@@ -174,6 +174,8 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
      preselection = false;
    }
 
+   bool write = false;
+
 
    
    // -----------------------------------------------------
@@ -228,6 +230,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 // TtSemiEvtSolutionMaker
 	 int bestSol = (*eSols)[0].getLRBestJetComb();   
 	 ttbar = (*eSols)[bestSol].getRecoHyp();
+	 write = true;
        }
        // No ttbar solution with 4 jets, something is weird, print a warning
        else {
@@ -318,6 +321,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 ttbar.addDaughter( lept, "lept");
 	 ttbar.addDaughter( hadt, "hadt");
 	 addFourMomenta.set( ttbar );
+	 write = true; 
        } // end of hadronic jet and leptonic jet
 
 
@@ -327,7 +331,9 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    // Write the solution to the event record   
    std::vector<reco::NamedCompositeCandidate> ttbarList;
-   ttbarList.push_back( ttbar );
+   if ( write ) {
+     ttbarList.push_back( ttbar );
+   }
    std::auto_ptr<std::vector<reco::NamedCompositeCandidate> > pTtbar ( new std::vector<reco::NamedCompositeCandidate>(ttbarList) );
    iEvent.put( pTtbar );
 
