@@ -48,6 +48,9 @@ void
 BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
+
+  bool debug = false;
+
   // -----------------------------------------------------
   // get the bare PAT objects
   // -----------------------------------------------------
@@ -220,9 +223,9 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    // Main decisions after preselection
    if ( preselection ) {
 
-     cout << "Preselection is satisfied" << endl;
+     if ( debug ) cout << "Preselection is satisfied" << endl;
 
-     cout << "Jets.size() = " << jets.size() << endl;
+     if ( debug ) cout << "Jets.size() = " << jets.size() << endl;
 
      // This will be modified for the z solution, so make a copy
      pat::MET              neutrino( mets[0] );
@@ -233,7 +236,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
      //    form the ttbar invariant mass.
      if ( jets.size() >= 4 ) {
 
-       cout << "Getting ttbar semileptonic solution" << endl;
+       if ( debug ) cout << "Getting ttbar semileptonic solution" << endl;
 
        // get the ttbar semileptonic event solution if there are more than 3 jets
        edm::Handle< std::vector<TtSemiEvtSolution> > eSols;
@@ -241,11 +244,11 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
        // Have solution, continue
        if ( eSols->size() > 0 ) {
-	 cout << "Got a nonzero size solution vector" << endl;
+	 if ( debug ) cout << "Got a nonzero size solution vector" << endl;
 	 // Just set the ttbar solution to the best ttbar solution from
 	 // TtSemiEvtSolutionMaker
 	 int bestSol = (*eSols)[0].getLRBestJetComb();
-	 cout << "bestSol = " << bestSol << endl;
+	 if ( debug ) cout << "bestSol = " << bestSol << endl;
 	 ttbar = (*eSols)[bestSol].getRecoHyp();
 	 write = true;
        }
@@ -265,13 +268,13 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        NamedCompositeCandidate lepW("lepW");
        
        if ( isMuon ) {
-	 cout << "Adding muon as daughter" << endl;
+	 if ( debug ) cout << "Adding muon as daughter" << endl;
 	 lepW.addDaughter(  *muon,     "muon" );
        } else {
-	 cout << "Adding electron as daughter" << endl;
+	 if ( debug ) cout << "Adding electron as daughter" << endl;
 	 lepW.addDaughter( *electron, "electron" );
        }
-       cout << "Adding neutrino as daughter" << endl;
+       if ( debug ) cout << "Adding neutrino as daughter" << endl;
        lepW.addDaughter  ( neutrino, "neutrino");
        addFourMomenta.set( lepW );
 
@@ -287,7 +290,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        // Set the neutrino pz
        neutrino.setPz( neutrinoPz );
 
-       cout << "Set neutrino pz to " << neutrinoPz << endl;
+       if ( debug ) cout << "Set neutrino pz to " << neutrinoPz << endl;
 
        // ------------------------------------------------------------------
        // Next ensure that there is a jet within the hemisphere of the 
@@ -295,7 +298,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        // ------------------------------------------------------------------
        reco::NamedCompositeCandidate hadt("hadt");
        reco::NamedCompositeCandidate lept("lept");
-       cout << "Adding lepW as daughter" << endl;
+       if ( debug ) cout << "Adding lepW as daughter" << endl;
        lept.addDaughter( lepW, "lepW" );
 
        std::string hadName("hadJet");
@@ -320,7 +323,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	   // Add this jet to the leptonic top
 	   std::stringstream s;
 	   s << lepName << ii;
-	   cout << "Adding daughter " << s.str() << endl;
+	   if ( debug ) cout << "Adding daughter " << s.str() << endl;
 	   lept.addDaughter( *jetit, s.str() );
 	 }
 	 // Get jets that are in the hadronic hemisphere
@@ -331,7 +334,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	   // jets are merged.
 	   std::stringstream s;
 	   s << hadName << ii;
-	   cout << "Adding daughter " << s.str() << endl;
+	   if ( debug ) cout << "Adding daughter " << s.str() << endl;
 	   hadt.addDaughter( *jetit, s.str() );
 	   
 	 }
@@ -343,7 +346,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        bool lepWHasJet = lept.numberOfDaughters() >= 2; // W and >= 1 jet
        bool hadWHasJet = hadt.numberOfDaughters() >= 1; // >= 1 jet
        if ( lepWHasJet && hadWHasJet ) {
-	 cout << "Adding daughters lept and hadt" << endl;
+	 if ( debug ) cout << "Adding daughters lept and hadt" << endl;
 	 ttbar.addDaughter( lept, "lept");
 	 ttbar.addDaughter( hadt, "hadt");
 	 addFourMomenta.set( ttbar );
@@ -358,7 +361,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    // Write the solution to the event record   
    std::vector<reco::NamedCompositeCandidate> ttbarList;
    if ( write ) {
-     cout << "Writing out" << endl;
+     if ( debug ) cout << "Writing out" << endl;
      ttbarList.push_back( ttbar );
    }
    std::auto_ptr<std::vector<reco::NamedCompositeCandidate> > pTtbar ( new std::vector<reco::NamedCompositeCandidate>(ttbarList) );
