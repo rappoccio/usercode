@@ -3,8 +3,11 @@
 
 #include <string>
 #include <sstream>
+#include <iostream>
 
 using std::string;
+using std::cout;
+using std::endl;
 
 //
 // constants, enums and typedefs
@@ -92,50 +95,53 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    // ----------------------
    // Find isolated muons, and highest pt lepton
    // ----------------------
-   pat::Muon     const * isolatedMuon     = 0;
+   std::vector<pat::Muon>::const_iterator isolatedMuon     = muons.end();
+   std::vector<pat::Muon>::const_iterator muon = muons.end();
    bool nIsolatedMuons = 0;
-   std::vector<pat::Muon>::const_iterator muit = muons.begin(),
-     muend = muons.end();
-   for (; muit != muend; ++muit ) {
+   std::vector<pat::Muon>::const_iterator muonIt = muons.begin(),
+     muonEnd = muons.end();
+   for (; muonIt != muonEnd; ++muonIt ) {
 
      // Find highest pt lepton
-     double pt = muit->pt();
+     double pt = muonIt->pt();
      if ( pt > maxWLeptonPt ) {
        maxWLeptonPt = pt;
-       Wlepton = &*muit;
+       muon = muonIt;
      }
 
      // Find any isolated muons
-     double caloIso = muit->caloIso();
+     double caloIso = muonIt->caloIso();
      if ( caloIso >= 0 && caloIso < caloIsoCut_ ) {
        nIsolatedMuons++;
-       isolatedMuon = &*muit;
+       isolatedMuon = muonIt;
      }
    }
 
    // ----------------------
    // Find isolated electrons, and highest pt lepton
    // ----------------------
-   pat::Electron     const * isolatedElectron     = 0;
+   std::vector<pat::Electron>::const_iterator isolatedElectron     = electrons.end();
+   std::vector<pat::Electron>::const_iterator electron = electrons.end();
    bool nIsolatedElectrons = 0;
-   std::vector<pat::Electron>::const_iterator eit = electrons.begin(),
-     eend = electrons.end();
-   for (; eit != eend; ++eit ) {
+   std::vector<pat::Electron>::const_iterator electronIt = electrons.begin(),
+     electronEnd = electrons.end();
+   for (; electronIt != electronEnd; ++electronIt ) {
 
      // Find highest pt lepton
-     double pt = eit->pt();
+     double pt = electronIt->pt();
      if ( pt > maxWLeptonPt ) {
        maxWLeptonPt = pt;
-       Wlepton = &*eit;
+       electron = electronIt;
      }
 
      // Find any isolated electrons
-     double caloIso = eit->caloIso();
+     double caloIso = electronIt->caloIso();
      if ( caloIso >= 0 && caloIso < caloIsoCut_ ) {
        nIsolatedElectrons++;
-       isolatedElectron = &*eit;
+       isolatedElectron = electronIt;
      }
    }
+
 
    // ----------------------
    // Now decide on the "prompt" lepton from the W:
@@ -143,13 +149,16 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    // then take highest pt lepton. 
    // ----------------------
    bool isMuon = true;
-   if      ( isolatedMuon     != 0 ) { Wlepton = isolatedMuon; isMuon = true; }
-   else if ( isolatedElectron != 0 ) { Wlepton = isolatedElectron; isMuon = false; } 
-   // else do nothing, it's already set to highest pt lepton
-
-   // Get some pointers for convenience.
-   pat::Muon     const * muon     = dynamic_cast<pat::Muon const *>    (Wlepton);
-   pat::Electron const * electron = dynamic_cast<pat::Electron const *>(Wlepton);
+   if      ( isolatedMuon     != muonEnd     ) { muon     = isolatedMuon;     isMuon = true; }
+   else if ( isolatedElectron != electronEnd ) { electron = isolatedElectron; isMuon = false; } 
+   else {
+     // Set to the highest pt lepton
+     if      ( muon != muonEnd && electron == electronEnd ) isMuon = true;
+     else if ( muon == muonEnd && electron != electronEnd ) isMuon = false;
+     else if ( muon != muonEnd && electron != electronEnd ) {
+       isMuon =  muon->pt() > electron->pt();
+     }
+   }
 
    // ----------------------
    // Veto events that have more than one isolated lepton
@@ -162,7 +171,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    // ----------------------
    // Veto events that have no prompt lepton candidates
    // ----------------------
-   if ( Wlepton == 0 ) {
+   if ( muon == muonEnd && electron == electronEnd ) {
      preselection = false;
    }
 
@@ -211,6 +220,10 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    // Main decisions after preselection
    if ( preselection ) {
 
+     cout << "Preselection is satisfied" << endl;
+
+     cout << "Jets.size() = " << jets.size() << endl;
+
      // This will be modified for the z solution, so make a copy
      pat::MET              neutrino( mets[0] );
 
@@ -220,15 +233,19 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
      //    form the ttbar invariant mass.
      if ( jets.size() >= 4 ) {
 
+       cout << "Getting ttbar semileptonic solution" << endl;
+
        // get the ttbar semileptonic event solution if there are more than 3 jets
        edm::Handle< std::vector<TtSemiEvtSolution> > eSols;
        iEvent.getByLabel(solLabel_, eSols);
 
        // Have solution, continue
-       if ( eSols->size() >= 0 ) {
+       if ( eSols->size() > 0 ) {
+	 cout << "Got a nonzero size solution vector" << endl;
 	 // Just set the ttbar solution to the best ttbar solution from
 	 // TtSemiEvtSolutionMaker
-	 int bestSol = (*eSols)[0].getLRBestJetComb();   
+	 int bestSol = (*eSols)[0].getLRBestJetComb();
+	 cout << "bestSol = " << bestSol << endl;
 	 ttbar = (*eSols)[bestSol].getRecoHyp();
 	 write = true;
        }
@@ -248,10 +265,13 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        NamedCompositeCandidate lepW("lepW");
        
        if ( isMuon ) {
+	 cout << "Adding muon as daughter" << endl;
 	 lepW.addDaughter(  *muon,     "muon" );
        } else {
+	 cout << "Adding electron as daughter" << endl;
 	 lepW.addDaughter( *electron, "electron" );
        }
+       cout << "Adding neutrino as daughter" << endl;
        lepW.addDaughter  ( neutrino, "neutrino");
        addFourMomenta.set( lepW );
 
@@ -267,12 +287,15 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        // Set the neutrino pz
        neutrino.setPz( neutrinoPz );
 
+       cout << "Set neutrino pz to " << neutrinoPz << endl;
+
        // ------------------------------------------------------------------
        // Next ensure that there is a jet within the hemisphere of the 
        // leptonic W, and one in the opposite hemisphere
        // ------------------------------------------------------------------
        reco::NamedCompositeCandidate hadt("hadt");
        reco::NamedCompositeCandidate lept("lept");
+       cout << "Adding lepW as daughter" << endl;
        lept.addDaughter( lepW, "lepW" );
 
        std::string hadName("hadJet");
@@ -297,6 +320,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	   // Add this jet to the leptonic top
 	   std::stringstream s;
 	   s << lepName << ii;
+	   cout << "Adding daughter " << s.str() << endl;
 	   lept.addDaughter( *jetit, s.str() );
 	 }
 	 // Get jets that are in the hadronic hemisphere
@@ -307,6 +331,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	   // jets are merged.
 	   std::stringstream s;
 	   s << hadName << ii;
+	   cout << "Adding daughter " << s.str() << endl;
 	   hadt.addDaughter( *jetit, s.str() );
 	   
 	 }
@@ -318,6 +343,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        bool lepWHasJet = lept.numberOfDaughters() >= 2; // W and >= 1 jet
        bool hadWHasJet = hadt.numberOfDaughters() >= 1; // >= 1 jet
        if ( lepWHasJet && hadWHasJet ) {
+	 cout << "Adding daughters lept and hadt" << endl;
 	 ttbar.addDaughter( lept, "lept");
 	 ttbar.addDaughter( hadt, "hadt");
 	 addFourMomenta.set( ttbar );
@@ -332,6 +358,7 @@ BoostedTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    // Write the solution to the event record   
    std::vector<reco::NamedCompositeCandidate> ttbarList;
    if ( write ) {
+     cout << "Writing out" << endl;
      ttbarList.push_back( ttbar );
    }
    std::auto_ptr<std::vector<reco::NamedCompositeCandidate> > pTtbar ( new std::vector<reco::NamedCompositeCandidate>(ttbarList) );
