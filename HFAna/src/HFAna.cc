@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Tue Jul 29 10:04:34 CDT 2008
-// $Id$
+// $Id: HFAna.cc,v 1.1 2008/07/30 15:01:58 srappocc Exp $
 //
 //
 
@@ -187,24 +187,27 @@ HFAna::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     // Fill the number of tracks
     vector<reco::TrackIPTagInfo::TrackIPData> const & trackIPData =  ipTagInfos->impactParameterData();
+    // Collect the indexes sorted IP2DSig
+    std::vector<size_t> trackIndexes( ipTagInfos->sortedIndexes(reco::TrackIPTagInfo::IP2DSig) );
+
     jetNtrk_->Fill( trackIPData.size() );
 
     if ( verbose_ ) cout << "About to fill track IP stuff" << endl;
     // Fill the track IP significances wrt jet axis
     if ( trackIPData.size() > 0 ) {
-      trk1d0Sig_->Fill( trackIPData[0].ip2d.significance() );
+      trk1d0Sig_->Fill( trackIPData[trackIndexes[0]].ip2d.significance() );
     }
     if ( trackIPData.size() > 1 ) {
-      trk2d0Sig_->Fill( trackIPData[1].ip2d.significance() );
+      trk2d0Sig_->Fill( trackIPData[trackIndexes[1]].ip2d.significance() );
     }
     if ( trackIPData.size() > 2 ) {
-      trk3d0Sig_->Fill( trackIPData[2].ip2d.significance() );
+      trk3d0Sig_->Fill( trackIPData[trackIndexes[2]].ip2d.significance() );
     }
     if ( trackIPData.size() > 3 ) {
-      trk4d0Sig_->Fill( trackIPData[3].ip2d.significance() );
+      trk4d0Sig_->Fill( trackIPData[trackIndexes[3]].ip2d.significance() );
     }
     if ( trackIPData.size() > 4 ) {
-      trk5d0Sig_->Fill( trackIPData[4].ip2d.significance() );
+      trk5d0Sig_->Fill( trackIPData[trackIndexes[4]].ip2d.significance() );
     }
     
     if ( verbose_ ) cout << "About to fill Lxy sig stuff" << endl;

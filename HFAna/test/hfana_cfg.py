@@ -6,7 +6,7 @@ process = cms.Process("HFANA")
 
 flavor = 'wc'
 histfile = flavor + 'Ana.root'
-outfile = '/uscms_data/d1/rappocc/' + flavor + 'Skim.root'
+outfile = '/uscms_data/d1/baites/CMSSW/CMSSW_2_1_0_pre8/src/Analysis/HFAna/test/' + flavor + '_patLayer1.root'
 
 # this defines the input files
 
