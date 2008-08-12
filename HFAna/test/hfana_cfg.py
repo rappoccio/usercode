@@ -92,6 +92,8 @@ process.wbbAna = process.hfAna.clone()
 process.wccAna = process.hfAna.clone()
 process.wcAna = process.hfAna.clone()
 process.wjetsAna = process.hfAna.clone()
+process.wbbAna_gs = process.hfAna.clone()
+process.wccAna_gs = process.hfAna.clone()
 
 
 # load the pat layer 1 event content
@@ -164,6 +166,33 @@ if patInput == False :
         process.wc_fe_flavorHistoryFilter*
         process.wcAna )
 
+    process.wbb_gs = cms.Path(
+        process.genParticles *
+        process.genEventWeight *
+        process.patLayer0*
+        process.patLayer1*  
+        process.bFlavorHistoryProducer*
+        process.cFlavorHistoryProducer*
+        ~process.wbb_me_flavorHistoryFilter*
+        ~process.wcc_me_flavorHistoryFilter*
+        ~process.wc_fe_flavorHistoryFilter*
+        process.wbb_gs_flavorHistoryFilter*
+        process.wjetsAna )
+
+    process.wcc_gs = cms.Path(
+        process.genParticles *
+        process.genEventWeight *
+        process.patLayer0*
+        process.patLayer1*  
+        process.bFlavorHistoryProducer*
+        process.cFlavorHistoryProducer*
+        ~process.wbb_me_flavorHistoryFilter*
+        ~process.wcc_me_flavorHistoryFilter*
+        ~process.wc_fe_flavorHistoryFilter*
+        ~process.wbb_gs_flavorHistoryFilter*
+        process.wcc_gs_flavorHistoryFilter*
+        process.wjetsAna )
+
     process.wjets = cms.Path(
         process.genParticles *
         process.genEventWeight *
@@ -174,6 +203,8 @@ if patInput == False :
         ~process.wbb_me_flavorHistoryFilter*
         ~process.wcc_me_flavorHistoryFilter*
         ~process.wc_fe_flavorHistoryFilter*
+        ~process.wbb_gs_flavorHistoryFilter*
+        ~process.wcc_gs_flavorHistoryFilter*
         process.wjetsAna )
 
 else : 
@@ -194,11 +225,27 @@ else :
         process.wc_fe_flavorHistoryFilter*
         process.wcAna )
 
+    process.wbb_gs = cms.Path(
+        ~process.wbb_me_flavorHistoryFilter*
+        ~process.wcc_me_flavorHistoryFilter*
+        ~process.wc_fe_flavorHistoryFilter*
+        process.wbb_gs_flavorHistoryFilter*
+        process.wjetsAna )
+
+    process.wcc_gs = cms.Path(
+        ~process.wbb_me_flavorHistoryFilter*
+        ~process.wcc_me_flavorHistoryFilter*
+        ~process.wc_fe_flavorHistoryFilter*
+        ~process.wbb_gs_flavorHistoryFilter*
+        process.wcc_gs_flavorHistoryFilter*
+        process.wjetsAna )
     
     process.wjets = cms.Path(
         ~process.wbb_me_flavorHistoryFilter*
         ~process.wcc_me_flavorHistoryFilter*
         ~process.wc_fe_flavorHistoryFilter*
+        ~process.wbb_gs_flavorHistoryFilter*
+        ~process.wcc_gs_flavorHistoryFilter*
         process.wjetsAna )
 
 # Set the threshold for output logging to 'info'
