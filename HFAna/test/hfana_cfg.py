@@ -5,8 +5,9 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("HFANA")
 
 patInput = False
+output = False
 
-flavor = 'wjets'
+flavor = 'qcd_50_80'
 histfile = flavor + 'Ana.root'
 outfile = '/uscms_data/d1/rappocc/' + flavor + '_patLayer1.root'
 
@@ -21,6 +22,8 @@ if patInput == False :
         from Analysis.HFAna.RecoInput_wc_cfi import *
     elif flavor == 'wjets' :
         from Analysis.HFAna.RecoInput_wjets_cfi import *
+    elif flavor == 'qcd_50_80' :
+        from Analysis.HFAna.RecoInput_qcd_50_80_cfi import *
     else :
         from Analysis.HFAna.RecoInput_wbb_cfi import *
 else : 
@@ -79,7 +82,9 @@ process.load("PhysicsTools.PatAlgos.patLayer1_cff")
 
 process.selectedLayer1Jets.cut = cms.string('et > 20.0 & abs(eta) < 2.5 & nConstituents > 0')
 process.selectedLayer1Muons.cut = cms.string('pt > 30.0 & abs(eta) < 5.0')
-process.countLayer1Leptons.minNumber = cms.uint32(1)
+if flavor != 'qcd_50_80' :
+    process.countLayer1Leptons.minNumber = cms.uint32(1)
+    
 process.countLayer1Jets.minNumber = cms.uint32(1)
 #process.countLayer1Leptons.maxNumber = cms.uint32(1)
 
@@ -177,7 +182,7 @@ if patInput == False :
         ~process.wcc_me_flavorHistoryFilter*
         ~process.wc_fe_flavorHistoryFilter*
         process.wbb_gs_flavorHistoryFilter*
-        process.wjetsAna )
+        process.wbbAna_gs )
 
     process.wcc_gs = cms.Path(
         process.genParticles *
@@ -191,7 +196,7 @@ if patInput == False :
         ~process.wc_fe_flavorHistoryFilter*
         ~process.wbb_gs_flavorHistoryFilter*
         process.wcc_gs_flavorHistoryFilter*
-        process.wjetsAna )
+        process.wccAna_gs )
 
     process.wjets = cms.Path(
         process.genParticles *
@@ -230,7 +235,7 @@ else :
         ~process.wcc_me_flavorHistoryFilter*
         ~process.wc_fe_flavorHistoryFilter*
         process.wbb_gs_flavorHistoryFilter*
-        process.wjetsAna )
+        process.wbbAna_gs )
 
     process.wcc_gs = cms.Path(
         ~process.wbb_me_flavorHistoryFilter*
@@ -238,7 +243,7 @@ else :
         ~process.wc_fe_flavorHistoryFilter*
         ~process.wbb_gs_flavorHistoryFilter*
         process.wcc_gs_flavorHistoryFilter*
-        process.wjetsAna )
+        process.wccAna_gs )
     
     process.wjets = cms.Path(
         ~process.wbb_me_flavorHistoryFilter*
@@ -253,7 +258,7 @@ process.MessageLogger.cerr.threshold = 'INFO'
 
 
 # talk to output module
-if patInput == False :
+if patInput == False & output == True :
 
     
     # extend event content to include pat analyzer kit objects
