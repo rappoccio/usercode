@@ -25,14 +25,15 @@
   hs->Add(h_mass_wbb );
   hs->Add(h_mass_wcc );
   hs->Add(h_mass_wc );
-//   hs->Add(h_mass_wjets );
-
+  hs->Add(h_mass_wjets );
+   
   TLegend * leg = new TLegend(0.8, 0.8, 1.0, 1.0);
   leg->AddEntry(h_mass_wbb, "W+bb", "l" );
   leg->AddEntry(h_mass_wcc, "W+cc", "l" );
   leg->AddEntry(h_mass_wc, "W+c", "l" );
-//   leg->AddEntry(h_mass_wjets, "W+jets", "l" );
-
+  leg->AddEntry(h_mass_wjets, "W+jets", "l" );
+  leg->SetFillColor(0);
+  leg->SetLineColor(0);
 
   hs->Draw("nostack");
   leg->Draw();

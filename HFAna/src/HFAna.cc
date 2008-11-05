@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Tue Jul 29 10:04:34 CDT 2008
-// $Id: HFAna.cc,v 1.1 2008/07/30 15:01:58 srappocc Exp $
+// $Id: HFAna.cc,v 1.2 2008/08/03 16:29:59 bazterra Exp $
 //
 //
 
@@ -34,15 +34,20 @@
 #include "PhysicsTools/CandUtils/interface/AddFourMomenta.h"
 #include "DataFormats/RecoCandidate/interface/RecoChargedCandidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
+#include "DataFormats/HepMCCandidate/interface/FlavorHistory.h"
 #include "DataFormats/BTauReco/interface/TrackIPData.h"
 
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileDirectory.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include <vector>
 
 #include <TH1.h>
+
+#include <TMath.h>
 
 //
 // class decleration
@@ -66,6 +71,9 @@ class HFAna : public edm::EDAnalyzer {
       // ----------member data ---------------------------
 
   InputTag     src_;
+  InputTag     bFlavorHistorySrc_;
+  InputTag     cFlavorHistorySrc_;
+  InputTag     genJetsSrc_;
   bool         verbose_;
 
   // Jet itself
@@ -85,6 +93,42 @@ class HFAna : public edm::EDAnalyzer {
   TH1F *        svCTau_;
 
 
+  // Flavor history itself
+  TH1F *        bPt1_;
+  TH1F *        bEta1_;
+  TH1F *        bProgId1_;
+  TH1F *        bSisId1_;
+  TH1F *        bPt2_;
+  TH1F *        bEta2_;
+  TH1F *        bDR_;
+  TH1F *        cPt1_;
+  TH1F *        cEta1_;
+  TH1F *        cProgId1_;
+  TH1F *        cSisId1_;
+  TH1F *        cPt2_;
+  TH1F *        cEta2_;
+  TH1F *        cDR_;
+
+
+
+  reco::GenJetCollection::const_iterator 
+  getClosestJet( Handle<reco::GenJetCollection> const & pJets,
+		 reco::CandidatePtr const & parton ) const 
+  {
+    double dr = 0.5;
+    reco::GenJetCollection::const_iterator j = pJets->begin(),
+      jend = pJets->end();
+    reco::GenJetCollection::const_iterator bestJet = pJets->end();
+    for ( ; j != jend; ++j ) {
+      double dri = deltaR( parton->p4(), j->p4() );
+      if ( dri < dr ) {
+	dr = dri;
+	bestJet = j;
+      }
+    }
+    return bestJet;
+  }
+  
 };
 
 //
@@ -100,6 +144,9 @@ class HFAna : public edm::EDAnalyzer {
 //
 HFAna::HFAna(const edm::ParameterSet& iConfig) :
   src_( iConfig.getParameter<InputTag>("src") ),
+  bFlavorHistorySrc_( iConfig.getParameter<InputTag>("bFlavorHistory") ),
+  cFlavorHistorySrc_( iConfig.getParameter<InputTag>("cFlavorHistory") ),
+  genJetsSrc_       ( iConfig.getParameter<InputTag>("genJetsSrc") ),
   verbose_( iConfig.getParameter<bool>("verbose") )
 {
    //now do what ever initialization is needed
@@ -119,6 +166,27 @@ HFAna::HFAna(const edm::ParameterSet& iConfig) :
   svMass_    = plots.make<TH1F>("svMass",    "Vertex Mass",                      100, 0, 10);
   svCTau_    = plots.make<TH1F>("svCTau",    "Vertex Pseudo C-Tau",              100, -0.2, 0.8);
   
+
+  bPt1_      = plots.make<TH1F>("bPt1",      "1st B Parton pt",                  100, 0, 100 );
+  bEta1_     = plots.make<TH1F>("bEta1",     "1st B Parton eta",                 100, -5.0, 5.0 );
+  bProgId1_  = plots.make<TH1F>("bProgID1",  "1st B Parton Progenitor ID",       30,  0, 30 );
+  bSisId1_   = plots.make<TH1F>("bSisID1",   "1st B Parton Sister ID",           30,  0, 30 );
+
+  bPt2_      = plots.make<TH1F>("bPt2",      "2nd B Parton pt",                  100, 0, 100 );
+  bEta2_     = plots.make<TH1F>("bEta2",     "2nd B Parton eta",                 100, -5.0, 5.0 );
+
+  bDR_       = plots.make<TH1F>("bDR",       "#Delta R between two b quarks",    100, 0, TMath::TwoPi() );
+
+  cPt1_      = plots.make<TH1F>("cPt1",      "1st C Parton pt",                  100, 0, 100 );
+  cEta1_     = plots.make<TH1F>("cEta1",     "1st C Parton eta",                 100, -5.0, 5.0 );
+  cProgId1_  = plots.make<TH1F>("cProgID1",  "1st C Parton Progenitor ID",       30,  0, 30 );
+  cSisId1_   = plots.make<TH1F>("cSisID1",   "1st C Parton Sister ID",           30,  0, 30 );
+
+  cPt2_      = plots.make<TH1F>("cPt2",      "2nd C Parton pt",                  100, 0, 100 );
+  cEta2_     = plots.make<TH1F>("cEta2",     "2nd C Parton eta",                 100, -5.0, 5.0 );
+
+  cDR_       = plots.make<TH1F>("cDR",       "#Delta R between two c quarks",    100, 0, TMath::TwoPi() );
+
 }
 
 
@@ -153,113 +221,181 @@ void
 HFAna::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
-  if ( verbose_ ) cout << "Hello from HFAna::analyze" << endl;
+//   if ( verbose_ ) cout << "Hello from HFAna::analyze" << endl;
 
-  Handle<vector<Jet> > h_jets;
-  iEvent.getByLabel( src_, h_jets );
+//   Handle<vector<Jet> > h_jets;
+//   iEvent.getByLabel( src_, h_jets );
 
-  if ( ! (h_jets.isValid()) ) return;
+//   if ( ! (h_jets.isValid()) ) return;
 
-  if ( verbose_ ) cout << "Got a valid handle" << endl;
+//   if ( verbose_ ) cout << "Got a valid handle" << endl;
 
-  if ( h_jets->size() == 0 ) return;
+//   if ( h_jets->size() == 0 ) return;
 
-  if ( verbose_ ) cout << "Have some jets" << endl;
+//   if ( verbose_ ) cout << "Have some jets" << endl;
 
 
-  vector<Jet>::const_iterator jetBegin = h_jets->begin(),
-    jetEnd = h_jets->end(), ijet = jetBegin;
+//   vector<Jet>::const_iterator jetBegin = h_jets->begin(),
+//     jetEnd = h_jets->end(), ijet = jetBegin;
 
-  for ( ; ijet != jetEnd; ++ijet ) {
+//   for ( ; ijet != jetEnd; ++ijet ) {
 
-    if ( verbose_ ) cout << "Processing jet " << ijet - jetBegin << " with pt = " << ijet->pt() << endl;
+//     if ( verbose_ ) cout << "Processing jet " << ijet - jetBegin << " with pt = " << ijet->pt() << endl;
 
-    // Fill basic jet mass
-    jetMass_->Fill( ijet->mass() );
+//     // Fill basic jet mass
+//     jetMass_->Fill( ijet->mass() );
 
-    // Get the associated tag infos
-    reco::TrackIPTagInfo const * ipTagInfos = ijet->tagInfoTrackIP("impactParameter");
-    reco::SecondaryVertexTagInfo const * svTagInfos = ijet->tagInfoSecondaryVertex("secondaryVertex");
+//     // Get the associated tag infos
+//     reco::TrackIPTagInfo const * ipTagInfos = ijet->tagInfoTrackIP("impactParameter");
+//     reco::SecondaryVertexTagInfo const * svTagInfos = ijet->tagInfoSecondaryVertex("secondaryVertex");
 
-    if ( ipTagInfos == 0 || svTagInfos == 0 ) continue;
+//     if ( ipTagInfos == 0 || svTagInfos == 0 ) continue;
 
-    if ( verbose_ ) cout << "Got valid tag infos" << endl;
+//     if ( verbose_ ) cout << "Got valid tag infos" << endl;
 
-    // Fill the number of tracks
-    vector<reco::TrackIPTagInfo::TrackIPData> const & trackIPData =  ipTagInfos->impactParameterData();
-    // Collect the indexes sorted IP2DSig
-    std::vector<size_t> trackIndexes( ipTagInfos->sortedIndexes(reco::TrackIPTagInfo::IP2DSig) );
+//     // Fill the number of tracks
+//     vector<reco::TrackIPTagInfo::TrackIPData> const & trackIPData =  ipTagInfos->impactParameterData();
+//     // Collect the indexes sorted IP2DSig
+//     std::vector<size_t> trackIndexes( ipTagInfos->sortedIndexes(reco::TrackIPTagInfo::IP2DSig) );
 
-    jetNtrk_->Fill( trackIPData.size() );
+//     jetNtrk_->Fill( trackIPData.size() );
 
-    if ( verbose_ ) cout << "About to fill track IP stuff" << endl;
-    // Fill the track IP significances wrt jet axis
-    if ( trackIPData.size() > 0 ) {
-      trk1d0Sig_->Fill( trackIPData[trackIndexes[0]].ip2d.significance() );
-    }
-    if ( trackIPData.size() > 1 ) {
-      trk2d0Sig_->Fill( trackIPData[trackIndexes[1]].ip2d.significance() );
-    }
-    if ( trackIPData.size() > 2 ) {
-      trk3d0Sig_->Fill( trackIPData[trackIndexes[2]].ip2d.significance() );
-    }
-    if ( trackIPData.size() > 3 ) {
-      trk4d0Sig_->Fill( trackIPData[trackIndexes[3]].ip2d.significance() );
-    }
-    if ( trackIPData.size() > 4 ) {
-      trk5d0Sig_->Fill( trackIPData[trackIndexes[4]].ip2d.significance() );
-    }
+//     if ( verbose_ ) cout << "About to fill track IP stuff" << endl;
+//     // Fill the track IP significances wrt jet axis
+//     if ( trackIPData.size() > 0 ) {
+//       trk1d0Sig_->Fill( trackIPData[trackIndexes[0]].ip2d.significance() );
+//     }
+//     if ( trackIPData.size() > 1 ) {
+//       trk2d0Sig_->Fill( trackIPData[trackIndexes[1]].ip2d.significance() );
+//     }
+//     if ( trackIPData.size() > 2 ) {
+//       trk3d0Sig_->Fill( trackIPData[trackIndexes[2]].ip2d.significance() );
+//     }
+//     if ( trackIPData.size() > 3 ) {
+//       trk4d0Sig_->Fill( trackIPData[trackIndexes[3]].ip2d.significance() );
+//     }
+//     if ( trackIPData.size() > 4 ) {
+//       trk5d0Sig_->Fill( trackIPData[trackIndexes[4]].ip2d.significance() );
+//     }
     
-    if ( verbose_ ) cout << "About to fill Lxy sig stuff" << endl;
-    // Fill lxy
-    if ( svTagInfos->nVertices() <= 0 ) continue;
+//     if ( verbose_ ) cout << "About to fill Lxy sig stuff" << endl;
+//     // Fill lxy
+//     if ( svTagInfos->nVertices() <= 0 ) continue;
     
-    svLxySig_->Fill( svTagInfos->flightDistance(0).significance() );
+//     svLxySig_->Fill( svTagInfos->flightDistance(0).significance() );
 
-    if ( verbose_ ) cout << "About to get tracks" << endl;
-    // Get and fill vertex mass and pseudo ctau
-    reco::TrackRefVector const & tracks = svTagInfos->vertexTracks(0);
+//     if ( verbose_ ) cout << "About to get tracks" << endl;
+//     // Get and fill vertex mass and pseudo ctau
+//     reco::TrackRefVector const & tracks = svTagInfos->vertexTracks(0);
 
-    if ( verbose_ ) cout << "About to make candidate" << endl;
-    reco::TrackRefVector::const_iterator tracksBegin = tracks.begin(),
-      tracksEnd = tracks.end(), itrack = tracksBegin;
+//     if ( verbose_ ) cout << "About to make candidate" << endl;
+//     reco::TrackRefVector::const_iterator tracksBegin = tracks.begin(),
+//       tracksEnd = tracks.end(), itrack = tracksBegin;
 
-    reco::CompositeCandidate vertexCand;
-    for ( ; itrack != tracksEnd; ++itrack ) {
+//     reco::CompositeCandidate vertexCand;
+//     for ( ; itrack != tracksEnd; ++itrack ) {
      
-      const double M_PION = 0.13957018;
-      ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > p4_1;
-      p4_1.SetPt  ( (*itrack)->pt() );
-      p4_1.SetEta ( (*itrack)->eta() );
-      p4_1.SetPhi ( (*itrack)->phi() );
-      p4_1.SetM   ( M_PION ) ;
-      reco::RecoChargedCandidate::LorentzVector p4( p4_1.x(), p4_1.y(), p4_1.z(), p4_1.t() );
-      reco::RecoChargedCandidate cand ( (*itrack)->charge(),
-					p4
-					);
+//       const double M_PION = 0.13957018;
+//       ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > p4_1;
+//       p4_1.SetPt  ( (*itrack)->pt() );
+//       p4_1.SetEta ( (*itrack)->eta() );
+//       p4_1.SetPhi ( (*itrack)->phi() );
+//       p4_1.SetM   ( M_PION ) ;
+//       reco::RecoChargedCandidate::LorentzVector p4( p4_1.x(), p4_1.y(), p4_1.z(), p4_1.t() );
+//       reco::RecoChargedCandidate cand ( (*itrack)->charge(),
+// 					p4
+// 					);
       
-      cand.setTrack( *itrack );
+//       cand.setTrack( *itrack );
 
-      vertexCand.addDaughter( cand );
+//       vertexCand.addDaughter( cand );
 
+//     }
+
+//     if ( verbose_ ) cout << "Done making candidate" << endl;
+
+//     AddFourMomenta addFourMomenta;
+//     addFourMomenta.set( vertexCand );
+
+//     double vtxMass = vertexCand.mass();
+//     double lxy = svTagInfos->flightDistance(0).value();
+//     double vtxPt = vertexCand.pt();
+
+//     double ctau = (vtxPt > 0 ) ?  vtxMass / vtxPt * lxy : 0;
+
+//     svMass_  ->Fill( vtxMass );
+//     svCTau_  ->Fill( ctau );
+
+//     if ( verbose_ ) cout << "Done filling jet" << endl;
+//   }
+
+  Handle<reco::GenJetCollection> h_jets;
+  iEvent.getByLabel( genJetsSrc_, h_jets );
+
+  reco::GenJetCollection::const_iterator jetsEnd = h_jets->end();
+
+  Handle<vector<reco::FlavorHistory> > h_bflav;
+  iEvent.getByLabel( bFlavorHistorySrc_, h_bflav );
+  if ( h_bflav.isValid() && h_bflav->size() > 0 ) {
+    reco::CandidatePtr parton     = h_bflav->at(0).parton();
+    reco::CandidatePtr progenitor = h_bflav->at(0).progenitor();
+    reco::CandidatePtr sister     = h_bflav->at(0).sister();
+
+    if ( !parton.isNull() ) {
+      reco::GenJetCollection::const_iterator matched1 = getClosestJet( h_jets, parton );
+      if ( matched1 != jetsEnd ) {
+	bPt1_->Fill( matched1->pt() );
+	bEta1_->Fill( matched1->pt() );
+	
+	if ( !progenitor.isNull() ) {
+	  bProgId1_->Fill( abs(progenitor->pdgId()) );
+	}
+	if ( !sister.isNull() ) {
+	  reco::GenJetCollection::const_iterator matched2 = getClosestJet( h_jets, sister );
+	  if ( matched2 != jetsEnd ) {
+	    bPt2_->Fill( matched2->pt() );
+	    bEta2_->Fill( matched2->pt() );
+	    bDR_->Fill( deltaR<reco::GenJet,reco::GenJet>( *matched1, *matched2 ) );
+	  }
+	  bSisId1_->Fill( abs(sister->pdgId()) );
+	}
+      }
     }
-
-    if ( verbose_ ) cout << "Done making candidate" << endl;
-
-    AddFourMomenta addFourMomenta;
-    addFourMomenta.set( vertexCand );
-
-    double vtxMass = vertexCand.mass();
-    double lxy = svTagInfos->flightDistance(0).value();
-    double vtxPt = vertexCand.pt();
-
-    double ctau = (vtxPt > 0 ) ?  vtxMass / vtxPt * lxy : 0;
-
-    svMass_  ->Fill( vtxMass );
-    svCTau_  ->Fill( ctau );
-
-    if ( verbose_ ) cout << "Done filling jet" << endl;
   }
+
+
+
+
+  Handle<vector<reco::FlavorHistory> > h_cflav;
+  iEvent.getByLabel( cFlavorHistorySrc_, h_cflav );
+  if ( h_cflav.isValid() && h_cflav->size() > 0 ) {
+    reco::CandidatePtr parton     = h_cflav->at(0).parton();
+    reco::CandidatePtr progenitor = h_cflav->at(0).progenitor();
+    reco::CandidatePtr sister     = h_cflav->at(0).sister();
+
+    if ( !parton.isNull() ) {
+      reco::GenJetCollection::const_iterator matched1 = getClosestJet( h_jets, parton );
+      if ( matched1 != jetsEnd ) {
+	cPt1_->Fill( matched1->pt() );
+	cEta1_->Fill( matched1->pt() );
+	
+	if ( !progenitor.isNull() ) {
+	  cProgId1_->Fill( abs(progenitor->pdgId()) );
+	}
+	if ( !sister.isNull() ) {
+	  reco::GenJetCollection::const_iterator matched2 = getClosestJet( h_jets, sister );
+	  if ( matched2 != jetsEnd ) {
+	    cPt2_->Fill( matched2->pt() );
+	    cEta2_->Fill( matched2->pt() );
+	    cDR_->Fill( deltaR<reco::GenJet,reco::GenJet>( *matched1, *matched2 ) );
+	  }
+	  cSisId1_->Fill( abs(sister->pdgId()) );
+	}
+      }
+    }
+  }
+
+  
 
   if ( verbose_ ) cout << "Finished" << endl;
 
