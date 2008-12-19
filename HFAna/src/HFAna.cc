@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Tue Jul 29 10:04:34 CDT 2008
-// $Id: HFAna.cc,v 1.2 2008/08/03 16:29:59 bazterra Exp $
+// $Id: HFAna.cc,v 1.3 2008/11/05 15:57:30 srappocc Exp $
 //
 //
 
@@ -36,6 +36,7 @@
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/HepMCCandidate/interface/FlavorHistory.h"
+#include "DataFormats/HepMCCandidate/interface/FlavorHistoryEvent.h"
 #include "DataFormats/BTauReco/interface/TrackIPData.h"
 
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
@@ -108,26 +109,6 @@ class HFAna : public edm::EDAnalyzer {
   TH1F *        cPt2_;
   TH1F *        cEta2_;
   TH1F *        cDR_;
-
-
-
-  reco::GenJetCollection::const_iterator 
-  getClosestJet( Handle<reco::GenJetCollection> const & pJets,
-		 reco::CandidatePtr const & parton ) const 
-  {
-    double dr = 0.5;
-    reco::GenJetCollection::const_iterator j = pJets->begin(),
-      jend = pJets->end();
-    reco::GenJetCollection::const_iterator bestJet = pJets->end();
-    for ( ; j != jend; ++j ) {
-      double dri = deltaR( parton->p4(), j->p4() );
-      if ( dri < dr ) {
-	dr = dri;
-	bestJet = j;
-      }
-    }
-    return bestJet;
-  }
   
 };
 
@@ -146,7 +127,6 @@ HFAna::HFAna(const edm::ParameterSet& iConfig) :
   src_( iConfig.getParameter<InputTag>("src") ),
   bFlavorHistorySrc_( iConfig.getParameter<InputTag>("bFlavorHistory") ),
   cFlavorHistorySrc_( iConfig.getParameter<InputTag>("cFlavorHistory") ),
-  genJetsSrc_       ( iConfig.getParameter<InputTag>("genJetsSrc") ),
   verbose_( iConfig.getParameter<bool>("verbose") )
 {
    //now do what ever initialization is needed
@@ -193,22 +173,6 @@ HFAna::HFAna(const edm::ParameterSet& iConfig) :
 HFAna::~HFAna()
 {
  
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
-
-//   if ( jetNtrk_   ) delete  jetNtrk_      ; 
-//   if ( jetMass_   ) delete  jetMass_      ; 
-//   if ( trk1d0Sig_ ) delete  trk1d0Sig_    ; 
-//   if ( trk2d0Sig_ ) delete  trk2d0Sig_    ; 
-//   if ( trk3d0Sig_ ) delete  trk3d0Sig_    ; 
-//   if ( trk4d0Sig_ ) delete  trk4d0Sig_    ; 
-//   if ( trk5d0Sig_ ) delete  trk5d0Sig_    ; 
-//   if ( svLxySig_  ) delete  svLxySig_     ; 
-//   if ( svMass_    ) delete  svMass_       ; 
-//   if ( svCTau_    ) delete  svCTau_       ; 
-
-
-
 }
 
 
@@ -221,181 +185,242 @@ void
 HFAna::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
-//   if ( verbose_ ) cout << "Hello from HFAna::analyze" << endl;
+  if ( verbose_ ) cout << "Hello from HFAna::analyze" << endl;
 
-//   Handle<vector<Jet> > h_jets;
-//   iEvent.getByLabel( src_, h_jets );
+  // First analyze the flavor history
 
-//   if ( ! (h_jets.isValid()) ) return;
-
-//   if ( verbose_ ) cout << "Got a valid handle" << endl;
-
-//   if ( h_jets->size() == 0 ) return;
-
-//   if ( verbose_ ) cout << "Have some jets" << endl;
-
-
-//   vector<Jet>::const_iterator jetBegin = h_jets->begin(),
-//     jetEnd = h_jets->end(), ijet = jetBegin;
-
-//   for ( ; ijet != jetEnd; ++ijet ) {
-
-//     if ( verbose_ ) cout << "Processing jet " << ijet - jetBegin << " with pt = " << ijet->pt() << endl;
-
-//     // Fill basic jet mass
-//     jetMass_->Fill( ijet->mass() );
-
-//     // Get the associated tag infos
-//     reco::TrackIPTagInfo const * ipTagInfos = ijet->tagInfoTrackIP("impactParameter");
-//     reco::SecondaryVertexTagInfo const * svTagInfos = ijet->tagInfoSecondaryVertex("secondaryVertex");
-
-//     if ( ipTagInfos == 0 || svTagInfos == 0 ) continue;
-
-//     if ( verbose_ ) cout << "Got valid tag infos" << endl;
-
-//     // Fill the number of tracks
-//     vector<reco::TrackIPTagInfo::TrackIPData> const & trackIPData =  ipTagInfos->impactParameterData();
-//     // Collect the indexes sorted IP2DSig
-//     std::vector<size_t> trackIndexes( ipTagInfos->sortedIndexes(reco::TrackIPTagInfo::IP2DSig) );
-
-//     jetNtrk_->Fill( trackIPData.size() );
-
-//     if ( verbose_ ) cout << "About to fill track IP stuff" << endl;
-//     // Fill the track IP significances wrt jet axis
-//     if ( trackIPData.size() > 0 ) {
-//       trk1d0Sig_->Fill( trackIPData[trackIndexes[0]].ip2d.significance() );
-//     }
-//     if ( trackIPData.size() > 1 ) {
-//       trk2d0Sig_->Fill( trackIPData[trackIndexes[1]].ip2d.significance() );
-//     }
-//     if ( trackIPData.size() > 2 ) {
-//       trk3d0Sig_->Fill( trackIPData[trackIndexes[2]].ip2d.significance() );
-//     }
-//     if ( trackIPData.size() > 3 ) {
-//       trk4d0Sig_->Fill( trackIPData[trackIndexes[3]].ip2d.significance() );
-//     }
-//     if ( trackIPData.size() > 4 ) {
-//       trk5d0Sig_->Fill( trackIPData[trackIndexes[4]].ip2d.significance() );
-//     }
-    
-//     if ( verbose_ ) cout << "About to fill Lxy sig stuff" << endl;
-//     // Fill lxy
-//     if ( svTagInfos->nVertices() <= 0 ) continue;
-    
-//     svLxySig_->Fill( svTagInfos->flightDistance(0).significance() );
-
-//     if ( verbose_ ) cout << "About to get tracks" << endl;
-//     // Get and fill vertex mass and pseudo ctau
-//     reco::TrackRefVector const & tracks = svTagInfos->vertexTracks(0);
-
-//     if ( verbose_ ) cout << "About to make candidate" << endl;
-//     reco::TrackRefVector::const_iterator tracksBegin = tracks.begin(),
-//       tracksEnd = tracks.end(), itrack = tracksBegin;
-
-//     reco::CompositeCandidate vertexCand;
-//     for ( ; itrack != tracksEnd; ++itrack ) {
-     
-//       const double M_PION = 0.13957018;
-//       ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > p4_1;
-//       p4_1.SetPt  ( (*itrack)->pt() );
-//       p4_1.SetEta ( (*itrack)->eta() );
-//       p4_1.SetPhi ( (*itrack)->phi() );
-//       p4_1.SetM   ( M_PION ) ;
-//       reco::RecoChargedCandidate::LorentzVector p4( p4_1.x(), p4_1.y(), p4_1.z(), p4_1.t() );
-//       reco::RecoChargedCandidate cand ( (*itrack)->charge(),
-// 					p4
-// 					);
-      
-//       cand.setTrack( *itrack );
-
-//       vertexCand.addDaughter( cand );
-
-//     }
-
-//     if ( verbose_ ) cout << "Done making candidate" << endl;
-
-//     AddFourMomenta addFourMomenta;
-//     addFourMomenta.set( vertexCand );
-
-//     double vtxMass = vertexCand.mass();
-//     double lxy = svTagInfos->flightDistance(0).value();
-//     double vtxPt = vertexCand.pt();
-
-//     double ctau = (vtxPt > 0 ) ?  vtxMass / vtxPt * lxy : 0;
-
-//     svMass_  ->Fill( vtxMass );
-//     svCTau_  ->Fill( ctau );
-
-//     if ( verbose_ ) cout << "Done filling jet" << endl;
-//   }
-
-  Handle<reco::GenJetCollection> h_jets;
-  iEvent.getByLabel( genJetsSrc_, h_jets );
-
-  reco::GenJetCollection::const_iterator jetsEnd = h_jets->end();
-
-  Handle<vector<reco::FlavorHistory> > h_bflav;
+  // b first
+  Handle<reco::FlavorHistoryEvent > h_bflav;
   iEvent.getByLabel( bFlavorHistorySrc_, h_bflav );
   if ( h_bflav.isValid() && h_bflav->size() > 0 ) {
-    reco::CandidatePtr parton     = h_bflav->at(0).parton();
-    reco::CandidatePtr progenitor = h_bflav->at(0).progenitor();
-    reco::CandidatePtr sister     = h_bflav->at(0).sister();
 
-    if ( !parton.isNull() ) {
-      reco::GenJetCollection::const_iterator matched1 = getClosestJet( h_jets, parton );
-      if ( matched1 != jetsEnd ) {
-	bPt1_->Fill( matched1->pt() );
-	bEta1_->Fill( matched1->pt() );
+    int nb                        = h_bflav->nb();
+    int nc                        = h_bflav->nc();
+    double dR                     = h_bflav->deltaR();
+
+    reco::FlavorHistoryEvent::const_iterator ib_begin = h_bflav->begin(),
+      ib_end = h_bflav->end(),
+      ib = ib_begin;
+
+    for (; ib != ib_end; ++ib ) {
+      reco::CandidatePtr parton     = ib->parton();
+      reco::CandidatePtr progenitor = ib->progenitor();
+      reco::CandidatePtr sister     = ib->sister();
+      reco::ShallowClonePtrCandidate matched1 = ib->matchedJet();
+      reco::ShallowClonePtrCandidate sister1  = ib->sisterJet();
+
+      if ( !parton.isNull() ) {
+      
+	double parton_pt = parton.isNonnull() ? parton->pt() : -1.0;
+	double sister_pt = sister.isNonnull() ? sister->pt() : -1.0;
+	double matched_pt = matched1.masterClonePtr().isNonnull() ? matched1.pt() : -1.0;
+	double matched_eta = matched1.masterClonePtr().isNonnull() ? matched1.eta() : -1.0;
+	double sister_matched_pt = sister1.masterClonePtr().isNonnull() ? sister1.pt() : -1.0;
+	double sister_matched_eta = sister1.masterClonePtr().isNonnull() ? sister1.eta() : -1.0;
+
+	if ( verbose_ ) {
+	  cout << "------------------------" << endl;
+	  cout << "highest flavor = " << h_bflav->highestFlavor() << endl;
+	  cout << "flavor source  = " << h_bflav->flavorSource() << endl;
+	  cout << "size           = " << h_bflav->size() << endl;
+	  cout << "nb             = " << nb << endl;
+	  cout << "nc             = " << nc << endl;
+	  cout << "dR             = " << dR << endl;
+	  cout << "parton pt      = " << parton_pt << endl;
+	  cout << "sister pt      = " << sister_pt << endl;
+	  cout << "matched pt     = " << matched_pt << endl;
+	  cout << "matched eta    = " << matched_eta << endl;
+	}
+
+	bPt1_->Fill( matched_pt );
+	bEta1_->Fill( matched_eta );
 	
 	if ( !progenitor.isNull() ) {
 	  bProgId1_->Fill( abs(progenitor->pdgId()) );
 	}
 	if ( !sister.isNull() ) {
-	  reco::GenJetCollection::const_iterator matched2 = getClosestJet( h_jets, sister );
-	  if ( matched2 != jetsEnd ) {
-	    bPt2_->Fill( matched2->pt() );
-	    bEta2_->Fill( matched2->pt() );
-	    bDR_->Fill( deltaR<reco::GenJet,reco::GenJet>( *matched1, *matched2 ) );
-	  }
+	  bPt2_->Fill( sister_matched_pt );
+	  bEta2_->Fill( sister_matched_eta );
+	  bDR_->Fill( dR );
 	  bSisId1_->Fill( abs(sister->pdgId()) );
 	}
       }
     }
   }
+  
 
+  // c next
 
-
-
-  Handle<vector<reco::FlavorHistory> > h_cflav;
+  Handle<reco::FlavorHistoryEvent > h_cflav;
   iEvent.getByLabel( cFlavorHistorySrc_, h_cflav );
   if ( h_cflav.isValid() && h_cflav->size() > 0 ) {
-    reco::CandidatePtr parton     = h_cflav->at(0).parton();
-    reco::CandidatePtr progenitor = h_cflav->at(0).progenitor();
-    reco::CandidatePtr sister     = h_cflav->at(0).sister();
 
-    if ( !parton.isNull() ) {
-      reco::GenJetCollection::const_iterator matched1 = getClosestJet( h_jets, parton );
-      if ( matched1 != jetsEnd ) {
-	cPt1_->Fill( matched1->pt() );
-	cEta1_->Fill( matched1->pt() );
+    int nb                        = h_cflav->nb();
+    int nc                        = h_cflav->nc();
+    double dR                     = h_cflav->deltaR();
+
+    reco::FlavorHistoryEvent::const_iterator ic_begin = h_cflav->begin(),
+      ic_end = h_cflav->end(),
+      ic = ic_begin;
+
+    for (; ic != ic_end; ++ic ) {
+      reco::CandidatePtr parton     = ic->parton();
+      reco::CandidatePtr progenitor = ic->progenitor();
+      reco::CandidatePtr sister     = ic->sister();
+      reco::ShallowClonePtrCandidate matched1 = ic->matchedJet();
+      reco::ShallowClonePtrCandidate sister1  = ic->sisterJet();
+
+      if ( !parton.isNull() ) {
+      
+	double parton_pt = parton.isNonnull() ? parton->pt() : -1.0;
+	double sister_pt = sister.isNonnull() ? sister->pt() : -1.0;
+	double matched_pt = matched1.masterClonePtr().isNonnull() ? matched1.pt() : -1.0;
+	double matched_eta = matched1.masterClonePtr().isNonnull() ? matched1.eta() : -1.0;
+	double sister_matched_pt = sister1.masterClonePtr().isNonnull() ? sister1.pt() : -1.0;
+	double sister_matched_eta = sister1.masterClonePtr().isNonnull() ? sister1.eta() : -1.0;
+
+	if ( verbose_ ) {
+	  cout << "------------------------" << endl;
+	  cout << "highest flavor = " << h_cflav->highestFlavor() << endl;
+	  cout << "flavor source  = " << h_cflav->flavorSource() << endl;
+	  cout << "size           = " << h_cflav->size() << endl;
+	  cout << "nb             = " << nb << endl;
+	  cout << "nc             = " << nc << endl;
+	  cout << "dR             = " << dR << endl;
+	  cout << "parton pt      = " << parton_pt << endl;
+	  cout << "sister pt      = " << sister_pt << endl;
+	  cout << "matched pt     = " << matched_pt << endl;
+	  cout << "matched eta    = " << matched_eta << endl;
+	}
+
+	cPt1_->Fill( matched_pt );
+	cEta1_->Fill( matched_eta );
 	
 	if ( !progenitor.isNull() ) {
 	  cProgId1_->Fill( abs(progenitor->pdgId()) );
 	}
 	if ( !sister.isNull() ) {
-	  reco::GenJetCollection::const_iterator matched2 = getClosestJet( h_jets, sister );
-	  if ( matched2 != jetsEnd ) {
-	    cPt2_->Fill( matched2->pt() );
-	    cEta2_->Fill( matched2->pt() );
-	    cDR_->Fill( deltaR<reco::GenJet,reco::GenJet>( *matched1, *matched2 ) );
-	  }
+	  cPt2_->Fill( sister_matched_pt );
+	  cEta2_->Fill( sister_matched_eta );
+	  cDR_->Fill( dR );
 	  cSisId1_->Fill( abs(sister->pdgId()) );
 	}
       }
     }
   }
 
+
+
+  // Then fill heavy flavor analysis part
+  Handle<vector<Jet> > h_jets;
+  iEvent.getByLabel( src_, h_jets );
+
+  if ( ! (h_jets.isValid()) ) return;
+
+  if ( verbose_ ) cout << "Got a valid handle" << endl;
+
+  if ( h_jets->size() == 0 ) return;
+
+  if ( verbose_ ) cout << "Have some jets" << endl;
+
+
+  vector<Jet>::const_iterator jetBegin = h_jets->begin(),
+    jetEnd = h_jets->end(), ijet = jetBegin;
+
+  for ( ; ijet != jetEnd; ++ijet ) {
+
+    if ( verbose_ ) cout << "Processing jet " << ijet - jetBegin << " with pt = " << ijet->pt() << endl;
+
+    // Fill basic jet mass
+    jetMass_->Fill( ijet->mass() );
+
+    // Get the associated tag infos
+    reco::TrackIPTagInfo const * ipTagInfos = ijet->tagInfoTrackIP("impactParameter");
+    reco::SecondaryVertexTagInfo const * svTagInfos = ijet->tagInfoSecondaryVertex("secondaryVertex");
+
+    if ( ipTagInfos == 0 || svTagInfos == 0 ) continue;
+
+    if ( verbose_ ) cout << "Got valid tag infos" << endl;
+
+    // Fill the number of tracks
+    vector<reco::TrackIPTagInfo::TrackIPData> const & trackIPData =  ipTagInfos->impactParameterData();
+    // Collect the indexes sorted IP2DSig
+    std::vector<size_t> trackIndexes( ipTagInfos->sortedIndexes(reco::TrackIPTagInfo::IP2DSig) );
+
+    jetNtrk_->Fill( trackIPData.size() );
+
+    if ( verbose_ ) cout << "About to fill track IP stuff" << endl;
+    // Fill the track IP significances wrt jet axis
+    if ( trackIPData.size() > 0 ) {
+      trk1d0Sig_->Fill( trackIPData[trackIndexes[0]].ip2d.significance() );
+    }
+    if ( trackIPData.size() > 1 ) {
+      trk2d0Sig_->Fill( trackIPData[trackIndexes[1]].ip2d.significance() );
+    }
+    if ( trackIPData.size() > 2 ) {
+      trk3d0Sig_->Fill( trackIPData[trackIndexes[2]].ip2d.significance() );
+    }
+    if ( trackIPData.size() > 3 ) {
+      trk4d0Sig_->Fill( trackIPData[trackIndexes[3]].ip2d.significance() );
+    }
+    if ( trackIPData.size() > 4 ) {
+      trk5d0Sig_->Fill( trackIPData[trackIndexes[4]].ip2d.significance() );
+    }
+    
+    if ( verbose_ ) cout << "About to fill Lxy sig stuff" << endl;
+    // Fill lxy
+    if ( svTagInfos->nVertices() > 0 ) {
+      svLxySig_->Fill( svTagInfos->flightDistance(0).significance() );
+    }
+
+    if ( verbose_ ) cout << "About to fill vertex mass " << endl;
+    if ( svTagInfos->nVertices() > 0 ) {
+      reco::Vertex::trackRef_iterator tracksBegin = svTagInfos->secondaryVertex(0).tracks_begin(),
+	tracksEnd = svTagInfos->secondaryVertex(0).tracks_end(),
+	itrack = tracksBegin;
+
+      if ( verbose_ ) cout << "There are " << tracksEnd - tracksBegin << " tracks in the vertex" << endl;
+    
+      reco::CompositeCandidate vertexCand;
+      for ( ; itrack != tracksEnd; ++itrack ) {
+     
+	const double M_PION = 0.13957018;
+	ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > p4_1;
+	p4_1.SetPt  ( (*itrack)->pt() );
+	p4_1.SetEta ( (*itrack)->eta() );
+	p4_1.SetPhi ( (*itrack)->phi() );
+	p4_1.SetM   ( M_PION ) ;
+	reco::RecoChargedCandidate::LorentzVector p4( p4_1.x(), p4_1.y(), p4_1.z(), p4_1.t() );
+	reco::RecoChargedCandidate cand ( (*itrack)->charge(),
+					  p4
+					  );
+      
+	//       cand.setTrack( *itrack );
+
+	vertexCand.addDaughter( cand );
+
+      }
+
+      if ( verbose_ ) cout << "Done making candidate" << endl;
+
+      AddFourMomenta addFourMomenta;
+      addFourMomenta.set( vertexCand );
+
+      double vtxMass = vertexCand.mass();
+      double lxy = svTagInfos->flightDistance(0).value();
+      double vtxPt = vertexCand.pt();
+
+      double ctau = (vtxPt > 0 ) ?  vtxMass / vtxPt * lxy : 0;
+
+      svMass_  ->Fill( vtxMass );
+      svCTau_  ->Fill( ctau );
+      if ( verbose_ ) cout << "Filling vertex mass and cta = " << vtxMass << ", " << ctau << endl;
+    }
+
+    if ( verbose_ ) cout << "Done filling jet" << endl;
+  }
   
+
 
   if ( verbose_ ) cout << "Finished" << endl;
 

@@ -5,6 +5,6 @@ hfAna = cms.EDAnalyzer("HFAna",
                        src = cms.InputTag('selectedLayer1Jets'),
                        bFlavorHistory = cms.InputTag("bFlavorHistoryProducer", "bPartonFlavorHistory"),
                        cFlavorHistory = cms.InputTag("cFlavorHistoryProducer", "cPartonFlavorHistory"),
-                       genJetsSrc = cms.InputTag("iterativeCone5GenJets"),
+                       genJetsSrc = cms.InputTag("sisCone5GenJets"),
                        verbose = cms.bool(False)
                        )

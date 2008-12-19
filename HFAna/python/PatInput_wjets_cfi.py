@@ -8,7 +8,7 @@ def RecoInput() :
                    debugFlag = cms.untracked.bool(True),
                    
                    fileNames = cms.untracked.vstring(
-    'file:/uscms_data/d1/rappocc/wjets_patLayer1.root'
-     
+    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/WJets_preprod/PATLayer1_Output_fromAOD_full_1.root',
+    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/WJets_preprod/PATLayer1_Output_fromAOD_full_2.root'
      )
                    )
