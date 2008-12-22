@@ -5,9 +5,9 @@ import FWCore.ParameterSet.Config as cms
 patInput = True
 output = False
 
-flavor = 'vqq'
-histfile = flavor + 'Ana_test.root'
-outfile = './' + flavor + '_patLayer1.root'
+flavor = 'wjets'
+histfile = flavor + 'Ana.root'
+outfile = '/uscms_data/d1/rappocc/' + flavor + '_patLayer1.root'
 
 
 # set up process
@@ -48,7 +48,7 @@ else :
         
 # set the number of events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 
 
@@ -147,197 +147,8 @@ process.p = cms.Path(
     process.bFlavorHistoryProducer*
     process.cFlavorHistoryProducer)
 
-#
-# Now the priority comes into play.
-# These are exclusive priorities, so sample "i" will not overlap with "i+1".
-# Note that the "dr" values below correspond to the dr between the
-# matched genjet, and the sister genjet. 
-#
-# 1) W+bb with >= 2 jets from the ME (dr > 0.5)
-# 2) W+b or W+bb with 1 jet from the ME
-# 3) W+cc from the ME (dr > 0.5)
-# 4) W+c or W+cc with 1 jet from the ME
-# 5) W+bb with 1 jet from the parton shower (dr == 0.0)
-# 6) W+cc with 1 jet from the parton shower (dr == 0.0)
-#
-# These are the "trash bin" samples that we're throwing away:
-#
-# 7) W+bb with >= 2 partons but 1 jet from the ME (dr == 0.0)
-# 8) W+cc with >= 2 partons but 1 jet from the ME (dr == 0.0)
-# 9) W+bb with >= 2 partons but 2 jets from the PS (dr > 0.5)
-# 10)W+cc with >= 2 partons but 2 jets from the PS (dr > 0.5)
-#
-# And here is the true "light flavor" sample:
-#
-# 11) Veto of all the previous (W+ light jets)
-#
-
-# Clone all the analyzers
-process.wbbAna = process.hfAna.clone()
-process.wbAna = process.hfAna.clone()
-process.wccAna = process.hfAna.clone()
-process.wcAna = process.hfAna.clone()
-process.wbbAna_gs = process.hfAna.clone()
-process.wccAna_gs = process.hfAna.clone()
-process.wbbCompAna = process.hfAna.clone()
-process.wccCompAna = process.hfAna.clone()
-process.wbbCompAna_gs = process.hfAna.clone()
-process.wccCompAna_gs = process.hfAna.clone()
-process.wjetsAna = process.hfAna.clone()
-
-#process.wjetsAna.verbose = cms.bool(True)
-
-# 1) W+bb with >= 2 jets from the ME (dr > 0.5)
-process.wbb = cms.Path(  
-    process.genJetParticles*process.sisCone5GenJets*
-    process.bFlavorHistoryProducer*
-    process.cFlavorHistoryProducer*
-    process.wbbMEFlavorHistoryFilter*
-    process.wbbAna )
-
-# 2) W+b or W+bb with 1 jet from the ME
-process.wb = cms.Path(
-    process.genJetParticles*process.sisCone5GenJets*
-    process.bFlavorHistoryProducer*
-    process.cFlavorHistoryProducer*
-    ~process.wbbMEFlavorHistoryFilter*
-    process.wbFEFlavorHistoryFilter*
-    process.wbAna )
-
-# 3) W+cc from the ME (dr > 0.5)
-process.wcc = cms.Path( 
-    process.genJetParticles*process.sisCone5GenJets*
-    process.bFlavorHistoryProducer*
-    process.cFlavorHistoryProducer*
-    ~process.wbbMEFlavorHistoryFilter*
-    ~process.wbFEFlavorHistoryFilter*
-    process.wccMEFlavorHistoryFilter*
-    process.wccAna )
-
-# 4) W+c or W+cc with 1 jet from the ME
-process.wc = cms.Path(
-    process.genJetParticles*process.sisCone5GenJets*
-    process.bFlavorHistoryProducer*
-    process.cFlavorHistoryProducer*
-    ~process.wbbMEFlavorHistoryFilter*
-    ~process.wbFEFlavorHistoryFilter*
-    ~process.wccMEFlavorHistoryFilter*
-    process.wcFEFlavorHistoryFilter*
-    process.wcAna )
-
-# 5) W+bb with 1 jet from the parton shower (dr == 0.0)
-process.wbb_gs = cms.Path(
-    process.genJetParticles*process.sisCone5GenJets*
-    process.bFlavorHistoryProducer*
-    process.cFlavorHistoryProducer*
-    process.cFlavorHistoryProducer*
-    ~process.wbbMEFlavorHistoryFilter*
-    ~process.wbFEFlavorHistoryFilter*
-    ~process.wccMEFlavorHistoryFilter*
-    ~process.wcFEFlavorHistoryFilter*
-    process.wbbGSFlavorHistoryFilter*
-    process.wbbAna_gs )
-
-# 6) W+cc with 1 jet from the parton shower (dr == 0.0)
-process.wcc_gs = cms.Path(
-    process.genJetParticles*process.sisCone5GenJets*
-    process.bFlavorHistoryProducer*
-    process.cFlavorHistoryProducer*
-    ~process.wbbMEFlavorHistoryFilter*
-    ~process.wbFEFlavorHistoryFilter*
-    ~process.wccMEFlavorHistoryFilter*
-    ~process.wcFEFlavorHistoryFilter*
-    ~process.wbbGSFlavorHistoryFilter*
-    process.wccGSFlavorHistoryFilter*
-    process.wccAna_gs )
-
-#
-# And these are the "trash bin" samples that we're throwing away:
-#
-# 7) W+bb with >= 2 partons but 1 jet from the ME (dr == 0.0)
-process.wbb_comp = cms.Path( 
-    process.genJetParticles*process.sisCone5GenJets*
-    process.bFlavorHistoryProducer*
-    process.cFlavorHistoryProducer*
-    ~process.wbbMEFlavorHistoryFilter*
-    ~process.wbFEFlavorHistoryFilter*
-    ~process.wccMEFlavorHistoryFilter*
-    ~process.wcFEFlavorHistoryFilter*
-    ~process.wbbGSFlavorHistoryFilter*
-    ~process.wccGSFlavorHistoryFilter*
-    process.wbbMEComplimentFlavorHistoryFilter*
-    process.wbbCompAna )
-
-
-# 8) W+cc with >= 2 partons but 1 jet from the ME (dr == 0.0)
-process.wcc_comp = cms.Path( 
-    process.genJetParticles*process.sisCone5GenJets*
-    process.bFlavorHistoryProducer*
-    process.cFlavorHistoryProducer*
-    ~process.wbbMEFlavorHistoryFilter*
-    ~process.wbFEFlavorHistoryFilter*
-    ~process.wccMEFlavorHistoryFilter*
-    ~process.wcFEFlavorHistoryFilter*
-    ~process.wbbGSFlavorHistoryFilter*
-    ~process.wccGSFlavorHistoryFilter*
-    ~process.wbbMEComplimentFlavorHistoryFilter*
-    process.wccMEComplimentFlavorHistoryFilter*
-    process.wccCompAna )
-
-# 9) W+bb with >= 2 partons but 2 jets from the PS (dr > 0.5)
-process.wbb_gs_comp = cms.Path(
-    process.genJetParticles*process.sisCone5GenJets*
-    process.bFlavorHistoryProducer*
-    process.cFlavorHistoryProducer*
-    ~process.wbbMEFlavorHistoryFilter*
-    ~process.wbFEFlavorHistoryFilter*
-    ~process.wccMEFlavorHistoryFilter*
-    ~process.wcFEFlavorHistoryFilter*
-    ~process.wbbGSFlavorHistoryFilter*
-    ~process.wccGSFlavorHistoryFilter*
-    ~process.wbbMEComplimentFlavorHistoryFilter*
-    ~process.wccMEComplimentFlavorHistoryFilter*
-    process.wbbGSComplimentFlavorHistoryFilter*
-    process.wbbCompAna_gs )
-
-# 10)W+cc with >= 2 partons but 2 jets from the PS (dr > 0.5)
-process.wcc_gs_comp = cms.Path(
-    process.genJetParticles*process.sisCone5GenJets*
-    process.bFlavorHistoryProducer*
-    process.cFlavorHistoryProducer*
-    ~process.wbbMEFlavorHistoryFilter*
-    ~process.wbFEFlavorHistoryFilter*
-    ~process.wccMEFlavorHistoryFilter*
-    ~process.wcFEFlavorHistoryFilter*
-    ~process.wbbGSFlavorHistoryFilter*
-    ~process.wccGSFlavorHistoryFilter*
-    ~process.wbbMEComplimentFlavorHistoryFilter*
-    ~process.wccMEComplimentFlavorHistoryFilter*
-    ~process.wbbGSComplimentFlavorHistoryFilter*
-    process.wccGSComplimentFlavorHistoryFilter*
-    process.wccCompAna_gs )
-
-#
-# Here is the "true" light flavor sample:
-#
-# 11) Veto of all the previous (W+ light jets)
-
-process.wjets = cms.Path(
-    process.genJetParticles*process.sisCone5GenJets*
-    process.bFlavorHistoryProducer*
-    process.cFlavorHistoryProducer*
-    ~process.wbbMEFlavorHistoryFilter*
-    ~process.wbFEFlavorHistoryFilter*
-    ~process.wccMEFlavorHistoryFilter*
-    ~process.wcFEFlavorHistoryFilter*
-    ~process.wbbGSFlavorHistoryFilter*
-    ~process.wccGSFlavorHistoryFilter*
-    ~process.wbbMEComplimentFlavorHistoryFilter*
-    ~process.wccMEComplimentFlavorHistoryFilter*
-    ~process.wbbGSComplimentFlavorHistoryFilter*
-    ~process.wccGSComplimentFlavorHistoryFilter*
-#    process.printList*
-    process.wjetsAna )
+# load the different paths to make the different HF selections
+process.load("PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi")
 
 # Set the threshold for output logging to 'info'
 process.MessageLogger.cerr.threshold = 'INFO'
