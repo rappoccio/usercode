@@ -7,7 +7,7 @@ output = False
 
 flavor = 'wjets'
 histfile = flavor + 'Ana.root'
-outfile = '/uscms_data/d1/rappocc/' + flavor + '_patLayer1.root'
+outfile = './' + flavor + '_patLayer1.root'
 
 
 # set up process
