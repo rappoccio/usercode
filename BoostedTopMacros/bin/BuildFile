@@ -1,0 +1,14 @@
+<environment>
+
+<bin file="run_kinematics.cc">
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+</bin>
+
+</environment>
+
