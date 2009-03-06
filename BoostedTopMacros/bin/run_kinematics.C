@@ -1,6 +1,6 @@
 {
 
-  TFile * forlibs = new TFile("ca_pat_slim_fastsim_220.root");
+  TFile * forlibs = new TFile("ca_pat_slim_223_test.root");
   gSystem->CompileMacro("kinematics_fwlite_plots.C", "k");
 
 // //   catop_fwlite("qcd_15");
@@ -48,13 +48,16 @@
 //   catop_fwlite("qcd_3500");
 
 
-  catop_fwlite("zprime_m1000_w10");
-  catop_fwlite("zprime_m2000_w20");
-  catop_fwlite("zprime_m3000_w30");
-  catop_fwlite("zprime_m4000_w40");
+//   catop_fwlite("zprime_m1000_w10");
+//   catop_fwlite("zprime_m2000_w20");
+//   catop_fwlite("zprime_m3000_w30");
+//   catop_fwlite("zprime_m4000_w40");
 
-  catop_fwlite("zprime_m1000_w100");
-  catop_fwlite("zprime_m2000_w200");
-  catop_fwlite("zprime_m3000_w300");
-  catop_fwlite("zprime_m4000_w400");
+//   catop_fwlite("zprime_m1000_w100");
+//   catop_fwlite("zprime_m2000_w200");
+//   catop_fwlite("zprime_m3000_w300");
+//   catop_fwlite("zprime_m4000_w400");
+
+  catop_fwlite("zprime_m3000_w30_jecfix");
+
 }

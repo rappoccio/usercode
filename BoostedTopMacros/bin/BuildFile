@@ -10,5 +10,25 @@
  <use name=DataFormats/PatCandidates>
 </bin>
 
+<bin file="run_mistag_parameterization.cc">
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+</bin>
+
+<bin file="run_subjetstudies.cc">
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+</bin>
+
 </environment>
 

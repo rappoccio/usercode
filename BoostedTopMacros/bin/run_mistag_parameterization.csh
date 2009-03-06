@@ -1,0 +1,16 @@
+
+rm mistag_rate_output.txt
+
+run_mistag_parameterization qcd_230_v5
+run_mistag_parameterization qcd_300_v5
+run_mistag_parameterization qcd_380_v5
+run_mistag_parameterization qcd_470_v5
+run_mistag_parameterization qcd_600_v5
+run_mistag_parameterization qcd_800_v5
+run_mistag_parameterization qcd_1000_v5
+run_mistag_parameterization qcd_1400_v5
+run_mistag_parameterization qcd_1800_v5
+run_mistag_parameterization qcd_2200_v5
+run_mistag_parameterization qcd_2600_v5
+run_mistag_parameterization qcd_3000_v5
+run_mistag_parameterization qcd_3500_v5

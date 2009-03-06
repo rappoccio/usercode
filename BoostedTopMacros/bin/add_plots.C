@@ -7,7 +7,7 @@
 
 #include "palette.C"
 
-THStack * add_plots( TLegend * leg, const char * basename, const char * varname, const char * vartitle )
+THStack * add_plots( double Lum, TLegend * leg, const char * basename, const char * varname, const char * vartitle )
 {
 
 
@@ -48,34 +48,34 @@ THStack * add_plots( TLegend * leg, const char * basename, const char * varname,
   };
 
   const char * filenames[] = {
-    "qcd_230",
-    "qcd_300",
-    "qcd_380",
-    "qcd_470",
-    "qcd_600",
-    "qcd_800",
-    "qcd_1000",
-    "qcd_1400",
-    "qcd_1800",
-    "qcd_2200",
-    "qcd_2600",
-    "qcd_3000",
-    "qcd_3500"
+    "qcd_230_v5",
+    "qcd_300_v5",
+    "qcd_380_v5",
+    "qcd_470_v5",
+    "qcd_600_v5",
+    "qcd_800_v5",
+    "qcd_1000_v5",
+    "qcd_1400_v5",
+    "qcd_1800_v5",
+    "qcd_2200_v5",
+    "qcd_2600_v5",
+    "qcd_3000_v5",
+    "qcd_3500_v5"
   };
   const char * filetitles[] = {
-    "QCD Dijets, #hat{pt} = 230-300",
-    "QCD Dijets, #hat{pt} = 300-380",
-    "QCD Dijets, #hat{pt} = 380-470",
-    "QCD Dijets, #hat{pt} = 470-600",
-    "QCD Dijets, #hat{pt} = 600-800",
-    "QCD Dijets, #hat{pt} = 800-1000",
-    "QCD Dijets, #hat{pt} = 1000-1400",
-    "QCD Dijets, #hat{pt} = 1400-1800",
-    "QCD Dijets, #hat{pt} = 1800-2200",
-    "QCD Dijets, #hat{pt} = 2200-2600",
-    "QCD Dijets, #hat{pt} = 2600-3000",
-    "QCD Dijets, #hat{pt} = 3000-3500",
-    "QCD Dijets, #hat{pt} = 3500-Inf"
+    "#hat{pt} = 230-300",
+    "#hat{pt} = 300-380",
+    "#hat{pt} = 380-470",
+    "#hat{pt} = 470-600",
+    "#hat{pt} = 600-800",
+    "#hat{pt} = 800-1000",
+    "#hat{pt} = 1000-1400",
+    "#hat{pt} = 1400-1800",
+    "#hat{pt} = 1800-2200",
+    "#hat{pt} = 2200-2600",
+    "#hat{pt} = 2600-3000",
+    "#hat{pt} = 3000-3500",
+    "#hat{pt} = 3500-Inf"
   };
 
   const Int_t N = sizeof ( weights ) / sizeof( double );
@@ -106,7 +106,7 @@ THStack * add_plots( TLegend * leg, const char * basename, const char * varname,
       cout << "Number of entries = " << h->GetEntries() << endl;
     }
 
-    h->Scale( weights[i] / (float) nevents[i] );
+    h->Scale( weights[i] / (float) nevents[i] * Lum );
 
     h->SetFillColor(251 + i);
     stack->Add( h );

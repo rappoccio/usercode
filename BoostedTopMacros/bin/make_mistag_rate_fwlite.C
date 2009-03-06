@@ -265,6 +265,240 @@ void make_mistag_rate_fwlite(string sample = "ttbar",
     //     files.push_back("/uscms_data/d1/rappocc/qcd_3500/ca_pat_slim_220_4.root");
   }
 
+  else if ( sample == "qcd_230_v5" ) {
+    isample = 0;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_300_v5" ) {
+    isample = 1;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_13.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_380_v5" ) {
+    isample = 2;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_470_v5" ) {
+    isample = 3;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_600_v5" ) {
+    isample = 4;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_800_v5" ) {
+    isample = 5;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_1000_v5" ) {
+    isample = 6;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_1400_v5" ) {
+    isample = 7;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_1800_v5" ) {
+    isample = 8;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_13.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_2200_v5" ) {
+    isample = 9;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_2600_v5" ) {
+    isample = 10;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_3000_v5" ) {
+    isample = 11;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_3500_v5" ) {
+    isample = 12;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "ttbar_v5" ) {
+    isample = 13;
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_10.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_11.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_12.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_13.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_14.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_15.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_16.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_17.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_18.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_19.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_1.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_20.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_21.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_22.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_23.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_2.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_3.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_4.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_5.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_6.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_7.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_8.root");
+    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_9.root");
+  }
+
+
+
   
   using namespace std;
   using namespace reco;
@@ -285,7 +519,8 @@ void make_mistag_rate_fwlite(string sample = "ttbar",
     0.00129608,
     0.00011404,
     0.0000084318,
-    0.00000018146
+    0.00000018146,
+    317. * 1.4
   };
 
 
@@ -302,7 +537,8 @@ void make_mistag_rate_fwlite(string sample = "ttbar",
     22560,
     22800,
     20880,
-    34320
+    34320,
+    1028322
   };
 
   double weight = weights[isample];
@@ -315,10 +551,41 @@ void make_mistag_rate_fwlite(string sample = "ttbar",
 //   TH2D * numerator   = new TH2D("numerator",   "Fake Tag Parameterization Numerator",   50, 0, 5000, 30, -3.0, 3.0 );
 //   TH2D * denominator = new TH2D("denominator", "Fake Tag Parameterization Denominator", 50, 0, 5000, 30, -3.0, 3.0 );
 
-  TH1D * numerator   = new TH1D("numerator",   "Fake Tag Parameterization Numerator",   50, 0, 5000 );
-  TH1D * denominator = new TH1D("denominator", "Fake Tag Parameterization Denominator", 50, 0, 5000 );
-  TH2D * numerator2d   = new TH2D("numerator2d",   "Fake Tag Parameterization Numerator",   50, 0, 5000, 20, -3.0, 3.0 );
-  TH2D * denominator2d = new TH2D("denominator2d", "Fake Tag Parameterization Denominator", 50, 0, 5000, 20, -3.0, 3.0 );
+
+  Double_t PtBins[] = {
+    0,
+    250,
+    275,
+    300,
+    325,
+    350,
+    375,
+    400,
+    450,
+    500,
+    550,
+    600,
+    650,
+    700,
+    750,
+    800,
+    900,
+    1000,
+    1200,
+    1600,
+    2000
+  };
+
+
+  static const int nPtBins = sizeof( PtBins ) / sizeof( Double_t );
+
+  
+  Double_t ptMax = PtBins[nPtBins - 1];
+
+  TH1D * numerator   = new TH1D("numerator",   "Fake Tag Parameterization Numerator",   nPtBins-1, PtBins );
+  TH1D * denominator = new TH1D("denominator", "Fake Tag Parameterization Denominator", nPtBins-1, PtBins );
+  TH2D * numerator2d   = new TH2D("numerator2d",   "Fake Tag Parameterization Numerator",   nPtBins-1, PtBins, 20, -3.0, 3.0 );
+  TH2D * denominator2d = new TH2D("denominator2d", "Fake Tag Parameterization Denominator", nPtBins-1, PtBins, 20, -3.0, 3.0 );
 
   numerator->Sumw2();
   denominator->Sumw2();
@@ -393,20 +660,22 @@ void make_mistag_rate_fwlite(string sample = "ttbar",
 
       // If jet 1 is antitagged, fill jet 2
       if ( !tagged1 ) {
-	denominator->Fill( jet2.et(),  weight / (double)nevent );
-	denominator2d->Fill( jet2.et(), jet2.eta(), weight / (double)nevent);
+	double jet2pt = jet2.pt();
+	denominator->Fill( jet2pt,  weight / (double)nevent );
+	denominator2d->Fill( jet2pt, jet2.rapidity(), weight / (double)nevent);
 	if ( tagged2 ) {
-	  numerator->Fill( jet2.et(),  weight / (double)nevent );
-	  numerator2d->Fill( jet2.et(), jet2.eta(), weight / (double)nevent);
+	  numerator->Fill( jet2pt,  weight / (double)nevent );
+	  numerator2d->Fill( jet2pt, jet2.rapidity(), weight / (double)nevent);
 	}
       } 
       // If jet 2 is antitagged, fill jet 1
       if ( !tagged2 ) {
-	denominator->Fill( jet1.et(),  weight / (double)nevent );
-	denominator2d->Fill( jet1.et(), jet1.eta(), weight / (double)nevent);
+	double jet1pt = jet1.pt();
+	denominator->Fill( jet1pt,  weight / (double)nevent );
+	denominator2d->Fill( jet1pt, jet1.rapidity(), weight / (double)nevent);
 	if ( tagged1 ) {
-	  numerator->Fill( jet1.et(),  weight / (double)nevent );
-	  numerator2d->Fill( jet1.et(), jet1.eta(), weight / (double)nevent);
+	  numerator->Fill( jet1pt,  weight / (double)nevent );
+	  numerator2d->Fill( jet1pt, jet1.rapidity(), weight / (double)nevent);
 	}
       } 
 
