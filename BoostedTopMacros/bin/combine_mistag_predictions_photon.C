@@ -10,12 +10,12 @@ void combine_mistag_predictions( double Lum = 1.0 )
 {
 
   const char * names [] = {
-    "xchecks_gammaplusjet_photonjet_300.root", 
-    "xchecks_gammaplusjet_photonjet_470.root", 
-    "xchecks_gammaplusjet_photonjet_800.root", 
-//     "xchecks_gammaplusjet_pe_photonjet_1400.root", 
-//     "xchecks_gammaplusjet_pe_photonjet_2200.root", 
-//     "xchecks_gammaplusjet_pe_photonjet_3000.root"
+"xchecks_gammaplusjet_pe_photonjet_300_v6.root",
+"xchecks_gammaplusjet_pe_photonjet_470_v6.root",
+"xchecks_gammaplusjet_pe_photonjet_800_v6.root",
+"xchecks_gammaplusjet_pe_photonjet_1400_v6.root",
+"xchecks_gammaplusjet_pe_photonjet_2200_v6.root",
+"xchecks_gammaplusjet_pe_photonjet_3000_v6.root",
   };
 
   static const int nnames = sizeof( names ) / sizeof ( const char * );
@@ -40,12 +40,18 @@ void combine_mistag_predictions( double Lum = 1.0 )
     1100000
   };
 
+
   const char * plotnames[] = {
     "total",
-    "jet_et",
+    "jet_pt",
     "jet_eta",
     "jet_phi"
-
+  };
+  const char * plottitles[] = {
+    "Total",
+    "Jet p_{T};Jet p_{T} (GeV/c);Number",
+    "Jet Rapidity;Jet Rapidity;Number",
+    "Jet Azimuthal Angle;Jet #phi;Number"
   };
 
   bool logy[] = {
@@ -58,7 +64,7 @@ void combine_mistag_predictions( double Lum = 1.0 )
   static const int nplots = sizeof( plotnames ) / sizeof ( const char * );
  
 
-  TFile * output = new TFile("xcheck_summary_photons.root", "RECREATE");
+  TFile * output = new TFile("xcheck_summary.root", "RECREATE");
 
 
   TFile * f [nnames] = {0};
@@ -80,8 +86,8 @@ void combine_mistag_predictions( double Lum = 1.0 )
       TH1D * obs = (TH1D*) f[i]->Get(obs_name.Data());
       TH1D * pred = (TH1D*) f[i]->Get(pred_name.Data());
 
-      obs->Scale( Lum * weights[i] / (double)nevents[i] );
-      pred->Scale( Lum * weights[i] / (double)nevents[i] );
+      obs->Scale( Lum );
+      pred->Scale( Lum );
 
 
       if ( i == 0 ) {
@@ -109,9 +115,12 @@ void combine_mistag_predictions( double Lum = 1.0 )
 
     obs_sum->SetMinimum(0);
 
+    obs_sum->SetMarkerStyle(20);
+    pred_sum->SetMarkerStyle(21);
+
     TString hsname( obs_name ); hsname += +"_hs";
 
-    THStack * hs = new THStack ( hsname.Data(), obs_name.Data() );
+    THStack * hs = new THStack ( hsname.Data(),plottitles[iplot]  );
 
     if ( logy[iplot] ) {
       obs_sum->SetMinimum(0.1);
@@ -135,10 +144,10 @@ void combine_mistag_predictions( double Lum = 1.0 )
     obs_sum->Write();
     pred_sum->Write();
 
-    TString canvout( obs_name ); canvout += "_predictions_photons.gif";
+    TString canvout( obs_name ); canvout += "_photon_predictions.gif";
     c->Print(canvout, "gif");
 
-    TString canvouteps( obs_name ); canvouteps += "_predictions_photons.eps";
+    TString canvouteps( obs_name ); canvouteps += "_photon_predictions.eps";
     c->Print(canvouteps, "eps");
 
     if ( iplot == 0 ) {

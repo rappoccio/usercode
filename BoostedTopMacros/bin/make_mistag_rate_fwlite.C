@@ -478,15 +478,7 @@ files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_sl
     files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_13.root");
     files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_14.root");
     files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_15.root");
-    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_16.root");
-    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_17.root");
-    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_18.root");
-    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_19.root");
     files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_1.root");
-    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_20.root");
-    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_21.root");
-    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_22.root");
-    files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_23.root");
     files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_2.root");
     files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_3.root");
     files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v5/ca_pat_slim_223_4.root");

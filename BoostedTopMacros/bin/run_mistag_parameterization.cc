@@ -9,7 +9,7 @@ int main (int argc, char ** argv)
 
 
   if ( argc < 2 ) {
-    cout << "usage: run_mistag_parameterization <sample>" << endl;
+    cout << "usage: run_mistag_parameterization <sample> <processAll>" << endl;
     return 0;
   }
 
@@ -17,8 +17,13 @@ int main (int argc, char ** argv)
   gSystem->Load("libFWCoreFWLite");
   AutoLibraryLoader::enable();
 
+  bool processAll = true;
+  if ( argc > 2 ) {
+    processAll = atoi(argv[2]);
+  }
+
   make_mistag_rate_fwlite(argv[1],
-			  true );
+			  processAll);
 
   return 0;
 }

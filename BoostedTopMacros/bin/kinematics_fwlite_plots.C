@@ -1239,12 +1239,198 @@ files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/kt_pat_sl
       }
 
 
+  else if ( sample == "rs_1000_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS1000_tt_jetMET__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+  else if ( sample == "rs_1250_heavyfrag_down_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS1250_tt_jetMET_heavyfrag_down__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+  else if ( sample == "rs_1250_heavyfrag_up_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS1250_tt_jetMET_heavyfrag_up__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+  else if ( sample == "rs_1250_isrfsr_down_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS1250_tt_jetMET_isrfsr_down__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+  else if ( sample == "rs_1250_isrfsr_up_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS1250_tt_jetMET_isrfsr_up__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+  else if ( sample == "rs_1250_lightfrag_down_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS1250_tt_jetMET_lightfrag_down__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+  else if ( sample == "rs_1250_lightfrag_up_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS1250_tt_jetMET_lightfrag_up__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+  else if ( sample == "rs_1250_renorm_down_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS1250_tt_jetMET_renorm_down__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+
+  else if ( sample == "rs_1250_renorm_up_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS1250_tt_jetMET_renorm_up__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+  else if ( sample == "rs_1250_v6_fixed") {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS1250_tt_jetMET__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+
+  else if ( sample == "rs_1500_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS1500_tt_jetMET__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+  else if ( sample == "rs_2000_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS2000_tt_jetMET__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+  else if ( sample == "rs_2000_v6_local" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS2000_tt_jetMET_v6_local/ca_pat_slim_fastsim_223.root");
+  }
+
+  else if ( sample == "rs_2500_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS2500_tt_jetMET__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+  else if ( sample == "rs_3000_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS3000_tt_jetMET__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+  else if ( sample == "rs_750_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS750_tt_jetMET__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
+  }
+
+  else if ( sample == "zprime_fullsim_m2000_w20_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_9.root");
+  }
+  else if ( sample == "zprime_fullsim_m2000_w20_v6_fixed_kt" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_9.root");
+
+  }
+  else if ( sample == "zprime_fullsim_m2000_w20_v6_fixed_antikt" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_9.root");
+
+  }
+
+  else if ( sample == "zprime_fullsim_m3000_w30_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_9.root");
+  }
+  else if ( sample == "zprime_fullsim_m3000_w30_v6_fixed_kt" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_9.root");
+
+  }
+  else if ( sample == "zprime_fullsim_m3000_w30_v6_fixed_antikt" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_9.root");
+
+  }
+
+  else if ( sample == "qcd_600_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_9.root");
+
+  }
+  else if ( sample == "qcd_600_v6_fixed_kt" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_9.root");
+
+  }
+  else if ( sample == "qcd_600_v6_fixed_antikt" ) {
+
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_9.root");
+
+  }
+
 
   ofstream tableout("kinematics_output.txt", ios_base::app);
    
   using namespace std;
   using namespace reco;
   
+
+
 
   TH1D * hist_top_jetPt = new TH1D("hist_top_jetPt", "Jet p_{T}", 100, 0, 5000 );
   TH1D * hist_nontop_jetPt = new TH1D("hist_nontop_jetPt", "Jet p_{T}", 100, 0, 5000 );

@@ -692,6 +692,144 @@ files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PhotonJetPt3000/ca_p
 files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PhotonJetPt3000/ca_pat_slim_fastsim_220_9.root");
  }
 
+ else if ( sample == "photonjet_300_v6" ) {
+   iweight = 0;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_13.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_14.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_15.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_16.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_17.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_18.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_19.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_20.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_300_v6/ca_pat_slim_fastsim_223_9.root");
+ }
+ else if ( sample == "photonjet_470_v6" ) {
+   iweight = 1;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_13.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_14.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_15.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_16.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_17.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_18.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_19.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_20.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_470_v6/ca_pat_slim_fastsim_223_9.root");
+ }
+ else if ( sample == "photonjet_800_v6" ) {
+   iweight = 2;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_13.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_14.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_15.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_16.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_17.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_18.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_19.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_20.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_800_v6/ca_pat_slim_fastsim_223_9.root");
+ }
+ else if ( sample == "photonjet_1400_v6" ) {
+   iweight = 3;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_13.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_14.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_15.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_16.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_17.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_18.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_19.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_20.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_21.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_1400_v6/ca_pat_slim_fastsim_223_9.root");
+ }
+ else if ( sample == "photonjet_2200_v6" ) {
+   iweight = 4;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_13.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_14.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_16.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_17.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_18.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_19.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_20.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_2200_v6/ca_pat_slim_fastsim_223_9.root");
+ }
+ else if ( sample == "photonjet_3000_v6" ) {
+   iweight = 5;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_13.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_14.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_15.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_16.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_17.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_18.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_19.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_20.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/photonjet_3000_v6/ca_pat_slim_fastsim_223_9.root");
+ }
+
   double weights[] = {
     4.193   ,
     4.515e-1,
@@ -727,6 +865,7 @@ files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PhotonJetPt3000/ca_p
     168572
   };
 
+
   double weight = weights[iweight];
   int nevent = nevents[iweight];
 
@@ -742,7 +881,7 @@ files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PhotonJetPt3000/ca_p
 
   // Make sure the pseudoexperiments always choose the same seed
   // for reproducability. 
-  if ( pseudoExp && pe_factor < 1.0 ) {
+  if ( pseudoExp ) {
     gRandom->SetSeed( seeds[iweight] );
 
     cout << "Effective lum = " << lum_eff << endl;
@@ -753,17 +892,17 @@ files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PhotonJetPt3000/ca_p
   using namespace std;
   using namespace reco;
   using namespace edm;
-
-
-  PredictedDistribution * total_pred     = new PredictedDistribution("total",  "Total Rate", 2, 0, 2 );
-  PredictedDistribution * jet_et_pred    = new PredictedDistribution( "jet_et", "Predicted Jet E_{T}", 50, 0, 5000 );
-  PredictedDistribution * jet_eta_pred   = new PredictedDistribution( "jet_eta", "Predicted Jet #eta", 30, -3.0, 3.0 );
-  PredictedDistribution * jet_phi_pred   = new PredictedDistribution( "jet_phi", "Predicted Jet #phi", 30, -3.14159, 3.14159 );
   
-  total_pred->SetRateMatrix( parameterization );
-  jet_et_pred->SetRateMatrix( parameterization );
-  jet_eta_pred->SetRateMatrix( parameterization );
-  jet_phi_pred->SetRateMatrix( parameterization );
+  using namespace std;
+  using namespace reco;
+  using namespace edm;
+
+
+  PredictedDistribution * total_pred     = new PredictedDistribution(parameterization, "total",  "Total Rate", 2, 0, 2 );
+  PredictedDistribution * jet_et_pred    = new PredictedDistribution(parameterization,  "jet_pt", "Predicted Jet p_{T}", 50, 0, 5000 );
+  PredictedDistribution * jet_eta_pred   = new PredictedDistribution(parameterization,  "jet_eta", "Predicted Jet #eta", 30, -3.0, 3.0 );
+  PredictedDistribution * jet_phi_pred   = new PredictedDistribution(parameterization,  "jet_phi", "Predicted Jet #phi", 30, -3.14159, 3.14159 );
+  
   
   cout << "About to create chain event" << endl;
   
@@ -806,14 +945,14 @@ files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PhotonJetPt3000/ca_p
 //     cout << "Have a valid handle" << endl;
 
 //     cout << "Done getting handle" << endl;
-    if ( (eventNumber % 2 == 1) || processAll ) continue; // Take even events, odd were used to make this matrix
+    if ( (eventNumber % 2 == 1) && !processAll ) continue; // Take even events, odd were used to make this matrix
 
 //     cout << "Got handle, dereferencing" << endl;
     vector<pat::Jet> const & jets = *h_jet;
     vector<pat::Photon> const & photons = *h_photon;
 
-//     cout << "Jets size = " << jets.size() << endl;
-//     cout << "Photons size = " << photons.size() << endl;
+//      cout << "Jets size = " << jets.size() << endl;
+//      cout << "Photons size = " << photons.size() << endl;
 
     // require gamma+jet events
     if ( jets.size() >= 1 && photons.size() >= 1 ) {
@@ -833,7 +972,7 @@ files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PhotonJetPt3000/ca_p
       for ( ; i != iend; ++i ) {
 	TLorentzVector w(i->px(), i->py(), i->pz(), i->energy() );
 	double dphi = fabs(w.DeltaPhi( v ));
-// 	cout << "Examining jet " << i - ibegin << ", p4 = " << w <<  ", dphi = " << dphi * 180.0/TMath::Pi() << endl;
+//  	cout << "Examining jet " << i - ibegin << ", p4 = " << w <<  ", dphi = " << dphi * 180.0/TMath::Pi() << endl;
 	if ( dphi > dphi_max) {
 	  dphi_max = fabs(dphi);
 	  ret = i;
@@ -842,7 +981,7 @@ files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PhotonJetPt3000/ca_p
 
       if ( ret == iend ) continue;
 
-//       cout << "Got retvalues" << endl;
+//        cout << "Got retvalues" << endl;
 
       pat::Jet const & jet1 = *ret;
 
@@ -859,10 +998,12 @@ files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PhotonJetPt3000/ca_p
 	(wMass1   >= wMassCut1   && wMass1   <= wMassCut2  ) &&
 	(minMass1 >= minMassCut1 && minMass1 <= minMassCut2);
 
-      total_pred->Accumulate( 1.0, jet1.et(), tagged1 );
-      jet_et_pred->Accumulate( jet1.et(), jet1.et(), tagged1  );
-      jet_eta_pred->Accumulate( jet1.eta(), jet1.et(), tagged1  );
-      jet_phi_pred->Accumulate( jet1.phi(), jet1.et(), tagged1  );
+//       cout << "minMass = " << minMass1 << endl;
+
+      total_pred->Accumulate( 1.0, jet1.pt(), tagged1 );
+      jet_et_pred->Accumulate( jet1.pt(), jet1.pt(), tagged1  );
+      jet_eta_pred->Accumulate( jet1.eta(), jet1.pt(), tagged1  );
+      jet_phi_pred->Accumulate( jet1.phi(), jet1.pt(), tagged1  );
 
     }
 

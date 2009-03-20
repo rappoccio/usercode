@@ -1,6 +1,7 @@
 #include "TROOT.h"
 #include <iostream>
 #include <cmath>
+#include "TMath.h"
 
 #include "PredictedDistribution.h"
 
@@ -11,10 +12,10 @@ using namespace std;
 /*----------------------------------------------*/
 
 //=============sets 1D histograms with fixed bins
-PredictedDistribution::PredictedDistribution(const char* name, const char* title, Int_t nbinsx, Axis_t xlow, Axis_t xup) : 
+PredictedDistribution::PredictedDistribution(TH1D * mtx, const char* name, const char* title, Int_t nbinsx, Axis_t xlow, Axis_t xup) : 
   _fNDataHisto(nbinsx + 2),
-  h1_r(0), 
-  a2_taggable(), _errsSet(false)
+  h1_r(mtx), 
+  _errsSet(false)
 {
   h1_o = new TH1D(name, title, nbinsx, xlow, xup);
   h1_o->Sumw2();
@@ -24,13 +25,15 @@ PredictedDistribution::PredictedDistribution(const char* name, const char* title
   char name3[20]; sprintf(name3,"%s_tgb\0",name);
   h1_tgb = new TH1D(name3, title, nbinsx, xlow, xup);
   h1_tgb->Sumw2();
+  char name4[20]; sprintf(name4, "%s_weights\0", name);
+  h_weights = new TH2D(name4, name4, nbinsx, xlow, xup, mtx->GetNbinsX(), mtx->GetXaxis()->GetXbins()->GetArray()  );
+  h_weights->Sumw2();
 }
    
 //=============sets histograms with bin array
-PredictedDistribution::PredictedDistribution(const char* name, const char* title, Int_t nbinsx, const Float_t* xbins) : 
+PredictedDistribution::PredictedDistribution(TH1D * mtx, const char* name, const char* title, Int_t nbinsx, const Double_t* xbins) : 
   _fNDataHisto(nbinsx + 2),
-  h1_r(0), 
-  a2_taggable(0)
+  h1_r(mtx)
 {
   h1_o = new TH1D(name, title, nbinsx, xbins);
   h1_o->Sumw2();
@@ -40,6 +43,8 @@ PredictedDistribution::PredictedDistribution(const char* name, const char* title
   char name3[20]; sprintf(name3,"%s_tgb\0",name);
   h1_tgb = new TH1D(name3, title, nbinsx, xbins);
   h1_tgb->Sumw2();
+  char name4[20]; sprintf(name4, "%s_weights\0", name);
+  h_weights = new TH2D(name4, name4, nbinsx, xbins, mtx->GetNbinsX(), mtx->GetXaxis()->GetXbins()->GetArray() );
 }
 
 /*----------------------------------------------*/
@@ -49,16 +54,7 @@ PredictedDistribution::~PredictedDistribution() {
   delete h1_p;	 h1_p=0;
   delete h1_o;	 h1_o=0;
   delete h1_tgb; h1_tgb=0;
-  for (int i=0; i<a2_taggable.size(); i++) {
-    delete a2_taggable[i]; a2_taggable[i]=0;
-  }
-}
-
-void PredictedDistribution::SetRateMatrix(TH1D * mtx){
-  if (!mtx) return;
-  h1_r = mtx;
-  a2_taggable.clear();
-  a2_taggable.resize(_fNDataHisto,0); // allocate upon demand
+  delete h_weights; h_weights = 0;
 }
 
 
@@ -73,7 +69,12 @@ void PredictedDistribution::Accumulate(Float_t X, Float_t et, Bool_t tagged, Flo
   Int_t bin = h1_r->FindBin( et );
   Float_t rate   = h1_r->GetBinContent(bin);
   Float_t err    = h1_r->GetBinError(bin);
-  int maxIndex = h1_r->GetSize();
+
+  Int_t binx= h1_o->FindBin(X);
+
+//   cout << "---------" << endl;
+//   cout << "filling: " << endl;
+//   cout << "bin = " << bin << ", binx = " << binx << ", weightFactor = " << weightFactor << ", rate = " << rate << ", err = " << err << endl;
 
    //fill observed
   if ( weightFactor > 0.0 ) {
@@ -82,27 +83,8 @@ void PredictedDistribution::Accumulate(Float_t X, Float_t et, Bool_t tagged, Flo
     h1_p->Fill(X,rate * weightFactor ); 
     // always fill taggable
     h1_tgb->Fill(X, weightFactor);
-  
-   
-    //fill temporary error-weighting histogram
-    // Errors are essentially
-    // Pred = weightFactor * rate * N_tgb
-    // dPred = weightFactor * sqrt( (R*dNtgb)^2 + (dR*Ntgb)^2)
-    // As we fill it, though, Ntgb = 1, so this reduces numerically to
-    // dPred += weightFactor * sqrt( (err*err + rate*rate)
-    Int_t binx= h1_o->FindBin(X);
-    if (a2_taggable[binx]==0) a2_taggable[binx] = new std::map<unsigned int, Float_t>;
-//     cout << "dist bin = " << binx << endl;
-//     cout << "rate bin = " << bin << endl;
-//     cout << "rate     = " << rate << endl;
-//     cout << "err      = " << err << endl;
-//     cout << "weight   = " << weightFactor << endl;
-//     cout << "quad sum = " << (*a2_taggable[binx])[bin] << endl;
-//     cout << "dR*Ntgb  = " << weightFactor*weightFactor*err*err << endl;
-//     cout << "R*dNtgb  = " << rate*rate*weightFactor << endl;
-    (*a2_taggable[binx])[bin]+= weightFactor*weightFactor* ( err*err + rate*rate);
-//     (*a2_taggable[binx])[bin]+= 1.0;  
-
+    // always fill weights
+    h_weights->Fill(X, et, weightFactor);
   }
   
 }
@@ -115,19 +97,49 @@ void PredictedDistribution::SetCalculatedErrors() {
       return;
     }
 
-    for (int i=0; i<a2_taggable.size(); i++) {
-      Double_t QuadSum(0);
-      if(a2_taggable[i] != 0){      
-	for (std::map<unsigned int, Float_t>::const_iterator j=a2_taggable[i]->begin(); j!=a2_taggable[i]->end(); j++) {
-	  unsigned int bin = (*j).first;
-	  Float_t corrErr = (*j).second;
-	  
-	  QuadSum += corrErr;
-	}
+//     h_weights->Draw("colz");
+
+//     cout << "======== Setting Calculated Errors =========" << endl;
+
+//     cout << "nbinsx = " << h_weights->GetNbinsX() << endl;
+//     cout << "nbinsy = " << h_weights->GetNbinsY() << endl;
+
+    for (int i=0; i<=h_weights->GetNbinsX(); ++i) {
+
+      Double_t a1 = 0.;
+      Double_t a2 = 0.;
+      Double_t den = 0.0;
+
+//       cout << "------ bin " << i << " --------" << endl;
+      for (int j = 0; j <= h_weights->GetNbinsY(); ++j) {
+
+
+	a1 += h1_r->GetBinContent(j) * h_weights->GetBinError(i,j);
+	a2 += h1_r->GetBinError(j)   * h_weights->GetBinContent(i,j);
+	den+= h1_r->GetBinContent(j) * h_weights->GetBinContent(i,j);
+
+
+// 	cout << "i = " << i << ", j = " << j << endl;
+// 	cout << "   rate = " << h1_r->GetBinContent(j) << endl;
+// 	cout << "  drate = " << h1_r->GetBinError(j) << endl;
+// 	cout << "    wij = " << h_weights->GetBinContent(i,j) << endl;
+// 	cout << "   dwij = " << h_weights->GetBinError(i,j) << endl;
+// 	cout << "    a1i = " << h1_r->GetBinContent(j) * h_weights->GetBinError(i,j) << endl;
+// 	cout << "    a2i = " << h1_r->GetBinError(j) * h_weights->GetBinContent(i,j) << endl;
+// 	cout << "    den = " << h1_r->GetBinContent(j) * h_weights->GetBinContent(i,j) << endl;
+
       }
 
-      h1_p->SetBinError(i,std::sqrt(QuadSum)); 
-//       cout << "Setting bin : " << i << " = " << h1_p->GetBinContent(i) << " +- " << h1_p->GetBinError(i) << endl;
+      Double_t x =den;
+      Double_t dx=0.0;
+      if ( x > 0.0 ) {
+	dx = sqrt(a1*a1+a2*a2)/ den;
+      }
+      
+      
+//       cout << " ---- error[" << i << "] = " << dx << endl;
+      h1_p->SetBinError(i,dx * h1_p->GetBinContent(i) ); 
+//       cout << "Setting bin : " << i << " = " << h1_p->GetBinContent(i) << " +- " << h1_p->GetBinError(i) << ", x = " << x << endl;
 
     }
 

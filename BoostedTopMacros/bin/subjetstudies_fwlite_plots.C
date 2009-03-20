@@ -143,6 +143,124 @@ files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_testing/ca_pa
 
   }
 
+  else if ( sample == "zprime_fullsim_m2000_w20_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/ca_pat_slim_223_9.root");
+  }
+  else if ( sample == "zprime_fullsim_m2000_w20_v6_fixed_kt" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/kt_pat_slim_223_9.root");
+
+  }
+  else if ( sample == "zprime_fullsim_m2000_w20_v6_fixed_antikt" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m2000_w20_v6_fixed/antikt_pat_slim_223_9.root");
+
+  }
+
+  else if ( sample == "zprime_fullsim_m3000_w30_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/ca_pat_slim_223_9.root");
+  }
+  else if ( sample == "zprime_fullsim_m3000_w30_v6_fixed_kt" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/kt_pat_slim_223_9.root");
+
+  }
+  else if ( sample == "zprime_fullsim_m3000_w30_v6_fixed_antikt" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m3000_w30_v6_fixed/antikt_pat_slim_223_9.root");
+
+  }
+
+  else if ( sample == "qcd_600_v6_fixed" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/ca_pat_slim_223_9.root");
+
+  }
+  else if ( sample == "qcd_600_v6_fixed_kt" ) {
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/kt_pat_slim_223_9.root");
+
+  }
+  else if ( sample == "qcd_600_v6_fixed_antikt" ) {
+
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v6_fixed/antikt_pat_slim_223_9.root");
+
+  }
 
    
   using namespace std;
@@ -250,7 +368,7 @@ files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_testing/ca_pa
     fwlite::Handle<std::vector<reco::GenParticle> > h_genParticles;
 
     h_jet   .getByLabel(ev,"selectedLayer1Jets");
-    h_genParticles.getByLabel(ev, "genParticles" );
+    h_genParticles.getByLabel(ev, "prunedGenParticles" );
 
     if ( !h_jet.isValid() || !h_genParticles.isValid() ) continue;
 
@@ -435,171 +553,171 @@ files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_testing/ca_pa
 
 
       
-      // Make sure we're looking at well-matched ttbar
-      const reco::GenParticle * genParton = ijet->genParton();
-      if ( genParton != 0 && abs(genParton->pdgId()) == 6 ) {
-	int nda = genParton->numberOfDaughters();
+//       // Make sure we're looking at well-matched ttbar
+//       const reco::GenParticle * genParton = ijet->genParton();
+//       if ( genParton != 0 && abs(genParton->pdgId()) == 6 ) {
+// 	int nda = genParton->numberOfDaughters();
 
-	// Get the 3 daughter quarks of the top + W
-	vector<reco::GenParticle::const_iterator> daughters;
-	vector<TLorentzVector> subjets_p4;
+// 	// Get the 3 daughter quarks of the top + W
+// 	vector<reco::GenParticle::const_iterator> daughters;
+// 	vector<TLorentzVector> subjets_p4;
 
-	// Get the top daughter iterators
-	reco::GenParticle::const_iterator topdaBegin = genParton->begin(),
-	  topdaEnd = genParton->end(), topda = topdaBegin;
+// 	// Get the top daughter iterators
+// 	reco::GenParticle::const_iterator topdaBegin = genParton->begin(),
+// 	  topdaEnd = genParton->end(), topda = topdaBegin;
 
-	for ( ; topda != topdaEnd; ++topda ) {
+// 	for ( ; topda != topdaEnd; ++topda ) {
 
-	  if ( topda->status() != 3 ) continue;
+// 	  if ( topda->status() != 3 ) continue;
 
 
-	  // Get the b
-	  if ( fabs(topda->pdgId()) == 5 ) {
-	    daughters.push_back( topda );
-	  }
-	  // And the q+q'
-	  else if ( fabs(topda->pdgId()) == 24 ) {
-	    
-	    // Get the W daughter iterators
-	    reco::GenParticle::const_iterator wdaBegin = topda->begin(),
-	      wdaEnd = topda->end(), wda = wdaBegin;
-	    for ( ; wda != wdaEnd; ++wda ) {
-	      if ( fabs(wda->pdgId()) < 21 ) {
-		daughters.push_back ( wda );
-	      }
-	    }
-	  }
-	}
-
-	// Now we have the 3 daughters. 
-	if ( daughters.size() == 3 ) {
-// 	  cout << "Top Quark = " << genParton->pdgId() << ", pt = " << genParton->pt() << ", Y = " << genParton->rapidity() << endl;
-// 	  cout << "Daughters: " << endl;
-	  vector<reco::GenParticle::const_iterator>::const_iterator subjetPartonBegin = daughters.begin(),
-	    subjetPartonEnd = daughters.end(), isubjetParton = subjetPartonBegin;
-// 	  for ( ; isubjetParton != subjetPartonEnd; ++isubjetParton ) {
-// 	    cout << isubjetParton - subjetPartonBegin << ", id = " << (*isubjetParton)->pdgId() 
-// 		 << ", status = " << (*isubjetParton)->status() 
-// 		 << ", pt = " << (*isubjetParton)->pt() 
-// 		 << ", Y = " << (*isubjetParton)->rapidity()
-// 		 << ", phi = " << (*isubjetParton)->phi() << endl;
+// 	  // Get the b
+// 	  if ( fabs(topda->pdgId()) == 5 ) {
+// 	    daughters.push_back( topda );
 // 	  }
+// 	  // And the q+q'
+// 	  else if ( fabs(topda->pdgId()) == 24 ) {
+	    
+// 	    // Get the W daughter iterators
+// 	    reco::GenParticle::const_iterator wdaBegin = topda->begin(),
+// 	      wdaEnd = topda->end(), wda = wdaBegin;
+// 	    for ( ; wda != wdaEnd; ++wda ) {
+// 	      if ( fabs(wda->pdgId()) < 21 ) {
+// 		daughters.push_back ( wda );
+// 	      }
+// 	    }
+// 	  }
+// 	}
+
+// 	// Now we have the 3 daughters. 
+// 	if ( daughters.size() == 3 ) {
+// // 	  cout << "Top Quark = " << genParton->pdgId() << ", pt = " << genParton->pt() << ", Y = " << genParton->rapidity() << endl;
+// // 	  cout << "Daughters: " << endl;
+// 	  vector<reco::GenParticle::const_iterator>::const_iterator subjetPartonBegin = daughters.begin(),
+// 	    subjetPartonEnd = daughters.end(), isubjetParton = subjetPartonBegin;
+// // 	  for ( ; isubjetParton != subjetPartonEnd; ++isubjetParton ) {
+// // 	    cout << isubjetParton - subjetPartonBegin << ", id = " << (*isubjetParton)->pdgId() 
+// // 		 << ", status = " << (*isubjetParton)->status() 
+// // 		 << ", pt = " << (*isubjetParton)->pt() 
+// // 		 << ", Y = " << (*isubjetParton)->rapidity()
+// // 		 << ", phi = " << (*isubjetParton)->phi() << endl;
+// // 	  }
 
 
 	 
-	  // Now look at the subjet resolution
-	  subjet_vector matches;
-	  // Loop over partons
-	  for ( isubjetParton = subjetPartonBegin; isubjetParton != subjetPartonEnd; ++isubjetParton ) {
-	    double minDr = 999;
-	    value_type dr_min_it = isubjetEnd;
-	    TLorentzVector parton_p4( (*isubjetParton)->px(),
-				      (*isubjetParton)->py(),
-				      (*isubjetParton)->pz(),
-				      (*isubjetParton)->energy() );
-	    // Find closest matching subjet
-	    for ( isubjet = isubjetBegin; isubjet != isubjetEnd; ++isubjet ) {
-	      TLorentzVector subjet_p4( (*isubjet)->px(),
-					(*isubjet)->py(),
-					(*isubjet)->pz(),
-					(*isubjet)->energy() );
-	      double dr = parton_p4.DeltaR(subjet_p4);
-	      if ( dr < minDr ) {
-		minDr = dr;
-		dr_min_it = isubjet;
-	      }
-	    }
-	    // If you found a matching subjet, store the pair
-	    if ( dr_min_it != isubjetEnd ) {
-	      matches.push_back( subjet_pair( isubjetParton, dr_min_it ) );
-	      subjets_p4.push_back( TLorentzVector( (*dr_min_it)->px(),
-						    (*dr_min_it)->py(),
-						    (*dr_min_it)->pz(),
-						    (*dr_min_it)->energy()
-						    ) );
-	    }
+// 	  // Now look at the subjet resolution
+// 	  subjet_vector matches;
+// 	  // Loop over partons
+// 	  for ( isubjetParton = subjetPartonBegin; isubjetParton != subjetPartonEnd; ++isubjetParton ) {
+// 	    double minDr = 999;
+// 	    value_type dr_min_it = isubjetEnd;
+// 	    TLorentzVector parton_p4( (*isubjetParton)->px(),
+// 				      (*isubjetParton)->py(),
+// 				      (*isubjetParton)->pz(),
+// 				      (*isubjetParton)->energy() );
+// 	    // Find closest matching subjet
+// 	    for ( isubjet = isubjetBegin; isubjet != isubjetEnd; ++isubjet ) {
+// 	      TLorentzVector subjet_p4( (*isubjet)->px(),
+// 					(*isubjet)->py(),
+// 					(*isubjet)->pz(),
+// 					(*isubjet)->energy() );
+// 	      double dr = parton_p4.DeltaR(subjet_p4);
+// 	      if ( dr < minDr ) {
+// 		minDr = dr;
+// 		dr_min_it = isubjet;
+// 	      }
+// 	    }
+// 	    // If you found a matching subjet, store the pair
+// 	    if ( dr_min_it != isubjetEnd ) {
+// 	      matches.push_back( subjet_pair( isubjetParton, dr_min_it ) );
+// 	      subjets_p4.push_back( TLorentzVector( (*dr_min_it)->px(),
+// 						    (*dr_min_it)->py(),
+// 						    (*dr_min_it)->pz(),
+// 						    (*dr_min_it)->energy()
+// 						    ) );
+// 	    }
 	    
-	  }
+// 	  }
 
-	  subjet_vector::const_iterator pairItBegin = matches.begin(),
-	    pairItEnd = matches.end(), pairIt = pairItBegin;
-	  for ( ; pairIt != pairItEnd; ++pairIt ) {
-	    TLorentzVector parton_p4( (* (pairIt->first))->px(),
-				      (* (pairIt->first))->py(),
-				      (* (pairIt->first))->pz(),
-				      (* (pairIt->first))->energy() );
-	    TLorentzVector subjet_p4 = subjets_p4[ pairIt - pairItBegin];
-// 	    cout << "pair " << pairIt - pairItBegin << " : " << endl;
-// 	    cout << "  parton " << pairIt->first - subjetPartonBegin << " : "
-// 		 << "   pt = " << parton_p4.Perp() 
-// 		 << ",  Y  = " << parton_p4.Rapidity() 
-// 		 << ",  phi= " << parton_p4.Phi() << endl
-// 		 << "  subjet " << pairIt->second - isubjetBegin << " : " 
-// 		 << "   pt = " << subjet_p4.Perp() 
-// 		 << ",  Y  = " << subjet_p4.Rapidity() 
-// 		 << ",  phi= " << subjet_p4.Phi() << endl
-// 		 << "  dR = " << subjet_p4.DeltaR( parton_p4 ) << endl;
+// 	  subjet_vector::const_iterator pairItBegin = matches.begin(),
+// 	    pairItEnd = matches.end(), pairIt = pairItBegin;
+// 	  for ( ; pairIt != pairItEnd; ++pairIt ) {
+// 	    TLorentzVector parton_p4( (* (pairIt->first))->px(),
+// 				      (* (pairIt->first))->py(),
+// 				      (* (pairIt->first))->pz(),
+// 				      (* (pairIt->first))->energy() );
+// 	    TLorentzVector subjet_p4 = subjets_p4[ pairIt - pairItBegin];
+// // 	    cout << "pair " << pairIt - pairItBegin << " : " << endl;
+// // 	    cout << "  parton " << pairIt->first - subjetPartonBegin << " : "
+// // 		 << "   pt = " << parton_p4.Perp() 
+// // 		 << ",  Y  = " << parton_p4.Rapidity() 
+// // 		 << ",  phi= " << parton_p4.Phi() << endl
+// // 		 << "  subjet " << pairIt->second - isubjetBegin << " : " 
+// // 		 << "   pt = " << subjet_p4.Perp() 
+// // 		 << ",  Y  = " << subjet_p4.Rapidity() 
+// // 		 << ",  phi= " << subjet_p4.Phi() << endl
+// // 		 << "  dR = " << subjet_p4.DeltaR( parton_p4 ) << endl;
 
 
-	    double dR = subjet_p4.DeltaR( parton_p4 );
-	    double ptfrac = (subjet_p4.Perp() - parton_p4.Perp()) / parton_p4.Perp();
-	    double deta = (subjet_p4.Rapidity() - parton_p4.Rapidity());
-	    double dphi = TVector2::Phi_mpi_pi(subjet_p4.Phi() - parton_p4.Phi());
+// 	    double dR = subjet_p4.DeltaR( parton_p4 );
+// 	    double ptfrac = (subjet_p4.Perp() - parton_p4.Perp()) / parton_p4.Perp();
+// 	    double deta = (subjet_p4.Rapidity() - parton_p4.Rapidity());
+// 	    double dphi = TVector2::Phi_mpi_pi(subjet_p4.Phi() - parton_p4.Phi());
 	    
-	    if ( subjets.size() == 3 ) {
-	      subjet_dr_3subjets ->Fill( parton_p4.Perp(), dR );
-	      subjet_deta_3subjets->Fill( parton_p4.Perp(), deta );
-	      subjet_dphi_3subjets->Fill( parton_p4.Perp(), dphi );
-	      subjet_res_3subjets ->Fill( parton_p4.Perp(), ptfrac );
-	      pt3_3subjets->Fill( subjets_p4[2].Perp() );
-	    }
-	    else if ( subjets.size() == 4 ) {
-	      subjet_dr_4subjets ->Fill( parton_p4.Perp(), dR );
-	      subjet_deta_4subjets->Fill( parton_p4.Perp(), deta );
-	      subjet_dphi_4subjets->Fill( parton_p4.Perp(), dphi );
-	      subjet_res_4subjets ->Fill( parton_p4.Perp(), ptfrac );
-	      pt3_4subjets->Fill( subjets_p4[2].Perp() );
-	    }
-	  }
+// 	    if ( subjets.size() == 3 ) {
+// 	      subjet_dr_3subjets ->Fill( parton_p4.Perp(), dR );
+// 	      subjet_deta_3subjets->Fill( parton_p4.Perp(), deta );
+// 	      subjet_dphi_3subjets->Fill( parton_p4.Perp(), dphi );
+// 	      subjet_res_3subjets ->Fill( parton_p4.Perp(), ptfrac );
+// 	      pt3_3subjets->Fill( subjets_p4[2].Perp() );
+// 	    }
+// 	    else if ( subjets.size() == 4 ) {
+// 	      subjet_dr_4subjets ->Fill( parton_p4.Perp(), dR );
+// 	      subjet_deta_4subjets->Fill( parton_p4.Perp(), deta );
+// 	      subjet_dphi_4subjets->Fill( parton_p4.Perp(), dphi );
+// 	      subjet_res_4subjets ->Fill( parton_p4.Perp(), ptfrac );
+// 	      pt3_4subjets->Fill( subjets_p4[2].Perp() );
+// 	    }
+// 	  }
 
 
-	  // Do some smearing if desired
-	  for ( isubjet = isubjetBegin; isubjet != isubjetEnd; ++isubjet ) {
-	    TLorentzVector & isubjet_p4 = subjets_p4[isubjet - isubjetBegin];
+// 	  // Do some smearing if desired
+// 	  for ( isubjet = isubjetBegin; isubjet != isubjetEnd; ++isubjet ) {
+// 	    TLorentzVector & isubjet_p4 = subjets_p4[isubjet - isubjetBegin];
 
 	  
-	    // Get the matched parton
-	    key_type imatched = subjetPartonEnd;
-	    subjet_vector::const_iterator imatchBegin = matches.begin(),
-	      imatchEnd = matches.end(), imatchIt = imatchBegin;
-	    for ( ; imatchIt != imatchEnd; ++imatchIt ) {
-	      if ( imatchIt->second == isubjet ) imatched = imatchIt->first;
-	    }
+// 	    // Get the matched parton
+// 	    key_type imatched = subjetPartonEnd;
+// 	    subjet_vector::const_iterator imatchBegin = matches.begin(),
+// 	      imatchEnd = matches.end(), imatchIt = imatchBegin;
+// 	    for ( ; imatchIt != imatchEnd; ++imatchIt ) {
+// 	      if ( imatchIt->second == isubjet ) imatched = imatchIt->first;
+// 	    }
 
 
-	    // Smear the pt of the subjet by some additional amount for studies
-	    if ( imatched != subjetPartonEnd ) {
-	      double resolution = resfit3->Eval( (*imatched)->energy() );
-	      double scalefactor1 = gRandom->Gaus(1, ptsmear*resolution );
-	      isubjet_p4 *= scalefactor1;
-	      double resolution_y = etaresfit->Eval( (*imatched)->energy() );
-	      double scalefactor2 = gRandom->Gaus(1, etasmear * resolution_y );
-	      double Y = isubjet_p4.Rapidity();
-	      double dY = Y * scalefactor2;
-	      double e = isubjet_p4.E();
-	      double p = isubjet_p4.P();
-	      double exp2Y = TMath::Exp(2*Y);
-	      double theta = TMath::ACos( (exp2Y-1)/(exp2Y+1) * e/p);
-	      isubjet_p4.SetTheta( theta );
-	      double resolution_phi = phiresfit->Eval( (*imatched)->energy() );
-	      double scalefactor3 = gRandom->Gaus(1, phismear * resolution_phi );
-	      isubjet_p4.SetPhi( isubjet_p4.Phi() * scalefactor3 );
-	    }
-	  }
+// 	    // Smear the pt of the subjet by some additional amount for studies
+// 	    if ( imatched != subjetPartonEnd ) {
+// 	      double resolution = resfit3->Eval( (*imatched)->energy() );
+// 	      double scalefactor1 = gRandom->Gaus(1, ptsmear*resolution );
+// 	      isubjet_p4 *= scalefactor1;
+// 	      double resolution_y = etaresfit->Eval( (*imatched)->energy() );
+// 	      double scalefactor2 = gRandom->Gaus(1, etasmear * resolution_y );
+// 	      double Y = isubjet_p4.Rapidity();
+// 	      double dY = Y * scalefactor2;
+// 	      double e = isubjet_p4.E();
+// 	      double p = isubjet_p4.P();
+// 	      double exp2Y = TMath::Exp(2*Y);
+// 	      double theta = TMath::ACos( (exp2Y-1)/(exp2Y+1) * e/p);
+// 	      isubjet_p4.SetTheta( theta );
+// 	      double resolution_phi = phiresfit->Eval( (*imatched)->energy() );
+// 	      double scalefactor3 = gRandom->Gaus(1, phismear * resolution_phi );
+// 	      isubjet_p4.SetPhi( isubjet_p4.Phi() * scalefactor3 );
+// 	    }
+// 	  }
 	  
-	}
+// 	}
 	
-      }
+//       }
     }
     
 

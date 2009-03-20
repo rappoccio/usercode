@@ -61,257 +61,216 @@ void xcheck_mistag_rate_fwlite(TH1D * parameterization,
   cout << "Processing sample = " << sample << endl;
   vector<string> files;
 
-  int iweight = -1;
-
-  if ( sample == "ttbar" ) {
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_11.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_12.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_13.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_14.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_15.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_16.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_17.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_18.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_19.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_1.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_20.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_21.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_22.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_23.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_2.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_3.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_4.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_5.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_6.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_7.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_8.root");
-    files.push_back("/uscms_data/d1/rappocc/TopTagging/ttbar/ca_pat_slim_220_9.root");
-  }
-  else if ( sample == "qcd_15" ) {
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_15/ca_pat_slim_220_1.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_15/ca_pat_slim_220_2.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_15/ca_pat_slim_220_3.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_15/ca_pat_slim_220_4.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_15/ca_pat_slim_220_5.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_15/ca_pat_slim_220_6.root");
-  }
-  else if ( sample == "qcd_20" ) {
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_20/ca_pat_slim_220_1.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_20/ca_pat_slim_220_2.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_20/ca_pat_slim_220_3.root");
-  }
-  else if ( sample == "qcd_30" ) {
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_30/ca_pat_slim_220_1.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_30/ca_pat_slim_220_2.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_30/ca_pat_slim_220_3.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_30/ca_pat_slim_220_4.root");
-  }
-  else if ( sample == "qcd_50" ) {
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_50/ca_pat_slim_220_4.root");
-  }
-  else if ( sample == "qcd_80" ) {
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_80/ca_pat_slim_220_1.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_80/ca_pat_slim_220_2.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_80/ca_pat_slim_220_3.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_80/ca_pat_slim_220_4.root");
-  }
-  else if ( sample == "qcd_120" ) {
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_120/ca_pat_slim_220_1.root");
-  }
-  else if ( sample == "qcd_170" ) {
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_170/ca_pat_slim_220_1.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_170/ca_pat_slim_220_2.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_170/ca_pat_slim_220_3.root");
-    files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/qcd_170/ca_pat_slim_220_4.root");
-  }
-  else if ( sample == "qcd_230" ) {
-    iweight = 0;
-    files.push_back("/uscms_data/d1/rappocc/qcd_230/ca_pat_slim_220_1.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_230/ca_pat_slim_220_2.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_230/ca_pat_slim_220_3.root");
-  }
-  else if ( sample == "qcd_300" ) {
-    iweight = 1;
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_10.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_11.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_12.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_13.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_1.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_2.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_3.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_4.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_5.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_6.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_7.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_8.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_300/ca_pat_slim_220_9.root");
-  }
-  else if ( sample == "qcd_380" ) {
-    iweight = 2;
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_380/ca_pat_slim_220_1.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_380/ca_pat_slim_220_2.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_380/ca_pat_slim_220_3.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_380/ca_pat_slim_220_4.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_380/ca_pat_slim_220_5.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_380/ca_pat_slim_220_6.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_380/ca_pat_slim_220_7.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_380/ca_pat_slim_220_8.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_380/ca_pat_slim_220_9.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_380/ca_pat_slim_220_10.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_380/ca_pat_slim_220_11.root");
-  }
-  else if ( sample == "qcd_470" ) {
-    iweight = 3;
-    files.push_back("/uscms_data/d1/rappocc/qcd_470/ca_pat_slim_220_1.root");
-  }
-  else if ( sample == "qcd_600" ) {
-    iweight = 4;
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_600/ca_pat_slim_220_10.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_600/ca_pat_slim_220_1.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_600/ca_pat_slim_220_2.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_600/ca_pat_slim_220_3.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_600/ca_pat_slim_220_4.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_600/ca_pat_slim_220_5.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_600/ca_pat_slim_220_6.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_600/ca_pat_slim_220_7.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_600/ca_pat_slim_220_8.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_600/ca_pat_slim_220_9.root");
-  }
-  else if ( sample == "qcd_800" ) {
-    iweight = 5;
-    files.push_back("/uscms_data/d1/rappocc/qcd_800/ca_pat_slim_220_1.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_800/ca_pat_slim_220_2.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_800/ca_pat_slim_220_3.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_800/ca_pat_slim_220_4.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_800/ca_pat_slim_220_5.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_800/ca_pat_slim_220_6.root");
-  }
-  else if ( sample == "qcd_1000" ) {
-    iweight = 6;
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1000/ca_pat_slim_220_10.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1000/ca_pat_slim_220_11.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1000/ca_pat_slim_220_12.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1000/ca_pat_slim_220_1.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1000/ca_pat_slim_220_2.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1000/ca_pat_slim_220_3.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1000/ca_pat_slim_220_4.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1000/ca_pat_slim_220_5.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1000/ca_pat_slim_220_6.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1000/ca_pat_slim_220_7.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1000/ca_pat_slim_220_8.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1000/ca_pat_slim_220_9.root");
-  }
-  else if ( sample == "qcd_1400" ) {
-    iweight = 7;
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1400/ca_pat_slim_220_1.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1400/ca_pat_slim_220_2.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1400/ca_pat_slim_220_3.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_1400/ca_pat_slim_220_4.root");
-  }
-  else if ( sample == "qcd_1800" ) {
-    iweight = 8;
-    files.push_back("/uscms_data/d1/rappocc/qcd_1800/ca_pat_slim_220_1.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_1800/ca_pat_slim_220_2.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_1800/ca_pat_slim_220_3.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_1800/ca_pat_slim_220_4.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_1800/ca_pat_slim_220_5.root");
-  } else if ( sample == "qcd_2200" ) {
-    iweight = 9;
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_2200/ca_pat_slim_220_10.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_2200/ca_pat_slim_220_11.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_2200/ca_pat_slim_220_12.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_2200/ca_pat_slim_220_1.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_2200/ca_pat_slim_220_2.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_2200/ca_pat_slim_220_3.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_2200/ca_pat_slim_220_4.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_2200/ca_pat_slim_220_5.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_2200/ca_pat_slim_220_6.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_2200/ca_pat_slim_220_7.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_2200/ca_pat_slim_220_8.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_2200/ca_pat_slim_220_9.root");
-
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_2200/ca_pat_slim_220_3.root");
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_2200/ca_pat_slim_220_4.root");
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_2200/ca_pat_slim_220_5.root");
-  } else if ( sample == "qcd_2600" ) {
-    iweight = 10;
-    files.push_back("/uscms_data/d1/rappocc/qcd_2600/ca_pat_slim_220_1.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_2600/ca_pat_slim_220_2.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_2600/ca_pat_slim_220_3.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_2600/ca_pat_slim_220_4.root");
-    files.push_back("/uscms_data/d1/rappocc/qcd_2600/ca_pat_slim_220_5.root");
-  } else if ( sample == "qcd_3000" ) {
-    iweight = 11;
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3000/ca_pat_slim_220_10.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3000/ca_pat_slim_220_11.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3000/ca_pat_slim_220_12.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3000/ca_pat_slim_220_1.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3000/ca_pat_slim_220_2.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3000/ca_pat_slim_220_3.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3000/ca_pat_slim_220_4.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3000/ca_pat_slim_220_5.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3000/ca_pat_slim_220_6.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3000/ca_pat_slim_220_7.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3000/ca_pat_slim_220_8.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3000/ca_pat_slim_220_9.root");
-
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_3000/ca_pat_slim_220_2.root");
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_3000/ca_pat_slim_220_3.root");
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_3000/ca_pat_slim_220_4.root");
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_3000/ca_pat_slim_220_5.root");
-  } else if ( sample == "qcd_3500" ) {
-    iweight = 12;
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3500/ca_pat_slim_220_10.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3500/ca_pat_slim_220_11.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3500/ca_pat_slim_220_12.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3500/ca_pat_slim_220_1.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3500/ca_pat_slim_220_2.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3500/ca_pat_slim_220_3.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3500/ca_pat_slim_220_4.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3500/ca_pat_slim_220_5.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3500/ca_pat_slim_220_6.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3500/ca_pat_slim_220_7.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3500/ca_pat_slim_220_8.root");
-    files.push_back("/uscms/home/rappocc/nobackup/qcd_3500/ca_pat_slim_220_9.root");
+  int isample = -1;
 
 
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_3500/ca_pat_slim_220_1.root");
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_3500/ca_pat_slim_220_2.root");
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_3500/ca_pat_slim_220_3.root");
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_3500/ca_pat_slim_220_4.root");
-  }else if ( sample == "zjets" ) {
-    iweight = 13;
-
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_10.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_11.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_12.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_13.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_14.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_15.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_16.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_17.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_18.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_19.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_1.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_20.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_21.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_23.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_24.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_2.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_3.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_4.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_5.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_6.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_7.root");
-    files.push_back("/uscms/home/rappocc/nobackup/TopTagging/zjets/ca_pat_slim_220_9.root");
 
 
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_3500/ca_pat_slim_220_1.root");
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_3500/ca_pat_slim_220_2.root");
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_3500/ca_pat_slim_220_3.root");
-    //     files.push_back("/uscms_data/d1/rappocc/qcd_3500/ca_pat_slim_220_4.root");
-  }
 
+   if ( sample == "qcd_230_v5" ) {
+    isample = 0;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_230_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_300_v5" ) {
+    isample = 1;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_13.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_300_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_380_v5" ) {
+    isample = 2;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_380_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_470_v5" ) {
+    isample = 3;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_470_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_600_v5" ) {
+    isample = 4;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_600_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_800_v5" ) {
+    isample = 5;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_800_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_1000_v5" ) {
+    isample = 6;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1000_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_1400_v5" ) {
+    isample = 7;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1400_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_1800_v5" ) {
+    isample = 8;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_13.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_1800_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_2200_v5" ) {
+    isample = 9;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2200_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_2600_v5" ) {
+    isample = 10;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_2600_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_3000_v5" ) {
+    isample = 11;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3000_v5/ca_pat_slim_223_9.root");
+      }
+
+  else if ( sample == "qcd_3500_v5" ) {
+    isample = 12;
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_10.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_11.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_12.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_1.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_2.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_3.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_4.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_5.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_6.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_7.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_8.root");
+files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/qcd_3500_v5/ca_pat_slim_223_9.root");
+      }
 
   double weights[] = {
     10623.2,
@@ -365,8 +324,8 @@ void xcheck_mistag_rate_fwlite(TH1D * parameterization,
     168572
   };
 
-  double weight = weights[iweight];
-  int nevent = nevents[iweight];
+  double weight = weights[isample];
+  int nevent = nevents[isample];
 
   // Calculate the effective luminosity generated
   double lum_eff = (double)nevent / weight; 
@@ -378,32 +337,33 @@ void xcheck_mistag_rate_fwlite(TH1D * parameterization,
 
   double pe_factor = Lum / lum_eff;
 
+  double fillWeight = weight / (double)nevent * Lum;
+
+  cout << "Fill weight 1 = " << fillWeight << endl;
   // Make sure the pseudoexperiments always choose the same seed
   // for reproducability. 
   if ( pseudoExp ) {
-    gRandom->SetSeed( seeds[iweight] );
+    gRandom->SetSeed( seeds[isample] );
+    if ( fillWeight < 1.0 )
+      fillWeight = 1.0; 
 
     cout << "Effective lum = " << lum_eff << endl;
     cout << "Desired lum   = " << Lum << endl;
     cout << "Skipping every " << 1.0 / pe_factor << " events" << endl;
   }
+  cout << "Fill weight 2 = " << fillWeight << endl;
   
   using namespace std;
   using namespace reco;
   using namespace edm;
 
 
-  PredictedDistribution * total_pred     = new PredictedDistribution("total",  "Total Rate", 2, 0, 2 );
-  PredictedDistribution * jet_et_pred    = new PredictedDistribution( "jet_et", "Predicted Jet E_{T}", 50, 0, 5000 );
-  PredictedDistribution * jet_eta_pred   = new PredictedDistribution( "jet_eta", "Predicted Jet #eta", 30, -3.0, 3.0 );
-  PredictedDistribution * jet_phi_pred   = new PredictedDistribution( "jet_phi", "Predicted Jet #phi", 30, -3.14159, 3.14159 );
-  PredictedDistribution * dijetmass_pred = new PredictedDistribution("dijetmass", "Predicted Dijet Mass", 50, 0, 5000);
+  PredictedDistribution * total_pred     = new PredictedDistribution( parameterization, "total",  "Total Rate", 2, 0, 2 );
+  PredictedDistribution * jet_pt_pred    = new PredictedDistribution( parameterization, "jet_pt", "Predicted Jet E_{T}", 50, 0, 5000 );
+  PredictedDistribution * jet_eta_pred   = new PredictedDistribution( parameterization, "jet_eta", "Predicted Jet #eta", 30, -3.0, 3.0 );
+  PredictedDistribution * jet_phi_pred   = new PredictedDistribution( parameterization, "jet_phi", "Predicted Jet #phi", 30, -3.14159, 3.14159 );
+  PredictedDistribution * dijetmass_pred = new PredictedDistribution( parameterization, "dijetmass", "Predicted Dijet Mass", 50, 0, 5000);
   
-  total_pred->SetRateMatrix( parameterization );
-  jet_et_pred->SetRateMatrix( parameterization );
-  jet_eta_pred->SetRateMatrix( parameterization );
-  jet_phi_pred->SetRateMatrix( parameterization );
-  dijetmass_pred->SetRateMatrix( parameterization );
   
   cout << "About to loop" << endl;
   
@@ -418,12 +378,14 @@ void xcheck_mistag_rate_fwlite(TH1D * parameterization,
 
     if ( ev.getBranchDescriptions().size() <= 0 ) continue;
 
+
     // Select a subset of the events for a pseudoexperiment
     // based on the desired luminosity. 
     if ( pseudoExp ) {
       double fi = gRandom->Uniform();
       if ( fi >= pe_factor ) continue;
     }
+
 
 
     if ( count % 1000 == 0 ) cout << "Processing event " << count << endl;
@@ -477,33 +439,33 @@ void xcheck_mistag_rate_fwlite(TH1D * parameterization,
 	(wMass2   >= wMassCut1   && wMass2   <= wMassCut2  ) &&
 	(minMass2 >= minMassCut1 && minMass2 <= minMassCut2);
 
-      if ( v.Mag() > 2000 ) {
-	int bin1 = parameterization->FindBin(jet1.et() );
-	int bin2 = parameterization->FindBin(jet2.et() );
-	cout << "v.Mag() = " << v.Mag() << endl;
-	cout << "jet1.p4 = " << v1 << endl;
-	cout << "bin1    = " << bin1 << endl;
-	cout << "rate1   = " << parameterization->GetBinContent(bin1) << " +- " << parameterization->GetBinError(bin1) << endl;
-	cout << "jet2.p4 = " << v2 << endl;
-	cout << "bin2    = " << bin2 << endl;
-	cout << "rate2   = " << parameterization->GetBinContent(bin2) << " +- " << parameterization->GetBinError(bin2) << endl;
+//       if ( true ) {
+// 	int bin1 = parameterization->FindBin(jet1.pt() );
+// 	int bin2 = parameterization->FindBin(jet2.pt() );
+// 	cout << "v.Mag() = " << v.Mag() << endl;
+// 	cout << "jet1.p4 = " << v1 << endl;
+// 	cout << "bin1    = " << bin1 << endl;
+// 	cout << "rate1   = " << parameterization->GetBinContent(bin1) << " +- " << parameterization->GetBinError(bin1) << endl;
+// 	cout << "jet2.p4 = " << v2 << endl;
+// 	cout << "bin2    = " << bin2 << endl;
+// 	cout << "rate2   = " << parameterization->GetBinContent(bin2) << " +- " << parameterization->GetBinError(bin2) << endl;
 	
-      }
+//       }
 
       if ( !tagged1 ) {
-	total_pred->Accumulate( 1.0, jet2.et(), tagged2 );
-	jet_et_pred->Accumulate( jet2.et(), jet2.et(), tagged2  );
-	jet_eta_pred->Accumulate( jet2.eta(), jet2.et(), tagged2  );
-	jet_phi_pred->Accumulate( jet2.phi(), jet2.et(), tagged2  );
-	dijetmass_pred->Accumulate( v.Mag(), jet2.et(), tagged2  );
+	total_pred->Accumulate( 1.0, jet2.pt(), tagged2 );
+	jet_pt_pred->Accumulate( jet2.pt(), jet2.pt(), tagged2 , fillWeight );
+	jet_eta_pred->Accumulate( jet2.eta(), jet2.pt(), tagged2 , fillWeight );
+	jet_phi_pred->Accumulate( jet2.phi(), jet2.pt(), tagged2 , fillWeight );
+	dijetmass_pred->Accumulate( v.Mag(), jet2.pt(), tagged2 , fillWeight );
       }
       
       if ( !tagged2 ) {
-	total_pred->Accumulate( 1.0, jet1.et(), tagged1 );
-	jet_et_pred->Accumulate( jet1.et(), jet1.et(), tagged1  );
-	jet_eta_pred->Accumulate( jet1.eta(), jet1.et(), tagged1  );
-	jet_phi_pred->Accumulate( jet1.phi(), jet1.et(), tagged1  );
-	dijetmass_pred->Accumulate( v.Mag(), jet1.et(), tagged1  );
+	total_pred->Accumulate( 1.0, jet1.pt(), tagged1 , fillWeight);
+	jet_pt_pred->Accumulate( jet1.pt(), jet1.pt(), tagged1  , fillWeight);
+	jet_eta_pred->Accumulate( jet1.eta(), jet1.pt(), tagged1  , fillWeight);
+	jet_phi_pred->Accumulate( jet1.phi(), jet1.pt(), tagged1  , fillWeight);
+	dijetmass_pred->Accumulate( v.Mag(), jet1.pt(), tagged1  , fillWeight);
       }
 
 
@@ -545,7 +507,7 @@ void xcheck_mistag_rate_fwlite(TH1D * parameterization,
   total_pred->SetCalculatedErrors();
 //   total_pred->Normalize();
 
-  jet_et_pred->SetCalculatedErrors();
+  jet_pt_pred->SetCalculatedErrors();
 //   jet_et_pred->Normalize();
   
   jet_eta_pred->SetCalculatedErrors();
@@ -569,9 +531,9 @@ void xcheck_mistag_rate_fwlite(TH1D * parameterization,
   total_pred->GetObservedHist()->Write();
   total_pred->GetTaggableHist()->Write();
 
-  jet_et_pred->GetPredictedHist()->Write();
-  jet_et_pred->GetObservedHist()->Write();
-  jet_et_pred->GetTaggableHist()->Write();
+  jet_pt_pred->GetPredictedHist()->Write();
+  jet_pt_pred->GetObservedHist()->Write();
+  jet_pt_pred->GetTaggableHist()->Write();
 
   jet_eta_pred->GetPredictedHist()->Write();
   jet_eta_pred->GetObservedHist()->Write();
@@ -589,7 +551,7 @@ void xcheck_mistag_rate_fwlite(TH1D * parameterization,
   f->Close();
 
   delete total_pred;
-  delete jet_et_pred;
+  delete jet_pt_pred;
   delete jet_eta_pred;
   delete jet_phi_pred;
   delete dijetmass_pred;

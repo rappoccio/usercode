@@ -13,7 +13,7 @@ using namespace std;
 void combine_mistag_rates(double Lum = 1.0)
 {
 
-  double deff = 0.069; // fractional efficiency uncertainty
+  double deff = 0.065; // fractional efficiency uncertainty
 
   const char * names [] = {
     "mistag_parameterization_qcd_230_v5.root", 

@@ -10,19 +10,19 @@ void combine_mistag_predictions( double Lum = 1.0 )
 {
 
   const char * names [] = {
-    "xchecks_qcd_230.root", 
-    "xchecks_qcd_300.root", 
-    "xchecks_qcd_380.root", 
-    "xchecks_qcd_470.root", 
-    "xchecks_qcd_600.root", 
-    "xchecks_qcd_800.root", 
-    "xchecks_qcd_1000.root", 
-    "xchecks_qcd_1400.root", 
-    "xchecks_qcd_1800.root", 
-    "xchecks_qcd_2200.root", 
-    "xchecks_qcd_2600.root", 
-    "xchecks_qcd_3000.root", 
-    "xchecks_qcd_3500.root"
+    "xchecks_qcd_230_v5.root", 
+    "xchecks_qcd_300_v5.root", 
+    "xchecks_qcd_380_v5.root", 
+    "xchecks_qcd_470_v5.root", 
+    "xchecks_qcd_600_v5.root", 
+    "xchecks_qcd_800_v5.root", 
+    "xchecks_qcd_1000_v5.root", 
+    "xchecks_qcd_1400_v5.root", 
+    "xchecks_qcd_1800_v5.root", 
+    "xchecks_qcd_2200_v5.root", 
+    "xchecks_qcd_2600_v5.root", 
+    "xchecks_qcd_3000_v5.root", 
+    "xchecks_qcd_3500_v5.root"
   };
 
   static const int nnames = sizeof( names ) / sizeof ( const char * );
@@ -63,18 +63,25 @@ void combine_mistag_predictions( double Lum = 1.0 )
 
   const char * plotnames[] = {
     "total",
-    "jet_et",
+    "jet_pt",
     "jet_eta",
     "jet_phi",
     "dijetmass"
   };
+  const char * plottitles[] = {
+    "Total",
+    "Jet p_{T};Jet p_{T} (GeV/c);Number",
+    "Jet Rapidity;Jet Rapidity;Number",
+    "Jet Azimuthal Angle;Jet #phi;Number",
+    "Dijet Mass;DijetMass (GeV/c^{2});Number"
+  };
 
   bool logy[] = {
     false,
-    true,
     false,
     false,
-    true
+    false,
+    false
   };
 
   static const int nplots = sizeof( plotnames ) / sizeof ( const char * );
@@ -131,9 +138,12 @@ void combine_mistag_predictions( double Lum = 1.0 )
 
     obs_sum->SetMinimum(0);
 
+    obs_sum->SetMarkerStyle(20);
+    pred_sum->SetMarkerStyle(21);
+
     TString hsname( obs_name ); hsname += +"_hs";
 
-    THStack * hs = new THStack ( hsname.Data(), obs_name.Data() );
+    THStack * hs = new THStack ( hsname.Data(),plottitles[iplot]  );
 
     if ( logy[iplot] ) {
       obs_sum->SetMinimum(0.1);

@@ -1,0 +1,16 @@
+
+
+
+
+run_subjetstudies_jec zprime_fullsim_m2000_w20_v6_fixed
+run_subjetstudies_jec zprime_fullsim_m2000_w20_v6_fixed_kt
+run_subjetstudies_jec zprime_fullsim_m2000_w20_v6_fixed_antikt
+
+run_subjetstudies_jec zprime_fullsim_m3000_w30_v6_fixed
+run_subjetstudies_jec zprime_fullsim_m3000_w30_v6_fixed_kt
+run_subjetstudies_jec zprime_fullsim_m3000_w30_v6_fixed_antikt
+
+
+run_subjetstudies_jec qcd_600_v6_fixed
+run_subjetstudies_jec qcd_600_v6_fixed_kt
+run_subjetstudies_jec qcd_600_v6_fixed_antikt
