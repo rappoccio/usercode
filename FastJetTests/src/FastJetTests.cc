@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Tue Mar 24 13:26:36 CDT 2009
-// $Id$
+// $Id: FastJetTests.cc,v 1.1 2009/03/24 21:10:06 srappocc Exp $
 //
 //
 
@@ -103,6 +103,8 @@ FastJetTests::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   using namespace edm;
   using namespace std;
 
+  ofstream output("output.txt", ios::app);
+
   std::auto_ptr<vector<reco::BasicJet> >      jets( new vector<reco::BasicJet> );
   vector<reco::LeafCandidate>  cand_particles;
 
@@ -150,7 +152,23 @@ FastJetTests::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
  for ( ; ijet != jetsEnd; ++ijet ) {
    jets->push_back( reco::BasicJet( ijet->p4(), reco::Candidate::Point() ) );
+   char buffout[1000];
+   output << "---------" << endl;
+   sprintf(buffout, " jet i = %10d %20.15f %20.15f %20.15f %20.15f :",
+	   ijet - jetsBegin,
+	   ijet->px(), ijet->py(), ijet->pz(), ijet->energy() );
+   output << buffout << endl;
+   ProtoJet::Constituents const & towerList = ijet->getTowerList();
+   ProtoJet::Constituents::const_iterator towerBegin = towerList.begin(),
+     towerEnd = towerList.end(), itower = towerBegin;
+   for (; itower != towerEnd; ++itower ) {
+     sprintf( buffout, "    tower j = %10d %20.15f %20.15f %20.15f %20.15f",
+	      itower->index(), itower->get()->px(), itower->get()->py(), itower->get()->pz(), itower->get()->energy() );
+     output << buffout << endl;
+   }
  }
+
+ output << " %END" << endl;
 
 //  cout << "Putting to the event" << endl;
  auto_ptr<vector<reco::LeafCandidate> > toPut( new vector<reco::LeafCandidate>( cand_particles ) );
