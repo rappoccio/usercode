@@ -42,8 +42,6 @@ elif flavor == 'wjets' :
     from Analysis.MethodIII.Pattuple_wjets_cfi import *
 elif flavor == 'ttjets' :
     from Analysis.MethodIII.Pattuple_ttbar_cfi  import *
-#else :
-#    from Analysis.MethodIII.PatInput_vqq_cfi import *
         
 
         
