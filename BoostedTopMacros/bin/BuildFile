@@ -72,6 +72,28 @@
  <use name=CondFormats/JetMETObjects>
 </bin>
 
+<bin file="run_subjet_event_display_fwlite.cc">
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+ <use name=DataFormats/HepMCCandidate>
+</bin>
+
+
+<bin file="run_gen.cc">
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/HepMCCandidate>
+ <use name=DataFormats/PatCandidates>
+</bin>
 
 </environment>
 

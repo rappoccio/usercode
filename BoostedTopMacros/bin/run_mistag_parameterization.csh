@@ -15,17 +15,19 @@
 #run_mistag_parameterization qcd_3000_v5
 #run_mistag_parameterization qcd_3500_v5
 
+#run_mistag_parameterization wjets_v5
+#run_mistag_parameterization zjets_v5
 
-run_mistag_parameterization qcd_230_v5 false
-run_mistag_parameterization qcd_300_v5 false
-run_mistag_parameterization qcd_380_v5 false
-run_mistag_parameterization qcd_470_v5 false
-run_mistag_parameterization qcd_600_v5 false
-run_mistag_parameterization qcd_800_v5 false
-run_mistag_parameterization qcd_1000_v5 false
-run_mistag_parameterization qcd_1400_v5 false
-run_mistag_parameterization qcd_1800_v5 false
-run_mistag_parameterization qcd_2200_v5 false
-run_mistag_parameterization qcd_2600_v5 false
-run_mistag_parameterization qcd_3000_v5 false
-run_mistag_parameterization qcd_3500_v5 false
+run_mistag_parameterization qcd_230_v6_fixed true false 
+run_mistag_parameterization qcd_300_v6_fixed true false 
+run_mistag_parameterization qcd_380_v6_fixed true false 
+run_mistag_parameterization qcd_470_v6_fixed true false 
+run_mistag_parameterization qcd_600_v6_fixed true false 
+run_mistag_parameterization qcd_800_v6_fixed true false 
+run_mistag_parameterization qcd_1000_v6_fixed true false 
+run_mistag_parameterization qcd_1400_v6_fixed true false 
+run_mistag_parameterization qcd_1800_v6_fixed true false 
+run_mistag_parameterization qcd_2200_v6_fixed true false 
+run_mistag_parameterization qcd_2600_v6_fixed true false 
+run_mistag_parameterization qcd_3000_v6_fixed true false 
+run_mistag_parameterization qcd_3500_v6_fixed true false 

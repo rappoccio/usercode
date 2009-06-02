@@ -1,6 +1,6 @@
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "TFile.h"
-#include "kinematics_fwlite_plots.C"
+#include "subjet_event_display_fwlite.C"
 #include "TSystem.h"
 
 
@@ -9,7 +9,7 @@ int main (int argc, char ** argv)
 
 
   if ( argc < 2 ) {
-    cout << "usage: run_kinematics <sample>" << endl;
+    cout << "usage: run_subjet_event_display <sample> <event>" << endl;
     return 0;
   }
 
@@ -19,16 +19,12 @@ int main (int argc, char ** argv)
 
 
   bool useJEC = true;
+  int event = 0;
   if ( argc > 2 ) {
-    if ( string(argv[2]) == "false" ) {
-      cout << "using uncorrected jets" << endl;
-      useJEC = false;
-    }
-    else
-      useJEC = true;
+    event = atoi(argv[2]);
   }
 
-  catop_fwlite(argv[1], useJEC);
+  subjet_event_display_fwlite(argv[1], event);
 
 
 

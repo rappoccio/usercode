@@ -20,46 +20,13 @@
 
 using namespace std;
 
-struct results {
-  results() {
-    n1jet_events = 0;
-    n2jet_events = 0;
-    n1tagged_events = 0;
-    n2tagged_events = 0;
-    nfiducial_jets = 0;
-    ntopmass_jets = 0; 
-    nminmass_jets = 0;
-  }
-  unsigned int n1jet_events ;    // Number of events that pass the filter (i.e. have >= 1 jet with pt > 300, eta < 2.5)
-  unsigned int n2jet_events;  // Number of events that have 2 fiducial jets
-  unsigned int n1tagged_events;   // Number of events with >= 1 tag
-  unsigned int n2tagged_events;   // Number of events with == 2 tags
 
-  unsigned int nfiducial_jets ;   // Number of jets with pt > 300, eta < 2.5
-  unsigned int ntopmass_jets ;    // Number of jets that pass top mass criterion
-  unsigned int nminmass_jets ;    // Number of jets that pass min mass criterion AND top mass criterion
-
-  friend ostream & operator<<(ostream & out, results const & iresults) {
-    char buff[800];
-    sprintf(buff, " & %6d & %6d & %6d & %6d & %6d & %6d & %6d \\\\ \n", 
-	    iresults.n1jet_events, iresults.n2jet_events, iresults.n1tagged_events, iresults.n2tagged_events,
-	    iresults.nfiducial_jets, iresults.ntopmass_jets, iresults.nminmass_jets );
-    out << buff;
-    return out;
-  }
-};
-
-void catop_fwlite(string sample = "ttbar",
-		  bool useJEC = true,
-		  double topMassCut1 = 100, double topMassCut2 = 250,
-		  double wMassCut1 = 0, double wMassCut2 = 99999.0,
-		  double minMassCut1 = 50.0, double minMassCut2 = 99999.0)
+void gen_fwlite_plots(string sample = "ttbar")
 {
    
 
   cout << "Processing sample = " << sample << endl;
   vector<string> files;
-
 
 
   if ( sample == "ttbar_v6_fixed" ) {
@@ -79,7 +46,6 @@ void catop_fwlite(string sample = "ttbar",
     files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v6_fixed/ca_pat_slim_223_8.root");
     files.push_back("/uscms_data/d2/rappocc/TopTaggingV2/ttbar_v6_fixed/ca_pat_slim_223_9.root");
   }
-
 
   else if ( sample == "rs_1000_v6_fixed" ) {
 files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/RS1000_tt_jetMET__FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
@@ -660,34 +626,6 @@ files.push_back("/uscms/home/rappocc/nobackup/TopTaggingV2/zprime_fullsim_m4000_
   }
 
 
-  else if ( sample == "wjets_inclusive_200_v6_fixed2" ) {
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_10.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_11.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_12.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_13.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_14.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_15.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_16.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_17.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_18.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_19.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_1.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_20.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_2.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_3.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_4.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_5.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_6.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_7.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_8.root");
-files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_200_FastSim_PAT_v6_fixed/ca_pat_slim_fastsim_223_9.root");
-
-
-
-  }
-
-
-
   ofstream tableout("kinematics_output.txt", ios_base::app);
    
   using namespace std;
@@ -695,61 +633,29 @@ files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_2
   
 
 
+  TH1D * hist_ttbar_mass = new TH1D("hist_ttbar_mass", "t#bar{t} Invariant Mass;Mass (GeV/c^{2});Fraction", 500, 0, 5000);
 
-  TH1D * hist_top_jetPt = new TH1D("hist_top_jetPt", "Jet p_{T}", 100, 0, 5000 );
-  TH1D * hist_nontop_jetPt = new TH1D("hist_nontop_jetPt", "Jet p_{T}", 100, 0, 5000 );
 
-  TH1D * hist_top_jetY = new TH1D("hist_top_jetY", "Jet Rapidity", 100, -3.0, 3.0 );
-  TH1D * hist_nontop_jetY = new TH1D("hist_nontop_jetY", "Jet Rapidity", 100, -3.0, 3.0);
+  TH1D * hist_top_genPt = new TH1D("hist_top_genPt", "Top Quark p_{T};p_{T} (GeV/c);Fraction",     100, 0, 5000 );
+  TH1D * hist_w_genPt   = new TH1D("hist_w_genPt",   "W p_{T};p_{T} (GeV/c);Fraction",             100, 0, 5000 );
+  TH1D * hist_wDa_genPt = new TH1D("hist_wDa_genPt", "W Daughter p_{T};p_{T} (GeV/c);Fraction",    100, 0, 5000 );
+  TH1D * hist_b_genPt   = new TH1D("hist_b_genPt",   "Bottom Quark p_{T};p_{T} (GeV/c);Fraction",  100, 0, 5000 );
 
-  TH1D * hist_top_nSubjet = new TH1D("hist_top_nSubjet", "Number of Subjets", 5, 0, 5);
-  TH1D * hist_nontop_nSubjet = new TH1D("hist_nontop_nSubjet", "Number of Subjets", 5, 0, 5);
+  TH1D * hist_top_genY = new TH1D("hist_top_genY", "Top Quark Rapidity;Rapidity;Fraction",     100, -5.0, 5.0 );
+  TH1D * hist_w_genY   = new TH1D("hist_w_genY",   "W Rapidity;Rapidity;Fraction",             100, -5.0, 5.0 );
+  TH1D * hist_wDa_genY = new TH1D("hist_wDa_genY", "W Daughter Rapidity;Rapidity;Fraction",    100, -5.0, 5.0 );
+  TH1D * hist_b_genY   = new TH1D("hist_b_genY",   "Bottom Quark Rapidity;Rapidity;Fraction",  100, -5.0, 5.0 );
 
-  TH2D * hist_top_jetPt_vs_jetY = new TH2D("hist_top_jetPt_vs_jetY", "Jet p_{T} Versus Jet Rapidity", 25, 0, 5000, 25, -3.0, 3.0);
-  TH2D * hist_nontop_jetPt_vs_jetY = new TH2D("hist_nontop_jetPt_vs_jetY", "Jet p_{T} Versus Jet Rapidity", 25, 0, 5000, 25, -3.0, 3.0);
+  TH1D * hist_minMass  = new TH1D("hist_minMass",  "Min Mass Pairing of All Partons;Mass (GeV/c^{2});Fraction", 100, 0, 200 );
+  TH1D * hist_minMass_submu  = new TH1D("hist_minMass_submu",  "Min Mass Pairing of All Partons Minus Muons;Mass (GeV/c^{2});Fraction", 100, 0, 200 );
 
-  TH1D * hist_tagged_top_jetPt = new TH1D("hist_tagged_top_jetPt", "Tagged Jet p_{T}", 100, 0, 5000 );
-  TH1D * hist_tagged_nontop_jetPt = new TH1D("hist_tagged_nontop_jetPt", "Tagged Jet p_{T}", 100, 0, 5000 );
+  TH1D * hist_top_genDeltaPt = new TH1D("hist_top_genDeltaPt", "Top Quark #Delta p_{T};#Delta p_{T} (GeV/c);Fraction", 100, 0, 1000);
 
-  TH1D * hist_tagged_top_jetY = new TH1D("hist_tagged_top_jetY", "Tagged Jet Rapidity", 100, -3.0, 3.0 );
-  TH1D * hist_tagged_nontop_jetY = new TH1D("hist_tagged_nontop_jetY", "Tagged Jet Rapidity", 100, -3.0, 3.0);
+  TH1D * hist_top_id = new TH1D("hist_top_id", "Top Quark PdgID", 30, 0, 30);
+  TH1D * hist_b_id   = new TH1D("hist_b_id",   "B Quark PdgID", 30, 0, 30);
+  TH1D * hist_w_id   = new TH1D("hist_w_id",   "W PdgID", 30, 0, 30);
+  TH1D * hist_wDa_id = new TH1D("hist_wDa_id", "W Daughter Quark PdgID", 30, 0, 30);
 
-  TH2D * hist_tagged_top_jetPt_vs_jetY = new TH2D("hist_tagged_top_jetPt_vs_jetY", "Jet p_{T} Versus Jet Rapidity", 25, 0, 5000, 25, -3.0, 3.0);
-  TH2D * hist_tagged_nontop_jetPt_vs_jetY = new TH2D("hist_tagged_nontop_jetPt_vs_jetY", "Jet p_{T} Versus Jet Rapidity", 25, 0, 5000, 25, -3.0, 3.0);
-
-  TH1D * hist_top_jetMass = new TH1D("hist_top_jetMass", "Jet Mass", 100, 0, 500 );
-  TH1D * hist_nontop_jetMass = new TH1D("hist_nontop_jetMass", "Jet Mass", 100, 0, 500 );
-
-  TH1D * hist_top_jetMinMass = new TH1D("hist_top_jetMinMass", "Jet Min Mass", 100, 0, 200 );
-  TH1D * hist_nontop_jetMinMass = new TH1D("hist_nontop_jetMinMass", "Jet Min Mass", 100, 0, 200 );
-
-  TH1D * hist_top_jetWMass = new TH1D("hist_top_jetWMass", "Jet W Mass", 100, 0, 200 );
-  TH1D * hist_nontop_jetWMass = new TH1D("hist_nontop_jetWMass", "Jet W Mass", 100, 0, 200 );
-
-  TH1D * hist_top_dijetmass = new TH1D("hist_top_dijetmass", "Dijet mass, Untagged", 100, 0, 5000 );
-  TH1D * hist_nontop_dijetmass = new TH1D("hist_nontop_dijetmass", "Dijet mass, Untagged", 100, 0, 5000 );
-
-  TH1D * hist_onetagged_top_dijetmass = new TH1D("hist_onetagged_top_dijetmass", "Dijet mass, Single Tagged Events", 100, 0, 5000 );
-  TH1D * hist_onetagged_nontop_dijetmass = new TH1D("hist_onetagged_nontop_dijetmass", "Dijet mass, Single Tagged Events", 100, 0, 5000 );
-
-  TH1D * hist_tagged_top_dijetmass = new TH1D("hist_tagged_top_dijetmass", "Dijet mass, Double Tagged Events", 100, 0, 5000 );
-  TH1D * hist_tagged_nontop_dijetmass = new TH1D("hist_tagged_nontop_dijetmass", "Dijet mass, Double Tagged Events", 100, 0, 5000 );
-
-  TH1D * hist_top_deltaPt = new TH1D("hist_top_deltaPt", "#Delta p_{T}, Untagged", 100, 0, 1000 );
-  TH1D * hist_nontop_deltaPt = new TH1D("hist_nontop_deltaPt", "#Delta p_{T}, Untagged", 100, 0, 1000 );
-
-  TH1D * hist_top_jetMinMass_semilep_b = new TH1D("hist_top_jetMinMass_semilep_b", "Jet Min Mass, Events with Semileptonic B Decay", 100, 0, 200);
-  TH1D * hist_nontop_jetMinMass_semilep_b = new TH1D("hist_nontop_jetMinMass_semilep_b", "Jet Min Mass, Events with Semileptonic B Decay", 100, 0, 200);
-
-  TH2D * hist_top_jetMass_Vs_jetMinMass = new TH2D("hist_top_jetMass_Vs_jetMinMass", 
-						"Jet Mass Versus Jet Min Mass, Top Jets",
-						100, 0, 500, 100, 0, 200 );
-
-  TH2D * hist_nontop_jetMass_Vs_jetMinMass = new TH2D("hist_nontop_jetMass_Vs_jetMinMass", 
-						"Jet Mass Versus Jet Min Mass, Non-Top Jets",
-						100, 0, 500, 100, 0, 200 );
-  
-  results iresults;
 
   cout << "About to make chain event" << endl;
   
@@ -765,282 +671,347 @@ files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_2
 
     if ( ev.getBranchDescriptions().size() <= 0 ) continue;
 
-    ++iresults.n1jet_events;
-
-    if ( count % 1000 == 0 ) cout << "Processing event " << count << endl;
 //     cout << "Processing event " << count << endl;
 
-    fwlite::Handle<std::vector<pat::Jet> > h_jet;
-    fwlite::Handle<std::vector<pat::Muon> > h_muon;
+    fwlite::Handle<std::vector<reco::GenParticle> > h_gen;
 
-    h_jet   .getByLabel(ev,"selectedLayer1Jets");
+    h_gen   .getByLabel(ev,"prunedGenParticles");
 
-    if ( !h_jet.isValid() ) continue;
+    if ( !h_gen.isValid() ) continue;
 
-    vector<pat::Jet> const & jets = *h_jet;
+    TLorentzVector ttbar;              // Resonance
+    TLorentzVector t1, b1, w1, p1, q1; // First top chain
+    TLorentzVector t2, b2, w2, p2, q2; // Second top chain
+    TLorentzVector mu1_soft, mu2_soft; // Semimuonic b decays
+    TLorentzVector num1_soft, num2_soft; // Semimuonic b decays
+
+    reco::Candidate const *pt1=0,  *pb1=0,  *pw1=0,  *pp1=0,  *pq1=0;
+    reco::Candidate const *pt2=0,  *pb2=0,  *pw2=0,  *pp2=0,  *pq2=0;
+    reco::Candidate const *pmu1_soft = 0, *pmu2_soft = 0;
+    reco::Candidate const *pnum1_soft = 0, *pnum2_soft = 0;
 
 
-    h_muon   .getByLabel(ev,"selectedLayer1Muons");
+    vector<reco::GenParticle> const & gen = *h_gen;
 
-    bool isSemiLep = (h_muon.isValid() && h_muon->size() > 0 );
+    vector<reco::GenParticle>::const_iterator gen_begin = gen.begin(),
+      gen_end = gen.end(), igen = gen_begin;
+    for ( ; igen != gen_end; ++igen ) {
+      if ( igen->status() != 3 ) continue;
+      if ( igen->pdgId() == 6   ) {
 
-    if ( jets.size() >= 2 ) {
 
-      pat::Jet const & jet1 = jets[0];
-      pat::Jet const & jet2 = jets[1];
+
+	pt1 = &(*igen);
+	
+	if ( pt1->numberOfDaughters() >= 2 ) {
+	  pw1 = igen->daughter(0);
+	  pb1 = igen->daughter(1);
+
+	  if ( abs( pw1->pdgId() ) != 24 ) {
+	    reco::Candidate const * temp = pw1;
+	    pw1 = pb1;
+	    pb1 = temp;
+	  }
+
+	  if ( pb1->numberOfDaughters() >= 1 ) {
+	    for ( int ibda = 0; ibda < pb1->numberOfDaughters(); ++ibda ) {
+	      reco::Candidate const * bda = pb1->daughter(ibda);
+	      if ( bda != 0 && abs(bda->pdgId()) == 13 ) {
+		pmu1_soft = bda;
+	      }
+	      if ( bda != 0 && abs(bda->pdgId()) == 14 ) {
+		pnum1_soft = bda;
+	      }
+	    }
+	  }
+	  
+	  if ( pw1->numberOfDaughters() >= 2 ) {
+	    pp1 = pw1->daughter(0);
+	    pq1 = pw1->daughter(1);
+	  } else {
+	    continue;
+	  }
+	  
+	} else {
+	  continue;
+	}
+	
       
-      const reco::CATopJetTagInfo * catopTag1 = dynamic_cast<CATopJetTagInfo const *>(jet1.tagInfo("CATopJetTagger"));
-      const reco::CATopJetTagInfo * catopTag2 = dynamic_cast<CATopJetTagInfo const *>(jet2.tagInfo("CATopJetTagger"));
-
-      double topMass1 = catopTag1->properties().topMass;
-      double wMass1 = catopTag1->properties().wMass;
-      double minMass1 = catopTag1->properties().minMass;
-
-      double topMass2 = catopTag2->properties().topMass;
-      double wMass2 = catopTag2->properties().wMass;
-      double minMass2 = catopTag2->properties().minMass;
-
-      bool tagged1 = 
-	(topMass1 >= topMassCut1 && topMass1 <= topMassCut2) &&
-	(wMass1   >= wMassCut1   && wMass1   <= wMassCut2  ) &&
-	(minMass1 >= minMassCut1 && minMass1 <= minMassCut2);
-
-      bool tagged2 = 
-	(topMass2 >= topMassCut1 && topMass2 <= topMassCut2) &&
-	(wMass2   >= wMassCut1   && wMass2   <= wMassCut2  ) &&
-	(minMass2 >= minMassCut1 && minMass2 <= minMassCut2);
-
-
-      double corrF1 = 1.0;
-      double corrF2 = 1.0;
-      if ( !useJEC ) {
-        corrF1 = jet1.jetCorrFactors().scaleDefault();
-	corrF2 = jet2.jetCorrFactors().scaleDefault();
+	
       }
 
+      else if ( igen->pdgId() == -6 ) {
+	
 
-      bool tagged = tagged1 && tagged2; 
+	pt2 = &(*igen);
+	
+	if ( pt2->numberOfDaughters() >= 2 ) {
+	  pw2 = igen->daughter(0);
+	  pb2 = igen->daughter(1);
+
+	  if ( abs( pw2->pdgId() ) != 24 ) {
+	    reco::Candidate const * temp = pw2;
+	    pw2 = pb2;
+	    pb2 = temp;
+	  }
+
+	  if ( pb2->numberOfDaughters() >= 1 ) {
+	    for ( int ibda = 0; ibda < pb2->numberOfDaughters(); ++ibda ) {
+	      reco::Candidate const * bda = pb2->daughter(ibda);
+	      if ( bda != 0 && abs(bda->pdgId()) == 13 ) {
+		pmu2_soft = bda;
+	      }
+	      if ( bda != 0 && abs(bda->pdgId()) == 14 ) {
+		pnum2_soft = bda;
+	      }
+	    }
+	  }
+
+	  if ( pw2->numberOfDaughters() >= 2 ) {
+	    pp2 = pw2->daughter(0);
+	    pq2 = pw2->daughter(1);
+	  } else {
+	    continue;
+	  }
+
+	} else {
+	  continue;
+	}
+
+      }
+
       
-      TLorentzVector v1(jet1.px()/corrF1, jet1.py()/corrF1, jet1.pz()/corrF1, jet1.energy()/corrF1 );
-      TLorentzVector v2(jet2.px()/corrF2, jet2.py()/corrF2, jet2.pz()/corrF2, jet2.energy()/corrF2 );
-
-      TLorentzVector v = v1 + v2;
-
-      double mass = v.Mag();
-      if ( abs(jet1.partonFlavour()) == 6 && abs(jet2.partonFlavour() == 6) ) {
-	hist_top_dijetmass->Fill( mass );
-	hist_top_deltaPt->Fill( fabs(jet1.pt() - jet2.pt()) );
-	if ( tagged ) {
-	  hist_tagged_top_dijetmass->Fill( mass );
-	} 
-	if ( tagged1 || tagged2 ) {
-	  hist_onetagged_top_dijetmass->Fill( mass );
-	}
-      }
-      else {
-	hist_nontop_dijetmass->Fill( mass );
-	hist_nontop_deltaPt->Fill( fabs(jet1.pt() - jet2.pt()) );
-	if ( tagged ) {
-	  hist_tagged_nontop_dijetmass->Fill( mass );
-	}
-	if ( tagged1 || tagged2 ) {
-	  hist_onetagged_nontop_dijetmass->Fill( mass );
-	}
-      }
-
-      ++iresults.n2jet_events;
-      if ( tagged1 || tagged2 ) ++iresults.n1tagged_events;
-      if ( tagged1 && tagged2 ) ++iresults.n2tagged_events;
     }
 
-    for ( int i = 0; i < jets.size();  ++i ) {
-
-      ++iresults.nfiducial_jets;
-
-      const reco::CATopJetTagInfo * catopTag = dynamic_cast<CATopJetTagInfo const *>(jets[i].tagInfo("CATopJetTagger"));
-
-      double topMass = catopTag->properties().topMass;
-      double wMass = catopTag->properties().wMass;
-      double minMass = catopTag->properties().minMass;
+    if ( pt1 == 0 || pb1 == 0 || pw1 == 0 || pp1 == 0 || pq1 == 0 ||
+	 pt2 == 0 || pb2 == 0 || pw2 == 0 || pp2 == 0 || pq2 == 0 ) continue;
 
 
+    t1 = TLorentzVector( pt1->px(), pt1->py(), pt1->pz(), pt1->energy() );
+    b1 = TLorentzVector( pb1->px(), pb1->py(), pb1->pz(), pb1->energy() );
+    w1 = TLorentzVector( pw1->px(), pw1->py(), pw1->pz(), pw1->energy() );
+    p1 = TLorentzVector( pp1->px(), pp1->py(), pp1->pz(), pp1->energy() );
+    q1 = TLorentzVector( pq1->px(), pq1->py(), pq1->pz(), pq1->energy() );
 
-      std::string corrname = jets[i].jetCorrName();
-      double corrF = 1.0;
+    t2 = TLorentzVector( pt2->px(), pt2->py(), pt2->pz(), pt2->energy() );
+    b2 = TLorentzVector( pb2->px(), pb2->py(), pb2->pz(), pb2->energy() );
+    w2 = TLorentzVector( pw2->px(), pw2->py(), pw2->pz(), pw2->energy() );
+    p2 = TLorentzVector( pp2->px(), pp2->py(), pp2->pz(), pp2->energy() );
+    q2 = TLorentzVector( pq2->px(), pq2->py(), pq2->pz(), pq2->energy() );
+
+    if ( pmu1_soft != 0 ) mu1_soft = TLorentzVector( pmu1_soft->px(), pmu1_soft->py(), pmu1_soft->pz(), pmu1_soft->energy() );
+    if ( pmu2_soft != 0 ) mu2_soft = TLorentzVector( pmu2_soft->px(), pmu2_soft->py(), pmu2_soft->pz(), pmu2_soft->energy() );
+    if ( pnum1_soft != 0 ) num1_soft = TLorentzVector( pnum1_soft->px(), pnum1_soft->py(), pnum1_soft->pz(), pnum1_soft->energy() );
+    if ( pnum2_soft != 0 ) num2_soft = TLorentzVector( pnum2_soft->px(), pnum2_soft->py(), pnum2_soft->pz(), pnum2_soft->energy() );
 
 
+    hist_top_id->Fill( pt1->pdgId() );
+    hist_top_id->Fill( pt2->pdgId() );
 
-      if ( useJEC ) {
-	corrF = jets[i].jetCorrFactors().scaleDefault();
-      }
+    hist_w_id->Fill( pw1->pdgId() );
+    hist_w_id->Fill( pw2->pdgId() );
 
-      
-      if ( topMass >= topMassCut1 && topMass <= topMassCut2 ) {
-	++iresults.ntopmass_jets;
-	if ( minMass >= minMassCut1 && minMass <= minMassCut2 ) {
-	  ++iresults.nminmass_jets;
-	}
-      }
+    hist_b_id->Fill( pb1->pdgId() );
+    hist_b_id->Fill( pb2->pdgId() );
 
-      bool tagged = 
-	(topMass >= topMassCut1 && topMass <= topMassCut2) &&
-	(wMass   >= wMassCut1   && wMass   <= wMassCut2  ) &&
-	(minMass >= minMassCut1 && minMass <= minMassCut2);
-       
-      if ( abs(jets[i].partonFlavour()) == 6) {
+    hist_wDa_id->Fill( pq1->pdgId() );
+    hist_wDa_id->Fill( pq2->pdgId() );
+    hist_wDa_id->Fill( pp1->pdgId() );
+    hist_wDa_id->Fill( pp2->pdgId() );
 
-	hist_top_jetPt_vs_jetY->Fill( jets[i].pt()/corrF, jets[i].rapidity() );
-	hist_top_jetPt->Fill( jets[i].pt()/corrF );
-	hist_top_jetY->Fill( jets[i].rapidity() );
-	hist_top_jetMass->Fill( topMass );
-	hist_top_jetMinMass->Fill( minMass );
-	hist_top_jetWMass->Fill( wMass );
-	hist_top_nSubjet->Fill( jets[i].nConstituents() );
-	if ( isSemiLep ) 
-	  hist_top_jetMinMass_semilep_b->Fill( minMass );
-	hist_top_jetMass_Vs_jetMinMass->Fill( topMass, minMass );
+    ttbar = t1 + t2;
 
-	if ( tagged ){
-	  hist_tagged_top_jetPt_vs_jetY->Fill( jets[i].pt()/corrF, jets[i].rapidity() );
-	  hist_tagged_top_jetPt->Fill( jets[i].pt()/corrF );
-	  hist_tagged_top_jetY->Fill( jets[i].rapidity() );
-	}
+    hist_ttbar_mass->Fill( ttbar.M() );
 
-      }
-      else {
+    hist_top_genPt ->Fill( t1.Perp());
+    hist_w_genPt   ->Fill( w1.Perp());
+    hist_wDa_genPt ->Fill( p1.Perp());
+    hist_wDa_genPt ->Fill( q1.Perp());
+    hist_b_genPt   ->Fill( b1.Perp());
 
-	hist_nontop_jetPt_vs_jetY->Fill( jets[i].pt()/corrF, jets[i].rapidity() );
-	hist_nontop_jetPt->Fill( jets[i].pt()/corrF );
-	hist_nontop_jetY->Fill( jets[i].rapidity() );
-	hist_nontop_jetMass->Fill( catopTag->properties().topMass );
-	hist_nontop_jetMinMass->Fill( catopTag->properties().minMass );
-	hist_nontop_jetWMass->Fill( catopTag->properties().wMass );
-	hist_nontop_nSubjet->Fill( jets[i].nConstituents() );
-	if ( isSemiLep ) 
-	  hist_nontop_jetMinMass_semilep_b->Fill( minMass );
+    hist_top_genPt ->Fill( t2.Perp());
+    hist_w_genPt   ->Fill( w2.Perp());
+    hist_wDa_genPt ->Fill( p2.Perp());
+    hist_wDa_genPt ->Fill( q2.Perp());
+    hist_b_genPt   ->Fill( b2.Perp());
 
-	hist_nontop_jetMass_Vs_jetMinMass->Fill( topMass, minMass );
+    hist_top_genY  ->Fill( t1.Rapidity());
+    hist_w_genY    ->Fill( w1.Rapidity());
+    hist_wDa_genY  ->Fill( p1.Rapidity());
+    hist_wDa_genY  ->Fill( q1.Rapidity());
+    hist_b_genY    ->Fill( b1.Rapidity());
 
-	if ( tagged ){
-	  hist_tagged_nontop_jetPt_vs_jetY->Fill( jets[i].pt()/corrF, jets[i].rapidity() );
-	  hist_tagged_nontop_jetPt->Fill( jets[i].pt()/corrF );
-	  hist_tagged_nontop_jetY->Fill( jets[i].rapidity() );
+    hist_top_genY  ->Fill( t2.Rapidity());
+    hist_w_genY    ->Fill( w2.Rapidity());
+    hist_wDa_genY  ->Fill( p2.Rapidity());
+    hist_wDa_genY  ->Fill( q2.Rapidity());
+    hist_b_genY    ->Fill( b2.Rapidity());
+
+
+    hist_top_genDeltaPt->Fill( fabs(t1.Perp() - t2.Perp() ) );
+
+
+    vector<TLorentzVector> partons1;
+    partons1.push_back( b1 );
+    partons1.push_back( p1 );
+    partons1.push_back( q1 );
+
+    vector<TLorentzVector> partons2;
+    partons2.push_back( b2 );
+    partons2.push_back( p2 );
+    partons2.push_back( q2 );
+
+    double minMass1 = 999999;
+    vector<TLorentzVector>::const_iterator parti = partons1.begin(), partj = parti + 1;
+
+    vector<TLorentzVector>::const_iterator part1Begin = partons1.begin(), part1End = partons1.end();
+    for ( parti = part1Begin ; parti != part1End - 1; ++parti ) {
+      for ( partj = parti + 1; partj != part1End; ++partj ) {
+	TLorentzVector sum = *parti + *partj;
+	if ( sum.M() < minMass1 ) {
+	  minMass1 = sum.M();
 	}
       }
     }
+
+    double minMass2 = 999999;
+    vector<TLorentzVector>::const_iterator part2Begin = partons2.begin(), part2End = partons2.end();
+    for ( parti = part2Begin ; parti != part2End - 1; ++parti ) {
+      for ( partj = parti + 1; partj != part2End; ++partj ) {
+	TLorentzVector sum = *parti + *partj;
+	if ( sum.M() < minMass2 ) {
+	  minMass2 = sum.M();
+	}
+      }
+    }
+
+    hist_minMass   ->Fill( minMass1 );
+    hist_minMass   ->Fill( minMass2 );
+    
+
+    // Now do it again subtracting out any muons from the b decays
+
+    if ( pmu1_soft != 0 ) {
+
+      partons1.clear();
+      TLorentzVector b1_prime = b1 - mu1_soft - num1_soft;
+      partons1.push_back( b1_prime );
+      partons1.push_back( p1 );
+      partons1.push_back( q1 );
+
+      double minMassPrime1 = 999999;
+      vector<TLorentzVector>::const_iterator parti = partons1.begin(), partj = parti + 1;
+
+      vector<TLorentzVector>::const_iterator part1Begin = partons1.begin(), part1End = partons1.end();
+      for ( parti = part1Begin ; parti != part1End - 1; ++parti ) {
+	for ( partj = parti + 1; partj != part1End; ++partj ) {
+	  TLorentzVector sum = *parti + *partj;
+	  if ( sum.M() < minMassPrime1 ) {
+	    minMassPrime1 = sum.M();
+	  }
+	}
+      }
+
+
+      hist_minMass_submu->Fill( minMassPrime1 );
+    }
+
+
+    
+    if ( pmu2_soft != 0 ) {
+
+      partons2.clear();
+      TLorentzVector b2_prime = b2 - mu2_soft - num2_soft;
+      partons1.push_back( b2_prime );
+      partons2.push_back( p2 );
+      partons2.push_back( q2 );
+
+      double minMassPrime2 = 999999;
+      vector<TLorentzVector>::const_iterator part2Begin = partons2.begin(), part2End = partons2.end();
+      for ( parti = part2Begin ; parti != part2End - 1; ++parti ) {
+	for ( partj = parti + 1; partj != part2End; ++partj ) {
+	  TLorentzVector sum = *parti + *partj;
+	  if ( sum.M() < minMassPrime2 ) {
+	    minMassPrime2 = sum.M();
+	  }
+	}
+      }
+
+      hist_minMass_submu->Fill( minMassPrime2 );
+
+    }
+
+//     for ( ; igen != gen_end; ++igen ) {
+// //       cout << "igen.pdgid = " << igen->pdgId() << endl;
+//       if ( abs( igen->pdgId() ) == 6 ) {
+// 	hist_top_genPt->Fill( igen->pt() );
+//       }
+//     }
 
   }
 
-  TString fname ("kinematic_histos_");
+  cout << "Done with loop, writing" << endl;
+
+
+  TString fname ("gen_histos_");
   fname += sample;
-  if ( !useJEC )
-    fname += "_uncorr";
   fname += ".root";
   TFile * f = new TFile(fname.Data(), "RECREATE");
   f->cd();
 
-  hist_nontop_jetPt_vs_jetY->Write();
-  hist_top_jetPt_vs_jetY->Write();
 
-  hist_nontop_jetPt->Write();
-  hist_top_jetPt->Write();
+  hist_ttbar_mass->Write();
 
-  hist_nontop_jetY->Write();
-  hist_top_jetY->Write();
+  hist_top_genPt ->Write();
+  hist_w_genPt   ->Write();
+  hist_wDa_genPt ->Write();
+  hist_b_genPt   ->Write();
 
-  hist_nontop_nSubjet->Write();
-  hist_top_nSubjet->Write();
+  hist_top_genY  ->Write();
+  hist_w_genY    ->Write();
+  hist_wDa_genY  ->Write();
+  hist_b_genY    ->Write();
 
-  hist_tagged_nontop_jetPt_vs_jetY->Write();
-  hist_tagged_top_jetPt_vs_jetY->Write();
+  hist_minMass   ->Write();
+  hist_minMass_submu->Write();
 
-  hist_tagged_nontop_jetPt->Write();
-  hist_tagged_top_jetPt->Write();
+  hist_top_genDeltaPt->Write();
 
-  hist_tagged_nontop_jetY->Write();
-  hist_tagged_top_jetY->Write();
 
-  hist_nontop_jetMinMass->Write();
-  hist_top_jetMinMass->Write();
-
-  hist_nontop_jetMass->Write();
-  hist_top_jetMass->Write();
-
-  hist_nontop_jetWMass->Write();
-  hist_top_jetWMass->Write();  
-
-  hist_nontop_dijetmass->Write();
-  hist_top_dijetmass->Write();
-
-  hist_tagged_nontop_dijetmass->Write();
-  hist_tagged_top_dijetmass->Write();
-
-  hist_onetagged_nontop_dijetmass->Write();
-  hist_onetagged_top_dijetmass->Write();
-
-  hist_nontop_deltaPt->Write();
-  hist_top_deltaPt->Write();
-
-  hist_nontop_jetMinMass_semilep_b->Write();
-  hist_top_jetMinMass_semilep_b->Write();
-
-  hist_top_jetMass_Vs_jetMinMass->Write();
-  hist_nontop_jetMass_Vs_jetMinMass->Write();
+  hist_top_id->Write();
+  hist_w_id->Write  ();
+  hist_b_id->Write  ();
+  hist_wDa_id->Write();
 
   f->Close();
 
 
 
-  delete hist_nontop_jetPt_vs_jetY;
-  delete hist_top_jetPt_vs_jetY;
+  delete hist_ttbar_mass;
 
-  delete hist_nontop_jetPt;
-  delete hist_top_jetPt;
+  delete hist_top_genPt ;
+  delete hist_w_genPt   ;
+  delete hist_wDa_genPt ;
+  delete hist_b_genPt   ;
 
-  delete hist_nontop_jetY;
-  delete hist_top_jetY;
-  
-  delete hist_nontop_nSubjet;
-  delete hist_top_nSubjet;
+  delete hist_top_genY  ;
+  delete hist_w_genY    ;
+  delete hist_wDa_genY  ;
+  delete hist_b_genY    ;
 
-  delete hist_tagged_nontop_jetPt_vs_jetY;
-  delete hist_tagged_top_jetPt_vs_jetY;
+  delete hist_minMass   ;
+  delete hist_minMass_submu;
 
-  delete hist_tagged_nontop_jetPt;
-  delete hist_tagged_top_jetPt;
+  delete hist_top_genDeltaPt;
 
-  delete hist_tagged_nontop_jetY;
-  delete hist_tagged_top_jetY;
 
-  delete hist_nontop_jetMinMass;
-  delete hist_top_jetMinMass;
 
-  delete hist_nontop_jetMass;
-  delete hist_top_jetMass;
-
-  delete hist_nontop_jetWMass;
-  delete hist_top_jetWMass;  
-
-  delete hist_nontop_dijetmass;
-  delete hist_top_dijetmass;
-
-  delete hist_tagged_nontop_dijetmass;
-  delete hist_tagged_top_dijetmass;
-
-  delete hist_onetagged_nontop_dijetmass;
-  delete hist_onetagged_top_dijetmass;
-
-  delete hist_nontop_deltaPt;
-  delete hist_top_deltaPt;
-
-  delete hist_nontop_jetMinMass_semilep_b;
-  delete hist_top_jetMinMass_semilep_b;
-
-  delete hist_top_jetMass_Vs_jetMinMass;
-  delete hist_nontop_jetMass_Vs_jetMinMass;
-
-  tableout << sample << " " << iresults;
+  delete hist_top_id;
+  delete hist_w_id  ;
+  delete hist_b_id  ;
+  delete hist_wDa_id;
 
 }
+
 
 
