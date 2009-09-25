@@ -472,23 +472,8 @@ files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_2
 
 
       if ( !useJEC ) {
-	pat::JetCorrFactors const & factors1 = jet1.jetCorrFactors();
-	pat::JetCorrFactors const & factors2 = jet2.jetCorrFactors();
-
-	if ( factors1.hasCorrection( pat::JetCorrFactors::L3 ) ) {
-	  corrF1 = factors1.scaleDefault();
-	}
-	else {
-	  cout << "Something really weird is going on" << endl;
-	}
-
-	if ( factors2.hasCorrection( pat::JetCorrFactors::L3 ) ) {
-	  corrF2 = factors2.scaleDefault();
-	}
-	else {
-	  cout << "Something really weird is going on" << endl;
-	}
-
+	corrF1 = jet1.corrFactor( jet1.corrStep() );
+	corrF2 = jet2.corrFactor( jet1.corrStep() );
       }
 
       // If jet 1 is antitagged, fill jet 2

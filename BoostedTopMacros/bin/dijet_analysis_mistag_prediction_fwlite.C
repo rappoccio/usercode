@@ -460,8 +460,8 @@ files.push_back("dcap:///pnfs/cms/WAX/11/store/user/rappocc/PYTHIA6_Winclusive_2
       double corrF1 = 1.0;
       double corrF2 = 1.0;
       if ( !useJEC ) {
-        corrF1 = jet1.jetCorrFactors().scaleDefault();
-	corrF2 = jet2.jetCorrFactors().scaleDefault();
+        corrF1 = jet1.corrFactor( jet1.corrStep() );
+	corrF2 = jet2.corrFactor( jet1.corrStep() );
       }
 
       TLorentzVector v1(jet1.px()/corrF1, jet1.py()/corrF1, jet1.pz()/corrF1, jet1.energy()/corrF1 );
