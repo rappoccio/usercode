@@ -1,71 +1,122 @@
-/*   A macro for making a histogram of Jet Pt with cuts
-This is a basic way to cut out jets of a certain Pt and Eta using an if statement
-This example creates a histogram of Jet Pt, using Jets with Pt above 30 and ETA above -2.1 and below 2.1
-*/
-#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
+// -*- C++ -*-
+
+// CMS includes
 #include "DataFormats/FWLite/interface/Handle.h"
-#include "DataFormats/FWLite/interface/Event.h"
-#include "TFile.h"
-#include "TH1.h"
-#include "TCanvas.h"
-#include "TLegend.h"
-#include "TSystem.h"
-
-
-#if !defined(__CINT__) && !defined(__MAKECINT__)
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "AnalysisDataFormats/TopObjects/interface/CATopJetTagInfo.h"
-#endif
+
+#include "PhysicsTools/FWLite/interface/EventContainer.h"
+#include "PhysicsTools/FWLite/interface/CommandLineParser.h" 
+
 
 #include <iostream>
 #include <cmath>      //necessary for absolute function fabs()
 #include <boost/shared_ptr.hpp>
 
+// Root includes
+#include "TROOT.h"
+
 using namespace std;
 
-int main ( int argc, char ** argv )
+
+///////////////////////////
+// ///////////////////// //
+// // Main Subroutine // //
+// ///////////////////// //
+///////////////////////////
+
+int main (int argc, char* argv[]) 
 {
+   ////////////////////////////////
+   // ////////////////////////// //
+   // // Command Line Options // //
+   // ////////////////////////// //
+   ////////////////////////////////
 
-  gSystem->Load("libFWCoreFWLite");
-  AutoLibraryLoader::enable();  
+   // Tell people what this analysis code does and setup default options.
+   optutl::CommandLineParser parser ("Boosted Top All Hadronic Example");
 
-  TFile  * file = new TFile("ttbsm_ca_pat_330.root");
-  TH1D * hist_jetPt = new TH1D("hist_jetPt", "Jet p_{T}", 20, 0, 100 );
-  fwlite::Event ev(file);
+   ////////////////////////////////////////////////
+   // Change any defaults or add any new command //
+   //      line options you would like here.     //
+   ////////////////////////////////////////////////
+   parser.stringValue ("outputFile") = "ttbsm_had"; // .root added automatically
 
-  int count = 0;
-  //loop through each event
-  for( ev.toBegin();
-         ! ev.atEnd();
-       ++ev, ++count) {
+   // Parse the command line arguments
+   parser.parseArguments (argc, argv);
 
+   //////////////////////////////////
+   // //////////////////////////// //
+   // // Create Event Container // //
+   // //////////////////////////// //
+   //////////////////////////////////
 
-    fwlite::Handle<std::vector<pat::Jet> > allJets;
-    allJets.getByLabel(ev,"selectedLayer1JetsTopTagCalo");
+   // This object 'event' is used both to get all information from the
+   // event as well as to store histograms, etc.
+   fwlite::EventContainer eventCont (parser);
+
+   ////////////////////////////////////////
+   // ////////////////////////////////// //
+   // //         Begin Run            // //
+   // // (e.g., book histograms, etc) // //
+   // ////////////////////////////////// //
+   ////////////////////////////////////////
+
+   // Setup a style
+   gROOT->SetStyle ("Plain");
+
+   // Book those histograms!
+   eventCont.add( new TH1F( "jetPt", "Jet p_{T};Jet p_{T} (GeV/c)", 60, 0, 3000) );
+   eventCont.add( new TH1F( "topMass", "Top Mass;Top Mass (GeV/c^{2}", 100, 0, 500 ) );
+   eventCont.add( new TH1F( "minMass", "Jet Min Mass;Min Mass (GeV/c^{2})", 100, 0, 200 ) );
+   eventCont.add( new TH1F( "wMass",   "W Mass;W Mass (GeV/c^{2})", 100, 0, 200 ) );
+
+   //////////////////////
+   // //////////////// //
+   // // Event Loop // //
+   // //////////////// //
+   //////////////////////
+
+   for (eventCont.toBegin(); ! eventCont.atEnd(); ++eventCont) {
+     //////////////////////////////////
+     // Take What We Need From Event //
+     //////////////////////////////////
+     edm::Handle< vector< pat::Jet > > allJets;
+     eventCont.getByLabel (edm::InputTag("selectedLayer1JetsTopTagCalo"), allJets);
+     
     if (!allJets.isValid() ) continue;
 
     for ( std::vector<pat::Jet>::const_iterator jetsBegin = allJets->begin(),
 	    jetsEnd = allJets->end(),
 	    ijet = jetsBegin;
 	  ijet != jetsEnd; ++ijet ) {
+
+
       const reco::CATopJetTagInfo * catopTag = dynamic_cast<reco::CATopJetTagInfo const *>(ijet->tagInfo("CATopCaloJet"));
       
       if ( catopTag !=0 && catopTag->properties().minMass != 999999.0 ) {
-	char buff[1000];
-	sprintf(buff, "Jet %6d, pt = %6.2f, mass = %6.2f, minMass = %6.2f, wMass = %6.2f",
-		ijet - jetsBegin,
-		ijet->pt(), 
-		catopTag->properties().topMass,
-		catopTag->properties().minMass,
-		catopTag->properties().wMass );
-	cout << buff << endl;
-      }
-    }
-    
-  } //end event loop
-  
 
-  file->Close();
-  delete file;
-  return 0;
+	eventCont.hist("jetPt")->Fill (ijet->pt());
+	eventCont.hist("topMass")->Fill( catopTag->properties().topMass );
+	eventCont.hist("minMass")->Fill( catopTag->properties().minMass );
+	eventCont.hist("wMass")->Fill( catopTag->properties().wMass );
+      }
+    }     
+     
+   } // for eventCont
+
+      
+   ////////////////////////
+   // ////////////////// //
+   // // Clean Up Job // //
+   // ////////////////// //
+   ////////////////////////
+
+   // Histograms will be automatically written to the root file
+   // specificed by command line options.
+
+   // All done!  Bye bye.
+   return 0;
 }
+
+

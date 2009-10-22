@@ -5,12 +5,10 @@
 <use name=PhysicsTools/PatUtils>
 <use name=PhysicsTools/Utilities>
 <use name=PhysicsTools/PatExamples>
+<use name=PhysicsTools/FWLite>
 <use name=rootcintex>
 <use name=root> 
 
 <environment>
- <bin file="PatBasicFWLiteAnalyzer.cc"> </bin>
- <bin file="PatMcMatchFWLiteAnalyzer.cc"> </bin> <!--Added for the new file. --> 
- <bin file="testSelection_wplusjets.C"> </bin>
  <bin file="testSelection_boostedtop.C"> </bin>
 </environment>
