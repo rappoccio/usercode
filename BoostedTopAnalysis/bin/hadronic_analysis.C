@@ -3,6 +3,7 @@
 // CMS includes
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
 #include "AnalysisDataFormats/TopObjects/interface/CATopJetTagInfo.h"
 #include "Analysis/BoostedTopAnalysis/interface/HadronicSelection.h"
 
@@ -98,7 +99,9 @@ int main (int argc, char* argv[])
    eventCont.add( new TH1F( "minMass", "Jet Min Mass;Min Mass (GeV/c^{2})", 100, 0, 200 ) );
    eventCont.add( new TH1F( "wMass",   "W Mass;W Mass (GeV/c^{2})", 100, 0, 200 ) );
 
-   eventCont.add( new TH1F( "dijetMass", "Dijet Mass;Mass (GeV/c^{2})", 350, 0, 3500 ) );
+   eventCont.add( new TH1F( "dijetMassGen", "Dijet Mass, Generator Level;Mass (GeV/c^{2})", 500, 0, 5000 ) );
+   eventCont.add( new TH1F( "dijetMassPre", "Dijet Mass Before Tagging;Mass (GeV/c^{2})", 500, 0, 5000 ) );
+   eventCont.add( new TH1F( "dijetMassTag", "Dijet Mass, 2 Tags;Mass (GeV/c^{2})", 500, 0, 5000 ) );
 
    //////////////////////
    // //////////////// //
@@ -108,12 +111,30 @@ int main (int argc, char* argv[])
 
    for (eventCont.toBegin(); ! eventCont.atEnd(); ++eventCont) {
      
-     std::strbitset ret = caTopHadronic.getBitTemplate();
 
+    edm::Handle<vector<reco::GenJet> > h_genJets;
+    eventCont.getByLabel( edm::InputTag("ca8GenJets"), h_genJets);
 
+    if ( !h_genJets.isValid() || h_genJets->size() < 2 ) continue;
+    vector<reco::GenJet> const & genJets   = *h_genJets;
+
+    TLorentzVector genJ0( genJets[0].px(),
+			  genJets[0].py(),
+			  genJets[0].pz(),
+			  genJets[0].energy());
+    TLorentzVector genJ1( genJets[1].px(),
+			  genJets[1].py(),
+			  genJets[1].pz(),
+			  genJets[1].energy());
+    TLorentzVector genJ = genJ0 + genJ1;
+    eventCont.hist("dijetMassGen")->Fill( genJ.M() );
+			  
+    std::strbitset ret = caTopHadronic.getBitTemplate();
+     
     bool passed = caTopHadronic(eventCont, ret);
     vector<pat::Jet>      const & jets      = caTopHadronic.selectedJets();
     vector<pat::Jet>      const & tags      = caTopHadronic.taggedJets();
+
 
     if ( ret[std::string(">= 1 Tight Jet")] ) {
       for ( vector<pat::Jet>::const_iterator jetsBegin = jets.begin(),
@@ -143,7 +164,10 @@ int main (int argc, char* argv[])
 			    jets[1].pz(),
 			    jets[1].energy() );
 	TLorentzVector j = j0 + j1;
-	eventCont.hist("dijetMass")->Fill( j.M() );
+	eventCont.hist("dijetMassPre")->Fill( j.M() );
+	if ( passed ) {
+	  eventCont.hist("dijetMassTag")->Fill( j.M() );
+	}
       }
     }
 

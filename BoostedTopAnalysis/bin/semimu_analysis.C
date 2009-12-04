@@ -6,11 +6,12 @@
 #include "AnalysisDataFormats/TopObjects/interface/CATopJetTagInfo.h"
 #include "Analysis/BoostedTopAnalysis/interface/HadronicSelection.h"
 #include "PhysicsTools/PatExamples/interface/WPlusJetsEventSelector.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "PhysicsTools/FWLite/interface/EventContainer.h"
 #include "PhysicsTools/FWLite/interface/CommandLineParser.h" 
 
-
+#include "TH2.h"
 #include <iostream>
 #include <cmath>      //necessary for absolute function fabs()
 #include <boost/shared_ptr.hpp>
@@ -37,13 +38,13 @@ int main (int argc, char* argv[])
    ////////////////////////////////
 
    // Tell people what this analysis code does and setup default options.
-   optutl::CommandLineParser parser ("Boosted Top All Hadronic Example");
+   optutl::CommandLineParser parser ("Boosted Top Semi-Muonic Example");
 
    ////////////////////////////////////////////////
    // Change any defaults or add any new command //
    //      line options you would like here.     //
    ////////////////////////////////////////////////
-   parser.stringValue ("outputFile") = "ttbsm_had"; // .root added automatically
+   parser.stringValue ("outputFile") = "ttbsm_semimu"; // .root added automatically
 
 
 
@@ -54,8 +55,8 @@ int main (int argc, char* argv[])
 		     "Run e+Jets",
                      true );
    parser.addOption ("minNJets",   optutl::CommandLineParser::kInteger,
-		     "Min number of tight jets",
-                     4 );
+		     "Min number of anti-kT 0.5 jets",
+                     2 );
    parser.addOption ("tightMuMinPt",   optutl::CommandLineParser::kDouble,
 		     "Min tight mu pt",
                      20.0 );
@@ -81,10 +82,10 @@ int main (int argc, char* argv[])
 		     "Max loose e eta",
                      2.4 );
    parser.addOption ("jetMinPt",   optutl::CommandLineParser::kDouble,
-		     "Min jet pt",
+		     "Min jet pt, anti-kT 0.5 jets",
 		     30.0 );
    parser.addOption ("jetMaxEta",   optutl::CommandLineParser::kDouble,
-		     "Max jet eta",
+		     "Max jet eta, anti-kT 0.5 jets",
                      2.4 );
 
 
@@ -108,10 +109,14 @@ int main (int argc, char* argv[])
   boost::shared_ptr<MuonVPlusJetsIDSelectionFunctor>      muonIdTight     
     (new MuonVPlusJetsIDSelectionFunctor( MuonVPlusJetsIDSelectionFunctor::SUMMER08 ) );
   muonIdTight->set( "D0", 0.02 );
+  muonIdTight->set( "RelIso", false);
+  muonIdTight->set( "HCalVeto", false );
+  muonIdTight->set( "ECalVeto", false );
   // Tight electron id
   boost::shared_ptr<ElectronVPlusJetsIDSelectionFunctor>  electronIdTight     
     (new ElectronVPlusJetsIDSelectionFunctor( ElectronVPlusJetsIDSelectionFunctor::SUMMER08 ) );
   electronIdTight->set( "D0", 0.02 );
+  electronIdTight->set( "RelIso", false);
 
   // Tight jet id
   boost::shared_ptr<JetIDSelectionFunctor>                jetIdTight      
@@ -126,13 +131,13 @@ int main (int argc, char* argv[])
   muonIdLoose->set( "NHits",   false);
   muonIdLoose->set( "ECalVeto",false);
   muonIdLoose->set( "HCalVeto",false);
-  muonIdLoose->set( "RelIso", 0.2 );
+  muonIdLoose->set( "RelIso",  false );
 
   // Loose electron id
   boost::shared_ptr<ElectronVPlusJetsIDSelectionFunctor>  electronIdLoose     
     (new ElectronVPlusJetsIDSelectionFunctor( ElectronVPlusJetsIDSelectionFunctor::SUMMER08) );
   electronIdLoose->set( "D0",  false);
-  electronIdLoose->set( "RelIso", 0.2 );
+  electronIdLoose->set( "RelIso", false);
   // Loose jet id
   boost::shared_ptr<JetIDSelectionFunctor>                jetIdLoose      
     ( new JetIDSelectionFunctor( JetIDSelectionFunctor::CRAFT08, JetIDSelectionFunctor::LOOSE) );
@@ -143,7 +148,7 @@ int main (int argc, char* argv[])
      edm::InputTag("selectedLayer1Electrons"),
      edm::InputTag("selectedLayer1Jets"),
      edm::InputTag("layer1METs"),
-     edm::InputTag("triggerEvent"),
+     edm::InputTag("patTriggerEvent"),
      muonIdTight,
      electronIdTight,
      jetIdTight,
@@ -188,6 +193,9 @@ int main (int argc, char* argv[])
      0., 1000000.
      );
 
+  // turn off trigger check on the muonic side for now
+   wPlusJets.set("Trigger", false);
+
    // Setup a style
    gROOT->SetStyle ("Plain");
 
@@ -201,6 +209,12 @@ int main (int argc, char* argv[])
 
 
    eventCont.add( new TH1F( "muPt", "Muon p_{T};Muon p_{T} (GeV/c)", 50, 0, 500 ) );
+
+   eventCont.add( new TH1F( "muPtRel", "Muon p_{T} Relative to Closest Jet;p_{T} (GeV/c)", 40, 0, 200.0) );
+   eventCont.add( new TH1F( "muDRMin", "Muon #Delta R Relative to Closest Jet;#Delta R", 50, 0, 5.0) );
+   
+   eventCont.add( new TH2F( "mu2D", "Muon 2D Cut;#Delta R_{min};p_{T}^{REL} (GeV/c)",
+			    50, 0, 5.0, 40, 0, 200.0 ) );
 
    //////////////////////
    // //////////////// //
@@ -216,37 +230,69 @@ int main (int argc, char* argv[])
 
     bool passedSemi = wPlusJets(eventCont, retSemi);
     vector<pat::Muon>     const & muons     = wPlusJets.selectedMuons();
+    vector<pat::Jet>      const & looseJets = wPlusJets.selectedJets();
 
     if ( passedSemi && muons.size() > 0 ) {
       eventCont.hist("muPt")->Fill( muons[0].pt() );
-    }
-
-     // Hadronic side
-     std::strbitset ret = caTopHadronic.getBitTemplate();
-
-
-    bool passed = caTopHadronic(eventCont, ret);
-    vector<pat::Jet>      const & jets      = caTopHadronic.selectedJets();
-    vector<pat::Jet>      const & tags      = caTopHadronic.taggedJets();
-
-    if ( ret[std::string(">= 1 Tight Jet")] ) {
-      for ( vector<pat::Jet>::const_iterator jetsBegin = jets.begin(),
-	      jetsEnd = jets.end(),
-	      ijet = jetsBegin;
-	    ijet != jetsEnd;
-	    ++ijet ) {
-	
-	
-	const reco::CATopJetTagInfo * catopTag = 
-	  dynamic_cast<reco::CATopJetTagInfo const *>(ijet->tagInfo(tagName));
-	eventCont.hist("jetPt")->Fill( ijet->pt() );
-	if ( catopTag != 0 && catopTag->properties().minMass < 999999.) {
-	  eventCont.hist("topMass")->Fill( catopTag->properties().topMass );
-	  eventCont.hist("minMass")->Fill( catopTag->properties().minMass );
-	  eventCont.hist("wMass")  ->Fill( catopTag->properties().wMass );
+    
+      double dRMin = 5.0;
+      vector<pat::Jet>::const_iterator closestJet = looseJets.end();
+      for ( vector<pat::Jet>::const_iterator ijet = looseJets.begin(),
+	      looseJetsBegin = looseJets.begin(), looseJetsEnd = looseJets.end();
+	    ijet != looseJetsEnd; ++ijet ) {
+	double dR = reco::deltaR<double>( ijet->eta(), ijet->phi(),
+					  muons[0].eta(), muons[0].phi() );
+	if ( dR < dRMin ) {
+	  dRMin = dR;
+	  closestJet = ijet;
 	}
       }
+      if ( closestJet != looseJets.end() )  {
+	TLorentzVector muP ( muons[0].px(),
+			     muons[0].py(),
+			     muons[0].pz(),
+			     muons[0].energy() );
 
+	TLorentzVector bjetP ( closestJet->px(),
+			       closestJet->py(),
+			       closestJet->pz(),
+			       closestJet->energy() );
+
+	double ptRel = TMath::Abs( muP.Perp( bjetP.Vect() ) );
+
+	eventCont.hist("muPtRel")->Fill( ptRel );
+	eventCont.hist("muDRMin")->Fill( dRMin );
+	eventCont.hist("mu2D")->Fill( dRMin, ptRel );
+
+	// Hadronic side
+	std::strbitset ret = caTopHadronic.getBitTemplate();
+	
+
+	bool passed = caTopHadronic(eventCont, ret);
+	vector<pat::Jet>      const & jets      = caTopHadronic.selectedJets();
+	vector<pat::Jet>      const & tags      = caTopHadronic.taggedJets();
+	
+	if ( ret[std::string(">= 1 Tight Jet")] ) {
+	  for ( vector<pat::Jet>::const_iterator jetsBegin = jets.begin(),
+		  jetsEnd = jets.end(),
+		  ijet = jetsBegin;
+		ijet != jetsEnd;
+		++ijet ) {
+	    
+	    
+	    const reco::CATopJetTagInfo * catopTag = 
+	      dynamic_cast<reco::CATopJetTagInfo const *>(ijet->tagInfo(tagName));
+	    eventCont.hist("jetPt")->Fill( ijet->pt() );
+	    if ( catopTag != 0 && catopTag->properties().minMass < 999999.) {
+	      eventCont.hist("topMass")->Fill( catopTag->properties().topMass );
+	      eventCont.hist("minMass")->Fill( catopTag->properties().minMass );
+	      eventCont.hist("wMass")  ->Fill( catopTag->properties().wMass );
+	    }
+	  }
+	  
+	}
+	
+      }
     }
 
    } // for eventCont
