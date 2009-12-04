@@ -14,4 +14,5 @@
  <bin file="hadronic_analysis.C"> </bin>
  <bin file="semimu_analysis.C"> </bin>
  <bin file="testSelection_boostedtop.C"> </bin>
+ <bin file="eff_catoptag.C"> </bin>
 </environment>
