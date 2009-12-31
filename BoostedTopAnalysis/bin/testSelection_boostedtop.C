@@ -82,7 +82,7 @@ int main (int argc, char* argv[])
      // Take What We Need From Event //
      //////////////////////////////////
      edm::Handle< vector< pat::Jet > > allJets;
-     eventCont.getByLabel (edm::InputTag("selectedLayer1JetsTopTagCalo"), allJets);
+     eventCont.getByLabel (edm::InputTag("selectedLayer1JetsTopTagPF"), allJets);
      
     if (!allJets.isValid() ) continue;
 
@@ -92,7 +92,7 @@ int main (int argc, char* argv[])
 	  ijet != jetsEnd; ++ijet ) {
 
 
-      const reco::CATopJetTagInfo * catopTag = dynamic_cast<reco::CATopJetTagInfo const *>(ijet->tagInfo("CATopCaloJet"));
+      const reco::CATopJetTagInfo * catopTag = dynamic_cast<reco::CATopJetTagInfo const *>(ijet->tagInfo("CATopPFJet"));
       
       if ( catopTag !=0 && catopTag->properties().minMass != 999999.0 ) {
 
