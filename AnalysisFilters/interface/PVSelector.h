@@ -1,7 +1,7 @@
 #ifndef Analysis_AnalysisFilters_interface_PVSelector_h
 #define Analysis_AnalysisFilters_interface_PVSelector_h
 
-#include "DataFormats/Common/interface/EventBase.h"
+#include "FWCore/Common/interface/EventBase.h"
 #include "DataFormats/Common/interface/Handle.h"
 
 #include "PhysicsTools/Utilities/interface/Selector.h"
