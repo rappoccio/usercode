@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Sun Jan 24 22:48:12 CST 2010
-// $Id$
+// $Id: PVFilter.cc,v 1.1 2010/01/25 18:46:00 srappocc Exp $
 //
 //
 
@@ -69,7 +69,7 @@ PVFilter::PVFilter(const edm::ParameterSet& iConfig)
   pvSelector_ = 
     boost::shared_ptr<PVSelector> ( new PVSelector (  
       iConfig.getParameter<edm::InputTag>("pvSrc"), 
-      iConfig.getParameter<int>("minPVTracks"), 
+      iConfig.getParameter<double>("minPVNdof"), 
       iConfig.getParameter<double>("maxPVZ") 
     ) );
 
