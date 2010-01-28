@@ -71,16 +71,28 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 
 print "About to switch jet collection"
 
-if runon=='31x':
-    run33xOn31xMC( process,
-               jetSrc = cms.InputTag("antikt5CaloJets"),
-               jetIdTag = "antikt5")
+#if runon=='31x':
+#    run33xOn31xMC( process,
+#               jetSrc = cms.InputTag("antikt5CaloJets"),
+#               jetIdTag = "antikt5")
 
 if runon=='332rereco':
     run33xOnReRecoMC( process, "ak5GenJets" )
 
 
-## ==== Example with CaloJets
+
+
+switchJetCollection(process, 
+                    cms.InputTag('antikt5PFJets'),   
+                    doJTA            = True,            
+                    doBTagging       = True,            
+                    jetCorrLabel     = ('AK5','PF'),  
+                    doType1MET       = False,
+                    genJetCollection = cms.InputTag("antikt5GenJets"),
+                    doJetID          = False,
+                    jetIdLabel       = "ak5"
+                    ) 
+
 addJetCollection(process, 
                  cms.InputTag('caPrunedPFJets'),         # Jet collection; must be already in the event when patLayer0 sequence is executed
                  'PrunedPF',
@@ -95,16 +107,6 @@ addJetCollection(process,
                  jetIdLabel = "ak5"
                  )
 
-switchJetCollection(process, 
-                    cms.InputTag('antikt5PFJets'),   
-                    doJTA            = False,            
-                    doBTagging       = False,            
-                    jetCorrLabel     = ('AK5','PF'),  
-                    doType1MET       = False,
-                    genJetCollection = cms.InputTag("antikt5GenJets"),
-                    doJetID          = False,
-                    jetIdLabel       = "ak5"
-                    ) 
 
 #jet ID does not work reliably in PAT for now (PAT as of 2009-10-20), so switch it off -- Jochen:
 #process.allLayer1Jets.addJetID = cms.bool(False)
