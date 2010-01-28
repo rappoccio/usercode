@@ -65,16 +65,18 @@ process.caPrunedPFJets.jetCollInstanceName = cms.string("subjets")
 process.ca8GenJets = ca4GenJets.clone( rParam = cms.double(0.8) )
 
 
+from PhysicsTools.PatAlgos.tools.metTools import *
+addPfMET(process, 'PF')
 
 # switch jet collection to our juets
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 print "About to switch jet collection"
 
-#if runon=='31x':
-#    run33xOn31xMC( process,
-#               jetSrc = cms.InputTag("antikt5CaloJets"),
-#               jetIdTag = "antikt5")
+if runon=='31x':
+    run33xOn31xMC( process,
+               jetSrc = cms.InputTag("antikt5CaloJets"),
+               jetIdTag = "antikt5")
 
 if runon=='332rereco':
     run33xOnReRecoMC( process, "ak5GenJets" )
@@ -82,16 +84,19 @@ if runon=='332rereco':
 
 
 
-switchJetCollection(process, 
-                    cms.InputTag('antikt5PFJets'),   
-                    doJTA            = True,            
-                    doBTagging       = True,            
-                    jetCorrLabel     = ('AK5','PF'),  
-                    doType1MET       = False,
-                    genJetCollection = cms.InputTag("antikt5GenJets"),
-                    doJetID          = False,
-                    jetIdLabel       = "ak5"
-                    ) 
+addJetCollection(process, 
+                 cms.InputTag('antikt5PFJets'),   
+                 'PF',
+                 doJTA            = True,            
+                 doBTagging       = True,            
+                 jetCorrLabel     = ('AK5','PF'),  
+                 doType1MET       = False,
+                 doL1Cleaning     = False,
+                 doL1Counters     = False,
+                 genJetCollection = cms.InputTag("antikt5GenJets"),
+                 doJetID          = False,
+                 jetIdLabel       = "ak5"
+                 ) 
 
 addJetCollection(process, 
                  cms.InputTag('caPrunedPFJets'),         # Jet collection; must be already in the event when patLayer0 sequence is executed
@@ -108,11 +113,11 @@ addJetCollection(process,
                  )
 
 
-
 #jet ID does not work reliably in PAT for now (PAT as of 2009-10-20), so switch it off -- Jochen:
 #process.allLayer1Jets.addJetID = cms.bool(False)
 # Place appropriate jet cuts (NB: no cut on number of constituents)
 process.selectedLayer1Jets.cut = cms.string('pt > 20. & abs(eta) < 5.0')
+process.selectedLayer1JetsPF.cut = cms.string('pt > 20. & abs(eta) < 5.0')
 process.selectedLayer1JetsPrunedPF.cut = cms.string('pt > 20. & abs(eta) < 2.5')
 process.selectedLayer1Muons.cut = cms.string('pt > 15. & abs(eta) < 2.5')
 process.selectedLayer1Electrons.cut = cms.string('pt > 15. & abs(eta) < 2.5')
@@ -202,7 +207,6 @@ process.out.outputCommands.extend(['drop *_genParticles_*_*',
                                    'keep *_offlineBeamSpot_*_*',
                                    'keep recoGenJets_ca8GenJets_*_*',
                                    'keep recoPFJets_caPrunedPFJets_*_*',
-                                   'keep *_caPrunedPFJets_*_*',
                                    'keep recoPFCandidates_particleFlow_*_*',
                                    "drop *_cleanLayer1Jets*_*_*",
                                    "keep *_selectedLayer1Jets*_*_*",
@@ -213,6 +217,7 @@ process.out.outputCommands.extend(['drop *_genParticles_*_*',
 				   'drop *_cleanLayer1Muons_*_*',
 				   'keep *_selectedLayer1Electrons_*_*',
 				   'keep *_selectedLayer1Muons_*_*',
+                                   "keep *_layer1METs*_*_*",
                                    'keep GenEventInfoProduct_generator_*_*'
                                    #'keep *_CAJetPartonMatcher_*_*',
                                    #'keep *_CAJetFlavourIdentifier_*_*'
@@ -247,7 +252,7 @@ process.p.remove( process.layer1MHTs )
 
 process.source.fileNames = [
     # /TTbarJets-madgraph/Summer09-MC_31X_V3-v2/GEN-SIM-RECO
-    '/store/mc/Summer09/WJets-madgraph/GEN-SIM-RECO/MC_31X_V3_7TeV-v1/0037/00987AE0-06DA-DE11-A490-001EC9AA9E78.root'
+      '/store/mc/Summer09/WJets-madgraph/GEN-SIM-RECO/MC_31X_V3_7TeV-v1/0037/00987AE0-06DA-DE11-A490-001EC9AA9E78.root'
     ]
 
 #On MC, there are often non-unique run and event ids. Safeguard against skipping in that case: --Jochen
