@@ -18,7 +18,7 @@ public:
 	      double maxPVZ = 15)  : 
   pvSrc_ (pvSrc)
   {
-    push_back("PV NTrk", minNdof);
+    push_back("PV NDOF", minNdof);
     push_back("PV Z", maxPVZ);
     set("PV NDOF");
     set("PV Z");
@@ -37,7 +37,7 @@ public:
 
     if ( pv.ndof() >= cut("PV NDOF", double() )
 	 || ignoreCut("PV NDOF")    ) {
-      passCut(ret, "PV NTrk" );
+      passCut(ret, "PV NDOF" );
       if ( fabs(pv.z()) <= cut("PV Z", double()) 
 	   || ignoreCut("PV Z")    ) 
 	passCut(ret, "PV Z" );
