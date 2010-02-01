@@ -1,0 +1,11 @@
+dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinimumBias/pat_jan23rereco_2360GeV_v4/8fc9e6c6544ce87c017a31bbf027fc27/reco_2360GeV_firstdata_336patch3_rereco_pat_1.root
+dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinimumBias/pat_jan23rereco_2360GeV_v4/8fc9e6c6544ce87c017a31bbf027fc27/reco_2360GeV_firstdata_336patch3_rereco_pat_10.root
+dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinimumBias/pat_jan23rereco_2360GeV_v4/8fc9e6c6544ce87c017a31bbf027fc27/reco_2360GeV_firstdata_336patch3_rereco_pat_11.root
+dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinimumBias/pat_jan23rereco_2360GeV_v4/8fc9e6c6544ce87c017a31bbf027fc27/reco_2360GeV_firstdata_336patch3_rereco_pat_2.root
+dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinimumBias/pat_jan23rereco_2360GeV_v4/8fc9e6c6544ce87c017a31bbf027fc27/reco_2360GeV_firstdata_336patch3_rereco_pat_3.root
+dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinimumBias/pat_jan23rereco_2360GeV_v4/8fc9e6c6544ce87c017a31bbf027fc27/reco_2360GeV_firstdata_336patch3_rereco_pat_4.root
+dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinimumBias/pat_jan23rereco_2360GeV_v4/8fc9e6c6544ce87c017a31bbf027fc27/reco_2360GeV_firstdata_336patch3_rereco_pat_5.root
+dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinimumBias/pat_jan23rereco_2360GeV_v4/8fc9e6c6544ce87c017a31bbf027fc27/reco_2360GeV_firstdata_336patch3_rereco_pat_6.root
+dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinimumBias/pat_jan23rereco_2360GeV_v4/8fc9e6c6544ce87c017a31bbf027fc27/reco_2360GeV_firstdata_336patch3_rereco_pat_7.root
+dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinimumBias/pat_jan23rereco_2360GeV_v4/8fc9e6c6544ce87c017a31bbf027fc27/reco_2360GeV_firstdata_336patch3_rereco_pat_8.root
+dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinimumBias/pat_jan23rereco_2360GeV_v4/8fc9e6c6544ce87c017a31bbf027fc27/reco_2360GeV_firstdata_336patch3_rereco_pat_9.root
