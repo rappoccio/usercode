@@ -265,14 +265,21 @@ int main (int argc, char* argv[])
 
     edm::EventBase const & event = eventCont;
 
+
+    edm::Handle<vector<pat::Jet> > h_jets;
+    event.getByLabel( edm::InputTag( parser.stringValue("jetSrc")), h_jets );
+
+    edm::Handle<vector<pat::Jet> > h_pfjets;
+    event.getByLabel( edm::InputTag( parser.stringValue("pfJetSrc")), h_pfjets );
+
+
     // Select the PV
     std::strbitset retPV = pvSelector.getBitTemplate();
     retPV.set(false);
     pvSelector( event, retPV );
     edm::Handle<vector<reco::Vertex> > const & vertices = pvSelector.vertices();
 
-    edm::Handle<vector<reco::Track> > h_tracks;
-    event.getByLabel( edm::InputTag("generalTracks"), h_tracks );
+
 
 //     edm::Handle<vector<reco::CaloJet> > h_calojets;
 //     event.getByLabel( edm::InputTag("ak5CaloJets"), h_calojets );
@@ -297,15 +304,14 @@ int main (int argc, char* argv[])
     eventCont.hist("hist_primVtxNTracks")->Fill( vertices->at(0).tracksSize() );
     eventCont.hist("hist_primVtxNDof")->Fill( vertices->at(0).ndof() );
     eventCont.hist("hist_primVtxChi2")->Fill( vertices->at(0).normalizedChi2() );
-    eventCont.hist("hist_nGeneralTracks")->Fill( h_tracks->size() );
+
+    if ( h_jets->size() == 0 && h_pfjets->size() == 0 ) continue;
 
 
     ///------------------
     /// CALO JETS
     ///------------------
 
-    edm::Handle<vector<pat::Jet> > h_jets;
-    event.getByLabel( edm::InputTag( parser.stringValue("jetSrc")), h_jets );
 
     std::strbitset retJet = jetSelector.getBitTemplate();
 
@@ -443,8 +449,6 @@ int main (int argc, char* argv[])
     /// PF JETS
     ///------------------
 
-    edm::Handle<vector<pat::Jet> > h_pfjets;
-    event.getByLabel( edm::InputTag( parser.stringValue("pfJetSrc")), h_pfjets );
 
     std::strbitset retPFJet = pfjetSelector.getBitTemplate();
 
