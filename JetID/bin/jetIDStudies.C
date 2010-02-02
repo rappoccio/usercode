@@ -231,6 +231,7 @@ int main (int argc, char* argv[])
    eventCont.add( new TH1D("hist_primVtxNTracks", "Number of Tracks in Primary Vertex", 100, 0, 100) );
    eventCont.add( new TH1D("hist_primVtxNDof", "Number of Degrees of Freedom in Primary Vertex", 100, 0, 100) );
    eventCont.add( new TH1D("hist_primVtxChi2", "Primary Vertex #chi^{2}", 100, 0, 20 ) );
+   eventCont.add( new TH1D("hist_primVtxZ", "Primary Vertex z", 100, -20, 20 ) );
 
    eventCont.add( new TH1D("hist_mjj", "Dijet mass", 300, 0, 300 ) );
    eventCont.add( new TH1D("hist_dR_jj", "#Delta R_{JJ}", 200, 0, TMath::TwoPi() ) );
@@ -248,10 +249,10 @@ int main (int argc, char* argv[])
    //////////////////////
    PVSelector pvSelector( edm::InputTag("offlinePrimaryVertices"), 5., 15. );
    JetIDSelectionFunctor jetSelector( JetIDSelectionFunctor::CRAFT08, 
-				      JetIDSelectionFunctor::TIGHT );
+				      JetIDSelectionFunctor::LOOSE );
 
    PFJetIDSelectionFunctor pfjetSelector( PFJetIDSelectionFunctor::FIRSTDATA, 
-					  PFJetIDSelectionFunctor::TIGHT,
+					  PFJetIDSelectionFunctor::LOOSE,
 					  0.0,
 					  0.9,
 					  0.9 );
@@ -304,6 +305,7 @@ int main (int argc, char* argv[])
     eventCont.hist("hist_primVtxNTracks")->Fill( vertices->at(0).tracksSize() );
     eventCont.hist("hist_primVtxNDof")->Fill( vertices->at(0).ndof() );
     eventCont.hist("hist_primVtxChi2")->Fill( vertices->at(0).normalizedChi2() );
+    eventCont.hist("hist_primVtxZ")->Fill( vertices->at(0).z() );
 
     if ( h_jets->size() == 0 && h_pfjets->size() == 0 ) continue;
 
@@ -328,20 +330,10 @@ int main (int argc, char* argv[])
       retJet.set(false);
       bool selected = jetSelector( jet, retJet );
 
-      bool minimal = retJet.test(string("MINIMAL_EMF") );
-      bool loose_n90hits = retJet.test(string("LOOSE_N90Hits"));
 
-
-      if ( minimal &&
-	   loose_n90hits ) {
+      if ( selected ) {
 	const reco::TrackRefVector & jetTracks = jet.associatedTracks();
 	
-	if ( static_cast<int>(jet.jetID().n90Hits) == 1 ) { 
-	  cout << endl << endl << endl << "---------------------------------->>>>> THIS ONE IS BUGGED! <<<<<<======" << endl;
-	  retJet.print(std::cout);
-	  cout << endl << endl;
-	}
-	  
 	if ( fabs(jet.eta()) < 2.6 ) {
 
 	  
@@ -471,13 +463,15 @@ int main (int argc, char* argv[])
 
 	  
 	if ( fabs(jet.eta()) < 3.0 ) {
-
 	  
 	  // get "uncleaned" jets
 	  eventCont.hist("hist_pf_jetPt")->Fill( pt );
 	  eventCont.hist("hist_pf_jetEtaVsPhi")->Fill( jet.eta(), jet.phi() );
 	  eventCont.hist("hist_pf_nConstituents")->Fill( jet.nConstituents() );
-
+	  eventCont.hist("hist_pf_jetCEF")->Fill( jet.chargedEmEnergyFraction()  );
+	  eventCont.hist("hist_pf_jetNEF")->Fill( jet.neutralEmEnergyFraction()  );
+	  eventCont.hist("hist_pf_jetCHF")->Fill( jet.chargedHadronEnergyFraction()  );
+	  eventCont.hist("hist_pf_jetNHF")->Fill( jet.neutralHadronEnergyFraction()  );
 
 
 	  if ( parser.boolValue("doGen") && jet.genJet() != 0 ) {
@@ -489,10 +483,15 @@ int main (int argc, char* argv[])
 	  }
 
 	  if ( retPV ) {
-	    goodJetIndices.push_back( ijet - jetBegin );
+	    goodPFJetIndices.push_back( ijet - jetBegin );
 	    eventCont.hist("hist_pf_good_jetPt")->Fill( pt );
 	    eventCont.hist("hist_pf_good_jetEtaVsPhi")->Fill( jet.eta(), jet.phi() );
 	    eventCont.hist("hist_pf_good_nConstituents")->Fill( jet.nConstituents() );
+	    eventCont.hist("hist_pf_good_jetCEF")->Fill( jet.chargedEmEnergyFraction()  );
+	    eventCont.hist("hist_pf_good_jetNEF")->Fill( jet.neutralEmEnergyFraction()  );
+	    eventCont.hist("hist_pf_good_jetCHF")->Fill( jet.chargedHadronEnergyFraction()  );
+	    eventCont.hist("hist_pf_good_jetNHF")->Fill( jet.neutralHadronEnergyFraction()  );
+
 
 	    if ( parser.boolValue("doGen") && jet.genJet() != 0 ) {
 	      eventCont.hist("hist_pf_good_jetGenEmE")->Fill( jet.genJet()->emEnergy() );
@@ -512,8 +511,8 @@ int main (int argc, char* argv[])
     
 
     if ( goodPFJetIndices.size() >= 2 ) {
-      pat::Jet const & jet0 = h_jets->at( goodPFJetIndices[0] );
-      pat::Jet const & jet1 = h_jets->at( goodPFJetIndices[1] );
+      pat::Jet const & jet0 = h_pfjets->at( goodPFJetIndices[0] );
+      pat::Jet const & jet1 = h_pfjets->at( goodPFJetIndices[1] );
 
       TLorentzVector p4_j0( jet0.px(), jet0.py(), jet0.pz(), jet0.energy() );
       TLorentzVector p4_j1( jet1.px(), jet1.py(), jet1.pz(), jet1.energy() );
@@ -527,16 +526,20 @@ int main (int argc, char* argv[])
 
       eventCont.hist("hist_pf_good_dijets_jetPt")->Fill( jet0.pt() );
       eventCont.hist("hist_pf_good_dijets_jetEtaVsPhi")->Fill( jet0.eta(), jet0.phi() );
-      eventCont.hist("hist_pf_good_dijets_jetEMF")->Fill( jet0.emEnergyFraction() );	
-      eventCont.hist("hist_pf_good_dijets_jetCorr")->Fill( jet0.corrFactor("raw") );
       eventCont.hist("hist_pf_good_dijets_nConstituents")->Fill( jet0.nConstituents() );
+      eventCont.hist("hist_pf_good_dijets_jetCEF")->Fill( jet0.chargedEmEnergyFraction()  );
+      eventCont.hist("hist_pf_good_dijets_jetNEF")->Fill( jet0.neutralEmEnergyFraction()  );
+      eventCont.hist("hist_pf_good_dijets_jetCHF")->Fill( jet0.chargedHadronEnergyFraction()  );
+      eventCont.hist("hist_pf_good_dijets_jetNHF")->Fill( jet0.neutralHadronEnergyFraction()  );
 
 
       eventCont.hist("hist_pf_good_dijets_jetPt")->Fill( jet1.pt() );
       eventCont.hist("hist_pf_good_dijets_jetEtaVsPhi")->Fill( jet1.eta(), jet1.phi() );
-      eventCont.hist("hist_pf_good_dijets_jetEMF")->Fill( jet1.emEnergyFraction() );	
-      eventCont.hist("hist_pf_good_dijets_jetCorr")->Fill( jet1.corrFactor("raw") );
       eventCont.hist("hist_pf_good_dijets_nConstituents")->Fill( jet1.nConstituents() );
+      eventCont.hist("hist_pf_good_dijets_jetCEF")->Fill( jet1.chargedEmEnergyFraction()  );
+      eventCont.hist("hist_pf_good_dijets_jetNEF")->Fill( jet1.neutralEmEnergyFraction()  );
+      eventCont.hist("hist_pf_good_dijets_jetCHF")->Fill( jet1.chargedHadronEnergyFraction()  );
+      eventCont.hist("hist_pf_good_dijets_jetNHF")->Fill( jet1.neutralHadronEnergyFraction()  );
 
       
       
