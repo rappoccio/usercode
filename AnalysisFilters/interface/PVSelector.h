@@ -4,7 +4,7 @@
 #include "FWCore/Common/interface/EventBase.h"
 #include "DataFormats/Common/interface/Handle.h"
 
-#include "PhysicsTools/Utilities/interface/Selector.h"
+#include "PhysicsTools/SelectorUtils/interface/Selector.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include <vector>
