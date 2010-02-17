@@ -6,14 +6,14 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 from PhysicsTools.PatAlgos.tools.coreTools import *
 
 ## global tag for data
-process.GlobalTag.globaltag = cms.string('GR09_P_V8_34X::All')
+process.GlobalTag.globaltag = cms.string('GR09_R_34X_V4::All')
 
 #switch off new tau features introduced in 33X to restore 31X defaults
 # new feaures: - shrinkingConeTaus instead of fixedCone ones
 #              - TaNC discriminants attached for shrinkingConeTaus
 #              - default preselection on cleaningLayer1
 from PhysicsTools.PatAlgos.tools.tauTools import *
-switchTo31Xdefaults(process, process.allLayer1Taus)
+switchTo31Xdefaults(process)
 
 
 # turn off MC matching for the process
