@@ -241,6 +241,9 @@ int main (int argc, char* argv[])
 		     "Is this data?",
 		     true );
 
+   parser.addOption( "runs", optutl::CommandLineParser::kIntegerVector,
+		     "List of runs" );
+
    // Parse the command line arguments
    parser.parseArguments (argc, argv);
 
@@ -431,12 +434,17 @@ int main (int argc, char* argv[])
 				    false
 				    );
 
+   vector<int> const & runs = parser.integerVector("runs");
+
   int nev = 0;
   //loop through each event
   for (eventCont.toBegin(); ! eventCont.atEnd(); ++eventCont) {
 
 
     edm::EventBase const & event = eventCont;
+
+    int run = event.id().run();
+    if ( runs.size() > 0 && find( runs.begin(), runs.end(), run ) == runs.end() ) continue;
 
     std::strbitset retCalo = caloSelector.getBitTemplate();
     bool passedCalo = caloSelector( event, retCalo );
