@@ -1,14 +1,14 @@
 #ifndef Analysis_BoostedTopAnalysis_interface_HadronicSelection_h_h
 #define Analysis_BoostedTopAnalysis_interface_HadronicSelection_h_h
 
-#include "PhysicsTools/Utilities/interface/EventSelector.h"
+#include "PhysicsTools/SelectorUtils/interface/EventSelector.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
-#include "PhysicsTools/PatUtils/interface/JetIDSelectionFunctor.h"
+#include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
 #include "Analysis/BoostedTopAnalysis/interface/CATopTagFunctor.h"
 
 class HadronicSelection : public EventSelector {
