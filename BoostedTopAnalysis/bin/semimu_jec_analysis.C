@@ -279,9 +279,9 @@ int main (int argc, char* argv[])
 	std::strbitset ret = boostedWHadronic.getBitTemplate();
 	
 
-	bool passed = boostedWHadronic(eventCont, ret);
+	// bool passed = boostedWHadronic(eventCont, ret);
 	HadronicSelectionBoostedW::collection_type const & jets = boostedWHadronic.selectedJets();
-	HadronicSelectionBoostedW::collection_type const & tags = boostedWHadronic.taggedJets();
+	// HadronicSelectionBoostedW::collection_type const & tags = boostedWHadronic.taggedJets();
 	
 	if ( ret[std::string(">= 1 Tag")] ) {
 	  for ( HadronicSelectionBoostedW::collection_type::const_iterator jetsBegin = jets.begin(),

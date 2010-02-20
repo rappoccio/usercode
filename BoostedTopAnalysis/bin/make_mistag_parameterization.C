@@ -20,8 +20,10 @@
 #include "TH1.h"
 #include "TH2.h"
 
-using namespace std;
+#include "PhysicsTools/FWLite/interface/TFileService.h"
+#include <string> 
 
+using namespace std;
 
 // Make a mistag parameterization in et and eta.
 // Procedure:
@@ -209,17 +211,21 @@ int main (int argc, char* argv[])
 
   // book histograms
   static const int nPtBins = sizeof( PtBins ) / sizeof( Double_t );
-  Double_t ptMax = PtBins[nPtBins - 1];
+  // Double_t ptMax = PtBins[nPtBins - 1];
 
-  ev.add( new TH1D("numerator",     "Fake Tag Parameterization Numerator",   nPtBins-1, PtBins ) );
-  ev.add( new TH1D("denominator",   "Fake Tag Parameterization Denominator", nPtBins-1, PtBins ) );
-  ev.add( new TH2D("numerator2d",   "Fake Tag Parameterization Numerator",   nPtBins-1, PtBins, 20, -3.0, 3.0 ) );
-  ev.add( new TH2D("denominator2d", "Fake Tag Parameterization Denominator", nPtBins-1, PtBins, 20, -3.0, 3.0 ) );
+  // create the TFileService instance and a map for the histograms
+  boost::shared_ptr<fwlite::TFileService> fs( new fwlite::TFileService("mistag_parameterization.root") );
+  std::map<std::string, TH1*> hist;
 
-  ev.hist("numerator")->Sumw2();
-  ev.hist("denominator")->Sumw2();
-  ev.hist("numerator2d")->Sumw2();
-  ev.hist("denominator2d")->Sumw2();
+  hist["numerator"] =     fs->make<TH1D>("numerator",     "Fake Tag Parameterization Numerator",   nPtBins-1, PtBins );
+  hist["denominator"] =   fs->make<TH1D>("denominator",   "Fake Tag Parameterization Denominator", nPtBins-1, PtBins );
+  hist["numerator2d"] =   fs->make<TH2D>("numerator2d",   "Fake Tag Parameterization Numerator",   nPtBins-1, PtBins, 20, -3.0, 3.0 );
+  hist["denominator2d"] = fs->make<TH2D>("denominator2d", "Fake Tag Parameterization Denominator", nPtBins-1, PtBins, 20, -3.0, 3.0 );
+
+  hist["numerator"]->Sumw2();
+  hist["denominator"]->Sumw2();
+  hist["numerator2d"]->Sumw2();
+  hist["denominator2d"]->Sumw2();
 
   // make selector for selecting top tagged jets
   boost::shared_ptr<CATopTagFunctor> catopTagFunctor; 
@@ -271,25 +277,25 @@ int main (int argc, char* argv[])
 
       // If jet 0 is antitagged, fill denominator
       if ( !mistagMakerSelector.tagged0() ) {
-	ev.hist("denominator")  ->Fill( mistagMakerSelector.jets().at(1).pt());
-	ev.hist("denominator2d")->Fill( mistagMakerSelector.jets().at(1).pt(), 
+	hist["denominator"]  ->Fill( mistagMakerSelector.jets().at(1).pt());
+	hist["denominator2d"]->Fill( mistagMakerSelector.jets().at(1).pt(), 
 					mistagMakerSelector.jets().at(1).rapidity());
 	// if jet 1 is also tagged, fill numerator
 	if ( mistagMakerSelector.tagged1() ) {
-	  ev.hist("numerator")  ->Fill( mistagMakerSelector.jets().at(1).pt());
-	  ev.hist("numerator2d")->Fill( mistagMakerSelector.jets().at(1).pt(), 
+	  hist["numerator"]  ->Fill( mistagMakerSelector.jets().at(1).pt());
+	  hist["numerator2d"]->Fill( mistagMakerSelector.jets().at(1).pt(), 
 					mistagMakerSelector.jets().at(1).rapidity() );
 	}
       } 
       // If jet 1 is antitagged, fill denominator
       if ( !mistagMakerSelector.tagged1() ) {
-	ev.hist("denominator")  ->Fill( mistagMakerSelector.jets().at(0).pt());
-	ev.hist("denominator2d")->Fill( mistagMakerSelector.jets().at(0).pt(), 
+	hist["denominator"]  ->Fill( mistagMakerSelector.jets().at(0).pt());
+	hist["denominator2d"]->Fill( mistagMakerSelector.jets().at(0).pt(), 
 					mistagMakerSelector.jets().at(0).rapidity());
 	// if jet 0 is also tagged, fill denominator
 	if ( mistagMakerSelector.tagged0() ) {
-	  ev.hist("numerator"  )->Fill( mistagMakerSelector.jets().at(0).pt());
-	  ev.hist("numerator2d")->Fill( mistagMakerSelector.jets().at(0).pt(), 
+	  hist["numerator"  ]->Fill( mistagMakerSelector.jets().at(0).pt());
+	  hist["numerator2d"]->Fill( mistagMakerSelector.jets().at(0).pt(), 
 					mistagMakerSelector.jets().at(0).rapidity());
 	}
       } 

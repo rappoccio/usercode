@@ -268,9 +268,9 @@ int main (int argc, char* argv[])
 	std::strbitset ret = caTopHadronic.getBitTemplate();
 	
 
-	bool passed = caTopHadronic(eventCont, ret);
+	// bool passed = caTopHadronic(eventCont, ret);
 	vector<pat::Jet>      const & jets      = caTopHadronic.selectedJets();
-	vector<pat::Jet>      const & tags      = caTopHadronic.taggedJets();
+	// vector<pat::Jet>      const & tags      = caTopHadronic.taggedJets();
 	
 	if ( ret[std::string(">= 1 Tight Jet")] ) {
 	  for ( vector<pat::Jet>::const_iterator jetsBegin = jets.begin(),
