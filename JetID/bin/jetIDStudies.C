@@ -227,11 +227,11 @@ int main (int argc, char* argv[])
 
    parser.addOption( "jetSrc", optutl::CommandLineParser::kString, 
 		     "Jet source",
-		     "selectedLayer1Jets" );
+		     "selectedPatJets" );
 
    parser.addOption( "pfjetSrc", optutl::CommandLineParser::kString, 
 		     "PFJet source",
-		     "selectedLayer1JetsPF" );
+		     "selectedPatJetsAK5PF" );
 
    parser.addOption( "doGen", optutl::CommandLineParser::kBool, 
 		     "Match generator level stuff",
