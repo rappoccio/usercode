@@ -1,23 +1,23 @@
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/FWLite/interface/Event.h"
+#include "PhysicsTools/FWLite/interface/EventContainer.h"
+#include "PhysicsTools/FWLite/interface/CommandLineParser.h" 
+#include "PhysicsTools/PatExamples/interface/WPlusJetsEventSelector.h"
+#include "Math/GenVector/PxPyPzM4D.h"
+
+#include <iostream>
+#include <cmath>      //necessary for absolute function fabs()
+#include <boost/shared_ptr.hpp>
+#include <boost/lexical_cast.hpp>
+
+//Root includes
+#include "TROOT.h"
 #include "TFile.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TSystem.h"
-#include "TROOT.h"
-#include "Math/GenVector/PxPyPzM4D.h"
-
-#include "PhysicsTools/FWLite/interface/EventContainer.h"
-#include "PhysicsTools/FWLite/interface/CommandLineParser.h" 
-
-#include "PhysicsTools/PatExamples/interface/WPlusJetsEventSelector.h"
-
-#include <iostream>
-#include <cmath>      //necessary for absolute function fabs()
-#include <boost/shared_ptr.hpp>
-#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
@@ -38,6 +38,7 @@ int    nhits_, HFcat_;
 unsigned int nJetsCut;
 bool   muPlusJets_, ePlusJets_;
 bool   passTrigger, passOneLepton;
+string sampleNameInput;
 
 edm::Handle< vector< pat::Muon     > > muonHandle_;
 edm::Handle< vector< pat::Electron > > electronHandle_;
@@ -59,7 +60,7 @@ int main ( int argc, char ** argv )
   ///// Command Line Options /////
   
   // Tell people what this analysis code does and setup default options.
-  optutl::CommandLineParser parser ("W+Jets Example");
+  optutl::CommandLineParser parser ("SHyFT tagged analysis");
   
   parser.stringValue ("storeprepend")="dcap:////pnfs/cms/WAX/11";
   parser.integerValue("outputevery" ) = 1000;
@@ -109,6 +110,10 @@ int main ( int argc, char ** argv )
 		    0);   
   parser.addOption ("sampleName",   optutl::CommandLineParser::kString, 
 		    "Sample name (e.g., top, Wqq, etc.)");
+
+  parser.addOption ("jetScale", optutl::CommandLineParser::kDouble,
+                    "Scale factor to apply to jet energies",
+                    1.0);
   
   // Parse the command line arguments
   parser.parseArguments (argc, argv);
@@ -185,7 +190,9 @@ int main ( int argc, char ** argv )
      parser.doubleValue  ("jetMaxEta")
      );
 
-  
+  //Shift the jet energy scale, if desired.
+  wPlusJets.scaleJets(parser.doubleValue("jetScale"));
+
   muPlusJets_ = parser.boolValue    ("muPlusJets");
   ePlusJets_  = parser.boolValue    ("ePlusJets" );
   nJetsCut    = parser.integerValue ("minNJets"  );
@@ -193,7 +200,7 @@ int main ( int argc, char ** argv )
   
   // Trying to smartly create the histograms. There must be a better way, but this removes many lines of code
   string prename;
-  std::string sampleNameInput = parser.stringValue  ("sampleName");
+  sampleNameInput = parser.stringValue  ("sampleName");
   std::vector<std::string> sampleNameBase;
   std::vector<std::string> sampleName;
   std::vector<std::string> secvtxName(5,"_secvtxMass_");
@@ -264,12 +271,32 @@ int main ( int argc, char ** argv )
     ev.add( new TH1F( prename+TString("flavorhistory"), "Flavor History",     12,    0,   12) );
     ev.add( new TH1F( prename+TString("discriminator"), "BTag Discriminator", 30,    2,    8) );
     ev.add( new TH1F( prename+TString("nVertices"), "num sec Vertices",        5,    0,    5) );
-    
+    ev.add ( new TH1F( prename+TString("jet1Mass"),   "1st leading jet mass",	    50,	   0,	   150) );
+    ev.add ( new TH1F( prename+TString("jet2Mass"),   "2nd leading jet mass",      50,    0,      150) );
+    ev.add ( new TH1F( prename+TString("jet3Mass"),   "3rd leading jet mass",      50,    0,      150) );
+    ev.add ( new TH1F( prename+TString("jet4Mass"),   "4th leading jet mass",      50,    0,      150) );
+  
     for (unsigned int j=0;j<sampleName.size();++j) {
+      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT"), "HT using Et is the sum of Jet Et plus Muon Pt", 50, 0, 1200) );
+      ev.add ( new TH1F( prename+sampleName[j]+TString("_hTUsingPt"), "HT s is Sum of Jet Pt", 50, 0, 1200) );
+      ev.add ( new TH2F( prename+sampleName[j]+TString("_hTvsNJet"), "HT as a function of NJets", 5, 0.5, 5.5, 50, 0, 1200));
+      
+      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_3jet"), "HT using Et is the sum of Jet Et plus Muon Pt", 50, 0, 1200) );
+      ev.add ( new TH2F( prename+sampleName[j]+TString("_hTvsNJet_3jet"), "HT as a function of NJets", 5, 0.5, 5.5, 50, 0, 1200));
+      //----- Use separate HT histograms
+      
+      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_1j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 50, 300) );
+      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_2j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 80, 500) );
+      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_3j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 110, 600) );
+      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_4j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 5, 140, 600) );
+      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_5j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 5, 170, 600) );
+      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_345j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 110, 600) );
+
+
       for(unsigned int k=0;k<secvtxName.size();++k) {
 	for(unsigned int l=0;l<secvtxEnd.size();++l) {
 	  std::string temp = prename+sampleName[j]+secvtxName[k]+secvtxEnd[l];
-	  ev.add( new TH1F( temp.c_str(), "secvtxmass", 50,    0,   10) );
+	  ev.add( new TH1F( temp.c_str(), "secvtxmass", 40,    0,   10) );
 	  if(k==0 && l==4) break;
 	}
       }
@@ -332,15 +359,15 @@ int main ( int argc, char ** argv )
     }
   } //end event loop
   
-  //  cout << "Printing" << endl;
-  //wPlusJets.print(std::cout);
+  //cout << "Printing" << endl;
+  wPlusJets.print(std::cout);
   //cout << "We're done!" << endl;
   
   return 0;
 }
 
 bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, vector<pat::Muon> muons, vector<pat::Jet> jets, vector<pat::Jet> jetsBeforeClean, std::string prename, std::string secvtxname) {
-
+  
   //SecVtxMass and b-tagging related quantities
   int numBottom=0,numCharm=0,numLight=0;
   int numTags=0, numJets=0;
@@ -353,12 +380,7 @@ bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, ve
       if( jetIter->bDiscriminator("simpleSecondaryVertexBJetTags") < 2.05 )
 	// This jet is not tagged, so we skip it
 	continue;
-      else {
-	// For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
-	if(numTags<2) ++numTags;
-	else break;
-	ev.hist( prename+TString("discriminator") ) -> Fill ( jetIter->bDiscriminator("simpleSecondaryVertexBJetTags") );
-      }
+      
       reco::SecondaryVertexTagInfo const * svTagInfos
 	= jetIter->tagInfoSecondaryVertex("secondaryVertex");
       if ( svTagInfos->nVertices() <= 0 )  continue;
@@ -383,6 +405,7 @@ bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, ve
 	  sumVec += p4_1;
 	  
 	}  // for trackIter
+      
       vertexMass = sumVec.M();
       sumVertexMass += vertexMass;
 
@@ -405,6 +428,13 @@ bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, ve
 	  ev.hist( prename+TString("lfmass") ) -> Fill( vertexMass );
 	  ++numLight;
 	} // if light flavor
+      
+      ++numTags;
+      ev.hist( prename+TString("discriminator") ) -> Fill ( jetIter->bDiscriminator("simpleSecondaryVertexBJetTags") );
+      
+      // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
+      if(numTags==2) break;
+      
     }//jets
 
   // Calculate average SecVtx mass and //
@@ -413,10 +443,52 @@ bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, ve
   ev.hist( prename+secvtxname + "_jettag")->Fill (numJets, numTags);
       
   // If we don't have any tags, don't bother going on
-  if ( ! numTags)
-    {
-      return false;
+  if ( ! numTags) {
+    double hTUsingPt = muPt_;
+    double hTUsingEt = muPt_;
+    
+    
+    for (unsigned ijet = 0; ijet < jets.size(); ijet++) {
+      hTUsingPt += jets[ijet].pt();
+      hTUsingEt += jets[ijet].et();
+      if (ijet == 0) {
+	ev.hist(prename+TString("jet1Pt" ))	->Fill( jets[ijet].pt() 	);
+	ev.hist(prename+TString("jet1Mass" ))	->Fill( jets[ijet].mass() 	);
+	ev.hist(prename+TString("jet1Eta" ))	->Fill( jets[ijet].eta()	);
+      }
+      if (ijet == 1) {
+	ev.hist(prename+TString("jet2Pt" )) ->Fill( jets[ijet].pt()    );
+	ev.hist(prename+TString("jet2Mass" ))  ->Fill( jets[ijet].mass()    );
+	ev.hist(prename+TString("jet2Eta" )) ->Fill( jets[ijet].eta()   );
+      }
+      if (ijet == 2) {
+	ev.hist(prename+TString("jet3Pt" )) ->Fill( jets[ijet].pt()    );
+	ev.hist(prename+TString("jet3Mass" ))  ->Fill( jets[ijet].mass()    );
+	ev.hist(prename+TString("jet3Eta" )) ->Fill( jets[ijet].eta()   );
+      }
+      
+      if (ijet == 3) {
+	ev.hist(prename+TString("jet4Pt" )) ->Fill( jets[ijet].pt()    );
+	ev.hist(prename+TString("jet4Mass" ))  ->Fill( jets[ijet].mass()    );
+	ev.hist(prename+TString("jet4Eta" )) ->Fill( jets[ijet].eta()   );
+      }
+      
     }
+     
+    if (numJets == 1 ) ev.hist(prename+sampleNameInput+TString("_hT_1j"))->Fill(hTUsingEt);
+    if (numJets == 2 ) ev.hist(prename+sampleNameInput+TString("_hT_2j"))->Fill(hTUsingEt);
+    if (numJets == 3 ) ev.hist(prename+sampleNameInput+TString("_hT_3j"))->Fill(hTUsingEt);
+    if (numJets == 4 ) ev.hist(prename+sampleNameInput+TString("_hT_4j"))->Fill(hTUsingEt);
+    if (numJets == 5 ) ev.hist(prename+sampleNameInput+TString("_hT_5j"))->Fill(hTUsingEt);
+
+        
+
+    ev.hist(prename+sampleNameInput+TString("_hT"))  ->Fill( hTUsingEt   );
+    ev.hist(prename+sampleNameInput+TString("_hTUsingPt"))->Fill (hTUsingPt);
+    ev.hist(prename+sampleNameInput+TString("_hTvsNJet"))-> Fill (numJets, hTUsingEt);
+
+      return true;
+  }
 
   sumVertexMass /= numTags;
     
@@ -436,7 +508,7 @@ bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, ve
     else if (2 == numLight)          whichtag = "_qq";
     else if (numBottom && numCharm)  whichtag = "_bc";
     else if (numBottom && numLight)  whichtag = "_bq";
-    else if (numCharm  && numLight)  whichtag = "_bq";
+    else if (numCharm  && numLight)  whichtag = "_cq";
     else                             whichtag = "_xx";
   } // if two tags
   string massName = secvtxname
