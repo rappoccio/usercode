@@ -74,7 +74,7 @@ int main ( int argc, char ** argv )
 		    false );
   parser.addOption ("minNJets",   optutl::CommandLineParser::kInteger,
 		    "Min number of tight jets",
-		    4 );
+		    1 );
   parser.addOption ("tightMuMinPt",   optutl::CommandLineParser::kDouble,
 		    "Min tight mu pt",
 		    20.0 );
