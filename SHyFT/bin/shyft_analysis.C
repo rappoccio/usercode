@@ -35,8 +35,9 @@ double hCalVeto_, eCalVeto_, trackIso_;
 double eCalIso_, hCalIso_, relIso_;
 double ePt_, eEta_, ePhi_, eD0_;
 int    nhits_, HFcat_;
-unsigned int nJetsCut;
+unsigned int nJetsCut_;
 bool   muPlusJets_, ePlusJets_;
+bool   useHFcat_;
 bool   passTrigger, passOneLepton;
 string sampleNameInput;
 
@@ -47,7 +48,7 @@ edm::Handle< vector< pat::Jet      > > jetHandle_;
 
 
 // Function which takes in the collections and fills the histograms
-bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, vector<pat::Muon> muons, vector<pat::Jet> jets, vector<pat::Jet> jetsBeforeClean, std::string prename, std::string secvtxname);
+bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, vector<pat::Muon> muons, vector<pat::Jet> jets, vector<pat::Jet> jetsBeforeClean, std::string secvtxname);
 
 // Calculate the name that should be used for this event based on the
 // mode, the HF word, and (if necessary), whether or not it's a W or
@@ -114,7 +115,9 @@ int main ( int argc, char ** argv )
   parser.addOption ("jetScale", optutl::CommandLineParser::kDouble,
                     "Scale factor to apply to jet energies",
                     1.0);
-  
+  parser.addOption ("heavyFlavor",   optutl::CommandLineParser::kBool,
+                    "Use heavy flavor information",
+                    true );
   // Parse the command line arguments
   parser.parseArguments (argc, argv);
   
@@ -193,13 +196,14 @@ int main ( int argc, char ** argv )
   //Shift the jet energy scale, if desired.
   wPlusJets.scaleJets(parser.doubleValue("jetScale"));
 
-  muPlusJets_ = parser.boolValue    ("muPlusJets");
-  ePlusJets_  = parser.boolValue    ("ePlusJets" );
-  nJetsCut    = parser.integerValue ("minNJets"  );
+  muPlusJets_ = parser.boolValue    ("muPlusJets" );
+  ePlusJets_  = parser.boolValue    ("ePlusJets"  );
+  useHFcat_   = parser.boolValue    ("heavyFlavor");
+  nJetsCut_   = parser.integerValue ("minNJets"   );
 
   
   // Trying to smartly create the histograms. There must be a better way, but this removes many lines of code
-  string prename;
+  //string prename;
   sampleNameInput = parser.stringValue  ("sampleName");
   std::vector<std::string> sampleNameBase;
   std::vector<std::string> sampleName;
@@ -224,86 +228,83 @@ int main ( int argc, char ** argv )
       sampleName.push_back(sampleNameBase[i]+"c2");
      }
   }
-  else if (sampleNameInput=="WJets") {
-    sampleName.push_back("WJets");
-    sampleName.push_back("WJetsb3");
-    sampleName.push_back("WJetsc3");
+  else if (sampleNameInput=="Wjets") {
+    sampleName.push_back("Wjetsb3");
+    sampleName.push_back("Wjetsc3");
   }
   else sampleName.push_back(sampleNameInput);
 
-  for(int i=0;i<2;++i) {
-    if(i==0) prename = "noSelection_";
-    else prename = "";
-    if( muPlusJets_ ) {
-      ev.add ( new TH1F( prename+TString("muPt"),     "Muon p_{T} (GeV/c) ", 100,    0, 200) );
-      ev.add ( new TH1F( prename+TString("muEta"),    "Muon eta",	      50, -3.0, 3.0) );
-      ev.add ( new TH1F( prename+TString("nHits"),    "Muon N Hits",	      35,    0,	 35) );
-      ev.add ( new TH1F( prename+TString("d0"),	      "Muon D0",              60, -0.2,	0.2) );
-      ev.add ( new TH1F( prename+TString("Chi2"),     "Muon Chi2",	      20,    0,   5) );
-      ev.add ( new TH1F( prename+TString("hCalVeto"), "Muon hCalVeto",	      30,    0,	 30) );
-      ev.add ( new TH1F( prename+TString("eCalVeto"), "Muon eCalVeto",	      30,    0,	 30) );
+  if( muPlusJets_ ) {
+    ev.add ( new TH1F( TString("muPt"),     "Muon p_{T} (GeV/c) ", 100,    0, 200) );
+    ev.add ( new TH1F( TString("muEta"),    "Muon eta",	            50, -3.0, 3.0) );
+    ev.add ( new TH1F( TString("nHits"),    "Muon N Hits",	        35,    0,  35) );
+    ev.add ( new TH1F( TString("d0"),	    "Muon D0",              60, -0.2, 0.2) );
+    ev.add ( new TH1F( TString("Chi2"),     "Muon Chi2",	        20,    0,   5) );
+    ev.add ( new TH1F( TString("hCalVeto"), "Muon hCalVeto",	    30,    0,  30) );
+    ev.add ( new TH1F( TString("eCalVeto"), "Muon eCalVeto",	    30,    0,  30) );
+  }
   
-    }
-    
-    if ( ePlusJets_ ) {
-      ev.add( new TH1F( prename+TString("ePt"),	      "Electron p_{T} (GeV/c) ", 100,    0, 200) );
-      ev.add( new TH1F( prename+TString("eEta"),      "Electron eta",		  50, -3.0, 3.0) );
-      ev.add( new TH1F( prename+TString("ePhi"),      "Electron Phi",		  50, -3.2, 3.2) );
-      ev.add( new TH1F( prename+TString("eD0"),	      "Electron D0",	          60, -0.2, 0.2) );
-    }  // end  ePlusJets_
-    
-    ev.add( new TH1F( prename+TString("trackIso"), "TrackIso",		      50,    0,	  50) );
-    ev.add( new TH1F( prename+TString("eCalIso"),  "eCalIso",		      80,    0,   40) );
-    ev.add( new TH1F( prename+TString("hCalIso"),  "hCalIso",		      60,    0,   30) );
-    ev.add( new TH1F( prename+TString("relIso"),   "RelIso",		      50,    0,    5) );
-    ev.add( new TH1F( prename+TString("nJets"),    "N Jets, pt>30, eta<2.4",  15,    0,	  15) );
-    ev.add( new TH1F( prename+TString("jet1Pt"),   "1st leading jet pt",     150,    0,  300) );
-    ev.add( new TH1F( prename+TString("jet2Pt"),   "2nd leading jet pt",     150,    0,  300) );
-    ev.add( new TH1F( prename+TString("jet3Pt"),   "3rd leading jet pt",     150,    0,  300) );
-    ev.add( new TH1F( prename+TString("jet4Pt"),   "4th leading jet pt",     150,    0,  300) );
-    ev.add( new TH1F( prename+TString("jet1Eta"),  "1st leading jet eta",     50, -3.0,  3.0) );
-    ev.add( new TH1F( prename+TString("jet2Eta"),  "2nd leading jet eta",     50, -3.0,  3.0) );
-    ev.add( new TH1F( prename+TString("jet3Eta"),  "3rd leading jet eta",     50, -3.0,  3.0) );
-    ev.add( new TH1F( prename+TString("jet4Eta"),  "4th leading jet eta",     50, -3.0,  3.0) );
-    ev.add( new TH1F( prename+TString("bmass"),    "B Sec Vtx Mass",          28,    0,    7) );
-    ev.add( new TH1F( prename+TString("cmass"),    "C Sec Vtx Mass",          28,    0,    7) );
-    ev.add( new TH1F( prename+TString("lfmass"),   "LF Sec Vtx Mass",         28,    0,    7) );
-    ev.add( new TH1F( prename+TString("flavorhistory"), "Flavor History",     12,    0,   12) );
-    ev.add( new TH1F( prename+TString("discriminator"), "BTag Discriminator", 30,    2,    8) );
-    ev.add( new TH1F( prename+TString("nVertices"), "num sec Vertices",        5,    0,    5) );
-    ev.add ( new TH1F( prename+TString("jet1Mass"),   "1st leading jet mass",	    50,	   0,	   150) );
-    ev.add ( new TH1F( prename+TString("jet2Mass"),   "2nd leading jet mass",      50,    0,      150) );
-    ev.add ( new TH1F( prename+TString("jet3Mass"),   "3rd leading jet mass",      50,    0,      150) );
-    ev.add ( new TH1F( prename+TString("jet4Mass"),   "4th leading jet mass",      50,    0,      150) );
-  
-    for (unsigned int j=0;j<sampleName.size();++j) {
-      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT"), "HT using Et is the sum of Jet Et plus Muon Pt", 50, 0, 1200) );
-      ev.add ( new TH1F( prename+sampleName[j]+TString("_hTUsingPt"), "HT s is Sum of Jet Pt", 50, 0, 1200) );
-      ev.add ( new TH2F( prename+sampleName[j]+TString("_hTvsNJet"), "HT as a function of NJets", 5, 0.5, 5.5, 50, 0, 1200));
-      
-      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_3jet"), "HT using Et is the sum of Jet Et plus Muon Pt", 50, 0, 1200) );
-      ev.add ( new TH2F( prename+sampleName[j]+TString("_hTvsNJet_3jet"), "HT as a function of NJets", 5, 0.5, 5.5, 50, 0, 1200));
-      //----- Use separate HT histograms
-      
-      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_1j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 50, 300) );
-      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_2j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 80, 500) );
-      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_3j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 110, 600) );
-      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_4j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 5, 140, 600) );
-      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_5j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 5, 170, 600) );
-      ev.add ( new TH1F( prename+sampleName[j]+TString("_hT_345j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 110, 600) );
+  if ( ePlusJets_ ) {
+    ev.add( new TH1F( TString("ePt"),  "Electron p_{T} (GeV/c) ", 100,    0, 200) );
+    ev.add( new TH1F( TString("eEta"), "Electron eta",		       50, -3.0, 3.0) );
+    ev.add( new TH1F( TString("ePhi"), "Electron Phi",		       50, -3.2, 3.2) );
+    ev.add( new TH1F( TString("eD0"),  "Electron D0",	           60, -0.2, 0.2) );
+  }
 
+  //Calibration Plots
+  ev.add( new TH1F( TString("trackIso"), "TrackIso",		        50,    0,   50) );
+  ev.add( new TH1F( TString("eCalIso"),  "eCalIso",		            80,    0,   40) );
+  ev.add( new TH1F( TString("hCalIso"),  "hCalIso",		            60,    0,   30) );
+  ev.add( new TH1F( TString("relIso"),   "RelIso",		            50,    0,    5) );
+  ev.add( new TH1F( TString("nJets"),    "N Jets, pt>30, eta<2.4",  15,    0,	15) );
+  ev.add( new TH1F( TString("jet1Pt"),   "1st leading jet pt",     150,    0,  300) );
+  ev.add( new TH1F( TString("jet2Pt"),   "2nd leading jet pt",     150,    0,  300) );
+  ev.add( new TH1F( TString("jet3Pt"),   "3rd leading jet pt",     150,    0,  300) );
+  ev.add( new TH1F( TString("jet4Pt"),   "4th leading jet pt",     150,    0,  300) );
+  ev.add( new TH1F( TString("jet1Eta"),  "1st leading jet eta",     50, -3.0,  3.0) );
+  ev.add( new TH1F( TString("jet2Eta"),  "2nd leading jet eta",     50, -3.0,  3.0) );
+  ev.add( new TH1F( TString("jet3Eta"),  "3rd leading jet eta",     50, -3.0,  3.0) );
+  ev.add( new TH1F( TString("jet4Eta"),  "4th leading jet eta",     50, -3.0,  3.0) );
+  ev.add( new TH1F( TString("jet1Mass"), "1st leading jet mass",    50,    0,  150) );
+  ev.add( new TH1F( TString("jet2Mass"), "2nd leading jet mass",    50,    0,  150) );
+  ev.add( new TH1F( TString("jet3Mass"), "3rd leading jet mass",    50,    0,  150) );
+  ev.add( new TH1F( TString("jet4Mass"), "4th leading jet mass",    50,    0,  150) );
+  ev.add( new TH1F( TString("bmass"),    "B Sec Vtx Mass",          28,    0,    7) );
+  ev.add( new TH1F( TString("cmass"),    "C Sec Vtx Mass",          28,    0,    7) );
+  ev.add( new TH1F( TString("lfmass"),   "LF Sec Vtx Mass",         28,    0,    7) );
+  ev.add( new TH1F( TString("flavorhistory"), "Flavor History",     12,    0,   12) );
+  ev.add( new TH1F( TString("discriminator"), "BTag Discriminator", 30,    2,    8) );
+  ev.add( new TH1F( TString("nVertices"),     "num sec Vertices",    5,    0,    5) );
+  /*  ev.add ( new TH1F( TString("beff_pt0to50"),    "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  ev.add ( new TH1F( TString("beff_pt50to100"),  "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  ev.add ( new TH1F( TString("beff_pt100to150"), "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  ev.add ( new TH1F( TString("beff_pt150to200"), "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  ev.add ( new TH1F( TString("beff_pt200to250"), "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  ev.add ( new TH1F( TString("beff_pt250to300"), "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  ev.add ( new TH1F( TString("beff_pt300plus"),  "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  */
+  ev.add ( new TH1F( TString("tag_eff"), "0 lf untag, 1 c untag, 2 b untag, 3 lf tag, 4 c tag, 5 b tag",   6,    0,      6) );
+  ev.add ( new TH1F( TString("tag_jet_pt"), "JetPt to go with tagging efficiency",                       150,    0,    300) );
 
-      for(unsigned int k=0;k<secvtxName.size();++k) {
-	for(unsigned int l=0;l<secvtxEnd.size();++l) {
-	  std::string temp = prename+sampleName[j]+secvtxName[k]+secvtxEnd[l];
-	  ev.add( new TH1F( temp.c_str(), "secvtxmass", 40,    0,   10) );
-	  if(k==0 && l==4) break;
-	}
+  ev.add ( new TH1F( sampleNameInput+TString("_hT"),    "HT using Et is the sum of Jet Et plus Muon Pt", 50, 0,   1200) );
+  ev.add ( new TH1F( sampleNameInput+TString("_hT_1j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 50,   300) );
+  ev.add ( new TH1F( sampleNameInput+TString("_hT_2j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 80,   500) );
+  ev.add ( new TH1F( sampleNameInput+TString("_hT_3j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 110,  600) );
+  ev.add ( new TH1F( sampleNameInput+TString("_hT_4j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 5,  140,  600) );
+  ev.add ( new TH1F( sampleNameInput+TString("_hT_5j"), "HT using Pt is the sum of Jet Et plus Muon Pt", 5,  170,  600) );
+  ev.add ( new TH2F( sampleNameInput+TString("_hTvsNJet"),  "HT as a function of NJets", 5, 0.5, 5.5, 50, 0, 1200));
+  //ev.add ( new TH1F( sampleNameInput+TString("_hTUsingPt"), "HT s is Sum of Jet Pt", 50, 0, 1200) );
+
+  for (unsigned int j=0;j<sampleName.size();++j) {
+    for(unsigned int k=0;k<secvtxName.size();++k) {
+      for(unsigned int l=0;l<secvtxEnd.size();++l) {
+        std::string temp = sampleName[j]+secvtxName[k]+secvtxEnd[l];
+        ev.add( new TH1F( temp.c_str(), "secvtxmass", 40,    0,   10) );
+        if(k==0 && l==4) break;
       }
-      ev.add( new TH2F( prename+sampleName[j]+TString("_jettag"), "N-Jets vs N-tags", 6, -0.5, 5.5, 3, -0.5, 2.5));
     }
-  }  
-  
+    ev.add( new TH2F( sampleName[j]+TString("_jettag"), "N-Jets vs N-tags", 6, -0.5, 5.5, 3, -0.5, 2.5));
+  }
   
   //loop through each event
   for( ev.toBegin();
@@ -343,19 +344,14 @@ int main ( int argc, char ** argv )
     ev.getByLabel ( edm::InputTag("selectedLayer1Jets") , jetHandle_);
     assert( jetHandle_.isValid() );
    
-    std::string prename = "noSelection_";
     std::string secvtxname = "";
-
+    
     //find the sample name
     if(!calcSampleName(ev, secvtxname) ) continue;
    
-    // Make the plots for the pre-event selection sample;
-    if(!make_plots(ev, *electronHandle_, *muonHandle_, jets, jetsBeforeClean, prename, secvtxname) ) continue;
-    
     // Make the plots for the post-event selection sample;
     if ( passed ) {
-      prename = "";
-      if(!make_plots(ev, electrons, muons, jets, jetsBeforeClean, prename, secvtxname)) continue;
+      if(!make_plots(ev, electrons, muons, jets, jetsBeforeClean, secvtxname)) continue;
     }
   } //end event loop
   
@@ -366,7 +362,7 @@ int main ( int argc, char ** argv )
   return 0;
 }
 
-bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, vector<pat::Muon> muons, vector<pat::Jet> jets, vector<pat::Jet> jetsBeforeClean, std::string prename, std::string secvtxname) {
+bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, vector<pat::Muon> muons, vector<pat::Jet> jets, vector<pat::Jet> jetsBeforeClean, std::string secvtxname) {
   
   //SecVtxMass and b-tagging related quantities
   int numBottom=0,numCharm=0,numLight=0;
@@ -376,61 +372,85 @@ bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, ve
 	  jetEnd = jets.end(), jetIter = jetBegin;
 	jetIter != jetEnd; ++jetIter)
     {
+      // We first get the flavor of the jet so we can fill look at btag efficiency.
+      int jetFlavor = std::abs( jetIter->partonFlavour() );
+      double jetPt  = std::abs( jetIter->pt() );
+      /*      string ptrange = "";
+      if(jetPt <= 50) ptrange = "_pt0to50";
+      else if(jetPt <= 100) ptrange = "_pt50to100";
+      else if(jetPt <= 150) ptrange = "_pt100to150";
+      else if(jetPt <= 200) ptrange = "_pt150to200";
+      else if(jetPt <= 250) ptrange = "_pt200to250";
+      else if(jetPt <= 300) ptrange = "_pt250to300";
+      else ptrange = "_pt300plus";
+      */
+      ev.hist( TString("tag_jet_pt") ) -> Fill( jetPt );
       // Is this jet tagged and does it have a good secondary vertex
-      if( jetIter->bDiscriminator("simpleSecondaryVertexBJetTags") < 2.05 )
-	// This jet is not tagged, so we skip it
-	continue;
-      
+      if( jetIter->bDiscriminator("simpleSecondaryVertexBJetTags") < 2.05 ) {
+        // This jet is not tagged, so we skip it but first we check the btag efficiency.
+        if     ( jetFlavor == 4 ) ev.hist( TString("tag_eff") ) -> Fill( 1 );
+        else if( jetFlavor == 5 ) ev.hist( TString("tag_eff") ) -> Fill( 2 );
+        else                      ev.hist( TString("tag_eff") ) -> Fill( 0 );
+        continue;
+      }
+      else {
+        if     ( jetFlavor == 4 ) ev.hist( TString("tag_eff") ) -> Fill( 4 );
+        else if( jetFlavor == 5 ) ev.hist( TString("tag_eff") ) -> Fill( 5 );
+        else                      ev.hist( TString("tag_eff") ) -> Fill( 3 );
+        //        if(jetFlavor == 5)  ev.hist( TString("beff")+ptrange ) -> Fill( 3 );
+        //else ev.hist(TString("beff")+ptrange ) -> Fill( 2 );
+      }
       reco::SecondaryVertexTagInfo const * svTagInfos
-	= jetIter->tagInfoSecondaryVertex("secondaryVertex");
+        = jetIter->tagInfoSecondaryVertex("secondaryVertex");
       if ( svTagInfos->nVertices() <= 0 )  continue;
-      else ev.hist( prename+TString("nVertices") ) -> Fill( svTagInfos->nVertices() );
-     
+      else ev.hist( TString("nVertices") ) -> Fill( svTagInfos->nVertices() );
+      
       // Calculate SecVtx Mass //
       ROOT::Math::LorentzVector< ROOT::Math::PxPyPzM4D<double> > sumVec;
       
       reco::Vertex::trackRef_iterator
-	kEndTracks = svTagInfos->secondaryVertex(0).tracks_end();
+        kEndTracks = svTagInfos->secondaryVertex(0).tracks_end();
       for (reco::Vertex::trackRef_iterator trackIter =
-	     svTagInfos->secondaryVertex(0).tracks_begin();
-	   trackIter != kEndTracks;
-	   ++trackIter )
-	{
-	  const double kPionMass = 0.13957018;
-	  ROOT::Math::LorentzVector< ROOT::Math::PxPyPzM4D<double> >  p4_1;
-	  p4_1.SetPx( (*trackIter)->px() );
-	  p4_1.SetPy( (*trackIter)->py() );
-	  p4_1.SetPz( (*trackIter)->pz() );
-	  p4_1.SetM (kPionMass);
-	  sumVec += p4_1;
-	  
-	}  // for trackIter
+             svTagInfos->secondaryVertex(0).tracks_begin();
+           trackIter != kEndTracks;
+           ++trackIter )
+        {
+          const double kPionMass = 0.13957018;
+          ROOT::Math::LorentzVector< ROOT::Math::PxPyPzM4D<double> >  p4_1;
+          p4_1.SetPx( (*trackIter)->px() );
+          p4_1.SetPy( (*trackIter)->py() );
+          p4_1.SetPz( (*trackIter)->pz() );
+          p4_1.SetM (kPionMass);
+          sumVec += p4_1;
+          
+        }  // for trackIter
       
       vertexMass = sumVec.M();
       sumVertexMass += vertexMass;
 
-      int jetFlavor = std::abs( jetIter->partonFlavour() );
+      // int jetFlavor = std::abs( jetIter->partonFlavour() );
     
       //Here we determine what kind of flavor we have in this jet
-      ev.hist( prename+TString("flavorhistory") ) -> Fill ( HFcat_ );
+      if ( useHFcat_ )
+        ev.hist( TString("flavorhistory") ) -> Fill ( HFcat_ );
       if (5 == jetFlavor)
-	{
-	  ev.hist( prename+TString("bmass") ) -> Fill( vertexMass );
-	  ++numBottom;
-	} // if bottom
+        {
+          ev.hist( TString("bmass") ) -> Fill( vertexMass );
+          ++numBottom;
+        } // if bottom
       else if ( 4 == jetFlavor )
-	{
-	  ev.hist( prename+TString("cmass") ) -> Fill( vertexMass );
-	  ++numCharm;
-	} // if charm
+        {
+          ev.hist( TString("cmass") ) -> Fill( vertexMass );
+          ++numCharm;
+        } // if charm
       else
-	{
-	  ev.hist( prename+TString("lfmass") ) -> Fill( vertexMass );
-	  ++numLight;
-	} // if light flavor
+        {
+          ev.hist( TString("lfmass") ) -> Fill( vertexMass );
+          ++numLight;
+        } // if light flavor
       
       ++numTags;
-      ev.hist( prename+TString("discriminator") ) -> Fill ( jetIter->bDiscriminator("simpleSecondaryVertexBJetTags") );
+      ev.hist( TString("discriminator") ) -> Fill ( jetIter->bDiscriminator("simpleSecondaryVertexBJetTags") );
       
       // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
       if(numTags==2) break;
@@ -440,56 +460,54 @@ bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, ve
   // Calculate average SecVtx mass and //
   // fill appropriate histograms.      //
   numJets = std::min( (int) jets.size(), 5 );
-  ev.hist( prename+secvtxname + "_jettag")->Fill (numJets, numTags);
+  ev.hist( secvtxname + "_jettag")->Fill (numJets, numTags);
       
   // If we don't have any tags, don't bother going on
   if ( ! numTags) {
     double hTUsingPt = muPt_;
     double hTUsingEt = muPt_;
     
-    
     for (unsigned ijet = 0; ijet < jets.size(); ijet++) {
       hTUsingPt += jets[ijet].pt();
       hTUsingEt += jets[ijet].et();
+      /*
       if (ijet == 0) {
-	ev.hist(prename+TString("jet1Pt" ))	->Fill( jets[ijet].pt() 	);
-	ev.hist(prename+TString("jet1Mass" ))	->Fill( jets[ijet].mass() 	);
-	ev.hist(prename+TString("jet1Eta" ))	->Fill( jets[ijet].eta()	);
+        ev.hist(TString("jet1Pt"   )) ->Fill( jets[ijet].pt() 	);
+        ev.hist(TString("jet1Mass" )) ->Fill( jets[ijet].mass() );
+        ev.hist(TString("jet1Eta"  )) ->Fill( jets[ijet].eta()	);
       }
       if (ijet == 1) {
-	ev.hist(prename+TString("jet2Pt" )) ->Fill( jets[ijet].pt()    );
-	ev.hist(prename+TString("jet2Mass" ))  ->Fill( jets[ijet].mass()    );
-	ev.hist(prename+TString("jet2Eta" )) ->Fill( jets[ijet].eta()   );
+        ev.hist(TString("jet2Pt"   )) ->Fill( jets[ijet].pt()   );
+        ev.hist(TString("jet2Mass" )) ->Fill( jets[ijet].mass() );
+        ev.hist(TString("jet2Eta"  )) ->Fill( jets[ijet].eta()  );
       }
       if (ijet == 2) {
-	ev.hist(prename+TString("jet3Pt" )) ->Fill( jets[ijet].pt()    );
-	ev.hist(prename+TString("jet3Mass" ))  ->Fill( jets[ijet].mass()    );
-	ev.hist(prename+TString("jet3Eta" )) ->Fill( jets[ijet].eta()   );
+        ev.hist(TString("jet3Pt"   )) ->Fill( jets[ijet].pt()   );
+        ev.hist(TString("jet3Mass" )) ->Fill( jets[ijet].mass() );
+        ev.hist(TString("jet3Eta"  )) ->Fill( jets[ijet].eta()  );
       }
       
       if (ijet == 3) {
-	ev.hist(prename+TString("jet4Pt" )) ->Fill( jets[ijet].pt()    );
-	ev.hist(prename+TString("jet4Mass" ))  ->Fill( jets[ijet].mass()    );
-	ev.hist(prename+TString("jet4Eta" )) ->Fill( jets[ijet].eta()   );
+        ev.hist(TString("jet4Pt"   )) ->Fill( jets[ijet].pt()   );
+        ev.hist(TString("jet4Mass" )) ->Fill( jets[ijet].mass() );
+        ev.hist(TString("jet4Eta"  )) ->Fill( jets[ijet].eta()  );
       }
-      
+      */
     }
      
-    if (numJets == 1 ) ev.hist(prename+sampleNameInput+TString("_hT_1j"))->Fill(hTUsingEt);
-    if (numJets == 2 ) ev.hist(prename+sampleNameInput+TString("_hT_2j"))->Fill(hTUsingEt);
-    if (numJets == 3 ) ev.hist(prename+sampleNameInput+TString("_hT_3j"))->Fill(hTUsingEt);
-    if (numJets == 4 ) ev.hist(prename+sampleNameInput+TString("_hT_4j"))->Fill(hTUsingEt);
-    if (numJets == 5 ) ev.hist(prename+sampleNameInput+TString("_hT_5j"))->Fill(hTUsingEt);
+    if (numJets == 1 ) ev.hist(sampleNameInput+TString("_hT_1j"))->Fill(hTUsingEt);
+    if (numJets == 2 ) ev.hist(sampleNameInput+TString("_hT_2j"))->Fill(hTUsingEt);
+    if (numJets == 3 ) ev.hist(sampleNameInput+TString("_hT_3j"))->Fill(hTUsingEt);
+    if (numJets == 4 ) ev.hist(sampleNameInput+TString("_hT_4j"))->Fill(hTUsingEt);
+    if (numJets == 5 ) ev.hist(sampleNameInput+TString("_hT_5j"))->Fill(hTUsingEt);
 
-        
-
-    ev.hist(prename+sampleNameInput+TString("_hT"))  ->Fill( hTUsingEt   );
-    ev.hist(prename+sampleNameInput+TString("_hTUsingPt"))->Fill (hTUsingPt);
-    ev.hist(prename+sampleNameInput+TString("_hTvsNJet"))-> Fill (numJets, hTUsingEt);
-
-      return true;
+    ev.hist(sampleNameInput+TString("_hT"       )) ->Fill (hTUsingEt         );
+    ev.hist(sampleNameInput+TString("_hTUsingPt")) ->Fill (hTUsingPt         );
+    ev.hist(sampleNameInput+TString("_hTvsNJet" )) ->Fill (numJets, hTUsingEt);
+    
+    return true;
   }
-
+  
   sumVertexMass /= numTags;
     
   string whichtag = "";
@@ -514,8 +532,8 @@ bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, ve
   string massName = secvtxname
    + Form("_secvtxMass_%dj_%dt", numJets, numTags);
 
-  ev.hist( prename + massName           ) -> Fill (sumVertexMass);
-  ev.hist( prename + massName + whichtag) -> Fill (sumVertexMass);
+  ev.hist( massName           ) -> Fill (sumVertexMass);
+  ev.hist( massName + whichtag) -> Fill (sumVertexMass);
 
   
   // Muons Only //
@@ -543,13 +561,13 @@ bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, ve
     hCalIso_	= globalMuon->hcalIso();
     relIso_	= ( trackIso_ + eCalIso_ + hCalIso_ )/muPt_ ;
 
-    ev.hist( prename+TString("muPt") )	  ->Fill( muPt_      );
-    ev.hist( prename+TString("muEta") )   ->Fill( muEta_     );
-    ev.hist( prename+TString("nHits") )   ->Fill( nhits_     );
-    ev.hist( prename+TString("d0") )	  ->Fill( d0_        );
-    ev.hist( prename+TString("Chi2") )	  ->Fill( norm_chi2_ );
-    ev.hist( prename+TString("hCalVeto") )->Fill( hCalVeto_  );
-    ev.hist( prename+TString("eCalVeto") )->Fill( eCalVeto_  );
+    ev.hist( TString("muPt") )	  ->Fill( muPt_      );
+    ev.hist( TString("muEta") )   ->Fill( muEta_     );
+    ev.hist( TString("nHits") )   ->Fill( nhits_     );
+    ev.hist( TString("d0") )	  ->Fill( d0_        );
+    ev.hist( TString("Chi2") )	  ->Fill( norm_chi2_ );
+    ev.hist( TString("hCalVeto") )->Fill( hCalVeto_  );
+    ev.hist( TString("eCalVeto") )->Fill( eCalVeto_  );
   } // end muonPlusJets_
   // Electrons Only //
   if ( ePlusJets_ ) {
@@ -566,27 +584,27 @@ bool make_plots(fwlite::EventContainer & ev, vector<pat::Electron> electrons, ve
     hCalIso_  = electron_ ->hcalIso();
     relIso_   = ( trackIso_ + eCalIso_ + hCalIso_ )/ePt_ ;
 
-    ev.hist( prename+TString("ePt"  ) )	   ->Fill( ePt_	     );
-    ev.hist( prename+TString("eEta" ) )	   ->Fill( eEta_     );
-    ev.hist( prename+TString("ePhi" ) )	   ->Fill( ePhi_     );
-    ev.hist( prename+TString("eD0"  ) )    ->Fill( eD0_	     );
+    ev.hist( TString("ePt"  ) )	   ->Fill( ePt_	     );
+    ev.hist( TString("eEta" ) )	   ->Fill( eEta_     );
+    ev.hist( TString("ePhi" ) )	   ->Fill( ePhi_     );
+    ev.hist( TString("eD0"  ) )    ->Fill( eD0_	     );
     
   }// end ePlusJets_
 
-  ev.hist( prename+TString("trackIso" ) )->Fill( trackIso_ );
-  ev.hist( prename+TString("eCalIso"  ) )->Fill( eCalIso_  );
-  ev.hist( prename+TString("hCalIso"  ) )->Fill( hCalIso_  );
-  ev.hist( prename+TString("relIso"   ) )->Fill( relIso_   );
+  ev.hist( TString("trackIso" ) )->Fill( trackIso_ );
+  ev.hist( TString("eCalIso"  ) )->Fill( eCalIso_  );
+  ev.hist( TString("hCalIso"  ) )->Fill( hCalIso_  );
+  ev.hist( TString("relIso"   ) )->Fill( relIso_   );
   
   if( !passOneLepton ) return false;
-  ev.hist( prename+TString("nJets" ) )->Fill( jets.size() );
+  ev.hist( TString("nJets" ) )->Fill( jets.size() );
     
   unsigned int maxJets = jets.size();
-  if ( maxJets >= nJetsCut ) {
+  if ( maxJets >= nJetsCut_ ) {
     if ( maxJets > 4 ) maxJets = 4;
     for ( unsigned int i=0; i<maxJets; ++i) {
-      ev.hist( prename+TString("jet" + boost::lexical_cast<std::string>(i+1) + "Pt") ) ->Fill( jets[i].pt()  );
-      ev.hist( prename+TString("jet" + boost::lexical_cast<std::string>(i+1) + "Eta") )->Fill( jets[i].eta() );
+      ev.hist( TString("jet" + boost::lexical_cast<std::string>(i+1) + "Pt") ) ->Fill( jets[i].pt()  );
+      ev.hist( TString("jet" + boost::lexical_cast<std::string>(i+1) + "Eta") )->Fill( jets[i].eta() );
     }
   }
   return true;
@@ -597,125 +615,134 @@ bool calcSampleName (fwlite::EventContainer &eventCont, string &sampleName)
   // calculate sample name
   optutl::CommandLineParser &parser = eventCont.parser();
   sampleName += parser.stringValue  ("sampleName");
-  int mode   = parser.integerValue ("mode");
+  int mode    = parser.integerValue ("mode");
   
-  // Get the heavy flavor category
-  fwlite::Handle< unsigned int > heavyFlavorCategory;
-  heavyFlavorCategory.getByLabel (eventCont, "flavorHistoryFilter");
-  assert ( heavyFlavorCategory.isValid() );
-  HFcat_ = (*heavyFlavorCategory);
+  // Get the heavy flavor category - we first want to make sure we have flavorHistory
+  if(useHFcat_) {
+    fwlite::Handle< unsigned int > heavyFlavorCategory;
+    heavyFlavorCategory.getByLabel (eventCont, "flavorHistoryFilter");
+    assert ( heavyFlavorCategory.isValid() );
+    HFcat_ = (*heavyFlavorCategory);
+
+    // Light Flavor Mode //
+    if (kLFMode == mode)
+      {
+        // Wqq
+        if (5 == HFcat_)
+          {
+            sampleName += "b3";
+          }
+        else if (6 == HFcat_)
+          {
+            sampleName += "c3";
+          }
+        else if (11 != HFcat_)
+          {
+            // skip this event
+            return false;
+          } // else if ! 11
+        return true;
+      }
+    
+    // Wc Mode //
+    if (kWcMode == mode)
+      {
+        // Wc
+        if (4 != HFcat_)
+          {
+            // skip this event
+            return false;
+          } // if not Wc
+        return true;
+      } // else if Wc
+    
+    // Vqq Mode //
+    
+    // MadGraph (at least as CMS has implemented it) has this _lovely_
+    // feature that if the W or Z is far enough off-shell, it erases
+    // the W or Z from the event record.  This means that in some
+    // number of cases, we won't be able to tell whether this is a W or
+    // Z event by looking for a W or Z in the GenParticle collection.
+    // (We'll eventually have to be more clever).
+    //   sampleName = "X";
+    fwlite::Handle< vector< reco::GenParticle > > genParticleCollection;
+    genParticleCollection.getByLabel (eventCont, "prunedGenParticles");
+    assert ( genParticleCollection.isValid() );
+    // We don't know if it is a W, a Z, or neither
+    // Iterate over genParticles
+    const vector< reco::GenParticle>::const_iterator 
+      kGenPartEnd = genParticleCollection->end();
+    for (vector< reco::GenParticle>::const_iterator gpIter =
+           genParticleCollection->begin(); 
+         gpIter != kGenPartEnd; ++gpIter ) 
+      {
+        if (gpIter->status() == 3 && std::abs(gpIter->pdgId()) == 23)
+          {
+            sampleName += "Z";
+            break;
+          }
+        else if (gpIter->status() == 3 && std::abs(gpIter->pdgId()) == 24)
+          {
+            sampleName += "W";
+            break;
+          }
+        else if (gpIter==kGenPartEnd-1) 
+          {
+            sampleName += "X";
+            break;
+          }
+      } // for  gpIter
+    switch (HFcat_)
+      {
+        // from:
+        // https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideFlavorHistory
+        //  1. W+bb with >= 2 jets from the ME (dr > 0.5)
+        //  2. W+b or W+bb with 1 jet from the ME
+        //  3. W+cc from the ME (dr > 0.5)
+        //  4. W+c or W+cc with 1 jet from the ME
+        //  5. W+bb with 1 jet from the parton shower (dr == 0.0)
+        //  6. W+cc with 1 jet from the parton shower (dr == 0.0)
+        //  7. W+bb with >= 2 partons but 1 jet from the ME (dr == 0.0)
+        //  8. W+cc with >= 2 partons but 1 jet from the ME (dr == 0.0)
+        //  9. W+bb with >= 2 partons but 2 jets from the PS (dr > 0.5)
+        // 10. W+cc with >= 2 partons but 2 jets from the PS (dr > 0.5)
+        // 11. Veto of all the previous (W+ light jets)
+      case 1:
+        sampleName += "bb";
+        break;
+      case 2:
+        // Sometimes this is referred to as 'b' (e.g., 'Wb'), but I
+        // am using the suffix '2' to keep this case clear for when
+        // we have charm (see below).
+        sampleName += "b2";
+        break; 
+      case 3:
+        sampleName += "cc";
+        break;
+      case 4:
+        // We want to keep this case clear from real W + single charm
+        // produced (as opposed to two charm quarks produced and one
+        // goes down the beampipe), so we use 'c2' instead of 'c'.
+        sampleName += "c2";
+        break;
+      default:
+        // we don't want the rest of the cases.  Return an empty
+        // string so we know.
+        return false;
+      } // switch HFcat_
+    return true;
+  }
   
   // Normal Mode //
-  if (kNormalMode == mode)
+  else if (kNormalMode == mode)
     {
       // all we want is the sample name, so in this case we're done.
       return true;
     }
-  
-  // Light Flavor Mode //
-  if (kLFMode == mode)
+  else
     {
-      // Wqq
-      if (5 == HFcat_)
-	{
-	  sampleName += "b3";
-	} else if (6 == HFcat_)
-	{
-	  sampleName += "c3";
-	} else if (11 != HFcat_)
-	{
-	  // skip this event
-	  return false;
-	} // else if ! 11
-      return true;
-    }
-  
-  // Wc Mode //
-  if (kWcMode == mode)
-    {
-      // Wc
-      if (4 != HFcat_)
-	{
-	  // skip this event
-	  return false;
-	} // if not Wc
-      return true;
-    } // else if Wc
-  
-  // Vqq Mode //
-  
-  // MadGraph (at least as CMS has implemented it) has this _lovely_
-  // feature that if the W or Z is far enough off-shell, it erases
-  // the W or Z from the event record.  This means that in some
-  // number of cases, we won't be able to tell whether this is a W or
-  // Z event by looking for a W or Z in the GenParticle collection.
-  // (We'll eventually have to be more clever).
-  //   sampleName = "X";
-  fwlite::Handle< vector< reco::GenParticle > > genParticleCollection;
-  genParticleCollection.getByLabel (eventCont, "prunedGenParticles");
-  assert ( genParticleCollection.isValid() );
-  // We don't know if it is a W, a Z, or neither
-  // Iterate over genParticles
-  const vector< reco::GenParticle>::const_iterator 
-    kGenPartEnd = genParticleCollection->end();
-  for (vector< reco::GenParticle>::const_iterator gpIter =
-	 genParticleCollection->begin(); 
-       gpIter != kGenPartEnd; ++gpIter ) 
-    {
-      if (gpIter->status() == 3 && std::abs(gpIter->pdgId()) == 23)
-	{
-	  sampleName += "Z";
-	  break;
-	}
-      else if (gpIter->status() == 3 && std::abs(gpIter->pdgId()) == 24)
-	{
-	  sampleName += "W";
-	  break;
-	}
-      else if (gpIter==kGenPartEnd-1) 
-	{
-	  sampleName += "X";
-	  break;
-	}
-    } // for  gpIter
-  switch (HFcat_)
-    {
-      // from:
-      // https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideFlavorHistory
-      //  1. W+bb with >= 2 jets from the ME (dr > 0.5)
-      //  2. W+b or W+bb with 1 jet from the ME
-      //  3. W+cc from the ME (dr > 0.5)
-      //  4. W+c or W+cc with 1 jet from the ME
-      //  5. W+bb with 1 jet from the parton shower (dr == 0.0)
-      //  6. W+cc with 1 jet from the parton shower (dr == 0.0)
-      //  7. W+bb with >= 2 partons but 1 jet from the ME (dr == 0.0)
-      //  8. W+cc with >= 2 partons but 1 jet from the ME (dr == 0.0)
-      //  9. W+bb with >= 2 partons but 2 jets from the PS (dr > 0.5)
-      // 10. W+cc with >= 2 partons but 2 jets from the PS (dr > 0.5)
-      // 11. Veto of all the previous (W+ light jets)
-    case 1:
-      sampleName += "bb";
-      break;
-    case 2:
-      // Sometimes this is referred to as 'b' (e.g., 'Wb'), but I
-      // am using the suffix '2' to keep this case clear for when
-      // we have charm (see below).
-      sampleName += "b2";
-      break; 
-    case 3:
-      sampleName += "cc";
-      break;
-    case 4:
-      // We want to keep this case clear from real W + single charm
-      // produced (as opposed to two charm quarks produced and one
-      // goes down the beampipe), so we use 'c2' instead of 'c'.
-      sampleName += "c2";
-      break;
-    default:
-      // we don't want the rest of the cases.  Return an empty
-      // string so we know.
+      std::cout << "Error with naming sample" << std::endl;
       return false;
-    } // switch HFcat_
-  return true;
+    }
 }
 
