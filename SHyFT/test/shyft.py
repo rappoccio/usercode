@@ -92,10 +92,10 @@ process.source.fileNames = [
   ]
 process.maxEvents.input = 1000         ##  (e.g. -1 to run on all events)
 
-process.out.outputCommands += ['drop *_cleanLayer1*_*_*',
+process.out.outputCommands += ['drop *_cleanPat*_*_*',
 			       'keep *_flavorHistoryFilter_*_*',
                                'keep *_prunedGenParticles_*_*',
-                               'keep *_selectedLayer1*_*_*',
+                               'keep *_selectedPat*_*_*',
 			       'keep *_decaySubset_*_*',
 			       'keep *_initSubset_*_*',
 			       'keep *_offlineBeamSpot_*_*',
