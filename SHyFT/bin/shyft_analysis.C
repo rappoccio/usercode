@@ -2,7 +2,7 @@
 #include "DataFormats/FWLite/interface/Event.h"
 #include "PhysicsTools/FWLite/interface/EventContainer.h"
 #include "PhysicsTools/FWLite/interface/CommandLineParser.h" 
-#include "PhysicsTools/PatExamples/interface/WPlusJetsEventSelector.h"
+#include "PhysicsTools/SelectorUtils/interface/WPlusJetsEventSelector.h"
 #include "Math/GenVector/PxPyPzM4D.h"
 
 #include <iostream>
