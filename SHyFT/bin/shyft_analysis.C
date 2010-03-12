@@ -46,9 +46,9 @@ class SHyFT {
     virtual void analyze(const edm::EventBase& iEvent);
 
   private:
-    bool plot_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons);
-    bool plot_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons);    
-    bool plot_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets);
+    bool analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons);
+    bool analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons);    
+    bool analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets);
     bool calcSampleName (const edm::EventBase& iEvent, std::string &sampleName);
 
     WPlusJetsEventSelector wPlusJets;
@@ -127,7 +127,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
 
 
 // fill the plots for the electrons
-bool SHyFT::plot_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons)
+bool SHyFT::analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons)
 {
   if ( electrons.size() == 0 )  return false;
   const pat::Electron * electron_ = dynamic_cast<const pat::Electron*>(&electrons[0]);
@@ -135,10 +135,10 @@ bool SHyFT::plot_electrons(const std::vector<reco::ShallowClonePtrCandidate>& el
   double eEta_     = electron_ ->eta();
   double ePhi_     = electron_ ->phi();
   double eD0_      = electron_ ->dB();
-  double trackIso_ = electron_ ->trackIso();
-  double eCalIso_  = electron_ ->ecalIso();
-  double hCalIso_  = electron_ ->hcalIso();
-  double relIso_   = ( trackIso_ + eCalIso_ + hCalIso_ )/ePt_ ;
+  //double trackIso_ = electron_ ->trackIso();
+  //double eCalIso_  = electron_ ->ecalIso();
+  //double hCalIso_  = electron_ ->hcalIso();
+  //double relIso_   = ( trackIso_ + eCalIso_ + hCalIso_ )/ePt_ ;
 
   histograms["ePt"]->Fill( ePt_ );
   histograms["eEta"]->Fill( eEta_ );
@@ -150,7 +150,7 @@ bool SHyFT::plot_electrons(const std::vector<reco::ShallowClonePtrCandidate>& el
 
 
 // fill the plots for the muons
-bool SHyFT::plot_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons)
+bool SHyFT::analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons)
 {
   const pat::Muon * globalMuon = NULL;
   for ( ShallowCloneCollection::const_iterator muonBegin = muons.begin(),
@@ -170,10 +170,10 @@ bool SHyFT::plot_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons)
   double norm_chi2_  = globalMuon->normChi2();
   double hCalVeto_   = globalMuon->isolationR03().hadVetoEt;
   double eCalVeto_   = globalMuon->isolationR03().emVetoEt;
-  double trackIso_   = globalMuon->trackIso();
-  double eCalIso_    = globalMuon->ecalIso();
-  double hCalIso_    = globalMuon->hcalIso();
-  double relIso_     = ( trackIso_ + eCalIso_ + hCalIso_ )/muPt_ ;
+  //double trackIso_   = globalMuon->trackIso();
+  //double eCalIso_    = globalMuon->ecalIso();
+  //double hCalIso_    = globalMuon->hcalIso();
+  //double relIso_     = ( trackIso_ + eCalIso_ + hCalIso_ )/muPt_ ;
 
   histograms["muPt"]->Fill( muPt_      );
   histograms["muEta"]->Fill( muEta_     );
@@ -188,8 +188,7 @@ bool SHyFT::plot_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons)
 
 
 // fill the plots for the jets
-// AND get the number of tags
-bool SHyFT::plot_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets)
+bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets)
 {
 
   //SecVtxMass and b-tagging related quantities
@@ -330,7 +329,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   std::vector<reco::ShallowClonePtrCandidate> const & electrons = wPlusJets.selectedElectrons();
   std::vector<reco::ShallowClonePtrCandidate> const & muons     = wPlusJets.selectedMuons();
   std::vector<reco::ShallowClonePtrCandidate> const & jets      = wPlusJets.cleanedJets();
-  std::vector<reco::ShallowClonePtrCandidate> const & jetsBeforeClean = wPlusJets.selectedJets();
+  //std::vector<reco::ShallowClonePtrCandidate> const & jetsBeforeClean = wPlusJets.selectedJets();
 
   string bit_;
 
@@ -351,9 +350,9 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
 
   if (passed) 
   {
-    plot_jets(jets);
-    if ( muPlusJets_ ) plot_muons(muons);
-    if ( ePlusJets_ ) plot_electrons(electrons);
+    analyze_jets(jets);
+    if ( muPlusJets_ ) analyze_muons(muons);
+    if ( ePlusJets_ ) analyze_electrons(electrons);
 
     if( !passOneLepton ) return;
 
@@ -513,6 +512,9 @@ int main ( int argc, char ** argv )
   gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
 
+  // Setup a style                                                                                                                                                       
+  gROOT->SetStyle ("Plain");
+
   if ( argc < 2 ) {
     std::cout << "Usage : " << argv[0] << " [parameters.py]" << std::endl;
     return 0;
@@ -533,11 +535,6 @@ int main ( int argc, char ** argv )
   // event as well as to store histograms, etc.
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
 
-  // Setup a style
-  gROOT->SetStyle ("Plain");
-  
-  // Trying to smartly create the histograms. There must be a better way, but this removes many lines of code
-  //string prename;
   //loop through each event
   for( ev.toBegin();
        ! ev.atEnd();
@@ -551,4 +548,3 @@ int main ( int argc, char ** argv )
   
   return 0;
 }
-
