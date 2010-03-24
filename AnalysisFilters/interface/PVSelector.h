@@ -13,17 +13,14 @@
 // make a selector for this selection
 class PVSelector : public Selector<edm::EventBase> {
 public:
-  PVSelector( edm::InputTag const & pvSrc,
-	      double minNdof = 5,
-	      double maxPVZ = 15)  : 
-  pvSrc_ (pvSrc)
-  {
-    push_back("PV NDOF", minNdof);
-    push_back("PV Z", maxPVZ);
+ PVSelector( edm::ParameterSet const & params ) :
+  pvSrc_ (params.getParameter<edm::InputTag>("pvSrc") ) {
+    push_back("PV NDOF", params.getParameter<double>("minNdof") );
+    push_back("PV Z", params.getParameter<double>("maxPVZ") );
     set("PV NDOF");
     set("PV Z");
   }
-
+  
   bool operator() ( edm::EventBase const & event,  std::strbitset & ret ) {
     event.getByLabel(pvSrc_, h_primVtx);
 

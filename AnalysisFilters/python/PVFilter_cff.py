@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 
+from Analysis.AnalysisFilters.pvSelector_cfi import pvSelector
+
 pvFilter = cms.EDFilter("PVFilter",
-                          pvSrc = cms.InputTag('offlinePrimaryVertices'),
-                          minPVNdof = cms.double(5.0),
-                          maxPVZ = cms.double(15.0)
-                                    )
+                        pvSelector
+                        )
