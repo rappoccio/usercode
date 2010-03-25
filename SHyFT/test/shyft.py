@@ -50,6 +50,14 @@ process.prunedGenParticles = cms.EDProducer("GenParticlePruner",
   )
 )
 
+# re-run the gen jets
+from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
+run33xOnReRecoMC( process,
+                  genJets = "ak5GenJets",
+                  postfix="")
+
+
+
 ######################
 # begin changes for PF
 
@@ -73,22 +81,22 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5')
 # remove trigger matching for PF2PAT as that is currently broken
 process.patDefaultSequence.remove(process.patTriggerSequence)
 
-
 # end changes for PF
 ####################
 
 # let it run
 process.p = cms.Path(
  process.makeGenEvt *
- process.flavorHistorySeq *
- process.prunedGenParticles*
  process.patDefaultSequenceStd *
- process.patDefaultSequence
+ process.patDefaultSequence*
+ process.flavorHistorySeq *
+ process.prunedGenParticles
  )
 
 
 process.source.fileNames = [
-'/store/relval/CMSSW_3_5_4/RelValTTbar/GEN-SIM-RECO/START3X_V24-v1/0003/0060E652-822B-DF11-BA47-002618943972.root'
+    'file:/uscms_data/d1/rappocc/SHyFT/files/84F29E99-202C-DF11-810C-00237DA14F92.root'
+#'/store/relval/CMSSW_3_5_4/RelValTTbar/GEN-SIM-RECO/START3X_V24-v1/0003/0060E652-822B-DF11-BA47-002618943972.root'
   ]
 process.maxEvents.input = 1000         ##  (e.g. -1 to run on all events)
 
