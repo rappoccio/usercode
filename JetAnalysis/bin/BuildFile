@@ -1,0 +1,15 @@
+<use name=DataFormats/PatCandidates>
+<use name=DataFormats/FWLite>
+<use name=FWCore/Framework>
+<use name=FWCore/FWLite>
+<use name=rootcintex>
+<use name=root> 
+<use name=boost>
+<use name=CommonTools/Utils>
+<use name=PhysicsTools/SelectorUtils>
+<use name=PhysicsTools/PatExamples>
+<use name=PhysicsTools/FWLite>
+
+<environment>
+ <bin file="jetStudies.C"> </bin>
+</environment>
