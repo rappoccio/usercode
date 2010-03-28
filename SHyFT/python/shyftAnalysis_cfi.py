@@ -8,6 +8,9 @@ shyftAnalysis = cms.PSet(
     jetSrc = cms.InputTag('selectedPatJetsStd'),
     metSrc = cms.InputTag('patMETsStd'),
     trigSrc = cms.InputTag('patTriggerEventStd'),
+    sampleName = cms.string("top"),
+    mode = cms.int32(0),
+    heavyFlavour = cms.bool(False),
 
     # object ID
 
