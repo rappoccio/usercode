@@ -22,6 +22,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TSystem.h"
+#include "TStopwatch.h"
 
 using namespace std;
 
@@ -44,6 +45,7 @@ class SHyFT {
     SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir);
     virtual ~SHyFT() {}
     virtual void analyze(const edm::EventBase& iEvent);
+    virtual void finalize();
 
   private:
     bool analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons);
@@ -59,7 +61,7 @@ class SHyFT {
     bool muPlusJets_;
     bool ePlusJets_;
     bool useHFcat_;
-    unsigned int nJetsCut_ ;
+    int nJetsCut_ ;
     int mode;
     std::string sampleNameInput;
     // used to be a global, what a shit!
@@ -71,12 +73,12 @@ class SHyFT {
 SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   wPlusJets(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis")),
   theDir(iDir),
-  muPlusJets_(iConfig.getParameter<bool>("muPlusJets")),
-  ePlusJets_(iConfig.getParameter<bool>("ePlusJets")),
-  useHFcat_(iConfig.getParameter<bool>("heavyFlavour")),
-  nJetsCut_(iConfig.getParameter<unsigned int>("nJetsCut")),  
-  mode(iConfig.getParameter<int>("mode")),
-  sampleNameInput(iConfig.getParameter<std::string>("sampleName"))
+  muPlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("muPlusJets")),
+  ePlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("ePlusJets")),
+  useHFcat_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("heavyFlavour")),
+  nJetsCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("minJets")),  
+  mode(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("mode")),
+  sampleNameInput(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("sampleName"))
 {
   //book all the histograms for muons
   histograms["muPt"]     = theDir.make<TH1F>("muPt",     "Muon p_{T} (GeV/c) ", 100,    0, 200);
@@ -122,7 +124,60 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   }
   else sampleName.push_back(sampleNameInput);
 
-  // TODO: add the missing histograms
+  //Calibration Plots
+histograms["trackIso"] = theDir.make<TH1F>("trackIso", "TrackIso",        50,    0,   50);
+histograms["eCalIso"] = theDir.make<TH1F>("eCalIso",  "eCalIso",            80,    0,   40);
+histograms["hCalIso"] = theDir.make<TH1F>("hCalIso",  "hCalIso",            60,    0,   30);
+histograms["relIso"] = theDir.make<TH1F>("relIso",   "RelIso",            50,    0,    5);
+histograms["nJets"] = theDir.make<TH1F>("nJets",    "N Jets, pt>30, eta<2.4",  15,    0,15);
+histograms["jet1Pt"] = theDir.make<TH1F>("jet1Pt",   "1st leading jet pt",     150,    0,  300);
+histograms["jet2Pt"] = theDir.make<TH1F>("jet2Pt",   "2nd leading jet pt",     150,    0,  300);
+histograms["jet3Pt"] = theDir.make<TH1F>("jet3Pt",   "3rd leading jet pt",     150,    0,  300);
+histograms["jet4Pt"] = theDir.make<TH1F>("jet4Pt",   "4th leading jet pt",     150,    0,  300);
+histograms["jet1Eta"] = theDir.make<TH1F>("jet1Eta",  "1st leading jet eta",     50, -3.0,  3.0);
+histograms["jet2Eta"] = theDir.make<TH1F>("jet2Eta",  "2nd leading jet eta",     50, -3.0,  3.0);
+histograms["jet3Eta"] = theDir.make<TH1F>("jet3Eta",  "3rd leading jet eta",     50, -3.0,  3.0);
+histograms["jet4Eta"] = theDir.make<TH1F>("jet4Eta",  "4th leading jet eta",     50, -3.0,  3.0);
+histograms["jet1Mass"] = theDir.make<TH1F>("jet1Mass", "1st leading jet mass",    50,    0,  150);
+histograms["jet2Mass"] = theDir.make<TH1F>("jet2Mass", "2nd leading jet mass",    50,    0,  150);
+histograms["jet3Mass"] = theDir.make<TH1F>("jet3Mass", "3rd leading jet mass",    50,    0,  150);
+histograms["jet4Mass"] = theDir.make<TH1F>("jet4Mass", "4th leading jet mass",    50,    0,  150);
+histograms["bmass"] = theDir.make<TH1F>("bmass",    "B Sec Vtx Mass",          28,    0,    7);
+histograms["cmass"] = theDir.make<TH1F>("cmass",    "C Sec Vtx Mass",          28,    0,    7);
+histograms["lfmass"] = theDir.make<TH1F>("lfmass",   "LF Sec Vtx Mass",         28,    0,    7);
+histograms["flavorHistory"] = theDir.make<TH1F>("flavorhistory", "Flavor History",     12,    0,   12);
+histograms["discriminator"] = theDir.make<TH1F>("discriminator", "BTag Discriminator", 30,    2,    8);
+histograms["nVertices"] = theDir.make<TH1F>("nVertices",     "num sec Vertices",    5,    0,    5) ;
+  /*  ev.add ( new TH1F( TString("beff_pt0to50"),    "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  ev.add ( new TH1F( TString("beff_pt50to100"),  "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  ev.add ( new TH1F( TString("beff_pt100to150"), "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  ev.add ( new TH1F( TString("beff_pt150to200"), "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  ev.add ( new TH1F( TString("beff_pt200to250"), "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  ev.add ( new TH1F( TString("beff_pt250to300"), "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  ev.add ( new TH1F( TString("beff_pt300plus"),  "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
+  */
+histograms["tag_eff"] = theDir.make<TH1F>("tag_eff", "0 lf untag, 1 c untag, 2 b untag, 3 lf tag, 4 c tag, 5 b tag",   6,    0,      6);
+histograms["tag_jet_pt"] = theDir.make<TH1F>("tag_jet_pt", "JetPt to go with tagging efficiency",                       150,    0,    300);
+
+histograms[sampleNameInput+"_hT"] = theDir.make<TH1F>( (sampleNameInput+"_hT").c_str(),    "HT using Et is the sum of Jet Et plus Muon Pt", 50, 0,   1200);
+ histograms[sampleNameInput+"_hT_1j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_1j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 50,   300);
+ histograms[sampleNameInput+"_hT_2j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_2j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 80,   500);
+histograms[sampleNameInput+"_hT_3j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_3j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 110,  600);
+histograms[sampleNameInput+"_hT_4j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_4j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 5,  140,  600);
+histograms[sampleNameInput+"_hT_5j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_5j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 5,  170,  600);
+//histograms[sampleNameInput+"_hTvsNJet"] = theDir.make<TH2F>( (sampleNameInput+"_hTvsNJet").c_str(),  "HT as a function of NJets", 5, 0.5, 5.5, 50, 0, 1200);
+  //ev.add ( new TH1F( sampleNameInput+TString("_hTUsingPt"), "HT s is Sum of Jet Pt", 50, 0, 1200) );
+
+  for (unsigned int j=0;j<sampleName.size();++j) {
+    for(unsigned int k=0;k<secvtxName.size();++k) {
+      for(unsigned int l=0;l<secvtxEnd.size();++l) {
+	std::string temp = sampleName[j]+secvtxName[k]+secvtxEnd[l];
+        histograms[temp] = theDir.make<TH1F>(temp.c_str(), "secvtxmass", 40,    0,   10);
+        if(k==0 && l==4) break;
+      }
+    }
+  }
+
 }
 
 
@@ -148,7 +203,6 @@ bool SHyFT::analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>&
   return true;
 }
 
-
 // fill the plots for the muons
 bool SHyFT::analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons)
 {
@@ -157,7 +211,7 @@ bool SHyFT::analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muo
           muonEnd = muons.end(), imuon = muonBegin;
         imuon != muonEnd; ++imuon ) {
     if ( imuon->isGlobalMuon() ) {
-      globalMuon = dynamic_cast<const pat::Muon *>(&*imuon);
+      globalMuon = dynamic_cast<const pat::Muon *>(imuon->masterClonePtr().get());
       break;
     }
   }
@@ -199,13 +253,14 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
 	  jetEnd = jets.end(), jetIter = jetBegin;
 	jetIter != jetEnd; ++jetIter)
   {
-      const pat::Jet * jet = dynamic_cast<const pat::Jet *>( &*jetIter);
+      const pat::Jet* jet = dynamic_cast<const pat::Jet *>(jetIter->masterClonePtr().get());
 
       // We first get the flavor of the jet so we can fill look at btag efficiency.
       int jetFlavor = std::abs( jet->partonFlavour() );
       double jetPt  = std::abs( jet->pt() );
-
+     
       histograms["tag_jet_pt"]->Fill( jetPt );
+
       // Is this jet tagged and does it have a good secondary vertex
       if( jet->bDiscriminator("simpleSecondaryVertexBJetTags") < 2.05 ) {
         // This jet is not tagged, so we skip it but first we check the btag efficiency.
@@ -223,7 +278,7 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
         = jet->tagInfoSecondaryVertex("secondaryVertex");
       if ( svTagInfos->nVertices() <= 0 )  continue;
       else histograms["nVertices"]-> Fill( svTagInfos->nVertices() );
-      
+
       // Calculate SecVtx Mass //
       ROOT::Math::LorentzVector< ROOT::Math::PxPyPzM4D<double> > sumVec;
       
@@ -266,7 +321,6 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
           histograms["lfmass"]->Fill(vertexMass);
           ++numLight;
       }
-      
       ++numTags;
       histograms["discriminator"]-> Fill ( jet->bDiscriminator("simpleSecondaryVertexBJetTags") );
       
@@ -277,7 +331,7 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
    // Calculate average SecVtx mass and //                                                                                                                                                                            // fill appropriate histograms.      //                                                                                                                                                            
    // TODO !!!
   numJets = std::min( (int) jets.size(), 5 );
-  histograms[secvtxname + "_jettag"]->Fill (numJets, numTags);
+  //histograms[secvtxname + "_jettag"]->Fill (numJets, numTags);
 
   sumVertexMass /= numTags;
 
@@ -303,13 +357,12 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
   string massName = secvtxname
     + Form("_secvtxMass_%dj_%dt", numJets, numTags);
 
-  histograms[massName           ]-> Fill (sumVertexMass);
-  histograms[massName + whichtag]-> Fill (sumVertexMass);
+  //  histograms[massName           ]-> Fill (sumVertexMass);
+  //  histograms[massName + whichtag]-> Fill (sumVertexMass);
+
 
   return true;
 }
-
-
 
 
 
@@ -319,9 +372,9 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
 void SHyFT::analyze(const edm::EventBase& iEvent)
 {
 
-  edm::Handle< vector< pat::Jet > > jetCollection;
-  iEvent.getByLabel (edm::InputTag("selectedLayer1Jets"), jetCollection);
-  assert ( jetCollection.isValid() );
+  //edm::Handle< vector< pat::Jet > > jetCollection;
+  //iEvent.getByLabel (edm::InputTag("selectedLayer1Jets"), jetCollection);
+  //assert ( jetCollection.isValid() );
 
   std::strbitset ret = wPlusJets.getBitTemplate();
 
@@ -502,6 +555,10 @@ bool SHyFT::calcSampleName (const edm::EventBase& iEvent, std::string &sampleNam
 	}
 }
 
+void SHyFT::finalize()
+{
+  wPlusJets.print(std::cout);
+}
 
 
 
@@ -522,29 +579,44 @@ int main ( int argc, char ** argv )
 
   // Get the python configuration
   PythonProcessDesc builder(argv[1]);
-  edm::ParameterSet const& parameters = *builder.processDesc()->getProcessPSet();
-  edm::ParameterSet const& inputs  = parameters.getParameter<edm::ParameterSet>("inputs");
-  edm::ParameterSet const& outputs = parameters.getParameter<edm::ParameterSet>("outputs");
+  boost::shared_ptr<edm::ProcessDesc> b = builder.processDesc();
+  boost::shared_ptr<edm::ParameterSet> parameters = b->getProcessPSet();
+  parameters->registerIt(); 
+  edm::ParameterSet const& inputs  = parameters->getParameter<edm::ParameterSet>("inputs");
+  edm::ParameterSet const& outputs = parameters->getParameter<edm::ParameterSet>("outputs");
   // book a set of histograms
   fwlite::TFileService fs = fwlite::TFileService( outputs.getParameter<std::string>("outputName") );
   TFileDirectory theDir = fs.mkdir( "histos" ); 
     
-  SHyFT theAnalysis(parameters,theDir);
+  SHyFT theAnalysis(*parameters,theDir);
 
   // This object 'event' is used both to get all information from the
   // event as well as to store histograms, etc.
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
 
+  unsigned int nEventsAnalyzed(0);
+
+  // some timing
+  TStopwatch timer;
+  timer.Start();
   //loop through each event
   for( ev.toBegin();
        ! ev.atEnd();
-       ++ev) 
+       ++ev, ++nEventsAnalyzed) 
   {
     theAnalysis.analyze(ev);
+    if (nEventsAnalyzed%100==0) std::cout<<"Events analyzed: "<<nEventsAnalyzed<<std::endl;
   } //end event loop
   
-  // we need an analysis finalize 
-  //  wPlusJets.print(std::cout);
+  theAnalysis.finalize();
+
+  timer.Stop();
+  Double_t rtime = timer.RealTime();
+  Double_t ctime = timer.CpuTime();
+  printf("Analyzed events: %d \n",nEventsAnalyzed);
+  printf("RealTime=%f seconds, CpuTime=%f seconds\n",rtime,ctime);
+  printf("%4.2f events / RealTime second .\n", nEventsAnalyzed/rtime);
+  printf("%4.2f events / CpuTime second .\n", nEventsAnalyzed/ctime);
   
   return 0;
 }
