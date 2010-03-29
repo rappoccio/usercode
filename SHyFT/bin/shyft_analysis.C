@@ -53,28 +53,20 @@ Preselection::Preselection(){;}
 
 bool
 Preselection::filter(const edm::EventBase& iEvent){
-
   bool passTrig = false;
   edm::Handle<pat::TriggerEvent> triggerEvent;
   iEvent.getByLabel(edm::InputTag("patTriggerEventStd"), triggerEvent);
-  pat::TriggerEvent const * trig = &*triggerEvent;
+  if ( triggerEvent->wasRun() && triggerEvent->wasAccept() ) {
+      pat::TriggerPath const * muPath = triggerEvent->path("HLT_Mu9");
+      pat::TriggerPath const * elePath = triggerEvent->path("HLT_Ele15_LW_L1R");
 
-    if ( trig->wasRun() && trig->wasAccept() ) {
-
-      pat::TriggerPath const * muPath = trig->path("HLT_Mu9");
-
-      pat::TriggerPath const * elePath = trig->path("HLT_Ele15_LW_L1R");
-
-      if (muPath != 0 && muPath->wasAccept() ) {
-	passTrig = true;    
-      }
-      
-      if (elePath != 0 && elePath->wasAccept() ) {
-	passTrig = true;
-      }
-    }
+      if (muPath != 0 && muPath->wasAccept()) passTrig = true;    
+      if (elePath != 0 && elePath->wasAccept()) passTrig = true;
+  }
   return passTrig;
 }
+
+
 
 class SHyFT {
 
@@ -122,15 +114,15 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   histograms["muEta"]    = theDir.make<TH1F>("muEta",    "Muon eta",             50, -3.0, 3.0);
   histograms["nHits"]    = theDir.make<TH1F>("nHits",    "Muon N Hits",          35,    0,  35);
   histograms["d0"]       = theDir.make<TH1F>("d0",       "Muon D0",              60, -0.2, 0.2);
-  histograms["Chi2"]     = theDir.make<TH1F>("Chi2", "Muon Chi2",            20,    0,   5);
+  histograms["Chi2"]     = theDir.make<TH1F>("Chi2",     "Muon Chi2",            20,    0,   5);
   histograms["hCalVeto"] = theDir.make<TH1F>("hCalVeto", "Muon hCalVeto",        30,    0,  30);
   histograms["eCalVeto"] = theDir.make<TH1F>("eCalVeto", "Muon eCalVeto",        30,    0,  30);
 
   // book all the histograms for electrons
-  histograms["ePt"] = theDir.make<TH1F>("ePt",  "Electron p_{T} (GeV/c) ", 100,    0, 200);
-  histograms["eEta"] = theDir.make<TH1F>("eEta", "Electron eta",            50, -3.0, 3.0);
-  histograms["ePhi"] = theDir.make<TH1F>("ePhi", "Electron Phi",                  50, -3.2, 3.2);
-  histograms["eD0"] = theDir.make<TH1F>("eD0",  "Electron D0",              60, -0.2, 0.2);
+  histograms["ePt"]  = theDir.make<TH1F>("ePt",  "Electron p_{T} (GeV/c) ", 100,    0, 200);
+  histograms["eEta"] = theDir.make<TH1F>("eEta", "Electron eta",             50, -3.0, 3.0);
+  histograms["ePhi"] = theDir.make<TH1F>("ePhi", "Electron Phi",             50, -3.2, 3.2);
+  histograms["eD0"]  = theDir.make<TH1F>("eD0",  "Electron D0",              60, -0.2, 0.2);
 
   std::vector<std::string> sampleNameBase;
   std::vector<std::string> sampleName;
@@ -162,29 +154,29 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   else sampleName.push_back(sampleNameInput);
 
   //Calibration Plots
-histograms["trackIso"] = theDir.make<TH1F>("trackIso", "TrackIso",        50,    0,   50);
-histograms["eCalIso"] = theDir.make<TH1F>("eCalIso",  "eCalIso",            80,    0,   40);
-histograms["hCalIso"] = theDir.make<TH1F>("hCalIso",  "hCalIso",            60,    0,   30);
-histograms["relIso"] = theDir.make<TH1F>("relIso",   "RelIso",            50,    0,    5);
-histograms["nJets"] = theDir.make<TH1F>("nJets",    "N Jets, pt>30, eta<2.4",  15,    0,15);
-histograms["jet1Pt"] = theDir.make<TH1F>("jet1Pt",   "1st leading jet pt",     150,    0,  300);
-histograms["jet2Pt"] = theDir.make<TH1F>("jet2Pt",   "2nd leading jet pt",     150,    0,  300);
-histograms["jet3Pt"] = theDir.make<TH1F>("jet3Pt",   "3rd leading jet pt",     150,    0,  300);
-histograms["jet4Pt"] = theDir.make<TH1F>("jet4Pt",   "4th leading jet pt",     150,    0,  300);
-histograms["jet1Eta"] = theDir.make<TH1F>("jet1Eta",  "1st leading jet eta",     50, -3.0,  3.0);
-histograms["jet2Eta"] = theDir.make<TH1F>("jet2Eta",  "2nd leading jet eta",     50, -3.0,  3.0);
-histograms["jet3Eta"] = theDir.make<TH1F>("jet3Eta",  "3rd leading jet eta",     50, -3.0,  3.0);
-histograms["jet4Eta"] = theDir.make<TH1F>("jet4Eta",  "4th leading jet eta",     50, -3.0,  3.0);
-histograms["jet1Mass"] = theDir.make<TH1F>("jet1Mass", "1st leading jet mass",    50,    0,  150);
-histograms["jet2Mass"] = theDir.make<TH1F>("jet2Mass", "2nd leading jet mass",    50,    0,  150);
-histograms["jet3Mass"] = theDir.make<TH1F>("jet3Mass", "3rd leading jet mass",    50,    0,  150);
-histograms["jet4Mass"] = theDir.make<TH1F>("jet4Mass", "4th leading jet mass",    50,    0,  150);
-histograms["bmass"] = theDir.make<TH1F>("bmass",    "B Sec Vtx Mass",          28,    0,    7);
-histograms["cmass"] = theDir.make<TH1F>("cmass",    "C Sec Vtx Mass",          28,    0,    7);
-histograms["lfmass"] = theDir.make<TH1F>("lfmass",   "LF Sec Vtx Mass",         28,    0,    7);
-histograms["flavorHistory"] = theDir.make<TH1F>("flavorhistory", "Flavor History",     12,    0,   12);
-histograms["discriminator"] = theDir.make<TH1F>("discriminator", "BTag Discriminator", 30,    2,    8);
-histograms["nVertices"] = theDir.make<TH1F>("nVertices",     "num sec Vertices",    5,    0,    5) ;
+  histograms["trackIso"]      = theDir.make<TH1F>("trackIso", "TrackIso",                50,    0,   50);
+  histograms["eCalIso"]       = theDir.make<TH1F>("eCalIso",  "eCalIso",                 80,    0,   40);
+  histograms["hCalIso"]       = theDir.make<TH1F>("hCalIso",  "hCalIso",                 60,    0,   30);
+  histograms["relIso"]        = theDir.make<TH1F>("relIso",   "RelIso",                  50,    0,    5);
+  histograms["nJets"]         = theDir.make<TH1F>("nJets",    "N Jets, pt>30, eta<2.4",  15,    0,   15);
+  histograms["jet1Pt"]        = theDir.make<TH1F>("jet1Pt",   "1st leading jet pt",     150,    0,  300);
+  histograms["jet2Pt"]        = theDir.make<TH1F>("jet2Pt",   "2nd leading jet pt",     150,    0,  300);
+  histograms["jet3Pt"]        = theDir.make<TH1F>("jet3Pt",   "3rd leading jet pt",     150,    0,  300);
+  histograms["jet4Pt"]        = theDir.make<TH1F>("jet4Pt",   "4th leading jet pt",     150,    0,  300);
+  histograms["jet1Eta"]       = theDir.make<TH1F>("jet1Eta",  "1st leading jet eta",     50, -3.0,  3.0);
+  histograms["jet2Eta"]       = theDir.make<TH1F>("jet2Eta",  "2nd leading jet eta",     50, -3.0,  3.0);
+  histograms["jet3Eta"]       = theDir.make<TH1F>("jet3Eta",  "3rd leading jet eta",     50, -3.0,  3.0);
+  histograms["jet4Eta"]       = theDir.make<TH1F>("jet4Eta",  "4th leading jet eta",     50, -3.0,  3.0);
+  histograms["jet1Mass"]      = theDir.make<TH1F>("jet1Mass", "1st leading jet mass",    50,    0,  150);
+  histograms["jet2Mass"]      = theDir.make<TH1F>("jet2Mass", "2nd leading jet mass",    50,    0,  150);
+  histograms["jet3Mass"]      = theDir.make<TH1F>("jet3Mass", "3rd leading jet mass",    50,    0,  150);
+  histograms["jet4Mass"]      = theDir.make<TH1F>("jet4Mass", "4th leading jet mass",    50,    0,  150);
+  histograms["bmass"]         = theDir.make<TH1F>("bmass",    "B Sec Vtx Mass",          28,    0,    7);
+  histograms["cmass"]         = theDir.make<TH1F>("cmass",    "C Sec Vtx Mass",          28,    0,    7);
+  histograms["lfmass"]        = theDir.make<TH1F>("lfmass",   "LF Sec Vtx Mass",         28,    0,    7);
+  histograms["flavorHistory"] = theDir.make<TH1F>("flavorhistory", "Flavor History",     12,    0,   12);
+  histograms["discriminator"] = theDir.make<TH1F>("discriminator", "BTag Discriminator", 30,    2,    8);
+  histograms["nVertices"]     = theDir.make<TH1F>("nVertices",     "num sec Vertices",    5,    0,    5);
   /*  ev.add ( new TH1F( TString("beff_pt0to50"),    "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
   ev.add ( new TH1F( TString("beff_pt50to100"),  "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
   ev.add ( new TH1F( TString("beff_pt100to150"), "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
@@ -193,16 +185,16 @@ histograms["nVertices"] = theDir.make<TH1F>("nVertices",     "num sec Vertices",
   ev.add ( new TH1F( TString("beff_pt250to300"), "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
   ev.add ( new TH1F( TString("beff_pt300plus"),  "0 non-b untag, 1 b untag, 2 non-b tag, 3 b tag",      4,    0,      4) );
   */
-histograms["tag_eff"] = theDir.make<TH1F>("tag_eff", "0 lf untag, 1 c untag, 2 b untag, 3 lf tag, 4 c tag, 5 b tag",   6,    0,      6);
-histograms["tag_jet_pt"] = theDir.make<TH1F>("tag_jet_pt", "JetPt to go with tagging efficiency",                       150,    0,    300);
+  histograms["tag_eff"]    = theDir.make<TH1F>("tag_eff", "0 lf untag, 1 c untag, 2 b untag, 3 lf tag, 4 c tag, 5 b tag", 6, 0, 6);
+  histograms["tag_jet_pt"] = theDir.make<TH1F>("tag_jet_pt", "JetPt to go with tagging efficiency", 150,    0,    300);
 
-histograms[sampleNameInput+"_hT"] = theDir.make<TH1F>( (sampleNameInput+"_hT").c_str(),    "HT using Et is the sum of Jet Et plus Muon Pt", 50, 0,   1200);
- histograms[sampleNameInput+"_hT_1j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_1j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 50,   300);
- histograms[sampleNameInput+"_hT_2j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_2j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 80,   500);
-histograms[sampleNameInput+"_hT_3j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_3j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 110,  600);
-histograms[sampleNameInput+"_hT_4j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_4j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 5,  140,  600);
-histograms[sampleNameInput+"_hT_5j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_5j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 5,  170,  600);
-//histograms[sampleNameInput+"_hTvsNJet"] = theDir.make<TH2F>( (sampleNameInput+"_hTvsNJet").c_str(),  "HT as a function of NJets", 5, 0.5, 5.5, 50, 0, 1200);
+  histograms[sampleNameInput+"_hT"]    = theDir.make<TH1F>( (sampleNameInput+"_hT").c_str(),    "HT using Et is the sum of Jet Et plus Muon Pt", 50, 0,  1200);
+  histograms[sampleNameInput+"_hT_1j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_1j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10,  50, 300);
+  histograms[sampleNameInput+"_hT_2j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_2j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10,  80, 500);
+  histograms[sampleNameInput+"_hT_3j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_3j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 110, 600);
+  histograms[sampleNameInput+"_hT_4j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_4j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt",  5, 140, 600);
+  histograms[sampleNameInput+"_hT_5j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_5j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt",  5, 170, 600);
+  //histograms[sampleNameInput+"_hTvsNJet"] = theDir.make<TH2F>( (sampleNameInput+"_hTvsNJet").c_str(),  "HT as a function of NJets", 5, 0.5, 5.5, 50, 0, 1200);
   //ev.add ( new TH1F( sampleNameInput+TString("_hTUsingPt"), "HT s is Sum of Jet Pt", 50, 0, 1200) );
 
   for (unsigned int j=0;j<sampleName.size();++j) {
@@ -365,7 +357,8 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       if(numTags==2) break;
   }
 
-   // Calculate average SecVtx mass and //                                                                                                                                                                            // fill appropriate histograms.      //                                                                                                                                                            
+   // Calculate average SecVtx mass and //  
+   // fill appropriate histograms.      //                                                                                                                                                            
    // TODO !!!
   numJets = std::min( (int) jets.size(), 5 );
   //histograms[secvtxname + "_jettag"]->Fill (numJets, numTags);
@@ -408,10 +401,6 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
 //////////////////
 void SHyFT::analyze(const edm::EventBase& iEvent)
 {
-
-  //edm::Handle< vector< pat::Jet > > jetCollection;
-  //iEvent.getByLabel (edm::InputTag("selectedLayer1Jets"), jetCollection);
-  //assert ( jetCollection.isValid() );
 
   std::strbitset ret = wPlusJets.getBitTemplate();
 
@@ -621,14 +610,14 @@ int main ( int argc, char ** argv )
   parameters->registerIt(); 
   edm::ParameterSet const& inputs  = parameters->getParameter<edm::ParameterSet>("inputs");
   edm::ParameterSet const& outputs = parameters->getParameter<edm::ParameterSet>("outputs");
+
   // book a set of histograms
   fwlite::TFileService fs = fwlite::TFileService( outputs.getParameter<std::string>("outputName") );
   TFileDirectory theDir = fs.mkdir( "histos" ); 
     
   SHyFT theAnalysis(*parameters,theDir);
   Preselection preselection;
-  // This object 'event' is used both to get all information from the
-  // event as well as to store histograms, etc.
+
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
 
   unsigned int nEventsAnalyzed(0);
@@ -648,6 +637,8 @@ int main ( int argc, char ** argv )
   theAnalysis.finalize();
 
   timer.Stop();
+
+  // print some timing statistics
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   printf("Analyzed events: %d \n",nEventsAnalyzed);
