@@ -18,6 +18,9 @@
 #include "TFile.h"
 #include <iostream>
 #include <sstream>
+#include "RooAbsData.h"
+#include "RooAddition.h"
+#include "RooMinuit.h"
 
 using namespace RooFit ;
 using namespace std;
@@ -30,80 +33,72 @@ public:
   //  virtual ~Template() {}
   ~Template();
 
-  RooDataHist * rdh() { return rdh_;  }
-  RooHistPdf  * rhp() { return rhp_;  }
-  // RooExtendPdf  * rep() { return rep_;  }
-  RooRealVar * norm() { return norm_; }
-  RooExtendPdf * epdf() { return rep_; }
+  RooRealVar   *   norm() { return norm_; }
+  RooDataHist  *  hdata() { return rdh_;  }
+  RooHistPdf   *    pdf() { return rhp_;  }
+  RooExtendPdf *   epdf() { return rep_;  }
   double hnorm() { return hnorm_; }
-  TH1F hist() { return hist_; }
+  TH1F    hist() { return hist_;  }
                            
 private:
   TH1F   hist_;
   string name_;
   double hnorm_;
-  RooRealVar    * norm_;
-  RooDataHist * rdh_;
-  RooHistPdf  * rhp_;
-    //  RooFormulaVar * form_;
-  RooRealVar  binningVar_;
+  RooRealVar   * norm_;
+  RooDataHist  * rdh_;
+  RooHistPdf   * rhp_;
   RooExtendPdf * rep_;
+  //  RooFormulaVar * form_;
+  RooRealVar  binningVar_;
 };
 
 Template::Template(TH1F hist, string name, RooRealVar& binningVar, RooRealVar& scaleFactor):
-  hist_(hist),name_(name),binningVar_(binningVar) {//form_(formula),name_(name) {
+  hist_(hist),name_(name),binningVar_(binningVar) {
   hnorm_   = hist_.Integral();
+  cout << "Normaliztion of " << name_.c_str() << " is " << hnorm_ << endl;
   norm_    = new RooRealVar ((name_+"_norm").c_str(), (name_+"_norm").c_str(),hnorm_);//,-1,100000);
-  //  binningVar_ = new RooRealVar ((name_+"_binningVar").c_str(), (name_+"_binningVar").c_str(),&binningVar,-1,100000);
-  //  binningVar_ = new RooRealVar(binningVar);
   rdh_     = new RooDataHist(name_.c_str(),name_.c_str(),binningVar_, &hist_);
   rhp_   = new RooHistPdf ((name_+"_pdf").c_str(),(name_+"_pdf").c_str(), binningVar_, *rdh_);
-  //  rep_   = new RooExtendPdf((name_+"_epdf").c_str(), (name_+"_epdf").c_str(), *rhp_, *norm_);//binningVar_);
   RooFormulaVar * form_ = new RooFormulaVar((name_+"_form").c_str(), (name_+"_form").c_str(),"@0*@1",RooArgSet(scaleFactor, norm_));
-  rep_   = new RooExtendPdf((name_+"_epdf").c_str(), (name_+"_epdf").c_str(), *rhp_, *form_);//binningVar_);
-  //norm needs to now not have a range and we have norm_scale
+  rep_   = new RooExtendPdf((name_+"_epdf").c_str(), (name_+"_epdf").c_str(), *rhp_, *form_);
 }
 
 Template::~Template() {
   delete norm_;
   delete rdh_;
   delete rhp_;
-  // delete form_;
   delete rep_;
-    //  delete binningVar_;
+  // delete form_;
+  //  delete binningVar_;
   
 }
 
 class JetTagBin {
 public:
-  JetTagBin(TFile & file, vector<string> const & samples, string jtBinName, std::map<std::string, RooRealVar *> scaleFactors);//, ScaleFactors SF);
-  //  virtual ~JetTagBin() {}
+  JetTagBin(TFile & file, vector<string> const & samples, string jtBinName, std::map<std::string, RooRealVar *> scaleFactors);
   ~JetTagBin();
   vector<Template*> & jtTemplates() { return jtTemplates_; }
-
+  
   //this needs to be instantiated
-  //  RooNLLVar getNllVar(RooDataHist) {return nll_; } 
+  RooNLLVar * nll()  { return jtNll_; } 
 
 
 private:
-  vector<Template*> jtTemplates_;
-  RooRealVar * jtFitVar_;
-  //  RooNLLVar nll_;
-  RooDataHist * jtData_; 
   string jtBinName_;
-  RooAbsPdf *jtPdf_;
-
+  TH1F * jtDataHist_;
+  RooRealVar * jtFitVar_;
+  RooAbsData * jtData_; 
+  RooAbsPdf  * jtPdf_;
+  RooNLLVar  * jtNll_;
+  vector<Template*> jtTemplates_;
 };
 
 JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinName, std::map<std::string, RooRealVar *> scaleFactors):
   jtBinName_(jtBinName)
 {
-  
-  RooRealVar ttbar("ttbar_frac", "ttbar_frac",  0, 100000);
-  RooRealVar wjets("wjets_frac", "wjets_frac",  0, 100000);
-  
-  jtFitVar_= new RooRealVar(jtBinName.c_str(),jtBinName.c_str(),80,50,300);
-  //TODO: create a map from scale factor to sample name!!!!!!
+  // I don't know if I should provide the guess here --also for different sized bins, I think we may have to dynamically provide range
+  // GetBinLowEdge and GetBinWidth should work if we move this below the th1f access
+  jtFitVar_= new RooRealVar(jtBinName.c_str(), jtBinName.c_str(), 50, 500);
   for(unsigned int i=0;i<samples.size();++i) {
     string name = samples[i]+jtBinName;
     cout << "opening histogram " << name << endl;
@@ -120,7 +115,7 @@ JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinN
     jtTemplates_.push_back( temp );
   }
   RooArgList TemplateList;
-  RooArgList NormList;
+  //RooArgList NormList;
   cout << "making lists" << endl;
   for(unsigned int i=0;i<jtTemplates_.size();++i) {
     TemplateList.add(*(jtTemplates_[i]->epdf()));
@@ -128,30 +123,37 @@ JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinN
     //NormList.add(*(jtTemplates_[i]->norm()));
   }
   cout << "making combined pdf" << endl;
-  //  RooAddPdf model("model","model",RooArgList(*ttbar.rhp(),*wjets.rhp()),RooArgList(*ttbar.norm(),*wjets.norm()));
   //jtPdf_ = new RooAddPdf((jtBinName+"_pdf").c_str(),(jtBinName+"_pdf").c_str(),TemplateList,NormList);
   jtPdf_ = new RooAddPdf((jtBinName+"_pdf").c_str(),(jtBinName+"_pdf").c_str(),TemplateList);
 
-  RooDataSet * data = jtPdf_->generate(*jtFitVar_,1000);
-  /*attempt by petar....keeping for use of nll
-    #define MULTI_DIM 0
-    #if MULTI_DIM
-    RooNLLVar nll("nll","nll", data, *jtPdf_ );
-    RooMinimizer m("m","m", 
-    #else
-    jtPdf_->fitTo(*data);
-    #endif */
+  TH1F * tempDataHist = (TH1F*)file.Get(("Data_"+jtBinName).c_str());
   
+  //  jtDataHist_ = (TH1F*)file.Get(("Data_"+jtBinName).c_str());
+  
+  if(tempDataHist==0) {
+    int nPD = 1000;
+    cout << "Data_" << jtBinName << " not located in the file, generating pseudo data with " << nPD << " entries." << endl;
+    jtData_ = jtPdf_->generateBinned(*jtFitVar_,nPD);
+  }
+  else {
+    // this compiles and "runs", but hasn't actually been tested yet. I need to make a histogram in the file called Data_hT_1j, etc and try
+    cout << "Loaded Data_" << jtBinName << " from the file." << endl;
+    jtDataHist_ = (TH1F*) tempDataHist->Clone();
+    jtData_ = new RooDataHist(("Data_"+jtBinName).c_str(),("Data_"+jtBinName).c_str(),*jtFitVar_,Import(*jtDataHist_));
+  }
+
   cout << "about to fit" << endl;
-  //this has memory issues here, but I guess that's okay because we don't want to fit here
-  RooFitResult * r = jtPdf_->fitTo(*data,Extended(kTRUE),Save(kTRUE),Verbose(kTRUE));
+  //this has had memory issues here, but it's okay at the moment...could be a symptom of a problem elsewhere when it messes up
+  RooFitResult * r = jtPdf_->fitTo(*jtData_,Extended(kTRUE),Save(kTRUE),Verbose(kFALSE));
   //jtPdf_->fitTo(*data);
-  cout << "finished fit" << endl;
-  
+
+  cout << "creating nllVar" << endl;
+  jtNll_ = new RooNLLVar((jtBinName+"_nll").c_str(), (jtBinName+"_nll").c_str(), *jtPdf_, *jtData_);
+
   //plotting stuff and examination below here
   TCanvas * c1 = new TCanvas("c1", "Combined Fit");
   RooPlot *frame = jtFitVar_->frame();
-  data->plotOn(frame);
+  jtData_->plotOn(frame);
   jtPdf_->plotOn(frame);
   //jtPdf_->plotOn(frame,Components("ttbar_hT_1j_pdf"),LineColor(3));
   //jtPdf_->plotOn(frame,Components("WJets_hT_1j_pdf"),LineColor(2));
@@ -159,7 +161,7 @@ JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinN
   //jtFitVar_->Print("t");
   //jtPdf_->Print("v");
   r->Print("v");
-  c1->SaveAs("new_test.png");
+  c1->SaveAs(("fitter"+jtBinName+".png").c_str());
   delete r;
   delete c1;
   delete frame;
@@ -176,18 +178,18 @@ void Fitter(string fileName)
 {
 
   // Create fit parameters - for now we use these as the scale factors
-  RooRealVar ttbar_xsec("ttbar_hT_xsec","ttbar_hT_xsec", 1., -100., 100. );
-  RooRealVar WJets_xsec("WJets_hT_xsec","WJets_hT_xsec", 1., -100., 100. );
+  RooRealVar ttbar_xsec("ttbar_hT_xsec","ttbar_hT_xsec", 1., .0001, 100. );
+  RooRealVar WJets_xsec("WJets_hT_xsec","WJets_hT_xsec", 1., .0001, 100. );
   // ... etc. add more here
 
   //For now just work with a map to a RooRealVar without worrying about a vector
   std::map<std::string, RooRealVar *> scaleFactors;
   /*std::map<std::string, std::vector<RooRealVar *> > scaleFactors; //-- can I typedef this?
-  std::vector<RooRealVar *> ttbarSF;
-  std::vector<RooRealVar *> wjetsSF;
-
-  ttbarSF.push_back(&ttbar_xsec);
-  wjetsSF.push_back(&WJets_xsec);
+    std::vector<RooRealVar *> ttbarSF;
+    std::vector<RooRealVar *> wjetsSF;
+    
+    ttbarSF.push_back(&ttbar_xsec);
+    wjetsSF.push_back(&WJets_xsec);
   */
   scaleFactors["ttbar"]=&ttbar_xsec;
   scaleFactors["WJets"]=&WJets_xsec;
@@ -196,23 +198,36 @@ void Fitter(string fileName)
   TFile file(fileName.c_str());
 
   vector<JetTagBin*> bins_;
+  vector<RooNLLVar*> nlls_;
   vector<string> samples;
   samples.push_back("ttbar");//_hT_");
   samples.push_back("WJets");//_hT_");
 
   stringstream tmpString;
   
-  for(int n_jets = 1; n_jets <2; ++n_jets) { //will run only once
-    for(int n_tags = 1; n_tags < 2; ++ n_tags) { // will run only once for now, but must run later until 3
-      if(n_tags > n_jets) continue;
+  for(int n_jets = 1; n_jets <3; ++n_jets) { //will run only once
+    //    for(int n_tags = 1; n_tags < 2; ++ n_tags) { // will run only once for now, but must run later until 3
+    //      if(n_tags > n_jets) continue;
       tmpString.str("");
       // eventually we will have a loop over all jets with 0T as a fixed string for ht and mt
       // then we loop over jets and tags  like this for secvtxmass
       tmpString << "_hT_" << n_jets << "j"; //_" << n_tags << "t";
       JetTagBin * jetTagBin = new JetTagBin(file, samples, tmpString.str(), scaleFactors );
       bins_.push_back( jetTagBin );
-    }
+      //}
   }
+
+  for(unsigned int i=0;i<bins_.size();++i) {
+    bins_[i]->nll()->Print();
+  }
+  RooAddition nllsum("nllsum","nllsum",RooArgSet(*bins_[0]->nll(),*bins_[1]->nll()));
+  RooMinuit m(nllsum);
+  m.setVerbose(kTRUE);
+  m.migrad();
+  RooFitResult* r = m.save() ;
+  // Print the fit result snapshot
+  r->Print("v") ;
+   
   file.Close();
 
 
@@ -220,4 +235,4 @@ void Fitter(string fileName)
     delete bins_[i]; // is this the proper way to delete this?
   }
 }
-
+  
