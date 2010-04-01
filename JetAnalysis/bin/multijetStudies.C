@@ -62,7 +62,8 @@ public:
     pfJetSel_  (new PFJetIDSelectionFunctor(pfJetIdParams)),
     jetSrc_    (params.getParameter<edm::InputTag>("jetSrc")), 
     pfJetSrc_  (params.getParameter<edm::InputTag>("pfJetSrc")),
-    minNJets_  (params.getParameter<int>("minNJets"))
+    minNJets_  (params.getParameter<int>("minNJets")),
+    ptMin_     (params.getParameter<double>("ptMin"))
   {
     bool useCalo = params.getParameter<bool>("useCalo");
 	       
@@ -85,6 +86,8 @@ public:
   virtual ~MultijetSelector() {}
 
   virtual bool operator()( edm::EventBase const & event, std::strbitset & ret){
+    allCaloJets_.clear();
+    allPFJets_.clear();
     caloJets_.clear();
     pfJets_.clear();
 
@@ -95,18 +98,31 @@ public:
       passCut(ret, "Calo Cuts");
       event.getByLabel( jetSrc_, h_jets_ );
       // Calo Cuts
-      if ( h_jets_->size() >= minNJets_ || ignoreCut("Calo Kin Cuts") ) {
-	passCut(ret, "Calo Kin Cuts");
 
+      int ncalo = 0;
+      if ( h_jets_->size() >= minNJets_ ) {
 	for (vector<pat::Jet>::const_iterator jetsBegin = h_jets_->begin(),
 	       jetsEnd = h_jets_->end(),
 	       ijet = jetsBegin;
 	     ijet != jetsEnd; ++ijet ) {
-	  pat::Jet const & jet = *ijet;
+	  if ( ijet->pt() > ptMin_ ) {
+	    allCaloJets_.push_back( edm::Ptr<pat::Jet>( h_jets_, ijet - jetsBegin ) );
+	  }
+	}
+      }
+	
+      if ( allCaloJets_.size() >= minNJets_ || ignoreCut("Calo Kin Cuts") ) {
+	passCut(ret, "Calo Kin Cuts");
+
+	for (vector<edm::Ptr<pat::Jet> >::const_iterator jetsBegin =allCaloJets_.begin(),
+	       jetsEnd = allCaloJets_.end(),
+	       ijet = jetsBegin;
+	     ijet != jetsEnd; ++ijet ) {
+	  pat::Jet const & jet = **ijet;
 	  retCaloJet.set(false);
 	  bool pass0 = (*jetSel_)( jet, retCaloJet );
 	  if ( pass0 ) 
-	    caloJets_.push_back( edm::Ptr<pat::Jet>( h_jets_, ijet - jetsBegin) );
+	    caloJets_.push_back( *ijet );
 	}
 
 	if ( caloJets_.size() >= minNJets_ || ignoreCut("Calo Jet ID") ) {
@@ -116,22 +132,36 @@ public:
     }// end if calo cuts
 
 
+
     if ( considerCut("PF Cuts") ) {
       passCut(ret, "PF Cuts");
       event.getByLabel( pfJetSrc_, h_pfjets_ );
       // PF Cuts
-      if ( h_pfjets_->size() >= minNJets_ || ignoreCut("PF Kin Cuts") ) {
-	passCut(ret, "PF Kin Cuts");
 
+      int npf = 0;
+      if ( h_pfjets_->size() >= minNJets_ ) {
 	for (vector<pat::Jet>::const_iterator jetsBegin = h_pfjets_->begin(),
 	       jetsEnd = h_pfjets_->end(),
 	       ijet = jetsBegin;
 	     ijet != jetsEnd; ++ijet ) {
-	  pat::Jet const & jet = *ijet;
+	  if ( ijet->pt() > ptMin_ ) {
+	    allPFJets_.push_back( edm::Ptr<pat::Jet>( h_pfjets_, ijet - jetsBegin ) );
+	  }
+	}
+      }
+	
+      if ( allPFJets_.size() >= minNJets_ || ignoreCut("PF Kin Cuts") ) {
+	passCut(ret, "PF Kin Cuts");
+
+	for (vector<edm::Ptr<pat::Jet> >::const_iterator jetsBegin =allPFJets_.begin(),
+	       jetsEnd = allPFJets_.end(),
+	       ijet = jetsBegin;
+	     ijet != jetsEnd; ++ijet ) {
+	  pat::Jet const & jet = **ijet;
 	  retPFJet.set(false);
 	  bool pass0 = (*pfJetSel_)( jet, retPFJet );
 	  if ( pass0 ) 
-	    pfJets_.push_back( edm::Ptr<pat::Jet>( h_pfjets_, ijet - jetsBegin) );
+	    pfJets_.push_back( *ijet );
 	}
 
 	if ( pfJets_.size() >= minNJets_ || ignoreCut("PF Jet ID") ) {
@@ -139,6 +169,9 @@ public:
 	}
       }// end pf kin cuts
     }// end if pf cuts
+
+
+
 
 
     setIgnored(ret);
@@ -149,8 +182,8 @@ public:
   boost::shared_ptr<JetIDSelectionFunctor> const &   jetSel()     const { return jetSel_;}
   boost::shared_ptr<PFJetIDSelectionFunctor> const & pfJetSel()   const { return pfJetSel_;}
 
-  vector<pat::Jet>            const &   allCaloJets () const { return *h_jets_; }
-  vector<pat::Jet>            const &   allPFJets   () const { return *h_pfjets_; }
+  std::vector<edm::Ptr<pat::Jet> > const &  allCaloJets () const { return allCaloJets_; }
+  std::vector<edm::Ptr<pat::Jet> > const &  allPFJets   () const { return allPFJets_; }
 
   std::vector<edm::Ptr<pat::Jet> > const &  caloJets() const { return caloJets_; }
   std::vector<edm::Ptr<pat::Jet> > const &  pfJets  () const { return pfJets_; }
@@ -163,9 +196,15 @@ protected:
   edm::InputTag                              jetSrc_;
   edm::InputTag                              pfJetSrc_;
   int                                        minNJets_;
+  double                                     ptMin_;
+
+
+  edm::Handle<std::vector<pat::Jet> >        h_jets_;
+  edm::Handle<std::vector<pat::Jet> >        h_pfjets_;
   
-  edm::Handle<vector<pat::Jet> >             h_jets_;
-  edm::Handle<vector<pat::Jet> >             h_pfjets_;
+  std::vector<edm::Ptr<pat::Jet> >           allCaloJets_;
+  std::vector<edm::Ptr<pat::Jet> >           allPFJets_;
+
 
   std::vector<edm::Ptr<pat::Jet> >           caloJets_;
   std::vector<edm::Ptr<pat::Jet> >           pfJets_;
@@ -336,14 +375,13 @@ int main (int argc, char* argv[])
     ///------------------
     if ( retCalo.test("Calo Kin Cuts") ) {
 
-      vector<pat::Jet>  const & allCaloJets = caloSelector.allCaloJets();
 
-      for ( std::vector<pat::Jet>::const_iterator jetBegin = allCaloJets.begin(),
-	      jetEnd = allCaloJets.end(), ijet = jetBegin;
+      for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin = caloSelector.allCaloJets().begin(),
+	      jetEnd = caloSelector.allCaloJets().end(), ijet = jetBegin;
 	    ijet != jetEnd; ++ijet ) {
 
 	
-	const pat::Jet & jet = *ijet;
+	const pat::Jet & jet = **ijet;
 
 	double pt = jet.pt();
 
@@ -412,13 +450,11 @@ int main (int argc, char* argv[])
     ///------------------
     if ( retPF.test("PF Kin Cuts") ) {
 
-      vector<pat::Jet> const & allPFJets = pfSelector.allPFJets();
-
-      for ( std::vector<pat::Jet>::const_iterator jetBegin = allPFJets.begin(),
-	      jetEnd = allPFJets.end(), ijet = jetBegin;
+      for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin = pfSelector.allPFJets().begin(),
+	      jetEnd = pfSelector.allPFJets().end(), ijet = jetBegin;
 	    ijet != jetEnd; ++ijet ) {
 	
-	const pat::Jet & jet = *ijet;
+	const pat::Jet & jet = **ijet;
 	
 	double pt = jet.pt();
       
