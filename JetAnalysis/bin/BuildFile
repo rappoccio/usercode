@@ -12,4 +12,5 @@
 
 <environment>
  <bin file="jetStudies.C"> </bin>
+ <bin file="multijetStudies.C"> </bin>
 </environment>

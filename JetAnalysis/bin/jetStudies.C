@@ -61,7 +61,8 @@ public:
     jetSel_    (new JetIDSelectionFunctor(caloJetIdParams)), 
     pfJetSel_  (new PFJetIDSelectionFunctor(pfJetIdParams)),
     jetSrc_    (params.getParameter<edm::InputTag>("jetSrc")), 
-    pfJetSrc_  (params.getParameter<edm::InputTag>("pfJetSrc")) 
+    pfJetSrc_  (params.getParameter<edm::InputTag>("pfJetSrc")),
+    minNJets_  (params.getParameter<int>("minNJets"))
   {
     bool useCalo = params.getParameter<bool>("useCalo");
 	       
@@ -97,7 +98,7 @@ public:
       passCut(ret, "Calo Cuts");
       event.getByLabel( jetSrc_, h_jets_ );
       // Calo Cuts
-      if ( h_jets_->size() >= 2 || ignoreCut("Calo Kin Cuts") ) {
+      if ( h_jets_->size() >= minNJets_ || ignoreCut("Calo Kin Cuts") ) {
 	passCut(ret, "Calo Kin Cuts");
 	pat::Jet const & jet0 = h_jets_->at(0);
 	pat::Jet const & jet1 = h_jets_->at(1);
@@ -129,7 +130,7 @@ public:
       passCut(ret, "PF Cuts");
       event.getByLabel( pfJetSrc_, h_pfjets_ );
       // PF Cuts
-      if ( h_pfjets_->size() >= 2 || ignoreCut("PF Kin Cuts") ) {
+      if ( h_pfjets_->size() >= minNJets_ || ignoreCut("PF Kin Cuts") ) {
 	passCut( ret, "PF Kin Cuts");
 	pat::Jet const & jet0 = h_pfjets_->at(0);
 	pat::Jet const & jet1 = h_pfjets_->at(1);
@@ -179,6 +180,7 @@ protected:
   boost::shared_ptr<PFJetIDSelectionFunctor> pfJetSel_;
   edm::InputTag                              jetSrc_;
   edm::InputTag                              pfJetSrc_;
+  int                                        minNJets_;
   
   edm::Handle<vector<pat::Jet> >             h_jets_;
   edm::Handle<vector<pat::Jet> >             h_pfjets_;
