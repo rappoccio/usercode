@@ -43,19 +43,24 @@ typedef std::vector<reco::ShallowClonePtrCandidate> ShallowCloneCollection;
 class Preselection {
 
   public:
-    Preselection();
+    Preselection(edm::ParameterSet const &);
     virtual bool filter(const edm::EventBase& iEvent);
+
+protected:
+  edm::InputTag trigSrc_;
 };
    
 
-Preselection::Preselection(){;}
+Preselection::Preselection(edm::ParameterSet const & params ) :
+  trigSrc_( params.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("trigSrc") )
+{;}
 
 
 bool
 Preselection::filter(const edm::EventBase& iEvent){
   bool passTrig = false;
   edm::Handle<pat::TriggerEvent> triggerEvent;
-  iEvent.getByLabel(edm::InputTag("patTriggerEventStd"), triggerEvent);
+  iEvent.getByLabel(trigSrc_, triggerEvent);
   if ( triggerEvent->wasRun() && triggerEvent->wasAccept() ) {
       pat::TriggerPath const * muPath = triggerEvent->path("HLT_Mu9");
       pat::TriggerPath const * elePath = triggerEvent->path("HLT_Ele15_LW_L1R");
@@ -616,7 +621,7 @@ int main ( int argc, char ** argv )
   TFileDirectory theDir = fs.mkdir( "histos" ); 
     
   SHyFT theAnalysis(*parameters,theDir);
-  Preselection preselection;
+  Preselection preselection( *parameters );
 
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
 
@@ -631,7 +636,7 @@ int main ( int argc, char ** argv )
        ++ev, ++nEventsAnalyzed) 
   {
     if (preselection.filter(ev))theAnalysis.analyze(ev);
-    if (nEventsAnalyzed%100==0) std::cout<<"Events analyzed: "<<nEventsAnalyzed<<std::endl;
+    if (nEventsAnalyzed%10000==0) std::cout<<"Events analyzed: "<<nEventsAnalyzed<<std::endl;
   } //end event loop
   
   theAnalysis.finalize();
