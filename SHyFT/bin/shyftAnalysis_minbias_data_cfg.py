@@ -12,6 +12,10 @@ process.shyftAnalysis.jetSrc = cms.InputTag('selectedPatJets')
 process.shyftAnalysis.metSrc = cms.InputTag('patMETs')
 process.shyftAnalysis.trigSrc = cms.InputTag('patTriggerEvent')
 
+process.shyftAnalysis.cutsToIgnore = cms.vstring( 'Trigger' )
+
+process.shyftAnalysis.muPtMin = cms.double( '10' )
+
 
 process.inputs = cms.PSet (
     fileNames = cms.vstring(
