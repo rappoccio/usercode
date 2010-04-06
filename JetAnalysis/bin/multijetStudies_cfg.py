@@ -44,6 +44,6 @@ process.inputs = cms.PSet (
 )
 
 process.outputs = cms.PSet (
-    outputName = cms.string('multijetPlots.root')
+    outputName = cms.string('multijetPlots_4jets.root')
 )
  

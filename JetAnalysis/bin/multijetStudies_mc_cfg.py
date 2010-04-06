@@ -9,7 +9,7 @@ process.jetStudies = cms.PSet(
     metSrc = cms.InputTag('patMETs'),
     pfMetSrc = cms.InputTag('patMETsPF'),
     useCalo = cms.bool(True),
-    minNJets = cms.int32(2),
+    minNJets = cms.int32(4),
     ptMin = cms.double(10.0)
 )
 process.pfJetStudies = process.jetStudies.clone( useCalo = cms.bool(False),
@@ -27,10 +27,10 @@ process.plotParameters = cms.PSet (
 
 
 process.inputs = cms.PSet (
-    fileNames = cms.vstring(
+    fileNamesShort = cms.vstring(
 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinBias/pat_7TeV_minbias_mc_356_v3/8eaeca184c893b426c750ab28dfdeb05/reco_7TeV_firstdata_mc_356_pat_1.root'
         ),
-    fileNamesLong = cms.vstring(
+    fileNames = cms.vstring(
 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinBias/pat_7TeV_minbias_mc_356_v3/8eaeca184c893b426c750ab28dfdeb05/reco_7TeV_firstdata_mc_356_pat_1.root',
 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinBias/pat_7TeV_minbias_mc_356_v3/8eaeca184c893b426c750ab28dfdeb05/reco_7TeV_firstdata_mc_356_pat_10.root',
 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinBias/pat_7TeV_minbias_mc_356_v3/8eaeca184c893b426c750ab28dfdeb05/reco_7TeV_firstdata_mc_356_pat_100.root',
@@ -140,6 +140,6 @@ process.inputs = cms.PSet (
 )
 
 process.outputs = cms.PSet (
-    outputName = cms.string('multijetPlots_mc.root')
+    outputName = cms.string('multijetPlots_mc_4jets_full.root')
 )
  
