@@ -91,8 +91,8 @@ print "About to add jet collections"
 # Add PF jets
 addJetCollection(process,cms.InputTag('ak5PFJets'),
                  'AK5', 'PF',
-                 doJTA        = False,
-                 doBTagging   = False,
+                 doJTA        = True,
+                 doBTagging   = True,
                  jetCorrLabel = ('AK5','PF'),
                  doType1MET   = False,
                  doL1Cleaning = False,                 
@@ -137,7 +137,8 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # Add CATopTag info... piggy-backing on b-tag functionality
 process.patJetsCA8PrunedPF.addTagInfos = cms.bool(False)
-process.patJetsCA8PrunedPF.addDiscriminators = cms.bool(False)
+process.patJets.addTagInfos = cms.bool(False)
+process.patJetsAK5PF.addTagInfos = cms.bool(False)
 
 
 print "Done switching jet collection"
