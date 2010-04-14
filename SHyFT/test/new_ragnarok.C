@@ -16,11 +16,14 @@
 #include "TCanvas.h"
 #include "TH1.h"
 #include "TFile.h"
+#include "TRandom.h"
 #include <iostream>
 #include <sstream>
 #include "RooAbsData.h"
 #include "RooAddition.h"
 #include "RooMinuit.h"
+
+#include <algorithm>
 
 using namespace RooFit ;
 using namespace std;
@@ -38,16 +41,20 @@ public:
   RooHistPdf   *    pdf() { return rhp_;  }
   RooExtendPdf *   epdf() { return rep_;  }
   double hnorm() { return hnorm_; }
-  TH1F    hist() { return hist_;  }
+  TH1F *  hist() { return &hist_;  }
+  TH1F * expHist() { return expHist_; }
+
+  void   setupPE( double F );
                            
 private:
-  TH1F   hist_;
-  string name_;
-  double hnorm_;
-  RooRealVar   * norm_;
-  RooDataHist  * rdh_;
-  RooHistPdf   * rhp_;
-  RooExtendPdf * rep_;
+  TH1F   hist_;          //< Input histogram for fit PDFs
+  TH1F  * expHist_;      //< "Experiment" histogram (either PseudoExperiment, or Real Experiment)
+  string name_;          //< Name of this template
+  double hnorm_;         //< Actual normalization
+  RooRealVar   * norm_;  //< Normalization RelVar
+  RooDataHist  * rdh_;   //< DataHist for fit
+  RooHistPdf   * rhp_;   //< HistPdf for fit
+  RooExtendPdf * rep_;   //< What's this for?????           <-----------
   //  RooFormulaVar * form_;
   RooRealVar  binningVar_;
 };
@@ -73,6 +80,13 @@ Template::~Template() {
   
 }
 
+
+void Template::setupPE( double F ) {
+  expHist_ = new TH1F(hist_);
+  expHist_->Scale( F );
+}
+     
+
 class JetTagBin {
 public:
   JetTagBin(TFile & file, vector<string> const & samples, string jtBinName, std::map<std::string, RooRealVar *> scaleFactors);
@@ -82,15 +96,26 @@ public:
   //this needs to be instantiated
   RooNLLVar * nll()  { return jtNll_; } 
 
+  void setupPE( double nent );
+  void inputData( TFile * file );
+  void makeNLLVar();
+  void plotOn( RooPlot * frame );
 
+  void setKFactors( std::vector<double> const & inputKFactors ) {
+    copy( inputKFactors.begin(), inputKFactors.end(), kFactors_.begin() );
+  }
+
+  RooRealVar const * jtFitVar() const { return jtFitVar_;}
+  std::string const & jtBinName() const { return jtBinName_; }
 private:
-  string jtBinName_;
-  TH1F * jtDataHist_;
-  RooRealVar * jtFitVar_;
-  RooAbsData * jtData_; 
-  RooAbsPdf  * jtPdf_;
-  RooNLLVar  * jtNll_;
-  vector<Template*> jtTemplates_;
+  string jtBinName_;                 //< Bin Name
+  TH1F * jtDataHist_;                //< Jet-tag bin template for PDF
+  RooRealVar * jtFitVar_;            //< Jet-tag bin fit variable
+  RooAbsData * jtData_;              //< Jet-tag bin for data to fit to
+  RooAbsPdf  * jtPdf_;               //< The fitting pdf for this jet-tag bin
+  RooNLLVar  * jtNll_;               //< Likelihood variable
+  vector<Template*> jtTemplates_;    //< Vector of templates representing the various species (ttbar,W+Jets, etc)
+  vector<double>  kFactors_;         //< K-factors for each bin for testing
 };
 
 JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinName, std::map<std::string, RooRealVar *> scaleFactors):
@@ -98,7 +123,7 @@ JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinN
 {
   // I don't know if I should provide the guess here --also for different sized bins, I think we may have to dynamically provide range
   // GetBinLowEdge and GetBinWidth should work if we move this below the th1f access
-  jtFitVar_= new RooRealVar(jtBinName.c_str(), jtBinName.c_str(), 50, 500);
+  jtFitVar_= new RooRealVar(jtBinName.c_str(), jtBinName.c_str(), 50, 600);
   for(unsigned int i=0;i<samples.size();++i) {
     string name = samples[i]+jtBinName;
     cout << "opening histogram " << name << endl;
@@ -113,6 +138,7 @@ JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinN
 
     Template * temp = new Template(*tempHisto2, name, *jtFitVar_, *scaleFactors[samples[i]]);
     jtTemplates_.push_back( temp );
+    kFactors_.push_back(1.0);
   }
   RooArgList TemplateList;
   //RooArgList NormList;
@@ -123,116 +149,213 @@ JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinN
     //NormList.add(*(jtTemplates_[i]->norm()));
   }
   cout << "making combined pdf" << endl;
-  //jtPdf_ = new RooAddPdf((jtBinName+"_pdf").c_str(),(jtBinName+"_pdf").c_str(),TemplateList,NormList);
-  jtPdf_ = new RooAddPdf((jtBinName+"_pdf").c_str(),(jtBinName+"_pdf").c_str(),TemplateList);
+  jtPdf_ = new RooAddPdf((jtBinName_+"_pdf").c_str(),(jtBinName_+"_pdf").c_str(),TemplateList);
 
-  TH1F * tempDataHist = (TH1F*)file.Get(("Data_"+jtBinName).c_str());
-  
-  //  jtDataHist_ = (TH1F*)file.Get(("Data_"+jtBinName).c_str());
-  
-  if(tempDataHist==0) {
-    int nPD = 1000;
-    cout << "Data_" << jtBinName << " not located in the file, generating pseudo data with " << nPD << " entries." << endl;
-    jtData_ = jtPdf_->generateBinned(*jtFitVar_,nPD);
+}
+
+
+void JetTagBin::setupPE( double Lum )
+{
+  cout << "generating pseudoexperiment" << endl;
+
+  bool first = true;
+  TH1F * temp = 0;  // Will hold the sum of all the experiments
+  for ( vector<Template *>::iterator tBegin = jtTemplates_.begin(),
+	  tEnd = jtTemplates_.end(), it = tBegin;
+	it != tEnd; ++it ) {
+    Template & t = **it;
+    t.setupPE( Lum * kFactors_[it - tBegin] );
+    if ( first ) {
+      temp = (TH1F*)( t.expHist()->Clone() ); 
+      first = false;
+    } else {
+      temp->Add( t.expHist() );
+    }
+
   }
-  else {
-    // this compiles and "runs", but hasn't actually been tested yet. I need to make a histogram in the file called Data_hT_1j, etc and try
-    cout << "Loaded Data_" << jtBinName << " from the file." << endl;
-    jtDataHist_ = (TH1F*) tempDataHist->Clone();
-    jtData_ = new RooDataHist(("Data_"+jtBinName).c_str(),("Data_"+jtBinName).c_str(),*jtFitVar_,Import(*jtDataHist_));
+
+  cout << "Generated pseudoexperiment with sum of xs * LUM * eff = " << temp->Integral() << " events" << endl;
+
+  // Vary the bin contents
+  for ( int ibin = 1; ibin <= temp->GetNbinsX(); ++ibin ) {
+    temp->SetBinContent( ibin, gRandom->Poisson( temp->GetBinContent(ibin) ) );
   }
 
-  cout << "about to fit" << endl;
-  //this has had memory issues here, but it's okay at the moment...could be a symptom of a problem elsewhere when it messes up
-  RooFitResult * r = jtPdf_->fitTo(*jtData_,Extended(kTRUE),Save(kTRUE),Verbose(kFALSE));
-  //jtPdf_->fitTo(*data);
+  jtData_ = new RooDataHist(("PEData_"+jtBinName_).c_str(),("PEData_"+jtBinName_).c_str(),*jtFitVar_,Import(*temp));
+}
 
+
+void JetTagBin::inputData( TFile * file ) 
+{
+  TH1F * tempDataHist = (TH1F*)file->Get(("Data_"+jtBinName_).c_str());
+  cout << "Loaded Data_" << jtBinName_ << " from the file." << endl;
+  jtDataHist_ = (TH1F*) tempDataHist->Clone();
+  jtData_ = new RooDataHist(("Data_"+jtBinName_).c_str(),("Data_"+jtBinName_).c_str(),*jtFitVar_,Import(*jtDataHist_));
+  
+}
+
+
+void JetTagBin::makeNLLVar()
+{
   cout << "creating nllVar" << endl;
-  jtNll_ = new RooNLLVar((jtBinName+"_nll").c_str(), (jtBinName+"_nll").c_str(), *jtPdf_, *jtData_);
+  jtNll_ = new RooNLLVar((jtBinName_+"_nll").c_str(), (jtBinName_+"_nll").c_str(), *jtPdf_, *jtData_);
+}
 
-  //plotting stuff and examination below here
-  TCanvas * c1 = new TCanvas("c1", "Combined Fit");
-  RooPlot *frame = jtFitVar_->frame();
+void JetTagBin::plotOn( RooPlot * frame )
+{
+  cout << "Plotting" << endl;
   jtData_->plotOn(frame);
   jtPdf_->plotOn(frame);
-  //jtPdf_->plotOn(frame,Components("ttbar_hT_1j_pdf"),LineColor(3));
-  //jtPdf_->plotOn(frame,Components("WJets_hT_1j_pdf"),LineColor(2));
-  frame->Draw();
-  //jtFitVar_->Print("t");
-  //jtPdf_->Print("v");
-  r->Print("v");
-  c1->SaveAs(("fitter"+jtBinName+".png").c_str());
-  delete r;
-  delete c1;
-  delete frame;
-  //r->Print();
 }
 
 JetTagBin::~JetTagBin() {
 }
 
 
-  
 
-void Fitter(string fileName)
+class SHyFT {
+public:
+
+  SHyFT( std::string const & fileName );
+  ~SHyFT() { file_->Close(); }
+  
+  void generatePEs( double Lum ); 
+  void makeNLLVars();
+  void fit();
+  void print();
+  void plot();
+
+  void setKFactors( std::vector<double> const & inputKFactors ) {
+    for ( std::vector<JetTagBin*>::iterator bBegin = bins_.begin(),
+	    bEnd = bins_.end(), ib = bBegin;
+	  ib != bEnd; ++ib ) {
+      (*ib)->setKFactors( inputKFactors );
+    }
+  }
+  
+protected:
+  std::vector< JetTagBin * > bins_;
+  std::vector< RooNLLVar * > nlls_;
+  std::map<std::string, RooRealVar *> scaleFactors_;
+  std::vector<std::string> samples_;
+  TFile * file_;
+  RooRealVar ttbar_xsec_;
+  RooRealVar WJets_xsec_;
+  RooFitResult* fitResult_;
+
+};
+
+
+SHyFT::SHyFT( std::string const & fileName ) :
+  file_( new TFile(fileName.c_str()) ),
+  ttbar_xsec_("ttbar_hT_xsec","ttbar_hT_xsec", 1., .0001, 100. ),
+  WJets_xsec_("WJets_hT_xsec","WJets_hT_xsec", 1., .0001, 100. )
 {
 
-  // Create fit parameters - for now we use these as the scale factors
-  RooRealVar ttbar_xsec("ttbar_hT_xsec","ttbar_hT_xsec", 1., .0001, 100. );
-  RooRealVar WJets_xsec("WJets_hT_xsec","WJets_hT_xsec", 1., .0001, 100. );
-  // ... etc. add more here
+  scaleFactors_["ttbar"]=&ttbar_xsec_;
+  scaleFactors_["WJets"]=&WJets_xsec_;
 
-  //For now just work with a map to a RooRealVar without worrying about a vector
-  std::map<std::string, RooRealVar *> scaleFactors;
-  /*std::map<std::string, std::vector<RooRealVar *> > scaleFactors; //-- can I typedef this?
-    std::vector<RooRealVar *> ttbarSF;
-    std::vector<RooRealVar *> wjetsSF;
-    
-    ttbarSF.push_back(&ttbar_xsec);
-    wjetsSF.push_back(&WJets_xsec);
-  */
-  scaleFactors["ttbar"]=&ttbar_xsec;
-  scaleFactors["WJets"]=&WJets_xsec;
-  
-  //createTemplates(fileName);
-  TFile file(fileName.c_str());
-
-  vector<JetTagBin*> bins_;
-  vector<RooNLLVar*> nlls_;
-  vector<string> samples;
-  samples.push_back("ttbar");//_hT_");
-  samples.push_back("WJets");//_hT_");
+  samples_.push_back("ttbar");//_hT_");
+  samples_.push_back("WJets");//_hT_");
 
   stringstream tmpString;
   
-  for(int n_jets = 1; n_jets <3; ++n_jets) { //will run only once
+  for(int n_jets = 1; n_jets <=5; ++n_jets) { //will run only once
     //    for(int n_tags = 1; n_tags < 2; ++ n_tags) { // will run only once for now, but must run later until 3
     //      if(n_tags > n_jets) continue;
       tmpString.str("");
       // eventually we will have a loop over all jets with 0T as a fixed string for ht and mt
       // then we loop over jets and tags  like this for secvtxmass
       tmpString << "_hT_" << n_jets << "j"; //_" << n_tags << "t";
-      JetTagBin * jetTagBin = new JetTagBin(file, samples, tmpString.str(), scaleFactors );
-      bins_.push_back( jetTagBin );
+      bins_.push_back(new JetTagBin(*file_, samples_, tmpString.str(), scaleFactors_ ) );
       //}
   }
 
+}
+
+void SHyFT::print()
+{
+  cout << "Printing" << endl;
   for(unsigned int i=0;i<bins_.size();++i) {
     bins_[i]->nll()->Print();
   }
-  RooAddition nllsum("nllsum","nllsum",RooArgSet(*bins_[0]->nll(),*bins_[1]->nll()));
+}
+
+void SHyFT::generatePEs(double Lum)
+{
+  cout << "Generating Pseudoexperiments" << endl;
+  for(unsigned int i=0;i<bins_.size();++i) {
+    bins_[i]->setupPE( Lum );
+  }
+}
+
+void SHyFT::makeNLLVars()
+{
+  cout << "Making NLL variables" << endl;
+  for(unsigned int i=0;i<bins_.size();++i) {
+    bins_[i]->makeNLLVar();
+  }
+}
+
+void SHyFT::fit()
+{
+  cout << "Fitting" << endl;
+  RooAddition nllsum("nllsum","nllsum",RooArgSet(*bins_[0]->nll(),
+						 *bins_[1]->nll(),
+						 *bins_[2]->nll(),
+						 *bins_[3]->nll(),
+						 *bins_[4]->nll()
+						 ) );
   RooMinuit m(nllsum);
   m.setVerbose(kTRUE);
   m.migrad();
-  RooFitResult* r = m.save() ;
+  fitResult_ = m.save() ;
   // Print the fit result snapshot
-  r->Print("v") ;
-   
-  file.Close();
+  fitResult_->Print("v") ;
+}
 
+void SHyFT::plot()
+{
+  //plotting stuff and examination below here
+  cout << "Plotting" << endl;
+  for (  std::vector< JetTagBin * >::iterator ibin = 
+	   bins_.begin(),
+	   binsBegin = bins_.begin(), binsEnd = bins_.end();
+	 ibin != binsEnd; ++ibin ) {
 
-  for(unsigned int i=0; i<bins_.size(); ++i) {
-    delete bins_[i]; // is this the proper way to delete this?
+    cout << "Plotting bin " << ibin - binsBegin << endl;
+    JetTagBin & bin = **ibin;
+    TCanvas * c1 = new TCanvas(("c"+bin.jtBinName()).c_str(), "Combined Fit");
+    RooPlot *frame = bin.jtFitVar()->frame();
+    
+    bin.jtTemplates().at(0)->pdf()->plotOn(frame, LineColor(3));
+    bin.jtTemplates().at(1)->pdf()->plotOn(frame, LineColor(2));
+    bin.plotOn( frame );
+    //jtPdf_->plotOn(frame,Components("ttbar_hT_1j_pdf"),LineColor(3));
+    //jtPdf_->plotOn(frame,Components("WJets_hT_1j_pdf"),LineColor(2));
+    frame->Draw();
+    c1->SaveAs(("fitter"+bin.jtBinName()+".png").c_str());
   }
+  //jtFitVar_->Print("t");
+  //jtPdf_->Print("v");
+  //   r->Print("v");
+
+  //   delete r;
+  
+  //r->Print();
+}
+
+void Fitter(string fileName)
+{
+  std::vector<double> kFactors;
+  kFactors.push_back( 3.0 );
+  kFactors.push_back( 1.0 );
+  SHyFT shyft(fileName);
+  shyft.setKFactors( kFactors );
+  shyft.generatePEs(1.0);
+  shyft.makeNLLVars();
+  shyft.print();
+  shyft.fit();
+  shyft.plot();
 }
   
