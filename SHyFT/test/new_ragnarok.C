@@ -28,11 +28,11 @@
 using namespace RooFit ;
 using namespace std;
 
-double lum=0.10;
+typedef map<string, vector< RooRealVar * > > scaleFact_vect;
 
 class Template {
 public:
-  Template(TH1F histo, string name, RooRealVar& dataVar, RooRealVar& scaleFactor);
+  Template(TH1F histo, string name, RooRealVar& dataVar, vector<RooRealVar*> scaleFactors);
   //  virtual ~Template() {}
   ~Template();
 
@@ -45,7 +45,6 @@ public:
   TH1F * expHist() { return expHist_; }
 
   void   setupPE( double F );
-                           
 private:
   TH1F   hist_;          //< Input histogram for fit PDFs
   TH1F  * expHist_;      //< "Experiment" histogram (either PseudoExperiment, or Real Experiment)
@@ -57,16 +56,18 @@ private:
   RooExtendPdf * rep_;   //< What's this for?????           <-----------
   //  RooFormulaVar * form_;
   RooRealVar  binningVar_;
+  RooRealVar * lum_;
 };
 
-Template::Template(TH1F hist, string name, RooRealVar& binningVar, RooRealVar& scaleFactor):
-  hist_(hist),name_(name),binningVar_(binningVar) {
+Template::Template(TH1F hist, string name, RooRealVar& binningVar, vector<RooRealVar*> scaleFactors)://, RooRealVar& lum, RooRealVar & kFactor):
+  hist_(hist),name_(name),binningVar_(binningVar),lum_(scaleFactors[1]) {
   hnorm_   = hist_.Integral();
   cout << "Normaliztion of " << name_.c_str() << " is " << hnorm_ << endl;
   norm_    = new RooRealVar ((name_+"_norm").c_str(), (name_+"_norm").c_str(),hnorm_);//,-1,100000);
   rdh_     = new RooDataHist(name_.c_str(),name_.c_str(),binningVar_, &hist_);
   rhp_   = new RooHistPdf ((name_+"_pdf").c_str(),(name_+"_pdf").c_str(), binningVar_, *rdh_);
-  RooFormulaVar * form_ = new RooFormulaVar((name_+"_form").c_str(), (name_+"_form").c_str(),"@0*@1",RooArgSet(scaleFactor, norm_));
+  //  lum_ = new RooRealVar (("luminosity","luminosity",lu
+  RooFormulaVar * form_ = new RooFormulaVar((name_+"_form").c_str(), (name_+"_form").c_str(),"@0*@1*@2*@3",RooArgSet(*scaleFactors[0], *norm_,*lum_,*scaleFactors[2]));//, lum, kFactor));
   rep_   = new RooExtendPdf((name_+"_epdf").c_str(), (name_+"_epdf").c_str(), *rhp_, *form_);
 }
 
@@ -89,24 +90,25 @@ void Template::setupPE( double F ) {
 
 class JetTagBin {
 public:
-  JetTagBin(TFile & file, vector<string> const & samples, string jtBinName, std::map<std::string, RooRealVar *> scaleFactors);
+  JetTagBin(TFile & file, vector<string> const & samples, string jtBinName, scaleFact_vect scaleFactor);//map<string, RooRealVar *> scaleFactors);
   ~JetTagBin();
   vector<Template*> & jtTemplates() { return jtTemplates_; }
   
-  //this needs to be instantiated
-  RooNLLVar * nll()  { return jtNll_; } 
+    RooNLLVar * nll()  { return jtNll_; } 
 
   void setupPE( double nent );
   void inputData( TFile * file );
   void makeNLLVar();
   void plotOn( RooPlot * frame );
 
-  void setKFactors( std::vector<double> const & inputKFactors ) {
+  void setKFactors( vector<double> const & inputKFactors ) {
     copy( inputKFactors.begin(), inputKFactors.end(), kFactors_.begin() );
   }
 
+  vector<double>  kFactors() { return kFactors_; };
+  
   RooRealVar const * jtFitVar() const { return jtFitVar_;}
-  std::string const & jtBinName() const { return jtBinName_; }
+  string const & jtBinName() const { return jtBinName_; }
 private:
   string jtBinName_;                 //< Bin Name
   TH1F * jtDataHist_;                //< Jet-tag bin template for PDF
@@ -118,7 +120,7 @@ private:
   vector<double>  kFactors_;         //< K-factors for each bin for testing
 };
 
-JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinName, std::map<std::string, RooRealVar *> scaleFactors):
+JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinName, scaleFact_vect scaleFactors)://map<string, RooRealVar *> scaleFactors):
   jtBinName_(jtBinName)
 {
   // I don't know if I should provide the guess here --also for different sized bins, I think we may have to dynamically provide range
@@ -136,7 +138,7 @@ JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinN
     else
       tempHisto2 = (TH1F*) tempHisto->Clone();
 
-    Template * temp = new Template(*tempHisto2, name, *jtFitVar_, *scaleFactors[samples[i]]);
+    Template * temp = new Template(*tempHisto2, name, *jtFitVar_, scaleFactors[samples[i]]);//, kFactors_[i]]);
     jtTemplates_.push_back( temp );
     kFactors_.push_back(1.0);
   }
@@ -203,7 +205,7 @@ void JetTagBin::makeNLLVar()
 
 void JetTagBin::plotOn( RooPlot * frame )
 {
-  cout << "Plotting" << endl;
+  cout << "Plotting On" << endl;
   jtData_->plotOn(frame);
   jtPdf_->plotOn(frame);
 }
@@ -216,17 +218,17 @@ JetTagBin::~JetTagBin() {
 class SHyFT {
 public:
 
-  SHyFT( std::string const & fileName );
+  SHyFT( string const & fileName, double lum );
   ~SHyFT() { file_->Close(); }
   
   void generatePEs( double Lum ); 
   void makeNLLVars();
   void fit();
   void print();
-  void plot();
+  void plot( double lum );
 
-  void setKFactors( std::vector<double> const & inputKFactors ) {
-    for ( std::vector<JetTagBin*>::iterator bBegin = bins_.begin(),
+  void setKFactors( vector<double> const & inputKFactors ) {
+    for ( vector<JetTagBin*>::iterator bBegin = bins_.begin(),
 	    bEnd = bins_.end(), ib = bBegin;
 	  ib != bEnd; ++ib ) {
       (*ib)->setKFactors( inputKFactors );
@@ -234,26 +236,51 @@ public:
   }
   
 protected:
-  std::vector< JetTagBin * > bins_;
-  std::vector< RooNLLVar * > nlls_;
-  std::map<std::string, RooRealVar *> scaleFactors_;
-  std::vector<std::string> samples_;
+  vector< JetTagBin * > bins_;
+  vector< RooNLLVar * > nlls_;
+  //map<string, vector< RooRealVar * > > scaleFactors_;
+  scaleFact_vect scaleFactors_;
+  vector<string> samples_;
   TFile * file_;
   RooRealVar ttbar_xsec_;
   RooRealVar WJets_xsec_;
   RooFitResult* fitResult_;
+  RooRealVar lum_;
+  RooRealVar kFactor1;
+  RooRealVar kFactor2;
 
 };
 
 
-SHyFT::SHyFT( std::string const & fileName ) :
+SHyFT::SHyFT( string const & fileName, double lum ) :
   file_( new TFile(fileName.c_str()) ),
   ttbar_xsec_("ttbar_hT_xsec","ttbar_hT_xsec", 1., .0001, 100. ),
-  WJets_xsec_("WJets_hT_xsec","WJets_hT_xsec", 1., .0001, 100. )
+  WJets_xsec_("WJets_hT_xsec","WJets_hT_xsec", 1., .0001, 100. ),
+  lum_("luminosity","luminosity",lum),
+  kFactor1("kFactor1","kFactor1",1.0),
+  kFactor2("kFactor2","kFactor2",1.0)
+  
 {
 
-  scaleFactors_["ttbar"]=&ttbar_xsec_;
-  scaleFactors_["WJets"]=&WJets_xsec_;
+  //  RooRealVar Lum("luminosity","luminosity", lum );
+  //  RooRealVar kFactor1("kFactor1","kFactor1",1.0);
+  //RooRealVar kFactor2("kFactor2","kFactor2",1.0);
+
+  vector<RooRealVar *> test1;
+  vector<RooRealVar *> test2;
+
+  test1.push_back(&ttbar_xsec_);
+  test1.push_back(&lum_);
+  test1.push_back(&kFactor1);
+  test2.push_back(&WJets_xsec_);
+  test2.push_back(&lum_);
+  test2.push_back(&kFactor2);
+
+  scaleFactors_["ttbar"]=test1;
+  scaleFactors_["WJets"]=test2;
+  
+  //  scaleFactors_["ttbar"]=&ttbar_xsec_;
+  //scaleFactors_["WJets"]=&WJets_xsec_;
 
   samples_.push_back("ttbar");//_hT_");
   samples_.push_back("WJets");//_hT_");
@@ -314,27 +341,30 @@ void SHyFT::fit()
   fitResult_->Print("v") ;
 }
 
-void SHyFT::plot()
+void SHyFT::plot(double lum)
 {
   //plotting stuff and examination below here
   cout << "Plotting" << endl;
-  for (  std::vector< JetTagBin * >::iterator ibin = 
+  for (  vector< JetTagBin * >::iterator ibin = 
 	   bins_.begin(),
 	   binsBegin = bins_.begin(), binsEnd = bins_.end();
 	 ibin != binsEnd; ++ibin ) {
 
-    cout << "Plotting bin " << ibin - binsBegin << endl;
+    cout << "Plotting bin " << ibin - binsBegin+1 << endl;
     JetTagBin & bin = **ibin;
     TCanvas * c1 = new TCanvas(("c"+bin.jtBinName()).c_str(), "Combined Fit");
     RooPlot *frame = bin.jtFitVar()->frame();
-    
-    bin.jtTemplates().at(0)->pdf()->plotOn(frame, LineColor(3));
-    bin.jtTemplates().at(1)->pdf()->plotOn(frame, LineColor(2));
+
+    double scale0 = bin.jtTemplates().at(0)->hnorm()*(bin.kFactors().at(0))*lum;
+    double scale1 = bin.jtTemplates().at(1)->hnorm()*(bin.kFactors().at(1))*lum;
+    bin.jtTemplates().at(0)->epdf()->plotOn(frame, LineColor(3),Normalization(scale0));
+    bin.jtTemplates().at(1)->epdf()->plotOn(frame, LineColor(2),Normalization(scale1));
     bin.plotOn( frame );
     //jtPdf_->plotOn(frame,Components("ttbar_hT_1j_pdf"),LineColor(3));
     //jtPdf_->plotOn(frame,Components("WJets_hT_1j_pdf"),LineColor(2));
     frame->Draw();
     c1->SaveAs(("fitter"+bin.jtBinName()+".png").c_str());
+    delete c1;
   }
   //jtFitVar_->Print("t");
   //jtPdf_->Print("v");
@@ -347,15 +377,16 @@ void SHyFT::plot()
 
 void Fitter(string fileName)
 {
-  std::vector<double> kFactors;
+  vector<double> kFactors;
+  //  kFactors.push_back( 3.0 );
   kFactors.push_back( 3.0 );
   kFactors.push_back( 1.0 );
-  SHyFT shyft(fileName);
+  double lum=100.0; // for now this is the same parameter input to generatePEs
+  SHyFT shyft(fileName, lum);
   shyft.setKFactors( kFactors );
-  shyft.generatePEs(1.0);
+  shyft.generatePEs(lum);
   shyft.makeNLLVars();
   shyft.print();
   shyft.fit();
-  shyft.plot();
+  shyft.plot( lum );
 }
-  
