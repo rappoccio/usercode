@@ -85,6 +85,7 @@ class SHyFT {
     bool analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons);
     bool analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons);    
     bool analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets);
+    bool analyze_met( const reco::ShallowClonePtrCandidate & met );
     bool calcSampleName (const edm::EventBase& iEvent, std::string &sampleName);
 
     WPlusJetsEventSelector wPlusJets;
@@ -101,6 +102,7 @@ class SHyFT {
     // used to be a global, what a shit!
     int HFcat_;
     std::string secvtxname;
+    bool doMC_;
 };
 
 
@@ -112,7 +114,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   useHFcat_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("heavyFlavour")),
   nJetsCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("minJets")),  
   mode(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("mode")),
-  sampleNameInput(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("sampleName"))
+  sampleNameInput(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("sampleName")),
+  doMC_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doMC") )
 {
   //book all the histograms for muons
   histograms["muPt"]     = theDir.make<TH1F>("muPt",     "Muon p_{T} (GeV/c) ", 100,    0, 200);
@@ -128,6 +131,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   histograms["eEta"] = theDir.make<TH1F>("eEta", "Electron eta",             50, -3.0, 3.0);
   histograms["ePhi"] = theDir.make<TH1F>("ePhi", "Electron Phi",             50, -3.2, 3.2);
   histograms["eD0"]  = theDir.make<TH1F>("eD0",  "Electron D0",              60, -0.2, 0.2);
+
+  histograms["metPt"] = theDir.make<TH1F>("metPt", "Missing p_{T} (GeV/c)", 100, 0, 200 );
 
   std::vector<std::string> sampleNameBase;
   std::vector<std::string> sampleName;
@@ -159,6 +164,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   else sampleName.push_back(sampleNameInput);
 
   //Calibration Plots
+  histograms["wMT"]           = theDir.make<TH1F>("wMT", "W Transverse Mass",           200,    0,  200);
   histograms["trackIso"]      = theDir.make<TH1F>("trackIso", "TrackIso",                50,    0,   50);
   histograms["eCalIso"]       = theDir.make<TH1F>("eCalIso",  "eCalIso",                 80,    0,   40);
   histograms["hCalIso"]       = theDir.make<TH1F>("hCalIso",  "hCalIso",                 60,    0,   30);
@@ -172,6 +178,10 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   histograms["jet2Eta"]       = theDir.make<TH1F>("jet2Eta",  "2nd leading jet eta",     50, -3.0,  3.0);
   histograms["jet3Eta"]       = theDir.make<TH1F>("jet3Eta",  "3rd leading jet eta",     50, -3.0,  3.0);
   histograms["jet4Eta"]       = theDir.make<TH1F>("jet4Eta",  "4th leading jet eta",     50, -3.0,  3.0);
+  histograms["jet1PtTrueRes"] = theDir.make<TH1F>("jet1PtTrueRes",   "1st leading jet pt / gen pt",     150,    0,  3);
+  histograms["jet2PtTrueRes"] = theDir.make<TH1F>("jet2PtTrueRes",   "2nd leading jet pt / gen pt",     150,    0,  3);
+  histograms["jet3PtTrueRes"] = theDir.make<TH1F>("jet3PtTrueRes",   "3rd leading jet pt / gen pt",     150,    0,  3);
+  histograms["jet4PtTrueRes"] = theDir.make<TH1F>("jet4PtTrueRes",   "4th leading jet pt / gen pt",     150,    0,  3);
   histograms["jet1Mass"]      = theDir.make<TH1F>("jet1Mass", "1st leading jet mass",    50,    0,  150);
   histograms["jet2Mass"]      = theDir.make<TH1F>("jet2Mass", "2nd leading jet mass",    50,    0,  150);
   histograms["jet3Mass"]      = theDir.make<TH1F>("jet3Mass", "3rd leading jet mass",    50,    0,  150);
@@ -399,6 +409,13 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
   return true;
 }
 
+bool SHyFT::analyze_met(const reco::ShallowClonePtrCandidate & met)
+{
+  histograms["metPt"]->Fill( met.pt() );
+
+  return true;
+}
+
 
 
 ///////////////////
@@ -414,6 +431,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   std::vector<reco::ShallowClonePtrCandidate> const & muons     = wPlusJets.selectedMuons();
   std::vector<reco::ShallowClonePtrCandidate> const & jets      = wPlusJets.cleanedJets();
   //std::vector<reco::ShallowClonePtrCandidate> const & jetsBeforeClean = wPlusJets.selectedJets();
+  reco::ShallowClonePtrCandidate const & met = wPlusJets.selectedMET();
 
   string bit_;
 
@@ -421,6 +439,20 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   bool passTrigger = ret[ bit_ ];
   bit_ = "== 1 Lepton";
   bool passOneLepton = ret[ bit_ ];
+  bit_ = "= 0 Jets";
+  bool jet0 = ret[bit_];
+  bit_ = "= 1 Jets";
+  bool jet1 = ret[bit_];
+  bit_ = "= 2 Jets";
+  bool jet2 = ret[bit_];
+  bit_ = "= 3 Jets";
+  bool jet3 = ret[bit_];
+  bit_ = "= 4 Jets";
+  bool jet4 = ret[bit_];
+  bit_ = ">=5 Jets";
+  bool jet5 = ret[bit_];
+
+  bool anyJets = jet1 || jet2 || jet3 || jet4 || jet5;
 
   // if not passed trigger, next event                                                                                                                                                                       
   if ( !passTrigger )  return;
@@ -432,9 +464,10 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   // TODO: check the logic !
   // TODO: integrate the secvtxname initialization 
 
-  if (passed) 
+  if (anyJets) 
   {
     analyze_jets(jets);
+    analyze_met( met );
     if ( muPlusJets_ ) analyze_muons(muons);
     if ( ePlusJets_ ) analyze_electrons(electrons);
 
@@ -447,7 +480,17 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
       for ( unsigned int i=0; i<maxJets; ++i) {
 	histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Pt"] ->Fill( jets[i].pt()  );
 	histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Eta"]->Fill( jets[i].eta() );
+	histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Mass"]->Fill( jets[i].mass() );
+	pat::Jet const * patJet = dynamic_cast<pat::Jet const *>( &* jets[i].masterClonePtr()  );
+	if ( doMC_ && patJet != 0 && patJet->genJet() != 0 ) {
+	  histograms["jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes"] ->Fill( jets[i].pt() / patJet->genJet()->pt()  );
+	}
       }
+
+      reco::Candidate::LorentzVector nu_p4 = met.p4();
+      reco::Candidate::LorentzVector mu_p4 = muons[0].p4();
+      double wMT = (mu_p4 + nu_p4).mt();
+      histograms["wMT"]->Fill( wMT );
     }
     return;
 
@@ -624,6 +667,7 @@ int main ( int argc, char ** argv )
   Preselection preselection( *parameters );
 
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
+  int maxEvents = inputs.getParameter<int>("maxEvents");
 
   unsigned int nEventsAnalyzed(0);
 
@@ -632,7 +676,7 @@ int main ( int argc, char ** argv )
   timer.Start();
   //loop through each event
   for( ev.toBegin();
-       ! ev.atEnd();
+       ! ev.atEnd() && ( nEventsAnalyzed < maxEvents || maxEvents < 0) ;
        ++ev, ++nEventsAnalyzed) 
   {
     if (preselection.filter(ev))theAnalysis.analyze(ev);

@@ -7,6 +7,7 @@ process.load('Analysis.SHyFT.shyftAnalysis_cfi')
 
 
 process.inputs = cms.PSet (
+    maxEvents = cms.int32(-1),
     fileNames = cms.vstring(
 '/Volumes/MyBook/Data/TTbar/shyft_35x_v3/ljmet_1.root',
 '/Volumes/MyBook/Data/TTbar/shyft_35x_v3/ljmet_10.root',
@@ -64,5 +65,5 @@ process.inputs = cms.PSet (
 )
 
 process.outputs = cms.PSet (
-    outputName = cms.string('shyftPlots_ttbar_pythia.root')
+    outputName = cms.string('shyftPlots_ttbar_pythia_syncex.root')
 )

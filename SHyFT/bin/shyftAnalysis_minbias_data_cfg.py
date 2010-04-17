@@ -15,7 +15,9 @@ process.shyftAnalysis.trigSrc = cms.InputTag('patTriggerEvent')
 process.shyftAnalysis.cutsToIgnore = cms.vstring( 'Trigger' )
 
 process.shyftAnalysis.muPtMin = cms.double( '10' )
-
+process.shyftAnalysis.elePtMin = cms.double( '10' )
+process.shyftAnalysis.muPlusJets = cms.bool(False)
+process.shyftAnalysis.ePlusJets = cms.bool(True)
 
 process.inputs = cms.PSet (
     fileNames = cms.vstring(
