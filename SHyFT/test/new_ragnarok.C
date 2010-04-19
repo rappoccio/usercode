@@ -28,6 +28,8 @@
 using namespace RooFit ;
 using namespace std;
 
+//bool verbose;
+
 typedef map<string, vector< RooRealVar * > > scaleFact_vect;
 
 class Template {
@@ -56,18 +58,19 @@ private:
   RooExtendPdf * rep_;   //< What's this for?????           <-----------
   //  RooFormulaVar * form_;
   RooRealVar  binningVar_;
-  RooRealVar * lum_;
+  //  RooRealVar * lum_;
 };
 
 Template::Template(TH1F hist, string name, RooRealVar& binningVar, vector<RooRealVar*> scaleFactors)://, RooRealVar& lum, RooRealVar & kFactor):
-  hist_(hist),name_(name),binningVar_(binningVar),lum_(scaleFactors[1]) {
+  hist_(hist),name_(name),binningVar_(binningVar) {//,lum_(scaleFactors[1]) {
   hnorm_   = hist_.Integral();
   cout << "Normaliztion of " << name_.c_str() << " is " << hnorm_ << endl;
   norm_    = new RooRealVar ((name_+"_norm").c_str(), (name_+"_norm").c_str(),hnorm_);//,-1,100000);
   rdh_     = new RooDataHist(name_.c_str(),name_.c_str(),binningVar_, &hist_);
-  rhp_   = new RooHistPdf ((name_+"_pdf").c_str(),(name_+"_pdf").c_str(), binningVar_, *rdh_);
+  rhp_     = new RooHistPdf ((name_+"_pdf").c_str(),(name_+"_pdf").c_str(), binningVar_, *rdh_);
   //  lum_ = new RooRealVar (("luminosity","luminosity",lu
-  RooFormulaVar * form_ = new RooFormulaVar((name_+"_form").c_str(), (name_+"_form").c_str(),"@0*@1*@2*@3",RooArgSet(*scaleFactors[0], *norm_,*lum_,*scaleFactors[2]));//, lum, kFactor));
+  //In the ScaleFactors, 0 is the xsection/fit variable, 1 is the luminosity, 2 is the generated xsection, and 3 is the number of events
+  RooFormulaVar * form_ = new RooFormulaVar((name_+"_form").c_str(), (name_+"_form").c_str(),"@0*@1*@2*@3/@4",RooArgSet(*scaleFactors[0], *norm_,*scaleFactors[1],*scaleFactors[2],*scaleFactors[3]));//, lum, kFactor));
   rep_   = new RooExtendPdf((name_+"_epdf").c_str(), (name_+"_epdf").c_str(), *rhp_, *form_);
 }
 
@@ -94,7 +97,7 @@ public:
   ~JetTagBin();
   vector<Template*> & jtTemplates() { return jtTemplates_; }
   
-    RooNLLVar * nll()  { return jtNll_; } 
+  RooNLLVar * nll()  { return jtNll_; } 
 
   void setupPE( double nent );
   void inputData( TFile * file );
@@ -223,9 +226,10 @@ public:
   
   void generatePEs( double Lum ); 
   void makeNLLVars();
-  void fit();
+  void fit(bool verbose);
   void print();
   void plot( double lum );
+  RooFitResult * fitResult() { return fitResult_; }
 
   void setKFactors( vector<double> const & inputKFactors ) {
     for ( vector<JetTagBin*>::iterator bBegin = bins_.begin(),
@@ -248,7 +252,10 @@ protected:
   RooRealVar lum_;
   RooRealVar kFactor1;
   RooRealVar kFactor2;
-
+  RooRealVar genXsec_ttbar;
+  RooRealVar genXsec_wjets;
+  RooRealVar genNevt_ttbar;
+  RooRealVar genNevt_wjets;
 };
 
 
@@ -257,8 +264,10 @@ SHyFT::SHyFT( string const & fileName, double lum ) :
   ttbar_xsec_("ttbar_hT_xsec","ttbar_hT_xsec", 1., .0001, 100. ),
   WJets_xsec_("WJets_hT_xsec","WJets_hT_xsec", 1., .0001, 100. ),
   lum_("luminosity","luminosity",lum),
-  kFactor1("kFactor1","kFactor1",1.0),
-  kFactor2("kFactor2","kFactor2",1.0)
+  genXsec_ttbar("genXsec_ttbar","genXsec_ttbar",1.0),
+  genXsec_wjets("genXsec_wjets","genXsec_wjets",1.0),
+  genNevt_ttbar("genNevt_ttbar","genNevt_ttbar",221131.),
+  genNevt_wjets("genNevt_wjets","genNevt_wjets",1204434.)
   
 {
 
@@ -266,18 +275,20 @@ SHyFT::SHyFT( string const & fileName, double lum ) :
   //  RooRealVar kFactor1("kFactor1","kFactor1",1.0);
   //RooRealVar kFactor2("kFactor2","kFactor2",1.0);
 
-  vector<RooRealVar *> test1;
-  vector<RooRealVar *> test2;
+  vector<RooRealVar *> ttbarSF;
+  vector<RooRealVar *> wjetsSF;
 
-  test1.push_back(&ttbar_xsec_);
-  test1.push_back(&lum_);
-  test1.push_back(&kFactor1);
-  test2.push_back(&WJets_xsec_);
-  test2.push_back(&lum_);
-  test2.push_back(&kFactor2);
+  ttbarSF.push_back(&ttbar_xsec_);
+  ttbarSF.push_back(&lum_);
+  ttbarSF.push_back(&genXsec_ttbar);
+  ttbarSF.push_back(&genNevt_ttbar);
+  wjetsSF.push_back(&WJets_xsec_);
+  wjetsSF.push_back(&lum_);
+  wjetsSF.push_back(&genXsec_wjets);
+  wjetsSF.push_back(&genNevt_wjets);
 
-  scaleFactors_["ttbar"]=test1;
-  scaleFactors_["WJets"]=test2;
+  scaleFactors_["ttbar"]=ttbarSF;
+  scaleFactors_["WJets"]=wjetsSF;
   
   //  scaleFactors_["ttbar"]=&ttbar_xsec_;
   //scaleFactors_["WJets"]=&WJets_xsec_;
@@ -324,7 +335,7 @@ void SHyFT::makeNLLVars()
   }
 }
 
-void SHyFT::fit()
+void SHyFT::fit(bool verbose)
 {
   cout << "Fitting" << endl;
   RooAddition nllsum("nllsum","nllsum",RooArgSet(*bins_[0]->nll(),
@@ -334,11 +345,18 @@ void SHyFT::fit()
 						 *bins_[4]->nll()
 						 ) );
   RooMinuit m(nllsum);
-  m.setVerbose(kTRUE);
+  if(verbose){
+    std::cout << "VERBOSE" << std::endl;
+    m.setVerbose(kTRUE);
+  }
+  else {
+    m.setVerbose(kFALSE);
+    m.setPrintLevel(-1);
+  }
   m.migrad();
   fitResult_ = m.save() ;
   // Print the fit result snapshot
-  fitResult_->Print("v") ;
+  if(verbose) fitResult_->Print("v") ;
 }
 
 void SHyFT::plot(double lum)
@@ -375,18 +393,47 @@ void SHyFT::plot(double lum)
   //r->Print();
 }
 
-void Fitter(string fileName)
+void Fitter(string fileName, int maxPEs)
 {
   vector<double> kFactors;
   //  kFactors.push_back( 3.0 );
   kFactors.push_back( 3.0 );
   kFactors.push_back( 1.0 );
-  double lum=100.0; // for now this is the same parameter input to generatePEs
-  SHyFT shyft(fileName, lum);
-  shyft.setKFactors( kFactors );
-  shyft.generatePEs(lum);
-  shyft.makeNLLVars();
-  shyft.print();
-  shyft.fit();
-  shyft.plot( lum );
+  double lum=10.0; // for now this is the same parameter input to generatePEs
+  vector<RooFitResult *> results;
+  //  TH1F * pull_ttbar = new TH1F("pull_ttbar", "pull_ttbar", 100, -0.3, 0.3);
+  TH1F * pull_ratio = new TH1F("pull_ratio", "pull_ratio", 50, -1.1, 1.1);
+  bool verbose = false;
+  if(maxPEs<=10) verbose = true;
+
+  for(int numPEs = 0; numPEs < maxPEs; ++numPEs) {
+    SHyFT shyft(fileName, lum);
+    shyft.setKFactors( kFactors );
+    shyft.generatePEs(lum);
+    shyft.makeNLLVars();
+    if(verbose) shyft.print();
+    shyft.fit(verbose);
+    results.push_back(shyft.fitResult());
+    cout << "NEVENT IS " << numPEs << endl;
+  }
+  for(unsigned int i=0; i<results.size(); ++i) {
+    double ttbar_xsec = ((RooRealVar * )(*results.at(i)).floatParsFinal().find("ttbar_hT_xsec"))->getVal();
+    double wjets_xsec = ((RooRealVar * )(*results.at(i)).floatParsFinal().find("WJets_hT_xsec"))->getVal();
+    if(verbose) cout << "ttbar_xsec " << ttbar_xsec << " wjets_xsec " << wjets_xsec << endl;
+    pull_ratio->Fill((ttbar_xsec/wjets_xsec)-3.0);
+      
+    //    (*results.at(i)).floatParsFinal().Print("s");
+    //(*results.at(i)).Print("v");
+    //    (*results.at(i)).printMultiline(cout,false,"");
+    //(*results.at(i)).printArgs(cout);
+  }
+  //shyft.plot( lum );
+  //  TCanvas * c1 = new TCanvas("ttbar_pulls", "ttbar_pulls");
+  TCanvas * c1 = new TCanvas("ratio_pulls", "ratio_pulls");
+  pull_ratio->Draw();
+  c1->SaveAs("ratio_test.png");
+  delete c1;
 }
+
+
+//petar wants plots of nll vs parameters
