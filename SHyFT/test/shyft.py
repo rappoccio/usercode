@@ -15,14 +15,18 @@ process.load("PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi")
 # jets
 #_____ SELECTION ________________________________________________ 	 
 #
-process.selectedPatJets.cut = cms.string("pt > 15 & abs(eta) < 3")
-process.patJets.embedGenJetMatch = cms.bool(False)
+process.selectedPatJets.cut = cms.string("pt > 20 & abs(eta) < 3")
+process.patJets.tagInfoSources = cms.VInputTag(
+    cms.InputTag("secondaryVertexTagInfos")
+    )
 # electrons
 process.selectedPatElectrons.cut = cms.string('pt > 3. & abs(eta) < 2.5')
 process.patElectrons.isoDeposits = cms.PSet()
 # muons
 process.selectedPatMuons.cut = cms.string("pt > 3 & abs(eta) < 2.1")
 process.patMuons.isoDeposits = cms.PSet()
+# taus
+process.selectedPatTaus.cut = cms.string("pt > 20 & abs(eta) < 3")
 # photons
 process.patPhotons.isoDeposits = cms.PSet()
 #taus
@@ -67,8 +71,8 @@ switchOnTrigger( process )
 from PhysicsTools.PatAlgos.patEventContent_cff import patTriggerEventContent
 
 # switch to 8e29 menu. Note this is needed to match SD production
-#process.patTriggerEvent.processName = cms.string( 'HLT8E29' )
-#process.patTrigger.processName = cms.string( 'HLT8E29' )
+process.patTriggerEvent.processName = cms.string( 'HLT8E29' )
+process.patTrigger.processName = cms.string( 'HLT8E29' )
 
 #try to clone what we have up to here.  
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
@@ -80,6 +84,9 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5')
 
 # remove trigger matching for PF2PAT as that is currently broken
 process.patDefaultSequence.remove(process.patTriggerSequence)
+
+# now change the PF jet cut to 10 GeV
+process.selectedPatJets.cut = cms.string("pt > 15 & abs(eta) < 3")
 
 # end changes for PF
 ####################
