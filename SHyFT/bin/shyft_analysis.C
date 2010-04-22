@@ -10,6 +10,7 @@
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 
 #include <iostream>
+#include <iomanip>
 #include <cmath>      //necessary for absolute function fabs()
 #include <boost/shared_ptr.hpp>
 #include <boost/lexical_cast.hpp>
@@ -464,6 +465,8 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   // TODO: check the logic !
   // TODO: integrate the secvtxname initialization 
 
+  if( !passOneLepton ) return;
+
   if (anyJets) 
   {
     analyze_jets(jets);
@@ -471,7 +474,6 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     if ( muPlusJets_ ) analyze_muons(muons);
     if ( ePlusJets_ ) analyze_electrons(electrons);
 
-    if( !passOneLepton ) return;
 
     histograms["nJets"]->Fill( jets.size() );
     unsigned int maxJets = jets.size();
@@ -491,6 +493,11 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
       reco::Candidate::LorentzVector mu_p4 = muons[0].p4();
       double wMT = (mu_p4 + nu_p4).mt();
       histograms["wMT"]->Fill( wMT );
+    } 
+    if ( maxJets >= 4 ) {
+        
+      std::cout << iEvent.id().run() << ":" << iEvent.id().event() <<":" << iEvent.id().luminosityBlock() << ":" << std::setprecision(8) << muons[0].pt() << std::endl;
+
     }
     return;
 
@@ -632,6 +639,7 @@ bool SHyFT::calcSampleName (const edm::EventBase& iEvent, std::string &sampleNam
 void SHyFT::finalize()
 {
   wPlusJets.print(std::cout);
+  wPlusJets.printSelectors(std::cout);
 }
 
 
