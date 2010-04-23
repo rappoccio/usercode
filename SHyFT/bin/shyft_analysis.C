@@ -41,36 +41,36 @@ enum
 typedef std::vector<reco::ShallowClonePtrCandidate> ShallowCloneCollection;
 
 
-class Preselection {
+// class Preselection {
 
-  public:
-    Preselection(edm::ParameterSet const &);
-    virtual bool filter(const edm::EventBase& iEvent);
+//   public:
+//     Preselection(edm::ParameterSet const &);
+//     virtual bool filter(const edm::EventBase& iEvent);
 
-protected:
-  edm::InputTag trigSrc_;
-};
+// protected:
+//   edm::InputTag trigSrc_;
+// };
    
 
-Preselection::Preselection(edm::ParameterSet const & params ) :
-  trigSrc_( params.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("trigSrc") )
-{;}
+// Preselection::Preselection(edm::ParameterSet const & params ) :
+//   trigSrc_( params.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("trigSrc") )
+// {;}
 
 
-bool
-Preselection::filter(const edm::EventBase& iEvent){
-  bool passTrig = false;
-  edm::Handle<pat::TriggerEvent> triggerEvent;
-  iEvent.getByLabel(trigSrc_, triggerEvent);
-  if ( triggerEvent->wasRun() && triggerEvent->wasAccept() ) {
-      pat::TriggerPath const * muPath = triggerEvent->path("HLT_Mu9");
-      pat::TriggerPath const * elePath = triggerEvent->path("HLT_Ele15_LW_L1R");
+// bool
+// Preselection::filter(const edm::EventBase& iEvent){
+//   bool passTrig = false;
+//   edm::Handle<pat::TriggerEvent> triggerEvent;
+//   iEvent.getByLabel(trigSrc_, triggerEvent);
+//   if ( triggerEvent->wasRun() && triggerEvent->wasAccept() ) {
+//       pat::TriggerPath const * muPath = triggerEvent->path("HLT_Mu9");
+//       pat::TriggerPath const * elePath = triggerEvent->path("HLT_Ele15_LW_L1R");
 
-      if (muPath != 0 && muPath->wasAccept()) passTrig = true;    
-      if (elePath != 0 && elePath->wasAccept()) passTrig = true;
-  }
-  return passTrig;
-}
+//       if (muPath != 0 && muPath->wasAccept()) passTrig = true;    
+//       if (elePath != 0 && elePath->wasAccept()) passTrig = true;
+//   }
+//   return passTrig;
+// }
 
 
 
@@ -670,7 +670,7 @@ int main ( int argc, char ** argv )
   TFileDirectory theDir = fs.mkdir( "histos" ); 
     
   SHyFT theAnalysis(*parameters,theDir);
-  Preselection preselection( *parameters );
+//   Preselection preselection( *parameters );
 
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
   int maxEvents = inputs.getParameter<int>("maxEvents");
@@ -685,7 +685,8 @@ int main ( int argc, char ** argv )
        ! ev.atEnd() && ( nEventsAnalyzed < maxEvents || maxEvents < 0) ;
        ++ev, ++nEventsAnalyzed) 
   {
-    if (preselection.filter(ev))theAnalysis.analyze(ev);
+    if ( ev.event()->size() == 0 ) continue; // skip trees with no events
+    theAnalysis.analyze(ev);
     if (nEventsAnalyzed%10000==0) std::cout<<"Events analyzed: "<<nEventsAnalyzed<<std::endl;
   } //end event loop
   
