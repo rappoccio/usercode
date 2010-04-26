@@ -9,6 +9,8 @@
 #include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 
+#include "DataFormats/Provenance/interface/LuminosityBlockRange.h"
+
 #include <iostream>
 #include <iomanip>
 #include <cmath>      //necessary for absolute function fabs()
@@ -665,6 +667,16 @@ int main ( int argc, char ** argv )
   edm::ParameterSet const& inputs  = parameters->getParameter<edm::ParameterSet>("inputs");
   edm::ParameterSet const& outputs = parameters->getParameter<edm::ParameterSet>("outputs");
 
+  bool selectLumis = false;
+  std::vector<edm::LuminosityBlockRange> lumis;
+  if ( inputs.exists("lumisToProcess") ) {
+    selectLumis = true;
+
+    std::vector<edm::LuminosityBlockRange> const & lumisTemp = inputs.getUntrackedParameter<std::vector<edm::LuminosityBlockRange> > ("lumisToProcess");
+    lumis.resize( lumisTemp.size() );
+    copy( lumisTemp.begin(), lumisTemp.end(), lumis.begin() );
+  }
+
   // book a set of histograms
   fwlite::TFileService fs = fwlite::TFileService( outputs.getParameter<std::string>("outputName") );
   TFileDirectory theDir = fs.mkdir( "histos" ); 
@@ -685,7 +697,21 @@ int main ( int argc, char ** argv )
        ! ev.atEnd() && ( nEventsAnalyzed < maxEvents || maxEvents < 0) ;
        ++ev, ++nEventsAnalyzed) 
   {
+    
     if ( ev.event()->size() == 0 ) continue; // skip trees with no events
+
+    if ( selectLumis ) {
+      bool goodLumi = false;
+      for ( std::vector<edm::LuminosityBlockRange>::const_iterator lumisBegin = lumis.begin(),
+	      lumisEnd = lumis.end(), ilumi = lumisBegin;
+	    ilumi != lumisEnd; ++ilumi ) {
+	if ( ev.id().run() >= ilumi->startRun() && ev.id().run() <= ilumi->endRun()  &&
+	     ev.id().luminosityBlock() >= ilumi->startLumi() && ev.id().luminosityBlock() <= ilumi->endLumi() )  {
+	  goodLumi = true;
+	}
+      }
+      if ( !goodLumi ) continue;
+    }
     theAnalysis.analyze(ev);
     if (nEventsAnalyzed%10000==0) std::cout<<"Events analyzed: "<<nEventsAnalyzed<<std::endl;
   } //end event loop
