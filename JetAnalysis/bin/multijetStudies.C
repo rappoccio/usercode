@@ -102,6 +102,17 @@ int main (int argc, char* argv[])
   fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
 
 
+  bool selectLumis = false;
+  std::vector<edm::LuminosityBlockRange> lumis;
+  if ( inputs.exists("lumisToProcess") ) {
+    selectLumis = true;
+
+    std::vector<edm::LuminosityBlockRange> const & lumisTemp = inputs.getUntrackedParameter<std::vector<edm::LuminosityBlockRange> > ("lumisToProcess");
+    lumis.resize( lumisTemp.size() );
+    copy( lumisTemp.begin(), lumisTemp.end(), lumis.begin() );
+  }
+
+
   cout << "Booking histograms" << endl;
   // Book histograms
 
@@ -195,8 +206,9 @@ int main (int argc, char* argv[])
 			    pfJetStudiesParams );
   pfSelector.set("Calo Delta Phi", false);
   pfSelector.set("PF Delta Phi", false);
+
   
-  vector<int> const & runs = plotParameters.getParameter<std::vector<int> >("runs");
+
   bool doTracks = plotParameters.getParameter<bool>("doTracks");
   bool useMC    = plotParameters.getParameter<bool>("useMC");
 
@@ -209,9 +221,24 @@ int main (int argc, char* argv[])
 
     edm::EventBase const & event = ev;
 
-    int run = event.id().run();
-    if ( runs.size() > 0 && find( runs.begin(), runs.end(), run ) == runs.end() ) continue;
     
+    if ( ev.event()->size() == 0 ) continue; // skip trees with no events
+
+    if ( selectLumis ) {
+      bool goodLumi = false;
+      for ( std::vector<edm::LuminosityBlockRange>::const_iterator lumisBegin = lumis.begin(),
+	      lumisEnd = lumis.end(), ilumi = lumisBegin;
+	    ilumi != lumisEnd; ++ilumi ) {
+	if ( ev.id().run() >= ilumi->startRun() && ev.id().run() <= ilumi->endRun()  &&
+	     ev.id().luminosityBlock() >= ilumi->startLumi() && ev.id().luminosityBlock() <= ilumi->endLumi() )  {
+	  goodLumi = true;
+	}
+      }
+      if ( !goodLumi ) continue;
+    }
+
+    int run = event.id().run();
+
     if ( nev % 10000 == 0 ) cout << "Entry " << nev << ", Processing run " << event.id().run() << ", event " << event.id().event() << endl;
 
     std::strbitset retCalo = caloSelector.getBitTemplate();
