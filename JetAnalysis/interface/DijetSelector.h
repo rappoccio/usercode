@@ -26,7 +26,7 @@ public:
     pfJetSel_  (new PFJetIDSelectionFunctor(pfJetIdParams)),
     jetSrc_    (params.getParameter<edm::InputTag>("jetSrc")), 
     pfJetSrc_  (params.getParameter<edm::InputTag>("pfJetSrc")),
-    minNJets_  (params.getParameter<int>("minNJets")),
+    minNJets_  (params.getParameter<unsigned int>("minNJets")),
     ptMin_     (params.getParameter<double>("ptMin"))
   {
     bool useCalo = params.getParameter<bool>("useCalo");
@@ -197,7 +197,7 @@ protected:
   boost::shared_ptr<PFJetIDSelectionFunctor> pfJetSel_;
   edm::InputTag                              jetSrc_;
   edm::InputTag                              pfJetSrc_;
-  int                                        minNJets_;
+  unsigned int                               minNJets_;
   double                                     ptMin_;
 
 
