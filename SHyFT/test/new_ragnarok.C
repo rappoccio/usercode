@@ -28,7 +28,7 @@
 using namespace RooFit ;
 using namespace std;
 
-//bool verbose;
+bool verbose;
 
 typedef map<string, vector< RooRealVar * > > scaleFact_vect;
 
@@ -131,7 +131,7 @@ JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinN
   jtFitVar_= new RooRealVar(jtBinName.c_str(), jtBinName.c_str(), 50, 600);
   for(unsigned int i=0;i<samples.size();++i) {
     string name = samples[i]+jtBinName;
-    cout << "opening histogram " << name << endl;
+    if(verbose) cout << "opening histogram " << name << endl;
     TH1F * tempHisto = (TH1F*)file.Get(name.c_str());
     TH1F * tempHisto2;
     if(tempHisto==0) {
@@ -147,13 +147,13 @@ JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinN
   }
   RooArgList TemplateList;
   //RooArgList NormList;
-  cout << "making lists" << endl;
+  if(verbose) cout << "making lists" << endl;
   for(unsigned int i=0;i<jtTemplates_.size();++i) {
     TemplateList.add(*(jtTemplates_[i]->epdf()));
     //TemplateList.add(*(jtTemplates_[i]->rhp()));
     //NormList.add(*(jtTemplates_[i]->norm()));
   }
-  cout << "making combined pdf" << endl;
+  if(verbose) cout << "making combined pdf" << endl;
   jtPdf_ = new RooAddPdf((jtBinName_+"_pdf").c_str(),(jtBinName_+"_pdf").c_str(),TemplateList);
 
 }
@@ -161,7 +161,7 @@ JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinN
 
 void JetTagBin::setupPE( double Lum )
 {
-  cout << "generating pseudoexperiment" << endl;
+  if(verbose) cout << "generating pseudoexperiment" << endl;
 
   bool first = true;
   TH1F * temp = 0;  // Will hold the sum of all the experiments
@@ -179,7 +179,7 @@ void JetTagBin::setupPE( double Lum )
 
   }
 
-  cout << "Generated pseudoexperiment with sum of xs * LUM * eff = " << temp->Integral() << " events" << endl;
+  if(verbose) cout << "Generated pseudoexperiment with sum of xs * LUM * eff = " << temp->Integral() << " events" << endl;
 
   // Vary the bin contents
   for ( int ibin = 1; ibin <= temp->GetNbinsX(); ++ibin ) {
@@ -193,7 +193,7 @@ void JetTagBin::setupPE( double Lum )
 void JetTagBin::inputData( TFile * file ) 
 {
   TH1F * tempDataHist = (TH1F*)file->Get(("Data_"+jtBinName_).c_str());
-  cout << "Loaded Data_" << jtBinName_ << " from the file." << endl;
+  if(verbose) cout << "Loaded Data_" << jtBinName_ << " from the file." << endl;
   jtDataHist_ = (TH1F*) tempDataHist->Clone();
   jtData_ = new RooDataHist(("Data_"+jtBinName_).c_str(),("Data_"+jtBinName_).c_str(),*jtFitVar_,Import(*jtDataHist_));
   
@@ -202,13 +202,13 @@ void JetTagBin::inputData( TFile * file )
 
 void JetTagBin::makeNLLVar()
 {
-  cout << "creating nllVar" << endl;
+  if(verbose) cout << "creating nllVar" << endl;
   jtNll_ = new RooNLLVar((jtBinName_+"_nll").c_str(), (jtBinName_+"_nll").c_str(), *jtPdf_, *jtData_);
 }
 
 void JetTagBin::plotOn( RooPlot * frame )
 {
-  cout << "Plotting On" << endl;
+  if(verbose) cout << "Plotting On" << endl;
   jtData_->plotOn(frame);
   jtPdf_->plotOn(frame);
 }
@@ -264,8 +264,8 @@ SHyFT::SHyFT( string const & fileName, double lum ) :
   ttbar_xsec_("ttbar_hT_xsec","ttbar_hT_xsec", 1., .0001, 100. ),
   WJets_xsec_("WJets_hT_xsec","WJets_hT_xsec", 1., .0001, 100. ),
   lum_("luminosity","luminosity",lum),
-  genXsec_ttbar("genXsec_ttbar","genXsec_ttbar",1.0),
-  genXsec_wjets("genXsec_wjets","genXsec_wjets",1.0),
+  genXsec_ttbar("genXsec_ttbar","genXsec_ttbar",90.0),
+  genXsec_wjets("genXsec_wjets","genXsec_wjets",17810.0),
   genNevt_ttbar("genNevt_ttbar","genNevt_ttbar",221131.),
   genNevt_wjets("genNevt_wjets","genNevt_wjets",1204434.)
   
@@ -321,7 +321,7 @@ void SHyFT::print()
 
 void SHyFT::generatePEs(double Lum)
 {
-  cout << "Generating Pseudoexperiments" << endl;
+  if(verbose) cout << "Generating Pseudoexperiments" << endl;
   for(unsigned int i=0;i<bins_.size();++i) {
     bins_[i]->setupPE( Lum );
   }
@@ -329,7 +329,7 @@ void SHyFT::generatePEs(double Lum)
 
 void SHyFT::makeNLLVars()
 {
-  cout << "Making NLL variables" << endl;
+  if(verbose) cout << "Making NLL variables" << endl;
   for(unsigned int i=0;i<bins_.size();++i) {
     bins_[i]->makeNLLVar();
   }
@@ -337,7 +337,7 @@ void SHyFT::makeNLLVars()
 
 void SHyFT::fit(bool verbose)
 {
-  cout << "Fitting" << endl;
+  if(verbose) cout << "Fitting" << endl;
   RooAddition nllsum("nllsum","nllsum",RooArgSet(*bins_[0]->nll(),
 						 *bins_[1]->nll(),
 						 *bins_[2]->nll(),
@@ -362,13 +362,13 @@ void SHyFT::fit(bool verbose)
 void SHyFT::plot(double lum)
 {
   //plotting stuff and examination below here
-  cout << "Plotting" << endl;
+  if(verbose) cout << "Plotting" << endl;
   for (  vector< JetTagBin * >::iterator ibin = 
 	   bins_.begin(),
 	   binsBegin = bins_.begin(), binsEnd = bins_.end();
 	 ibin != binsEnd; ++ibin ) {
 
-    cout << "Plotting bin " << ibin - binsBegin+1 << endl;
+    if(verbose) cout << "Plotting bin " << ibin - binsBegin+1 << endl;
     JetTagBin & bin = **ibin;
     TCanvas * c1 = new TCanvas(("c"+bin.jtBinName()).c_str(), "Combined Fit");
     RooPlot *frame = bin.jtFitVar()->frame();
@@ -403,7 +403,9 @@ void Fitter(string fileName, int maxPEs)
   vector<RooFitResult *> results;
   //  TH1F * pull_ttbar = new TH1F("pull_ttbar", "pull_ttbar", 100, -0.3, 0.3);
   TH1F * pull_ratio = new TH1F("pull_ratio", "pull_ratio", 50, -1.1, 1.1);
-  bool verbose = false;
+  TH1F * ttbar_xsec_h1 = new TH1F("ttbar_xsec_h1", "ttbar_xsec_h1", 50, 0.0, 4.0);
+  TH1F * wjets_xsec_h1 = new TH1F("wjets_xsec_h1", "wjets_xsec_h1", 50, 0.0001, 0.10);
+  //bool verbose = false;
   if(maxPEs<=10) verbose = true;
 
   for(int numPEs = 0; numPEs < maxPEs; ++numPEs) {
@@ -416,24 +418,38 @@ void Fitter(string fileName, int maxPEs)
     results.push_back(shyft.fitResult());
     cout << "NEVENT IS " << numPEs << endl;
   }
+  double ttbar_xsec_avg = 0;
+  double wjets_xsec_avg = 0;
+  //  double ttbar_xsec_gen = ((RooRealVar * )(*results.at(1)).floatParsFinal().find("genXsec_ttbar"))->getVal();
   for(unsigned int i=0; i<results.size(); ++i) {
     double ttbar_xsec = ((RooRealVar * )(*results.at(i)).floatParsFinal().find("ttbar_hT_xsec"))->getVal();
     double wjets_xsec = ((RooRealVar * )(*results.at(i)).floatParsFinal().find("WJets_hT_xsec"))->getVal();
     if(verbose) cout << "ttbar_xsec " << ttbar_xsec << " wjets_xsec " << wjets_xsec << endl;
-    pull_ratio->Fill((ttbar_xsec/wjets_xsec)-3.0);
-      
+    //pull_ratio->Fill((ttbar_xsec/wjets_xsec)-3.0);
+    ttbar_xsec_h1->Fill(ttbar_xsec);
+    wjets_xsec_h1->Fill(wjets_xsec);
+    ttbar_xsec_avg+=ttbar_xsec;
+    wjets_xsec_avg+=wjets_xsec;
+    //    cout << " testing = " << ttbar_xsec_avg << endl;
     //    (*results.at(i)).floatParsFinal().Print("s");
     //(*results.at(i)).Print("v");
     //    (*results.at(i)).printMultiline(cout,false,"");
     //(*results.at(i)).printArgs(cout);
   }
+  ttbar_xsec_avg/=results.size();
+  wjets_xsec_avg/=results.size();
+
+  cout << " ttbar_xsec = " << ttbar_xsec_avg << endl;//" times gen, or = " << 
+  cout << " wjets_xsec = " << wjets_xsec_avg << endl;//" times gen, or = " << 
   //shyft.plot( lum );
   //  TCanvas * c1 = new TCanvas("ttbar_pulls", "ttbar_pulls");
-  TCanvas * c1 = new TCanvas("ratio_pulls", "ratio_pulls");
-  pull_ratio->Draw();
-  c1->SaveAs("ratio_test.png");
+  TCanvas * c1 = new TCanvas("plots", "plots");
+  //pull_ratio->Draw();
+  //c1->SaveAs("ratio_test.png");
+  ttbar_xsec_h1->Draw();
+  c1->SaveAs("ttbar_xsec_100.png");
+  wjets_xsec_h1->Draw();
+  c1->SaveAs("wjets_xsec_100.png");
   delete c1;
 }
 
-
-//petar wants plots of nll vs parameters
