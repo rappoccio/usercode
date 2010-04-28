@@ -120,6 +120,8 @@ int main (int argc, char* argv[])
 
   hists["hist_nJet"                     ] = theDir.make<TH1D>( "hist_nJet"                    ,"Number of Calo Jets", 10, 0, 10 ) ;
   hists["hist_nPFJet"                   ] = theDir.make<TH1D>( "hist_nPFJet"                  ,"Number of PF Jets", 10, 0, 10 ) ;
+  hists["hist_hT"                       ] = theDir.make<TH1D>( "hist_hT"                      ,"H_{T}, Calo Jets", 400, 0, 400 );
+  hists["hist_pf_hT"                    ] = theDir.make<TH1D>( "hist_pf_hT"                   ,"H_{T}, PF Jets", 400, 0, 400 );
 
   hists["hist_jetPt"                    ] = theDir.make<TH1D>( "hist_jetPt"                   , "Jet p_{T}", 400, 0, 400 ) ;
   hists["hist_jetEtaVsPhi"              ] = theDir.make<TH2D>( "hist_jetEtaVsPhi"             , "Jet #phi versus #eta;#eta;#phi", 50, -5.0, 5.0, 50, -TMath::Pi(), TMath::Pi() ) ;
@@ -300,12 +302,15 @@ int main (int argc, char* argv[])
 
       if ( retCalo.test("Calo Jet ID") ) {
 	hists["hist_nJet"]->Fill( caloSelector.caloJets().size() );
+	double hT = 0.0;
 	for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsBegin = caloSelector.caloJets().begin(),
 		jetsEnd = caloSelector.caloJets().end(),
 		ijet = jetsBegin;
 	      ijet != jetsEnd; ++ijet ) {
 
+
 	  pat::Jet const & jet0 = **ijet;
+	  hT += jet0.pt();
 	  hists["hist_good_jetPt"]->Fill( jet0.pt() );
 	  hists["hist_good_jetEtaVsPhi"]->Fill( jet0.eta(), jet0.phi() );
 	  hists["hist_good_jetNTracks"]->Fill( jet0.associatedTracks().size() );
@@ -317,6 +322,7 @@ int main (int argc, char* argv[])
 	  hists["hist_good_nConstituents"]->Fill( jet0.nConstituents() );
 	}// end loop over good calo jets
 
+	hists["hist_hT"]->Fill( hT );
       }// end if passed calo jet id
 
     }// end if passed kin cuts
@@ -359,6 +365,7 @@ int main (int argc, char* argv[])
       if ( retPF.test("PF Jet ID") ) {
 
 	hists["hist_nPFJet"]->Fill( pfSelector.pfJets().size() );
+	double hT = 0.0;
 	vector<edm::Ptr<pat::Jet> > const & goodPFJets = pfSelector.pfJets();
 
 	for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin = goodPFJets.begin(),
@@ -368,6 +375,7 @@ int main (int argc, char* argv[])
 	  const pat::Jet & jet = **ijet;
 	
 	  double pt = jet.pt();
+	  hT += pt;
       
 	  hists["hist_pf_good_jetPt"]->Fill( pt );
 	  hists["hist_pf_good_jetEtaVsPhi"]->Fill( jet.eta(), jet.phi() );
@@ -388,7 +396,7 @@ int main (int argc, char* argv[])
  
 	} // end loop over good pf jets
 
-
+	hists["hist_pf_hT"]->Fill( hT );
       } // end if N good PF jets
     
     }// end if passed kin cuts
