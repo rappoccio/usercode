@@ -9,9 +9,7 @@
 <use name=CommonTools/Utils>
 <use name=PhysicsTools/SelectorUtils>
 <use name=PhysicsTools/FWLite>
-<use name=Analysis/JetAnalysis>
 
-<environment>
- <bin file="jetStudies.C"> </bin>
- <bin file="multijetStudies.C"> </bin>
-</environment>
+<export>
+  <lib name=AnalysisJetAnalysis>
+</export>

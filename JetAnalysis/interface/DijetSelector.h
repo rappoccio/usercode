@@ -7,11 +7,22 @@
 #include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
+#include "PhysicsTools/SelectorUtils/interface/strbitset.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Photon.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
+#include "PhysicsTools/SelectorUtils/interface/Selector.h"
+#include "PhysicsTools/SelectorUtils/interface/EventSelector.h"
+
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/Ptr.h"
 #include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
+#include "FWCore/Common/interface/EventBase.h"
 
 #include <vector>
 #include <string>
@@ -27,7 +38,8 @@ public:
     jetSrc_    (params.getParameter<edm::InputTag>("jetSrc")), 
     pfJetSrc_  (params.getParameter<edm::InputTag>("pfJetSrc")),
     minNJets_  (params.getParameter<unsigned int>("minNJets")),
-    ptMin_     (params.getParameter<double>("ptMin"))
+    ptMin_     (params.getParameter<double>("ptMin")),
+    etaMax_    (params.getParameter<double>("etaMax"))
   {
     bool useCalo = params.getParameter<bool>("useCalo");
 	       
@@ -76,7 +88,7 @@ public:
 	       jetsEnd = h_jets_->end(),
 	       ijet = jetsBegin;
 	     ijet != jetsEnd; ++ijet ) {
-	  if ( ijet->pt() > ptMin_ ) {
+	  if ( ijet->pt() > ptMin_ && std::abs(ijet->eta()) < etaMax_ ) {
 	    allCaloJets_.push_back( edm::Ptr<pat::Jet>( h_jets_, ijet - jetsBegin ) );
 	  }
 	}
@@ -131,7 +143,7 @@ public:
 	       jetsEnd = h_pfjets_->end(),
 	       ijet = jetsBegin;
 	     ijet != jetsEnd; ++ijet ) {
-	  if ( ijet->pt() > ptMin_ ) {
+	  if ( ijet->pt() > ptMin_ && std::abs(ijet->eta()) < etaMax_ ) {
 	    allPFJets_.push_back( edm::Ptr<pat::Jet>( h_pfjets_, ijet - jetsBegin ) );
 	  }
 	}
@@ -199,6 +211,7 @@ protected:
   edm::InputTag                              pfJetSrc_;
   unsigned int                               minNJets_;
   double                                     ptMin_;
+  double                                     etaMax_;
 
 
   edm::Handle<std::vector<pat::Jet> >        h_jets_;
