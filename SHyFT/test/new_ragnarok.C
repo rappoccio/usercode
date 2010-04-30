@@ -97,7 +97,7 @@ public:
   
   RooNLLVar * nll()  { return jtNll_; } 
 
-  void setupPE( double nent );
+  void setupPE( int N );
   void inputData( TFile * file );
   void makeNLLVar();
   void plotOn( RooPlot * frame );
@@ -162,14 +162,14 @@ JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinN
 }
 
 
-void JetTagBin::setupPE( double Lum )
+void JetTagBin::setupPE( int N )
 {
   if(verbose) cout << "generating pseudoexperiment" << endl;
 
 
 
   if ( jtData_ ) delete jtData_;
-  jtData_ = jtPdf_->generate( RooArgList(*jtFitVar_) );
+  jtData_ = jtPdf_->generate( RooArgList(*jtFitVar_), N, Extended() );
 }
 
 
@@ -209,7 +209,7 @@ public:
   SHyFT( string const & fileName, double lum );
   ~SHyFT() { file_->Close(); }
   
-  void generatePEs( double Lum ); 
+  void generatePEs( int N ); 
   void makeNLLVars();
   void fit(bool verbose);
   void print();
@@ -306,11 +306,11 @@ void SHyFT::print()
   }
 }
 
-void SHyFT::generatePEs(double Lum)
+void SHyFT::generatePEs(int N)
 {
   if(verbose) cout << "Generating Pseudoexperiments" << endl;
   for(unsigned int i=0;i<bins_.size();++i) {
-    bins_[i]->setupPE( Lum );
+    bins_[i]->setupPE(N);
   }
 }
 
@@ -400,7 +400,7 @@ void Fitter(string fileName, int maxPEs)
   shyft.setKFactors( kFactors );
   for(int numPEs = 0; numPEs < maxPEs; ++numPEs) {
 
-    shyft.generatePEs(lum);
+    shyft.generatePEs(1);
     shyft.makeNLLVars();
     if(verbose) shyft.print();
     shyft.fit(verbose);
