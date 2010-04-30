@@ -42,16 +42,16 @@ public:
   RooDataHist  *  hdata() { return rdh_;  }
   RooHistPdf   *    pdf() { return rhp_;  }
   RooExtendPdf *   epdf() { return rep_;  }
-  double hnorm() { return hnorm_; }
+  double nmc() { return nmc_; }
   TH1F *  hist() { return &hist_;  }
   TH1F * expHist() { return expHist_; }
 
-  void   setupPE( double F );
+
 private:
   TH1F   hist_;          //< Input histogram for fit PDFs
   TH1F  * expHist_;      //< "Experiment" histogram (either PseudoExperiment, or Real Experiment)
   string name_;          //< Name of this template
-  double hnorm_;         //< Actual normalization
+  double nmc_;           //< Actual number of input MC events
   RooRealVar   * norm_;  //< Normalization RelVar
   RooDataHist  * rdh_;   //< DataHist for fit
   RooHistPdf   * rhp_;   //< HistPdf for fit
@@ -63,33 +63,31 @@ private:
 
 Template::Template(TH1F hist, string name, RooRealVar& binningVar, vector<RooRealVar*> scaleFactors)://, RooRealVar& lum, RooRealVar & kFactor):
   hist_(hist),name_(name),binningVar_(binningVar) {//,lum_(scaleFactors[1]) {
-  hnorm_   = hist_.Integral();
-  cout << "Normaliztion of " << name_.c_str() << " is " << hnorm_ << endl;
-  norm_    = new RooRealVar ((name_+"_norm").c_str(), (name_+"_norm").c_str(),hnorm_);//,-1,100000);
+  nmc_   = hist_.Integral();
+  cout << "Number of MC events of " << name_.c_str() << " is " << nmc_ << endl;
+  norm_    = new RooRealVar ((name_+"_norm").c_str(), (name_+"_norm").c_str(),nmc_);//,-1,100000);
   rdh_     = new RooDataHist(name_.c_str(),name_.c_str(),binningVar_, &hist_);
   rhp_     = new RooHistPdf ((name_+"_pdf").c_str(),(name_+"_pdf").c_str(), binningVar_, *rdh_);
   //  lum_ = new RooRealVar (("luminosity","luminosity",lu
   //In the ScaleFactors, 0 is the xsection/fit variable, 1 is the luminosity, 2 is the generated xsection, and 3 is the number of events
-  RooFormulaVar * form_ = new RooFormulaVar((name_+"_form").c_str(), (name_+"_form").c_str(),"@0*@1*@2*@3/@4",RooArgSet(*scaleFactors[0], *norm_,*scaleFactors[1],*scaleFactors[2],*scaleFactors[3]));//, lum, kFactor));
+  RooFormulaVar * form_ = new RooFormulaVar((name_+"_form").c_str(), (name_+"_form").c_str(),"@0*@1*@2*@3/@4",
+					    RooArgSet(*scaleFactors[0], *norm_,*scaleFactors[1],*scaleFactors[2],*scaleFactors[3]));//, lum, kFactor));
   rep_   = new RooExtendPdf((name_+"_epdf").c_str(), (name_+"_epdf").c_str(), *rhp_, *form_);
+
+  expHist_ = 0;
 }
 
 Template::~Template() {
-  delete norm_;
-  delete rdh_;
-  delete rhp_;
-  delete rep_;
+  if ( norm_ ) delete norm_;
+  if ( rdh_ )  delete rdh_;
+  if ( rhp_ )  delete rhp_;
+  if ( rep_ )  delete rep_;
   // delete form_;
   //  delete binningVar_;
   
 }
 
 
-void Template::setupPE( double F ) {
-  expHist_ = new TH1F(hist_);
-  expHist_->Scale( F );
-}
-     
 
 class JetTagBin {
 public:
@@ -105,6 +103,8 @@ public:
   void plotOn( RooPlot * frame );
 
   void setKFactors( vector<double> const & inputKFactors ) {
+    kFactors_.clear();
+    kFactors_.resize( inputKFactors.size() );
     copy( inputKFactors.begin(), inputKFactors.end(), kFactors_.begin() );
   }
 
@@ -121,6 +121,7 @@ private:
   RooNLLVar  * jtNll_;               //< Likelihood variable
   vector<Template*> jtTemplates_;    //< Vector of templates representing the various species (ttbar,W+Jets, etc)
   vector<double>  kFactors_;         //< K-factors for each bin for testing
+  
 };
 
 JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinName, scaleFact_vect scaleFactors)://map<string, RooRealVar *> scaleFactors):
@@ -156,6 +157,8 @@ JetTagBin::JetTagBin(TFile & file, vector<string> const & samples, string jtBinN
   if(verbose) cout << "making combined pdf" << endl;
   jtPdf_ = new RooAddPdf((jtBinName_+"_pdf").c_str(),(jtBinName_+"_pdf").c_str(),TemplateList);
 
+  jtData_ = 0;
+  jtNll_ = 0;
 }
 
 
@@ -163,30 +166,10 @@ void JetTagBin::setupPE( double Lum )
 {
   if(verbose) cout << "generating pseudoexperiment" << endl;
 
-  bool first = true;
-  TH1F * temp = 0;  // Will hold the sum of all the experiments
-  for ( vector<Template *>::iterator tBegin = jtTemplates_.begin(),
-	  tEnd = jtTemplates_.end(), it = tBegin;
-	it != tEnd; ++it ) {
-    Template & t = **it;
-    t.setupPE( Lum * kFactors_[it - tBegin] );
-    if ( first ) {
-      temp = (TH1F*)( t.expHist()->Clone() ); 
-      first = false;
-    } else {
-      temp->Add( t.expHist() );
-    }
 
-  }
 
-  if(verbose) cout << "Generated pseudoexperiment with sum of xs * LUM * eff = " << temp->Integral() << " events" << endl;
-
-  // Vary the bin contents
-  for ( int ibin = 1; ibin <= temp->GetNbinsX(); ++ibin ) {
-    temp->SetBinContent( ibin, gRandom->Poisson( temp->GetBinContent(ibin) ) );
-  }
-
-  jtData_ = new RooDataHist(("PEData_"+jtBinName_).c_str(),("PEData_"+jtBinName_).c_str(),*jtFitVar_,Import(*temp));
+  if ( jtData_ ) delete jtData_;
+  jtData_ = jtPdf_->generate( RooArgList(*jtFitVar_) );
 }
 
 
@@ -195,6 +178,7 @@ void JetTagBin::inputData( TFile * file )
   TH1F * tempDataHist = (TH1F*)file->Get(("Data_"+jtBinName_).c_str());
   if(verbose) cout << "Loaded Data_" << jtBinName_ << " from the file." << endl;
   jtDataHist_ = (TH1F*) tempDataHist->Clone();
+  if ( jtData_ ) delete jtData_;
   jtData_ = new RooDataHist(("Data_"+jtBinName_).c_str(),("Data_"+jtBinName_).c_str(),*jtFitVar_,Import(*jtDataHist_));
   
 }
@@ -203,6 +187,7 @@ void JetTagBin::inputData( TFile * file )
 void JetTagBin::makeNLLVar()
 {
   if(verbose) cout << "creating nllVar" << endl;
+  if ( jtNll_ ) delete jtNll_;
   jtNll_ = new RooNLLVar((jtBinName_+"_nll").c_str(), (jtBinName_+"_nll").c_str(), *jtPdf_, *jtData_);
 }
 
@@ -256,6 +241,8 @@ protected:
   RooRealVar genXsec_wjets;
   RooRealVar genNevt_ttbar;
   RooRealVar genNevt_wjets;
+  vector<RooRealVar *> xsecs_;
+  vector<RooRealVar *> nTotMC_;
 };
 
 
@@ -373,8 +360,8 @@ void SHyFT::plot(double lum)
     TCanvas * c1 = new TCanvas(("c"+bin.jtBinName()).c_str(), "Combined Fit");
     RooPlot *frame = bin.jtFitVar()->frame();
 
-    double scale0 = bin.jtTemplates().at(0)->hnorm()*(bin.kFactors().at(0))*lum;
-    double scale1 = bin.jtTemplates().at(1)->hnorm()*(bin.kFactors().at(1))*lum;
+    double scale0 = bin.jtTemplates().at(0)->nmc()*(bin.kFactors().at(0))*lum;
+    double scale1 = bin.jtTemplates().at(1)->nmc()*(bin.kFactors().at(1))*lum;
     bin.jtTemplates().at(0)->epdf()->plotOn(frame, LineColor(3),Normalization(scale0));
     bin.jtTemplates().at(1)->epdf()->plotOn(frame, LineColor(2),Normalization(scale1));
     bin.plotOn( frame );
@@ -382,7 +369,6 @@ void SHyFT::plot(double lum)
     //jtPdf_->plotOn(frame,Components("WJets_hT_1j_pdf"),LineColor(2));
     frame->Draw();
     c1->SaveAs(("fitter"+bin.jtBinName()+".png").c_str());
-    delete c1;
   }
   //jtFitVar_->Print("t");
   //jtPdf_->Print("v");
@@ -403,14 +389,17 @@ void Fitter(string fileName, int maxPEs)
   vector<RooFitResult *> results;
   //  TH1F * pull_ttbar = new TH1F("pull_ttbar", "pull_ttbar", 100, -0.3, 0.3);
   TH1F * pull_ratio = new TH1F("pull_ratio", "pull_ratio", 50, -1.1, 1.1);
-  TH1F * ttbar_xsec_h1 = new TH1F("ttbar_xsec_h1", "ttbar_xsec_h1", 50, 0.0, 4.0);
-  TH1F * wjets_xsec_h1 = new TH1F("wjets_xsec_h1", "wjets_xsec_h1", 50, 0.0001, 0.10);
+  TH1F * ttbar_xsec_h1 = new TH1F("ttbar_xsec_h1", "ttbar_xsec_h1", 50, 1.5, 2.5);
+  TH1F * wjets_xsec_h1 = new TH1F("wjets_xsec_h1", "wjets_xsec_h1", 50, 0.01, 0.03);
+  TH1F * ttbar_pull_h1 = new TH1F("ttbar_pull_h1", "ttbar_pull_h1", 50, -10, 10 );  
+  TH1F * wjets_pull_h1 = new TH1F("wjets_pull_h1", "wjets_pull_h1", 50, -10, 10 );
   //bool verbose = false;
   if(maxPEs<=10) verbose = true;
 
+  SHyFT shyft(fileName, lum);
+  shyft.setKFactors( kFactors );
   for(int numPEs = 0; numPEs < maxPEs; ++numPEs) {
-    SHyFT shyft(fileName, lum);
-    shyft.setKFactors( kFactors );
+
     shyft.generatePEs(lum);
     shyft.makeNLLVars();
     if(verbose) shyft.print();
@@ -423,11 +412,15 @@ void Fitter(string fileName, int maxPEs)
   //  double ttbar_xsec_gen = ((RooRealVar * )(*results.at(1)).floatParsFinal().find("genXsec_ttbar"))->getVal();
   for(unsigned int i=0; i<results.size(); ++i) {
     double ttbar_xsec = ((RooRealVar * )(*results.at(i)).floatParsFinal().find("ttbar_hT_xsec"))->getVal();
+    double ttbar_xerr = ((RooRealVar * )(*results.at(i)).floatParsFinal().find("ttbar_hT_xsec"))->getError();
     double wjets_xsec = ((RooRealVar * )(*results.at(i)).floatParsFinal().find("WJets_hT_xsec"))->getVal();
-    if(verbose) cout << "ttbar_xsec " << ttbar_xsec << " wjets_xsec " << wjets_xsec << endl;
+    double wjets_xerr = ((RooRealVar * )(*results.at(i)).floatParsFinal().find("WJets_hT_xsec"))->getError();
+    if(verbose) cout << "ttbar_xsec " << ttbar_xsec << " +- " <<  ttbar_xerr  << ", wjets_xsec " << wjets_xsec << " +- " << wjets_xerr << endl;
     //pull_ratio->Fill((ttbar_xsec/wjets_xsec)-3.0);
     ttbar_xsec_h1->Fill(ttbar_xsec);
     wjets_xsec_h1->Fill(wjets_xsec);
+    if ( ttbar_xerr > 0.0000001 ) ttbar_pull_h1->Fill( (ttbar_xsec - 1.927) / ttbar_xerr );
+    if ( wjets_xerr > 0.0000001 ) wjets_pull_h1->Fill( (wjets_xsec - 0.01771) / wjets_xerr );
     ttbar_xsec_avg+=ttbar_xsec;
     wjets_xsec_avg+=wjets_xsec;
     //    cout << " testing = " << ttbar_xsec_avg << endl;
@@ -450,6 +443,10 @@ void Fitter(string fileName, int maxPEs)
   c1->SaveAs("ttbar_xsec_100.png");
   wjets_xsec_h1->Draw();
   c1->SaveAs("wjets_xsec_100.png");
-  delete c1;
+  ttbar_pull_h1->Draw();
+  c1->SaveAs("ttbar_pull_100.png");
+  wjets_pull_h1->Draw();
+  c1->SaveAs("wjets_pull_100.png");
+
 }
 
