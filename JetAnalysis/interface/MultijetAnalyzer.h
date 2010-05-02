@@ -21,6 +21,27 @@
 class MultijetAnalyzer {
 
   public:
+
+  struct EventSummary {
+  EventSummary( double ihT, unsigned int irun, unsigned int ievent, unsigned int iluminosityBlock) :
+    hT(ihT), run(irun), event(ievent), luminosityBlock(iluminosityBlock)
+    {
+    }
+    double hT;
+    unsigned int run;
+    unsigned int event;
+    unsigned int luminosityBlock;
+
+    friend std::ostream & operator<<( std::ostream & out, const EventSummary & e ) {
+      out << "Run " << e.run << ", lumi " << e.luminosityBlock << ", event " << e.event << ", HT = " << e.hT << std::endl;
+      return out;
+    };
+
+    bool operator< (  const EventSummary & e) const {
+      return this->hT < e.hT;
+    };
+  };
+
     MultijetAnalyzer(const edm::ParameterSet& iConfig, TFileDirectory& iDir);
     virtual ~MultijetAnalyzer() {}
     virtual void analyze(const edm::EventBase& iEvent);
@@ -42,6 +63,8 @@ class MultijetAnalyzer {
 
     // Histograms
     std::map<std::string, TH1*> hists;
+    std::vector<EventSummary>   caloSummary;
+    std::vector<EventSummary>   pfSummary;
 };
 
 

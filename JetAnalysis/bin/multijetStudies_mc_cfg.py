@@ -10,10 +10,10 @@ process.jetStudies = cms.PSet(
     pfMetSrc = cms.InputTag('patMETsPF'),
     useCalo = cms.bool(True),
     minNJets = cms.int32(4),
-    ptMin = cms.double(10.0)
+    ptMin = cms.double(25.0)
 )
 process.pfJetStudies = process.jetStudies.clone( useCalo = cms.bool(False),
-                                                 ptMin = cms.double(8.0) )
+                                                 ptMin = cms.double(25.0) )
 
 
 process.load('PhysicsTools.SelectorUtils.pfJetIDSelector_cfi')

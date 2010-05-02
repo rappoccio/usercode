@@ -2,6 +2,7 @@
 
 
 #include <vector>
+#include <iterator>
 
 MultijetAnalyzer::MultijetAnalyzer(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   caloSelector( iConfig.getParameter<edm::ParameterSet>("jetIDSelector"),
@@ -125,7 +126,6 @@ void MultijetAnalyzer::analyze(const edm::EventBase& event)
     ///------------------
     if ( retCalo.test("Calo Kin Cuts") ) {
 
-
       for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin = caloSelector.allCaloJets().begin(),
 	      jetEnd = caloSelector.allCaloJets().end(), ijet = jetBegin;
 	    ijet != jetEnd; ++ijet ) {
@@ -194,6 +194,7 @@ void MultijetAnalyzer::analyze(const edm::EventBase& event)
 	}// end loop over good calo jets
 
 	hists["hist_hT"]->Fill( hT );
+	caloSummary.push_back( EventSummary(hT, event.id().run(), event.id().event(), event.id().luminosityBlock() ) );
       }// end if passed calo jet id
 
     }// end if passed kin cuts
@@ -268,6 +269,7 @@ void MultijetAnalyzer::analyze(const edm::EventBase& event)
 	} // end loop over good pf jets
 
 	hists["hist_pf_hT"]->Fill( hT );
+	pfSummary.push_back( EventSummary(hT, event.id().run(), event.id().event(), event.id().luminosityBlock() ) );
       } // end if N good PF jets
     
     }// end if passed kin cuts
@@ -284,4 +286,14 @@ void MultijetAnalyzer::finalize()
   caloSelector.print(std::cout);
   std::cout << "PF jet selection" << std::endl;
   pfSelector.print(std::cout);
+
+  sort( caloSummary.begin(), caloSummary.end() );
+  sort( pfSummary.begin(), pfSummary.end() );
+
+  std::cout << "============= 4-jet CALO events =============" << std::endl;
+  copy( caloSummary.begin(), caloSummary.end(), std::ostream_iterator<EventSummary>(std::cout) );
+  std::cout << std::endl;
+  std::cout << "============= 4-jet PF events =============" << std::endl;
+  copy( pfSummary.begin(), pfSummary.end(), std::ostream_iterator<EventSummary>(std::cout) );
+  std::cout << std::endl;  
 }
