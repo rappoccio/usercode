@@ -92,9 +92,22 @@ process.patDefaultSequence.remove(process.patTriggerSequence)
 # now change the PF jet cut to 10 GeV
 process.selectedPatJets.cut = cms.string("pt > 15 & abs(eta) < 3")
 
-
 # end changes for PF
 ####################
+
+####################
+# make some quick-access shallow clones for speeding up read access
+
+process.stdjetClones = cms.EDProducer("CandViewShallowCloneProducer",
+                                   src = cms.InputTag('selectedPatJetsStd'),
+                                   cut = cms.string('pt > 20 & abs(eta) < 3')
+                                   )
+
+process.jetClones = cms.EDProducer("CandViewShallowCloneProducer",
+                                   src = cms.InputTag('selectedPatJets'),
+                                   cut = cms.string('pt > 15 & abs(eta) < 3')
+                                   )
+
 
 # let it run
 process.p = cms.Path(
@@ -102,7 +115,9 @@ process.p = cms.Path(
  process.patDefaultSequenceStd* 
  process.patDefaultSequence*
  process.flavorHistorySeq *
- process.prunedGenParticles
+ process.prunedGenParticles * 
+ process.stdjetClones * 
+ process.jetClones
  )
 
 
@@ -139,7 +154,8 @@ process.out.outputCommands += ['drop *_cleanPat*_*_*',
                                'keep *_cleanPatMuonsTriggerMatchStd_*_*',
                                'keep *_cleanPatTausTriggerMatchStd_*_*',
                                'keep *_cleanPatJetsTriggerMatchStd_*_*',
-                               'keep *_patMETsTriggerMatchStd_*_*'
+                               'keep *_patMETsTriggerMatchStd_*_*',
+                               'keep *_*jetClones_*_*',
 ]
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 process.out.fileName = 'ljmet.root'
