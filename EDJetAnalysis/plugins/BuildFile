@@ -1,0 +1,10 @@
+<export></export>
+<library name=AnalysisEDJetAnalysis_plugins file=*.cc>
+  <use name=Analysis/EDJetAnalysis>
+  <use name=FWCore/Framework>
+  <use name=FWCore/ParameterSet>
+  <use name=FWCore/MessageLogger>
+  <use name=FWCore/MessageService>
+  <use name=DataFormats/PatCandidates>
+  <use name=root>
+</library>
