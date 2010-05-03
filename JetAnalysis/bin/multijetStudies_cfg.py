@@ -2,20 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("FWLitePlots")
 
-process.jetStudies = cms.PSet(
-    # input parameter sets
-    jetSrc = cms.InputTag('selectedPatJetsStd'),
-    pfJetSrc = cms.InputTag('selectedPatJets'),
-    metSrc = cms.InputTag('patMETsStd'),
-    pfMetSrc = cms.InputTag('patMETs'),
-    useCalo = cms.bool(True),
-    minNJets = cms.uint32(4),
-    ptMin = cms.double(25.0),
-    etaMax = cms.double(3.0)
-)
-process.pfJetStudies = process.jetStudies.clone( useCalo = cms.bool(False),
-                                                 ptMin = cms.double(25.0) )
-
+process.load('Analysis.JetAnalysis.multijetStudies_cfi')
 
 process.load('PhysicsTools.SelectorUtils.pfJetIDSelector_cfi')
 process.load('PhysicsTools.SelectorUtils.jetIDSelector_cfi')

@@ -278,7 +278,7 @@ void MultijetAnalyzer::analyze(const edm::EventBase& event)
 }
 
 
-void MultijetAnalyzer::finalize()
+void MultijetAnalyzer::endJob()
 {
 
   

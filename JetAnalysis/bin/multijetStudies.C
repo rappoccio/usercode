@@ -109,7 +109,7 @@ int main (int argc, char* argv[])
     
 
 
-  multijetAna.finalize();
+  multijetAna.endJob();
 
   return 0;
 }

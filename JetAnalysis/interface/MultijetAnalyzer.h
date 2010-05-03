@@ -44,8 +44,9 @@ class MultijetAnalyzer {
 
     MultijetAnalyzer(const edm::ParameterSet& iConfig, TFileDirectory& iDir);
     virtual ~MultijetAnalyzer() {}
+    virtual void beginJob() {}
     virtual void analyze(const edm::EventBase& iEvent);
-    virtual void finalize();
+    virtual void endJob();
 
   private:
 
