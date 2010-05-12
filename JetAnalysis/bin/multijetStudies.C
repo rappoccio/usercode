@@ -59,7 +59,7 @@ int main (int argc, char* argv[])
 
   cout << "Getting parameters" << endl;
   // Get the python configuration
-  PythonProcessDesc builder(argv[1]);
+  PythonProcessDesc builder(argv[1], argc, argv);
   boost::shared_ptr<edm::ProcessDesc> b = builder.processDesc();
   boost::shared_ptr<edm::ParameterSet> parameters = b->getProcessPSet();
   parameters->registerIt(); 

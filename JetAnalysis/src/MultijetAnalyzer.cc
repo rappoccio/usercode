@@ -287,13 +287,13 @@ void MultijetAnalyzer::endJob()
   std::cout << "PF jet selection" << std::endl;
   pfSelector.print(std::cout);
 
-  sort( caloSummary.begin(), caloSummary.end() );
-  sort( pfSummary.begin(), pfSummary.end() );
+//   sort( caloSummary.begin(), caloSummary.end() );
+//   sort( pfSummary.begin(), pfSummary.end() );
 
-  std::cout << "============= 4-jet CALO events =============" << std::endl;
-  copy( caloSummary.begin(), caloSummary.end(), std::ostream_iterator<EventSummary>(std::cout) );
-  std::cout << std::endl;
-  std::cout << "============= 4-jet PF events =============" << std::endl;
-  copy( pfSummary.begin(), pfSummary.end(), std::ostream_iterator<EventSummary>(std::cout) );
-  std::cout << std::endl;  
+//   std::cout << "============= 4-jet CALO events =============" << std::endl;
+//   copy( caloSummary.begin(), caloSummary.end(), std::ostream_iterator<EventSummary>(std::cout) );
+//   std::cout << std::endl;
+//   std::cout << "============= 4-jet PF events =============" << std::endl;
+//   copy( pfSummary.begin(), pfSummary.end(), std::ostream_iterator<EventSummary>(std::cout) );
+//   std::cout << std::endl;  
 }
