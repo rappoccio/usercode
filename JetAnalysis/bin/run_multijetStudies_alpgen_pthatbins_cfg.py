@@ -27,6 +27,6 @@ files = [
 
 for file in files :
     txtfile = file + '.txt'
-    rootfile = file + '.root'
+    rootfile = file + '_dijetHt100.root'
     print 'executing : multijetStudies multijetStudies_alpgen_pthatbins_cfg.py ' + txtfile + ' ' + rootfile
     subprocess.call('multijetStudies multijetStudies_alpgen_pthatbins_cfg.py ' + txtfile + ' ' + rootfile, shell=True)

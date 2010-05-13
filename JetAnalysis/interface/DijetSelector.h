@@ -39,26 +39,36 @@ public:
     pfJetSrc_  (params.getParameter<edm::InputTag>("pfJetSrc")),
     minNJets_  (params.getParameter<unsigned int>("minNJets")),
     ptMin_     (params.getParameter<double>("ptMin")),
-    etaMax_    (params.getParameter<double>("etaMax"))
+    etaMax_    (params.getParameter<double>("etaMax")),
+    htMin_     (params.getParameter<double>("htMin")),
+    ht2Min_    (params.getParameter<double>("ht2Min"))
   {
     bool useCalo = params.getParameter<bool>("useCalo");
 	       
     push_back("Calo Cuts");
     push_back("Calo Kin Cuts");
     push_back("Calo Delta Phi");
+    push_back("Calo HT");
+    push_back("Calo Dijet HT");
     push_back("Calo Jet ID");
     push_back("PF Cuts");
     push_back("PF Kin Cuts");
     push_back("PF Delta Phi");
+    push_back("PF HT");
+    push_back("PF Dijet HT");
     push_back("PF Jet ID");
 
     set("Calo Cuts", useCalo);
     set("Calo Kin Cuts", useCalo);
     set("Calo Delta Phi", useCalo);
+    set("Calo HT", useCalo);
+    set("Calo Dijet HT", useCalo);
     set("Calo Jet ID", useCalo);
     set("PF Cuts", !useCalo);
-    set("PF Kin Cuts", !useCalo);    
-    set("PF Delta Phi", !useCalo);    
+    set("PF Kin Cuts", !useCalo);
+    set("PF Delta Phi", !useCalo);
+    set("PF HT", !useCalo);
+    set("PF Dijet HT", !useCalo);
     set("PF Jet ID", !useCalo);
     
   }
@@ -83,6 +93,8 @@ public:
 
       // Check kinematics
       int ncalo = 0;
+      double htCalo = 0.0;
+      double htCalo2 = 0.0; // dijet ht
       if ( h_jets_->size() >= minNJets_ ) {
 	for (std::vector<pat::Jet>::const_iterator jetsBegin = h_jets_->begin(),
 	       jetsEnd = h_jets_->end(),
@@ -90,6 +102,10 @@ public:
 	     ijet != jetsEnd; ++ijet ) {
 	  if ( ijet->pt() > ptMin_ && std::abs(ijet->eta()) < etaMax_ ) {
 	    allCaloJets_.push_back( edm::Ptr<pat::Jet>( h_jets_, ijet - jetsBegin ) );
+	    htCalo += ijet->pt();
+	    if ( ijet - jetsBegin < 2 ) {
+	      htCalo2 += ijet->pt();
+	    }
 	  }
 	}
       }
@@ -109,22 +125,30 @@ public:
 	}
 	if ( passDijet || ignoreCut("Calo Delta Phi") ) {
 	  passCut(ret, "Calo Delta Phi");
+
+	  if ( htCalo > htMin_ || ignoreCut("Calo HT") ) {
+	    passCut(ret, "Calo HT");
+
+	    if ( htCalo2 > ht2Min_ || ignoreCut("Calo Dijet HT") ) {
+	      passCut(ret, "Calo Dijet HT");
 	    
-	  // Check jet ID
-	  std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsBegin =allCaloJets_.begin();
-	  std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsEnd = allCaloJets_.end();
-	  std::vector<edm::Ptr<pat::Jet> >::const_iterator ijet = jetsBegin;
-	  if ( considerCut("Calo Delta Phi") ) jetsEnd = jetsBegin + 2;
-	  for (; ijet != jetsEnd; ++ijet ) {
-	    pat::Jet const & jet = **ijet;
-	    retCaloJet.set(false);
-	    bool pass0 = (*jetSel_)( jet, retCaloJet );
-	    if ( pass0 ) 
-	      caloJets_.push_back( *ijet );
-	  }// end loop over good jets
-	  if ( caloJets_.size() >= minNJets_ || ignoreCut("Calo Jet ID") ) {
-	    passCut(ret, "Calo Jet ID");
-	  }// end if N good calo jets
+	      // Check jet ID
+	      std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsBegin =allCaloJets_.begin();
+	      std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsEnd = allCaloJets_.end();
+	      std::vector<edm::Ptr<pat::Jet> >::const_iterator ijet = jetsBegin;
+	      if ( considerCut("Calo Delta Phi") ) jetsEnd = jetsBegin + 2;
+	      for (; ijet != jetsEnd; ++ijet ) {
+		pat::Jet const & jet = **ijet;
+		retCaloJet.set(false);
+		bool pass0 = (*jetSel_)( jet, retCaloJet );
+		if ( pass0 ) 
+		  caloJets_.push_back( *ijet );
+	      }// end loop over good jets
+	      if ( caloJets_.size() >= minNJets_ || ignoreCut("Calo Jet ID") ) {
+		passCut(ret, "Calo Jet ID");
+	      }// end if N good calo jets
+	    }// end if pass dijet ht cut
+	  }// end if pass ht cut
 	}// end delta phi cut
       }// end calo kin cuts
     }// end if calo cuts
@@ -138,6 +162,8 @@ public:
 
       // Check kinematics
       int npf = 0;
+      double htPF = 0.0;
+      double htPF2 = 0.0;
       if ( h_pfjets_->size() >= minNJets_ ) {
 	for (std::vector<pat::Jet>::const_iterator jetsBegin = h_pfjets_->begin(),
 	       jetsEnd = h_pfjets_->end(),
@@ -145,6 +171,10 @@ public:
 	     ijet != jetsEnd; ++ijet ) {
 	  if ( ijet->pt() > ptMin_ && std::abs(ijet->eta()) < etaMax_ ) {
 	    allPFJets_.push_back( edm::Ptr<pat::Jet>( h_pfjets_, ijet - jetsBegin ) );
+	    htPF += ijet->pt();
+	    if ( ijet - jetsBegin < 2 ) {
+	      htPF2 += ijet->pt();
+	    }
 	  }
 	}
       }
@@ -164,22 +194,30 @@ public:
 	}
 	if ( passDijet || ignoreCut("PF Delta Phi") ) {
 	  passCut(ret, "PF Delta Phi");
+
+	  if ( htPF > htMin_ || ignoreCut("PF HT") ) {
+	    passCut(ret, "PF HT");
 	    
-	  // Check jet ID
-	  std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsBegin =allPFJets_.begin();
-	  std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsEnd = allPFJets_.end();
-	  std::vector<edm::Ptr<pat::Jet> >::const_iterator ijet = jetsBegin;
-	  if ( considerCut("PF Delta Phi") ) jetsEnd = jetsBegin + 2;
-	  for (; ijet != jetsEnd; ++ijet ) {
-	    pat::Jet const & jet = **ijet;
-	    retPFJet.set(false);
-	    bool pass0 = (*pfJetSel_)( jet, retPFJet );
-	    if ( pass0 ) 
-	      pfJets_.push_back( *ijet );
-	  }// end loop over good jets
-	  if ( pfJets_.size() >= minNJets_ || ignoreCut("PF Jet ID") ) {
-	    passCut(ret, "PF Jet ID");
-	  }// end if N good pf jets
+	    if ( htPF2 > ht2Min_ || ignoreCut("PF Dijet HT") ) {
+	      passCut(ret, "PF Dijet HT");
+	    
+	      // Check jet ID
+	      std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsBegin =allPFJets_.begin();
+	      std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsEnd = allPFJets_.end();
+	      std::vector<edm::Ptr<pat::Jet> >::const_iterator ijet = jetsBegin;
+	      if ( considerCut("PF Delta Phi") ) jetsEnd = jetsBegin + 2;
+	      for (; ijet != jetsEnd; ++ijet ) {
+		pat::Jet const & jet = **ijet;
+		retPFJet.set(false);
+		bool pass0 = (*pfJetSel_)( jet, retPFJet );
+		if ( pass0 ) 
+		  pfJets_.push_back( *ijet );
+	      }// end loop over good jets
+	      if ( pfJets_.size() >= minNJets_ || ignoreCut("PF Jet ID") ) {
+		passCut(ret, "PF Jet ID");
+	      }// end if N good pf jets
+	    }// end if pass dijet ht cut
+	  }// end if pass ht cut
 	}// end delta phi cut
       }// end pf kin cuts
     }// end if pf cuts
@@ -212,6 +250,8 @@ protected:
   unsigned int                               minNJets_;
   double                                     ptMin_;
   double                                     etaMax_;
+  double                                     htMin_;
+  double                                     ht2Min_;
 
 
   edm::Handle<std::vector<pat::Jet> >        h_jets_;

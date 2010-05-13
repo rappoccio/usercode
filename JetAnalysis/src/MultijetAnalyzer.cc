@@ -124,7 +124,7 @@ void MultijetAnalyzer::analyze(const edm::EventBase& event)
     ///------------------
     /// CALO JETS
     ///------------------
-    if ( retCalo.test("Calo Kin Cuts") ) {
+    if ( retCalo.test("Calo Dijet HT") ) {
 
       for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin = caloSelector.allCaloJets().begin(),
 	      jetEnd = caloSelector.allCaloJets().end(), ijet = jetBegin;
@@ -203,7 +203,7 @@ void MultijetAnalyzer::analyze(const edm::EventBase& event)
     ///------------------
     /// PF JETS
     ///------------------
-    if ( retPF.test("PF Kin Cuts") ) {
+    if ( retPF.test("PF Dijet HT") ) {
 
       for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin = pfSelector.allPFJets().begin(),
 	      jetEnd = pfSelector.allPFJets().end(), ijet = jetBegin;
