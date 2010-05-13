@@ -254,10 +254,12 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
           // bottom
           histograms["bmass"]->Fill(vertexMass);
           ++numBottom; 
+	  break;
         case 4:
           // charm
           histograms["cmass"]->Fill(vertexMass);
           ++numCharm;
+	  break;
         default:
           // light flavour
           histograms["lfmass"]->Fill(vertexMass);
