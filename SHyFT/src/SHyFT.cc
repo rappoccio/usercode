@@ -278,6 +278,8 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
   numJets = std::min( (int) jets.size(), 5 );
   //histograms[secvtxname + "_jettag"]->Fill (numJets, numTags);
 
+  //skip 0 tag events
+  if( numTags < 1 )    return  false;
   sumVertexMass /= numTags;
 
   string whichtag = "";
@@ -302,8 +304,8 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
   string massName = secvtxname
     + Form("_secvtxMass_%dj_%dt", numJets, numTags);
 
-  //  histograms[massName           ]-> Fill (sumVertexMass);
-  //  histograms[massName + whichtag]-> Fill (sumVertexMass);
+  histograms[massName           ]-> Fill (sumVertexMass);
+  histograms[massName + whichtag]-> Fill (sumVertexMass);
 
 
   return true;
@@ -355,7 +357,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   // if not passed trigger, next event                                                                                                                                                                       
   if ( !passTrigger )  return;
 
-  secvtxname = "";
+  secvtxname = sampleNameInput;
   //find the sample name
   if(!calcSampleName(iEvent, secvtxname) ) return;
 
