@@ -115,9 +115,9 @@ MultijetAnalyzer::MultijetAnalyzer(const edm::ParameterSet& iConfig, TFileDirect
 void MultijetAnalyzer::analyze(const edm::EventBase& event)
 {
 
-    std::strbitset retCalo = caloSelector.getBitTemplate();
+    pat::strbitset retCalo = caloSelector.getBitTemplate();
     bool passedCalo = caloSelector( event, retCalo );
-    std::strbitset retPF = pfSelector.getBitTemplate();
+    pat::strbitset retPF = pfSelector.getBitTemplate();
     bool passedPF = pfSelector( event, retPF );
 
 

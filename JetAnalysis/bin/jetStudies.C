@@ -212,10 +212,10 @@ int main (int argc, char* argv[])
     
     if ( nev % 10000 == 0 ) cout << "Entry " << nev << ", Processing run " << event.id().run() << ", event " << event.id().event() << endl;
 
-    std::strbitset retCalo = caloSelector.getBitTemplate();
+    pat::strbitset retCalo = caloSelector.getBitTemplate();
     bool passedCalo = caloSelector( event, retCalo );
 
-    std::strbitset retPF = pfSelector.getBitTemplate();
+    pat::strbitset retPF = pfSelector.getBitTemplate();
     bool passedPF = pfSelector( event, retPF );
 
     ///------------------

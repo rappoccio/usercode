@@ -43,6 +43,7 @@ public:
     htMin_     (params.getParameter<double>("htMin")),
     ht2Min_    (params.getParameter<double>("ht2Min"))
   {
+    std::cout << "Instantiated DijetSelector" << std::endl;
     bool useCalo = params.getParameter<bool>("useCalo");
 	       
     push_back("Calo Cuts");
@@ -70,20 +71,24 @@ public:
     set("PF HT", !useCalo);
     set("PF Dijet HT", !useCalo);
     set("PF Jet ID", !useCalo);
+
+    if ( params.exists("cutsToIgnore") )
+      setIgnoredCuts( params.getParameter<std::vector<std::string> >("cutsToIgnore") );
+
     
   }
 
   virtual ~DijetSelector() {}
 
   // Main selector
-  virtual bool operator()( edm::EventBase const & event, std::strbitset & ret){
+  virtual bool operator()( edm::EventBase const & event, pat::strbitset & ret){
     allCaloJets_.clear();
     allPFJets_.clear();
     caloJets_.clear();
     pfJets_.clear();
 
-    std::strbitset retCaloJet = jetSel_->getBitTemplate();
-    std::strbitset retPFJet = pfJetSel_->getBitTemplate();
+    pat::strbitset retCaloJet = jetSel_->getBitTemplate();
+    pat::strbitset retPFJet = pfJetSel_->getBitTemplate();
 
     // First check if we're considering calo jet cuts
     if ( considerCut("Calo Cuts") ) {
@@ -92,7 +97,6 @@ public:
       // Calo Cuts
 
       // Check kinematics
-      int ncalo = 0;
       double htCalo = 0.0;
       double htCalo2 = 0.0; // dijet ht
       if ( h_jets_->size() >= minNJets_ ) {
@@ -133,16 +137,21 @@ public:
 	      passCut(ret, "Calo Dijet HT");
 	    
 	      // Check jet ID
+
 	      std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsBegin =allCaloJets_.begin();
 	      std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsEnd = allCaloJets_.end();
 	      std::vector<edm::Ptr<pat::Jet> >::const_iterator ijet = jetsBegin;
 	      if ( considerCut("Calo Delta Phi") ) jetsEnd = jetsBegin + 2;
 	      for (; ijet != jetsEnd; ++ijet ) {
 		pat::Jet const & jet = **ijet;
-		retCaloJet.set(false);
-		bool pass0 = (*jetSel_)( jet, retCaloJet );
-		if ( pass0 ) 
+		if ( considerCut("Calo Jet ID") ) {
+		  retCaloJet.set(false);
+		  bool pass0 = (*jetSel_)( jet, retCaloJet );
+		  if ( pass0 ) 
+		    caloJets_.push_back( *ijet );
+		} else {
 		  caloJets_.push_back( *ijet );
+		}
 	      }// end loop over good jets
 	      if ( caloJets_.size() >= minNJets_ || ignoreCut("Calo Jet ID") ) {
 		passCut(ret, "Calo Jet ID");
@@ -161,7 +170,6 @@ public:
       // PF Cuts
 
       // Check kinematics
-      int npf = 0;
       double htPF = 0.0;
       double htPF2 = 0.0;
       if ( h_pfjets_->size() >= minNJets_ ) {
@@ -208,10 +216,14 @@ public:
 	      if ( considerCut("PF Delta Phi") ) jetsEnd = jetsBegin + 2;
 	      for (; ijet != jetsEnd; ++ijet ) {
 		pat::Jet const & jet = **ijet;
-		retPFJet.set(false);
-		bool pass0 = (*pfJetSel_)( jet, retPFJet );
-		if ( pass0 ) 
-		  pfJets_.push_back( *ijet );
+		if ( considerCut("PF Jet ID") ) {
+		  retPFJet.set(false);
+		  bool pass0 = (*pfJetSel_)( jet, retPFJet );
+		  if ( pass0 ) 
+		    pfJets_.push_back( *ijet );
+		} else {
+		  pfJets_.push_back(*ijet);
+		}
 	      }// end loop over good jets
 	      if ( pfJets_.size() >= minNJets_ || ignoreCut("PF Jet ID") ) {
 		passCut(ret, "PF Jet ID");
