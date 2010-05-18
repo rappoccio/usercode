@@ -9,7 +9,7 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
-#include "PhysicsTools/PatExamples/interface/WPlusJetsEventSelector.h"
+#include "PhysicsTools/SelectorUtils/interface/WPlusJetsEventSelector.h"
 #include "Analysis/BoostedTopAnalysis/interface/CATopTagFunctor.h"
 #include "TLorentzVector.h"
 
@@ -34,7 +34,7 @@ class HadronicSelectionBoostedW : public Selector<fwlite::EventContainer> {
   ~HadronicSelectionBoostedW() {}
 
 
-  virtual bool operator()( fwlite::EventContainer const & eventConst, std::strbitset & ret);  
+  virtual bool operator()( fwlite::EventContainer const & eventConst, pat::strbitset & ret);  
 
   collection_type      const & selectedJets     () const { return selectedJets_;     } 
   collection_type      const & taggedJets       () const { return taggedJets_;       } 

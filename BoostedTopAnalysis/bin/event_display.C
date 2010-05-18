@@ -107,7 +107,7 @@ int main (int argc, char* argv[])
 
      cout << "---------------------------" << endl;
      
-     std::strbitset ret = caTopHadronic.getBitTemplate();
+     pat::strbitset ret = caTopHadronic.getBitTemplate();
 
 
     bool passed = caTopHadronic(eventCont, ret);

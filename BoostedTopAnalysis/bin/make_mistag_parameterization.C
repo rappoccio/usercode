@@ -61,7 +61,7 @@ public:
   }
 
 
-  bool operator() ( edm::EventBase const & event,  std::strbitset & ret ) {
+  bool operator() ( edm::EventBase const & event,  pat::strbitset & ret ) {
     
     passCut(ret, "Inclusive");
 
@@ -83,7 +83,7 @@ public:
 	pat::Jet const & jet0 = jets[0];
 	pat::Jet const & jet1 = jets[1];
 
-	std::strbitset jetRet = tagSel_->getBitTemplate();
+	pat::strbitset jetRet = tagSel_->getBitTemplate();
 	jetRet.set(false);
 
 	// get the tag quantities
@@ -246,7 +246,7 @@ int main (int argc, char* argv[])
   // make selector for mistag maker
   MistagMakerSelector mistagMakerSelector( catopTagFunctor, parser.stringValue("jetSrc") );
   // get the bit template for caching results
-  std::strbitset ret = mistagMakerSelector.getBitTemplate();					    
+  pat::strbitset ret = mistagMakerSelector.getBitTemplate();					    
   
 
   //////////////////////

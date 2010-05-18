@@ -3,59 +3,49 @@
 
 #include "PhysicsTools/SelectorUtils/interface/EventSelector.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "DataFormats/Candidate/interface/ShallowClonePtrCandidate.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
-#include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
+#include "Analysis/JetAnalysis/interface/DijetSelector.h"
 #include "Analysis/BoostedTopAnalysis/interface/CATopTagFunctor.h"
+#include "Analysis/BoostedTopAnalysis/interface/BoostedTopWTagFunctor.h"
 
 class HadronicSelection : public EventSelector {
  public:
-  HadronicSelection(
-   edm::InputTag const & jetTag,
-   edm::InputTag const & trigTag,
-   boost::shared_ptr<JetIDSelectionFunctor> & jetIdTight,
-   boost::shared_ptr<CATopTagFunctor>       & caTopTagFunctor,
-   int minJets,
-   int minTags,
-   double jetPtMin      , double jetEtaMax,
-   double topMassMin    , double topMassMax,
-   double minMass       ,
-   double wMassMin      , double wMassMax
-   );
+  HadronicSelection( edm::ParameterSet const & params );
 
   ~HadronicSelection() {}
   
-  virtual bool operator()( edm::EventBase const & t, std::strbitset & ret);
+  virtual bool operator()( edm::EventBase const & t, pat::strbitset & ret);
 
-  std::vector<pat::Jet>      const & selectedJets     () const { return selectedJets_;     } 
-  std::vector<pat::Jet>      const & taggedJets       () const { return taggedJets_;       } 
+  using EventSelector::operator();
+
+  std::vector<edm::Ptr<pat::Jet> >      const & pretaggedJets     () const { 
+    return  !usePF_ ? dijetSelector_.caloJets() : dijetSelector_.pfJets() ;     
+  } 
+
+  std::vector<edm::Ptr<pat::Jet> >      const & taggedJets       () const { return taggedJets_;       } 
+
+  virtual void print( std::ostream & out ){
+    EventSelector::print(out);
+    dijetSelector_.print(out);
+    caTopTagFunctor_.print(out);
+    boostedTopWTagFunctor_.print(out);
+  }
  
  protected: 
-  edm::InputTag               jetTag_;
-  edm::InputTag               trigTag_;
-
-  std::vector<pat::Jet>       selectedJets_;
-  std::vector<pat::Jet>       taggedJets_;
-
-  boost::shared_ptr<JetIDSelectionFunctor>                jetIdTight_;
-  boost::shared_ptr<CATopTagFunctor>                      caTopTagFunctor_;
-
-  int minJets_;
-  int minTags_;
-
-  double jetPtMin_ ;
-  double jetEtaMax_;
-  
-  double topMassMin_;
-  double topMassMax_;
-  double minMass_;
-  double wMassMin_;
-  double wMassMax_;
-
-  
+  DijetSelector             dijetSelector_;
+  CATopTagFunctor           caTopTagFunctor_;
+  BoostedTopWTagFunctor     boostedTopWTagFunctor_;
+  edm::InputTag             trigSrc_;
+  std::string               trig_;
+  int                       minTags_;
+  bool                      usePF_; 
+  bool                      useWTag_;
+  std::vector<edm::Ptr<pat::Jet> >             taggedJets_;
 };
 
 

@@ -1,20 +1,16 @@
 <use name=DataFormats/PatCandidates>
 <use name=DataFormats/FWLite>
-<use name=FWCore/Framework>
+<use name=FWCore/PythonParameterSet>
+<use name=boost_python>
 <use name=FWCore/FWLite>
-<use name=PhysicsTools/PatUtils>
-<use name=PhysicsTools/Utilities>
-<use name=PhysicsTools/PatExamples>
-<use name=PhysicsTools/FWLite>
-<use name=Analysis/BoostedTopAnalysis>
 <use name=rootcintex>
 <use name=root> 
+<use name=boost>
+<use name=CommonTools/Utils>
+<use name=PhysicsTools/SelectorUtils>
+<use name=PhysicsTools/FWLite>
+<use name=Analysis/BoostedTopAnalysis>
 
 <environment>
  <bin file="hadronic_analysis.C"> </bin>
- <bin file="semimu_analysis.C"> </bin>
- <bin file="semimu_jec_analysis.C"> </bin>
- <bin file="testSelection_boostedtop.C"> </bin>
- <bin file="eff_catoptag.C"> </bin>
- <bin file="make_mistag_parameterization.C"> </bin>
 </environment>
