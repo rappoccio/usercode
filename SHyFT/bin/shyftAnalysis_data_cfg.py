@@ -3,18 +3,18 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("FWLitePlots")
 
 
-process.load('Analysis.SHyFT.shyftAnalysis_minbias_cfi')
+process.load('Analysis.SHyFT.shyftAnalysis_cfi')
 
-
+process.shyftAnalysis.cutsToIgnore = cms.vstring(['Trigger'])
 
 
 process.inputs = cms.PSet (
     maxEvents = cms.int32(-1),
 
-    fileNamesShort = cms.vstring(
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/MinimumBias/shyft_357_data_v1/8f2ebcaed76069a836d8d452483e47c8/shyft_7TeV_firstdata_357_pat_100_1.root'
-),
     fileNames = cms.vstring(
+'/Users/rappocc/data_local/shyft/shyft_7TeV_firstdata_357_pat_10_1.root'
+),
+    fileNamesLong = cms.vstring(
 '/uscms_data/d2/rappocc/data/MinimumBias/shyft_357_data_v1/shyft_7TeV_firstdata_357_pat_100_1.root',
 '/uscms_data/d2/rappocc/data/MinimumBias/shyft_357_data_v1/shyft_7TeV_firstdata_357_pat_101_1.root',
 '/uscms_data/d2/rappocc/data/MinimumBias/shyft_357_data_v1/shyft_7TeV_firstdata_357_pat_102_1.root',
@@ -315,5 +315,5 @@ process.inputs = cms.PSet (
 )
 
 process.outputs = cms.PSet (
-    outputName = cms.string('shyftPlots_minbias.root')
+    outputName = cms.string('shyftPlots_minbias_short.root')
 )

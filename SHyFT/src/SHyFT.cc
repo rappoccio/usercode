@@ -32,6 +32,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
 
   histograms["metPt"] = theDir.make<TH1F>("metPt", "Missing p_{T} (GeV/c)", 100, 0, 200 );
 
+  histograms2d["massVsPt"] = theDir.make<TH2F>("massVsPt", "Mass vs pt", 25, 0, 250, 25, 0, 500);
+
   std::vector<std::string> sampleNameBase;
   std::vector<std::string> sampleName;
   std::vector<std::string> secvtxName(5,"_secvtxMass_");
@@ -202,6 +204,7 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       double jetPt  = std::abs( jet->pt() );
      
       histograms["tag_jet_pt"]->Fill( jetPt );
+      histograms2d["massVsPt"]->Fill( jetPt, jet->mass() );
 
       // Is this jet tagged and does it have a good secondary vertex
       if( jet->bDiscriminator("simpleSecondaryVertexBJetTags") < 2.05 ) {
@@ -326,7 +329,7 @@ bool SHyFT::analyze_met(const reco::ShallowClonePtrCandidate & met)
 void SHyFT::analyze(const edm::EventBase& iEvent)
 {
 
-  std::strbitset ret = wPlusJets.getBitTemplate();
+  pat::strbitset ret = wPlusJets.getBitTemplate();
 
   bool passed = wPlusJets(iEvent, ret);
   std::vector<reco::ShallowClonePtrCandidate> const & electrons = wPlusJets.selectedElectrons();
