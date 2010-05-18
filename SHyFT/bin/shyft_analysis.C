@@ -73,7 +73,7 @@ int main ( int argc, char ** argv )
   timer.Start();
   //loop through each event
   for( ev.toBegin();
-       ! ev.atEnd() && ( nEventsAnalyzed < maxEvents || maxEvents < 0) ;
+       ! ev.atEnd() && ( (int)nEventsAnalyzed < maxEvents || maxEvents < 0) ;
        ++ev, ++nEventsAnalyzed) 
   {
     

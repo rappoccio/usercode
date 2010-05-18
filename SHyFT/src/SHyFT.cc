@@ -379,7 +379,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
 
     histograms["nJets"]->Fill( jets.size() );
     unsigned int maxJets = jets.size();
-    if ( maxJets >= nJetsCut_ ) {
+    if ( (int)maxJets >= nJetsCut_ ) {
       if ( maxJets > 4 ) maxJets = 4;
       for ( unsigned int i=0; i<maxJets; ++i) {
 	histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Pt"] ->Fill( jets[i].pt()  );
