@@ -13,4 +13,5 @@
 
 <environment>
  <bin file="hadronic_analysis.C"> </bin>
+ <bin file="gen_analysis.C"> </bin>
 </environment>
