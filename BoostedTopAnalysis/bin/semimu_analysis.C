@@ -5,7 +5,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "AnalysisDataFormats/TopObjects/interface/CATopJetTagInfo.h"
 #include "Analysis/BoostedTopAnalysis/interface/HadronicSelection.h"
-#include "PhysicsTools/SelectorUtils/interface/WPlusJetsEventSelector.h"
+#include "PhysicsTools/PatExamples/interface/WPlusJetsEventSelector.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "PhysicsTools/FWLite/interface/EventContainer.h"
@@ -225,7 +225,7 @@ int main (int argc, char* argv[])
    for (eventCont.toBegin(); ! eventCont.atEnd(); ++eventCont) {
 
      // Leptonic side
-    pat::strbitset retSemi = wPlusJets.getBitTemplate();
+    std::strbitset retSemi = wPlusJets.getBitTemplate();
 
 
     bool passedSemi = wPlusJets(eventCont, retSemi);
@@ -265,7 +265,7 @@ int main (int argc, char* argv[])
 	eventCont.hist("mu2D")->Fill( dRMin, ptRel );
 
 	// Hadronic side
-	pat::strbitset ret = caTopHadronic.getBitTemplate();
+	std::strbitset ret = caTopHadronic.getBitTemplate();
 	
 
 	// bool passed = caTopHadronic(eventCont, ret);
