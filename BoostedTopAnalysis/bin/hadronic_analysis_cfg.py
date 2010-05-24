@@ -8,34 +8,42 @@ process.load('Analysis.BoostedTopAnalysis.hadronicAnalysis_cfi')
 process.hadronicAnalysis.dijetSelectorParams.cutsToIgnore = cms.vstring(['Calo Jet ID', 'PF Jet ID'])
 process.hadronicAnalysis.cutsToIgnore = cms.vstring(['Trigger'])
 
+process.plotOptions = cms.PSet(
+    plotTracks = cms.bool(True),
+    reweightHistoFile = cms.string('boostedTopPlots.root'),
+    sampleHistoFile   = cms.string('boostedTopPlots.root'),
+    reweightHistoName = cms.string('histos/nTracks')
+    )
+
 process.inputs = cms.PSet (
     fileNames = cms.vstring(
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_10_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_11_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_12_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_13_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_14_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_15_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_16_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_17_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_18_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_19_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_1_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_20_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_21_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_22_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_23_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_24_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_25_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_26_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_2_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_3_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_4_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_5_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_6_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_7_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_8_1.root',
-'/uscms/home/rappocc/nobackup/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_9_1.root'
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_10_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_11_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_12_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_13_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_14_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_15_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_16_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_17_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_18_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_19_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_1_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_20_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_21_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_22_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_23_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_24_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_25_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_26_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_2_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_3_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_4_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_5_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_6_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_7_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_8_1.root',
+'/Users/rappocc/data_local/MinimumBias/TopTagging36xFiles/JetMETTau_early_17may2010/pruning_361_9_1.root'
+
 
 
         ),
@@ -130,5 +138,5 @@ process.inputs = cms.PSet (
 )
 
 process.outputs = cms.PSet (
-    outputName = cms.string('boostedTopPlots.root')
+    outputName = cms.string('boostedTopPlotsWeighted.root')
 )

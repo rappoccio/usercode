@@ -30,21 +30,60 @@ typedef std::vector<reco::ShallowClonePtrCandidate> ShallowCloneCollection;
 class HadronicAnalysis {
 
   public:
-    HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirectory& iDir);
+
+
+  struct EventSummary {
+    double mjj;
+    double mu0, mu1, y0, y1;
+    unsigned int run;
+    unsigned int event;
+    unsigned int luminosityBlock;
+
+  EventSummary( double imjj, 
+		double imu0, double imu1, double iy0, double iy1,
+		unsigned int irun, unsigned int ievent, unsigned int iluminosityBlock) :
+    mjj(imjj), mu0(imu0), mu1(imu1), y0(iy0), y1(iy1),
+      run(irun), event(ievent), luminosityBlock(iluminosityBlock)
+    {
+    }
+    
+    friend std::ostream & operator<<( std::ostream & out, const EventSummary & e ) {
+      out << "Run " << e.run << ", lumi " << e.luminosityBlock << ", event " << e.event << ", mjj = " << e.mjj
+	  << " mu0 = " << e.mu0 << ", mu1 = " << e.mu1 << ", y0 = " << e.y0 << ", y1 = " << e.y1;
+      return out;
+    };
+    
+    bool operator< (  const EventSummary & e) const {
+      return this->mjj < e.mjj;
+    };
+  };
+  
+  HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirectory& iDir);
     virtual ~HadronicAnalysis() {}
     virtual void analyze(const edm::EventBase& iEvent);
     virtual void beginJob() {}
     virtual void endJob() {
       hadronicSelection_.print(std::cout);
+      sort( summary.begin(), summary.end() );
+      int max = (summary.size() < 100) ? summary.size() : 100;
+      for ( std::vector<EventSummary>::const_reverse_iterator ibegin = summary.rbegin(),
+	      iend = ibegin + max, i = ibegin;
+	    i != iend; ++i ) {
+	std::cout << *i << std::endl;
+      }
     }
 
   private:
+    bool                plotTracks_;
+    double              histoWeight_;
+    TH1F*               weightHist_;
     HadronicSelection   hadronicSelection_;
     TFileDirectory& theDir;
     // 'registry' for the histograms                                                                                                                                                                    
     std::map<std::string, TH1F*> histograms1d;
     std::map<std::string, TH2F*> histograms2d;
 
+    std::vector<EventSummary>  summary;
 };
 
 #endif

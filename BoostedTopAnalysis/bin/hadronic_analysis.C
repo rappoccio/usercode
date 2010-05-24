@@ -81,12 +81,13 @@ int main (int argc, char* argv[])
   std::cout << "Making hadronic analysis object" << std::endl;
   HadronicAnalysis hadronicAnalysis( *parameters, theDir );
 
-
+  std::vector<int> runs;
 
 
   cout << "About to begin looping" << endl;
 
   int nev = 0;
+  int nev_passed = 0;
   //loop through each event
   for (ev.toBegin(); ! ev.atEnd(); ++ev, ++nev) {
     edm::EventBase const & event = ev;
@@ -98,14 +99,27 @@ int main (int argc, char* argv[])
     bool goodLumi = runLumiSel( event );
     if ( !goodLumi ) continue;
 
+    ++nev_passed;
+
     int run = event.id().run();
+    if ( find( runs.begin(), runs.end(), run ) == runs.end() )
+      runs.push_back(run);
+
     if ( nev % 10000 == 0 ) cout << "Entry " << nev << ", Processing run " << event.id().run() << ", event " << event.id().event() << endl;
 
     // Analyze it
     hadronicAnalysis.analyze( event );
   } // end loop over events
     
+  sort( runs.begin(), runs.end() );
 
+  std::cout << "Processed " << nev_passed << " / " << nev << " events" << std::endl;
+  std::cout << "List of runs processed: " << std::endl;
+
+  for ( std::vector<int>::const_iterator ibegin = runs.begin(),
+	  iend = runs.end(), i = ibegin;
+	i != iend; ++i )
+    std::cout << *i << std::endl;
 
   hadronicAnalysis.endJob();
 
