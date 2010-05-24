@@ -43,7 +43,7 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   }
 
   if ( plotTracks_ ) {
-    histograms1d["nTracks"] = theDir.make<TH1F>("nTracks", "Number of Tracks", 100, 0, 100 );
+    histograms1d["nTracks"] = theDir.make<TH1F>("nTracks", "Number of Tracks", 400, 0, 400 );
   }
 
   histograms1d["dijetMass"] = theDir.make<TH1F>("dijetMass", "Dijet Mass", 500, 0, 5000);
