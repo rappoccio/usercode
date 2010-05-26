@@ -1,22 +1,15 @@
-# This is an example PAT configuration showing the usage of PAT on minbias data
-
-# Starting with a skeleton process which gets imported with the following line
+# SHyFT configuration
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 from PhysicsTools.PatAlgos.tools.coreTools import *
 
 ## global tag for data
-process.GlobalTag.globaltag = cms.string('GR10_P_V2::All')
-
-# turn off MC matching for the process
-removeMCMatching(process, ['All'])
+process.GlobalTag.globaltag = cms.string('GR_R_36X_V10::All')
 
 
-
-
-# get the 7 TeV GeV jet corrections
+# get the 7 TeV jet corrections
 from PhysicsTools.PatAlgos.tools.jetTools import *
-switchJECSet( process, "Summer09_7TeV_ReReco332")
+switchJECSet( process, "Spring10")
 
 # require physics declared
 process.load('HLTrigger.special.hltPhysicsDeclared_cfi')
@@ -30,6 +23,9 @@ process.scrapingVeto = cms.EDFilter("FilterOutScraping",
                                     thresh = cms.untracked.double(0.2)
                                     )
 
+# Run b-tagging sequences on 35x inputs
+#from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
+#run36xOn35xInput(process)
 
 # configure HLT
 process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
@@ -49,71 +45,67 @@ process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                            )
 
 
-#_____ SELECTION ________________________________________________ 	 
-#
+from PhysicsTools.PatAlgos.tools.pfTools import *
+postfix = "PFlow"
+usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=False, postfix=postfix) 
+
+# turn to false when running on data
+getattr(process, "patElectrons"+postfix).embedGenMatch = False
+getattr(process, "patMuons"+postfix).embedGenMatch = False
+
+
+# turn off MC matching for the process
+removeMCMatching(process, ['All'])
+
+# Selection
+process.selectedPatJetsPFlow.cut = cms.string("pt > 15")
 process.selectedPatJets.cut = cms.string("pt > 20")
 process.patJets.tagInfoSources = cms.VInputTag(
     cms.InputTag("secondaryVertexTagInfos")
     )
-# electrons
-process.selectedPatElectrons.cut = cms.string('pt > 3.0')
-process.patElectrons.isoDeposits = cms.PSet()
-# muons
-process.selectedPatMuons.cut = cms.string("pt > 3.0")
-process.patMuons.isoDeposits = cms.PSet()
-# taus
-process.selectedPatTaus.cut = cms.string("pt > 5 & abs(eta) < 3")
-# photons
-process.patPhotons.isoDeposits = cms.PSet()
-#taus
-process.patTaus.isoDeposits = cms.PSet()
-
-
-#try to clone what we have up to here.  
-from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
-cloneProcessingSnippet(process, process.patDefaultSequence, "Std")
-
-# add PF2PAT
-from PhysicsTools.PatAlgos.tools.pfTools import *
-usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC = False)
+process.patJetsPFlow.tagInfoSources = cms.VInputTag(
+    cms.InputTag("secondaryVertexTagInfos")
+    )
+process.selectedPatMuons.cut = cms.string("pt > 3")
+process.selectedPatMuonsPFlow.cut = cms.string("pt > 3")
+process.selectedPatElectrons.cut = cms.string("pt > 3")
+process.selectedPatElectronsPFlow.cut = cms.string("pt > 3")
 
 # remove trigger matching for PF2PAT as that is currently broken
-process.patDefaultSequence.remove(process.patTriggerSequence)
+process.patPF2PATSequencePFlow.remove(process.patTriggerSequencePFlow)
 
-# now change the PF jet cut to 10 GeV
-process.selectedPatJets.cut = cms.string("pt > 15")
 
 # FILTERS:
 # One of : >=1 mu (PF or std)
 #          >=1 e (PF or std)
 #          >=2 jet (PF or std)
 process.muonFilter = cms.EDFilter("CandViewCountFilter",
-                                  src = cms.InputTag("selectedPatMuonsStd"),
+                                  src = cms.InputTag("selectedPatMuons"),
                                   minNumber = cms.uint32(1),
                                   )
 
 process.pfMuonFilter = cms.EDFilter("CandViewCountFilter",
-                                    src = cms.InputTag("selectedPatMuons"),
+                                    src = cms.InputTag("selectedPatMuonsPFlow"),
                                     minNumber = cms.uint32(1),
                                     )
 
 process.electronFilter = cms.EDFilter("CandViewCountFilter",
-                                  src = cms.InputTag("selectedPatElectronsStd"),
+                                  src = cms.InputTag("selectedPatElectrons"),
                                   minNumber = cms.uint32(1),
                                   )
 
 process.pfElectronFilter = cms.EDFilter("CandViewCountFilter",
-                                    src = cms.InputTag("selectedPatElectrons"),
+                                    src = cms.InputTag("selectedPatElectronsPFlow"),
                                     minNumber = cms.uint32(1),
                                     )
 
 process.jetFilter = cms.EDFilter("CandViewCountFilter",
-                                  src = cms.InputTag("selectedPatJetsStd"),
+                                  src = cms.InputTag("selectedPatJets"),
                                   minNumber = cms.uint32(2),
                                   )
 
 process.pfJetFilter = cms.EDFilter("CandViewCountFilter",
-                                    src = cms.InputTag("selectedPatJets"),
+                                    src = cms.InputTag("selectedPatJetsPFlow"),
                                     minNumber = cms.uint32(2),
                                     )
 
@@ -126,45 +118,24 @@ readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 
 readFiles.extend( [
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/EEE6A6A0-4742-DF11-B29E-0019B9F72F97.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/EAB2FD5C-3A42-DF11-AE5F-000423D98804.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/EA9A1F00-4742-DF11-898A-001D09F25438.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/E093E3BA-4242-DF11-ABD8-0030487CD704.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/CE7C3100-4742-DF11-A410-001D09F24F1F.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/CE70DDD4-5E42-DF11-AED6-001D09F24448.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/CA0F3E00-4742-DF11-B993-001D09F252DA.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/C6F10ED6-4442-DF11-8E2A-0016177CA778.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/C4E0CBB7-3B42-DF11-BB57-000423D98FBC.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/C238AD9E-4042-DF11-BC5A-0030487CD178.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/BE486F9E-4042-DF11-80FD-001617C3B76E.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/BCBB11D6-4A42-DF11-A2F4-001D09F24489.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/B6A974E6-3F42-DF11-A8B1-0030487C8CBE.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/B00EBC9E-4042-DF11-9961-0030487C6A66.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/ACBE1B97-3C42-DF11-9CAB-000423D94534.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/A299B019-3B42-DF11-8079-001617E30F50.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/A0EFA323-4442-DF11-91F1-0030487CD7B4.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/967CB9A2-4042-DF11-95D2-001617C3B70E.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/94B61F24-4442-DF11-BE00-0030487CD812.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/8A431F24-4442-DF11-8D10-0030487CD77E.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/8A385724-4442-DF11-B326-0030487CD906.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/760D60DE-3D42-DF11-82A2-000423D99EEE.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/70884523-4442-DF11-80F9-001617C3B5D8.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/703AEB7D-3C42-DF11-BA8A-000423D987FC.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/668141EE-3842-DF11-BACA-0030487C8CBE.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/60662E79-3C42-DF11-A001-000423D98EC8.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/5AADE2E4-4442-DF11-9B0F-0030487CD178.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/4E89AE58-3A42-DF11-AB48-003048D2C092.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/4E484072-4342-DF11-9128-0030487CD76A.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/4AD6A4A2-4742-DF11-B95B-001D09F24691.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/4AC5E83B-3F42-DF11-AB77-0030487CF41E.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/469EA393-3E42-DF11-9FAE-000423DD2F34.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/3EF70B15-3B42-DF11-A9D7-000423D98AF0.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/3A910E07-4242-DF11-842C-0030487CD6DA.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/385854E5-4442-DF11-A8B9-0030487CD76A.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/361DB55A-6542-DF11-9FFE-0030487CD718.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/266D69ED-3842-DF11-8935-001D09F253FC.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/0E4D13B5-4A42-DF11-9D05-001D09F29597.root',
-'/store/data/Commissioning10/MinimumBias/RECO/v8/000/132/716/0E17871B-3D42-DF11-B3C7-001D09F2432B.root'
+'/store/data/Run2010A/Mu/RECO/v2/000/136/087/7AE9EF4A-7D67-DF11-97EC-0030487CD7CA.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/087/F63A8D4C-6167-DF11-BD3A-000423D944F8.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/088/2630E4C3-7267-DF11-B57C-0030487CD7C6.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/088/2AA4E6A5-7067-DF11-AF34-0030487CD6D2.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/088/38E7B9C2-6B67-DF11-BCF4-0030487C7828.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/088/40E31290-6E67-DF11-B91A-0030487CD6D8.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/088/941764C0-6467-DF11-BACC-000423D996C8.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/088/D83846A0-8367-DF11-8287-0030487C6088.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/089/D802058C-6E67-DF11-B721-000423D98634.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/091/58725305-8567-DF11-B7A2-0030487CD840.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/092/628111AD-AB67-DF11-93EB-000423D9970C.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/094/EEC8EE61-AA67-DF11-9433-001D09F251FE.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/095/5E1E4AB0-A467-DF11-A9D1-0030487CD17C.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/096/A42B63BB-B967-DF11-96D9-001617E30D12.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/097/2C54B8E6-C967-DF11-8688-001D09F24DA8.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/097/4C7E1E9F-CA67-DF11-ACD5-001D09F24498.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/098/D47463AC-D167-DF11-9492-0030487C5CE2.root'
+
 
         ] );
 process.source.fileNames = readFiles
@@ -182,8 +153,8 @@ process.patseq = cms.Sequence(
     process.scrapingVeto*
     process.hltPhysicsDeclared*
     process.primaryVertexFilter*
-    process.patDefaultSequenceStd* 
-    process.patDefaultSequence
+    process.patDefaultSequence* 
+    getattr(process,"patPF2PATSequence"+postfix)
 )
 
 process.p1 = cms.Path(
@@ -215,13 +186,13 @@ process.out.SelectEvents.SelectEvents = cms.vstring('p1', 'p2', 'p3', 'p4', 'p5'
 
 
 # rename output file
-process.out.fileName = cms.untracked.string('shyft_7TeV_firstdata_357_pat.root')
+process.out.fileName = cms.untracked.string('shyft_361_pat.root')
 
 # reduce verbosity
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
 # process all the events
-process.maxEvents.input = 1000
+process.maxEvents.input = 10000
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 
@@ -249,6 +220,7 @@ process.out.outputCommands = [
     'keep *_cleanPatMuonsTriggerMatchStd_*_*',
     'keep *_cleanPatTausTriggerMatchStd_*_*',
     'keep *_cleanPatJetsTriggerMatchStd_*_*',
-    'keep *_patMETsTriggerMatchStd_*_*'
+    'keep *_patMETsTriggerMatchStd_*_*',
+    'drop *_MEtoEDMConverter_*_*'
     ]
 
