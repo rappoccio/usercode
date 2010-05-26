@@ -10,6 +10,10 @@ process.load('Analysis.BoostedTopAnalysis.hadronicAnalysis_cfi')
 process.hadronicAnalysis.dijetSelectorParams.cutsToIgnore = cms.vstring(['Calo Jet ID', 'PF Jet ID'])
 process.hadronicAnalysis.cutsToIgnore = cms.vstring(['Trigger'])
 
+process.plotOptions = cms.PSet(
+        plotTracks = cms.bool(True)
+            )
+
 
 filesin = sys.argv[2]
 outfile = sys.argv[3]

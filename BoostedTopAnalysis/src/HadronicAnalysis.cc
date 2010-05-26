@@ -50,6 +50,12 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms1d["dijetMassSingleTagged"] = theDir.make<TH1F>("dijetMassSingleTagged", "Dijet Mass, Single Tagged", 500, 0, 5000);
   histograms1d["dijetMassDoubleTagged"] = theDir.make<TH1F>("dijetMassDoubleTagged", "Dijet Mass, Double Tagged", 500, 0, 5000);
 
+  histograms1d["jetPt0"] = theDir.make<TH1F>("jetPt0", "Jet p_{T} of First Jet", 500, 0, 5000 );
+  histograms1d["jetPt1"] = theDir.make<TH1F>("jetPt1", "Jet p_{T} of Second Jet", 500, 0, 5000 );
+
+  histograms1d["jetEta0"] = theDir.make<TH1F>("jetEta0", "Jet #eta of First Jet", 500, -5.0, 5.0 );
+  histograms1d["jetEta1"] = theDir.make<TH1F>("jetEta1", "Jet #eta of Second Jet", 500, -5.0, 5.0 );
+
   histograms1d["jetMass0"] = theDir.make<TH1F>("jetMass0", "Jet Mass of First Jet", 500, 0, 250 );
   histograms1d["jetMass1"] = theDir.make<TH1F>("jetMass1", "Jet Mass of Second Jet", 500, 0, 250 );
   histograms1d["mu0"]     = theDir.make<TH1F>("mu0", "Mass Drop of First Jet", 500, 0.0, 1.0 );
@@ -111,6 +117,11 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       double mu1 = 0.0, y1 = 0.0, dR1 = 0.0;
       pat::subjetHelper( *pretaggedJets[1], y1, mu1, dR1);	  
 
+
+      histograms1d["jetPt0"]->Fill( p4_0.pt() );
+      histograms1d["jetPt1"]->Fill( p4_1.pt() );
+      histograms1d["jetEta0"]->Fill( p4_0.eta() );
+      histograms1d["jetEta1"]->Fill( p4_1.eta() );
 
       histograms1d["dijetMass"]->Fill( p4.mass(), histoWeight_ );
       histograms1d["jetMass0"]->Fill( pretaggedJets[0]->mass() , histoWeight_);
