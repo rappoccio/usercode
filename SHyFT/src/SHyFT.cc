@@ -102,6 +102,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   */
   histograms["tag_eff"]    = theDir.make<TH1F>("tag_eff", "0 lf untag, 1 c untag, 2 b untag, 3 lf tag, 4 c tag, 5 b tag", 6, 0, 6);
   histograms["tag_jet_pt"] = theDir.make<TH1F>("tag_jet_pt", "JetPt to go with tagging efficiency", 150,    0,    300);
+  //Using btagging and mistag to do normalization
+  histograms3d["normalization"]	= theDir.make<TH3F>("normalization",	"Normalization",	5,	1,	6,	2,	1,	3,   11,  0,  11 );
 
   histograms[sampleNameInput+"_hT"]    = theDir.make<TH1F>( (sampleNameInput+"_hT").c_str(),    "HT using Et is the sum of Jet Et plus Muon Pt", 50, 0,  1200);
   histograms[sampleNameInput+"_hT_1j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_1j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10,  50, 300);
@@ -193,6 +195,11 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
   int numBottom=0,numCharm=0,numLight=0;
   int numTags=0, numJets=0;
   double sumVertexMass=0, vertexMass=0;
+
+  //btag scale factor and mistag rate
+  const double bScaleFactor = 0.550719,  cMistag = 0.121149,  lMistag = 0.00925701;
+  const double bUntag = 1. - bScaleFactor,    cUntag = 1. - cMistag ,   lUntag = 1. - lMistag ;
+
   for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
 	  jetEnd = jets.end(), jetIter = jetBegin;
 	jetIter != jetEnd; ++jetIter)
@@ -282,33 +289,158 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
   //histograms[secvtxname + "_jettag"]->Fill (numJets, numTags);
 
   //skip 0 tag events
-  if( numTags < 1 )    return  false;
-  sumVertexMass /= numTags;
+  if( numTags > 0 ) 
+  {
+     sumVertexMass /= numTags;
 
-  string whichtag = "";
-  if (1 == numTags)
-    {
-      // single tag                                                                                                                                                                                                
-      if      (numBottom)              whichtag = "_b";
-      else if (numCharm)               whichtag = "_c";
-      else if (numLight)               whichtag = "_q";
-      else                             whichtag = "_x";
-    }
-  else {
-    // double tags                                                                                                                                                                                                 
-    if      (2 == numBottom)         whichtag = "_bb";
-    else if (2 == numCharm)          whichtag = "_cc";
-    else if (2 == numLight)          whichtag = "_qq";
-    else if (numBottom && numCharm)  whichtag = "_bc";
-    else if (numBottom && numLight)  whichtag = "_bq";
-    else if (numCharm  && numLight)  whichtag = "_cq";
-    else                             whichtag = "_xx";
-  } // if two tags                                                                                                                                                                                                  
-  string massName = secvtxname
-    + Form("_secvtxMass_%dj_%dt", numJets, numTags);
+     string whichtag = "";
+     if (1 == numTags)
+       {
+	 // single tag                                                                                                                                                                                                
+	 if      (numBottom)              whichtag = "_b";
+	 else if (numCharm)               whichtag = "_c";
+	 else if (numLight)               whichtag = "_q";
+	 else                             whichtag = "_x";
+       }
+     else {
+       // double tags                                                                                                                                                                                                 
+       if      (2 == numBottom)         whichtag = "_bb";
+       else if (2 == numCharm)          whichtag = "_cc";
+       else if (2 == numLight)          whichtag = "_qq";
+       else if (numBottom && numCharm)  whichtag = "_bc";
+       else if (numBottom && numLight)  whichtag = "_bq";
+       else if (numCharm  && numLight)  whichtag = "_cq";
+       else                             whichtag = "_xx";
+     } // if two tags                                                                                                                                                                                                  
+     string massName = secvtxname
+       + Form("_secvtxMass_%dj_%dt", numJets, numTags);
 
-  histograms[massName           ]-> Fill (sumVertexMass);
-  histograms[massName + whichtag]-> Fill (sumVertexMass);
+     histograms[massName           ]-> Fill (sumVertexMass);
+     histograms[massName + whichtag]-> Fill (sumVertexMass);
+  } // end if numTags > 0
+
+  //Normalization for "1 tag" events
+  for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
+          jetEnd = jets.end(), jetIter = jetBegin;
+        jetIter != jetEnd; ++jetIter)
+  {
+      const pat::Jet* jet = dynamic_cast<const pat::Jet *>(jetIter->masterClonePtr().get());
+
+      // We first get the flavor of the jet so we can fill look at btag efficiency.
+      int jetFlavor = std::abs( jet->partonFlavour() );
+      //Probability to tag this jet
+      double weight = 1.0;
+      int whichtag = 0;
+      switch( jetFlavor )
+      {
+         case 5:
+	    whichtag = 5;
+	    weight *= bScaleFactor;
+	    break;
+	 case 4:
+	    whichtag = 4;
+	    weight *= cMistag;
+	    break;
+	 default:
+	    whichtag = 0;
+	    weight *= lMistag;
+      }
+
+      //Probability to untag the rest jets
+      double untagRate = 1.0;
+      for( ShallowCloneCollection::const_iterator jet2Iter = jetBegin;  jet2Iter != jetEnd; ++jet2Iter )
+      {
+         const pat::Jet* jet2 = dynamic_cast<const pat::Jet *>(jet2Iter->masterClonePtr().get());
+         if( jet2Iter != jetIter )
+	 {
+	    int jetFlavor2 = std::abs( jet2->partonFlavour() );
+	    switch( jetFlavor2 )
+	    {
+	       case 5:
+		  untagRate *= bUntag;
+		  break;
+	       case 4:
+		  untagRate *= cUntag;
+		  break;
+	       default:
+		  untagRate *= lUntag;
+	    }
+	 }
+      } // end for jet2Iter
+      histograms3d["normalization"]	->  Fill(  numJets,	1,	whichtag,	weight*untagRate );
+  } // end for jetIter
+
+  if( numJets < 2 )   return true;
+  //Normalization for double tagged events
+  for( ShallowCloneCollection::const_iterator jetBegin = jets.begin(), jetEnd = jets.end(),
+      jetIter1 = jetBegin;  jetIter1 != jetEnd;  jetIter1 ++ )
+      for( ShallowCloneCollection::const_iterator jetIter2 = jetIter1 + 1;  jetIter2 != jetEnd; jetIter2 ++ )
+      {
+         const pat::Jet* jet1 = dynamic_cast<const pat::Jet *>(jetIter1->masterClonePtr().get());
+         const pat::Jet* jet2 = dynamic_cast<const pat::Jet *>(jetIter2->masterClonePtr().get());
+	 int flavour1 = std::abs( jet1->partonFlavour() );
+	 int flavour2 = std::abs( jet2->partonFlavour() );
+	 double weight1 = 1.0;
+	 double weight2 = 1.0;
+	 double whichtag = 0;
+	 //norm the flavour value as follow, b -> 5, c -> 4, l -> 0
+	 switch( flavour1 )
+	 {
+	    case 5:
+	      weight1 = bScaleFactor;
+	      break;
+	    case 4:
+	      weight1 = cMistag;
+	      break;
+	    default:
+	      weight1 = lMistag;
+	      flavour1 = 0;
+	 }
+	 switch ( flavour2 )
+	 {
+	    case 5:
+	       weight2 = bScaleFactor;
+	       break;
+	    case 4:
+	       weight2 = cMistag;
+	       break;
+	    default:
+	      weight2  = lMistag;
+	      flavour2 = 0;
+	 }
+	 int flavourSum = flavour1 + flavour2 ;
+	 switch( flavourSum )
+	 {
+	    case 10:
+	       //_bb
+	       whichtag = 10;
+	       break;
+	    case 9:
+	       //_bc
+	       whichtag = 9;
+	       break;
+	    case 8:
+	       //_cc
+	       whichtag = 8;
+	       break;
+	    case 5:
+	       //_bq
+	       whichtag = 5;
+	       break;
+	    case 4:
+	       //_cq
+	       whichtag = 4;
+	       break;
+	    case 0:
+	       //_qq
+	       whichtag = 0;
+	       break;
+	    default:
+	       cout<<"Jet Flavour Error: "<<endl;
+	       return false;
+	 }
+	 histograms3d["normalization"]		->  Fill( numJets,  2,  whichtag,  weight1*weight2 );
+      }  // end jetIter1, jetIter2
 
 
   return true;
@@ -398,7 +530,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     } 
     if ( maxJets >= 4 ) {
         
-      std::cout << iEvent.id().run() << ":" << iEvent.id().event() <<":" << iEvent.id().luminosityBlock() << ":" << std::setprecision(8) << muons[0].pt() << std::endl;
+      //std::cout << iEvent.id().run() << ":" << iEvent.id().event() <<":" << iEvent.id().luminosityBlock() << ":" << std::setprecision(8) << muons[0].pt() << std::endl;
 
     }
     return;
