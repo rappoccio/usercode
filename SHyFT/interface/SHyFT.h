@@ -21,6 +21,7 @@
 #include "TFile.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TH3.h"
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TSystem.h"
@@ -60,6 +61,7 @@ class SHyFT {
     // 'registry' for the histograms                                                                                                                                                                    
     std::map<std::string, TH1F*> histograms;
     std::map<std::string, TH2F*> histograms2d;
+    std::map<std::string, TH3F*> histograms3d;
     // the following parameters need to come from the config
     bool muPlusJets_;
     bool ePlusJets_;
