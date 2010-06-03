@@ -178,7 +178,8 @@ private:
 
 Template::Template(TH1F hist, string name, RooRealVar& binningVar, Sample theSample):
   hist_(hist),name_(name),binningVar_(binningVar) {
-  nmc_     = hist_.GetEntries();
+  //  nmc_     = hist_.GetEntries();
+  nmc_     = hist_.Integral(); // must be used for secvtxmass plots...note there are no overflow/underflow
   rNmc_    = new RooRealVar((name_+"_nmc").c_str(), (name_+"_nmc").c_str(), nmc_);
   rdh_     = new RooDataHist((name_+"_datahist").c_str(),(name_+"_datahist").c_str(), binningVar_, &hist_);
   rhp_     = new RooHistPdf((name_+"_pdf").c_str(),(name_+"_pdf").c_str(), binningVar_, *rdh_);
@@ -209,7 +210,7 @@ public:
   RooNLLVar *                 nll()       { return jtNll_;       } 
   vector<Template*> & jtTemplates()       { return jtTemplates_; }
   
-  void generateData(int seed);
+  void generateData();
   void inputData( TFile * file );
   void makeNLLVar();
   void makeNLLVar(RooAbsData * abs_data);
@@ -286,14 +287,8 @@ JetTagBin::JetTagBin(TFile & file, string jtBinName, vector<Sample> theSamples):
   jtNll_ = 0;
 }
 
-void JetTagBin::generateData(int seed)
+void JetTagBin::generateData()
 {
-  if ( seed>0 ) {
-    if ( verbose )
-      RooRandom::randomGenerator()->SetSeed(seed);
-  }
-  //else seed = RooRandom::randomGenerator()->GetSeed();
-    
   if ( jtData_ ) delete jtData_;
   int nToGen = (int) nevt()+.5;
   int nToGenPoisson = RooRandom::randomGenerator()->Poisson(nToGen) ;
@@ -355,7 +350,8 @@ class SHyFT {
 public:
 
   SHyFT( string const & fileName, vector<Sample> theSamples );
-  ~SHyFT() { file_->Close(); }
+  SHyFT() { file_ = 0; }
+  ~SHyFT() { if ( file_ ) file_->Close(); }
 
   void init();
   
@@ -369,6 +365,8 @@ public:
 
   vector< JetTagBin * > bins() { return bins_; }
 
+  TFile * file() { return file_; }
+  
 protected:
   vector< JetTagBin * > bins_;
   vector< RooNLLVar * > nlls_;
@@ -387,14 +385,15 @@ SHyFT::SHyFT( string const & fileName, vector<Sample> theSamples ) :
   stringstream tmpString;
   
   for(int n_jets = 1; n_jets <=5; ++n_jets) {
-    //    for(int n_tags = 1; n_tags < 2; ++ n_tags) { // will run only once for now, but must run later until 3
-    //      if(n_tags > n_jets) continue;
+    for(int n_tags = 1; n_tags <=2; ++n_tags) { // will run only once for now, but must run later until 3
+      if(n_tags > n_jets) continue;
       tmpString.str("");
       // eventually we will have a loop over all jets with 0T as a fixed string for ht and mt
       // then we loop over jets and tags  like this for secvtxmass
-      tmpString << "_hT_" << n_jets << "j"; //_" << n_tags << "t";
+      //tmpString << "_hT_" << n_jets << "j"; //_" << n_tags << "t";
+      tmpString << "_" << n_jets << "j_" << n_tags << "t";
       bins_.push_back(new JetTagBin(*file_, tmpString.str(), samples_ ) );
-      //}
+    }
   }
   //Some Basic Plots here
   for(unsigned int i = 0; i<theSamples.size(); ++i) {
@@ -420,10 +419,10 @@ void SHyFT::init() {
 
 void SHyFT::generateData(int seed)
 {
-  if ( nPEs_ > 0 ) seed = 0;
+  if ( seed>0 && nPEs_==1 ) RooRandom::randomGenerator()->SetSeed(seed);
   if ( verbose ) cout << "Generating Pseudo Data with seed: " << seed << endl;
   for(unsigned int i=0;i<bins_.size();++i) {
-    bins_[i]->generateData(seed);
+    bins_[i]->generateData();
   }
 }
 
@@ -478,9 +477,12 @@ void SHyFT::print()
 
 void SHyFT::plot()
 {
-  if ( 0 ) { //We don't want to have this for every event
-    //  if ( verbose && histos_[samples_[0].name()+"_fitVar"]->GetEntries()<1) { //We don't want to have this for every event
+  //if ( 0 ) { //We don't want to have this for every event
+  if ( verbose && nPEs_<10 ) { //We don't want to have this for every event
     cout << "Plotting" << endl;
+    stringstream tempstring;
+    tempstring.str("");
+    tempstring << nPEs_;
     for ( vector< JetTagBin * >::iterator ibin = bins_.begin(),
             binsBegin = bins_.begin(), binsEnd = bins_.end(); ibin != binsEnd; ++ibin ) {
       
@@ -490,7 +492,7 @@ void SHyFT::plot()
       RooPlot * frame = bin.jtBinVar()->frame();
       bin.plotOn( frame );
       frame->Draw();
-      c1->SaveAs(("fitter"+bin.jtBinName()+".png").c_str());
+      c1->SaveAs(("fitter"+bin.jtBinName()+"_"+tempstring.str()+".png").c_str());
       delete c1;
     }
   }
@@ -508,43 +510,69 @@ void SHyFT::plot()
 
 void Fitter(string fileName, int maxPEs, int seed=0, string fileName_ref="")
 {
+  //  RooRandom::randomGenerator()->Reset();
   verbose = false;
   if(maxPEs<=10) verbose = true;
 
   Sample ttbar = Sample("Top", 10, 90, 221131, 1, 1);
-  ttbar.setGuess( 1000 );
+  /*ttbar.setGuess( 1000 );
   ttbar.push_back(21781);
   RooFormulaVar * form_ttbar = new RooFormulaVar("form_ttbar","form_ttbar",
                                                  "@0/@1", RooArgSet( *ttbar.fitVar(), *ttbar.rExtraParms()[0]) );
-  cout << "test" << endl;
   ttbar.setFormula( form_ttbar);
-  Sample wjets = Sample("Wjets", 10, 17810, 1204434, 1, 1);
-  wjets.push_back(25965);
+  */
+  Sample wjets = Sample("Wqq", 10, 17810, 1204434, 1, 1);
+  /*wjets.push_back(25965);
   wjets.setGuess( 7000 );
   RooFormulaVar * form_wjets = new RooFormulaVar("form_wjets","form_wjets",
                                                  "@0/@1", RooArgSet( *wjets.fitVar(), *wjets.rExtraParms()[0]) );
   wjets.setFormula( form_wjets);
+  */
+  //Sample wbb = Sample("Wbb", 10, 17810, 1204434, 1, 1);
+  /*wjets.push_back(25965);
+  wjets.setGuess( 7000 );
+  RooFormulaVar * form_wjets = new RooFormulaVar("form_wjets","form_wjets",
+                                                 "@0/@1", RooArgSet( *wjets.fitVar(), *wjets.rExtraParms()[0]) );
+  wjets.setFormula( form_wjets);
+  */
+  //Sample wcc = Sample("Wbb", 10, 17810, 1204434, 1, 1);
+  /*wjets.push_back(25965);
+  wjets.setGuess( 7000 );
+  RooFormulaVar * form_wjets = new RooFormulaVar("form_wjets","form_wjets",
+                                                 "@0/@1", RooArgSet( *wjets.fitVar(), *wjets.rExtraParms()[0]) );
+  wjets.setFormula( form_wjets);
+  */
   vector<Sample> theSamples;
   theSamples.push_back(ttbar);
   theSamples.push_back(wjets);
 
-  /*Sample ttbar_ref = Sample("Top_ref", 10, 90, 221131, 1.5, 1, "Top");
-  ttbar_ref.push_back(21781);
-  Sample wjets_ref = Sample("Wjets_ref", 10, 17810, 1204434, 1, 1, "Wjets");
-  wjets_ref.push_back(25965);
+  //For references
   vector<Sample> theSamples_ref;
-  theSamples_ref.push_back(ttbar_ref);
-  theSamples_ref.push_back(wjets_ref);
-  */
+  SHyFT * shyft_ref=0;
+  bool have_ref = false;
+  if ( fileName_ref != "" ) have_ref = true;
+
+  if ( have_ref ) {
+    Sample ttbar_ref(  "Top_ref", 10,    90,  221131, 1.5, 1,   "Top");
+    ttbar_ref.push_back(21781);
+    Sample wjets_ref("Wjets_ref", 10, 17810, 1204434,   1, 1, "Wjets");
+    wjets_ref.push_back(25965);
+    theSamples_ref.push_back(ttbar_ref);
+    theSamples_ref.push_back(wjets_ref);
+    shyft_ref = new SHyFT(fileName_ref, theSamples_ref);
+  }
   SHyFT shyft(fileName, theSamples);
-  //SHyFT shyft_ref(fileName_ref, theSamples_ref);
   for(int numPEs = 0; numPEs < maxPEs; ++numPEs) {
     shyft.init();
-    //shyft_ref.init();
-    shyft.generateData(seed);
-    //shyft_ref.generateData(seed);
-    //shyft.makeNLLVars(shyft_ref.bins());
-    shyft.makeNLLVars();
+    if ( !have_ref ) {
+      shyft.generateData(seed);
+      shyft.makeNLLVars();
+    } 
+    else {
+      shyft_ref->init();
+      shyft_ref->generateData(seed);
+      shyft.makeNLLVars(shyft_ref->bins());
+    }
     if ( verbose ) shyft.print();
     shyft.fit(verbose);
     shyft.plot();
