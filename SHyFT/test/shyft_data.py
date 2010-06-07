@@ -31,7 +31,7 @@ process.scrapingVeto = cms.EDFilter("FilterOutScraping",
 process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
 process.load('HLTrigger/HLTfilters/hltLevel1GTSeed_cfi')
 process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
-process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('0 AND (40 OR 41) AND NOT (36 OR 37 OR 38 OR 39)')
+process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('0 AND NOT (36 OR 37 OR 38 OR 39)')
 
 # switch on PAT trigger
 from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
@@ -118,23 +118,31 @@ readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 
 readFiles.extend( [
-'/store/data/Run2010A/Mu/RECO/v2/000/136/087/7AE9EF4A-7D67-DF11-97EC-0030487CD7CA.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/087/F63A8D4C-6167-DF11-BD3A-000423D944F8.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/088/2630E4C3-7267-DF11-B57C-0030487CD7C6.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/088/2AA4E6A5-7067-DF11-AF34-0030487CD6D2.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/088/38E7B9C2-6B67-DF11-BCF4-0030487C7828.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/088/40E31290-6E67-DF11-B91A-0030487CD6D8.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/088/941764C0-6467-DF11-BACC-000423D996C8.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/088/D83846A0-8367-DF11-8287-0030487C6088.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/089/D802058C-6E67-DF11-B721-000423D98634.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/091/58725305-8567-DF11-B7A2-0030487CD840.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/092/628111AD-AB67-DF11-93EB-000423D9970C.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/094/EEC8EE61-AA67-DF11-9433-001D09F251FE.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/095/5E1E4AB0-A467-DF11-A9D1-0030487CD17C.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/096/A42B63BB-B967-DF11-96D9-001617E30D12.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/097/2C54B8E6-C967-DF11-8688-001D09F24DA8.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/097/4C7E1E9F-CA67-DF11-ACD5-001D09F24498.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/098/D47463AC-D167-DF11-9492-0030487C5CE2.root'
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/F6F55DE7-FD67-DF11-A666-000423D985B0.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/F07DB0FC-D767-DF11-84D5-000423D33970.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/DECFB81E-0968-DF11-9C9E-0030487A18A4.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/CECBE189-CF67-DF11-9CB7-000423D94E70.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/C0B532D2-E167-DF11-AEA1-0030487CAEAC.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/C0AF0837-DA67-DF11-9D30-001D09F295A1.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/BCF8DBF2-F167-DF11-8F84-000423D99660.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/B640EC18-ED67-DF11-A369-001D09F23A84.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/B0E0A03F-0468-DF11-8331-000423D98930.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/AEAD3EDD-D567-DF11-A4B0-0030487C90D4.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/A0EEBCD1-DA67-DF11-8C30-000423D991D4.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/9A8E77CA-D867-DF11-B1E9-0019B9F70607.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/9A883A09-0068-DF11-B14E-0030487A322E.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/8883B0E0-CE67-DF11-BEAD-000423D952C0.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/7E74B613-0E68-DF11-A31C-0030487C8E02.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/7E40E899-F367-DF11-A236-001D09F2462D.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/60DA6322-FB67-DF11-88FC-0030487CD17C.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/6034D55A-E367-DF11-BFE5-001D09F295A1.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/3A8CE618-DD67-DF11-AB2C-000423D987E0.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/22FD643F-D067-DF11-9B48-003048678098.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/141E9A25-E867-DF11-B73D-001617E30D12.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/080CE26D-F367-DF11-B737-001D09F2AD7F.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/06300301-E667-DF11-B2B6-00304879FC6C.root',
+'/store/data/Run2010A/Mu/RECO/v2/000/136/100/00DF30E7-DD67-DF11-B9DA-001617DBD5AC.root'
+
 
 
         ] );
@@ -211,16 +219,16 @@ process.out.outputCommands = [
     'keep *_offlinePrimaryVertices_*_*',
     'keep recoTracks_generalTracks_*_*',
     'drop patPFParticles_*_*_*',
-    'keep patTriggerObjects_patTriggerStd_*_*',
-    'keep patTriggerFilters_patTriggerStd_*_*',
-    'keep patTriggerPaths_patTriggerStd_*_*',
-    'keep patTriggerEvent_patTriggerEventStd_*_*',
-    'keep *_cleanPatPhotonsTriggerMatchStd_*_*',
-    'keep *_cleanPatElectronsTriggerMatchStd_*_*',
-    'keep *_cleanPatMuonsTriggerMatchStd_*_*',
-    'keep *_cleanPatTausTriggerMatchStd_*_*',
-    'keep *_cleanPatJetsTriggerMatchStd_*_*',
-    'keep *_patMETsTriggerMatchStd_*_*',
+    'keep patTriggerObjects_patTrigger_*_*',
+    'keep patTriggerFilters_patTrigger_*_*',
+    'keep patTriggerPaths_patTrigger_*_*',
+    'keep patTriggerEvent_patTriggerEvent_*_*',
+    'keep *_cleanPatPhotonsTriggerMatch_*_*',
+    'keep *_cleanPatElectronsTriggerMatch_*_*',
+    'keep *_cleanPatMuonsTriggerMatch_*_*',
+    'keep *_cleanPatTausTriggerMatch_*_*',
+    'keep *_cleanPatJetsTriggerMatch_*_*',
+    'keep *_patMETsTriggerMatch_*_*',
     'drop *_MEtoEDMConverter_*_*'
     ]
 
