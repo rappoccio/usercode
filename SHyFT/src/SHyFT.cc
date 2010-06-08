@@ -13,7 +13,12 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   nJetsCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("minJets")),  
   mode(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("mode")),
   sampleNameInput(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("sampleName")),
-  doMC_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doMC") )
+  doMC_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doMC") ),
+  plRootFile_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("payload")  ),
+  f_( plRootFile_.c_str(), "READ"),  es_(&f_),
+  bPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("bPerformanceTag")  ),
+  cPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("cPerformanceTag")  ),
+  lPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("lPerformanceTag")  )
 {
   //book all the histograms for muons
   histograms["muPt"]     = theDir.make<TH1F>("muPt",     "Muon p_{T} (GeV/c) ", 100,    0, 200);
@@ -104,6 +109,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   histograms["tag_jet_pt"] = theDir.make<TH1F>("tag_jet_pt", "JetPt to go with tagging efficiency", 150,    0,    300);
   //Using btagging and mistag to do normalization
   histograms3d["normalization"]	= theDir.make<TH3F>("normalization",	"Normalization",	5,	1,	6,	2,	1,	3,   11,  0,  11 );
+  //Store stat errors
+  histograms3d["normalization"]		->  Sumw2();
 
   histograms[sampleNameInput+"_hT"]    = theDir.make<TH1F>( (sampleNameInput+"_hT").c_str(),    "HT using Et is the sum of Jet Et plus Muon Pt", 50, 0,  1200);
   histograms[sampleNameInput+"_hT_1j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_1j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10,  50, 300);
@@ -196,9 +203,30 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
   int numTags=0, numJets=0;
   double sumVertexMass=0, vertexMass=0;
 
-  //btag scale factor and mistag rate
-  const double bScaleFactor = 0.550719,  cMistag = 0.121149,  lMistag = 0.00925701;
-  const double bUntag = 1. - bScaleFactor,    cUntag = 1. - cMistag ,   lUntag = 1. - lMistag ;
+  //Get Payload and Working Point
+  fwlite::ESHandle< PerformancePayload >   plBHandle;
+  fwlite::ESHandle< PerformancePayload >   plLHandle;
+  fwlite::ESHandle< PerformancePayload >   plCHandle;
+  fwlite::ESHandle< PerformanceWorkingPoint >   wpBHandle;
+  fwlite::ESHandle< PerformanceWorkingPoint >   wpLHandle;
+  fwlite::ESHandle< PerformanceWorkingPoint >   wpCHandle;
+  es_.get(recId_).get(plBHandle, bPerformanceTag_.c_str() );
+  es_.get(recId_).get(wpBHandle, bPerformanceTag_.c_str() );
+  es_.get(recId_).get(plCHandle, cPerformanceTag_.c_str() );
+  es_.get(recId_).get(wpCHandle, cPerformanceTag_.c_str() );
+  es_.get(recId_).get(plLHandle, lPerformanceTag_.c_str() );
+  es_.get(recId_).get(wpLHandle, lPerformanceTag_.c_str() );
+  if( !(plBHandle.isValid() && wpBHandle.isValid() ) )
+     std::cout<<"BEff BtagPerformance is not valid !!"<<std::endl;
+  if( !(plLHandle.isValid() && wpLHandle.isValid() ) )
+     std::cout<<"LEff BtagPerformance is not valid !!"<<std::endl;
+  if( !(plCHandle.isValid() && wpCHandle.isValid() ) )
+     std::cout<<"CEff BtagPerformance is not valid !!"<<std::endl;
+
+  BtagPerformance  perfB( *plBHandle, *wpBHandle );
+  BtagPerformance  perfL( *plLHandle, *wpLHandle );
+  BtagPerformance  perfC( *plCHandle, *wpCHandle );
+  btagOP_ = perfB.workingPoint().cut();
 
   for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
 	  jetEnd = jets.end(), jetIter = jetBegin;
@@ -214,7 +242,7 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       histograms2d["massVsPt"]->Fill( jetPt, jet->mass() );
 
       // Is this jet tagged and does it have a good secondary vertex
-      if( jet->bDiscriminator("simpleSecondaryVertexBJetTags") < 2.05 ) {
+      if( jet->bDiscriminator("simpleSecondaryVertexBJetTags") < btagOP_ ) {
         // This jet is not tagged, so we skip it but first we check the btag efficiency.
         if     ( jetFlavor == 4 ) histograms["tag_eff"]-> Fill( 1 );
         else if( jetFlavor == 5 ) histograms["tag_eff"]-> Fill( 2 );
@@ -326,6 +354,30 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
   {
       const pat::Jet* jet = dynamic_cast<const pat::Jet *>(jetIter->masterClonePtr().get());
 
+      double jetPt = jet->pt();
+      //jetPt range from BTag POG, [30, 400]
+      if( jetPt < 30 )    jetPt = 30.5;
+      if( jetPt > 400 )	  jetPt = 395.5;
+      double jetEta = jet->eta();
+      //jetEta range from BTag POG, [-3.0, 3.0]
+      if( jetEta < -3.0 )	jetEta = -2.99;
+      if( jetEta > 3.0 )	jetEta = 2.99;
+      BinningPointByMap p;
+      p.insert( BinningVariables::JetEt,  jetPt );
+      p.insert( BinningVariables::JetEta, jetEta );
+      p.insert( BinningVariables::JetAbsEta,  abs(jetEta) );
+
+      //btag scale factor and mistag rate
+      if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p )  )
+         std::cout<<"No reasonable result for b effi !"<<std::endl;
+      if( !perfC.isResultOk( PerformanceResult::BTAGCEFF, p )  )
+         std::cout<<"No reasonable result for c effi !"<<std::endl;
+      if( !perfL.isResultOk( PerformanceResult::BTAGLEFF, p )  )
+         std::cout<<"No reasonable result for lf effi !"<<std::endl;
+      double bEff = perfB.getResult( PerformanceResult::BTAGBEFF, p );
+      double cEff = perfC.getResult( PerformanceResult::BTAGCEFF, p );
+      double lEff = perfL.getResult( PerformanceResult::BTAGLEFF, p );
+
       // We first get the flavor of the jet so we can fill look at btag efficiency.
       int jetFlavor = std::abs( jet->partonFlavour() );
       //Probability to tag this jet
@@ -335,15 +387,15 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       {
          case 5:
 	    whichtag = 5;
-	    weight *= bScaleFactor;
+	    weight *= bEff;
 	    break;
 	 case 4:
 	    whichtag = 4;
-	    weight *= cMistag;
+	    weight *= cEff;
 	    break;
 	 default:
 	    whichtag = 0;
-	    weight *= lMistag;
+	    weight *= lEff;
       }
 
       //Probability to untag the rest jets
@@ -354,16 +406,35 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
          if( jet2Iter != jetIter )
 	 {
 	    int jetFlavor2 = std::abs( jet2->partonFlavour() );
+	    double jetPt2	= jet2->pt();
+	    //jetPt range from BTag POG, [30, 400]
+	    if( jetPt2 < 30 )	jetPt2 = 30.5;
+	    if( jetPt2 > 400 )   jetPt2 = 399.5;
+	    double jetEta2	= jet2->eta();
+	    //jetEta range from BTag POG, [-3.0, 3.0]
+	    if( jetEta2 < -3.0 )	jetEta2 = -2.99;
+	    if( jetEta2 > 3.0 )		jetEta2 = 2.99;
+	    BinningPointByMap p2;
+	    p2.insert( BinningVariables::JetEt,  jetPt2 );
+	    p2.insert( BinningVariables::JetEta, jetEta2 );
+	    p2.insert( BinningVariables::JetAbsEta,  abs(jetEta2) );
+
 	    switch( jetFlavor2 )
 	    {
 	       case 5:
-		  untagRate *= bUntag;
+	          if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p2 )  )
+		     std::cout<<"No reasonable result for b effi !"<<std::endl;
+		  untagRate *= (1.-perfB.getResult( PerformanceResult::BTAGBEFF, p2 ) );
 		  break;
 	       case 4:
-		  untagRate *= cUntag;
+	          if( !perfC.isResultOk( PerformanceResult::BTAGCEFF, p2 )  )
+		     std::cout<<"No reasonable result for c effi !"<<std::endl;
+		  untagRate *= (1.-perfC.getResult( PerformanceResult::BTAGCEFF, p2 )  );
 		  break;
 	       default:
-		  untagRate *= lUntag;
+	          if( !perfL.isResultOk( PerformanceResult::BTAGLEFF, p2 )  )
+		     std::cout<<"No reasonable result for lf effi !"<<std::endl;
+		  untagRate *= (1.-perfL.getResult( PerformanceResult::BTAGLEFF, p2 ) );
 	    }
 	 }
       } // end for jet2Iter
@@ -378,6 +449,27 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       {
          const pat::Jet* jet1 = dynamic_cast<const pat::Jet *>(jetIter1->masterClonePtr().get());
          const pat::Jet* jet2 = dynamic_cast<const pat::Jet *>(jetIter2->masterClonePtr().get());
+	 double jetPt1 = jet1->pt();
+	 double jetPt2 = jet2->pt();
+	 double jetEta1 = jet1->eta();
+	 double jetEta2 = jet2->eta();
+	 if( jetPt1 < 30 )   jetPt1 = 30.5;
+	 if( jetPt1 > 400 )  jetPt1 = 399.5;
+	 if( jetPt2 < 30 )   jetPt2 = 30.5;
+	 if( jetPt2 > 400 )  jetPt2 = 399.5;
+	 if( jetEta1 < -3.0 )  jetEta1 = -2.99;
+	 if( jetEta1 > 3.0  )  jetEta1 = 2.99;
+	 if( jetEta2 < -3.0 )  jetEta2 = -2.99;
+	 if( jetEta2 > 3.0  )  jetEta2 = 2.99;
+	 BinningPointByMap p1;
+	 p1.insert( BinningVariables::JetEt,  jetPt1 );
+	 p1.insert( BinningVariables::JetEta, jetEta1 );
+	 p1.insert( BinningVariables::JetAbsEta,  abs(jetEta1) );
+         BinningPointByMap p2;
+         p2.insert( BinningVariables::JetEt,  jetPt2 );
+         p2.insert( BinningVariables::JetEta, jetEta2 );
+         p2.insert( BinningVariables::JetAbsEta,  abs(jetEta2) );
+
 	 int flavour1 = std::abs( jet1->partonFlavour() );
 	 int flavour2 = std::abs( jet2->partonFlavour() );
 	 double weight1 = 1.0;
@@ -387,26 +479,38 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
 	 switch( flavour1 )
 	 {
 	    case 5:
-	      weight1 = bScaleFactor;
+	      if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p1 )  )
+	         std::cout<<"No reasonable result for b effi !"<<std::endl;
+	      weight1 = perfB.getResult( PerformanceResult::BTAGBEFF, p1 );
 	      break;
 	    case 4:
-	      weight1 = cMistag;
+	      if( !perfC.isResultOk( PerformanceResult::BTAGCEFF, p1 )  )
+	         std::cout<<"No reasonable result for c effi !"<<std::endl;
+	      weight1 = perfC.getResult( PerformanceResult::BTAGCEFF, p1 );
 	      break;
 	    default:
-	      weight1 = lMistag;
+	      if( !perfL.isResultOk( PerformanceResult::BTAGLEFF, p1 ) )
+	         std::cout<<"No reasonable result for lf effi !"<<std::endl;
+	      weight1 = perfL.getResult( PerformanceResult::BTAGLEFF, p1 );
 	      flavour1 = 0;
 	 }
 	 switch ( flavour2 )
 	 {
 	    case 5:
-	       weight2 = bScaleFactor;
+	       if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p2 )  )
+	          std::cout<<"No reasonable result for b effi !"<<std::endl;
+	       weight2 = perfB.getResult( PerformanceResult::BTAGBEFF, p2 );
 	       break;
 	    case 4:
-	       weight2 = cMistag;
+	       if( !perfC.isResultOk( PerformanceResult::BTAGCEFF, p2 ) )
+	          std::cout<<"No reasonable result for c effi !"<<std::endl;
+	       weight2 = perfC.getResult( PerformanceResult::BTAGCEFF, p2 );
 	       break;
 	    default:
-	      weight2  = lMistag;
-	      flavour2 = 0;
+	       if( !perfL.isResultOk( PerformanceResult::BTAGLEFF, p2 )  )
+	          std::cout<<"No reasonable result for lf effi !"<<std::endl;
+	       weight2  = perfL.getResult( PerformanceResult::BTAGLEFF, p2 ) ;
+	       flavour2 = 0;
 	 }
 	 int flavourSum = flavour1 + flavour2 ;
 	 switch( flavourSum )
@@ -503,6 +607,17 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
 
   if (anyJets) 
   {
+    //Check if the BTagPerformanceRecord exists
+    if( es_.exists("BTagPerformanceRecord")  )
+    {
+       std::cout << "Got the right tree" << std::endl;
+    }   else {
+       std::cout << "Can't find tree" << std::endl;
+    }
+
+    recId_ = es_.recordID("BTagPerformanceRecord");
+    es_.syncTo( iEvent.id(), edm::Timestamp());
+
     analyze_jets(jets);
     analyze_met( met );
     if ( muPlusJets_ ) analyze_muons(muons);

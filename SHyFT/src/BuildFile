@@ -10,6 +10,8 @@
 <use name=PhysicsTools/SelectorUtils>
 <use name=PhysicsTools/FWLite>
 <use name=PhysicsTools/Utilities>
+<use name=CondFormats/PhysicsToolsObjects>
+<use name=RecoBTag/PerformanceDB>
 
 <export>
   <lib   name=AnalysisSHyFT>

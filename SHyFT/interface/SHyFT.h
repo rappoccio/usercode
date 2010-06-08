@@ -7,6 +7,11 @@
 #include "DataFormats/FWLite/interface/Event.h"
 #include "Math/GenVector/PxPyPzM4D.h"
 #include "DataFormats/FWLite/interface/Handle.h"
+#include "DataFormats/FWLite/interface/Record.h"
+#include "DataFormats/FWLite/interface/EventSetup.h"
+#include "DataFormats/FWLite/interface/ESHandle.h"
+#include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h"
+#include "RecoBTag/PerformanceDB/interface/BtagPerformance.h"
 
 
 #include <iostream>
@@ -73,6 +78,15 @@ class SHyFT {
     int HFcat_;
     std::string secvtxname;
     bool doMC_;
+    std::string plRootFile_;
+    TFile f_;
+    fwlite::EventSetup es_;
+    fwlite::RecordID  recId_;
+    double btagOP_;
+    std::string bPerformanceTag_;
+    std::string cPerformanceTag_;
+    std::string lPerformanceTag_;
+
 };
 
 
