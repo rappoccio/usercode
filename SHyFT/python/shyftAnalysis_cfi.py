@@ -16,5 +16,9 @@ shyftAnalysis = cms.PSet(
     sampleName = cms.string("top"),
     mode = cms.int32(0),
     heavyFlavour = cms.bool(False),
-    doMC           = cms.bool(False)
+    doMC           = cms.bool(False),
+    payload = cms.string( "PayLoad.root" ),
+    bPerformanceTag = cms.string( "MCSSVMb" ),
+    cPerformanceTag = cms.string( "MCSSVMc" ),
+    lPerformanceTag = cms.string( "MCSSVMl" )
 )

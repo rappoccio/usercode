@@ -357,7 +357,7 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       double jetPt = jet->pt();
       //jetPt range from BTag POG, [30, 400]
       if( jetPt < 30 )    jetPt = 30.5;
-      if( jetPt > 400 )	  jetPt = 395.5;
+      if( jetPt > 400 )	  jetPt = 399.5;
       double jetEta = jet->eta();
       //jetEta range from BTag POG, [-3.0, 3.0]
       if( jetEta < -3.0 )	jetEta = -2.99;
@@ -610,7 +610,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     //Check if the BTagPerformanceRecord exists
     if( es_.exists("BTagPerformanceRecord")  )
     {
-       std::cout << "Got the right tree" << std::endl;
+       ;//std::cout << "Got the right tree" << std::endl;
     }   else {
        std::cout << "Can't find tree" << std::endl;
     }
