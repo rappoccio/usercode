@@ -73,7 +73,7 @@ process.selectedPatElectronsPFlow.cut = cms.string("pt > 3")
 
 # remove trigger matching for PF2PAT as that is currently broken
 process.patPF2PATSequencePFlow.remove(process.patTriggerSequencePFlow)
-
+process.patTaus.isoDeposits = cms.PSet()
 
 # FILTERS:
 # One of : >=1 mu (PF or std)
