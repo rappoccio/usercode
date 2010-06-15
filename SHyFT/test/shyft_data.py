@@ -6,7 +6,7 @@ from PhysicsTools.PatAlgos.tools.coreTools import *
 ## global tag for data
 process.GlobalTag.globaltag = cms.string('GR_R_36X_V10::All')
 
-
+ 
 # get the 7 TeV jet corrections
 from PhysicsTools.PatAlgos.tools.jetTools import *
 switchJECSet( process, "Spring10")
@@ -147,6 +147,8 @@ readFiles.extend( [
 
         ] );
 process.source.fileNames = readFiles
+
+process.source.inputCommands = cms.untracked.vstring("keep *", "drop *_MEtoEDMConverter_*_*")
 
 # let it run
 
