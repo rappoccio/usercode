@@ -4,7 +4,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 from PhysicsTools.PatAlgos.tools.coreTools import *
 
 ## global tag for data
-process.GlobalTag.globaltag = cms.string('GR_R_36X_V10::All')
+process.GlobalTag.globaltag = cms.string('START36_V9::All')
 
  
 # get the 7 TeV jet corrections
@@ -68,6 +68,8 @@ process.patJetsPFlow.tagInfoSources = cms.VInputTag(
     )
 process.selectedPatMuons.cut = cms.string("pt > 3")
 process.selectedPatMuonsPFlow.cut = cms.string("pt > 3")
+process.patMuons.usePV = False
+process.patMuonsPFlow.usePV = False
 process.selectedPatElectrons.cut = cms.string("pt > 3")
 process.selectedPatElectronsPFlow.cut = cms.string("pt > 3")
 
