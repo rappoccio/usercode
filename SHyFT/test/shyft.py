@@ -31,6 +31,11 @@ process.scrapingVeto = cms.EDFilter("FilterOutScraping",
 from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
 switchOnTrigger( process )
 
+# switch to 8e29 menu. Note this is needed to match SD production
+process.patTriggerEvent.processName = cms.string( 'REDIGI' )
+process.patTrigger.processName = cms.string( 'REDIGI' )
+
+
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                            vertexCollection = cms.InputTag('offlinePrimaryVertices'),
                                            minimumNDOF = cms.uint32(4) ,
