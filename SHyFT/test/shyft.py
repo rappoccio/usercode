@@ -6,6 +6,9 @@ from PhysicsTools.PatAlgos.tools.coreTools import *
 ## global tag for data
 process.GlobalTag.globaltag = cms.string('START36_V9::All')
 
+# add the flavor history
+process.load("PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi")
+
  
 # get the 7 TeV jet corrections
 from PhysicsTools.PatAlgos.tools.jetTools import *
@@ -23,9 +26,10 @@ process.scrapingVeto = cms.EDFilter("FilterOutScraping",
                                     thresh = cms.untracked.double(0.2)
                                     )
 
-# Run b-tagging sequences on 35x inputs
-#from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
-#run36xOn35xInput(process)
+# Run b-tagging and ak5 genjets sequences on 35x inputs
+from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
+run36xOn35xInput( process, "ak5GenJets")
+
 
 # switch on PAT trigger
 from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
@@ -73,6 +77,29 @@ process.selectedPatElectronsPFlow.cut = cms.string("pt > 3")
 process.patPF2PATSequencePFlow.remove(process.patTriggerSequencePFlow)
 process.patTaus.isoDeposits = cms.PSet()
 
+#-- Tuning of Monte Carlo matching --------------------------------------------
+# Also match with leptons of opposite charge
+process.electronMatch.checkCharge = False
+process.muonMatch.checkCharge = False
+
+## produce ttGenEvent
+process.load("TopQuarkAnalysis.TopEventProducers.sequences.ttGenEvent_cff")
+
+# prune gen particles
+
+process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+
+
+process.prunedGenParticles = cms.EDProducer("GenParticlePruner",
+  src = cms.InputTag("genParticles"),
+  select = cms.vstring(
+  "drop  *",
+  "keep status = 3", #keeps all particles from the hard matrix element
+  "+keep (abs(pdgId) = 11 | abs(pdgId) = 13) & status = 1" #keeps all stable muons and electrons and their (direct) mothers.
+  )
+)
+
+
 # FILTERS:
 # One of : >=1 mu (PF or std)
 #          >=1 e (PF or std)
@@ -109,6 +136,18 @@ process.pfJetFilter = cms.EDFilter("CandViewCountFilter",
 
 
 
+####################
+# make some quick-access shallow clones for speeding up read access
+
+process.jetClones = cms.EDProducer("CandViewShallowCloneProducer",
+                                   src = cms.InputTag('selectedPatJets'),
+                                   cut = cms.string('pt > 20 & abs(eta) < 3')
+                                   )
+
+process.pfjetClones = cms.EDProducer("CandViewShallowCloneProducer",
+                                   src = cms.InputTag('selectedPatJetsPFlow'),
+                                   cut = cms.string('pt > 15 & abs(eta) < 3')
+                                   )
 
 
 # Add the files 
@@ -116,32 +155,16 @@ readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 
 readFiles.extend( [
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/F6F55DE7-FD67-DF11-A666-000423D985B0.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/F07DB0FC-D767-DF11-84D5-000423D33970.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/DECFB81E-0968-DF11-9C9E-0030487A18A4.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/CECBE189-CF67-DF11-9CB7-000423D94E70.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/C0B532D2-E167-DF11-AEA1-0030487CAEAC.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/C0AF0837-DA67-DF11-9D30-001D09F295A1.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/BCF8DBF2-F167-DF11-8F84-000423D99660.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/B640EC18-ED67-DF11-A369-001D09F23A84.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/B0E0A03F-0468-DF11-8331-000423D98930.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/AEAD3EDD-D567-DF11-A4B0-0030487C90D4.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/A0EEBCD1-DA67-DF11-8C30-000423D991D4.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/9A8E77CA-D867-DF11-B1E9-0019B9F70607.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/9A883A09-0068-DF11-B14E-0030487A322E.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/8883B0E0-CE67-DF11-BEAD-000423D952C0.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/7E74B613-0E68-DF11-A31C-0030487C8E02.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/7E40E899-F367-DF11-A236-001D09F2462D.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/60DA6322-FB67-DF11-88FC-0030487CD17C.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/6034D55A-E367-DF11-BFE5-001D09F295A1.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/3A8CE618-DD67-DF11-AB2C-000423D987E0.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/22FD643F-D067-DF11-9B48-003048678098.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/141E9A25-E867-DF11-B73D-001617E30D12.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/080CE26D-F367-DF11-B737-001D09F2AD7F.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/06300301-E667-DF11-B2B6-00304879FC6C.root',
-'/store/data/Run2010A/Mu/RECO/v2/000/136/100/00DF30E7-DD67-DF11-B9DA-001617DBD5AC.root'
-
-
+'/store/mc/Summer09/TTbarJets-madgraph/GEN-SIM-RECO/MC_31X_V3_7TeV-v5/0003/FE166634-2D33-DF11-977F-0030487D814B.root',
+'/store/mc/Summer09/TTbarJets-madgraph/GEN-SIM-RECO/MC_31X_V3_7TeV-v5/0003/FCB9EE61-3D35-DF11-A1F6-003048C693D0.root',
+'/store/mc/Summer09/TTbarJets-madgraph/GEN-SIM-RECO/MC_31X_V3_7TeV-v5/0003/FC5A46B8-FA32-DF11-8315-003048D3C7DC.root',
+'/store/mc/Summer09/TTbarJets-madgraph/GEN-SIM-RECO/MC_31X_V3_7TeV-v5/0003/FC16B513-5B33-DF11-95AE-0030487F1A4F.root',
+'/store/mc/Summer09/TTbarJets-madgraph/GEN-SIM-RECO/MC_31X_V3_7TeV-v5/0003/FAD09139-2D33-DF11-91E6-003048D436EA.root',
+'/store/mc/Summer09/TTbarJets-madgraph/GEN-SIM-RECO/MC_31X_V3_7TeV-v5/0003/FA653160-4A33-DF11-906E-0030487F1F23.root',
+'/store/mc/Summer09/TTbarJets-madgraph/GEN-SIM-RECO/MC_31X_V3_7TeV-v5/0003/F8A6CF18-E732-DF11-AD4B-003048C693EE.root',
+'/store/mc/Summer09/TTbarJets-madgraph/GEN-SIM-RECO/MC_31X_V3_7TeV-v5/0003/F88CA7EA-0B33-DF11-8E59-003048D4363C.root',
+'/store/mc/Summer09/TTbarJets-madgraph/GEN-SIM-RECO/MC_31X_V3_7TeV-v5/0003/F8745C50-D732-DF11-94CB-0030487D8633.root',
+'/store/mc/Summer09/TTbarJets-madgraph/GEN-SIM-RECO/MC_31X_V3_7TeV-v5/0003/F84EC46F-E432-DF11-9C47-003048D436D2.root'
 
         ] );
 process.source.fileNames = readFiles
@@ -156,10 +179,15 @@ process.source.fileNames = readFiles
 #print "primary vertex filter:       DISABLED"
 
 process.patseq = cms.Sequence(
+    process.makeGenEvt *
     process.scrapingVeto*
     process.primaryVertexFilter*
     process.patDefaultSequence* 
-    getattr(process,"patPF2PATSequence"+postfix)
+    getattr(process,"patPF2PATSequence"+postfix)*
+    process.jetClones * 
+    process.pfjetClones *
+    process.flavorHistorySeq *
+    process.prunedGenParticles 
 )
 
 process.p1 = cms.Path(
@@ -197,7 +225,7 @@ process.out.fileName = cms.untracked.string('shyft_361_pat.root')
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
 # process all the events
-process.maxEvents.input = 10000
+process.maxEvents.input = 1000
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 
@@ -208,6 +236,10 @@ from PhysicsTools.PatAlgos.patEventContent_cff import patTriggerEventContent
 #process.out.outputCommands += patExtraAodEventContent
 #process.out.outputCommands += patTriggerEventContent
 process.out.outputCommands = [
+    'keep *_flavorHistoryFilter_*_*',
+    'keep *_prunedGenParticles_*_*',
+    'keep *_decaySubset_*_*',
+    'keep *_initSubset_*_*',
     'drop *_cleanPat*_*_*',
     'keep *_selectedPat*_*_*',
     'keep *_patMETs*_*_*',
@@ -226,6 +258,7 @@ process.out.outputCommands = [
     'keep *_cleanPatTausTriggerMatch_*_*',
     'keep *_cleanPatJetsTriggerMatch_*_*',
     'keep *_patMETsTriggerMatch_*_*',
-    'drop *_MEtoEDMConverter_*_*'
+    'drop *_MEtoEDMConverter_*_*',
+    'keep *_*jetClones_*_*'
     ]
 
