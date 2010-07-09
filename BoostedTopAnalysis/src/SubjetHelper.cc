@@ -34,3 +34,38 @@ void pat::subjetHelper( pat::Jet const &jet,
 
 }
 
+void pat::subjetHelper( math::XYZTLorentzVector const & p1, math::XYZTLorentzVector const & p2,
+			double & y, double & mu, double & dR , double & mfat )  {
+
+  math::XYZTLorentzVector p = p1 + p2;
+  mfat = p.M();
+  double m0 = p1.M();
+  double m1 = p2.M();
+  double pt0 = p1.pt();
+  double pt1 = p2.pt();
+  if ( m1 > m0 ) {
+    double temp = m1;
+    m1 = m0;
+    m0 = temp;
+    temp = pt1;
+    pt1 = pt0;
+    pt0 = temp;
+  }
+
+  dR = reco::deltaR<double>( p1.eta(),
+                             p1.phi(),
+                             p2.eta(),
+                             p2.phi()  );
+  y = std::min( pt0*pt0, pt1*pt1) * dR*dR / (mfat*mfat);
+  mu = m0 / mfat ;
+
+  return ;
+}
+
+void pat::subjetHelper( reco::Candidate const & jet1, reco::Candidate const & jet2,
+                        double & y, double & mu, double & dR , double & mfat )  {
+
+  pat::subjetHelper( jet1.p4(), jet2.p4(), y, mu, dR , mfat);
+  return;
+}
+
