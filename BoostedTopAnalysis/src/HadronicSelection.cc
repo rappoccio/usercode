@@ -51,28 +51,6 @@ bool HadronicSelection::operator() ( edm::EventBase const & event, pat::strbitse
   event.getByLabel( trigSrc_, triggerEvent);
   if (!triggerEvent.isValid() ) return (bool)ret;  
 
-  // Get the good inclusive jets
-  pat::strbitset jetRet = dijetSelector_.getBitTemplate();
-  bool passDijet = dijetSelector_( event, jetRet );
-  std::vector<edm::Ptr<pat::Jet> > const & inclusiveJets = (!usePF_) ? dijetSelector_.caloJets() : dijetSelector_.pfJets();
-
-  // Get a list of the jets that pass our tag requirements
-  for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin = inclusiveJets.begin(),
-	  jetEnd = inclusiveJets.end(), ijet = jetBegin;
-	ijet != jetEnd; ++ijet ) {
-    if ( !useWTag_ ) {
-      pat::strbitset ret = caTopTagFunctor_.getBitTemplate();
-      if ( caTopTagFunctor_(**ijet, ret ) ) {
-	taggedJets_.push_back( *ijet );
-      }
-    } else {
-      pat::strbitset ret = boostedTopWTagFunctor_.getBitTemplate();
-      if ( boostedTopWTagFunctor_(**ijet, ret ) ) {
-	taggedJets_.push_back( *ijet );
-      }
-    }
-    
-  }
 
   // Check the trigger requirement
   pat::TriggerEvent const * trig = &*triggerEvent;
@@ -89,7 +67,31 @@ bool HadronicSelection::operator() ( edm::EventBase const & event, pat::strbitse
   if ( ignoreCut("Trigger") || 
        passTrig ) {
     passCut(ret, "Trigger");
+    
+    // Get the good inclusive jets
+    pat::strbitset jetRet = dijetSelector_.getBitTemplate();
+    bool passDijet = dijetSelector_( event, jetRet );
+    std::vector<edm::Ptr<pat::Jet> > const & inclusiveJets = (!usePF_) ? dijetSelector_.caloJets() : dijetSelector_.pfJets();
 
+    // Get a list of the jets that pass our tag requirements
+    for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin = inclusiveJets.begin(),
+	    jetEnd = inclusiveJets.end(), ijet = jetBegin;
+	  ijet != jetEnd; ++ijet ) {
+      if ( !useWTag_ ) {
+	pat::strbitset ret = caTopTagFunctor_.getBitTemplate();
+	if ( caTopTagFunctor_(**ijet, ret ) ) {
+	  taggedJets_.push_back( *ijet );
+	}
+      } else {
+	pat::strbitset ret = boostedTopWTagFunctor_.getBitTemplate();
+	if ( boostedTopWTagFunctor_(**ijet, ret ) ) {
+	  taggedJets_.push_back( *ijet );
+	}
+      }
+      
+    }
+    
+    
     // Now check if there is at least one jet with pt,Y cuts
     if ( ignoreCut("Jet Preselection") ||
 	 inclusiveJets.size() >= 1 ){

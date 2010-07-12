@@ -21,24 +21,15 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
     }
     
     if ( plotOptions.exists("reweightHistoFile") && plotOptions.exists("reweightHistoName") ) {
+      std::cout << "HadronicAnalysis: Getting reweighting histogram" << std::endl;
       std::string const & reweightHistoFile = plotOptions.getParameter<std::string>("reweightHistoFile");
-      std::string const & sampleHistoFile = plotOptions.getParameter<std::string>("sampleHistoFile");
       std::string const & reweightHistoName = plotOptions.getParameter<std::string>("reweightHistoName");
 
       TFile * f1 = TFile::Open(reweightHistoFile.c_str());
-      weightHist_ = (TH1F*)f1->Get(reweightHistoName.c_str())->Clone();
+      weightHist_ = (TH1F*)f1->Get(reweightHistoName.c_str());
       weightHist_->SetName("weightHist");
-
-      TFile * f2 = TFile::Open(sampleHistoFile.c_str());
-      TH1F * sampleHist = (TH1F*)f2->Get(reweightHistoName.c_str());
-
-
-      weightHist_->Sumw2();
-      weightHist_->Scale( 1.0 / weightHist_->GetEntries() );
-      sampleHist->Sumw2();
-      sampleHist->Scale( 1.0 / sampleHist->GetEntries() );
-
-      weightHist_->Divide( sampleHist );
+    } else {
+      weightHist_ = 0;
     }
   }
 
@@ -50,11 +41,11 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms1d["dijetMassSingleTagged"] = theDir.make<TH1F>("dijetMassSingleTagged", "Dijet Mass, Single Tagged", 500, 0, 5000);
   histograms1d["dijetMassDoubleTagged"] = theDir.make<TH1F>("dijetMassDoubleTagged", "Dijet Mass, Double Tagged", 500, 0, 5000);
 
-  histograms1d["jetPt0"] = theDir.make<TH1F>("jetPt0", "Jet p_{T} of First Jet", 500, 0, 5000 );
-  histograms1d["jetPt1"] = theDir.make<TH1F>("jetPt1", "Jet p_{T} of Second Jet", 500, 0, 5000 );
+  histograms1d["jetPt0"] = theDir.make<TH1F>("jetPt0", "Jet p_{T} of First Jet", 50, 0, 500 );
+  histograms1d["jetPt1"] = theDir.make<TH1F>("jetPt1", "Jet p_{T} of Second Jet", 50, 0, 500 );
 
-  histograms1d["jetEta0"] = theDir.make<TH1F>("jetEta0", "Jet #eta of First Jet", 500, -5.0, 5.0 );
-  histograms1d["jetEta1"] = theDir.make<TH1F>("jetEta1", "Jet #eta of Second Jet", 500, -5.0, 5.0 );
+  histograms1d["jetEta0"] = theDir.make<TH1F>("jetEta0", "Jet #eta of First Jet", 50, -5.0, 5.0 );
+  histograms1d["jetEta1"] = theDir.make<TH1F>("jetEta1", "Jet #eta of Second Jet", 50, -5.0, 5.0 );
 
   histograms1d["jetMass0"] = theDir.make<TH1F>("jetMass0", "Jet Mass of First Jet", 500, 0, 250 );
   histograms1d["jetMass1"] = theDir.make<TH1F>("jetMass1", "Jet Mass of Second Jet", 500, 0, 250 );
@@ -82,19 +73,12 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 {
   histograms1d["run"]->Fill( iEvent.id().run() );
 
-  if ( plotTracks_ || weightHist_ != 0 ) {
+  histoWeight_ = 1.0;
+  if ( plotTracks_ ) {
     edm::Handle<std::vector<reco::Track> > h_tracks;
     iEvent.getByLabel( edm::InputTag("generalTracks"), h_tracks ) ;
 
     int nTracks = h_tracks->size();
-
-    if ( weightHist_ != 0 ) {
-      int ibin = weightHist_->GetXaxis()->FindBin( nTracks );
-      double iweight = weightHist_->GetBinContent(ibin);
-      
-      histoWeight_ = iweight;
-      
-    }
     
     histograms1d["nTracks"]->Fill( nTracks, histoWeight_ );
   }
@@ -103,7 +87,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
   bool pass = hadronicSelection_(iEvent, ret);
 
   if ( ret[std::string("Jet Preselection")] ) {
-    histograms1d["runSelected"]->Fill( iEvent.id().run(), histoWeight_ );
+    histograms1d["runSelected"]->Fill( iEvent.id().run() );
     std::vector<edm::Ptr<pat::Jet> > const & pretaggedJets = hadronicSelection_.pretaggedJets();
 
     if ( pretaggedJets.size() >= 2 ) {
@@ -117,11 +101,19 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       double mu1 = 0.0, y1 = 0.0, dR1 = 0.0;
       pat::subjetHelper( *pretaggedJets[1], y1, mu1, dR1);	  
 
+      if ( weightHist_ != 0 ) {
+	int ibin = weightHist_->GetXaxis()->FindBin( p4_0.pt() );
+	double iweight = weightHist_->GetBinContent(ibin);
+      
+	histoWeight_ = iweight;
+      
+      }
 
-      histograms1d["jetPt0"]->Fill( p4_0.pt() );
-      histograms1d["jetPt1"]->Fill( p4_1.pt() );
-      histograms1d["jetEta0"]->Fill( p4_0.eta() );
-      histograms1d["jetEta1"]->Fill( p4_1.eta() );
+
+      histograms1d["jetPt0"]->Fill( p4_0.pt(), histoWeight_ );
+      histograms1d["jetPt1"]->Fill( p4_1.pt(), histoWeight_ );
+      histograms1d["jetEta0"]->Fill( p4_0.eta(), histoWeight_ );
+      histograms1d["jetEta1"]->Fill( p4_1.eta(), histoWeight_ );
 
       histograms1d["dijetMass"]->Fill( p4.mass(), histoWeight_ );
       histograms1d["jetMass0"]->Fill( pretaggedJets[0]->mass() , histoWeight_);
