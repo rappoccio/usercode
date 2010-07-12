@@ -1,10 +1,12 @@
 #include "Analysis/BoostedTopAnalysis/interface/CATopJetEventSelector.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 CATopJetEventSelector::CATopJetEventSelector ( edm::ParameterSet const & params ) :
   jetTag_		(params.getParameter<edm::InputTag>("CATopJetSrc")  ),
   caTopJetSelector_	(params.getParameter<edm::ParameterSet>("CATopJetParameters") ),
   jetPtMin_		(params.getParameter<double>("jetPtMin") ),
-  jetEtaMax_		(params.getParameter<double>("jetEtaMax") )
+  jetEtaMax_		(params.getParameter<double>("jetEtaMax") ),
+  dR_			(params.getParameter<double>("coneSize") )
 {
   //make the bitset
   push_back( "Inclusive"	);
@@ -19,7 +21,7 @@ CATopJetEventSelector::CATopJetEventSelector ( edm::ParameterSet const & params 
 
 }
 
-bool CATopJetEventSelector::operator() ( edm::EventBase const & t, reco::Candidate::LorentzVector const & v, pat::strbitset & ret)
+bool CATopJetEventSelector::operator() ( edm::EventBase const & t, reco::Candidate::LorentzVector const & v, pat::strbitset & ret, bool towards)
 {
   ret.set(false);
   topJets_.clear();
@@ -29,16 +31,23 @@ bool CATopJetEventSelector::operator() ( edm::EventBase const & t, reco::Candida
   edm::Handle<vector<pat::Jet>  >	   jetHandle;
   t.getByLabel( jetTag_,  jetHandle );
   
+  //Get the towards Lorentz vector
+  reco::Candidate::LorentzVector vtowards = (towards) ? v : (-1)*v ;
+
   //Search for top jets
   for( vector<pat::Jet>::const_iterator jetBegin=jetHandle->begin(), jetEnd=jetHandle->end(), ijet=jetBegin ;
     ijet!=jetEnd; ijet++ )
   {
-    if( ijet->pt() > jetPtMin_ && fabs( ijet->eta() ) < jetEtaMax_ ) {
-      pat::strbitset iret = caTopJetSelector_.getBitTemplate();
-      if( caTopJetSelector_( *ijet, iret )  ) {
-        topJets_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Jet>( jetHandle, ijet-jetBegin )  )  );
-      }  
-    } // end if jet pt, eta
+    //Only consider jets in the towards hemisphere
+    double deltaR_ = reco::deltaR<double>( vtowards.eta(), vtowards.phi(), ijet->eta(), ijet->phi()  );
+    if( deltaR_ < dR_ ) {
+       if( ijet->pt() > jetPtMin_ && fabs( ijet->eta() ) < jetEtaMax_ ) {
+	 pat::strbitset iret = caTopJetSelector_.getBitTemplate();
+	 if( caTopJetSelector_( *ijet, iret )  ) {
+	   topJets_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Jet>( jetHandle, ijet-jetBegin )  )  );
+	 }  
+       } // end if jet pt, eta
+    }  //end if dR_
   }  // end for jets
 
   if( ignoreCut(">= 1 TopJet")  ||

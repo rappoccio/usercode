@@ -9,6 +9,10 @@
 <use name=CommonTools/Utils>
 <use name=PhysicsTools/SelectorUtils>
 <use name=PhysicsTools/FWLite>
+<use name=FWCore/ParameterSet>
+<use name=FWCore/Common>
+<use name=PhysicsTools/CandUtils>
+<use name=AnalysisDataFormats/TopObjects>
 
 <export>
   <lib name=AnalysisBoostedTopAnalysis>

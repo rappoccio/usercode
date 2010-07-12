@@ -13,7 +13,7 @@ using namespace std;
 class CATopJetEventSelector : public EventSelector {
   public:
     CATopJetEventSelector( edm::ParameterSet const & params );
-    virtual bool operator()( edm::EventBase const & t, reco::Candidate::LorentzVector const & v, pat::strbitset & ret);
+    virtual bool operator()( edm::EventBase const & t, reco::Candidate::LorentzVector const & v, pat::strbitset & ret, bool towards);
 
     vector<reco::ShallowClonePtrCandidate> const & topJets ()  const { return topJets_; }
     bool hasTopJets ()  const { return topJets_.size() > 0 ; }
@@ -25,6 +25,7 @@ class CATopJetEventSelector : public EventSelector {
     CATopTagFunctor  caTopJetSelector_;
     double  jetPtMin_;
     double  jetEtaMax_;
+    double  dR_;  //hemisphere cone size
 
 };
 
