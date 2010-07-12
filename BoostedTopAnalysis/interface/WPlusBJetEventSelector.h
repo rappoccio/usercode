@@ -17,14 +17,22 @@ class WPlusBJetEventSelector : public EventSelector {
 
     vector<reco::ShallowClonePtrCandidate> const & wJets ()  const { return wJets_; }
     vector<reco::ShallowClonePtrCandidate> const & bJets ()  const { return bJets_; }
+    //For type III top reconstruction, a pair of jets with min deltaR
+    vector<reco::ShallowClonePtrCandidate> const & minDrPair () const { return minDrPair_ ; } 
+    //For type II top, when a W jet is found, but no b jet
+    reco::ShallowClonePtrCandidate const & aJet()  const { return aJet_ ; }
     bool hasWJets ()  const { return wJets_.size() > 0 ; }
     bool hasBJets ()  const { return bJets_.size() > 0 ; }
+    bool aJetFound () const { return aJetFound_ ; }
 
   private:
 
     edm::InputTag               jetTag_;
     std::vector<reco::ShallowClonePtrCandidate>  wJets_;
     std::vector<reco::ShallowClonePtrCandidate>  bJets_;
+    std::vector<reco::ShallowClonePtrCandidate>  minDrPair_;
+    reco::ShallowClonePtrCandidate		 aJet_;
+    bool aJetFound_ ;
     BoostedTopWTagFunctor  wJetSelector_;
     double  jetPtMin_;
     double  jetEtaMax_;
