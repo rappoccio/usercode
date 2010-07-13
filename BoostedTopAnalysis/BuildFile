@@ -12,7 +12,7 @@
 <use name=FWCore/ParameterSet>
 <use name=FWCore/Common>
 <use name=PhysicsTools/CandUtils>
-<use name=AnalysisDataFormats/TopObjects>
+
 
 <export>
   <lib name=AnalysisBoostedTopAnalysis>

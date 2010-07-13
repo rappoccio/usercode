@@ -14,5 +14,6 @@
 <environment>
  <bin file="hadronic_analysis.C"> </bin>
  <bin file="gen_analysis.C"> </bin>
+ <bin file="semilep_analysis_WTag.C"></bin>
  <bin file="subjetsBTag.C"></bin>
 </environment>
