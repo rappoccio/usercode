@@ -24,6 +24,10 @@ SemileptonicAnalysis::SemileptonicAnalysis(const edm::ParameterSet& iConfig, TFi
   histograms2d["mu2DAfter"] = theDir.make<TH2F>( "mu2DAfter", "Muon 2D Cut;#Delta R_{min};p_{T}^{REL} (GeV/c)", 50, 0, 5.0, 40, 0, 200.0 );
   histograms2d["semiMassVsGenPt"] = theDir.make<TH2F>("semiMassVsGenPt", "Semileptonic Side Mass versus GenJet p_{T}", 50, 0, 1500, 50, 0, 350); 
 
+  histograms1d["muHtBefore"] = theDir.make<TH1F>( "muHtBefore", "Muon H_{T} no Jets;Muon H_{T} (GeV/c)", 50, 0, 500 );
+  histograms1d["muHtAfter"] = theDir.make<TH1F>( "muHtAfter", "Muon H_{T} >2 Jets;Muon H_{T} (GeV/c)", 50, 0, 500 );
+  histograms1d["nJetsSemi"] = theDir.make<TH1F>( "nJetsSemi", "Number of Semilep Jets; #Jets", 5, 0, 5 );
+
   histograms1d["had_w_deltaPhi"] = theDir.make<TH1F>( "had_w_deltaPhi", "#Delta #phi", 50, 0, TMath::Pi());
   histograms1d["had_w_m"] = theDir.make<TH1F>( "had_w_m", "m", 50, 0, 250 );
   histograms1d["had_w_pt"] = theDir.make<TH1F>( "had_w_pt", "pt", 150, 0, 1500 );
@@ -57,15 +61,58 @@ void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
   //SemileptonicSelection::candidate_collection::const_iterator wJet = semileptonicSelection_.getWJet();
   SemileptonicSelection::candidate_collection::const_iterator closestJet = semileptonicSelection_.getClosestJet();
   SemileptonicSelection::candidate met = semileptonicSelection_.taggedMETs();
+  SemileptonicSelection::candidate_collection taggedMuons = semileptonicSelection_.taggedMuons();
+  SemileptonicSelection::candidate_collection taggedJets  = semileptonicSelection_.taggedJets();
+  pat::strbitset wPlusJetsRet (semileptonicSelection_.getWPlusJetsBitSet());
 
+  if(taggedMuons.size() > 0)
+    {
+      TLorentzVector muP ( taggedMuons[0].px(),
+			   taggedMuons[0].py(),
+			   taggedMuons[0].pz(),
+			   taggedMuons[0].energy() );
+      if(wPlusJetsRet[string("== 1 Lepton")])
+	{
+	  histograms1d["nJetsSemi"]->Fill(taggedJets.size());
+	  histograms1d["muHtBefore"]->Fill(taggedMuons[0].pt() + met.et());
+	  if(taggedJets.size() > 0)
+	    {
+	      TLorentzVector bjetP ( taggedJets[0].px(),
+				     taggedJets[0].py(),
+				     taggedJets[0].pz(),
+				     taggedJets[0].energy() );
+	      double ptRel = TMath::Abs(muP.Perp(bjetP.Vect()));
+	      double dRMin = semileptonicSelection_.getdRMin();
+	      if(!(ptRel < 35 && dRMin < 0.4))
+		{
+		  histograms2d["mu2DBefore"]->Fill( dRMin, ptRel );
+		}
+	    }
+	}
+      else if (wPlusJetsRet[string(">=2 Jets")])
+	{
+	  histograms1d["muHtAfter"]->Fill(taggedMuons[0].pt() + met.et());
+	  if(closestJet != taggedJets.end() )
+	    {
+	      TLorentzVector bjetP( closestJet->px(),
+				    closestJet->py(),
+				    closestJet->pz(),
+				    closestJet->energy() );
+	      double ptRel = TMath::Abs(muP.Perp(bjetP.Vect()));
+	      double dRMin = semileptonicSelection_.getdRMin();
+	      if(!(ptRel < 35 && dRMin < 0.4))
+		{
+		  histograms2d["mu2DAfter"]->Fill( dRMin, ptRel );
+		}
+	    }
+	}
+    }	  
 
   if(semilepRet[string("Lepton has close jet")])
     {
 
       pat::strbitset retHad = boostedTopWTagFunctor_.getBitTemplate();
       retHad.set(false);
-      SemileptonicSelection::candidate_collection taggedMuons = semileptonicSelection_.taggedMuons();
-      SemileptonicSelection::candidate_collection taggedJets  = semileptonicSelection_.taggedJets();
 
       TLorentzVector MET ( met.px(), 
 			   met.py(), 
