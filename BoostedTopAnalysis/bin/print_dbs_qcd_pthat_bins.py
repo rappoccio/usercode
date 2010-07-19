@@ -4,7 +4,7 @@ import subprocess
 import commands
 
 prepend = 'dbs search --url=http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet --query='
-datasets = commands.getoutput(prepend + '\"find dataset where dataset like *QCDDiJet_Pt*srappocc-pruning*\"').split('\n')
+datasets = commands.getoutput(prepend + '\"find dataset where dataset like *QCDDiJet_Pt*srappocc-ttbsm_361*\"').split('\n')
 
 del datasets[0:4]
 

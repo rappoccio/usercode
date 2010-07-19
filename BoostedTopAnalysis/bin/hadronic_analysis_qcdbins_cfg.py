@@ -7,11 +7,13 @@ process = cms.Process("FWLitePlots")
 
 process.load('Analysis.BoostedTopAnalysis.hadronicAnalysis_cfi')
 
-process.hadronicAnalysis.dijetSelectorParams.cutsToIgnore = cms.vstring(['Calo Jet ID', 'PF Jet ID'])
+#process.hadronicAnalysis.dijetSelectorParams.cutsToIgnore = cms.vstring(['Calo Jet ID', 'PF Jet ID'])
 process.hadronicAnalysis.cutsToIgnore = cms.vstring(['Trigger'])
 
 process.plotOptions = cms.PSet(
-        plotTracks = cms.bool(True)
+    plotTracks = cms.bool(True),
+    reweightHistoFile = cms.string('reweight_histo.root'),
+    reweightHistoName = cms.string('ratio')
             )
 
 
