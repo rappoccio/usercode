@@ -23,18 +23,14 @@ from Analysis.BoostedTopAnalysis.hadronicAnalysis_cfi import hadronicAnalysis as
 
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("boostedTopHadronicStudies_pt_gt50.root")
+                                   fileName = cms.string("boostedTopHadronicStudies_pt_gt25.root")
                                    )
 
 
 process.hadronicAna = cms.EDAnalyzer('EDHadronicAnalysis',
                                   hadronicAnalysis = inputHadronicAnalysis.clone()
                                      )
-process.hadronicAna.hadronicAnalysis.dijetSelectorParams.ptMin = cms.double(50.0) 
-
-#process.hadronicAna.hadronicAnalysis.dijetSelectorParams.cutsToIgnore = cms.vstring(['Calo Jet ID', 'PF Jet ID'])
-process.hadronicAna.hadronicAnalysis.cutsToIgnore = cms.vstring(['Trigger'])
-
+process.hadronicAna.hadronicAnalysis.dijetSelectorParams.ptMin = cms.double(25.0) 
 
 process.hadronicAnaUnweighted = process.hadronicAna.clone( )
 

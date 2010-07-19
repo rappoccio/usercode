@@ -29,6 +29,6 @@ datasets = [
 
 for dataset in datasets :
     toks = dataset.split('/')
-    s = './my_multicrab.pl crab_dummy_hadronic_analysis.cfg hadronicEDAnalyzer_cfg.py '  + dataset + ' ttbsm_361_v1 -1 5 condor 0 ' + idir + ' ' + toks[1] + '_reweighted_pt_gt50'
+    s = './my_multicrab.pl crab_dummy_hadronic_analysis.cfg hadronicEDAnalyzer_cfg.py '  + dataset + ' ttbsm_361_v1 -1 5 condor 0 ' + idir + ' ' + toks[1] + '_reweighted_pt_gt25_templates'
     print s
     subprocess.call( [s], shell=True )
