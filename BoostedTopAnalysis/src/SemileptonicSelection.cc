@@ -20,11 +20,11 @@ SemileptonicSelection::SemileptonicSelection( edm::ParameterSet const & params )
   nJetsA(0),
   nJetsB(0),
   nJetsC(0),
-  jetSrc(params.getParameter<edm::ParameterSet>("initParams").getParameter<edm::InputTag>("jetSrc")),
-  ptRelMin(params.getParameter<edm::ParameterSet>("initParams").getParameter<double>("ptRelMin")),
-  dRMinCut(params.getParameter<edm::ParameterSet>("initParams").getParameter<double>("dRMin")),
-  oppLeadJetPt(params.getParameter<edm::ParameterSet>("initParams").getParameter<double>("oppLeadJetPt")),
-  leadJetPt(params.getParameter<edm::ParameterSet>("initParams").getParameter<double>("leadJetPt"))
+  jetSrc(params.getParameter<edm::InputTag>("jetSrc")),
+  ptRelMin(params.getParameter<double>("ptRelMin")),
+  dRMinCut(params.getParameter<double>("dRMin")),
+  oppLeadJetPt(params.getParameter<double>("oppLeadJetPt")),
+  leadJetPt(params.getParameter<double>("leadJetPt"))
 {
   // std::cout << "Instantiated SemileptonicSelection" << std::endl;
   // make the bitset
@@ -44,8 +44,8 @@ SemileptonicSelection::SemileptonicSelection( edm::ParameterSet const & params )
   set("Relative Pt and Min Delta R");
   set("Passed Semileptonic Side");
 
-  if ( params.getParameter<edm::ParameterSet>("initParams").exists("cutsToIgnore") )
-    setIgnoredCuts( params.getParameter<edm::ParameterSet>("initParams").getParameter<vector<string> >("cutsToIgnore") );
+  if ( params.exists("cutsToIgnore") )
+    setIgnoredCuts( params.getParameter<vector<string> >("cutsToIgnore") );
 
   // initialize bitsets for later
   retSemi = wPlusJets_.getBitTemplate();

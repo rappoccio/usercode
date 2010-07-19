@@ -38,7 +38,7 @@ class SemileptonicSelection : public EventSelector {
     vec[1] = nJetsB;
     vec[2] = nJetsC;
     return vec;}
-  //candidate_collection::const_iterator getWJet() const {return wJet;}
+  candidate_collection::const_iterator getWJet() const {return wJet;}
   candidate_collection::const_iterator getClosestJet() const {return closestJet;}
   double getdRMin() const {return dRMin;}
 

@@ -47,6 +47,27 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms1d["jetEta0"] = theDir.make<TH1F>("jetEta0", "Jet #eta of First Jet", 50, -5.0, 5.0 );
   histograms1d["jetEta1"] = theDir.make<TH1F>("jetEta1", "Jet #eta of Second Jet", 50, -5.0, 5.0 );
 
+  histograms1d["jetPt0_G"] = theDir.make<TH1F>("jetPt0_G", "Jet p_{T} of First Jet", 50, 0, 500 );
+  histograms1d["jetPt1_G"] = theDir.make<TH1F>("jetPt1_G", "Jet p_{T} of Second Jet", 50, 0, 500 );
+
+  histograms1d["jetEta0_G"] = theDir.make<TH1F>("jetEta0_G", "Jet #eta of First Jet", 50, -5.0, 5.0 );
+  histograms1d["jetEta1_G"] = theDir.make<TH1F>("jetEta1_G", "Jet #eta of Second Jet", 50, -5.0, 5.0 );
+
+
+  histograms1d["jetPt0_UDS"] = theDir.make<TH1F>("jetPt0_UDS", "Jet p_{T} of First Jet", 50, 0, 500 );
+  histograms1d["jetPt1_UDS"] = theDir.make<TH1F>("jetPt1_UDS", "Jet p_{T} of Second Jet", 50, 0, 500 );
+
+  histograms1d["jetEta0_UDS"] = theDir.make<TH1F>("jetEta0_UDS", "Jet #eta of First Jet", 50, -5.0, 5.0 );
+  histograms1d["jetEta1_UDS"] = theDir.make<TH1F>("jetEta1_UDS", "Jet #eta of Second Jet", 50, -5.0, 5.0 );
+
+
+  histograms1d["jetPt0_BC"] = theDir.make<TH1F>("jetPt0_BC", "Jet p_{T} of First Jet", 50, 0, 500 );
+  histograms1d["jetPt1_BC"] = theDir.make<TH1F>("jetPt1_BC", "Jet p_{T} of Second Jet", 50, 0, 500 );
+
+  histograms1d["jetEta0_BC"] = theDir.make<TH1F>("jetEta0_BC", "Jet #eta of First Jet", 50, -5.0, 5.0 );
+  histograms1d["jetEta1_BC"] = theDir.make<TH1F>("jetEta1_BC", "Jet #eta of Second Jet", 50, -5.0, 5.0 );
+
+
   histograms1d["jetMass0"] = theDir.make<TH1F>("jetMass0", "Jet Mass of First Jet", 500, 0, 250 );
   histograms1d["jetMass1"] = theDir.make<TH1F>("jetMass1", "Jet Mass of Second Jet", 500, 0, 250 );
   histograms1d["mu0"]     = theDir.make<TH1F>("mu0", "Mass Drop of First Jet", 500, 0.0, 1.0 );
@@ -55,6 +76,33 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms1d["y1"]     = theDir.make<TH1F>("y1", "Asymmetry of Second Jet", 500, 0.0, 1.0 );
   histograms1d["dR0"]     = theDir.make<TH1F>("dR0", "#Delta R of First Jet", 500, 0.0, 1.0 );
   histograms1d["dR1"]     = theDir.make<TH1F>("dR1", "#Delta R of Second Jet", 500, 0.0, 1.0 );
+
+  histograms1d["jetMass0_G"] = theDir.make<TH1F>("jetMass0_G", "Jet Mass of First Jet", 500, 0, 250 );
+  histograms1d["jetMass1_G"] = theDir.make<TH1F>("jetMass1_G", "Jet Mass of Second Jet", 500, 0, 250 );
+  histograms1d["mu0_G"]     = theDir.make<TH1F>("mu0_G", "Mass Drop of First Jet", 500, 0.0, 1.0 );
+  histograms1d["mu1_G"]     = theDir.make<TH1F>("mu1_G", "Mass Drop of Second Jet", 500, 0.0, 1.0 );
+  histograms1d["y0_G"]     = theDir.make<TH1F>("y0_G", "Asymmetry of First Jet", 500, 0.0, 1.0 );
+  histograms1d["y1_G"]     = theDir.make<TH1F>("y1_G", "Asymmetry of Second Jet", 500, 0.0, 1.0 );
+  histograms1d["dR0_G"]     = theDir.make<TH1F>("dR0_G", "#Delta R of First Jet", 500, 0.0, 1.0 );
+  histograms1d["dR1_G"]     = theDir.make<TH1F>("dR1_G", "#Delta R of Second Jet", 500, 0.0, 1.0 );
+
+  histograms1d["jetMass0_UDS"] = theDir.make<TH1F>("jetMass0_UDS", "Jet Mass of First Jet", 500, 0, 250 );
+  histograms1d["jetMass1_UDS"] = theDir.make<TH1F>("jetMass1_UDS", "Jet Mass of Second Jet", 500, 0, 250 );
+  histograms1d["mu0_UDS"]     = theDir.make<TH1F>("mu0_UDS", "Mass Drop of First Jet", 500, 0.0, 1.0 );
+  histograms1d["mu1_UDS"]     = theDir.make<TH1F>("mu1_UDS", "Mass Drop of Second Jet", 500, 0.0, 1.0 );
+  histograms1d["y0_UDS"]     = theDir.make<TH1F>("y0_UDS", "Asymmetry of First Jet", 500, 0.0, 1.0 );
+  histograms1d["y1_UDS"]     = theDir.make<TH1F>("y1_UDS", "Asymmetry of Second Jet", 500, 0.0, 1.0 );
+  histograms1d["dR0_UDS"]     = theDir.make<TH1F>("dR0_UDS", "#Delta R of First Jet", 500, 0.0, 1.0 );
+  histograms1d["dR1_UDS"]     = theDir.make<TH1F>("dR1_UDS", "#Delta R of Second Jet", 500, 0.0, 1.0 );
+
+  histograms1d["jetMass0_BC"] = theDir.make<TH1F>("jetMass0_BC", "Jet Mass of First Jet", 500, 0, 250 );
+  histograms1d["jetMass1_BC"] = theDir.make<TH1F>("jetMass1_BC", "Jet Mass of Second Jet", 500, 0, 250 );
+  histograms1d["mu0_BC"]     = theDir.make<TH1F>("mu0_BC", "Mass Drop of First Jet", 500, 0.0, 1.0 );
+  histograms1d["mu1_BC"]     = theDir.make<TH1F>("mu1_BC", "Mass Drop of Second Jet", 500, 0.0, 1.0 );
+  histograms1d["y0_BC"]     = theDir.make<TH1F>("y0_BC", "Asymmetry of First Jet", 500, 0.0, 1.0 );
+  histograms1d["y1_BC"]     = theDir.make<TH1F>("y1_BC", "Asymmetry of Second Jet", 500, 0.0, 1.0 );
+  histograms1d["dR0_BC"]     = theDir.make<TH1F>("dR0_BC", "#Delta R of First Jet", 500, 0.0, 1.0 );
+  histograms1d["dR1_BC"]     = theDir.make<TH1F>("dR1_BC", "#Delta R of Second Jet", 500, 0.0, 1.0 );
 
   histograms1d["run"] = theDir.make<TH1F>("run", "Run Number", 135698 - 132440, 132440, 135698 );
   histograms1d["runSelected"] = theDir.make<TH1F>("runSelected", "Run Number, After selection", 135698 - 132440, 132440, 135698 );
@@ -133,6 +181,79 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       histograms2d["muVsPt1"]->Fill(pretaggedJets[1]->pt(), mu1, histoWeight_);
       histograms2d["yVsPt1"]->Fill(pretaggedJets[1]->pt(), y1, histoWeight_);
       histograms2d["dRVsPt1"]->Fill(pretaggedJets[1]->pt(), dR1, histoWeight_);
+
+
+
+      if ( pretaggedJets[0]->genParton() != 0 &&
+	   pretaggedJets[0]->partonFlavour() == 21 ) {
+	histograms1d["jetPt0_G"]->Fill( p4_0.pt(), histoWeight_ );
+	histograms1d["jetMass0_G"]->Fill( pretaggedJets[0]->mass() , histoWeight_);
+	histograms1d["mu0_G"]->Fill(mu0, histoWeight_);
+	histograms1d["y0_G"]->Fill(y0, histoWeight_);
+	histograms1d["dR0_G"]->Fill(dR0, histoWeight_);
+	histograms1d["jetEta0_G"]->Fill( p4_0.eta(), histoWeight_ );
+
+      }
+
+      else if ( pretaggedJets[0]->genParton() != 0 &&
+		fabs(pretaggedJets[0]->partonFlavour()) < 4 ) {
+	histograms1d["jetPt0_UDS"]->Fill( p4_0.pt(), histoWeight_ );
+	histograms1d["jetMass0_UDS"]->Fill( pretaggedJets[0]->mass() , histoWeight_);
+	histograms1d["mu0_UDS"]->Fill(mu0, histoWeight_);
+	histograms1d["y0_UDS"]->Fill(y0, histoWeight_);
+	histograms1d["dR0_UDS"]->Fill(dR0, histoWeight_);
+	histograms1d["jetEta0_UDS"]->Fill( p4_0.eta(), histoWeight_ );
+
+      }
+
+      else if ( pretaggedJets[0]->genParton() != 0 &&
+		(fabs(pretaggedJets[0]->partonFlavour()) == 4 ||
+		 fabs(pretaggedJets[0]->partonFlavour()) == 5 )
+		) {
+	histograms1d["jetPt0_BC"]->Fill( p4_0.pt(), histoWeight_ );
+	histograms1d["jetMass0_BC"]->Fill( pretaggedJets[0]->mass() , histoWeight_);
+	histograms1d["mu0_BC"]->Fill(mu0, histoWeight_);
+	histograms1d["y0_BC"]->Fill(y0, histoWeight_);
+	histograms1d["dR0_BC"]->Fill(dR0, histoWeight_);
+	histograms1d["jetEta0_BC"]->Fill( p4_0.eta(), histoWeight_ );
+
+      }
+
+
+      if ( pretaggedJets[1]->genParton() != 0 &&
+	   pretaggedJets[1]->partonFlavour() == 21 ) {
+	histograms1d["jetPt1_G"]->Fill( p4_1.pt(), histoWeight_ );
+	histograms1d["jetMass1_G"]->Fill( pretaggedJets[1]->mass() , histoWeight_);
+	histograms1d["mu1_G"]->Fill(mu1, histoWeight_);
+	histograms1d["y1_G"]->Fill(y1, histoWeight_);
+	histograms1d["dR1_G"]->Fill(dR1, histoWeight_);
+	histograms1d["jetEta1_G"]->Fill( p4_1.eta(), histoWeight_ );
+
+      }
+
+      else if ( pretaggedJets[1]->genParton() != 0 &&
+		fabs(pretaggedJets[1]->partonFlavour()) < 4 ) {
+	histograms1d["jetPt1_UDS"]->Fill( p4_1.pt(), histoWeight_ );
+	histograms1d["jetMass1_UDS"]->Fill( pretaggedJets[1]->mass() , histoWeight_);
+	histograms1d["mu1_UDS"]->Fill(mu1, histoWeight_);
+	histograms1d["y1_UDS"]->Fill(y1, histoWeight_);
+	histograms1d["dR1_UDS"]->Fill(dR1, histoWeight_);
+	histograms1d["jetEta1_UDS"]->Fill( p4_1.eta(), histoWeight_ );
+
+      }
+
+      else if ( pretaggedJets[1]->genParton() != 0 &&
+		(fabs(pretaggedJets[1]->partonFlavour()) == 4 ||
+		 fabs(pretaggedJets[1]->partonFlavour()) == 5 )
+		) {
+	histograms1d["jetPt1_BC"]->Fill( p4_1.pt(), histoWeight_ );
+	histograms1d["jetMass1_BC"]->Fill( pretaggedJets[1]->mass() , histoWeight_);
+	histograms1d["mu1_BC"]->Fill(mu1, histoWeight_);
+	histograms1d["y1_BC"]->Fill(y1, histoWeight_);
+	histograms1d["dR1_BC"]->Fill(dR1, histoWeight_);
+	histograms1d["jetEta1_BC"]->Fill( p4_1.eta(), histoWeight_ );
+
+      }
 
       summary.push_back( EventSummary( p4.mass(), mu0, mu1, y0, y1,
 				       iEvent.id().run(), iEvent.id().event(), iEvent.luminosityBlock() ) );

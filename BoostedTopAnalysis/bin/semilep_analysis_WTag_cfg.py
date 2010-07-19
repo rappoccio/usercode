@@ -4,10 +4,15 @@ process = cms.Process("FWLitePlots")
 
 from Analysis.BoostedTopAnalysis.BoostedTopWTagParams_cfi import boostedTopWTagParams
 process.hadronicWParams = boostedTopWTagParams.clone()
-from Analysis.BoostedTopAnalysis.QCDDiJet_Pt50to80_cfi import readFiles
 
 from PhysicsTools.SelectorUtils.wplusjetsAnalysis_cfi import wplusjetsAnalysis as wPlusJets
-process.initParams = cms.PSet(
+process.semileptonicAnalysis = cms.PSet(
+    WPlusJetsParams = wPlusJets.clone(
+        jetSrc = cms.InputTag("selectedPatJetsCA8PrunedPF"),
+        minJets = cms.int32(2),
+        muPtMin = cms.double(25.0),
+        muonIdTight  = wPlusJets.muonIdTight.clone( cutsToIgnore= ['RelIso'])
+        ),
    jetSrc = cms.InputTag("selectedPatJetsCA8PrunedPF"),
    trigTag = cms.InputTag("patTriggerEvent"),
    cutsToIgnore      = cms.vstring(['Trigger']), #'Relative Pt','Minimum Delta R' ,'Opposite leadJetPt'
@@ -19,21 +24,15 @@ process.initParams = cms.PSet(
    oppLeadJetPt      = cms.double(100.0),
    deltaPhi          = cms.double(3.1415926/2.0)
 )
-process.WPlusJetsParams = cms.PSet(wPlusJets.clone())
-process.WPlusJetsParams.jetSrc = cms.InputTag("selectedPatJetsCA8PrunedPF")
-process.WPlusJetsParams.minJets = cms.int32(2)
-process.WPlusJetsParams.muPtMin = cms.double(25.0)
-process.WPlusJetsParams.muonIdTight.cutsToIgnore= ['RelIso']
 
 process.inputs = cms.PSet (
-    fileNamesQCD = readFiles,
 
 fileNamesShort = cms.vstring( #
        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/Zprime_M1TeV_W10GeV-madgraph/ttbsm_361_v1/2c398110672bba227822a112ea0dde68/ttbsm_361_9_1.root',
        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/Zprime_M1TeV_W10GeV-madgraph/ttbsm_361_v1/2c398110672bba227822a112ea0dde68/ttbsm_361_99_1.root',
        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/Zprime_M1TeV_W10GeV-madgraph/ttbsm_361_v1/2c398110672bba227822a112ea0dde68/ttbsm_361_98_1.root'
        ),
-fileNames = cms.vstring(
+fileNamesInclusiveMu15 = cms.vstring(
         'dcap:///pnfs/cms/WAX/11/store/user/guofan/InclusiveMu15/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_9_1_9Zg.root',
         'dcap:///pnfs/cms/WAX/11/store/user/guofan/InclusiveMu15/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_8_1_fyg.root',
         'dcap:///pnfs/cms/WAX/11/store/user/guofan/InclusiveMu15/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_7_1_imu.root',
@@ -86,17 +85,17 @@ fileNames = cms.vstring(
         # 'dcap:///pnfs/cms/WAX/11/store/user/guofan/InclusiveMu15/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_11_1_P2J.root',
         # 'dcap:///pnfs/cms/WAX/11/store/user/guofan/InclusiveMu15/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_10_1_zAQ.root'
 ),
-fileNamesQCDBackground = cms.vstring(
-        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_9_1_zpm.root',
-        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_8_1_9pD.root',
-        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_7_1_rHf.root',
-        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_6_1_CaF.root',
-        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_5_1_tDc.root',
-        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_53_1_luX.root',
-        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_52_1_Xqb.root',
-        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_51_1_0wp.root',
-        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_50_1_2hf.root',
-        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_4_1_k85.root'
+fileNames = cms.vstring(
+        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_9_1_zpm.root'
+#        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_8_1_9pD.root',
+#        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_7_1_rHf.root',
+#        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_6_1_CaF.root',
+#        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_5_1_tDc.root',
+#        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_53_1_luX.root',
+#        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_52_1_Xqb.root',
+#        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_51_1_0wp.root',
+#        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_50_1_2hf.root',
+#        'dcap:///pnfs/cms/WAX/11/store/user/srappocc/WJets-madgraph/ttbsm_361_v1/6e46b5e195f4b3b727488919472b1913/ttbsm_361_4_1_k85.root'
         ),
 fileNames1TeVZPrime = cms.vstring(#
         '/uscms/home/dbjergaa/nobackup/ZPrimePatTuple/BoostedTopPatTuple_50k.root'
