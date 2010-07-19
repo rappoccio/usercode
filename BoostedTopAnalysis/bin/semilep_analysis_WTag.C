@@ -120,9 +120,15 @@ int main (int argc, char* argv[])
   histograms["zPrimeMass"] = theDir.make<TH1F>("zPrimeMass","Z' invariant mass",60,0.0,600);
   histograms["hadronicTopMass"] = theDir.make<TH1F>("hadronicTopMass","Hadronic top mass",100,60.0,350);
   histograms["metDPhiMin"] = theDir.make<TH1F>("metDPhiMin","MET #Delta R to closest Jet;Delta R",50,0,5.0);
-  histograms2D["mu2DBefore"] = theDir.make<TH2F>( "mu2DBefore", "Muon 2D Cut;#Delta R_{min};p_{T}^{REL} (GeV/c)", 50, 0, 5.0, 40, 0, 200.0 );
-  histograms2D["mu2DAfter"] = theDir.make<TH2F>( "mu2DAfter", "Muon 2D Cut;#Delta R_{min};p_{T}^{REL} (GeV/c)", 50, 0, 5.0, 40, 0, 200.0 );
+  histograms2D["mu2DBefore"] = theDir.make<TH2F>( "mu2DBefore", "Muon 2D Cut 1 Jet;#Delta R_{min};p_{T}^{REL} (GeV/c)", 50, 0, 5.0, 40, 0, 200.0 );
+  histograms2D["mu2DAfter"] = theDir.make<TH2F>( "mu2DAfter", "Muon 2D Cut >2 Jets;#Delta R_{min};p_{T}^{REL} (GeV/c)", 50, 0, 5.0, 40, 0, 200.0 );
   histograms2D["semiMassVsGenPt"] = theDir.make<TH2F>("semiMassVsGenPt", "Semileptonic Side Mass versus GenJet p_{T}", 50, 0, 1500, 50, 0, 350); 
+
+  histograms["muHtBefore"] = theDir.make<TH1F>( "muHtBefore", "Muon H_{T} no Jets;Muon H_{T} (GeV/c)", 50, 0, 500 );
+  histograms["muHtAfter"] = theDir.make<TH1F>( "muHtAfter", "Muon H_{T} >2 Jets;Muon H_{T} (GeV/c)", 50, 0, 500 );
+
+  histograms["nJetsSemi"] = theDir.make<TH1F>( "nJetsSemi", "Number of Semilep Jets; #Jets", 5, 0, 5 );
+  
 
   histograms["had_w_deltaPhi"] = theDir.make<TH1F>( "had_w_deltaPhi", "#Delta #phi", 50, 0, TMath::Pi());
   histograms["had_w_m"] = theDir.make<TH1F>( "had_w_m", "m", 50, 0, 250 );
@@ -155,13 +161,14 @@ int main (int argc, char* argv[])
   for (ev.toBegin(); ! ev.atEnd(); ++ev, ++nev) 
    {
       //if( nev == 150000) break;
-     //if(nev==50000) break;
+     //if(nev==10000) break;
 
       edm::EventBase const & event = ev;
       if ( ev.event()->size() == 0 ) continue; // skip trees with no events
       if ( nev % 10000 == 0 ) cout << "Entry " << nev << ", Processing run " << event.id().run() << ", event " << event.id().event() << endl;
-      pat::strbitset semilepRet = semilepSelector.getBitTemplate();
+      pat::strbitset semilepRet (semilepSelector.getBitTemplate());
       semilepSelector(event, semilepRet);
+      pat::strbitset wPlusJetsRet (semilepSelector.getWPlusJetsBitSet());
       string bitString;
       //SemileptonicSelection::candidate_collection::const_iterator wJet = semilepSelector.getWJet();
       SemileptonicSelection::candidate_collection::const_iterator closestJet = semilepSelector.getClosestJet();
@@ -173,6 +180,48 @@ int main (int argc, char* argv[])
       event.getByLabel( edm::InputTag("decaySubset"), h_gens);
 
       typedef std::vector<reco::GenParticle> genparticle_collection;
+      if(taggedMuons.size() > 0)
+	{
+	  TLorentzVector muP ( taggedMuons[0].px(),
+			       taggedMuons[0].py(),
+			       taggedMuons[0].pz(),
+			       taggedMuons[0].energy() );
+	  if(wPlusJetsRet[string("== 1 Lepton")])
+	    {
+	      histograms["nJetsSemi"]->Fill(taggedJets.size());
+	      histograms["muHtBefore"]->Fill(taggedMuons[0].pt() + met.et());
+	      if(taggedJets.size() > 0)
+		{
+		  TLorentzVector bjetP ( taggedJets[0].px(),
+					 taggedJets[0].py(),
+					 taggedJets[0].pz(),
+					 taggedJets[0].energy() );
+		  double ptRel = TMath::Abs(muP.Perp(bjetP.Vect()));
+		  double dRMin = semilepSelector.getdRMin();
+		  if(!(ptRel < 35 && dRMin < 0.4))
+		    {
+		      histograms2D["mu2DBefore"]->Fill( dRMin, ptRel );
+		    }
+		}
+	    }
+	  else if (wPlusJetsRet[string(">=2 Jets")])
+	    {
+	      histograms["muHtAfter"]->Fill(taggedMuons[0].pt() + met.et());
+	      if(closestJet != taggedJets.end() )
+		{
+		  TLorentzVector bjetP( closestJet->px(),
+					closestJet->py(),
+					closestJet->pz(),
+					closestJet->energy() );
+		  double ptRel = TMath::Abs(muP.Perp(bjetP.Vect()));
+		  double dRMin = semilepSelector.getdRMin();
+		  if(!(ptRel < 35 && dRMin < 0.4))
+		    {
+		      histograms2D["mu2DAfter"]->Fill( dRMin, ptRel );
+		    }
+		}
+	    }
+	}	  
       if(semilepRet[string("Lepton has close jet")])
 	{
 	  TLorentzVector MET ( met.px(), 
@@ -190,11 +239,6 @@ int main (int argc, char* argv[])
 
 	  double ptRel = TMath::Abs(muP.Perp(bjetP.Vect()));
 	  double dRMin = semilepSelector.getdRMin();
-	  histograms2D["mu2DBefore"]->Fill( dRMin, ptRel );
-	  if(semilepRet[string("Relative Pt and Min Delta R")])
-	    {
-	      histograms2D["mu2DAfter"]->Fill( dRMin, ptRel );
-	    }
 	  if(semilepRet[string("Passed Semileptonic Side")])
 	    {
 	      double mMax = 0.0;
