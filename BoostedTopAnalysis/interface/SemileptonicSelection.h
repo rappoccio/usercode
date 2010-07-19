@@ -51,6 +51,8 @@ class SemileptonicSelection : public EventSelector {
     //std::cout <<"----- boosted w top tagger ----\n";
     //boostedTopWTagFunctor_.print(out);
   }
+
+  WPlusJetsEventSelector const & wPlusJets() const { return wPlusJets_;}
  
  protected: 
   // selected bitsets

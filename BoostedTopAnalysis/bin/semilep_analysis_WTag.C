@@ -91,7 +91,7 @@ int main (int argc, char* argv[])
   fwlite::TFileService fs = fwlite::TFileService(outName);
   TFileDirectory theDir = fs.mkdir( dirName.c_str() ); 
 
-  SemileptonicAnalysis semilepAna( *parameters, theDir );
+  SemileptonicAnalysis semilepAna( parameters->getParameter<edm::ParameterSet>("semileptonicAnalysis"), theDir );
     
   cout << "Setting up chain event... ";
   // This object 'event' is used both to get all information from the
@@ -103,7 +103,7 @@ int main (int argc, char* argv[])
 
   int nev = 0;
   //loop through each event
-  for (ev.toBegin(); ! ev.atEnd() && nev < 10000; ++ev, ++nev) 
+  for (ev.toBegin(); ! ev.atEnd(); ++ev, ++nev) 
    {
       //if( nev == 150000) break;
      //if(nev==50000) break;

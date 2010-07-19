@@ -5,7 +5,7 @@ using namespace std;
 
 
 SemileptonicAnalysis::SemileptonicAnalysis(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
-  semileptonicSelection_(iConfig.getParameter<edm::ParameterSet>("semileptonicAnalysis")),
+  semileptonicSelection_(iConfig.getParameter<edm::ParameterSet>("semileptonicSelection")),
   boostedTopWTagFunctor_(iConfig.getParameter<edm::ParameterSet>("hadronicWParams")),
   theDir(iDir)
 {
