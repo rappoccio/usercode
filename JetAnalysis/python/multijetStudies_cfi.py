@@ -14,6 +14,7 @@ jetStudies = cms.PSet(
     etaMax = cms.double(3.0),
     htMin = cms.double(100.0),
     ht2Min = cms.double(100.0)
+    
 )
 pfJetStudies = jetStudies.clone( useCalo = cms.bool(False),
                                  ptMin = cms.double(25.0) )
