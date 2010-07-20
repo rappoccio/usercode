@@ -3,7 +3,17 @@
 import subprocess
 import sys
 
+
 dirs = [
+
+'Zprime_M1TeV_W10GeV-madgraph_semilep',
+'Zprime_M1500GeV_W150GeV-madgraph_semilep',
+'WJets-madgraph_semilep',
+'TTbarJets-madgraph_semilep',
+'InclusiveMu15_semilep'
+]
+
+dirsHad = [
     'QCDDiJet_Pt0to15_reweighted_pt_gt25_templates',
     'QCDDiJet_Pt1000to1400_reweighted_pt_gt25_templates',
     'QCDDiJet_Pt120to170_reweighted_pt_gt25_templates',

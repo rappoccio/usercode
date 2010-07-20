@@ -23,7 +23,7 @@ from Analysis.BoostedTopAnalysis.semileptonicAnalysis_cfi import semileptonicAna
 
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("boostedTopSemileptonicStudies_pt_gt25.root")
+                                   fileName = cms.string("boostedTopSemileptonicStudies.root")
                                    )
 
 process.semileptonicAna = cms.EDAnalyzer('EDSemileptonicAnalysis',
