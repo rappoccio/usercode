@@ -26,9 +26,9 @@ class SemileptonicSelection : public EventSelector {
   virtual bool operator()( edm::EventBase const & t, pat::strbitset & ret);
 
   using EventSelector::operator();
-  candidate_collection const & taggedJets () const { return taggedJets_; } 
-  candidate_collection const & taggedMuons() const { return taggedMuons_;}
-  candidate            const & taggedMETs () const { return taggedMETs_; }
+  candidate_collection const & taggedJets () const { return wPlusJets().selectedJets(); } 
+  candidate_collection const & taggedMuons() const { return wPlusJets().selectedMuons();}
+  candidate            const & taggedMETs () const { return wPlusJets().selectedMET(); }
   pat::strbitset const & getWPlusJetsBitSet() const {return retSemi; }
   //pat::strbitset const & getHadronicBitSet() const {return retHad; }
 

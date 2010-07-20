@@ -30,27 +30,36 @@ SemileptonicSelection::SemileptonicSelection( edm::ParameterSet const & params )
   // make the bitset
   push_back("Inclusive");
   push_back("Trigger");
-  push_back("Lepton + Jets");
+  push_back("Lepton");
+  push_back("Lepton + >=1 Jets");
   push_back("Lepton has close jet");
   push_back("Relative Pt and Min Delta R");
+  push_back("Lepton + >=2 Jets");
   push_back("Opposite leadJetPt");
-  push_back("Passed Semileptonic Side");
   // all on by default
   set("Inclusive");
   set("Trigger");
-  set("Lepton + Jets");
-  set("Opposite leadJetPt");
+  set("Lepton");
+  set("Lepton + >=1 Jets");
   set("Lepton has close jet");
   set("Relative Pt and Min Delta R");
-  set("Passed Semileptonic Side");
+  set("Lepton + >=2 Jets");
+  set("Opposite leadJetPt");
 
   if ( params.exists("cutsToIgnore") )
     setIgnoredCuts( params.getParameter<vector<string> >("cutsToIgnore") );
 
   // initialize bitsets for later
   retSemi = wPlusJets_.getBitTemplate();
-  //retHad  = boostedTopWTagFunctor_.getBitTemplate();
+  // retHad  = boostedTopWTagFunctor_.getBitTemplate();
   retInt = getBitTemplate();
+
+  if ( wPlusJets_.ignoreCut(string("== 1 Lepton")) ||
+       wPlusJets_.ignoreCut(string(">=2 Jets"))) {
+    std::cout << "In SemileptonicSelection, we require 1 lepton and >= 2 jets, please!" << std::endl;
+    wPlusJets_.set(string("== 1 Lepton"), true);
+    wPlusJets_.set(string(">=2 Jets"), true);
+  }
 }
 
 bool SemileptonicSelection::operator() ( edm::EventBase const & event, pat::strbitset & ret)
@@ -60,13 +69,12 @@ bool SemileptonicSelection::operator() ( edm::EventBase const & event, pat::strb
   // fail everything by default
   ret.set(false);
   retSemi.set(false);
-  //retHad.set(false);
+  // retHad.set(false);
   // tagged objects are const references, so they're handled by the
   // selector that owns them
 
   taggedMuons_.clear();
   taggedJets_.clear();
-  //  taggedMETs_.clear();
 
   passCut(ret,"Inclusive");
   if(ignoreCut("Trigger")) 
@@ -76,74 +84,98 @@ bool SemileptonicSelection::operator() ( edm::EventBase const & event, pat::strb
   // ignoreCut isn't needed here, but it doesn't hurt to be pedantic
   if( ignoreCut("Trigger") || retSemi[string("Trigger")]) passCut(ret, "Trigger");
 
-  //not sure if this is the way to handle this, but we need more than
-  //one lepton to continue, otherwise we'll get memory problems.  Is
-  //there a way to enforce that a cut is turned on??
-  if(ignoreCut("Lepton + Jets")) passCut(ret, "Lepton + Jets");
-
-  if ( retSemi[string("== 1 Lepton")] && retSemi[string(">=2 Jets")]  ) 
+  // Check to see if we have at least one lepton. If so,
+  // this is the first stage of the selection
+  if ( retSemi[string("== 1 Lepton")] || ignoreCut("Lepton") ) 
     {
-      taggedMuons_     = wPlusJets_.selectedMuons();
-      taggedJets_      = wPlusJets_.selectedJets();
-      taggedMETs_      = wPlusJets_.selectedMET();
-      if(taggedMuons_.size()*taggedJets_.size() != 0)
-	{
-	  passCut(ret, string("Lepton + Jets"));
-	  dRMin = TMath::Pi() / 3.0;
-	  closestJet = taggedJets_.end();
-	  bool leadJetCut = false;
-	  bool oppLeadJetCut = false;
-	  for ( vector<reco::ShallowClonePtrCandidate>::const_iterator ijet = taggedJets_.begin(),
-		  taggedJets_Begin = taggedJets_.begin(), taggedJets_End = taggedJets_.end();
-		ijet != taggedJets_End; ++ijet ) 
-	    {
-	      if( fabs(reco::deltaPhi<double>(ijet->phi(), taggedMuons_[0].phi()) < TMath::Pi()/3 ))
-		nJetsA++;
-	      else if (fabs(reco::deltaPhi<double>(ijet->phi(), taggedMuons_[0].phi())) > 2*TMath::Pi()/3 )
-		{
-		  oppLeadJetCut = (ijet->pt() > leadJetPt );
-		  nJetsB++;
-		}
-	      else 
-		nJetsC++;
-	      double dR = reco::deltaR<double>(ijet->eta(), ijet->phi(),
-					       taggedMuons_[0].eta(), taggedMuons_[0].phi() );
-	      if ( dR < dRMin ) 
-		{
-		  dRMin = dR;
-		  closestJet = ijet;
-		}
-	    }
-	  if ( closestJet != taggedJets_.end() || ignoreCut("Lepton has close jet"))  
-	    {
-	      passCut(ret, "Lepton has close jet");
-	      TLorentzVector muP ( taggedMuons_[0].px(),
-				   taggedMuons_[0].py(),
-				   taggedMuons_[0].pz(),
-				   taggedMuons_[0].energy() );
+      passCut(ret, string("Lepton"));
+      candidate_collection const & taggedMuons     = wPlusJets_.selectedMuons();
+      candidate            const & taggedMETs      = wPlusJets_.selectedMET();
 
-	      TLorentzVector bjetP ( closestJet->px(),
-				     closestJet->py(),
-				     closestJet->pz(),
-				     closestJet->energy() );
+      // Check to see if we have at least one jet. This is the
+      // second stage of the selection. This allows the computation
+      // of the muon 2d cut
+      if ( retSemi[string(">=1 Jets")] || ignoreCut("Lepton + >=1 Jets") ) {
+	passCut(ret, string("Lepton + >=1 Jets") );
+	candidate_collection const & taggedJets      = wPlusJets_.selectedJets();
 
 
-	      double ptRel = TMath::Abs( muP.Perp( bjetP.Vect() ) );
-	      bool dRandPtCut = !(ptRel < ptRelMin && dRMin < dRMinCut);
-	      if(dRandPtCut ||  ignoreCut("Relative Pt and Min Delta R") )
-		{
-		  passCut(ret, "Relative Pt and Min Delta R");
-		  if( oppLeadJetCut || ignoreCut("Opposite leadJetPt") || ignoreCut("Passed Semileptonic Side"))
-		    {
-		      passCut(ret, "Opposite leadJetPt");
-		      passCut(ret, "Passed Semileptonic Side");
-		    }//if(!oppLeadJetCut)
-		} // dRandPtCut 
-	    } //if ( closestJet != taggedJets_.end() )  
-	}//if(taggedMuons_.size()*taggedJets_.size() == 0)
+	// calculate the muon 2d cut
+	dRMin = TMath::Pi() / 3.0;
+	closestJet = taggedJets.end();
+	for ( vector<reco::ShallowClonePtrCandidate>::const_iterator ijet = taggedJets.begin(),
+		taggedJets_Begin = taggedJets.begin(), taggedJets_End = taggedJets.end();
+	      ijet != taggedJets_End; ++ijet ) 
+	  {
+	    double dR = reco::deltaR<double>(ijet->eta(), ijet->phi(),
+					     taggedMuons[0].eta(), taggedMuons[0].phi() );
+	    if ( dR < dRMin ) 
+	      {
+		dRMin = dR;
+		closestJet = ijet;
+	      }
+	  }
+	
+	// Check the muon 2d cut
+	if ( closestJet != taggedJets.end() || ignoreCut("Lepton has close jet"))  
+	  {
+	    passCut(ret, "Lepton has close jet");
+	    TLorentzVector muP ( taggedMuons[0].px(),
+				 taggedMuons[0].py(),
+				 taggedMuons[0].pz(),
+				 taggedMuons[0].energy() );
+	    
+	    TLorentzVector bjetP ( closestJet->px(),
+				   closestJet->py(),
+				   closestJet->pz(),
+				   closestJet->energy() );
+	    
+	    
+	    double ptRel = TMath::Abs( muP.Perp( bjetP.Vect() ) );
+	    bool dRandPtCut = !(ptRel < ptRelMin && dRMin < dRMinCut);
+	    if(dRandPtCut ||  ignoreCut("Relative Pt and Min Delta R") )
+	      {
+		passCut(ret, "Relative Pt and Min Delta R");
+		
+		// Check if there are at least 2 jets. If so, this is the
+		// third stage of the selection
+		if( (retSemi[string(">=2 Jets")] || ignoreCut("Lepton + >=2 Jets")) )
+		  {
+		    passCut(ret, string("Lepton + >=2 Jets"));
 
-    } //if passed semileptonic
+		    // Separate out the jets into "Mercedes" regions. 
+		    // Region A: Close to the muon (dphi < pi/3)
+		    // Region B: Away from the muon (dphi > 2pi/3)
+		    // Region C: Sideband regions (2pi/3 > dphi > pi/3)
+		    dRMin = TMath::Pi() / 3.0;
+		    bool oppLeadJetCut = false;
+		    for ( vector<reco::ShallowClonePtrCandidate>::const_iterator ijet = taggedJets.begin(),
+			    taggedJets_Begin = taggedJets.begin(), taggedJets_End = taggedJets.end();
+			  ijet != taggedJets_End; ++ijet ) 
+		      {
+			if( fabs(reco::deltaPhi<double>(ijet->phi(), taggedMuons[0].phi()) < TMath::Pi()/3 ))
+			  nJetsA++;
+			else if (fabs(reco::deltaPhi<double>(ijet->phi(), taggedMuons[0].phi())) > 2*TMath::Pi()/3 )
+			  {
+			    oppLeadJetCut |= (ijet->pt() > leadJetPt );
+			    nJetsB++;
+			  }
+			else 
+			  nJetsC++;
+		      }
+		    
+		    // Require a hard jet in the Mercedes "away" region (region B)
+		    if( oppLeadJetCut || ignoreCut("Opposite leadJetPt") )
+		      {
+			passCut(ret, "Opposite leadJetPt");
+		      }//if(!oppLeadJetCut)
 
+		  }// end if >= 2 jets
+	      } // dRandPtCut 
+	  } // end if muon 2d cut
+      }// if have >= 1 jets
+    } //if have >= 1 muon
+  
   return (bool)ret;
 }
 
