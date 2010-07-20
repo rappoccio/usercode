@@ -7,12 +7,10 @@ process.load('Analysis.SHyFT.shyftAnalysis_cfi')
 
 process.inputs = cms.PSet (
     fileNames = cms.vstring(
-'dcap:///pnfs/cms/WAX/11/store/user/lannon/TTbarJets-madgraph/SHYFT_pat357/b0399e0e9cf131396b9de602835507f7/ljmet_9_1.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lannon/TTbarJets-madgraph/SHYFT_pat357/b0399e0e9cf131396b9de602835507f7/ljmet_8_1.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lannon/TTbarJets-madgraph/SHYFT_pat357/b0399e0e9cf131396b9de602835507f7/ljmet_7_1.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lannon/TTbarJets-madgraph/SHYFT_pat357/b0399e0e9cf131396b9de602835507f7/ljmet_75_1.root'
-        ),
-        maxEvents = cms.int32(100)
+        'dcap:///pnfs/cms/WAX/11/store/user/rappocc/RelValTTbar/shyft_35x_v3/1e2b4cadbe0380f8ac5134ff55904d15/ljmet_1.root',
+        'dcap:///pnfs/cms/WAX/11/store/user/rappocc/RelValTTbar/shyft_35x_v3/1e2b4cadbe0380f8ac5134ff55904d15/ljmet_2.root',
+        'dcap:///pnfs/cms/WAX/11/store/user/rappocc/RelValTTbar/shyft_35x_v3/1e2b4cadbe0380f8ac5134ff55904d15/ljmet_3.root'
+        )
 )
 
 process.outputs = cms.PSet (
