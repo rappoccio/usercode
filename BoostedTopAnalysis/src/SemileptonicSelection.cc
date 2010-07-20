@@ -35,6 +35,7 @@ SemileptonicSelection::SemileptonicSelection( edm::ParameterSet const & params )
   push_back("Lepton has close jet");
   push_back("Relative Pt and Min Delta R");
   push_back("Lepton + >=2 Jets");
+  push_back("Hemispheric");
   push_back("Opposite leadJetPt");
   // all on by default
   set("Inclusive");
@@ -44,6 +45,7 @@ SemileptonicSelection::SemileptonicSelection( edm::ParameterSet const & params )
   set("Lepton has close jet");
   set("Relative Pt and Min Delta R");
   set("Lepton + >=2 Jets");
+  set("Hemispheric");
   set("Opposite leadJetPt");
 
   if ( params.exists("cutsToIgnore") )
@@ -98,7 +100,7 @@ bool SemileptonicSelection::operator() ( edm::EventBase const & event, pat::strb
       if ( retSemi[string(">=1 Jets")] || ignoreCut("Lepton + >=1 Jets") ) {
 	passCut(ret, string("Lepton + >=1 Jets") );
 	candidate_collection const & taggedJets      = wPlusJets_.selectedJets();
-
+	wJet = taggedJets.end();
 
 	// calculate the muon 2d cut
 	dRMin = TMath::Pi() / 3.0;
@@ -149,6 +151,7 @@ bool SemileptonicSelection::operator() ( edm::EventBase const & event, pat::strb
 		    // Region C: Sideband regions (2pi/3 > dphi > pi/3)
 		    dRMin = TMath::Pi() / 3.0;
 		    bool oppLeadJetCut = false;
+		    double leadPt = -1.0; 
 		    for ( vector<reco::ShallowClonePtrCandidate>::const_iterator ijet = taggedJets.begin(),
 			    taggedJets_Begin = taggedJets.begin(), taggedJets_End = taggedJets.end();
 			  ijet != taggedJets_End; ++ijet ) 
@@ -158,18 +161,25 @@ bool SemileptonicSelection::operator() ( edm::EventBase const & event, pat::strb
 			else if (fabs(reco::deltaPhi<double>(ijet->phi(), taggedMuons[0].phi())) > 2*TMath::Pi()/3 )
 			  {
 			    oppLeadJetCut |= (ijet->pt() > leadJetPt );
+			    if ( ijet->pt() > leadPt ) {
+			      leadPt = ijet->pt();
+			      wJet = ijet;
+			    }
 			    nJetsB++;
 			  }
 			else 
 			  nJetsC++;
 		      }
-		    
-		    // Require a hard jet in the Mercedes "away" region (region B)
-		    if( oppLeadJetCut || ignoreCut("Opposite leadJetPt") )
-		      {
-			passCut(ret, "Opposite leadJetPt");
-		      }//if(!oppLeadJetCut)
 
+		    if ( (nJetsB >= 0 && wJet != taggedJets.end()) || ignoreCut("Hemispheric") ) {
+		      passCut( ret, "Hemispheric");
+
+		      // Require a hard jet in the Mercedes "away" region (region B)
+		      if( oppLeadJetCut || ignoreCut("Opposite leadJetPt") )
+			{
+			  passCut(ret, "Opposite leadJetPt");
+			}//if(!oppLeadJetCut)
+		    }
 		  }// end if >= 2 jets
 	      } // dRandPtCut 
 	  } // end if muon 2d cut

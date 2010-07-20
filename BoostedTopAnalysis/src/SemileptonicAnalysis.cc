@@ -56,6 +56,7 @@ SemileptonicAnalysis::SemileptonicAnalysis(const edm::ParameterSet& iConfig, TFi
 
 void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 {
+
   pat::strbitset semilepRet = semileptonicSelection_.getBitTemplate();
   semileptonicSelection_(iEvent, semilepRet);
   string bitString;
@@ -80,7 +81,6 @@ void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 
 	  if(semilepRet[string("Lepton has close jet")])
 	    {
-
 	      pat::strbitset retHad = boostedTopWTagFunctor_.getBitTemplate();
 	      retHad.set(false);
 
@@ -107,82 +107,79 @@ void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 
 		if(semilepRet[string("Opposite leadJetPt")])
 		  {
-		    double mMax = 0.0;
-		    double yMax = 0.0;
-		    double muMax = 0.0;
-		    double dRMax = 0.0;
 
 		    histograms2d["mu2DAfter"]->Fill( dRMin, ptRel );
 		    histograms1d["muHtFinal"]->Fill(taggedMuons[0].pt() + met.et());
-		    SemileptonicSelection::candidate_collection::const_iterator wJet = taggedJets.end();
-		    for ( SemileptonicSelection::candidate_collection::const_iterator ijet = taggedJets.begin(),
-			    taggedJetsBegin = taggedJets.begin(), taggedJetsEnd = taggedJets.end();
-			  ijet != taggedJetsEnd; ++ijet ) 
-		      {
-			if ( ijet != closestJet && reco::deltaPhi<double>(ijet->phi(),taggedMuons[0].phi()) > 2*TMath::Pi()/3.0 ) 
-			  {
-			    retHad.set(false);
-			    pat::Jet const * jet = dynamic_cast<pat::Jet const *>(ijet->masterClonePtr().get());
-			    if ( jet != 0 && jet->numberOfDaughters() >= 2 ) 
-			      {
-				if ( ijet->mass() > mMax ) 
-				  {
-				    boostedTopWTagFunctor_( *jet, retHad);
-				    double y = 0.0, mu = 0.0, dR = 0.0;
-				    pat::subjetHelper( *jet, y, mu, dR );
-				    wJet = ijet;
-				    mMax = ijet->mass();
-				    yMax = y;
-				    muMax = mu;
-				    dRMax = dR;
-				  }
-			      }
-			  }
-		      }
-
 		    TLorentzVector MET ( met.px(), 
 					 met.py(), 
 					 met.pz(), //filling with zero, should have an estimate of this to get it right
 					 met.energy() );
 
 		    double metDPhiMin = reco::deltaPhi<double>( closestJet->phi(), met.phi() );
-		    if(wJet==taggedJets.end()) {
-		      edm::LogWarning("AnomalousTopology") << "No W candidates!" << std::endl;
-		    }
 		    //semileptonic histograms
 		    histograms1d["muPt"]->Fill( muP.Perp() );
 		    histograms1d["muPtRel"]->Fill( ptRel );
 		    histograms1d["muDRMin"]->Fill( dRMin );
 		    histograms1d["metDPhiMin"]->Fill(metDPhiMin);
 		    histograms1d["semiLepTopMass"]->Fill((muP + bjetP + MET).M());
-		    pat::Jet const * closestJetPat = dynamic_cast<pat::Jet const *>(closestJet->masterClonePtr().get());
-		    if (closestJetPat != NULL && closestJetPat->genJet() != 0 )
-		      histograms2d["semiMassVsGenPt"]->Fill( closestJetPat->genJet()->pt(), closestJet->mass() );
-		    else
-		      edm::LogWarning("AnomalousTopology") << "No GenJet!" << std::endl;
-		    //double yMax=0.0, muMax=0.0, dRMax=0.0;
-		    //pat::Jet const * jet = dynamic_cast<pat::Jet const *>(wJet->masterClonePtr().get());
-		    //if (jet == NULL) cout << "ERROR, crashing!\n";
-		    //pat::subjetHelper(*jet, yMax, muMax, dRMax);
-		    //hadronic histograms
-		    histograms1d["diffPtb1b2"]->Fill(closestJet->pt() - wJet->pt() );
-		    histograms1d["diffEb1b2"]->Fill(closestJet->energy() - wJet->energy() );
-		    histograms2d["Mb1VsMb2"]->Fill(closestJet->mass(), wJet->mass() );
-		    histograms2d["Ptb1VsPtb2"]->Fill(closestJet->pt(), wJet->pt() );
-		    histograms1d["had_w_m"]->Fill( wJet->mass() );
-		    histograms1d["had_w_pt"]->Fill( wJet->pt() );
-		    histograms1d["had_w_m0"]->Fill( wJet->daughter(0)->mass() );
-		    histograms1d["had_w_m1"]->Fill( wJet->daughter(1)->mass() );
-		    histograms1d["had_w_pt0"]->Fill( wJet->daughter(0)->pt() );
-		    histograms1d["had_w_pt1"]->Fill( wJet->daughter(1)->pt() );
-		    histograms1d["had_w_mu"]->Fill( muMax );
-		    histograms1d["had_w_y"]->Fill( yMax );
-		    histograms1d["had_w_deltaR"]->Fill( dRMax );	
-		    pat::Jet const * wJetPat = dynamic_cast<pat::Jet const *>(wJet->masterClonePtr().get());
-		    if ( wJetPat->genJet() != 0 ) 
-		      histograms2d["hadMassVsGenPt"]->Fill(  wJetPat->genJet()->pt(), wJet->mass() );
-		    else
-		      edm::LogWarning("AnomalousTopology") << "GenJet is zero for W candidates!" << std::endl;
+
+
+		    if( semilepRet[string("Hemispheric")]) {
+		      pat::Jet const * closestJetPat = dynamic_cast<pat::Jet const *>(closestJet->masterClonePtr().get());
+		      if (closestJetPat != NULL && closestJetPat->genJet() != 0 )
+			histograms2d["semiMassVsGenPt"]->Fill( closestJetPat->genJet()->pt(), closestJet->mass() );
+		      else
+			edm::LogWarning("AnomalousTopology") << "No GenJet!" << std::endl;
+		      //double yMax=0.0, muMax=0.0, dRMax=0.0;
+		      //pat::Jet const * jet = dynamic_cast<pat::Jet const *>(wJet->masterClonePtr().get());
+		      //if (jet == NULL) cout << "ERROR, crashing!\n";
+		      //pat::subjetHelper(*jet, yMax, muMax, dRMax);
+		      //hadronic histograms
+		      SemileptonicSelection::candidate_collection::const_iterator wJet = semileptonicSelection_.getWJet();
+		      if ( wJet != semileptonicSelection_.taggedJets().end() ) {
+			pat::Jet const * wJetPat = dynamic_cast<pat::Jet const *>(wJet->masterClonePtr().get());
+			if ( wJetPat != 0 ) {
+			  boostedTopWTagFunctor_( *wJetPat, retHad);
+			  double y = 0.0, mu = 0.0, dR = 0.0;
+			  pat::subjetHelper( *wJetPat, y, mu, dR );
+		
+			  histograms1d["diffPtb1b2"]->Fill(closestJet->pt() - wJet->pt() );
+			  histograms1d["diffEb1b2"]->Fill(closestJet->energy() - wJet->energy() );
+			  histograms2d["Mb1VsMb2"]->Fill(closestJet->mass(), wJet->mass() );
+			  histograms2d["Ptb1VsPtb2"]->Fill(closestJet->pt(), wJet->pt() );
+			  histograms1d["had_w_m"]->Fill( wJet->mass() );
+			  histograms1d["had_w_pt"]->Fill( wJet->pt() );
+			  if ( wJet->daughter(0) != 0 ) {
+			    histograms1d["had_w_m0"]->Fill( wJet->daughter(0)->mass() );
+			    histograms1d["had_w_pt0"]->Fill( wJet->daughter(0)->pt() );
+			  } else {
+			    edm::LogWarning("AnomalousTopology") << "W0 has no daughters" << std::endl;
+			    histograms1d["had_w_m0"]->Fill( -1.0 );
+			    histograms1d["had_w_pt0"]->Fill( -1.0 );
+			  }
+
+			  if ( wJet->daughter(1) != 0 ) {
+			    histograms1d["had_w_m1"]->Fill( wJet->daughter(1)->mass() );
+			    histograms1d["had_w_pt1"]->Fill( wJet->daughter(1)->pt() );
+			  } else {
+			    edm::LogWarning("AnomalousTopology") << "W1 has no daughters" << std::endl;
+			    histograms1d["had_w_m1"]->Fill( -1.0 );
+			    histograms1d["had_w_pt1"]->Fill( -1.0 );
+			  }
+
+			  histograms1d["had_w_mu"]->Fill( mu );
+			  histograms1d["had_w_y"]->Fill( y );
+			  histograms1d["had_w_deltaR"]->Fill( dR );	
+
+			  if ( wJetPat->genJet() != 0 ) 
+			    histograms2d["hadMassVsGenPt"]->Fill(  wJetPat->genJet()->pt(), wJet->mass() );
+			  else
+			    edm::LogWarning("AnomalousTopology") << "GenJet is zero for W candidates!" << std::endl;
+			} else {
+			  edm::LogWarning("BadCast") << "This isn't a pat jet!" << std::endl;
+			} // end if pat jet
+		      }// end if valid wjet
+		    }// end if hemispheric event
 		  }// end if opposite leading jet pt
 	      }// end if 2d cut
 	    }// end if lepton has close jet
