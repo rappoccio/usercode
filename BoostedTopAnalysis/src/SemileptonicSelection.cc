@@ -23,7 +23,8 @@ SemileptonicSelection::SemileptonicSelection( edm::ParameterSet const & params )
   jetSrc(params.getParameter<edm::InputTag>("jetSrc")),
   ptRelMin(params.getParameter<double>("ptRelMin")),
   dRMinCut(params.getParameter<double>("dRMin")),
-  oppLeadJetPt(params.getParameter<double>("oppLeadJetPt"))
+  oppLeadJetPt(params.getParameter<double>("oppLeadJetPt")),
+  htLepCut(params.getParameter<double>("htLepCut"))
 {
   // std::cout << "Instantiated SemileptonicSelection" << std::endl;
   // make the bitset
@@ -36,6 +37,7 @@ SemileptonicSelection::SemileptonicSelection( edm::ParameterSet const & params )
   push_back("Hemispheric");
   push_back("Opposite leadJetPt");
   push_back("Relative Pt and Min Delta R");
+  push_back("HTLep");
   // all on by default
   set("Inclusive");
   set("Trigger");
@@ -46,6 +48,7 @@ SemileptonicSelection::SemileptonicSelection( edm::ParameterSet const & params )
   set("Hemispheric");
   set("Opposite leadJetPt");
   set("Relative Pt and Min Delta R");
+  set("HTLep", htLepCut);
 
   if ( params.exists("cutsToIgnore") )
     setIgnoredCuts( params.getParameter<vector<string> >("cutsToIgnore") );
@@ -170,9 +173,7 @@ bool SemileptonicSelection::operator() ( edm::EventBase const & event, pat::strb
 		      nJetsC++;
 		  }
 		
-		    
-
-
+		   
 		if ( (nJetsB >= 0 && wJet != taggedJets.end()) || ignoreCut("Hemispheric") ) {
 		  passCut( ret, "Hemispheric");
 
@@ -186,7 +187,10 @@ bool SemileptonicSelection::operator() ( edm::EventBase const & event, pat::strb
 			{
 			  passCut(ret, "Relative Pt and Min Delta R");
 			  
-			  
+			  double htLep = taggedMuons[0].pt() + taggedMETs.pt();
+			  if ( htLep >= cut("HTLep", double()) || ignoreCut("HTLep") ) {
+			    passCut(ret, "HTLep");
+			  }
 			}//if(!oppLeadJetCut)
 		    }
 		}// end if >= 2 jets

@@ -22,7 +22,8 @@ semileptonicAnalysis = cms.PSet(
         ptRelMin          = cms.double(35.0),
         mu                = cms.double(0.7),
         ycut              = cms.double(0.1),
-        oppLeadJetPt      = cms.double(100.0)
+        oppLeadJetPt      = cms.double(100.0),
+        htLepCut          = cms.double(150.0)
         )
 
 )

@@ -78,6 +78,7 @@ class SemileptonicSelection : public EventSelector {
   const double ptRelMin;
   const double dRMinCut;
   const double oppLeadJetPt;
+  const double htLepCut;
 
 };
 
