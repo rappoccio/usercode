@@ -23,8 +23,7 @@ SemileptonicSelection::SemileptonicSelection( edm::ParameterSet const & params )
   jetSrc(params.getParameter<edm::InputTag>("jetSrc")),
   ptRelMin(params.getParameter<double>("ptRelMin")),
   dRMinCut(params.getParameter<double>("dRMin")),
-  oppLeadJetPt(params.getParameter<double>("oppLeadJetPt")),
-  leadJetPt(params.getParameter<double>("leadJetPt"))
+  oppLeadJetPt(params.getParameter<double>("oppLeadJetPt"))
 {
   // std::cout << "Instantiated SemileptonicSelection" << std::endl;
   // make the bitset
@@ -32,21 +31,21 @@ SemileptonicSelection::SemileptonicSelection( edm::ParameterSet const & params )
   push_back("Trigger");
   push_back("Lepton");
   push_back("Lepton + >=1 Jets");
-  push_back("Lepton has close jet");
-  push_back("Relative Pt and Min Delta R");
   push_back("Lepton + >=2 Jets");
+  push_back("Lepton has close jet");
   push_back("Hemispheric");
   push_back("Opposite leadJetPt");
+  push_back("Relative Pt and Min Delta R");
   // all on by default
   set("Inclusive");
   set("Trigger");
   set("Lepton");
   set("Lepton + >=1 Jets");
-  set("Lepton has close jet");
-  set("Relative Pt and Min Delta R");
   set("Lepton + >=2 Jets");
+  set("Lepton has close jet");
   set("Hemispheric");
   set("Opposite leadJetPt");
+  set("Relative Pt and Min Delta R");
 
   if ( params.exists("cutsToIgnore") )
     setIgnoredCuts( params.getParameter<vector<string> >("cutsToIgnore") );
@@ -103,8 +102,9 @@ bool SemileptonicSelection::operator() ( edm::EventBase const & event, pat::strb
 	wJet = taggedJets.end();
 
 	// calculate the muon 2d cut
-	dRMin = TMath::Pi() / 3.0;
+	dRMin = 999.0;
 	closestJet = taggedJets.end();
+	bool foundClose = false;
 	for ( vector<reco::ShallowClonePtrCandidate>::const_iterator ijet = taggedJets.begin(),
 		taggedJets_Begin = taggedJets.begin(), taggedJets_End = taggedJets.end();
 	      ijet != taggedJets_End; ++ijet ) 
@@ -115,72 +115,81 @@ bool SemileptonicSelection::operator() ( edm::EventBase const & event, pat::strb
 	      {
 		dRMin = dR;
 		closestJet = ijet;
+		foundClose = true;
 	      }
 	  }
 	
-	// Check the muon 2d cut
-	if ( closestJet != taggedJets.end() || ignoreCut("Lepton has close jet"))  
-	  {
-	    passCut(ret, "Lepton has close jet");
-	    TLorentzVector muP ( taggedMuons[0].px(),
-				 taggedMuons[0].py(),
-				 taggedMuons[0].pz(),
-				 taggedMuons[0].energy() );
-	    
-	    TLorentzVector bjetP ( closestJet->px(),
-				   closestJet->py(),
-				   closestJet->pz(),
-				   closestJet->energy() );
-	    
-	    
-	    double ptRel = TMath::Abs( muP.Perp( bjetP.Vect() ) );
-	    bool dRandPtCut = !(ptRel < ptRelMin && dRMin < dRMinCut);
-	    if(dRandPtCut ||  ignoreCut("Relative Pt and Min Delta R") )
-	      {
-		passCut(ret, "Relative Pt and Min Delta R");
+
 		
-		// Check if there are at least 2 jets. If so, this is the
-		// third stage of the selection
-		if( (retSemi[string(">=2 Jets")] || ignoreCut("Lepton + >=2 Jets")) )
+	// Check if there are at least 2 jets. If so, this is the
+	// third stage of the selection
+	if( (retSemi[string(">=2 Jets")] || ignoreCut("Lepton + >=2 Jets")) )
+	  {
+	    passCut(ret, string("Lepton + >=2 Jets"));
+
+	    // Check the muon 2d cut
+	    if ( foundClose || ignoreCut("Lepton has close jet"))  
+	      {
+		passCut(ret, "Lepton has close jet");
+		TLorentzVector muP ( taggedMuons[0].px(),
+				     taggedMuons[0].py(),
+				     taggedMuons[0].pz(),
+				     taggedMuons[0].energy() );
+		
+		TLorentzVector bjetP ( closestJet->px(),
+				       closestJet->py(),
+				       closestJet->pz(),
+				       closestJet->energy() );
+		
+		
+		double ptRel = TMath::Abs( muP.Perp( bjetP.Vect() ) );
+		bool dRandPtCut = !(ptRel < ptRelMin && dRMin < dRMinCut);
+		
+		// Separate out the jets into "Mercedes" regions. 
+		// Region A: Close to the muon (dphi < pi/3)
+		// Region B: Away from the muon (dphi > 2pi/3)
+		// Region C: Sideband regions (2pi/3 > dphi > pi/3)
+		bool oppLeadJetCut = false;
+		double leadPt = -1.0; 
+		for ( vector<reco::ShallowClonePtrCandidate>::const_iterator ijet = taggedJets.begin(),
+			taggedJets_Begin = taggedJets.begin(), taggedJets_End = taggedJets.end();
+		      ijet != taggedJets_End; ++ijet ) 
 		  {
-		    passCut(ret, string("Lepton + >=2 Jets"));
-
-		    // Separate out the jets into "Mercedes" regions. 
-		    // Region A: Close to the muon (dphi < pi/3)
-		    // Region B: Away from the muon (dphi > 2pi/3)
-		    // Region C: Sideband regions (2pi/3 > dphi > pi/3)
-		    dRMin = TMath::Pi() / 3.0;
-		    bool oppLeadJetCut = false;
-		    double leadPt = -1.0; 
-		    for ( vector<reco::ShallowClonePtrCandidate>::const_iterator ijet = taggedJets.begin(),
-			    taggedJets_Begin = taggedJets.begin(), taggedJets_End = taggedJets.end();
-			  ijet != taggedJets_End; ++ijet ) 
+		    if( fabs(reco::deltaPhi<double>(ijet->phi(), taggedMuons[0].phi()) < TMath::Pi()/3 ))
+		      nJetsA++;
+		    else if (fabs(reco::deltaPhi<double>(ijet->phi(), taggedMuons[0].phi())) > 2*TMath::Pi()/3 )
 		      {
-			if( fabs(reco::deltaPhi<double>(ijet->phi(), taggedMuons[0].phi()) < TMath::Pi()/3 ))
-			  nJetsA++;
-			else if (fabs(reco::deltaPhi<double>(ijet->phi(), taggedMuons[0].phi())) > 2*TMath::Pi()/3 )
-			  {
-			    oppLeadJetCut |= (ijet->pt() > leadJetPt );
-			    if ( ijet->pt() > leadPt ) {
-			      leadPt = ijet->pt();
-			      wJet = ijet;
-			    }
-			    nJetsB++;
-			  }
-			else 
-			  nJetsC++;
+			oppLeadJetCut |= (ijet->pt() > oppLeadJetPt );
+			if ( ijet->pt() > leadPt ) {
+			  leadPt = ijet->pt();
+			  wJet = ijet;
+			}
+			nJetsB++;
 		      }
+		    else 
+		      nJetsC++;
+		  }
+		
+		    
 
-		    if ( (nJetsB >= 0 && wJet != taggedJets.end()) || ignoreCut("Hemispheric") ) {
-		      passCut( ret, "Hemispheric");
 
-		      // Require a hard jet in the Mercedes "away" region (region B)
-		      if( oppLeadJetCut || ignoreCut("Opposite leadJetPt") )
+		if ( (nJetsB >= 0 && wJet != taggedJets.end()) || ignoreCut("Hemispheric") ) {
+		  passCut( ret, "Hemispheric");
+
+		  // Require a hard jet in the Mercedes "away" region (region B)
+		  if( oppLeadJetCut || ignoreCut("Opposite leadJetPt") )
+		    {
+		      passCut(ret, "Opposite leadJetPt");
+		      
+
+		      if(dRandPtCut ||  ignoreCut("Relative Pt and Min Delta R") )
 			{
-			  passCut(ret, "Opposite leadJetPt");
+			  passCut(ret, "Relative Pt and Min Delta R");
+			  
+			  
 			}//if(!oppLeadJetCut)
 		    }
-		  }// end if >= 2 jets
+		}// end if >= 2 jets
 	      } // dRandPtCut 
 	  } // end if muon 2d cut
       }// if have >= 1 jets

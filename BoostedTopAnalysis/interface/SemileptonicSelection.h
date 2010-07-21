@@ -40,7 +40,6 @@ class SemileptonicSelection : public EventSelector {
     return vec;}
   candidate_collection::const_iterator getWJet() const {return wJet;}
   candidate_collection::const_iterator getClosestJet() const {return closestJet;}
-  double getdRMin() const {return dRMin;}
 
   virtual void print( std::ostream & out )
   {
@@ -79,7 +78,6 @@ class SemileptonicSelection : public EventSelector {
   const double ptRelMin;
   const double dRMinCut;
   const double oppLeadJetPt;
-  const double leadJetPt;
 
 };
 

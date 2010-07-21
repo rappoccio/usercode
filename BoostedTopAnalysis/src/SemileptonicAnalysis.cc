@@ -22,6 +22,7 @@ SemileptonicAnalysis::SemileptonicAnalysis(const edm::ParameterSet& iConfig, TFi
   histograms1d["metDPhiMin"] = theDir.make<TH1F>("metDPhiMin","MET #Delta R to closest Jet;Delta R",50,0,5.0);
   histograms2d["mu2DBefore"] = theDir.make<TH2F>( "mu2DBefore", "Muon 2D Cut;#Delta R_{min};p_{T}^{REL} (GeV/c)", 50, 0, 5.0, 40, 0, 200.0 );
   histograms2d["mu2DAfter"] = theDir.make<TH2F>( "mu2DAfter", "Muon 2D Cut;#Delta R_{min};p_{T}^{REL} (GeV/c)", 50, 0, 5.0, 40, 0, 200.0 );
+  histograms2d["mu2DFinal"] = theDir.make<TH2F>( "mu2DFinal", "Muon 2D Cut;#Delta R_{min};p_{T}^{REL} (GeV/c)", 50, 0, 5.0, 40, 0, 200.0 );
   histograms2d["semiMassVsGenPt"] = theDir.make<TH2F>("semiMassVsGenPt", "Semileptonic Side Mass versus GenJet p_{T}", 50, 0, 1500, 50, 0, 350); 
 
   histograms1d["muHtBefore"] = theDir.make<TH1F>( "muHtBefore", "Muon H_{T} no Jets;Muon H_{T} (GeV/c)", 50, 0, 500 );
@@ -75,9 +76,6 @@ void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 			   taggedMuons[0].energy() );
       if(semilepRet[string("Lepton")])
 	{
-	  histograms1d["nJetsSemi"]->Fill(taggedJets.size());
-	  histograms1d["muHtBefore"]->Fill(taggedMuons[0].pt() + met.et());
-
 
 	  if(semilepRet[string("Lepton has close jet")])
 	    {
@@ -98,18 +96,27 @@ void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 				     closestJet->energy() );
 
 	      double ptRel = TMath::Abs(muP.Perp(bjetP.Vect()));
-	      double dRMin = semileptonicSelection_.getdRMin();
+	      double dRMin = reco::deltaR<double>( muP.Eta(), muP.Phi(),
+						   bjetP.Eta(), bjetP.Phi() );
+	      histograms1d["nJetsSemi"]->Fill(taggedJets.size());
+	      histograms1d["muHtBefore"]->Fill(taggedMuons[0].pt() + met.et());
 	      histograms2d["mu2DBefore"]->Fill( dRMin, ptRel );
+	      histograms1d["muPtRel"]->Fill( ptRel );
+	      histograms1d["muDRMin"]->Fill( dRMin );
+	      histograms1d["muPt"]->Fill( muP.Perp() );
+	      histograms1d["lepJetPt"]->Fill( bjetP.Perp() );
+	      histograms1d["lepJetMass"]->Fill( bjetP.M() );
 
-	      if ( semilepRet[string("Relative Pt and Min Delta R")] ) {
+	      if(semilepRet[string("Opposite leadJetPt")])
+		{
 
 		histograms1d["muHtAfter"]->Fill(taggedMuons[0].pt() + met.et());
+		histograms2d["mu2DAfter"]->Fill( dRMin, ptRel );
 
-		if(semilepRet[string("Opposite leadJetPt")])
-		  {
+		if ( semilepRet[string("Relative Pt and Min Delta R")] ) {
 
-		    histograms2d["mu2DAfter"]->Fill( dRMin, ptRel );
 		    histograms1d["muHtFinal"]->Fill(taggedMuons[0].pt() + met.et());
+		    histograms2d["mu2DFinal"]->Fill( dRMin, ptRel );
 		    TLorentzVector MET ( met.px(), 
 					 met.py(), 
 					 met.pz(), //filling with zero, should have an estimate of this to get it right
@@ -117,9 +124,8 @@ void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 
 		    double metDPhiMin = reco::deltaPhi<double>( closestJet->phi(), met.phi() );
 		    //semileptonic histograms
-		    histograms1d["muPt"]->Fill( muP.Perp() );
-		    histograms1d["muPtRel"]->Fill( ptRel );
-		    histograms1d["muDRMin"]->Fill( dRMin );
+
+
 		    histograms1d["metDPhiMin"]->Fill(metDPhiMin);
 		    histograms1d["semiLepTopMass"]->Fill((muP + bjetP + MET).M());
 
