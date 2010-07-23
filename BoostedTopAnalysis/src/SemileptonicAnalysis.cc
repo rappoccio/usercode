@@ -115,22 +115,24 @@ void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 
 		if ( semilepRet[string("Relative Pt and Min Delta R")] ) {
 
-		    histograms1d["muHtFinal"]->Fill(taggedMuons[0].pt() + met.et());
-		    histograms2d["mu2DFinal"]->Fill( dRMin, ptRel );
-		    TLorentzVector MET ( met.px(), 
-					 met.py(), 
-					 met.pz(), //filling with zero, should have an estimate of this to get it right
-					 met.energy() );
+		    if( semilepRet[string("HTLep")] ) {
 
-		    double metDPhiMin = reco::deltaPhi<double>( closestJet->phi(), met.phi() );
-		    //semileptonic histograms
+		      histograms1d["muHtFinal"]->Fill(taggedMuons[0].pt() + met.et());
+		      histograms2d["mu2DFinal"]->Fill( dRMin, ptRel );
+		      TLorentzVector MET ( met.px(), 
+					   met.py(), 
+					   met.pz(), //filling with zero, should have an estimate of this to get it right
+					   met.energy() );
 
-
-		    histograms1d["metDPhiMin"]->Fill(metDPhiMin);
-		    histograms1d["semiLepTopMass"]->Fill((muP + bjetP + MET).M());
+		      double metDPhiMin = reco::deltaPhi<double>( closestJet->phi(), met.phi() );
+		      //semileptonic histograms
 
 
-		    if( semilepRet[string("Hemispheric")]) {
+		      histograms1d["metDPhiMin"]->Fill(metDPhiMin);
+		      histograms1d["semiLepTopMass"]->Fill((muP + bjetP + MET).M());
+
+
+
 		      pat::Jet const * closestJetPat = dynamic_cast<pat::Jet const *>(closestJet->masterClonePtr().get());
 		      if (closestJetPat != NULL && closestJetPat->genJet() != 0 )
 			histograms2d["semiMassVsGenPt"]->Fill( closestJetPat->genJet()->pt(), closestJet->mass() );

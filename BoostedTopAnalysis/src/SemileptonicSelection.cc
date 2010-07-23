@@ -64,6 +64,8 @@ SemileptonicSelection::SemileptonicSelection( edm::ParameterSet const & params )
     wPlusJets_.set(string("== 1 Lepton"), true);
     wPlusJets_.set(string(">=2 Jets"), true);
   }
+
+  retInternal_ = getBitTemplate();
 }
 
 bool SemileptonicSelection::operator() ( edm::EventBase const & event, pat::strbitset & ret)
