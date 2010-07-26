@@ -77,8 +77,11 @@ class SemileptonicSelection : public EventSelector {
   const edm::InputTag jetSrc;
   const double ptRelMin;
   const double dRMinCut;
+  const double anyLeadJetPt;
   const double oppLeadJetPt;
   const double htLepCut;
+  const std::string bDiscriminator;
+  const double bDiscriminatorCut;
 
 };
 
