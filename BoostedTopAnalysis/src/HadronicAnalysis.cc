@@ -115,6 +115,22 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms2d["yVsPt1"]     = theDir.make<TH2F>("yVsPt1", "Asymmetry of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
   histograms2d["dRVsPt0"]     = theDir.make<TH2F>("dRVsPt0", "#Delta R of First Jet", 50, 0, 500, 50, 0.0, 1.0 );
   histograms2d["dRVsPt1"]     = theDir.make<TH2F>("dRVsPt1", "#Delta R of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
+
+  histograms2d["dRVsPt0_UDS"]	= theDir.make<TH2F>("dRVsPt0_UDS",	"#Delta R of First Jet", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["dRVsPt1_UDS"]	= theDir.make<TH2F>("dRVsPt1_UDS",      "#Delta R of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["dRVsPt0_BC"]	= theDir.make<TH2F>("dRVsPt0_BC",	"#Delta R of First Jet", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["dRVsPt1_BC"]    = theDir.make<TH2F>("dRVsPt1_BC",       "#Delta R of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["dRVsPt0_G"]   = theDir.make<TH2F>("dRVsPt0_G",      "#Delta R of First Jet", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["dRVsPt1_G"]   = theDir.make<TH2F>("dRVsPt1_G",      "#Delta R of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
+
+  histograms2d["jetMassVsPt0_UDS"]	=  theDir.make<TH2F>("jetMassVsPt0_UDS",	"First Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt1_UDS"]      =  theDir.make<TH2F>("jetMassVsPt1_UDS",        "Second Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt0_BC"]	=  theDir.make<TH2F>("jetMassVsPt0_BC",		"First Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt1_BC"]	=  theDir.make<TH2F>("jetMassVsPt1_BC",         "Second Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt0_G"]	=  theDir.make<TH2F>("jetMassVsPt0_G",		"First Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt1_G"]	=  theDir.make<TH2F>("jetMassVsPt1_G",		"Second Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+
+
 }
 
 void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
@@ -192,6 +208,8 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 	histograms1d["y0_G"]->Fill(y0, histoWeight_);
 	histograms1d["dR0_G"]->Fill(dR0, histoWeight_);
 	histograms1d["jetEta0_G"]->Fill( p4_0.eta(), histoWeight_ );
+	histograms2d["dRVsPt0_G"]	->  Fill( p4_0.pt(),	dR0, histoWeight_ );
+	histograms2d["jetMassVsPt0_G"]	->  Fill( p4_0.pt(),	pretaggedJets[0]->mass() , histoWeight_);
 
       }
 
@@ -203,6 +221,8 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 	histograms1d["y0_UDS"]->Fill(y0, histoWeight_);
 	histograms1d["dR0_UDS"]->Fill(dR0, histoWeight_);
 	histograms1d["jetEta0_UDS"]->Fill( p4_0.eta(), histoWeight_ );
+        histograms2d["dRVsPt0_UDS"]       ->  Fill( p4_0.pt(),    dR0, histoWeight_ );
+        histograms2d["jetMassVsPt0_UDS"]  ->  Fill( p4_0.pt(),    pretaggedJets[0]->mass() , histoWeight_);
 
       }
 
@@ -216,6 +236,8 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 	histograms1d["y0_BC"]->Fill(y0, histoWeight_);
 	histograms1d["dR0_BC"]->Fill(dR0, histoWeight_);
 	histograms1d["jetEta0_BC"]->Fill( p4_0.eta(), histoWeight_ );
+        histograms2d["dRVsPt0_BC"]       ->  Fill( p4_0.pt(),    dR0, histoWeight_ );
+        histograms2d["jetMassVsPt0_BC"]  ->  Fill( p4_0.pt(),    pretaggedJets[0]->mass() , histoWeight_);
 
       }
 
@@ -228,6 +250,8 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 	histograms1d["y1_G"]->Fill(y1, histoWeight_);
 	histograms1d["dR1_G"]->Fill(dR1, histoWeight_);
 	histograms1d["jetEta1_G"]->Fill( p4_1.eta(), histoWeight_ );
+        histograms2d["dRVsPt1_G"]       ->  Fill( p4_1.pt(),    dR1, histoWeight_ );
+        histograms2d["jetMassVsPt1_G"]  ->  Fill( p4_1.pt(),    pretaggedJets[1]->mass() , histoWeight_);
 
       }
 
@@ -239,6 +263,8 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 	histograms1d["y1_UDS"]->Fill(y1, histoWeight_);
 	histograms1d["dR1_UDS"]->Fill(dR1, histoWeight_);
 	histograms1d["jetEta1_UDS"]->Fill( p4_1.eta(), histoWeight_ );
+        histograms2d["dRVsPt1_UDS"]       ->  Fill( p4_1.pt(),    dR1, histoWeight_ );
+        histograms2d["jetMassVsPt1_UDS"]  ->  Fill( p4_1.pt(),    pretaggedJets[1]->mass() , histoWeight_);
 
       }
 
@@ -252,6 +278,8 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 	histograms1d["y1_BC"]->Fill(y1, histoWeight_);
 	histograms1d["dR1_BC"]->Fill(dR1, histoWeight_);
 	histograms1d["jetEta1_BC"]->Fill( p4_1.eta(), histoWeight_ );
+        histograms2d["dRVsPt1_BC"]       ->  Fill( p4_1.pt(),    dR1, histoWeight_ );
+        histograms2d["jetMassVsPt1_BC"]  ->  Fill( p4_1.pt(),    pretaggedJets[1]->mass() , histoWeight_);
 
       }
 
