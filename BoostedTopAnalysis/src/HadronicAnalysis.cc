@@ -200,8 +200,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 
 
 
-      if ( pretaggedJets[0]->genParton() != 0 &&
-	   pretaggedJets[0]->partonFlavour() == 21 ) {
+      if ( pretaggedJets[0]->partonFlavour() == 21 ) {
 	histograms1d["jetPt0_G"]->Fill( p4_0.pt(), histoWeight_ );
 	histograms1d["jetMass0_G"]->Fill( pretaggedJets[0]->mass() , histoWeight_);
 	histograms1d["mu0_G"]->Fill(mu0, histoWeight_);
@@ -213,8 +212,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 
       }
 
-      else if ( pretaggedJets[0]->genParton() != 0 &&
-		fabs(pretaggedJets[0]->partonFlavour()) < 4 ) {
+      else if ( fabs(pretaggedJets[0]->partonFlavour()) < 4 ) {
 	histograms1d["jetPt0_UDS"]->Fill( p4_0.pt(), histoWeight_ );
 	histograms1d["jetMass0_UDS"]->Fill( pretaggedJets[0]->mass() , histoWeight_);
 	histograms1d["mu0_UDS"]->Fill(mu0, histoWeight_);
@@ -226,8 +224,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 
       }
 
-      else if ( pretaggedJets[0]->genParton() != 0 &&
-		(fabs(pretaggedJets[0]->partonFlavour()) == 4 ||
+      else if ( (fabs(pretaggedJets[0]->partonFlavour()) == 4 ||
 		 fabs(pretaggedJets[0]->partonFlavour()) == 5 )
 		) {
 	histograms1d["jetPt0_BC"]->Fill( p4_0.pt(), histoWeight_ );
@@ -241,9 +238,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 
       }
 
-
-      if ( pretaggedJets[1]->genParton() != 0 &&
-	   pretaggedJets[1]->partonFlavour() == 21 ) {
+      if ( pretaggedJets[1]->partonFlavour() == 21 ) {
 	histograms1d["jetPt1_G"]->Fill( p4_1.pt(), histoWeight_ );
 	histograms1d["jetMass1_G"]->Fill( pretaggedJets[1]->mass() , histoWeight_);
 	histograms1d["mu1_G"]->Fill(mu1, histoWeight_);
@@ -255,8 +250,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 
       }
 
-      else if ( pretaggedJets[1]->genParton() != 0 &&
-		fabs(pretaggedJets[1]->partonFlavour()) < 4 ) {
+      else if ( fabs(pretaggedJets[1]->partonFlavour()) < 4 ) {
 	histograms1d["jetPt1_UDS"]->Fill( p4_1.pt(), histoWeight_ );
 	histograms1d["jetMass1_UDS"]->Fill( pretaggedJets[1]->mass() , histoWeight_);
 	histograms1d["mu1_UDS"]->Fill(mu1, histoWeight_);
@@ -268,8 +262,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 
       }
 
-      else if ( pretaggedJets[1]->genParton() != 0 &&
-		(fabs(pretaggedJets[1]->partonFlavour()) == 4 ||
+      else if ( (fabs(pretaggedJets[1]->partonFlavour()) == 4 ||
 		 fabs(pretaggedJets[1]->partonFlavour()) == 5 )
 		) {
 	histograms1d["jetPt1_BC"]->Fill( p4_1.pt(), histoWeight_ );
@@ -282,6 +275,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
         histograms2d["jetMassVsPt1_BC"]  ->  Fill( p4_1.pt(),    pretaggedJets[1]->mass() , histoWeight_);
 
       }
+
 
       summary.push_back( EventSummary( p4.mass(), mu0, mu1, y0, y1,
 				       iEvent.id().run(), iEvent.id().event(), iEvent.luminosityBlock() ) );
