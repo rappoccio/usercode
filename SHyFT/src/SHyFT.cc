@@ -149,6 +149,14 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     }
   }
 
+  //Book some data histograms
+  for(unsigned int k=0;k<secvtxName.size();++k) {
+    std::string temp = string("Data") + secvtxName[k];
+    histograms[temp+"1t"]   = theDir.make<TH1F>( (temp+"1t").c_str(), "Data SecvtxMass",  40,    0,   10);
+    if( k!=0 )
+      histograms[temp+"2t"] = theDir.make<TH1F>( (temp+"2t").c_str(), "Data SecvtxMass",  40,    0,   10);
+  }
+
 }
 
 
@@ -266,19 +274,26 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       histograms["tag_jet_pt"]->Fill( jetPt );
       histograms2d["massVsPt"]->Fill( jetPt, jet->mass() );
       
-      // Is this jet tagged and does it have a good secondary vertex
-      if( jet->bDiscriminator("simpleSecondaryVertexBJetTags") < btagOP_ ) {
-        // This jet is not tagged, so we skip it but first we check the btag efficiency.
-        if     ( jetFlavor == 4 ) histograms["tag_eff"]-> Fill( 1 );
-        else if( jetFlavor == 5 ) histograms["tag_eff"]-> Fill( 2 );
-        else                      histograms["tag_eff"]-> Fill( 0 );
-        continue;
-      } 
-      else {
-        if     ( jetFlavor == 4 ) histograms["tag_eff"]-> Fill( 4 );
-        else if( jetFlavor == 5 ) histograms["tag_eff"]-> Fill( 5 );
-        else                      histograms["tag_eff"]-> Fill( 3 );
+      if( doMC_ ) {
+        // Is this jet tagged and does it have a good secondary vertex
+        if( jet->bDiscriminator("simpleSecondaryVertexBJetTags") < btagOP_ ) {
+          // This jet is not tagged, so we skip it but first we check the btag efficiency.
+          if     ( jetFlavor == 4 ) histograms["tag_eff"]-> Fill( 1 );
+          else if( jetFlavor == 5 ) histograms["tag_eff"]-> Fill( 2 );
+          else                      histograms["tag_eff"]-> Fill( 0 );
+          continue;
+        } 
+        else {
+          if     ( jetFlavor == 4 ) histograms["tag_eff"]-> Fill( 4 );
+          else if( jetFlavor == 5 ) histograms["tag_eff"]-> Fill( 5 );
+          else                      histograms["tag_eff"]-> Fill( 3 );
+        }
       }
+
+      //If this jet is not tagged, skip it
+      if( jet->bDiscriminator("simpleSecondaryVertexBJetTags") < btagOP_ )
+        continue;
+
       reco::SecondaryVertexTagInfo const * svTagInfos
         = jet->tagInfoSecondaryVertex("secondaryVertex");
       if ( svTagInfos->nVertices() <= 0 )  continue;
@@ -309,23 +324,25 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       //Here we determine what kind of flavor we have in this jet
       if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( HFcat_ );
       
-      switch (jetFlavor)
+      if( doMC_ ) {
+        switch (jetFlavor)
         {
-        case 5:
-          // bottom
-          histograms["bmass"]->Fill(vertexMass);
-          ++numBottom; 
-          break;
-        case 4:
-          // charm
-          histograms["cmass"]->Fill(vertexMass);
-          ++numCharm;
-          break;
-        default:
-          // light flavour
-          histograms["lfmass"]->Fill(vertexMass);
-          ++numLight;
+          case 5:
+            // bottom
+            histograms["bmass"]->Fill(vertexMass);
+            ++numBottom; 
+            break;
+          case 4:
+            // charm
+            histograms["cmass"]->Fill(vertexMass);
+            ++numCharm;
+            break;
+          default:
+            // light flavour
+            histograms["lfmass"]->Fill(vertexMass);
+            ++numLight;
         }
+      }
       ++numTags;
       histograms["discriminator"]-> Fill ( jet->bDiscriminator("simpleSecondaryVertexBJetTags") );
       
@@ -341,7 +358,8 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       sumVertexMass /= numTags;
       
       string whichtag = "";
-      if (1 == numTags)
+      if( doMC_ ) {
+        if (1 == numTags)
         {
           // single tag
           if      (numBottom)              whichtag = "_b";
@@ -349,7 +367,7 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
           else if (numLight)               whichtag = "_q";
           else                             whichtag = "_x";
         }
-      else
+        else
         {
           // double tags
           if      (2 == numBottom)         whichtag = "_bb";
@@ -360,6 +378,7 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
           else if (numCharm  && numLight)  whichtag = "_cq";
           else                             whichtag = "_xx";
         } // if two tags
+      }
       
       string massName = secvtxname
         + Form("_secvtxMass_%dj_%dt", numJets, numTags);
@@ -370,7 +389,8 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       //std::cout << massName_comb << std::endl;
       if(numTags>0 && numJets>0) {
         histograms[massName           ]-> Fill (sumVertexMass);
-        histograms[massName + whichtag]-> Fill (sumVertexMass);
+        if( doMC_ )
+          histograms[massName + whichtag]-> Fill (sumVertexMass);
         //So that we can look at all of a sample without worring about path
         /*        if(massName_comb!=massName) {
           histograms[massName_comb           ]-> Fill (sumVertexMass);
@@ -383,13 +403,14 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       
     } // end if numTags > 0
   
-  //Normalization for "1 tag" events
-  for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
-          jetEnd = jets.end(), jetIter = jetBegin;
+  if( doMC_ ) {
+    //Normalization for "1 tag" events
+    for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
+        jetEnd = jets.end(), jetIter = jetBegin;
         jetIter != jetEnd; ++jetIter)
     {
       const pat::Jet* jet = dynamic_cast<const pat::Jet *>(jetIter->masterClonePtr().get());
-      
+
       double jetPt = jet->pt();
       //jetPt range from BTag POG, [30, 400]
       if( jetPt < 30 )    jetPt = 30.5;
@@ -405,11 +426,11 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
 
       //btag scale factor and mistag rate
       if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p )  )
-         std::cout<<"No reasonable result for b effi !"<<std::endl;
+        std::cout<<"No reasonable result for b effi !"<<std::endl;
       if( !perfC.isResultOk( PerformanceResult::BTAGCEFF, p )  )
-         std::cout<<"No reasonable result for c effi !"<<std::endl;
+        std::cout<<"No reasonable result for c effi !"<<std::endl;
       if( !perfL.isResultOk( PerformanceResult::BTAGLEFF, p )  )
-         std::cout<<"No reasonable result for lf effi !"<<std::endl;
+        std::cout<<"No reasonable result for lf effi !"<<std::endl;
       double bEff = perfB.getResult( PerformanceResult::BTAGBEFF, p );
       double cEff = perfC.getResult( PerformanceResult::BTAGCEFF, p );
       double lEff = perfL.getResult( PerformanceResult::BTAGLEFF, p );
@@ -420,7 +441,7 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       double weight = 1.0;
       int whichtag = 0;
       switch( jetFlavor )
-        {
+      {
         case 5:
           whichtag = 5;
           weight *= bEff;
@@ -432,56 +453,56 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
         default:
           whichtag = 0;
           weight *= lEff;
-        }
-      
+      }
+
       //Probability to untag the rest jets
       double untagRate = 1.0;
       for( ShallowCloneCollection::const_iterator jet2Iter = jetBegin;  jet2Iter != jetEnd; ++jet2Iter )
+      {
+        const pat::Jet* jet2 = dynamic_cast<const pat::Jet *>(jet2Iter->masterClonePtr().get());
+        if( jet2Iter != jetIter )
         {
-          const pat::Jet* jet2 = dynamic_cast<const pat::Jet *>(jet2Iter->masterClonePtr().get());
-          if( jet2Iter != jetIter )
-            {
-              int jetFlavor2 = std::abs( jet2->partonFlavour() );
-              double jetPt2	= jet2->pt();
-              //jetPt range from BTag POG, [30, 400]
-              if( jetPt2 < 30 )	jetPt2 = 30.5;
-              if( jetPt2 > 400 )   jetPt2 = 399.5;
-              double jetEta2	= jet2->eta();
-              //jetEta range from BTag POG, [-3.0, 3.0]
-              if( jetEta2 < -3.0 )	jetEta2 = -2.99;
-              if( jetEta2 > 3.0 )		jetEta2 = 2.99;
-              BinningPointByMap p2;
-              p2.insert( BinningVariables::JetEt,  jetPt2 );
-              p2.insert( BinningVariables::JetEta, jetEta2 );
-              p2.insert( BinningVariables::JetAbsEta,  abs(jetEta2) );
-              
-              switch( jetFlavor2 )
-                {
-                case 5:
-                  if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p2 )  )
-                    std::cout<<"No reasonable result for b effi !"<<std::endl;
-                  untagRate *= (1.-perfB.getResult( PerformanceResult::BTAGBEFF, p2 ) );
-                  break;
-                case 4:
-                  if( !perfC.isResultOk( PerformanceResult::BTAGCEFF, p2 )  )
-                    std::cout<<"No reasonable result for c effi !"<<std::endl;
-                  untagRate *= (1.-perfC.getResult( PerformanceResult::BTAGCEFF, p2 )  );
-                  break;
-                default:
-                  if( !perfL.isResultOk( PerformanceResult::BTAGLEFF, p2 )  )
-                    std::cout<<"No reasonable result for lf effi !"<<std::endl;
-                  untagRate *= (1.-perfL.getResult( PerformanceResult::BTAGLEFF, p2 ) );
-                }
-            }
-        } // end for jet2Iter
+          int jetFlavor2 = std::abs( jet2->partonFlavour() );
+          double jetPt2	= jet2->pt();
+          //jetPt range from BTag POG, [30, 400]
+          if( jetPt2 < 30 )	jetPt2 = 30.5;
+          if( jetPt2 > 400 )   jetPt2 = 399.5;
+          double jetEta2	= jet2->eta();
+          //jetEta range from BTag POG, [-3.0, 3.0]
+          if( jetEta2 < -3.0 )	jetEta2 = -2.99;
+          if( jetEta2 > 3.0 )		jetEta2 = 2.99;
+          BinningPointByMap p2;
+          p2.insert( BinningVariables::JetEt,  jetPt2 );
+          p2.insert( BinningVariables::JetEta, jetEta2 );
+          p2.insert( BinningVariables::JetAbsEta,  abs(jetEta2) );
+
+          switch( jetFlavor2 )
+          {
+            case 5:
+              if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p2 )  )
+                std::cout<<"No reasonable result for b effi !"<<std::endl;
+              untagRate *= (1.-perfB.getResult( PerformanceResult::BTAGBEFF, p2 ) );
+              break;
+            case 4:
+              if( !perfC.isResultOk( PerformanceResult::BTAGCEFF, p2 )  )
+                std::cout<<"No reasonable result for c effi !"<<std::endl;
+              untagRate *= (1.-perfC.getResult( PerformanceResult::BTAGCEFF, p2 )  );
+              break;
+            default:
+              if( !perfL.isResultOk( PerformanceResult::BTAGLEFF, p2 )  )
+                std::cout<<"No reasonable result for lf effi !"<<std::endl;
+              untagRate *= (1.-perfL.getResult( PerformanceResult::BTAGLEFF, p2 ) );
+          }
+        }
+      } // end for jet2Iter
       histograms3d["normalization"]	->  Fill(  numJets,	1,	whichtag,	weight*untagRate );
     } // end for jetIter
-  
-  if( numJets < 2 )   return true;
-  //Normalization for double tagged events
-  for( ShallowCloneCollection::const_iterator jetBegin = jets.begin(), jetEnd = jets.end(),
-         jetIter1 = jetBegin;  jetIter1 != jetEnd;  jetIter1 ++ )
-    for( ShallowCloneCollection::const_iterator jetIter2 = jetIter1 + 1;  jetIter2 != jetEnd; jetIter2 ++ )
+
+    if( numJets < 2 )   return true;
+    //Normalization for double tagged events
+    for( ShallowCloneCollection::const_iterator jetBegin = jets.begin(), jetEnd = jets.end(),
+        jetIter1 = jetBegin;  jetIter1 != jetEnd;  jetIter1 ++ )
+      for( ShallowCloneCollection::const_iterator jetIter2 = jetIter1 + 1;  jetIter2 != jetEnd; jetIter2 ++ )
       {
         const pat::Jet* jet1 = dynamic_cast<const pat::Jet *>(jetIter1->masterClonePtr().get());
         const pat::Jet* jet2 = dynamic_cast<const pat::Jet *>(jetIter2->masterClonePtr().get());
@@ -505,7 +526,7 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
         p2.insert( BinningVariables::JetEt,  jetPt2 );
         p2.insert( BinningVariables::JetEta, jetEta2 );
         p2.insert( BinningVariables::JetAbsEta,  abs(jetEta2) );
-        
+
         int flavour1 = std::abs( jet1->partonFlavour() );
         int flavour2 = std::abs( jet2->partonFlavour() );
         double weight1 = 1.0;
@@ -513,7 +534,7 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
         double whichtag = 0;
         //norm the flavour value as follow, b -> 5, c -> 4, l -> 0
         switch( flavour1 )
-          {
+        {
           case 5:
             if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p1 )  )
               std::cout<<"No reasonable result for b effi !"<<std::endl;
@@ -529,9 +550,9 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
               std::cout<<"No reasonable result for lf effi !"<<std::endl;
             weight1 = perfL.getResult( PerformanceResult::BTAGLEFF, p1 );
             flavour1 = 0;
-          }
+        }
         switch ( flavour2 )
-          {
+        {
           case 5:
             if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p2 )  )
               std::cout<<"No reasonable result for b effi !"<<std::endl;
@@ -547,10 +568,10 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
               std::cout<<"No reasonable result for lf effi !"<<std::endl;
             weight2  = perfL.getResult( PerformanceResult::BTAGLEFF, p2 ) ;
             flavour2 = 0;
-          }
+        }
         int flavourSum = flavour1 + flavour2 ;
         switch( flavourSum )
-          {
+        {
           case 10:
             //_bb
             whichtag = 10;
@@ -578,9 +599,10 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
           default:
             cout<<"Jet Flavour Error: "<<endl;
             return false;
-          }
+        }
         histograms3d["normalization"]		->  Fill( numJets,  2,  whichtag,  weight1*weight2 );
       }  // end jetIter1, jetIter2
+  }
   return true;
 }
 
