@@ -1,4 +1,6 @@
 #include "Analysis/SHyFT/interface/SHyFT.h"
+#include "TVector3.h"
+#include "TLorentzVector.h"
 #include <sstream>
 
 using namespace std;
@@ -18,7 +20,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   f_( plRootFile_.c_str(), "READ"),  es_(&f_),
   bPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("bPerformanceTag")  ),
   cPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("cPerformanceTag")  ),
-  lPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("lPerformanceTag")  )
+  lPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("lPerformanceTag")  ),
+  btaggerString_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("btaggerString"))
 {
   //book all the histograms for muons
   if(muPlusJets_) {
@@ -80,7 +83,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   else sampleName.push_back(sampleNameInput);
     
   //Calibration Plots
-  histograms["wMT"]           = theDir.make<TH1F>("wMT", "W Transverse Mass",           200,    0,  200);
+  histograms["wMT"]           = theDir.make<TH1F>("wMT",   "W Transverse Mass, Any Jets",         200,    0,  200);
+
   histograms["trackIso"]      = theDir.make<TH1F>("trackIso", "TrackIso",                50,    0,   50);
   histograms["eCalIso"]       = theDir.make<TH1F>("eCalIso",  "eCalIso",                 80,    0,   40);
   histograms["hCalIso"]       = theDir.make<TH1F>("hCalIso",  "hCalIso",                 60,    0,   30);
@@ -129,12 +133,45 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   //Store stat errors
   histograms3d["normalization"]		->  Sumw2();
 
+  histograms["m3"] = theDir.make<TH1F>("m3", "M3", 25, 0, 250);
+
   histograms[sampleNameInput+"_hT"]    = theDir.make<TH1F>( (sampleNameInput+"_hT").c_str(),    "HT using Et is the sum of Jet Et plus Muon Pt", 50, 0,  1200);
   histograms[sampleNameInput+"_hT_1j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_1j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10,  50, 300);
   histograms[sampleNameInput+"_hT_2j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_2j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10,  80, 500);
   histograms[sampleNameInput+"_hT_3j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_3j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt", 10, 110, 600);
   histograms[sampleNameInput+"_hT_4j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_4j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt",  5, 140, 600);
   histograms[sampleNameInput+"_hT_5j"] = theDir.make<TH1F>( (sampleNameInput+"_hT_5j").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt",  5, 170, 600);
+  histograms[sampleNameInput+"_hT_1j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_hT_1j_0t").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt in 0-Tag Sample", 10,  50, 300);
+  histograms[sampleNameInput+"_hT_2j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_hT_2j_0t").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt in 0-Tag Sample", 10,  80, 500);
+  histograms[sampleNameInput+"_hT_3j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_hT_3j_0t").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt in 0-Tag Sample", 10, 110, 600);
+  histograms[sampleNameInput+"_hT_4j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_hT_4j_0t").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt in 0-Tag Sample",  5, 140, 600);
+  histograms[sampleNameInput+"_hT_5j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_hT_5j_0t").c_str(), "HT using Pt is the sum of Jet Et plus Muon Pt in 0-Tag Sample",  5, 170, 600);
+
+  histograms[sampleNameInput+"_wMT"]    = theDir.make<TH1F>( (sampleNameInput+"_wMT").c_str(),    "HT using Et is the sum of Jet Et plus Muon Pt", 10,   0, 200);
+  histograms[sampleNameInput+"_wMT_1j"] = theDir.make<TH1F>( (sampleNameInput+"_wMT_1j").c_str(), "W Transverse Mass, 1 jets", 10,   0, 200);
+  histograms[sampleNameInput+"_wMT_2j"] = theDir.make<TH1F>( (sampleNameInput+"_wMT_2j").c_str(), "W Transverse Mass, 2 jets", 10,   0, 200);
+  histograms[sampleNameInput+"_wMT_3j"] = theDir.make<TH1F>( (sampleNameInput+"_wMT_3j").c_str(), "W Transverse Mass, 3 jets", 10,   0, 200);
+  histograms[sampleNameInput+"_wMT_4j"] = theDir.make<TH1F>( (sampleNameInput+"_wMT_4j").c_str(), "W Transverse Mass, 4 jets", 10,   0, 200);
+  histograms[sampleNameInput+"_wMT_5j"] = theDir.make<TH1F>( (sampleNameInput+"_wMT_5j").c_str(), "W Transverse Mass, 5 jets", 10,   0, 200);
+  histograms[sampleNameInput+"_wMT_1j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_wMT_1j_0t").c_str(), "W Transverse Mass, 1 jets in 0-Tag Sample", 10,   0, 200);
+  histograms[sampleNameInput+"_wMT_2j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_wMT_2j_0t").c_str(), "W Transverse Mass, 2 jets in 0-Tag Sample", 10,   0, 200);
+  histograms[sampleNameInput+"_wMT_3j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_wMT_3j_0t").c_str(), "W Transverse Mass, 3 jets in 0-Tag Sample", 10,   0, 200);
+  histograms[sampleNameInput+"_wMT_4j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_wMT_4j_0t").c_str(), "W Transverse Mass, 4 jets in 0-Tag Sample", 10,   0, 200);
+  histograms[sampleNameInput+"_wMT_5j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_wMT_5j_0t").c_str(), "W Transverse Mass, 5 jets in 0-Tag Sample", 10,   0, 200);
+
+  histograms[sampleNameInput+"_MET"]    = theDir.make<TH1F>( (sampleNameInput+"_MET").c_str(),    "HT using Et is the sum of Jet Et plus Muon Pt", 10,   0, 100);
+  histograms[sampleNameInput+"_MET_1j"] = theDir.make<TH1F>( (sampleNameInput+"_MET_1j").c_str(), "Missing E_{T}, 1 Jets", 10,   0, 100);
+  histograms[sampleNameInput+"_MET_2j"] = theDir.make<TH1F>( (sampleNameInput+"_MET_2j").c_str(), "Missing E_{T}, 2 Jets", 10,   0, 100);
+  histograms[sampleNameInput+"_MET_3j"] = theDir.make<TH1F>( (sampleNameInput+"_MET_3j").c_str(), "Missing E_{T}, 3 Jets", 10,   0, 100);
+  histograms[sampleNameInput+"_MET_4j"] = theDir.make<TH1F>( (sampleNameInput+"_MET_4j").c_str(), "Missing E_{T}, 4 Jets", 10,   0, 100);
+  histograms[sampleNameInput+"_MET_5j"] = theDir.make<TH1F>( (sampleNameInput+"_MET_5j").c_str(), "Missing E_{T}, 5 Jets", 10,   0, 100);
+  histograms[sampleNameInput+"_MET_1j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_MET_1j_0t").c_str(), "Missing E_{T}, 1 Jets in 0-Tag Sample", 10,   0, 100);
+  histograms[sampleNameInput+"_MET_2j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_MET_2j_0t").c_str(), "Missing E_{T}, 2 Jets in 0-Tag Sample", 10,   0, 100);
+  histograms[sampleNameInput+"_MET_3j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_MET_3j_0t").c_str(), "Missing E_{T}, 3 Jets in 0-Tag Sample", 10,   0, 100);
+  histograms[sampleNameInput+"_MET_4j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_MET_4j_0t").c_str(), "Missing E_{T}, 4 Jets in 0-Tag Sample", 10,   0, 100);
+  histograms[sampleNameInput+"_MET_5j_0t"] = theDir.make<TH1F>( (sampleNameInput+"_MET_5j_0t").c_str(), "Missing E_{T}, 5 Jets in 0-Tag Sample", 10,   0, 100);
+
+
   //histograms[sampleNameInput+"_hTvsNJet"] = theDir.make<TH2F>( (sampleNameInput+"_hTvsNJet").c_str(),  "HT as a function of NJets", 5, 0.5, 5.5, 50, 0, 1200);
   //ev.add ( new TH1F( sampleNameInput+TString("_hTUsingPt"), "HT s is Sum of Jet Pt", 50, 0, 1200) );
 
@@ -229,8 +266,17 @@ bool SHyFT::analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muo
 
 
 // fill the plots for the jets
-bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets)
+bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
+			   const reco::ShallowClonePtrCandidate & met,
+			   const std::vector<reco::ShallowClonePtrCandidate>& muons,
+			   const std::vector<reco::ShallowClonePtrCandidate>& electrons)
 {
+
+  reco::Candidate::LorentzVector nu_p4 = met.p4();
+  reco::Candidate::LorentzVector lep_p4 = ( muPlusJets_  ? muons[0].p4() : electrons[0].p4() );
+  double wMT = (lep_p4 + nu_p4).mt();
+  double hT = lep_p4.pt() + nu_p4.Et();
+
   //SecVtxMass and b-tagging related quantities
   int numBottom=0,numCharm=0,numLight=0;
   int numTags=0, numJets=0;
@@ -260,7 +306,39 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
   BtagPerformance  perfL( *plLHandle, *wpLHandle );
   BtagPerformance  perfC( *plCHandle, *wpCHandle );
   btagOP_ = perfB.workingPoint().cut();
-  
+
+  reco::Candidate::LorentzVector p4_m3(0,0,0,0);
+  if ( jets.size() >= 3 ) {
+
+    // std::vector<TVector3> JetEnergy;
+    std::vector<TLorentzVector> jets_p4;
+    for (unsigned i=0; i< jets.size(); ++i) {
+      // JetEnergy.push_back( TVector3( jets[i].px(), jets[i].py(), jets[i].pz() ) );
+      jets_p4.push_back( TLorentzVector( jets[i].px(), jets[i].py(), jets[i].pz(), jets[i].energy() ) );
+    }
+    
+    double M3 = 0.0;
+    double highestPt = 0.0;
+    
+    for (unsigned int j=0;j<jets.size() - 2;++j)
+      {
+	for (unsigned int k=j+1;k<jets.size() - 1;++k)
+	  {
+	    for (unsigned int l = k+1; l<jets.size(); ++l)
+	      {
+		TLorentzVector threeJets = jets_p4[j] + jets_p4[k] + jets_p4[l];
+		if (highestPt < threeJets.Perp())
+		  {
+		    M3 = threeJets.M();
+		    highestPt=threeJets.Perp();
+		  }
+	      }
+	  }
+      }
+    histograms["m3"]->Fill( M3 );
+  }
+
+
   for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
           jetEnd = jets.end(), jetIter = jetBegin;
         jetIter != jetEnd; ++jetIter)
@@ -270,13 +348,14 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       // We first get the flavor of the jet so we can fill look at btag efficiency.
       int jetFlavor = std::abs( jet->partonFlavour() );
       double jetPt  = std::abs( jet->pt() );
+      hT += jet->et();
       
       histograms["tag_jet_pt"]->Fill( jetPt );
       histograms2d["massVsPt"]->Fill( jetPt, jet->mass() );
       
       if( doMC_ ) {
         // Is this jet tagged and does it have a good secondary vertex
-        if( jet->bDiscriminator("simpleSecondaryVertexBJetTags") < btagOP_ ) {
+        if( jet->bDiscriminator(btaggerString_) < btagOP_ ) {
           // This jet is not tagged, so we skip it but first we check the btag efficiency.
           if     ( jetFlavor == 4 ) histograms["tag_eff"]-> Fill( 1 );
           else if( jetFlavor == 5 ) histograms["tag_eff"]-> Fill( 2 );
@@ -291,7 +370,7 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
       }
 
       //If this jet is not tagged, skip it
-      if( jet->bDiscriminator("simpleSecondaryVertexBJetTags") < btagOP_ )
+      if( jet->bDiscriminator(btaggerString_) < btagOP_ )
         continue;
 
       reco::SecondaryVertexTagInfo const * svTagInfos
@@ -344,64 +423,87 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
         }
       }
       ++numTags;
-      histograms["discriminator"]-> Fill ( jet->bDiscriminator("simpleSecondaryVertexBJetTags") );
+      histograms["discriminator"]-> Fill ( jet->bDiscriminator(btaggerString_) );
       
       // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
       if(numTags==2) break;
     }
   // Calculate average SecVtx mass and //  
   // fill appropriate histograms.      //
+
+
   numJets = std::min( (int) jets.size(), 5 );
-  //skip 0 tag events
-  if( numTags > 0 )
-    {
-      sumVertexMass /= numTags;
+
+
+  string htName = sampleNameInput + Form("_hT_%dj", numJets);
+  string wmtName = sampleNameInput + Form("_wMT_%dj", numJets);
+  string metName = sampleNameInput + Form("_MET_%dj", numJets);
+
+  string htName0 = sampleNameInput + Form("_hT_%dj_0t", numJets);
+  string wmtName0 = sampleNameInput + Form("_wMT_%dj_0t", numJets);
+  string metName0 = sampleNameInput + Form("_MET_%dj_0t", numJets);
+
+  if ( numJets > 0 ) {
+    histograms[htName]->Fill( hT );
+    histograms[wmtName]->Fill( wMT );
+    histograms[metName]->Fill( met.pt() );
+    
+    if ( numTags == 0 ) {
+      histograms[htName0]->Fill( hT );
+      histograms[wmtName0]->Fill( wMT );
+      histograms[metName0]->Fill( met.pt() );
+    }
+    else if( numTags > 0 )
+      {
+	sumVertexMass /= numTags;
       
-      string whichtag = "";
-      if( doMC_ ) {
-        if (1 == numTags)
-        {
-          // single tag
-          if      (numBottom)              whichtag = "_b";
-          else if (numCharm)               whichtag = "_c";
-          else if (numLight)               whichtag = "_q";
-          else                             whichtag = "_x";
-        }
-        else
-        {
-          // double tags
-          if      (2 == numBottom)         whichtag = "_bb";
-          else if (2 == numCharm)          whichtag = "_cc";
-          else if (2 == numLight)          whichtag = "_qq";
-          else if (numBottom && numCharm)  whichtag = "_bc";
-          else if (numBottom && numLight)  whichtag = "_bq";
-          else if (numCharm  && numLight)  whichtag = "_cq";
-          else                             whichtag = "_xx";
-        } // if two tags
-      }
+	string whichtag = "";
+	if( doMC_ ) {
+	  if (1 == numTags)
+	    {
+	      // single tag
+	      if      (numBottom)              whichtag = "_b";
+	      else if (numCharm)               whichtag = "_c";
+	      else if (numLight)               whichtag = "_q";
+	      else                             whichtag = "_x";
+	    }
+	  else
+	    {
+	      // double tags
+	      if      (2 == numBottom)         whichtag = "_bb";
+	      else if (2 == numCharm)          whichtag = "_cc";
+	      else if (2 == numLight)          whichtag = "_qq";
+	      else if (numBottom && numCharm)  whichtag = "_bc";
+	      else if (numBottom && numLight)  whichtag = "_bq";
+	      else if (numCharm  && numLight)  whichtag = "_cq";
+	      else                             whichtag = "_xx";
+	    } // if two tags
+	}
       
-      string massName = secvtxname
-        + Form("_secvtxMass_%dj_%dt", numJets, numTags);
-      string massName_comb = sampleNameInput
-        + Form("_secvtxMass_%dj_%dt", numJets, numTags);
-      string htName = sampleNameInput + Form("_hT_%dj", numJets);
-      //std::cout << massName << std::endl;
-      //std::cout << massName_comb << std::endl;
-      if(numTags>0 && numJets>0) {
-        histograms[massName           ]-> Fill (sumVertexMass);
-        if( doMC_ )
-          histograms[massName + whichtag]-> Fill (sumVertexMass);
-        //So that we can look at all of a sample without worring about path
-        /*        if(massName_comb!=massName) {
-          histograms[massName_comb           ]-> Fill (sumVertexMass);
-          histograms[massName_comb + whichtag]-> Fill (sumVertexMass);
-          }*/
-      }
-      //  else if (numJets>0)
-      //histograms[htName]-> Fill (hTUsingPt);
+	string massName = secvtxname
+	  + Form("_secvtxMass_%dj_%dt", numJets, numTags);
+	string massName_comb = sampleNameInput
+	  + Form("_secvtxMass_%dj_%dt", numJets, numTags);
+	string htName = sampleNameInput + Form("_hT_%dj", numJets);
+	//std::cout << massName << std::endl;
+	//std::cout << massName_comb << std::endl;
+	if(numTags>0 && numJets>0) {
+	  histograms[massName           ]-> Fill (sumVertexMass);
+	  if( doMC_ )
+	    histograms[massName + whichtag]-> Fill (sumVertexMass);
+	  //So that we can look at all of a sample without worring about path
+	  /*        if(massName_comb!=massName) {
+		    histograms[massName_comb           ]-> Fill (sumVertexMass);
+		    histograms[massName_comb + whichtag]-> Fill (sumVertexMass);
+		    }*/
+	}
+	//  else if (numJets>0)
+	//histograms[htName]-> Fill (hTUsingPt);
+
       
       
-    } // end if numTags > 0
+      } // end if numTags > 0
+  }// end if numJets > 0 
   
   if( doMC_ ) {
     //Normalization for "1 tag" events
@@ -426,7 +528,9 @@ bool SHyFT::analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets
 
       //btag scale factor and mistag rate
       if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p )  )
+
         std::cout<<"No reasonable result for b effi !"<<std::endl;
+
       if( !perfC.isResultOk( PerformanceResult::BTAGCEFF, p )  )
         std::cout<<"No reasonable result for c effi !"<<std::endl;
       if( !perfL.isResultOk( PerformanceResult::BTAGLEFF, p )  )
@@ -667,7 +771,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
       recId_ = es_.recordID("BTagPerformanceRecord");
       es_.syncTo( iEvent.id(), edm::Timestamp());
       
-      analyze_jets(jets);
+      make_templates(jets, met, muons, electrons);
       analyze_met( met );
       if ( muPlusJets_ ) analyze_muons(muons);
       if ( ePlusJets_ ) analyze_electrons(electrons);
@@ -685,10 +789,6 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
             histograms["jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes"] ->Fill( jets[i].pt() / patJet->genJet()->pt()  );
           }
         }
-        reco::Candidate::LorentzVector nu_p4 = met.p4();
-        reco::Candidate::LorentzVector mu_p4 = muons[0].p4();
-        double wMT = (mu_p4 + nu_p4).mt();
-        histograms["wMT"]->Fill( wMT );
       } 
       if ( maxJets >= 4 ) {
         //std::cout << iEvent.id().run() << ":" << iEvent.id().event() <<":" << iEvent.id().luminosityBlock() << ":" << std::setprecision(8) << muons[0].pt() << std::endl;

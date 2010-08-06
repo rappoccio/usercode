@@ -91,7 +91,7 @@ class SHyFT {
     std::string bPerformanceTag_;
     std::string cPerformanceTag_;
     std::string lPerformanceTag_;
-
+    std::string btaggerString_;
 };
 
 
