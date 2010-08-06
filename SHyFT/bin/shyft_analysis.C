@@ -77,8 +77,6 @@ int main ( int argc, char ** argv )
        ++ev, ++nEventsAnalyzed) 
   {
     
-    if ( ev.event()->size() == 0 ) continue; // skip trees with no events
-
     if ( selectLumis ) {
       bool goodLumi = false;
       for ( std::vector<edm::LuminosityBlockRange>::const_iterator lumisBegin = lumis.begin(),
@@ -91,6 +89,12 @@ int main ( int argc, char ** argv )
       }
       if ( !goodLumi ) continue;
     }
+
+    if ( ev.event()->size() == 0 ) continue; // skip trees with no events
+
+    if ( nEventsAnalyzed % 1000 == 0 )
+      std::cout << "Processing run " << ev.id().run() << ", event " << ev.id().event() << std::endl;
+
     theAnalysis.analyze(ev);
     if (nEventsAnalyzed%10000==0) std::cout<<"Events analyzed: "<<nEventsAnalyzed<<std::endl;
   } //end event loop

@@ -57,9 +57,14 @@ class SHyFT {
   private:
     bool analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons);
     bool analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons);    
-    bool analyze_jets(const std::vector<reco::ShallowClonePtrCandidate>& jets);
     bool analyze_met( const reco::ShallowClonePtrCandidate & met );
     bool calcSampleName (const edm::EventBase& iEvent, std::string &sampleName);
+
+    bool make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
+			const reco::ShallowClonePtrCandidate & met,
+			const std::vector<reco::ShallowClonePtrCandidate>& muons,
+			const std::vector<reco::ShallowClonePtrCandidate>& electrons
+			);
 
     WPlusJetsEventSelector wPlusJets;
     TFileDirectory& theDir;
