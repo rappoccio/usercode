@@ -11,7 +11,11 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/ttbsm_361_v1/a5033698d5913844267be726de0ea95f/ttbsm_361_10_1.root'
+'/store/user/srappocc/MinimumBias/ttbsmAug10_381on36x_r1/4e8cc640dce80838a57cdc6e0cf49d2e/ttbsm_381_1_1_qpg.root',
+'/store/user/srappocc/MinimumBias/ttbsmAug10_381on36x_r1/4e8cc640dce80838a57cdc6e0cf49d2e/ttbsm_381_19_1_ZCG.root',
+'/store/user/srappocc/MinimumBias/ttbsmAug10_381on36x_r1/4e8cc640dce80838a57cdc6e0cf49d2e/ttbsm_381_18_1_MDf.root',
+'/store/user/srappocc/MinimumBias/ttbsmAug10_381on36x_r1/4e8cc640dce80838a57cdc6e0cf49d2e/ttbsm_381_17_1_fkw.root'
+
     )
 )
 ## Maximal Number of Events
@@ -28,9 +32,14 @@ process.TFileService = cms.Service("TFileService",
 
 
 process.hadronicAna = cms.EDAnalyzer('EDHadronicAnalysis',
-                                  hadronicAnalysis = inputHadronicAnalysis.clone()
+                                     hadronicAnalysis = inputHadronicAnalysis.clone(
+                                         inputHadronicAnalysis.dijetSelectorParams.clone(
+                                             pfMetSrc = cms.InputTag('patMETsPFlow'),
+                                             ptMin = cms.double(50.0)
+                                             ),
+                                         trig = cms.string('HLT_Jet30U')
+                                         )
                                      )
-process.hadronicAna.hadronicAnalysis.dijetSelectorParams.ptMin = cms.double(25.0) 
 
 process.hadronicAnaUnweighted = process.hadronicAna.clone( )
 
@@ -45,7 +54,7 @@ process.hadronicAnaUnweighted.plotOptions = cms.PSet(
     )
 
 process.p = cms.Path(
-    process.hadronicAna*
+#    process.hadronicAna*
     process.hadronicAnaUnweighted
     )
 

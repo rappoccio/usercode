@@ -6,12 +6,13 @@ import sys
 command = sys.argv[1]
 
 dirs = [
+'ttbsmAug10_381on36x_r1_version1',
+'ttbsmAug10_381on36x_r2_version1',
+'ttbsmAug10_381on36x_r3_version1',
+'ttbsmAug10_381on36x_r4_version1',
+'ttbsmAug10_381on36x_r5_version1',
+'ttbsmAug10_381on36x_r6_version1'
 
-'Zprime_M1TeV_W10GeV-madgraph_semilep',
-'Zprime_M1500GeV_W150GeV-madgraph_semilep',
-'WJets-madgraph_semilep',
-'TTbarJets-madgraph_semilep',
-'InclusiveMu15_semilep'
 ]
 
 for idir in dirs :
