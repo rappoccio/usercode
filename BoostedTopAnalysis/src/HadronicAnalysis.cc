@@ -9,6 +9,7 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histoWeight_(1.0),
   weightHist_(0),
   hadronicSelection_(iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis")),
+  boostedTopWTagFunctor_ (iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<edm::ParameterSet>("boostedTopWTagParams") ),
   theDir(iDir)
 {
   std::cout << "Instantiated HadronicAnalysis" << std::endl;
@@ -115,6 +116,45 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms2d["yVsPt1"]     = theDir.make<TH2F>("yVsPt1", "Asymmetry of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
   histograms2d["dRVsPt0"]     = theDir.make<TH2F>("dRVsPt0", "#Delta R of First Jet", 50, 0, 500, 50, 0.0, 1.0 );
   histograms2d["dRVsPt1"]     = theDir.make<TH2F>("dRVsPt1", "#Delta R of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
+
+  histograms2d["dRVsPt0_UDS"]	= theDir.make<TH2F>("dRVsPt0_UDS",	"#Delta R of First Jet", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["dRVsPt1_UDS"]	= theDir.make<TH2F>("dRVsPt1_UDS",      "#Delta R of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["dRVsPt0_BC"]	= theDir.make<TH2F>("dRVsPt0_BC",	"#Delta R of First Jet", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["dRVsPt1_BC"]    = theDir.make<TH2F>("dRVsPt1_BC",       "#Delta R of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["dRVsPt0_G"]   = theDir.make<TH2F>("dRVsPt0_G",      "#Delta R of First Jet", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["dRVsPt1_G"]   = theDir.make<TH2F>("dRVsPt1_G",      "#Delta R of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
+
+  histograms2d["jetMassVsPt0_UDS"]	=  theDir.make<TH2F>("jetMassVsPt0_UDS",	"First Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt1_UDS"]      =  theDir.make<TH2F>("jetMassVsPt1_UDS",        "Second Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt0_BC"]	=  theDir.make<TH2F>("jetMassVsPt0_BC",		"First Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt1_BC"]	=  theDir.make<TH2F>("jetMassVsPt1_BC",         "Second Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt0_G"]	=  theDir.make<TH2F>("jetMassVsPt0_G",		"First Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt1_G"]	=  theDir.make<TH2F>("jetMassVsPt1_G",		"Second Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+
+  histograms2d["taggedJetdRVsPt"]	 = theDir.make<TH2F>("taggedJetdRVsPt",	"#Delta R of Tagged Jets",	50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["taggedJetdRVsPt_UDS"]	= theDir.make<TH2F>("taggedJetdRVsPt_UDS", "#Delta R of Tagged UDS Jets", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["taggedJetdRVsPt_BC"]   = theDir.make<TH2F>("taggedJetdRVsPt_BC", "#Delta R of Tagged BC Jets", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["taggedJetdRVsPt_G"]   = theDir.make<TH2F>("taggedJetdRVsPt_G", "#Delta R of Tagged G Jets", 50, 0, 500, 50, 0.0, 1.0 );
+
+  histograms2d["taggedJetMassVsPt"]	= theDir.make<TH2F>("taggedJetMassVsPt",	"Tagged Jet Mass",	50, 0, 500, 50, 0, 250 );
+  histograms2d["taggedJetMassVsPt_UDS"]     = theDir.make<TH2F>("taggedJetMassVsPt_UDS",        "Tagged UDS Jet Mass",      50, 0, 500, 50, 0, 250 );
+  histograms2d["taggedJetMassVsPt_BC"]     = theDir.make<TH2F>("taggedJetMassVsPt_BC",        "Tagged BC Jet Mass",      50, 0, 500, 50, 0, 250 );
+  histograms2d["taggedJetMassVsPt_G"]     = theDir.make<TH2F>("taggedJetMassVsPt_G",        "Tagged G Jet Mass",      50, 0, 500, 50, 0, 250 );
+
+  histograms2d["antiTagJetdRVsPt"]        = theDir.make<TH2F>("antiTagJetdRVsPt", "#Delta R of Anti-Tagged Jets",      50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["antiTagJetdRVsPt_UDS"]   = theDir.make<TH2F>("antiTagJetdRVsPt_UDS", "#Delta R of Anti-Tagged UDS Jets", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["antiTagJetdRVsPt_BC"]   = theDir.make<TH2F>("antiTagJetdRVsPt_BC", "#Delta R of Anti-Tagged BC Jets", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["antiTagJetdRVsPt_G"]   = theDir.make<TH2F>("antiTagJetdRVsPt_G", "#Delta R of Anti-Tagged G Jets", 50, 0, 500, 50, 0.0, 1.0 );
+
+  histograms2d["antiTagJetMassVsPt"]     = theDir.make<TH2F>("antiTagJetMassVsPt",        "Anti-Tagged Jet Mass",      50, 0, 500, 50, 0, 250 );
+  histograms2d["antiTagJetMassVsPt_UDS"]     = theDir.make<TH2F>("antiTagJetMassVsPt_UDS",        "Anti-Tagged UDS Jet Mass",      50, 0, 500, 50, 0, 250 );
+  histograms2d["antiTagJetMassVsPt_BC"]     = theDir.make<TH2F>("antiTagJetMassVsPt_BC",        "Anti-Tagged BC Jet Mass",      50, 0, 500, 50, 0, 250 );
+  histograms2d["antiTagJetMassVsPt_G"]     = theDir.make<TH2F>("antiTagJetMassVsPt_G",        "Anti-Tagged G Jet Mass",      50, 0, 500, 50, 0, 250 );
+
+  histograms1d["partonFlavor"]		= theDir.make<TH1F>("partonFlavor",	"Parton Flavor",	100,	-50,	50 );
+  histograms1d["genPartonFlavor"]	= theDir.make<TH1F>("genPartonFlavor",	"Gen Parton Flavor",	100,	-50,	50 );
+
+
 }
 
 void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
@@ -138,6 +178,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
     histograms1d["runSelected"]->Fill( iEvent.id().run() );
     std::vector<edm::Ptr<pat::Jet> > const & pretaggedJets = hadronicSelection_.pretaggedJets();
 
+
     if ( pretaggedJets.size() >= 2 ) {
       reco::Candidate::LorentzVector p4_0( pretaggedJets[0]->p4() );
       reco::Candidate::LorentzVector p4_1( pretaggedJets[1]->p4() );
@@ -156,6 +197,61 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 	histoWeight_ = iweight;
       
       }
+
+      for( size_t i=0; i< pretaggedJets.size(); i++ ) {
+         pat::strbitset wtagRet = boostedTopWTagFunctor_.getBitTemplate();
+	 const pat::Jet & theJet = (*pretaggedJets[i]);
+
+	 histograms1d["partonFlavor"]	->  Fill( theJet.partonFlavour() );
+	 if( theJet.genParton() != 0 )
+	    histograms1d["genPartonFlavor"]	->  Fill( theJet.genParton()->pdgId() );
+	 else
+	    histograms1d["genPartonFlavor"]	->  Fill( 0 );
+
+	 double mu=0.0, y=0.0, dR=0.0;
+	 pat::subjetHelper( theJet, mu, y, dR );
+	 if( boostedTopWTagFunctor_( theJet, wtagRet) )  {
+	    histograms2d["taggedJetMassVsPt"]	->  Fill( theJet.pt(), theJet.mass() ) ;
+	    histograms2d["taggedJetdRVsPt"]	->  Fill( theJet.pt(), dR );
+	    if( theJet.genParton() != 0 && fabs( theJet.partonFlavour() ) == 21 )  {
+	      histograms2d["taggedJetdRVsPt_G"]	->  Fill( theJet.pt(), dR );
+	      histograms2d["taggedJetMassVsPt_G"]	->  Fill( theJet.pt(), theJet.mass() ) ;
+	    }
+	    else if( theJet.genParton() != 0 && 
+	    		( fabs( theJet.partonFlavour() ) == 4 || fabs( theJet.partonFlavour() ) == 5 )  )
+			{
+			  histograms2d["taggedJetdRVsPt_BC"]	 ->  Fill( theJet.pt(), dR );
+			  histograms2d["taggedJetMassVsPt_BC"]	->  Fill( theJet.pt(), theJet.mass() ) ;
+			}
+	    else if( theJet.genParton() != 0 && fabs( theJet.partonFlavour() ) < 4 )
+	    {
+	    	histograms2d["taggedJetdRVsPt_UDS"]     ->  Fill( theJet.pt(), dR );
+		histograms2d["taggedJetMassVsPt_UDS"]  ->  Fill( theJet.pt(), theJet.mass() ) ;
+	    }
+
+	 } // end if wtagRet
+	 else
+	 {
+	    histograms2d["antiTagJetMassVsPt"]   ->  Fill( theJet.pt(), theJet.mass() ) ;
+            histograms2d["antiTagJetdRVsPt"]     ->  Fill( theJet.pt(), dR );
+            if( theJet.genParton() != 0 && fabs( theJet.partonFlavour() ) == 21 )  {
+              histograms2d["antiTagJetdRVsPt_G"] ->  Fill( theJet.pt(), dR );
+              histograms2d["antiTagJetMassVsPt_G"]       ->  Fill( theJet.pt(), theJet.mass() ) ;
+            }
+            else if( theJet.genParton() != 0 &&
+                        ( fabs( theJet.partonFlavour() ) == 4 || fabs( theJet.partonFlavour() ) == 5 )  )
+                        {
+                          histograms2d["antiTagJetdRVsPt_BC"]     ->  Fill( theJet.pt(), dR );
+                          histograms2d["antiTagJetMassVsPt_BC"]  ->  Fill( theJet.pt(), theJet.mass() ) ;
+                        }
+            else if( theJet.genParton() != 0 && fabs( theJet.partonFlavour() ) < 4 )
+            {
+                histograms2d["antiTagJetdRVsPt_UDS"]     ->  Fill( theJet.pt(), dR );
+                histograms2d["antiTagJetMassVsPt_UDS"]  ->  Fill( theJet.pt(), theJet.mass() ) ;
+            }
+
+	 }  // end else wtagRet
+      }  // end for i
 
 
       histograms1d["jetPt0"]->Fill( p4_0.pt(), histoWeight_ );
@@ -184,30 +280,31 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 
 
 
-      if ( pretaggedJets[0]->genParton() != 0 &&
-	   pretaggedJets[0]->partonFlavour() == 21 ) {
+      if ( pretaggedJets[0]->partonFlavour() == 21 ) {
 	histograms1d["jetPt0_G"]->Fill( p4_0.pt(), histoWeight_ );
 	histograms1d["jetMass0_G"]->Fill( pretaggedJets[0]->mass() , histoWeight_);
 	histograms1d["mu0_G"]->Fill(mu0, histoWeight_);
 	histograms1d["y0_G"]->Fill(y0, histoWeight_);
 	histograms1d["dR0_G"]->Fill(dR0, histoWeight_);
 	histograms1d["jetEta0_G"]->Fill( p4_0.eta(), histoWeight_ );
+	histograms2d["dRVsPt0_G"]	->  Fill( p4_0.pt(),	dR0, histoWeight_ );
+	histograms2d["jetMassVsPt0_G"]	->  Fill( p4_0.pt(),	pretaggedJets[0]->mass() , histoWeight_);
 
       }
 
-      else if ( pretaggedJets[0]->genParton() != 0 &&
-		fabs(pretaggedJets[0]->partonFlavour()) < 4 ) {
+      else if ( fabs(pretaggedJets[0]->partonFlavour()) < 4 ) {
 	histograms1d["jetPt0_UDS"]->Fill( p4_0.pt(), histoWeight_ );
 	histograms1d["jetMass0_UDS"]->Fill( pretaggedJets[0]->mass() , histoWeight_);
 	histograms1d["mu0_UDS"]->Fill(mu0, histoWeight_);
 	histograms1d["y0_UDS"]->Fill(y0, histoWeight_);
 	histograms1d["dR0_UDS"]->Fill(dR0, histoWeight_);
 	histograms1d["jetEta0_UDS"]->Fill( p4_0.eta(), histoWeight_ );
+        histograms2d["dRVsPt0_UDS"]       ->  Fill( p4_0.pt(),    dR0, histoWeight_ );
+        histograms2d["jetMassVsPt0_UDS"]  ->  Fill( p4_0.pt(),    pretaggedJets[0]->mass() , histoWeight_);
 
       }
 
-      else if ( pretaggedJets[0]->genParton() != 0 &&
-		(fabs(pretaggedJets[0]->partonFlavour()) == 4 ||
+      else if ( (fabs(pretaggedJets[0]->partonFlavour()) == 4 ||
 		 fabs(pretaggedJets[0]->partonFlavour()) == 5 )
 		) {
 	histograms1d["jetPt0_BC"]->Fill( p4_0.pt(), histoWeight_ );
@@ -216,34 +313,36 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 	histograms1d["y0_BC"]->Fill(y0, histoWeight_);
 	histograms1d["dR0_BC"]->Fill(dR0, histoWeight_);
 	histograms1d["jetEta0_BC"]->Fill( p4_0.eta(), histoWeight_ );
+        histograms2d["dRVsPt0_BC"]       ->  Fill( p4_0.pt(),    dR0, histoWeight_ );
+        histograms2d["jetMassVsPt0_BC"]  ->  Fill( p4_0.pt(),    pretaggedJets[0]->mass() , histoWeight_);
 
       }
 
-
-      if ( pretaggedJets[1]->genParton() != 0 &&
-	   pretaggedJets[1]->partonFlavour() == 21 ) {
+      if ( pretaggedJets[1]->partonFlavour() == 21 ) {
 	histograms1d["jetPt1_G"]->Fill( p4_1.pt(), histoWeight_ );
 	histograms1d["jetMass1_G"]->Fill( pretaggedJets[1]->mass() , histoWeight_);
 	histograms1d["mu1_G"]->Fill(mu1, histoWeight_);
 	histograms1d["y1_G"]->Fill(y1, histoWeight_);
 	histograms1d["dR1_G"]->Fill(dR1, histoWeight_);
 	histograms1d["jetEta1_G"]->Fill( p4_1.eta(), histoWeight_ );
+        histograms2d["dRVsPt1_G"]       ->  Fill( p4_1.pt(),    dR1, histoWeight_ );
+        histograms2d["jetMassVsPt1_G"]  ->  Fill( p4_1.pt(),    pretaggedJets[1]->mass() , histoWeight_);
 
       }
 
-      else if ( pretaggedJets[1]->genParton() != 0 &&
-		fabs(pretaggedJets[1]->partonFlavour()) < 4 ) {
+      else if ( fabs(pretaggedJets[1]->partonFlavour()) < 4 ) {
 	histograms1d["jetPt1_UDS"]->Fill( p4_1.pt(), histoWeight_ );
 	histograms1d["jetMass1_UDS"]->Fill( pretaggedJets[1]->mass() , histoWeight_);
 	histograms1d["mu1_UDS"]->Fill(mu1, histoWeight_);
 	histograms1d["y1_UDS"]->Fill(y1, histoWeight_);
 	histograms1d["dR1_UDS"]->Fill(dR1, histoWeight_);
 	histograms1d["jetEta1_UDS"]->Fill( p4_1.eta(), histoWeight_ );
+        histograms2d["dRVsPt1_UDS"]       ->  Fill( p4_1.pt(),    dR1, histoWeight_ );
+        histograms2d["jetMassVsPt1_UDS"]  ->  Fill( p4_1.pt(),    pretaggedJets[1]->mass() , histoWeight_);
 
       }
 
-      else if ( pretaggedJets[1]->genParton() != 0 &&
-		(fabs(pretaggedJets[1]->partonFlavour()) == 4 ||
+      else if ( (fabs(pretaggedJets[1]->partonFlavour()) == 4 ||
 		 fabs(pretaggedJets[1]->partonFlavour()) == 5 )
 		) {
 	histograms1d["jetPt1_BC"]->Fill( p4_1.pt(), histoWeight_ );
@@ -252,8 +351,11 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 	histograms1d["y1_BC"]->Fill(y1, histoWeight_);
 	histograms1d["dR1_BC"]->Fill(dR1, histoWeight_);
 	histograms1d["jetEta1_BC"]->Fill( p4_1.eta(), histoWeight_ );
+        histograms2d["dRVsPt1_BC"]       ->  Fill( p4_1.pt(),    dR1, histoWeight_ );
+        histograms2d["jetMassVsPt1_BC"]  ->  Fill( p4_1.pt(),    pretaggedJets[1]->mass() , histoWeight_);
 
       }
+
 
       summary.push_back( EventSummary( p4.mass(), mu0, mu1, y0, y1,
 				       iEvent.id().run(), iEvent.id().event(), iEvent.luminosityBlock() ) );
