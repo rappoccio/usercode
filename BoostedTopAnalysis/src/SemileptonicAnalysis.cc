@@ -89,6 +89,11 @@ SemileptonicAnalysis::SemileptonicAnalysis(const edm::ParameterSet& iConfig, TFi
 
 }
 
+static TLorentzVector castLorentzVector(reco::Candidate::LorentzVector vec)
+{
+  return TLorentzVector(vec.px(),vec.py(),vec.pz(),vec.energy());
+}
+
 void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 {
 
@@ -166,6 +171,7 @@ void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 
 		    if( semilepRet[string("HTLep")] ) {
 		      
+		      TLorentzVector zPrime(0,0,0,0);
 		      histograms1d["muHt_4"]->Fill(taggedMuons[0].pt() + met.et());
 		      histograms2d["mu2D_4"]->Fill( dRMin, ptRel );
 		      histograms1d["muPtRel_4"]->Fill( ptRel );
@@ -203,6 +209,26 @@ void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 		      if ( wJet != semileptonicSelection_.taggedJets().end() ) {
 			pat::Jet const * wJetPat = dynamic_cast<pat::Jet const *>(wJet->masterClonePtr().get());
 			if ( wJetPat != 0 ) {
+			  zPrime = MET + bjetP + muP;// + TLorentzVector(wJet->px(),wJet->py(),wJet->pz(),wJet->energy());
+			  SemileptonicSelection::candidate_collection::const_iterator hadWJet = taggedJets.end();
+			  double leadPt = -1.0, deltaPhi = -1.0;
+			  for(SemileptonicSelection::candidate_collection::const_iterator ijet = taggedJets.begin(),
+				jetEnd = taggedJets.end(), jetBegin = taggedJets.begin(); ijet != jetEnd; ++ijet)
+			    {
+			      deltaPhi = fabs(reco::deltaPhi<double>(ijet->phi(), taggedMuons[0].phi()));
+			      if( deltaPhi > 2*TMath::Pi()/3 )
+				{
+				  if(ijet != wJet )
+				    {
+				      pat::Jet const * bJetPat = dynamic_cast<pat::Jet const *>(ijet->masterClonePtr().get());
+				      if(bJetPat == NULL) continue;
+				      if(bJetPat->bDiscriminator("trackCountingHighEffBJetTags") > 3.3)
+					{
+					  zPrime += castLorentzVector(ijet->p4());
+					}
+				    }
+				}
+			    }
 			  boostedTopWTagFunctor_( *wJetPat, retHad);
 			  double y = 0.0, mu = 0.0, dR = 0.0;
 			  pat::subjetHelper( *wJetPat, y, mu, dR );
@@ -240,9 +266,6 @@ void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 			    histograms2d["hadMassVsGenPt"]->Fill(  wJetPat->genJet()->pt(), wJet->mass() );
 			  // else
 			  //   edm::LogWarning("AnomalousTopology") << "GenJet is zero for W candidates!" << std::endl;
-
-
-
 
 			  if( semilepRet[string("SemilepBtag")] ) {
 
@@ -283,3 +306,4 @@ void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 	}// end if lepton passes
     }// end if there are any muons
 }// end of function
+
