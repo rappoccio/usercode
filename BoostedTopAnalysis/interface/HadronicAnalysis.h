@@ -80,6 +80,8 @@ class HadronicAnalysis {
     HadronicSelection   hadronicSelection_;
     TFileDirectory& theDir;
     // 'registry' for the histograms                                                                                                                                                                    
+    BoostedTopWTagFunctor   boostedTopWTagFunctor_;
+
     std::map<std::string, TH1F*> histograms1d;
     std::map<std::string, TH2F*> histograms2d;
 
