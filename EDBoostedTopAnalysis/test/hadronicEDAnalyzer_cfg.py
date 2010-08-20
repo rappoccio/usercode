@@ -33,7 +33,7 @@ process.TFileService = cms.Service("TFileService",
 
 process.hadronicAna = cms.EDAnalyzer('EDHadronicAnalysis',
                                      hadronicAnalysis = inputHadronicAnalysis.clone(
-                                         inputHadronicAnalysis.dijetSelectorParams.clone(
+                                         dijetSelectorParams = inputHadronicAnalysis.dijetSelectorParams.clone(
                                              pfMetSrc = cms.InputTag('patMETsPFlow'),
                                              ptMin = cms.double(50.0)
                                              ),
