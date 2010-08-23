@@ -11,7 +11,8 @@ shyftAnalysis = cms.PSet(
         metSrc = cms.InputTag('patMETs'),
         trigSrc = cms.InputTag('patTriggerEvent'),
         jetPtMin = cms.double(30.0),
-        jetEtaMax = cms.double(2.4)
+        jetEtaMax = cms.double(2.4),
+#        minJets = cms.int32(5)
         ) ,
     sampleName = cms.string("top"),
     mode = cms.int32(0),
@@ -21,5 +22,7 @@ shyftAnalysis = cms.PSet(
     bPerformanceTag = cms.string( "MCSSVMb" ),
     cPerformanceTag = cms.string( "MCSSVMc" ),
     lPerformanceTag = cms.string( "MCSSVMl" ),
-    btaggerString = cms.string('simpleSecondaryVertexHighEffBJetTags')
+    btaggerString = cms.string('simpleSecondaryVertexBJetTags')
+#    btaggerString = cms.string("simpleSecondaryVertexBJetTags")
 )
+#shyftAnalysis.pvSelector.maxZ = 24.0
