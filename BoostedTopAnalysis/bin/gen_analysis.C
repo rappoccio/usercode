@@ -89,7 +89,9 @@ int main (int argc, char* argv[])
   TH1F * h_genPt     = theDir.make<TH1F>("h_genPt", "GenJet p_{T}", 500, 0., 5000.);
   TH1F * h_genParton  = theDir.make<TH1F>("h_genParton",  "Parton pdgId", 50, -25,  25 );
   TH1F * h_partonFla  = theDir.make<TH1F>("h_partonFla",  "Jet Flavor",   50, -25,  25 );
-  TH1F * h_numBC      = theDir.make<TH1F>("h_numBC",      "Number of BC parton",  0,  0,  10 );
+  TH1F * h_numBC      = theDir.make<TH1F>("h_numBC",      "Number of BC parton",  10,  0,  10 );
+  TH1F * h_numB       = theDir.make<TH1F>("h_numB",       "Number of B parton",   10,  0,  10 );
+  TH1F * h_numC       = theDir.make<TH1F>("h_numC",       "Number of C parton",   10,  0,  10 );
 
 
   cout << "About to begin looping" << endl;
@@ -98,7 +100,7 @@ int main (int argc, char* argv[])
   //loop through each event
   for (ev.toBegin(); ! ev.atEnd(); ++ev, ++nev) {
     edm::EventBase const & event = ev;
-    if( nev > 1000 )  break;
+    if( nev > 10000 )  break;
 
 
     if ( ev.event()->size() == 0 ) continue; // skip trees with no events
@@ -143,7 +145,7 @@ int main (int argc, char* argv[])
               if( iparton->status() == 2 && fabs(iparton->pdgId()) == 5 )
                 bPartons.push_back( &(*iparton) );
             } // genParticles loop
-          cout<<"bPartons " << bPartons.size() << " cPartons "<< cPartons.size() << endl;
+          //cout<<"bPartons " << bPartons.size() << " cPartons "<< cPartons.size() << endl;
 
           //Chech how many of b's, c's are daughters of the gluon jet
           for( size_t i=0; i < bPartons.size() ; i++ ) {
@@ -154,7 +156,7 @@ int main (int argc, char* argv[])
             do {
               double dR = reco::deltaR<double>( theParton->eta(), theParton->phi(), up->eta(), up->phi() );
               //if( up == theParton ) {
-              if( dR < 0.01 ) {
+              if( dR < 0.1 ) {
                 matched = true;
                 stop = true;
                 numB ++;
@@ -178,7 +180,7 @@ int main (int argc, char* argv[])
             do {
               double dR = reco::deltaR<double>( theParton->eta(), theParton->phi(), up->eta(), up->phi() );
               //if( up == theParton ) {
-              if( dR < 0.01 ) {
+              if( dR < 0.1 ) {
                 matched = true;
                 stop = true;
                 numC ++;
@@ -193,7 +195,10 @@ int main (int argc, char* argv[])
             }  while ( !stop );
 
           } // end for cPartons
-          cout<<"numB " << numB << " numC " << numC <<endl;
+          //cout<<"numB " << numB << " numC " << numC <<endl;
+          h_numB    ->  Fill( numB );
+          h_numC    ->  Fill( numC );
+          h_numBC   ->  Fill( numB+numC );
         } // end if genPartonId 21
       }
     }  // end for ijet
