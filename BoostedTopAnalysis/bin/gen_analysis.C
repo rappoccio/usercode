@@ -87,6 +87,10 @@ int main (int argc, char* argv[])
 
   TH1F * h_dijetMass = theDir.make<TH1F>("h_dijetMass", "Dijet Mass", 500, 0., 5000.);
   TH1F * h_genPt     = theDir.make<TH1F>("h_genPt", "GenJet p_{T}", 500, 0., 5000.);
+  TH1F * h_genParton  = theDir.make<TH1F>("h_genParton",  "Parton pdgId", 50, -25,  25 );
+  TH1F * h_partonFla  = theDir.make<TH1F>("h_partonFla",  "Jet Flavor",   50, -25,  25 );
+  TH1F * h_numBC      = theDir.make<TH1F>("h_numBC",      "Number of BC parton",  0,  0,  10 );
+
 
   cout << "About to begin looping" << endl;
 
@@ -94,12 +98,105 @@ int main (int argc, char* argv[])
   //loop through each event
   for (ev.toBegin(); ! ev.atEnd(); ++ev, ++nev) {
     edm::EventBase const & event = ev;
+    if( nev > 1000 )  break;
 
 
     if ( ev.event()->size() == 0 ) continue; // skip trees with no events
 
     edm::Handle< std::vector<reco::GenJet> > h_genJets;
     event.getByLabel< std::vector<reco::GenJet> > ( edm::InputTag("ca8GenJets"), h_genJets );
+    edm::Handle< std::vector<reco::GenParticle>  > h_genPtrs;
+    event.getByLabel<  std::vector<reco::GenParticle> > ( edm::InputTag("genParticles"), h_genPtrs );
+    edm::Handle< std::vector<pat::Jet>  >  h_jets;
+    event.getByLabel< std::vector<pat::Jet>  > (edm::InputTag("selectedPatJetsCA8PrunedPF"), h_jets );
+
+    std::vector<pat::Jet>::const_iterator  jetBegin = h_jets->begin(), jetEnd = h_jets->end(), ijet = jetBegin;
+    for( ; ijet != jetEnd ; ++ijet )
+    {
+      int partonFlavour = fabs( ijet->partonFlavour() );
+      int genPartonId;
+      if( ijet->pt() > 50 ) {
+        h_partonFla   ->  Fill( ijet->partonFlavour() );
+        if( ijet->genParton() )
+        {
+          h_genParton   ->  Fill( ijet->genParton()->pdgId() );
+          genPartonId = ijet->genParton()->pdgId();
+        }
+        else {
+          h_genParton   ->  Fill( 0 );
+          genPartonId  = 0;
+        }
+        //Check if it's gluon splitting
+        if( (partonFlavour == 4 || partonFlavour == 5) && genPartonId == 21 )
+        {
+          int numB =0 , numC = 0;
+          const reco::GenParticle * theParton = ijet->genParton();
+          //cout<<"theParton status "<<theParton->status() << " and adress " << theParton <<endl;
+
+          std::vector<const reco::GenParticle * >  bPartons;
+          std::vector<const reco::GenParticle * >  cPartons;
+          for( std::vector<reco::GenParticle>::const_iterator partonBegin = h_genPtrs->begin(), partonEnd = h_genPtrs->end(),
+            iparton = partonBegin;  iparton != partonEnd; iparton++ )
+            {
+              if( iparton->status() == 2 && fabs(iparton->pdgId()) == 4 )
+                cPartons.push_back( &(*iparton) );
+              if( iparton->status() == 2 && fabs(iparton->pdgId()) == 5 )
+                bPartons.push_back( &(*iparton) );
+            } // genParticles loop
+          cout<<"bPartons " << bPartons.size() << " cPartons "<< cPartons.size() << endl;
+
+          //Chech how many of b's, c's are daughters of the gluon jet
+          for( size_t i=0; i < bPartons.size() ; i++ ) {
+            bool stop = false;
+            bool matched = false;
+            const reco::Candidate * up = bPartons[i];
+            //cout<<"up is "<< up <<endl;
+            do {
+              double dR = reco::deltaR<double>( theParton->eta(), theParton->phi(), up->eta(), up->phi() );
+              //if( up == theParton ) {
+              if( dR < 0.01 ) {
+                matched = true;
+                stop = true;
+                numB ++;
+              }
+              //else if( up->status() == 3 || !up->mother(0) )
+              else if( !up->mother(0) ) {
+                    stop = true;
+                    //cout<<"Stopped here?"<<endl;
+                    }
+                    else {
+                      //cout<<"Going up"<<endl;
+                      up = up->mother(0);
+                    }
+            }  while ( !stop );
+          } // end for bPartons
+
+          for( size_t i=0; i < cPartons.size(); i++ ) {
+            bool stop = false;
+            bool matched = false;
+            const reco::Candidate * up = cPartons[i];
+            do {
+              double dR = reco::deltaR<double>( theParton->eta(), theParton->phi(), up->eta(), up->phi() );
+              //if( up == theParton ) {
+              if( dR < 0.01 ) {
+                matched = true;
+                stop = true;
+                numC ++;
+              }
+              //else if( up->status() == 3 || !up->mother(0) )
+              else if( !up->mother(0) )
+                    stop = true;
+                    else {
+                      //cout<<"Going up"<<endl;
+                      up = up->mother(0);
+                    }
+            }  while ( !stop );
+
+          } // end for cPartons
+          cout<<"numB " << numB << " numC " << numC <<endl;
+        } // end if genPartonId 21
+      }
+    }  // end for ijet
 
     if ( h_genJets->size() >= 2 ) {
       reco::GenJet const & jet0 = h_genJets->at(0);
