@@ -250,7 +250,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
           histograms1d["genPartonFlavor"]	->  Fill( 0 );
 
         double mu=0.0, y=0.0, dR=0.0;
-        pat::subjetHelper( theJet, mu, y, dR );
+        pat::subjetHelper( theJet, y, mu, dR );
         double theMass = theJet.mass();
         bool passMassCut = ( theMass > 50 ) && ( theMass < 100 );
         bool passWJet = passMassCut && boostedTopWTagFunctor_( theJet, wtagRet);
