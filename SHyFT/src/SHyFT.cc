@@ -314,7 +314,9 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   BtagPerformance  perfL( *plLHandle, *wpLHandle );
   BtagPerformance  perfC( *plCHandle, *wpCHandle );
   btagOP_ = perfB.workingPoint().cut();
-  
+ 
+
+ 
   reco::Candidate::LorentzVector p4_m3(0,0,0,0);
   if ( jets.size() >= 3 ) {
     
@@ -345,7 +347,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       }
     histograms["m3"]->Fill( M3 );
   }
-  
   
   for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
           jetEnd = jets.end(), jetIter = jetBegin;
@@ -392,12 +393,13 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       
       reco::SecondaryVertexTagInfo const * svTagInfos
         = jet->tagInfoSecondaryVertex("secondaryVertex");
+      if ( svTagInfos == 0 ) continue;
       if ( svTagInfos->nVertices() <= 0 )  continue;
       else histograms["nVertices"]-> Fill( svTagInfos->nVertices() );
       
       // Calculate SecVtx Mass //
       ROOT::Math::LorentzVector< ROOT::Math::PxPyPzM4D<double> > sumVec;
-      
+
       reco::Vertex::trackRef_iterator
         kEndTracks = svTagInfos->secondaryVertex(0).tracks_end();
       for (reco::Vertex::trackRef_iterator trackIter =
@@ -460,7 +462,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   string htName0 = sampleNameInput + Form("_hT_%dj_0t", numJets);
   string wmtName0 = sampleNameInput + Form("_wMT_%dj_0t", numJets);
   string metName0 = sampleNameInput + Form("_MET_%dj_0t", numJets);
-  
+
   histograms[muName]->Fill( muons[0].pt() );
   histograms[sampleNameInput + Form("_hT")]->Fill( hT );
   histograms[sampleNameInput + Form("_wMT")]->Fill( wMT );
