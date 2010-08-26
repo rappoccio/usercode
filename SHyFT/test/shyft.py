@@ -4,8 +4,34 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 from PhysicsTools.PatAlgos.tools.coreTools import *
 
 
-useData = True
-use35x = False
+###############################
+####### Parameters ############
+###############################
+from FWCore.ParameterSet.VarParsing import VarParsing
+options = VarParsing ('python')
+
+options.register ('useData',
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Run this on real data")
+
+options.register ('use35x',
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Run on samples produced with <= 35x")
+                  
+options.parseArguments()
+
+print options
+
+import sys
+
+# Set to true for running on data
+useData = options.useData
+# Set to true to run on < 36x samples
+use35x = options.use35x
 
 ## global tag for data
 if useData :
@@ -315,7 +341,7 @@ process.out.outputCommands = [
     'drop *_cleanPat*_*_*',
     'keep *_selectedPat*_*_*',
     'keep *_patMETs*_*_*',
-    'keep recoPFCandidates_particleFlow_*_*',
+#    'keep recoPFCandidates_particleFlow_*_*',
     'keep *_offlineBeamSpot_*_*',
     'keep *_offlinePrimaryVertices_*_*',
     'keep recoTracks_generalTracks_*_*',
