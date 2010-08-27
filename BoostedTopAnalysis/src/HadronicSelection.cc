@@ -11,6 +11,7 @@ HadronicSelection::HadronicSelection( edm::ParameterSet const & params ) :
 			  params.getParameter<edm::ParameterSet>("dijetSelectorParams")),
   caTopTagFunctor_       (params.getParameter<edm::ParameterSet>("caTopTagParams") ),
   boostedTopWTagFunctor_ (params.getParameter<edm::ParameterSet>("boostedTopWTagParams") ),
+  pvSrc_                 (params.getParameter<edm::InputTag>("pvSrc")),
   trigSrc_               (params.getParameter<edm::InputTag>("trigSrc") ),
   trig_                  (params.getParameter<std::string>("trig") ),
   minTags_               (params.getParameter<unsigned int>("minTags") ),
@@ -22,6 +23,8 @@ HadronicSelection::HadronicSelection( edm::ParameterSet const & params ) :
   push_back( "Inclusive"       );
   push_back( "Trigger"         );
   push_back( "Jet Preselection");
+  push_back( "Min nPV"         );
+  push_back( "Max nPV"         );
   push_back( ">= 1 Tag"        );
   push_back( ">= N Tags"       );
 
@@ -29,6 +32,17 @@ HadronicSelection::HadronicSelection( edm::ParameterSet const & params ) :
   set( "Inclusive"        );
   set( "Trigger"          );
   set( "Jet Preselection" );
+
+  if ( params.exists("minNPV")) 
+    set( "Min nPV"          , params.getParameter<int>("minNPV") );
+  else
+    set( "Min nPV"          , 0);
+
+  if ( params.exists("maxNPV")) 
+    set( "Max nPV"          , params.getParameter<int>("maxNPV") );
+  else
+    set( "Max nPV"          , 10000);
+
   set( ">= 1 Tag"         );
   set( ">= N Tags",  minTags_ );
 
@@ -68,50 +82,68 @@ bool HadronicSelection::operator() ( edm::EventBase const & event, pat::strbitse
        passTrig ) {
     passCut(ret, "Trigger");
     
-    // Get the good inclusive jets
-    pat::strbitset jetRet = dijetSelector_.getBitTemplate();
-    bool passDijet = dijetSelector_( event, jetRet );
-    std::vector<edm::Ptr<pat::Jet> > const & inclusiveJets = (!usePF_) ? dijetSelector_.caloJets() : dijetSelector_.pfJets();
+    edm::Handle< std::vector<reco::Vertex>  > pvHandle;
+    event.getByLabel( pvSrc_, pvHandle);
 
-    // Get a list of the jets that pass our tag requirements
-    for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin = inclusiveJets.begin(),
-	    jetEnd = inclusiveJets.end(), ijet = jetBegin;
-	  ijet != jetEnd; ++ijet ) {
-      if ( !useWTag_ ) {
-	pat::strbitset ret = caTopTagFunctor_.getBitTemplate();
-	if ( caTopTagFunctor_(**ijet, ret ) ) {
-	  taggedJets_.push_back( *ijet );
+    int npv = pvHandle->size();
+
+    if ( ignoreCut("Min nPV") || npv >= cut("Min nPV", int()) ) {
+      passCut( ret, "Min nPV");
+
+      if ( ignoreCut("Max nPV") || npv <= cut("Max nPV", int()) ) {
+	passCut( ret, "Max nPV");
+
+
+
+
+	// Get the good inclusive jets
+	pat::strbitset jetRet = dijetSelector_.getBitTemplate();
+	bool passDijet = dijetSelector_( event, jetRet );
+	std::vector<edm::Ptr<pat::Jet> > const & inclusiveJets = (!usePF_) ? dijetSelector_.caloJets() : dijetSelector_.pfJets();
+
+	// Get a list of the jets that pass our tag requirements
+	for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin = inclusiveJets.begin(),
+		jetEnd = inclusiveJets.end(), ijet = jetBegin;
+	      ijet != jetEnd; ++ijet ) {
+	  if ( !useWTag_ ) {
+	    pat::strbitset ret = caTopTagFunctor_.getBitTemplate();
+	    if ( caTopTagFunctor_(**ijet, ret ) ) {
+	      taggedJets_.push_back( *ijet );
+	    }
+	  } else {
+	    pat::strbitset ret = boostedTopWTagFunctor_.getBitTemplate();
+	    if ( boostedTopWTagFunctor_(**ijet, ret ) ) {
+	      taggedJets_.push_back( *ijet );
+	    }
+	  }
+	  
 	}
-      } else {
-	pat::strbitset ret = boostedTopWTagFunctor_.getBitTemplate();
-	if ( boostedTopWTagFunctor_(**ijet, ret ) ) {
-	  taggedJets_.push_back( *ijet );
-	}
-      }
-      
-    }
-    
-    
-    // Now check if there is at least one jet with pt,Y cuts
-    if ( ignoreCut("Jet Preselection") ||
-	 inclusiveJets.size() >= 1 ){
-      passCut(ret,"Jet Preselection");
-
-
-      // Now look for >= 1 tags
-      if ( ignoreCut(">= 1 Tag") ||
-	   static_cast<int>(taggedJets_.size()) > 0 ){
-	passCut(ret,">= 1 Tag");
-
-	// Next require at least N (configurable) tags
-	if ( ignoreCut(">= N Tags") ||
-	     static_cast<int>(taggedJets_.size()) >=  this->cut(">= N Tags", int()) ){
-	  passCut(ret,">= N Tags");
-	}// end if >= N Tags
 	
-      }// end if >= 1 Tag
+    
+	// Now check if there is at least one jet with pt,Y cuts
+	if ( ignoreCut("Jet Preselection") ||
+	     inclusiveJets.size() >= 1 ){
+	  passCut(ret,"Jet Preselection");
+
+
+	  // Now look for >= 1 tags
+	  if ( ignoreCut(">= 1 Tag") ||
+	       static_cast<int>(taggedJets_.size()) > 0 ){
+	    passCut(ret,">= 1 Tag");
+
+	    // Next require at least N (configurable) tags
+	    if ( ignoreCut(">= N Tags") ||
+		 static_cast<int>(taggedJets_.size()) >=  this->cut(">= N Tags", int()) ){
+	      passCut(ret,">= N Tags");
+	    }// end if >= N Tags
+	    
+	  }// end if >= 1 Tag
+	  
+	}// End if jet preselection
+	
+      }// max npv
       
-    }// End if jet preselection
+    } // min npv
     
   } // end if trigger
   

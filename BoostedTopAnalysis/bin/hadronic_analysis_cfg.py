@@ -21,6 +21,7 @@ process.hadronicAnalysis = inputHadronicAnalysis.clone(
         pfMetSrc = cms.InputTag('patMETsPFlow'),
         ptMin = cms.double(50.0)
         ),
+    maxNPV = cms.int32(1),
     trig = cms.string('HLT_Jet30U')
     )
 

@@ -24,9 +24,12 @@ hadronicAnalysis = cms.PSet(
         ),
     jetIDParams = cms.PSet( jetIDSelector.clone() ),
     pfJetIDParams = cms.PSet( pfJetIDSelector.clone() ),
+    pvSrc = cms.InputTag('offlinePrimaryVertices'),
     trigSrc = cms.InputTag('patTriggerEvent'),
-    trig = cms.string('HLT_Jet15U'),
+    trig = cms.string('HLT_Jet30U'),
     minTags = cms.uint32(0),
+    minNPV = cms.int32(0),
+    maxNPV = cms.int32(100000),
     usePF = cms.bool(True),
     useWTag = cms.bool(True)
 )

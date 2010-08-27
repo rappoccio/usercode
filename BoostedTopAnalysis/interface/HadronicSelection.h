@@ -40,6 +40,7 @@ class HadronicSelection : public EventSelector {
   DijetSelector             dijetSelector_;
   CATopTagFunctor           caTopTagFunctor_;
   BoostedTopWTagFunctor     boostedTopWTagFunctor_;
+  edm::InputTag             pvSrc_;
   edm::InputTag             trigSrc_;
   std::string               trig_;
   int                       minTags_;
