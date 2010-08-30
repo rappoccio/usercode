@@ -72,14 +72,15 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     secvtxEnd.push_back("1t"); secvtxEnd.push_back("2t");
   }
   
-  if(sampleNameInput=="Vqq" || sampleNameInput=="Wjets" || sampleNameInput=="Wc") {
+  if(sampleNameInput=="Vqq" || sampleNameInput=="Wjets" || sampleNameInput=="Wc" || sampleNameInput=="Zjets") {
     stringstream tmpString;
     for(int i=1;i<12;++i) {
       tmpString.str("");
       tmpString << i;
       sampleName.push_back(sampleNameInput+"_path"+tmpString.str());
-      sampleName.push_back(sampleNameInput+"W_path"+tmpString.str());
-      if(sampleNameInput=="Vqq") {
+      if ( sampleNameInput != "Zjets" )
+	sampleName.push_back(sampleNameInput+"W_path"+tmpString.str());
+      if(sampleNameInput=="Vqq"  || sampleNameInput == "Zjets") {
         sampleName.push_back(sampleNameInput+"Z_path"+tmpString.str());
       }
     }
@@ -119,12 +120,12 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   histograms["nVertices"]     = theDir.make<TH1F>("nVertices",     "num sec Vertices",    5,    0,    5);
   histograms["nTags"]         = theDir.make<TH1F>("nTags",     "number of Tags",          3,    0,    3);
   
-  /*
-    histograms["tag_eff"]    = theDir.make<TH1F>("tag_eff", "0 lf untag, 1 c untag, 2 b untag, 3 lf tag, 4 c tag, 5 b tag", 6, 0, 6);
-    histograms["tag_jet_pt"] = theDir.make<TH1F>("tag_jet_pt", "JetPt to go with tagging efficiency", 150,    0,    300);
-    histograms2d["eff_vs_pt"]  = theDir.make<TH2F>("eff_vs_pt", "eff_vs_pt", 150, 0, 300, 6, 0, 6); 
-    histograms2d["eff_vs_eta"] = theDir.make<TH2F>("eff_vs_eta", "eff_vs_eta", 50, -3.0, 3.0, 6, 0, 6);
-  */
+
+  histograms["tag_eff"]    = theDir.make<TH1F>("tag_eff", "0 lf untag, 1 c untag, 2 b untag, 3 lf tag, 4 c tag, 5 b tag", 6, 0, 6);
+  histograms["tag_jet_pt"] = theDir.make<TH1F>("tag_jet_pt", "JetPt to go with tagging efficiency", 150,    0,    300);
+  histograms2d["eff_vs_pt"]  = theDir.make<TH2F>("eff_vs_pt", "eff_vs_pt", 150, 0, 300, 6, 0, 6); 
+  histograms2d["eff_vs_eta"] = theDir.make<TH2F>("eff_vs_eta", "eff_vs_eta", 50, -3.0, 3.0, 6, 0, 6);
+
   
   //Using btagging and mistag to do normalization
   histograms3d["normalization"]	= theDir.make<TH3F>("normalization",	"Normalization",	5,	1,	6,	2,	1,	3,   11,  0,  11 );
@@ -315,7 +316,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   BtagPerformance  perfC( *plCHandle, *wpCHandle );
   btagOP_ = perfB.workingPoint().cut();
  
-
  
   reco::Candidate::LorentzVector p4_m3(0,0,0,0);
   if ( jets.size() >= 3 ) {
@@ -329,7 +329,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     
     double M3 = 0.0;
     double highestPt = 0.0;
-    
+
     for (unsigned int j=0;j<jets.size() - 2;++j)
       {
         for (unsigned int k=j+1;k<jets.size() - 1;++k)
@@ -347,11 +347,13 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       }
     histograms["m3"]->Fill( M3 );
   }
+
   
   for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
           jetEnd = jets.end(), jetIter = jetBegin;
         jetIter != jetEnd; ++jetIter)
     {
+
       const pat::Jet* jet = dynamic_cast<const pat::Jet *>(jetIter->masterClonePtr().get());
       
       // We first get the flavor of the jet so we can fill look at btag efficiency.
@@ -363,6 +365,12 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       histograms2d["massVsPt"]->Fill( jetPt, jet->mass() );
       
       if( doMC_ ) {
+	typedef std::pair<std::string, float> pair_type ;
+	std::vector<pair_type> const & pairs = jet->getPairDiscri();
+	for ( std::vector<pair_type>::const_iterator ipair = pairs.begin();
+	      ipair != pairs.end(); ++ipair ) {
+	}
+
         // Is this jet tagged and does it have a good secondary vertex
         if( jet->bDiscriminator(btaggerString_) < btagOP_ ) {
           //cout << "first, bop = " << btagOP_ << endl;
@@ -418,7 +426,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       
       vertexMass = sumVec.M();
       sumVertexMass += vertexMass;
-      
       //Here we determine what kind of flavor we have in this jet
       if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( HFcat_ );
       
@@ -882,6 +889,7 @@ bool SHyFT::calcSampleName (const edm::EventBase& iEvent, std::string &sampleNam
 
 void SHyFT::endJob()
 {
+  std::cout << "----------------------------------------------------------------------------------------" << std::endl;
   wPlusJets.print(std::cout);
   wPlusJets.printSelectors(std::cout);
 }
