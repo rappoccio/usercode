@@ -134,8 +134,6 @@ addJetCollection(process,cms.InputTag('JetPlusTrackZSPCorJetAntiKt5'),
 process.selectedPatJetsPFlow.cut = cms.string('pt > 15 & abs(eta) < 2.4')
 process.selectedPatJetsAK5JPT.cut = cms.string('pt > 15 & abs(eta) < 2.4')
 process.selectedPatJets.cut = cms.string('pt > 20 & abs(eta) < 2.4')
-
-
 process.patJets.tagInfoSources = cms.VInputTag(
     cms.InputTag("secondaryVertexTagInfos")
     )
@@ -145,6 +143,13 @@ process.patJetsPFlow.tagInfoSources = cms.VInputTag(
 process.patJetsAK5JPT.tagInfoSources = cms.VInputTag(
     cms.InputTag("secondaryVertexTagInfosAK5JPT")
     )
+
+# apply my kludge for JPT Jet ID
+process.kludgedJPTJets = cms.EDProducer( 'KludgeJPTID',
+                                         jetSrc = cms.InputTag( 'selectedPatJetsAK5JPT' )
+                                         )
+
+
 process.selectedPatMuons.cut = cms.string("pt > 3")
 process.selectedPatMuonsPFlow.cut = cms.string("pt > 3")
 process.patMuons.usePV = False
@@ -289,7 +294,8 @@ process.patseq = cms.Sequence(
     process.patDefaultSequence* 
     getattr(process,"patPF2PATSequence"+postfix)*
     process.flavorHistorySeq *
-    process.prunedGenParticles 
+    process.prunedGenParticles
+    #    process.kludgedJPTJets
 )
 
 if useData :
@@ -392,6 +398,7 @@ process.out.outputCommands = [
     'keep *_patMETsTriggerMatch_*_*',
     'drop *_MEtoEDMConverter_*_*',
     'keep *_*goodCaloJets_*_*',
-    'keep *_*goodPFJets_*_*'
+    'keep *_*goodPFJets_*_*',
+    'keep *_kludgedJPTJets_*_*'
     ]
 
