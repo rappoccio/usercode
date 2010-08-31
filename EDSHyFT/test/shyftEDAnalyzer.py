@@ -114,8 +114,7 @@ process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
 
 
 process.p = cms.Path(
-    #process.pfShyftAna*process.jptShyftAna*process.caloShyftAna
-    process.jptShyftAna
+    process.pfShyftAna*process.jptShyftAna*process.caloShyftAna
     )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
