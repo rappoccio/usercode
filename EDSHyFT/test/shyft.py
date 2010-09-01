@@ -28,6 +28,15 @@ options.register ('useWJetsFilter',
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
                   "Select events with the W+jets selector")
+
+
+options.register ('useTrigger',
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Select events with the HLT_Mu9 trigger only")
+                  
+
                   
 options.parseArguments()
 
@@ -41,12 +50,23 @@ useData = options.useData
 use35x = options.use35x
 # run the W+Jets selector filter
 useWJetsFilter = options.useWJetsFilter
+# check the trigger
+useTrigger = options.useTrigger
 
 ## global tag for data
 if useData :
     process.GlobalTag.globaltag = cms.string('GR_R_38X_V9::All')
 else :
     process.GlobalTag.globaltag = cms.string('START38_V9::All')
+
+
+# require HLT_Mu9 trigger
+from HLTrigger.HLTfilters.hltHighLevel_cfi import *
+if useTrigger :
+    process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu9"])
+else :
+    process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["*"])
+
 
 # add the flavor history
 process.load("PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi")
@@ -288,6 +308,7 @@ process.source.fileNames = readFiles
 
 process.patseq = cms.Sequence(
 #    process.makeGenEvt *
+    process.step1*
     process.scrapingVeto*
     process.primaryVertexFilter*
     process.recoJPTJets*
@@ -308,7 +329,8 @@ from PhysicsTools.SelectorUtils.wplusjetsAnalysis_cfi import wplusjetsAnalysis a
 
 process.shyftMuCalo = cms.EDFilter( 'EDWPlusJets',
                                     inputwplusjetsAnalysis.clone(
-                                    jetPtMin = cms.double(25.0),
+                                        jetPtMin = cms.double(25.0),
+                                        muJetDR = cms.double(0.),
                                         cutsToIgnore = cms.vstring( ['MET Cut'        ,
                                                                      'Z Veto'         ,
                                                                      'Conversion Veto',
@@ -318,9 +340,26 @@ process.shyftMuCalo = cms.EDFilter( 'EDWPlusJets',
                                                                      '>=3 Jets'       ,
                                                                      '>=4 Jets'       ,
                                                                      '>=5 Jets'                                                                     
-                                                                    ] )
+                                                                     ] )
                                         )
                                     )
+
+process.shyftMuJPT = process.shyftMuCalo.clone(
+    jetSrc = cms.InputTag('selectedPatJetsAK5JPT'),
+    metSrc = cms.InputTag('patMETsTC'),
+    jetPtMin = cms.double(25.0),
+    muJetDR = cms.double(0.),
+    cutsToIgnore = cms.vstring( ['MET Cut'        ,
+                                 'Z Veto'         ,
+                                 'Conversion Veto',
+                                 'Cosmic Veto'    ,
+                                 '>=1 Jets'       ,
+                                 '>=2 Jets'       ,
+                                 '>=3 Jets'       ,
+                                 '>=4 Jets'       ,
+                                 '>=5 Jets'                                                                     
+                                 ] )
+    )
 
 process.shyftMuPF = process.shyftMuCalo.clone(
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
@@ -328,11 +367,23 @@ process.shyftMuPF = process.shyftMuCalo.clone(
     jetSrc = cms.InputTag('selectedPatJetsPFlow'),
     metSrc = cms.InputTag('patMETsPFlow'),
     trigSrc = cms.InputTag('patTriggerEvent'),
-    jetPtMin = cms.double(20.0)
+    muJetDR = cms.double(0.),
+    jetPtMin = cms.double(20.0),
+    cutsToIgnore = cms.vstring( ['MET Cut'        ,
+                                 'Z Veto'         ,
+                                 'Conversion Veto',
+                                 'Cosmic Veto'    ,
+                                 '>=1 Jets'       ,
+                                 '>=2 Jets'       ,
+                                 '>=3 Jets'       ,
+                                 '>=4 Jets'       ,
+                                 '>=5 Jets'                                                                     
+                                 ] )
     )
 
 process.shyftSeqCalo = cms.Sequence( process.shyftMuCalo )
 process.shyftSeqPF = cms.Sequence( process.shyftMuPF )
+process.shyftSeqJPT = cms.Sequence( process.shyftMuJPT )
 
 process.p1 = cms.Path(
     process.patseq
@@ -350,7 +401,11 @@ else :
         process.patseq *
         process.shyftSeqPF
         )
-    process.out.SelectEvents.SelectEvents = cms.vstring('p2', 'p3')    
+    process.p4 = cms.Path(
+        process.patseq *
+        process.shyftSeqJPT
+        )
+    process.out.SelectEvents.SelectEvents = cms.vstring('p2', 'p3', 'p4')    
 
 
 # rename output file
