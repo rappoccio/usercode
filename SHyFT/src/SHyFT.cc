@@ -101,10 +101,16 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   histograms["jet3Phi"]       = theDir.make<TH1F>("jet3Phi",  "3rd leading jet phi",     60, -3.5,  3.5);
   histograms["jet4Phi"]       = theDir.make<TH1F>("jet4Phi",  "4th leading jet phi",     60, -3.5,  3.5);
   if(doMC_) {
-    histograms["jet1PtTrueRes"] = theDir.make<TH1F>("jet1PtTrueRes",   "1st leading jet pt / gen pt",     150,    0,  3);
-    histograms["jet2PtTrueRes"] = theDir.make<TH1F>("jet2PtTrueRes",   "2nd leading jet pt / gen pt",     150,    0,  3);
-    histograms["jet3PtTrueRes"] = theDir.make<TH1F>("jet3PtTrueRes",   "3rd leading jet pt / gen pt",     150,    0,  3);
-    histograms["jet4PtTrueRes"] = theDir.make<TH1F>("jet4PtTrueRes",   "4th leading jet pt / gen pt",     150,    0,  3);
+    histograms2d["jet1PtTrueRes"] = theDir.make<TH2F>("jet1PtTrueRes",   "1st leading jet pt / gen pt",  25, -5.0, 5.0, 50,    0,  3);
+    histograms2d["jet2PtTrueRes"] = theDir.make<TH2F>("jet2PtTrueRes",   "2nd leading jet pt / gen pt",  25, -5.0, 5.0, 50,    0,  3);
+    histograms2d["jet3PtTrueRes"] = theDir.make<TH2F>("jet3PtTrueRes",   "3rd leading jet pt / gen pt",  25, -5.0, 5.0, 50,    0,  3);
+    histograms2d["jet4PtTrueRes"] = theDir.make<TH2F>("jet4PtTrueRes",   "4th leading jet pt / gen pt",  25, -5.0, 5.0, 50,    0,  3);
+
+    histograms2d["jet1PtTrueResBJets"] = theDir.make<TH2F>("jet1PtTrueResBJets",   "1st leading bjet pt / gen pt",  25, -5.0, 5.0, 50,    0,  3);
+    histograms2d["jet2PtTrueResBJets"] = theDir.make<TH2F>("jet2PtTrueResBJets",   "2nd leading bjet pt / gen pt",  25, -5.0, 5.0, 50,    0,  3);
+    histograms2d["jet3PtTrueResBJets"] = theDir.make<TH2F>("jet3PtTrueResBJets",   "3rd leading bjet pt / gen pt",  25, -5.0, 5.0, 50,    0,  3);
+    histograms2d["jet4PtTrueResBJets"] = theDir.make<TH2F>("jet4PtTrueResBJets",   "4th leading bjet pt / gen pt",  25, -5.0, 5.0, 50,    0,  3);
+
   }
   histograms["jet1Mass"]      = theDir.make<TH1F>("jet1Mass", "1st leading jet mass",    50,    0,  150);
   histograms["jet2Mass"]      = theDir.make<TH1F>("jet2Mass", "2nd leading jet mass",    50,    0,  150);
@@ -427,7 +433,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       vertexMass = sumVec.M();
       sumVertexMass += vertexMass;
       //Here we determine what kind of flavor we have in this jet
-      if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( HFcat_ );
+
       
       if( doMC_ ) {
         switch (jetFlavor)
@@ -763,7 +769,6 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   std::vector<reco::ShallowClonePtrCandidate> const & electrons = wPlusJets.selectedElectrons();
   std::vector<reco::ShallowClonePtrCandidate> const & muons     = wPlusJets.selectedMuons();
   std::vector<reco::ShallowClonePtrCandidate> const & jets      = wPlusJets.cleanedJets();
-  //std::vector<reco::ShallowClonePtrCandidate> const & jetsBeforeClean = wPlusJets.selectedJets();
   reco::ShallowClonePtrCandidate const & met = wPlusJets.selectedMET();
   
   string bit_;
@@ -784,6 +789,8 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   bool jet5 = ret[bit_];
 
   bool anyJets = jet1 || jet2 || jet3 || jet4 || jet5;
+
+  histograms["nJets"]->Fill( jets.size() );
   
   // if not passed trigger, next event
   if ( !passTrigger )  return;
@@ -792,6 +799,9 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   //find the sample name
   if(!calcSampleName(iEvent, secvtxname) ) return;
   
+  if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( HFcat_ );
+
+
   if( !passOneLepton ) return;
   
   if (anyJets) 
@@ -812,18 +822,24 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
       if ( muPlusJets_ ) analyze_muons(muons);
       if ( ePlusJets_ ) analyze_electrons(electrons);
       
-      histograms["nJets"]->Fill( jets.size() );
+
       unsigned int maxJets = jets.size();
+      unsigned int ibjet = 0;
       if ( (int)maxJets >= nJetsCut_ ) {
         if ( maxJets > 4 ) maxJets = 4;
         for ( unsigned int i=0; i<maxJets; ++i) {
+
           histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Pt"] ->Fill( jets[i].pt()  );
           histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Eta"]->Fill( jets[i].eta() );
           histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Phi"]->Fill( jets[i].phi() );
           histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Mass"]->Fill( jets[i].mass() );
           pat::Jet const * patJet = dynamic_cast<pat::Jet const *>( &* jets[i].masterClonePtr()  );
           if ( doMC_ && patJet != 0 && patJet->genJet() != 0 ) {
-            histograms["jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes"] ->Fill( jets[i].pt() / patJet->genJet()->pt()  );
+            histograms2d["jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt()  );
+	    if ( abs(patJet->partonFlavour()) == 5 ) {
+	      ++ibjet;
+	      histograms2d["jet" + boost::lexical_cast<std::string>(ibjet) + "PtTrueResBJets"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt()  );
+	    }
           }
         }
       } 
