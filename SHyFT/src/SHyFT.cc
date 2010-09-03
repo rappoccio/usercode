@@ -789,8 +789,6 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   bool jet5 = ret[bit_];
 
   bool anyJets = jet1 || jet2 || jet3 || jet4 || jet5;
-
-  histograms["nJets"]->Fill( jets.size() );
   
   // if not passed trigger, next event
   if ( !passTrigger )  return;
@@ -803,6 +801,9 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
 
 
   if( !passOneLepton ) return;
+
+
+  histograms["nJets"]->Fill( jets.size() );
   
   if (anyJets) 
     {
