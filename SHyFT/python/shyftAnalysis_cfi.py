@@ -22,7 +22,8 @@ shyftAnalysis = cms.PSet(
     bPerformanceTag = cms.string( "MCSSVMb" ),
     cPerformanceTag = cms.string( "MCSSVMc" ),
     lPerformanceTag = cms.string( "MCSSVMl" ),
-    btaggerString = cms.string('simpleSecondaryVertexHighEffBJetTags')
+    btaggerString = cms.string('simpleSecondaryVertexHighEffBJetTags'),
+    identifier = cms.string('Douglas Adams')
 #    btaggerString = cms.string('simpleSecondaryVertexBJetTags')
 )
 #shyftAnalysis.pvSelector.maxZ = 24.0

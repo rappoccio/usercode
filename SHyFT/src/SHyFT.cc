@@ -21,7 +21,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   bPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("bPerformanceTag")  ),
   cPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("cPerformanceTag")  ),
   lPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("lPerformanceTag")  ),
-  btaggerString_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("btaggerString"))
+  btaggerString_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("btaggerString")),
+  identifier_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("identifier"))
 {
   //book all the histograms for muons
   if(muPlusJets_) {
@@ -209,6 +210,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
         histograms[temp+"2t"] = theDir.make<TH1F>( (temp+"2t").c_str(), "Data SecvtxMass",  40,    0,   10);
     }
     }*/
+
+  allNumTags_ = 0;
 }
 
 
@@ -292,10 +295,13 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   double wMT = (lep_p4 + nu_p4).mt();
   double hT = lep_p4.pt() + nu_p4.Et();
 
+  
   //SecVtxMass and b-tagging related quantities
   int numBottom=0,numCharm=0,numLight=0;
   int numTags=0, numJets=0;
   double sumVertexMass=0, vertexMass=0;
+  allNumTags_ = 0;
+  
 
   //Get Payload and Working Point
   fwlite::ESHandle< PerformancePayload >   plBHandle;
@@ -455,6 +461,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
           }
       }
       ++numTags;
+      ++allNumTags_;
       histograms["discriminator"]-> Fill ( jet->bDiscriminator(btaggerString_) );
       
       // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
@@ -807,6 +814,16 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   
   if (anyJets) 
     {
+
+      if ( !doMC_ && jets.size() > 0 ) {
+	summary_.push_back( SHyFTSummary(iEvent.id().run(),
+					 iEvent.id().luminosityBlock(),
+					 iEvent.id().event(),
+					 jets.size(),
+					 allNumTags_
+					 ) );
+      }
+
       //Check if the BTagPerformanceRecord exists
       if( es_.exists("BTagPerformanceRecord")  )
         {
@@ -907,8 +924,13 @@ bool SHyFT::calcSampleName (const edm::EventBase& iEvent, std::string &sampleNam
 void SHyFT::endJob()
 {
   std::cout << "----------------------------------------------------------------------------------------" << std::endl;
+  std::cout << "      So long, and thanks for all the fish..." << std::endl;
+  std::cout << "                 -- " << identifier_ << std::endl;
+  std::cout << "----------------------------------------------------------------------------------------" << std::endl;
   wPlusJets.print(std::cout);
   wPlusJets.printSelectors(std::cout);
+  sort(summary_.begin(), summary_.end());
+  copy(summary_.begin(), summary_.end(), std::ostream_iterator<SHyFTSummary>(std::cout, "\n"));  
 }
 
 

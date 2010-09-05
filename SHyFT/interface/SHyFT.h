@@ -48,8 +48,47 @@ typedef std::vector<reco::ShallowClonePtrCandidate> ShallowCloneCollection;
 class SHyFT {
 
   public:
+
+  struct SHyFTSummary {
+    SHyFTSummary( unsigned int irun=0,
+		  unsigned int ilumiSec=0,
+		  unsigned int ievent=0,
+		  unsigned int inJets=0,
+		  unsigned int inTags=0 ) :
+    run(irun), lumiSec(ilumiSec), event(ievent), nJets(inJets), nTags(inTags)
+    {
+    }
+    unsigned int run;
+    unsigned int lumiSec;
+    unsigned int event;
+    unsigned int nJets;
+    unsigned int nTags;
+
+    friend std::ostream & operator<<(std::ostream & out, SHyFTSummary const & r ) {
+      char buff[1000];
+      sprintf(buff, "%12d , %12d, %20d, %5d, %5d", r.run, r.lumiSec, r.event, r.nJets, r.nTags );
+      out << buff;
+      return out;
+    }
+
+    bool operator<( SHyFTSummary const & r ) const {
+      if ( run < r.run ) return true;
+      else if ( run > r.run ) return false;
+      else { // equal runs
+	if ( lumiSec < r.lumiSec ) return true;
+	else if ( lumiSec > r.lumiSec ) return false;
+	else { // equal lumi sections
+	  if ( event < r.event ) return true;
+	  else if ( event > r.event ) return false;
+	  else return false;
+	}
+      }
+    }
+  };
+
     SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir);
-    virtual ~SHyFT() {}
+    virtual ~SHyFT() {     
+    }
     virtual void analyze(const edm::EventBase& iEvent);
     virtual void beginJob() {}
     virtual void endJob();
@@ -92,6 +131,10 @@ class SHyFT {
     std::string cPerformanceTag_;
     std::string lPerformanceTag_;
     std::string btaggerString_;
+    std::string identifier_; 
+
+    int allNumTags_;
+    std::vector<SHyFTSummary> summary_;
 };
 
 
