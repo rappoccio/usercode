@@ -5,14 +5,14 @@ import subprocess
 
 dirs = [
 
-'TTbarJets-madgraph_shyftana_38xOn35x_v1',
-'WJets-madgraph_shyftana_38xOn35x_v1',
-'ZJets-madgraph_shyftana_38xOn35x_v1',
-'SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v1',
-'SingleTop_tChannel-madgraph_shyftana_38xOn35x_v1',
-'SingleTop_sChannel-madgraph_shyftana_38xOn35x_v1',
-'InclusiveMu15_shyftana_38xOn35x_v1',
-'Vqq-madgraph_shyftana_38xOn35x_v1'
+'TTbarJets-madgraph_shyftana_38xOn35x_v2',
+'WJets-madgraph_shyftana_38xOn35x_v2',
+'ZJets-madgraph_shyftana_38xOn35x_v2',
+'SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v2',
+'SingleTop_tChannel-madgraph_shyftana_38xOn35x_v2',
+'SingleTop_sChannel-madgraph_shyftana_38xOn35x_v2',
+'InclusiveMu15_shyftana_38xOn35x_v2',
+'VqqJets-madgraph_shyftana_38xOn35x_v2'
 
 
 ]

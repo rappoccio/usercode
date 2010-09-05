@@ -8,13 +8,14 @@ idir='/uscms_data/d2/rappocc/analysis/SHyFT/CMSSW_3_8_2_SHyFT/src/Analysis/EDSHy
 
 
 crabFiles = [
-   [ 'crab_InclusiveMu15_shyftana_38xOn35x_v1_anashyft.cfg',                    'InclusiveMu15_shyftana_38xOn35x_v1'],                  
-   [ 'crab_SingleTop_sChannel-madgraph_shyftana_38xOn35x_v1_anashyft.cfg',      'SingleTop_sChannel-madgraph_shyftana_38xOn35x_v1'],    
-   [ 'crab_SingleTop_tChannel-madgraph_shyftana_38xOn35x_v1_anashyft.cfg',      'SingleTop_tChannel-madgraph_shyftana_38xOn35x_v1'],    
-   [ 'crab_SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v1_anashyft.cfg',     'SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v1'],   
-   [ 'crab_TTbarJets-madgraph_shyftana_38xOn35x_v1_anashyft.cfg',               'TTbarJets-madgraph_shyftana_38xOn35x_v1'],             
-   [ 'crab_WJets-madgraph_shyftana_38xOn35x_v1_anashyft.cfg',                   'WJets-madgraph_shyftana_38xOn35x_v1'],                 
-   [ 'crab_ZJets-madgraph_shyftana_38xOn35x_v1_anashyft.cfg',                    'ZJets-madgraph_shyftana_38xOn35x_v1']                  
+    [ 'crab_InclusiveMu15_shyftana_38xOn35x_v2_anashyft.cfg',                    'InclusiveMu15_shyftana_38xOn35x_v2'],                  
+    [ 'crab_SingleTop_sChannel-madgraph_shyftana_38xOn35x_v2_anashyft.cfg',      'SingleTop_sChannel-madgraph_shyftana_38xOn35x_v2'],    
+    [ 'crab_SingleTop_tChannel-madgraph_shyftana_38xOn35x_v2_anashyft.cfg',      'SingleTop_tChannel-madgraph_shyftana_38xOn35x_v2'],    
+    [ 'crab_SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v2_anashyft.cfg',     'SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v2'],   
+    [ 'crab_TTbarJets-madgraph_shyftana_38xOn35x_v2_anashyft.cfg',               'TTbarJets-madgraph_shyftana_38xOn35x_v2'],             
+    [ 'crab_WJets-madgraph_shyftana_38xOn35x_v2_anashyft.cfg',                   'WJets-madgraph_shyftana_38xOn35x_v2'],                 
+    [ 'crab_ZJets-madgraph_shyftana_38xOn35x_v2_anashyft.cfg',                   'ZJets-madgraph_shyftana_38xOn35x_v2'],
+    [ 'crab_VqqJets-madgraph_shyftana_38xOn35x_v2_anashyft.cfg',                 'VqqJets-madgraph_shyftana_38xOn35x_v2']
     ]
 
 

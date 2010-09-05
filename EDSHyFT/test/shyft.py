@@ -68,6 +68,10 @@ else :
     process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["*"])
 
 
+
+# HB + HE noise filtering
+process.load('CommonTools/RecoAlgos/HBHENoiseFilter_cfi')
+
 # add the flavor history
 process.load("PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi")
 
@@ -311,6 +315,7 @@ process.patseq = cms.Sequence(
     process.step1*
     process.scrapingVeto*
     process.primaryVertexFilter*
+    process.HBHENoiseFilter*
     process.recoJPTJets*
     process.patDefaultSequence* 
     getattr(process,"patPF2PATSequence"+postfix)*
