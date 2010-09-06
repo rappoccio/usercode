@@ -57,6 +57,10 @@ class SHyFT {
 		  unsigned int inTags=0 ) :
     run(irun), lumiSec(ilumiSec), event(ievent), nJets(inJets), nTags(inTags)
     {
+      if ( nJets < nTags ) {
+	throw cms::Exception("InvalidCode") << " This says there are more tags than jets."
+					    << " This is nonsense." <<std::endl;
+      }
     }
     unsigned int run;
     unsigned int lumiSec;
@@ -134,6 +138,7 @@ class SHyFT {
     std::string identifier_; 
 
     int allNumTags_;
+    int allNumJets_;
     std::vector<SHyFTSummary> summary_;
 };
 

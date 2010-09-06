@@ -212,6 +212,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     }*/
 
   allNumTags_ = 0;
+  allNumJets_ = 0;
 }
 
 
@@ -290,17 +291,47 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 			   const std::vector<reco::ShallowClonePtrCandidate>& electrons)
 {
 
+  allNumTags_ = 0;
+  allNumJets_ = 0;
+
   reco::Candidate::LorentzVector nu_p4 = met.p4();
   reco::Candidate::LorentzVector lep_p4 = ( muPlusJets_  ? muons[0].p4() : electrons[0].p4() );
   double wMT = (lep_p4 + nu_p4).mt();
   double hT = lep_p4.pt() + nu_p4.Et();
 
-  
+
+  unsigned int maxJets = jets.size();
+  unsigned int ibjet = 0;
+  if ( (int)maxJets >= nJetsCut_ ) {
+    if ( maxJets > 4 ) maxJets = 4;
+    for ( unsigned int i=0; i<maxJets; ++i) {
+      
+      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Pt"] ->Fill( jets[i].pt()  );
+      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Eta"]->Fill( jets[i].eta() );
+      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Phi"]->Fill( jets[i].phi() );
+      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Mass"]->Fill( jets[i].mass() );
+      pat::Jet const * patJet = dynamic_cast<pat::Jet const *>( &* jets[i].masterClonePtr()  );
+      if ( doMC_ && patJet != 0 && patJet->genJet() != 0 ) {
+	histograms2d["jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt()  );
+	if ( abs(patJet->partonFlavour()) == 5 ) {
+	  ++ibjet;
+	  histograms2d["jet" + boost::lexical_cast<std::string>(ibjet) + "PtTrueResBJets"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt()  );
+	}
+      }
+    }
+  } 
+  if ( maxJets >= 4 ) {
+    //std::cout << iEvent.id().run() << ":" << iEvent.id().event() <<":" << iEvent.id().luminosityBlock() << ":" << std::setprecision(8) << muons[0].pt() << std::endl;
+  }
+  // std::cout << "jets.size() = " << jets.size() << ", wMT = " << wMT << ", hT = " << hT 
+  // 	    << ", maxJets = " << maxJets << std::endl;
+
+
+
   //SecVtxMass and b-tagging related quantities
   int numBottom=0,numCharm=0,numLight=0;
   int numTags=0, numJets=0;
-  double sumVertexMass=0, vertexMass=0;
-  allNumTags_ = 0;
+  double vertexMass = -1.0;
   
 
   //Get Payload and Working Point
@@ -328,7 +359,9 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   BtagPerformance  perfC( *plCHandle, *wpCHandle );
   btagOP_ = perfB.workingPoint().cut();
  
- 
+  // --------------
+  // Fill the M3 if there are more than 3 jets
+  // --------------
   reco::Candidate::LorentzVector p4_m3(0,0,0,0);
   if ( jets.size() >= 3 ) {
     
@@ -360,7 +393,22 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     histograms["m3"]->Fill( M3 );
   }
 
-  
+
+
+  // --------------
+  // Loop over the jets. Find the flavor of the *highest pt jet* that passes
+  // the discriminator cuts. 
+  //    Check the parton flavor if MC
+  //    Plot pt versus mass 
+  //    If there is a SecondaryVertexTagInfo:
+  //        plot number of vertices
+  //        if there are >= 1 vertex:
+  //               fill discriminator
+  //               if MC, fill the tag eff.
+  //               if discriminator passes cuts (i.e. is tagged):
+  //                     fill secondary vertex mass
+  //                     if MC, fill template
+  bool firstTag = true;
   for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
           jetEnd = jets.end(), jetIter = jetBegin;
         jetIter != jetEnd; ++jetIter)
@@ -375,14 +423,43 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       
       //histograms["tag_jet_pt"]->Fill( jetPt );
       histograms2d["massVsPt"]->Fill( jetPt, jet->mass() );
-      
+
+
+      //Here we determine what kind of flavor we have in this jet	
+      if( doMC_ ) {
+	switch (jetFlavor)
+	  {
+	  case 5:
+	    // bottom
+	    ++numBottom; 
+	    break;
+	  case 4:
+	    // charm
+	    ++numCharm;
+	    break;
+	  default:
+	    // light flavour
+	    ++numLight;
+	  }
+      }
+
+      // Get the secondary vertex tag info
+      reco::SecondaryVertexTagInfo const * svTagInfos
+        = jet->tagInfoSecondaryVertex("secondaryVertex");
+      if ( svTagInfos == 0 ) continue;
+      histograms["nVertices"]-> Fill( svTagInfos->nVertices() );
+
+      // Check to make sure we have a vertex
+      if ( svTagInfos->nVertices() <= 0 )  continue;
+
+      // If MC, fill the tagging efficiency
       if( doMC_ ) {
 	typedef std::pair<std::string, float> pair_type ;
 	std::vector<pair_type> const & pairs = jet->getPairDiscri();
 	for ( std::vector<pair_type>::const_iterator ipair = pairs.begin();
 	      ipair != pairs.end(); ++ipair ) {
 	}
-
+	
         // Is this jet tagged and does it have a good secondary vertex
         if( jet->bDiscriminator(btaggerString_) < btagOP_ ) {
           //cout << "first, bop = " << btagOP_ << endl;
@@ -399,79 +476,52 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
           else                      histograms["tag_eff"]-> Fill( 3 );
         }
       }
-      //cout << "TESTING HERE " << endl;
-      //      cout << "
-      //if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( HFcat_ );
-      //std::cout << jet->bDiscriminator(btaggerString_) << " " << btagOP_ << std::endl;
-      //std::cout << btaggerString_ << std::endl;
-      //histograms["discriminator"]-> Fill ( jet->bDiscriminator(btaggerString_) );
-      
-      
-      //If this jet is not tagged, skip it
-      //      if( jet->bDiscriminator(btaggerString_) < btagOP_ )
-      //continue;
-      
-      reco::SecondaryVertexTagInfo const * svTagInfos
-        = jet->tagInfoSecondaryVertex("secondaryVertex");
-      if ( svTagInfos == 0 ) continue;
-      if ( svTagInfos->nVertices() <= 0 )  continue;
-      else histograms["nVertices"]-> Fill( svTagInfos->nVertices() );
-      
-      // Calculate SecVtx Mass //
-      ROOT::Math::LorentzVector< ROOT::Math::PxPyPzM4D<double> > sumVec;
 
-      reco::Vertex::trackRef_iterator
-        kEndTracks = svTagInfos->secondaryVertex(0).tracks_end();
-      for (reco::Vertex::trackRef_iterator trackIter =
-             svTagInfos->secondaryVertex(0).tracks_begin();
-           trackIter != kEndTracks;
-           ++trackIter )
-        {
-          const double kPionMass = 0.13957018;
-          ROOT::Math::LorentzVector< ROOT::Math::PxPyPzM4D<double> >  p4_1;
-          p4_1.SetPx( (*trackIter)->px() );
-          p4_1.SetPy( (*trackIter)->py() );
-          p4_1.SetPz( (*trackIter)->pz() );
-          p4_1.SetM (kPionMass);
-          sumVec += p4_1;
-        }  // for trackIter
-      
-      vertexMass = sumVec.M();
-      sumVertexMass += vertexMass;
-      //Here we determine what kind of flavor we have in this jet
+      // This discriminator is only filled when we have a secondary vertex
+      // tag info and a vertex in it
+      histograms["discriminator"]-> Fill ( jet->bDiscriminator(btaggerString_) );
 
-      
-      if( doMC_ ) {
-        switch (jetFlavor)
-          {
-          case 5:
-            // bottom
-            histograms["bmass"]->Fill(vertexMass);
-            ++numBottom; 
-            break;
-          case 4:
-            // charm
-            histograms["cmass"]->Fill(vertexMass);
-            ++numCharm;
-            break;
-          default:
-            // light flavour
-            histograms["lfmass"]->Fill(vertexMass);
-            ++numLight;
-          }
-      }
+      // Check to see if the actual jet is tagged
+      if( jet->bDiscriminator(btaggerString_) < btagOP_ ) continue;
       ++numTags;
       ++allNumTags_;
-      histograms["discriminator"]-> Fill ( jet->bDiscriminator(btaggerString_) );
-      
-      // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
-      if(numTags==2) break;
-    }
+
+
+      // Take the template info from the first tag (ordered by jet pt)
+      if ( firstTag ) {
+	vertexMass = svTagInfos->secondaryVertex(0).p4().mass();
+
+	//Here we determine what kind of flavor we have in this jet	
+	if( doMC_ ) {
+	  switch (jetFlavor)
+	    {
+	    case 5:
+	      // bottom
+	      histograms["bmass"]->Fill(vertexMass);
+	      ++numBottom; 
+	      break;
+	    case 4:
+	      // charm
+	      histograms["cmass"]->Fill(vertexMass);
+	      ++numCharm;
+	      break;
+	    default:
+	      // light flavour
+	      histograms["lfmass"]->Fill(vertexMass);
+	      ++numLight;
+	    }
+	}
+	firstTag = false;
+      }// end if first tag
+    }// end loop over jets
+
   histograms["nTags"]->Fill(numTags);
-  // Calculate average SecVtx mass and //  
-  // fill appropriate histograms.      //
-  
-  numJets = std::min( (int) jets.size(), 5 );
+
+  // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
+  if(numTags>=2) numTags = 2;
+
+  allNumJets_ = (int) jets.size();
+  numJets = std::min( allNumJets_, 5 );
 
   string muName = sampleNameInput + Form("_muPt_%dj", numJets);
   
@@ -487,11 +537,17 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   histograms[sampleNameInput + Form("_hT")]->Fill( hT );
   histograms[sampleNameInput + Form("_wMT")]->Fill( wMT );
   histograms[sampleNameInput + Form("_MET")]->Fill( met.pt() );
-  if ( numJets > 0 ) {
-    histograms[htName]->Fill( hT );
-    histograms[wmtName]->Fill( wMT );
-    histograms[metName]->Fill( met.pt() );
-    
+
+  // Now, if we have jets, fill 0, 1, and >=2 tag histograms.
+  // The 0-tag histograms are hT, met, and mT_w.
+  // The 1-tag and >=2-tag histogram is the secondary vertex mass
+  // of the highest pt tagged jet.
+
+  histograms[htName]->Fill( hT );
+  histograms[wmtName]->Fill( wMT );
+  histograms[metName]->Fill( met.pt() );
+
+  if ( numJets > 0 ) {    
     if ( numTags == 0 ) {
       histograms[htName0]->Fill( hT );
       histograms[wmtName0]->Fill( wMT );
@@ -499,7 +555,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     }
     else if( numTags > 0 )
       {
-        sumVertexMass /= numTags;
         
         string whichtag = "";
         if( doMC_ ) {
@@ -529,22 +584,12 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
         string massName_comb = sampleNameInput
           + Form("_secvtxMass_%dj_%dt", numJets, numTags);
         string htName = sampleNameInput + Form("_hT_%dj", numJets);
-        //std::cout << massName << std::endl;
-        //std::cout << massName_comb << std::endl;
-        if(numTags>0 && numJets>0) {
-          histograms[massName           ]-> Fill (sumVertexMass);
-          if( doMC_ )
-            histograms[massName + whichtag]-> Fill (sumVertexMass);
-          //So that we can look at all of a sample without worrying about path
-          /*        if(massName_comb!=massName) {
-                    histograms[massName_comb           ]-> Fill (sumVertexMass);
-                    histograms[massName_comb + whichtag]-> Fill (sumVertexMass);
-                    }*/
-        }
-        //  else if (numJets>0)
-        //histograms[htName]-> Fill (hTUsingPt);     
+	histograms[massName           ]-> Fill (vertexMass);
+	if( doMC_ )
+	  histograms[massName + whichtag]-> Fill (vertexMass);	 
       } // end if numTags > 0
-  }// end if numJets > 0 
+  } // end if numJets > 0 
+  // This is the 0-jet bin
   else
     {
       histograms[sampleNameInput + Form("_hT_0j")]->Fill( hT );
@@ -554,6 +599,10 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       histograms[sampleNameInput + Form("_wMT_0j_0t")]->Fill( wMT );
       histograms[sampleNameInput + Form("_MET_0j_0t")]->Fill( met.pt() );
     }
+
+
+  // Now get the normalization of the tag bins from the BVTX POG
+  // efficiency
   if( doMC_ ) {
     //Normalization for "1 tag" events
     for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
@@ -770,6 +819,16 @@ bool SHyFT::analyze_met(const reco::ShallowClonePtrCandidate & met)
 //////////////////
 void SHyFT::analyze(const edm::EventBase& iEvent)
 {
+
+
+  if(useHFcat_) {
+    edm::Handle< unsigned int > heavyFlavorCategory;
+    iEvent.getByLabel ( edm::InputTag("flavorHistoryFilter"),heavyFlavorCategory);
+    assert ( heavyFlavorCategory.isValid() );
+    if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( *heavyFlavorCategory );
+  }
+
+
   pat::strbitset ret = wPlusJets.getBitTemplate();
   
   bool passed = wPlusJets(iEvent, ret);
@@ -795,34 +854,24 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   bit_ = ">=5 Jets";
   bool jet5 = ret[bit_];
 
-  bool anyJets = jet1 || jet2 || jet3 || jet4 || jet5;
+  bool anyJets = passed;
   
   // if not passed trigger, next event
   if ( !passTrigger )  return;
   
   secvtxname = sampleNameInput;
   //find the sample name
-  if(!calcSampleName(iEvent, secvtxname) ) return;
+  if(!calcSampleName(iEvent, secvtxname) ) {
+    throw cms::Exception("InvalidLogic") << " Calculating sample name broke on me... I'm outta here" << std::endl;
+  }
+
+
   
-  if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( HFcat_ );
-
-
-  if( !passOneLepton ) return;
-
-
-  histograms["nJets"]->Fill( jets.size() );
-  
-  if (anyJets) 
+  if (passOneLepton) 
     {
 
-      if ( !doMC_ && jets.size() > 0 ) {
-	summary_.push_back( SHyFTSummary(iEvent.id().run(),
-					 iEvent.id().luminosityBlock(),
-					 iEvent.id().event(),
-					 jets.size(),
-					 allNumTags_
-					 ) );
-      }
+      histograms["nJets"]->Fill( jets.size() );
+  
 
       //Check if the BTagPerformanceRecord exists
       if( es_.exists("BTagPerformanceRecord")  )
@@ -838,34 +887,19 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
       make_templates(jets, met, muons, electrons);
       analyze_met( met );
       if ( muPlusJets_ ) analyze_muons(muons);
-      if ( ePlusJets_ ) analyze_electrons(electrons);
-      
+      if ( ePlusJets_ ) analyze_electrons(electrons);          
 
-      unsigned int maxJets = jets.size();
-      unsigned int ibjet = 0;
-      if ( (int)maxJets >= nJetsCut_ ) {
-        if ( maxJets > 4 ) maxJets = 4;
-        for ( unsigned int i=0; i<maxJets; ++i) {
-
-          histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Pt"] ->Fill( jets[i].pt()  );
-          histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Eta"]->Fill( jets[i].eta() );
-          histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Phi"]->Fill( jets[i].phi() );
-          histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Mass"]->Fill( jets[i].mass() );
-          pat::Jet const * patJet = dynamic_cast<pat::Jet const *>( &* jets[i].masterClonePtr()  );
-          if ( doMC_ && patJet != 0 && patJet->genJet() != 0 ) {
-            histograms2d["jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt()  );
-	    if ( abs(patJet->partonFlavour()) == 5 ) {
-	      ++ibjet;
-	      histograms2d["jet" + boost::lexical_cast<std::string>(ibjet) + "PtTrueResBJets"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt()  );
-	    }
-          }
-        }
-      } 
-      if ( maxJets >= 4 ) {
-        //std::cout << iEvent.id().run() << ":" << iEvent.id().event() <<":" << iEvent.id().luminosityBlock() << ":" << std::setprecision(8) << muons[0].pt() << std::endl;
+      if ( !doMC_) {
+	summary_.push_back( SHyFTSummary(iEvent.id().run(),
+					 iEvent.id().luminosityBlock(),
+					 iEvent.id().event(),
+					 allNumJets_,
+					 allNumTags_
+					 ) );
       }
-      return;
+      
     }
+
 }
 
 bool SHyFT::calcSampleName (const edm::EventBase& iEvent, std::string &sampleName)
@@ -904,7 +938,7 @@ bool SHyFT::calcSampleName (const edm::EventBase& iEvent, std::string &sampleNam
     //  2. W+b or W+bb with 1 jet from the ME
     //  3. W+cc from the ME (dr > 0.5)
     //  4. W+c or W+cc with 1 jet from the ME
-    //  5. W+bb with 1 jet from the parton shower (dr == 0.0)
+    //  5. W+bb with 1 jet from the part[on shower (dr == 0.0)
     //  6. W+cc with 1 jet from the parton shower (dr == 0.0)
     //  7. W+bb with >= 2 partons but 1 jet from the ME (dr == 0.0)
     //  8. W+cc with >= 2 partons but 1 jet from the ME (dr == 0.0)
@@ -930,7 +964,9 @@ void SHyFT::endJob()
   wPlusJets.print(std::cout);
   wPlusJets.printSelectors(std::cout);
   sort(summary_.begin(), summary_.end());
+  std::cout << "** Start " << identifier_ << " **" << std::endl;
   copy(summary_.begin(), summary_.end(), std::ostream_iterator<SHyFTSummary>(std::cout, "\n"));  
+  std::cout << "** End **" << std::endl;
 }
 
 
