@@ -62,11 +62,16 @@ else :
 
 # require HLT_Mu9 trigger
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-if useTrigger :
-    process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu9"])
+if useData == True :
+    if useTrigger :
+        process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu9"])
+    else :
+        process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["*"])
 else :
-    process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["*"])
-
+    if useTrigger :
+        process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::REDIGI", HLTPaths = ["HLT_Mu9"])
+    else :
+        process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::REDIGI", HLTPaths = ["*"])
 
 
 # HB + HE noise filtering
@@ -328,7 +333,10 @@ if useData :
 #    process.patseq.remove( process.makeGenEvt )
     process.patseq.remove( process.flavorHistorySeq )
     process.patseq.remove( process.prunedGenParticles )
-
+else :
+    process.patseq.remove( process.scrapingVeto )
+    process.patseq.remove( process.primaryVertexFilter )
+    process.patseq.remove( process.HBHENoiseFilter )    
 
 from PhysicsTools.SelectorUtils.wplusjetsAnalysis_cfi import wplusjetsAnalysis as inputwplusjetsAnalysis
 
@@ -434,6 +442,8 @@ from PhysicsTools.PatAlgos.patEventContent_cff import patTriggerEventContent
 #process.out.outputCommands += patExtraAodEventContent
 #process.out.outputCommands += patTriggerEventContent
 process.out.outputCommands = [
+    'keep GenRunInfoProduct_generator_*_*',
+    'keep GenEventInfoProduct_generator_*_*',
     'keep *_flavorHistoryFilter_*_*',
     'keep *_prunedGenParticles_*_*',
     'keep *_decaySubset_*_*',
