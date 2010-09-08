@@ -12,6 +12,7 @@
 <use name=PhysicsTools/Utilities>
 <use name=CondFormats/PhysicsToolsObjects>
 <use name=RecoBTag/PerformanceDB>
+<use name=lhapdf>
 
 <export>
   <lib   name=AnalysisSHyFT>

@@ -140,6 +140,11 @@ class SHyFT {
     int allNumTags_;
     int allNumJets_;
     std::vector<SHyFTSummary> summary_;
+
+    double globalWeight_;  // For reweighting the entire event for, e.g., pdf reweighting
+    bool reweightPDF_;
+    edm::InputTag pdfInputTag_; 
+    std::vector<std::string> pdfSetNames_;
 };
 
 

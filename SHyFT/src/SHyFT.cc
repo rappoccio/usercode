@@ -3,6 +3,20 @@
 #include "TLorentzVector.h"
 #include <sstream>
 
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+namespace LHAPDF {
+      void initPDFSet(int nset, const std::string& filename, int member=0);
+      int numberPDF(int nset);
+      void usePDFMember(int nset, int member);
+      double xfx(int nset, double x, double Q, int fl);
+      double getXmin(int nset, int member);
+      double getXmax(int nset, int member);
+      double getQ2min(int nset, int member);
+      double getQ2max(int nset, int member);
+      void extrapolate(bool extrapolate=true);
+}
+
+
 using namespace std;
 
 
@@ -22,7 +36,10 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   cPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("cPerformanceTag")  ),
   lPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("lPerformanceTag")  ),
   btaggerString_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("btaggerString")),
-  identifier_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("identifier"))
+  identifier_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("identifier")),
+  reweightPDF_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPDF")),
+  pdfInputTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("pdfSrc")),
+  pdfSetNames_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::vector<std::string> >("pdfSetNames"))
 {
   //book all the histograms for muons
   if(muPlusJets_) {
@@ -213,6 +230,13 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
 
   allNumTags_ = 0;
   allNumJets_ = 0;
+
+
+
+  for (unsigned int k=1; k<=pdfSetNames_.size(); k++) {
+    LHAPDF::initPDFSet(k,pdfSetNames_[k-1]);
+  }
+
 }
 
 
@@ -230,14 +254,14 @@ bool SHyFT::analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>&
   double hCalIso_  = electron_ ->hcalIso();
   double relIso_   = ( trackIso_ + eCalIso_ + hCalIso_ )/ePt_ ;
 
-  histograms["ePt"      ]->Fill( ePt_        );
-  histograms["eEta"     ]->Fill( eEta_       );
-  histograms["ePhi"     ]->Fill( ePhi_       );
-  histograms["eD0"      ]->Fill( eD0_        );
-  histograms["eTrackIso"]->Fill( trackIso_   );
-  histograms["eECalIso" ]->Fill( eCalIso_    );
-  histograms["eHCalIso" ]->Fill( hCalIso_    );
-  histograms["eRelIso"  ]->Fill( relIso_     );
+  histograms["ePt"      ]->Fill( ePt_        , globalWeight_);
+  histograms["eEta"     ]->Fill( eEta_       , globalWeight_);
+  histograms["ePhi"     ]->Fill( ePhi_       , globalWeight_);
+  histograms["eD0"      ]->Fill( eD0_        , globalWeight_);
+  histograms["eTrackIso"]->Fill( trackIso_   , globalWeight_);
+  histograms["eECalIso" ]->Fill( eCalIso_    , globalWeight_);
+  histograms["eHCalIso" ]->Fill( hCalIso_    , globalWeight_);
+  histograms["eRelIso"  ]->Fill( relIso_     , globalWeight_);
   
   return true;
 }
@@ -268,17 +292,17 @@ bool SHyFT::analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muo
   double hCalIso_    = globalMuon->hcalIso();
   double relIso_     = ( trackIso_ + eCalIso_ + hCalIso_ )/muPt_ ;
 
-  histograms["muPt"      ]->Fill( muPt_        );
-  histograms["muEta"     ]->Fill( muEta_       );
-  histograms["muNhits"   ]->Fill( nhits_       );
-  histograms["muD0"      ]->Fill( muD0_        );
-  histograms["muChi2"    ]->Fill( norm_chi2_   );
-  histograms["muHCalVeto"]->Fill( muHCalVeto_  );
-  histograms["muECalVeto"]->Fill( muECalVeto_  );
-  histograms["muTrackIso"]->Fill( trackIso_    );
-  histograms["muECalIso" ]->Fill( eCalIso_     );
-  histograms["muHCalIso" ]->Fill( hCalIso_     );
-  histograms["muRelIso"  ]->Fill( relIso_      );
+  histograms["muPt"      ]->Fill( muPt_        , globalWeight_);
+  histograms["muEta"     ]->Fill( muEta_       , globalWeight_);
+  histograms["muNhits"   ]->Fill( nhits_       , globalWeight_);
+  histograms["muD0"      ]->Fill( muD0_        , globalWeight_);
+  histograms["muChi2"    ]->Fill( norm_chi2_   , globalWeight_);
+  histograms["muHCalVeto"]->Fill( muHCalVeto_  , globalWeight_);
+  histograms["muECalVeto"]->Fill( muECalVeto_  , globalWeight_);
+  histograms["muTrackIso"]->Fill( trackIso_    , globalWeight_);
+  histograms["muECalIso" ]->Fill( eCalIso_     , globalWeight_);
+  histograms["muHCalIso" ]->Fill( hCalIso_     , globalWeight_);
+  histograms["muRelIso"  ]->Fill( relIso_      , globalWeight_);
   
   return true;
 }
@@ -306,16 +330,16 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     if ( maxJets > 4 ) maxJets = 4;
     for ( unsigned int i=0; i<maxJets; ++i) {
       
-      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Pt"] ->Fill( jets[i].pt()  );
-      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Eta"]->Fill( jets[i].eta() );
-      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Phi"]->Fill( jets[i].phi() );
-      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Mass"]->Fill( jets[i].mass() );
+      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Pt"] ->Fill( jets[i].pt()  , globalWeight_);
+      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Eta"]->Fill( jets[i].eta() , globalWeight_);
+      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Phi"]->Fill( jets[i].phi() , globalWeight_);
+      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Mass"]->Fill( jets[i].mass() , globalWeight_);
       pat::Jet const * patJet = dynamic_cast<pat::Jet const *>( &* jets[i].masterClonePtr()  );
       if ( doMC_ && patJet != 0 && patJet->genJet() != 0 ) {
-	histograms2d["jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt()  );
+	histograms2d["jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt() , globalWeight_ );
 	if ( abs(patJet->partonFlavour()) == 5 ) {
 	  ++ibjet;
-	  histograms2d["jet" + boost::lexical_cast<std::string>(ibjet) + "PtTrueResBJets"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt()  );
+	  histograms2d["jet" + boost::lexical_cast<std::string>(ibjet) + "PtTrueResBJets"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt(), globalWeight_  );
 	}
       }
     }
@@ -390,7 +414,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
               }
           }
       }
-    histograms["m3"]->Fill( M3 );
+    histograms["m3"]->Fill( M3, globalWeight_ );
   }
 
 
@@ -422,7 +446,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       hT += jet->et();
       
       //histograms["tag_jet_pt"]->Fill( jetPt );
-      histograms2d["massVsPt"]->Fill( jetPt, jet->mass() );
+      histograms2d["massVsPt"]->Fill( jetPt, jet->mass(), globalWeight_ );
 
 
       //Here we determine what kind of flavor we have in this jet	
@@ -447,7 +471,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       reco::SecondaryVertexTagInfo const * svTagInfos
         = jet->tagInfoSecondaryVertex("secondaryVertex");
       if ( svTagInfos == 0 ) continue;
-      histograms["nVertices"]-> Fill( svTagInfos->nVertices() );
+      histograms["nVertices"]-> Fill( svTagInfos->nVertices(), globalWeight_ );
 
       // Check to make sure we have a vertex
       if ( svTagInfos->nVertices() <= 0 )  continue;
@@ -464,22 +488,22 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
         if( jet->bDiscriminator(btaggerString_) < btagOP_ ) {
           //cout << "first, bop = " << btagOP_ << endl;
           // This jet is not tagged, so we skip it but first we check the btag efficiency.
-          if     ( jetFlavor == 4 ) histograms["tag_eff"]-> Fill( 1 );
-          else if( jetFlavor == 5 ) histograms["tag_eff"]-> Fill( 2 );
-          else                      histograms["tag_eff"]-> Fill( 0 );
+          if     ( jetFlavor == 4 ) histograms["tag_eff"]-> Fill( 1., globalWeight_ );
+          else if( jetFlavor == 5 ) histograms["tag_eff"]-> Fill( 2., globalWeight_ );
+          else                      histograms["tag_eff"]-> Fill( 0., globalWeight_ );
           continue;
         } 
         else {
           //cout << "second, bop = " << btagOP_ << endl;
-          if     ( jetFlavor == 4 ) histograms["tag_eff"]-> Fill( 4 );
-          else if( jetFlavor == 5 ) histograms["tag_eff"]-> Fill( 5 );
-          else                      histograms["tag_eff"]-> Fill( 3 );
+          if     ( jetFlavor == 4 ) histograms["tag_eff"]-> Fill( 4., globalWeight_ );
+          else if( jetFlavor == 5 ) histograms["tag_eff"]-> Fill( 5., globalWeight_ );
+          else                      histograms["tag_eff"]-> Fill( 3., globalWeight_ );
         }
       }
 
       // This discriminator is only filled when we have a secondary vertex
       // tag info and a vertex in it
-      histograms["discriminator"]-> Fill ( jet->bDiscriminator(btaggerString_) );
+      histograms["discriminator"]-> Fill ( jet->bDiscriminator(btaggerString_), globalWeight_ );
 
       // Check to see if the actual jet is tagged
       if( jet->bDiscriminator(btaggerString_) < btagOP_ ) continue;
@@ -497,17 +521,17 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	    {
 	    case 5:
 	      // bottom
-	      histograms["bmass"]->Fill(vertexMass);
+	      histograms["bmass"]->Fill(vertexMass, globalWeight_);
 	      ++numBottom; 
 	      break;
 	    case 4:
 	      // charm
-	      histograms["cmass"]->Fill(vertexMass);
+	      histograms["cmass"]->Fill(vertexMass, globalWeight_);
 	      ++numCharm;
 	      break;
 	    default:
 	      // light flavour
-	      histograms["lfmass"]->Fill(vertexMass);
+	      histograms["lfmass"]->Fill(vertexMass, globalWeight_);
 	      ++numLight;
 	    }
 	}
@@ -515,7 +539,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       }// end if first tag
     }// end loop over jets
 
-  histograms["nTags"]->Fill(numTags);
+  histograms["nTags"]->Fill(numTags, globalWeight_);
 
   // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
   if(numTags>=2) numTags = 2;
@@ -533,25 +557,25 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   string wmtName0 = sampleNameInput + Form("_wMT_%dj_0t", numJets);
   string metName0 = sampleNameInput + Form("_MET_%dj_0t", numJets);
 
-  histograms[muName]->Fill( muons[0].pt() );
-  histograms[sampleNameInput + Form("_hT")]->Fill( hT );
-  histograms[sampleNameInput + Form("_wMT")]->Fill( wMT );
-  histograms[sampleNameInput + Form("_MET")]->Fill( met.pt() );
+  histograms[muName]->Fill( muons[0].pt(), globalWeight_ );
+  histograms[sampleNameInput + Form("_hT")]->Fill( hT, globalWeight_ );
+  histograms[sampleNameInput + Form("_wMT")]->Fill( wMT, globalWeight_ );
+  histograms[sampleNameInput + Form("_MET")]->Fill( met.pt(), globalWeight_ );
 
   // Now, if we have jets, fill 0, 1, and >=2 tag histograms.
   // The 0-tag histograms are hT, met, and mT_w.
   // The 1-tag and >=2-tag histogram is the secondary vertex mass
   // of the highest pt tagged jet.
 
-  histograms[htName]->Fill( hT );
-  histograms[wmtName]->Fill( wMT );
-  histograms[metName]->Fill( met.pt() );
+  histograms[htName]->Fill( hT, globalWeight_ );
+  histograms[wmtName]->Fill( wMT, globalWeight_ );
+  histograms[metName]->Fill( met.pt(), globalWeight_ );
 
   if ( numJets > 0 ) {    
     if ( numTags == 0 ) {
-      histograms[htName0]->Fill( hT );
-      histograms[wmtName0]->Fill( wMT );
-      histograms[metName0]->Fill( met.pt() );
+      histograms[htName0]->Fill( hT, globalWeight_ );
+      histograms[wmtName0]->Fill( wMT, globalWeight_ );
+      histograms[metName0]->Fill( met.pt(), globalWeight_ );
     }
     else if( numTags > 0 )
       {
@@ -584,24 +608,24 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
         string massName_comb = sampleNameInput
           + Form("_secvtxMass_%dj_%dt", numJets, numTags);
         string htName = sampleNameInput + Form("_hT_%dj", numJets);
-	histograms[massName           ]-> Fill (vertexMass);
+	histograms[massName           ]-> Fill (vertexMass, globalWeight_);
 	if( doMC_ )
-	  histograms[massName + whichtag]-> Fill (vertexMass);	 
+	  histograms[massName + whichtag]-> Fill (vertexMass, globalWeight_);	 
       } // end if numTags > 0
   } // end if numJets > 0 
   // This is the 0-jet bin
   else
     {
-      histograms[sampleNameInput + Form("_hT_0j")]->Fill( hT );
-      histograms[sampleNameInput + Form("_wMT_0j")]->Fill( wMT );
-      histograms[sampleNameInput + Form("_MET_0j")]->Fill( met.pt() );
-      histograms[sampleNameInput + Form("_hT_0j_0t")]->Fill( hT );
-      histograms[sampleNameInput + Form("_wMT_0j_0t")]->Fill( wMT );
-      histograms[sampleNameInput + Form("_MET_0j_0t")]->Fill( met.pt() );
+      histograms[sampleNameInput + Form("_hT_0j")]->Fill( hT , globalWeight_);
+      histograms[sampleNameInput + Form("_wMT_0j")]->Fill( wMT , globalWeight_);
+      histograms[sampleNameInput + Form("_MET_0j")]->Fill( met.pt() , globalWeight_);
+      histograms[sampleNameInput + Form("_hT_0j_0t")]->Fill( hT , globalWeight_);
+      histograms[sampleNameInput + Form("_wMT_0j_0t")]->Fill( wMT , globalWeight_);
+      histograms[sampleNameInput + Form("_MET_0j_0t")]->Fill( met.pt() , globalWeight_);
     }
 
 
-  // Now get the normalization of the tag bins from the BVTX POG
+  // Now get the normalization of the tag bins from the BVTX PO
   // efficiency
   if( doMC_ ) {
     //Normalization for "1 tag" events
@@ -697,7 +721,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
           }
         }
       } // end for jet2Iter
-      histograms3d["normalization"]	->  Fill(  numJets,	1,	whichtag,	weight*untagRate );
+      histograms3d["normalization"]	->  Fill(  numJets,	1,	whichtag,	weight*untagRate*globalWeight_ );
     } // end for jetIter
 
     if( numJets < 2 )   return true;
@@ -802,7 +826,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
             cout<<"Jet Flavour Error: "<<endl;
             return false;
         }
-        histograms3d["normalization"]		->  Fill( numJets,  2,  whichtag,  weight1*weight2 );
+        histograms3d["normalization"]		->  Fill( numJets,  2,  whichtag,  weight1*weight2*globalWeight_ );
       }  // end jetIter1, jetIter2
   }
   return true;
@@ -810,7 +834,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 
 bool SHyFT::analyze_met(const reco::ShallowClonePtrCandidate & met)
 {
-  histograms["metPt"]->Fill( met.pt() );
+  histograms["metPt"]->Fill( met.pt(), globalWeight_ );
   return true;
 }
 
@@ -821,11 +845,64 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
 {
 
 
+  globalWeight_ = 1.0;
+
+
+  if (reweightPDF_) {
+
+    
+    double iWeightSum = 0.0;
+    unsigned int nWeightSum = 0;
+    edm::Handle<GenEventInfoProduct> pdfstuff;
+    iEvent.getByLabel(pdfInputTag_, pdfstuff);
+       
+    float Q = pdfstuff->pdf()->scalePDF;
+ 
+    int id1 = pdfstuff->pdf()->id.first;
+    double x1 = pdfstuff->pdf()->x.first;
+    double pdf1 = pdfstuff->pdf()->xPDF.first;
+ 
+    int id2 = pdfstuff->pdf()->id.second;
+    double x2 = pdfstuff->pdf()->x.second;
+    double pdf2 = pdfstuff->pdf()->xPDF.second; 
+
+    if ( pdf1 < 0.0000000000001 || pdf2 < 0.0000000000001 ) {
+      throw cms::Exception("ReallyReallyTinyPDF") << "The PDF's you're accessing are too tiny." << std::endl;
+    }
+ 
+    // Put PDF weights in the event
+    for (unsigned int k=1; k<=pdfSetNames_.size(); ++k) {
+      
+      unsigned int nweights = 1;
+      if (LHAPDF::numberPDF(k)>1) nweights += LHAPDF::numberPDF(k);
+	 
+      for (unsigned int i=0; i<nweights; ++i) {
+	LHAPDF::usePDFMember(k,i);
+	double newpdf1 = LHAPDF::xfx(k, x1, Q, id1)/x1;
+	double newpdf2 = LHAPDF::xfx(k, x2, Q, id2)/x2;
+	double prod =  (newpdf1/pdf1*newpdf2/pdf2);
+	iWeightSum += prod*prod;
+	++nWeightSum;
+      }
+      
+    }
+
+    iWeightSum = TMath::Sqrt(iWeightSum)  / TMath::Sqrt( (double) nWeightSum );
+    
+    globalWeight_ = iWeightSum;
+
+    char buff[1000];
+    sprintf(buff, "x1 = %6.2f, x1 = %6.2f, pdf1 = %6.2f, pdf2 = %6.2f, weight = %6.2f",
+	    x1, x2, pdf1, pdf2, globalWeight_
+	    );
+    std::cout << buff << std::endl;
+  }
+  
   if(useHFcat_) {
     edm::Handle< unsigned int > heavyFlavorCategory;
     iEvent.getByLabel ( edm::InputTag("flavorHistoryFilter"),heavyFlavorCategory);
     assert ( heavyFlavorCategory.isValid() );
-    if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( *heavyFlavorCategory );
+    if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( *heavyFlavorCategory, globalWeight_ );
   }
 
 
@@ -870,7 +947,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   if (passOneLepton) 
     {
 
-      histograms["nJets"]->Fill( jets.size() );
+      histograms["nJets"]->Fill( jets.size(), globalWeight_ );
   
 
       //Check if the BTagPerformanceRecord exists

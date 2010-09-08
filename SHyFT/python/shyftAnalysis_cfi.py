@@ -23,7 +23,15 @@ shyftAnalysis = cms.PSet(
     cPerformanceTag = cms.string( "MCSSVMc" ),
     lPerformanceTag = cms.string( "MCSSVMl" ),
     btaggerString = cms.string('simpleSecondaryVertexHighEffBJetTags'),
-    identifier = cms.string('Douglas Adams')
+    identifier = cms.string('Douglas Adams'),
+    reweightPDF = cms.bool(False),
+    pdfSrc = cms.InputTag('generator'),
+    pdfSetNames = cms.vstring( [
+        "cteq65"
+        , "MRST2006nnlo"
+        , "MRST2007lomod"
+        
+        ] )
 #    btaggerString = cms.string('simpleSecondaryVertexBJetTags')
 )
 #shyftAnalysis.pvSelector.maxZ = 24.0
