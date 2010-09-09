@@ -31,19 +31,7 @@
 #include "TLegend.h"
 #include "TSystem.h"
 
-enum
-{
-   kNormalMode,
-   kVqqMode,
-   kLFMode,
-   kWcMode
-};
-
-
-// TODO: bring the isolation plots back to life 
-
 typedef std::vector<reco::ShallowClonePtrCandidate> ShallowCloneCollection;
-
 
 class SHyFT {
 
@@ -101,6 +89,7 @@ class SHyFT {
     bool analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons);
     bool analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons);    
     bool analyze_met( const reco::ShallowClonePtrCandidate & met );
+    void calcTagWeight (double & weight, const std::vector<reco::ShallowClonePtrCandidate>& jets);
     bool calcSampleName (const edm::EventBase& iEvent, std::string &sampleName);
 
     bool make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
@@ -135,7 +124,7 @@ class SHyFT {
     std::string cPerformanceTag_;
     std::string lPerformanceTag_;
     std::string btaggerString_;
-    std::string identifier_; 
+    std::string identifier_;
 
     int allNumTags_;
     int allNumJets_;
@@ -145,6 +134,10 @@ class SHyFT {
     bool reweightPDF_;
     edm::InputTag pdfInputTag_; 
     std::vector<std::string> pdfSetNames_;
+
+    bool doTagWeight_;
+    double bcEffScale_;
+    double lfEffScale_;
 };
 
 

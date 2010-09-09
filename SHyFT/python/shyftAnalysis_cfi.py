@@ -15,7 +15,6 @@ shyftAnalysis = cms.PSet(
 #        minJets = cms.int32(5)
         ) ,
     sampleName = cms.string("top"),
-    mode = cms.int32(0),
     heavyFlavour = cms.bool(False),
     doMC           = cms.bool(False),
     payload = cms.string( "PayLoad.root" ),
@@ -31,7 +30,11 @@ shyftAnalysis = cms.PSet(
         , "MRST2006nnlo"
         , "MRST2007lomod"
         
-        ] )
+        ] ),
+    doTagWeight = cms.bool(True),
+    bcEffScale = cms.double(1.0),
+    lfEffScale = cms.double(1.0)
+    
 #    btaggerString = cms.string('simpleSecondaryVertexBJetTags')
 )
 #shyftAnalysis.pvSelector.maxZ = 24.0
