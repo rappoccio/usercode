@@ -133,7 +133,7 @@ class SHyFT {
     double globalWeight_;  // For reweighting the entire event for, e.g., pdf reweighting
     bool reweightPDF_;
     edm::InputTag pdfInputTag_; 
-    std::vector<std::string> pdfSetNames_;
+    std::string pdfToUse_;
 
     bool doTagWeight_;
     double bcEffScale_;

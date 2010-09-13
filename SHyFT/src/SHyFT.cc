@@ -2,19 +2,22 @@
 #include "TVector3.h"
 #include "TLorentzVector.h"
 #include <sstream>
-
+// #include "/uscmst1/prod/sw/cms/slc5_ia32_gcc434/external/lhapdf/5.6.0/full/include/LHAPDF/LHAPDF.h"
+#include "/uscmst1/prod/sw/cms/slc5_ia32_gcc434/external/lhapdf/5.6.0-cms2/share/lhapdf/PDFsets/../../../include/LHAPDF/LHAPDF.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
-namespace LHAPDF {
-      void initPDFSet(int nset, const std::string& filename, int member=0);
-      int numberPDF(int nset);
-      void usePDFMember(int nset, int member);
-      double xfx(int nset, double x, double Q, int fl);
-      double getXmin(int nset, int member);
-      double getXmax(int nset, int member);
-      double getQ2min(int nset, int member);
-      double getQ2max(int nset, int member);
-      void extrapolate(bool extrapolate=true);
-}
+// namespace LHAPDF {
+      
+//       void initPDF(int nset);
+//       void initPDFSet(int nset, const std::string& filename, int member=0);
+//       int numberPDF(int nset);
+//       void usePDFMember(int nset, int member);
+//       double xfx(int nset, double x, double Q, int fl);
+//       double getXmin(int nset, int member);
+//       double getXmax(int nset, int member);
+//       double getQ2min(int nset, int member);
+//       double getQ2max(int nset, int member);
+//       void extrapolate(bool extrapolate=true);
+// }
 
 
 using namespace std;
@@ -38,7 +41,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   identifier_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("identifier")),
   reweightPDF_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPDF")),
   pdfInputTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("pdfSrc")),
-  pdfSetNames_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::vector<std::string> >("pdfSetNames")),
+  pdfToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("pdfToUse")),
   doTagWeight_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doTagWeight")),
   bcEffScale_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("bcEffScale")),
   lfEffScale_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("lfEffScale"))
@@ -124,6 +127,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     histograms["cmass"]         = theDir.make<TH1F>("cmass",    "C Sec Vtx Mass",          40,    0,   10);
     histograms["lfmass"]        = theDir.make<TH1F>("lfmass",   "LF Sec Vtx Mass",         40,    0,   10);
     histograms["flavorHistory"] = theDir.make<TH1F>("flavorHistory", "Flavor History",     12,    0,   12);
+    if ( reweightPDF_ )
+      histograms["pdfWeight"] = theDir.make<TH1F>("pdfWeight", "PDF Weight", 50, -0.9, 1.1);
   }
   histograms["discriminator"] = theDir.make<TH1F>("discriminator", "BTag Discriminator", 30,    2,    8);
   histograms["nVertices"]     = theDir.make<TH1F>("nVertices",     "num sec Vertices",    5,    0,    5);
@@ -167,10 +172,13 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   allNumTags_ = 0;
   allNumJets_ = 0;
 
-  if(reweightPDF_) {
-    for (unsigned int k=1; k<=pdfSetNames_.size(); k++) {
-      LHAPDF::initPDFSet(k,pdfSetNames_[k-1]);
-    }
+  if ( reweightPDF_ ) {
+    std::cout << "Initializing pdfs" << std::endl;
+    // For the first one, MAKE ABSOLUTELY SURE it is the one used to generate
+    // your sample. 
+    std::cout << "PDF to use = " << pdfToUse_ << std::endl;
+    LHAPDF::initPDFSet(pdfToUse_);
+    std::cout << "Done initializing pdfs" << std::endl;
   }
 }
 
@@ -372,6 +380,16 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       // tag info and a vertex in it
       histograms["discriminator"]-> Fill ( jet->bDiscriminator(btaggerString_), globalWeight_ );
 
+      // std::cout << "Jet " << jetIter - jetBegin << ", pt = " << jet->pt() << std::endl;
+      // typedef std::pair<std::string,float> sfpair;
+      // typedef std::vector<sfpair> sfpair_coll;
+      // sfpair_coll const & discs = jet->getPairDiscri();
+      // for ( sfpair_coll::const_iterator ipairBegin = discs.begin(),
+      // 	      ipairEnd = discs.end(), ipair = ipairBegin;
+      // 	    ipair != ipairEnd; ++ipair ) {
+      // 	std::cout << " disc : " << ipair->first << " = " << ipair->second << std::endl;
+      // }
+
       // Check to see if the actual jet is tagged
       if( jet->bDiscriminator(btaggerString_) < btagOP_ ) continue;
       ++numTags;
@@ -504,53 +522,60 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   globalWeight_ = 1.0;
 
 
-  if (reweightPDF_) {
-    
+  if (doMC_ && reweightPDF_) {
+    std::cout << "Analyzing pdfs" << std::endl;
+    // 
+    // NOTA BENE!!!!
+    //
+    //     The values "pdf1" and "pdf2" below are *wrong* for madgraph or alpgen samples.
+    //     They must be taken from the "zeroth" PDF in the PDF set, assuming that is set
+
     double iWeightSum = 0.0;
     unsigned int nWeightSum = 0;
     edm::Handle<GenEventInfoProduct> pdfstuff;
     iEvent.getByLabel(pdfInputTag_, pdfstuff);
        
     float Q = pdfstuff->pdf()->scalePDF;
- 
     int id1 = pdfstuff->pdf()->id.first;
     double x1 = pdfstuff->pdf()->x.first;
-    double pdf1 = pdfstuff->pdf()->xPDF.first;
- 
     int id2 = pdfstuff->pdf()->id.second;
     double x2 = pdfstuff->pdf()->x.second;
-    double pdf2 = pdfstuff->pdf()->xPDF.second; 
 
-    if ( pdf1 < 0.0000000000001 || pdf2 < 0.0000000000001 ) {
-      throw cms::Exception("ReallyReallyTinyPDF") << "The PDF's you're accessing are too tiny." << std::endl;
+    // BROKEN for Madgraph productions:
+    double pdf1 = pdfstuff->pdf()->xPDF.first;
+    double pdf2 = pdfstuff->pdf()->xPDF.second;  
+
+    char buff[1000];
+    sprintf(buff, "Q = %6.2f, id1 = %4d, id2 = %4d, x1 = %6.2f, x2 = %6.2f, pdf1 = %6.2f, pdf2 = %6.2f",
+    	    Q, id1, id2, x1, x2, pdf1, pdf2
+    	    );
+    std::cout << buff << std::endl;
+
+
+    unsigned int nweights = 1;
+    if (LHAPDF::numberPDF()>1) nweights += LHAPDF::numberPDF();
+    std::cout << "nweights = " << nweights << std::endl;
+      
+    for (unsigned int i=0; i<nweights; ++i) {
+      LHAPDF::usePDFMember(i);
+      double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
+      double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
+      double prod =  (newpdf1/pdf1*newpdf2/pdf2);
+      iWeightSum += prod*prod;
+      ++nWeightSum;
+      sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
+	      newpdf1, newpdf2, prod
+	      );
+      std::cout << buff << std::endl;
     }
- 
-    // Put PDF weights in the event
-    for (unsigned int k=1; k<=pdfSetNames_.size(); ++k) {
-      
-      unsigned int nweights = 1;
-      if (LHAPDF::numberPDF(k)>1) nweights += LHAPDF::numberPDF(k);
-      
-      for (unsigned int i=0; i<nweights; ++i) {
-        LHAPDF::usePDFMember(k,i);
-        double newpdf1 = LHAPDF::xfx(k, x1, Q, id1)/x1;
-        double newpdf2 = LHAPDF::xfx(k, x2, Q, id2)/x2;
-        double prod =  (newpdf1/pdf1*newpdf2/pdf2);
-        iWeightSum += prod*prod;
-        ++nWeightSum;
-      }
-      
-    }
+
+    
 
     iWeightSum = TMath::Sqrt(iWeightSum)  / TMath::Sqrt( (double) nWeightSum );
     
-    globalWeight_ = iWeightSum;
-    
-    char buff[1000];
-    sprintf(buff, "x1 = %6.2f, x1 = %6.2f, pdf1 = %6.2f, pdf2 = %6.2f, weight = %6.2f",
-            x1, x2, pdf1, pdf2, globalWeight_
-            );
-    std::cout << buff << std::endl;
+    globalWeight_ *= iWeightSum;
+    // std::cout << "Global weight = " << globalWeight_ << std::endl;
+    histograms["pdfWeight"]->Fill( globalWeight_ );
   }
 
   pat::strbitset ret = wPlusJets.getBitTemplate();

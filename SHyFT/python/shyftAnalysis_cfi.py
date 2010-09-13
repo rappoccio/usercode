@@ -25,12 +25,17 @@ shyftAnalysis = cms.PSet(
     identifier = cms.string('Douglas Adams'),
     reweightPDF = cms.bool(False),
     pdfSrc = cms.InputTag('generator'),
-    pdfSetNames = cms.vstring( [
-        "cteq65"
-        , "MRST2006nnlo"
-        , "MRST2007lomod"
-        
-        ] ),
+    pdfToUse = cms.string('cteq6ll.LHpdf'),
+#    pdfUsed = cms.string('cteq61'),
+#    pdfSetNames = cms.vstring( [
+#        'cteq61',
+#        'cteq6AB',
+#        'MRST2007lomod'
+#        , "cteq65"
+#        , "MRST2006nnlo"
+#        , "MRST2007lomod"
+#        
+#        ] ),
     doTagWeight = cms.bool(True),
     bcEffScale = cms.double(1.0),
     lfEffScale = cms.double(1.0)
