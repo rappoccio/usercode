@@ -523,7 +523,6 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
 
 
   if (doMC_ && reweightPDF_) {
-    std::cout << "Analyzing pdfs" << std::endl;
     // 
     // NOTA BENE!!!!
     //
@@ -545,16 +544,15 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     double pdf1 = pdfstuff->pdf()->xPDF.first;
     double pdf2 = pdfstuff->pdf()->xPDF.second;  
 
-    char buff[1000];
-    sprintf(buff, "Q = %6.2f, id1 = %4d, id2 = %4d, x1 = %6.2f, x2 = %6.2f, pdf1 = %6.2f, pdf2 = %6.2f",
-    	    Q, id1, id2, x1, x2, pdf1, pdf2
-    	    );
-    std::cout << buff << std::endl;
+    // char buff[1000];
+    // sprintf(buff, "Q = %6.2f, id1 = %4d, id2 = %4d, x1 = %6.2f, x2 = %6.2f, pdf1 = %6.2f, pdf2 = %6.2f",
+    // 	    Q, id1, id2, x1, x2, pdf1, pdf2
+    // 	    );
+    // std::cout << buff << std::endl;
 
 
     unsigned int nweights = 1;
     if (LHAPDF::numberPDF()>1) nweights += LHAPDF::numberPDF();
-    std::cout << "nweights = " << nweights << std::endl;
       
     for (unsigned int i=0; i<nweights; ++i) {
       LHAPDF::usePDFMember(i);
@@ -563,15 +561,15 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
       double prod =  (newpdf1/pdf1*newpdf2/pdf2);
       iWeightSum += prod*prod;
       ++nWeightSum;
-      sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
-	      newpdf1, newpdf2, prod
-	      );
-      std::cout << buff << std::endl;
+      // sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
+      // 	      newpdf1, newpdf2, prod
+      // 	      );
+      // std::cout << buff << std::endl;
     }
 
     
 
-    iWeightSum = TMath::Sqrt(iWeightSum)  / TMath::Sqrt( (double) nWeightSum );
+    iWeightSum = TMath::Sqrt(iWeightSum)  /  (double) nWeightSum ;
     
     globalWeight_ *= iWeightSum;
     // std::cout << "Global weight = " << globalWeight_ << std::endl;
