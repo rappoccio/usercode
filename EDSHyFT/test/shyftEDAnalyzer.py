@@ -130,8 +130,8 @@ process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
 
 
 process.p = cms.Path(
-    process.pfShyftAna
-#    process.pfShyftAna*process.jptShyftAna*process.caloShyftAna
+#    process.pfShyftAna
+    process.pfShyftAna*process.jptShyftAna*process.caloShyftAna
 #    process.jptShyftAna
     )
 
