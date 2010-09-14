@@ -134,6 +134,7 @@ class SHyFT {
     bool reweightPDF_;
     edm::InputTag pdfInputTag_; 
     std::string pdfToUse_;
+    int         pdfVariation_;
 
     bool doTagWeight_;
     double bcEffScale_;

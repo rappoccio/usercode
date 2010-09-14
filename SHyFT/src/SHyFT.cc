@@ -42,6 +42,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   reweightPDF_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPDF")),
   pdfInputTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("pdfSrc")),
   pdfToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("pdfToUse")),
+  pdfVariation_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("pdfVariation")),
   doTagWeight_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doTagWeight")),
   bcEffScale_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("bcEffScale")),
   lfEffScale_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("lfEffScale"))
@@ -128,7 +129,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     histograms["lfmass"]        = theDir.make<TH1F>("lfmass",   "LF Sec Vtx Mass",         40,    0,   10);
     histograms["flavorHistory"] = theDir.make<TH1F>("flavorHistory", "Flavor History",     12,    0,   12);
     if ( reweightPDF_ )
-      histograms["pdfWeight"] = theDir.make<TH1F>("pdfWeight", "PDF Weight", 50, -0.9, 1.1);
+      histograms["pdfWeight"] = theDir.make<TH1F>("pdfWeight", "PDF Weight", 50, 0., 2.0);
   }
   histograms["discriminator"] = theDir.make<TH1F>("discriminator", "BTag Discriminator", 30,    2,    8);
   histograms["nVertices"]     = theDir.make<TH1F>("nVertices",     "num sec Vertices",    5,    0,    5);
@@ -552,10 +553,17 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
 
 
     unsigned int nweights = 1;
-    if (LHAPDF::numberPDF()>1) nweights += LHAPDF::numberPDF();
+    unsigned int neigen = 0;
+    if (LHAPDF::numberPDF()>1) {
+      nweights += LHAPDF::numberPDF();
+      neigen = nweights / 2;
+    }
       
-    for (unsigned int i=0; i<nweights; ++i) {
-      LHAPDF::usePDFMember(i);
+    for (unsigned int i=0; i<neigen; ++i) {
+      int toGrab = 2*i;
+      if ( pdfVariation_ < 0 )
+	toGrab = 2*i+1;
+      LHAPDF::usePDFMember(toGrab);
       double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
       double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
       double prod =  (newpdf1/pdf1*newpdf2/pdf2);
@@ -569,9 +577,9 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
 
     
 
-    iWeightSum = TMath::Sqrt(iWeightSum)  /  (double) nWeightSum ;
+    iWeightSum = TMath::Sqrt(iWeightSum) / TMath::Sqrt((double)nWeightSum) ;
     
-    globalWeight_ *= iWeightSum;
+    globalWeight_ *= iWeightSum ;
     // std::cout << "Global weight = " << globalWeight_ << std::endl;
     histograms["pdfWeight"]->Fill( globalWeight_ );
   }
@@ -944,10 +952,12 @@ void SHyFT::endJob()
   std::cout << "----------------------------------------------------------------------------------------" << std::endl;
   wPlusJets.print(std::cout);
   wPlusJets.printSelectors(std::cout);
-  sort(summary_.begin(), summary_.end());
-  std::cout << "** Start " << identifier_ << " **" << std::endl;
-  copy(summary_.begin(), summary_.end(), std::ostream_iterator<SHyFTSummary>(std::cout, "\n"));  
-  std::cout << "** End **" << std::endl;
+  if ( !doMC_ ) {
+    sort(summary_.begin(), summary_.end());
+    std::cout << "** Start " << identifier_ << " **" << std::endl;
+    copy(summary_.begin(), summary_.end(), std::ostream_iterator<SHyFTSummary>(std::cout, "\n"));  
+    std::cout << "** End **" << std::endl;
+  }
 }
 
 

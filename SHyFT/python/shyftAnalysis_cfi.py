@@ -26,6 +26,7 @@ shyftAnalysis = cms.PSet(
     reweightPDF = cms.bool(False),
     pdfSrc = cms.InputTag('generator'),
     pdfToUse = cms.string('cteq6ll.LHpdf'),
+    pdfVariation = cms.int32(1),
 #    pdfUsed = cms.string('cteq61'),
 #    pdfSetNames = cms.vstring( [
 #        'cteq61',
