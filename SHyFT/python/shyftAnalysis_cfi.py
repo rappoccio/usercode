@@ -37,7 +37,7 @@ shyftAnalysis = cms.PSet(
 #        , "MRST2007lomod"
 #        
 #        ] ),
-    doTagWeight = cms.bool(True),
+    doTagWeight = cms.bool(False),
     bcEffScale = cms.double(1.0),
     lfEffScale = cms.double(1.0)
     
