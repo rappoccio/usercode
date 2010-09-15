@@ -12,7 +12,8 @@ shyftAnalysis = cms.PSet(
         trigSrc = cms.InputTag('patTriggerEvent'),
         jetPtMin = cms.double(30.0),
         jetEtaMax = cms.double(2.4),
-#        minJets = cms.int32(5)
+        jetScale=cms.double(1.0),
+        minJets = cms.int32(5)
         ) ,
     sampleName = cms.string("top"),
     heavyFlavour = cms.bool(False),

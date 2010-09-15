@@ -50,7 +50,8 @@ inputSampleName = options.sampleNameInput
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbar/shyft_38xOn35x_v4/10de90d53f51d470a59d10c8f54ad479/shyft_382_mc_1_1_VM0.root'
+#                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
                                     )
                                 )
 else :
@@ -62,13 +63,13 @@ else :
                                 )
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("shyftStudies.root")
+                                   fileName = cms.string("shyftStudies_PDF.root")
                                    )
 
 
@@ -79,24 +80,36 @@ process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
                                           heavyFlavour = cms.bool( useFlavorHistory ),
                                           doMC = cms.bool( True),
                                           sampleName = cms.string(inputSampleName),
+                                          reweightPDF = cms.bool(False),
                                           btaggerString = cms.string('simpleSecondaryVertexBJetTags'),
                                           identifier = cms.string('CALO')
                                           )                                      
                                       )
 
+
 process.caloShyftAnaUP = process.caloShyftAna.clone(
     shyftAnalysis = process.caloShyftAna.shyftAnalysis.clone(
         reweightPDF = cms.bool(True),
-        pdfToUse = cms.string('cteq61.LHgrid'),
+        pdfToUse = cms.string('cteq66.LHgrid'),
         pdfVariation =cms.int32( 1 ),
         identifier=cms.string('CALOUP')
+        )
+    )
+
+
+process.caloShyftAnaNOMINAL = process.caloShyftAna.clone(
+    shyftAnalysis = process.caloShyftAna.shyftAnalysis.clone(
+        reweightPDF = cms.bool(True),
+        pdfToUse = cms.string('cteq66.LHgrid'),
+        pdfVariation =cms.int32( 0 ),
+        identifier=cms.string('CALONOMINAL')
         )
     )
 
 process.caloShyftAnaDOWN = process.caloShyftAna.clone(
     shyftAnalysis = process.caloShyftAna.shyftAnalysis.clone(
         reweightPDF = cms.bool(True),
-        pdfToUse = cms.string('cteq61.LHgrid'),
+        pdfToUse = cms.string('cteq66.LHgrid'),
         pdfVariation =cms.int32( -1 ),
         identifier=cms.string('CALODOWN')
         )
@@ -105,6 +118,7 @@ process.caloShyftAnaDOWN = process.caloShyftAna.clone(
 process.p = cms.Path(
     process.caloShyftAna*
     process.caloShyftAnaUP*
+    process.caloShyftAnaNOMINAL*
     process.caloShyftAnaDOWN
     )
 

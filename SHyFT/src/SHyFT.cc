@@ -156,8 +156,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     histograms[sampleNameInput+"_hT_Lep"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_hT_Lep"+jtNum+"_0t").c_str(), "HTlep (sum Jet Et + mu Pt, 0-Tag)", 50, 0, 1200);
     histograms[sampleNameInput+"_wMT"+jtNum]  = theDir.make<TH1F>( (sampleNameInput+"_wMT"+jtNum).c_str(), "W Trans. Mass, 0 Jets", 25, 0, 500);
     histograms[sampleNameInput+"_wMT"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_wMT"+jtNum+"_0t").c_str(), "W Trans. Mass, 0 Jets, 0-Tag", 25,0,500);
-    histograms[sampleNameInput+"_MET"+jtNum]  = theDir.make<TH1F>( (sampleNameInput+"_MET"+jtNum).c_str(), "Missing E_{T}, 0 Jets", 25, 0, 200);
-    histograms[sampleNameInput+"_MET"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_MET"+jtNum+"_0t").c_str(), "Missing E_{T}, 0 Jets, 0-Tag", 25,0,200);
+    histograms[sampleNameInput+"_MET"+jtNum]  = theDir.make<TH1F>( (sampleNameInput+"_MET"+jtNum).c_str(), "Missing E_{T}, 0 Jets", 20, 0, 200);
+    histograms[sampleNameInput+"_MET"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_MET"+jtNum+"_0t").c_str(), "Missing E_{T}, 0 Jets, 0-Tag", 20,0,200);
   }
   for (unsigned int j=0;j<sampleName.size();++j) {
     for(unsigned int k=0;k<secvtxName.size();++k) {
@@ -175,7 +175,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   allNumJets_ = 0;
 
   if ( reweightPDF_ ) {
-    std::cout << "Initializing pdfs" << std::endl;
+    std::cout << "Initializing pdfs, identifier = " << identifier_ << std::endl;
     // For the first one, MAKE ABSOLUTELY SURE it is the one used to generate
     // your sample. 
     std::cout << "PDF to use = " << pdfToUse_ << std::endl;
@@ -258,6 +258,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
                            const std::vector<reco::ShallowClonePtrCandidate>& muons,
                            const std::vector<reco::ShallowClonePtrCandidate>& electrons)
 {
+  // std::cout << "Filling global weight in make_templates : " << globalWeight_ << std::endl;
   reco::Candidate::LorentzVector nu_p4 = met.p4();
   reco::Candidate::LorentzVector lep_p4 = ( muPlusJets_  ? muons[0].p4() : electrons[0].p4() );
   double wMT = (lep_p4 + nu_p4).mt();
@@ -582,18 +583,35 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     // 	    );
     // std::cout << buff << std::endl;
 
-    unsigned int nweights = 1;
-    unsigned int neigen = 0;
-    if (LHAPDF::numberPDF()>1) {
-      nweights += LHAPDF::numberPDF();
-      neigen = nweights / 2;
-    }
+
+    if ( pdfVariation_ != 0 ) {
+      // Here is where we check the varied systematic PDF's
+      unsigned int nweights = 1;
+      unsigned int neigen = 0;
+      if (LHAPDF::numberPDF()>1) {
+	nweights += LHAPDF::numberPDF();
+	neigen = nweights / 2;
+      }
+
       
-    for (unsigned int i=0; i<neigen; ++i) {
-      int toGrab = 2*i;
-      if ( pdfVariation_ < 0 )
-	toGrab = 2*i+1;
-      LHAPDF::usePDFMember(toGrab);
+      for (unsigned int i=0; i<neigen; ++i) {
+	int toGrab = 2*i;
+	if ( pdfVariation_ < 0 )
+	  toGrab = 2*i+1;
+	LHAPDF::usePDFMember(toGrab);
+	double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
+	double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
+	double prod =  (newpdf1/pdf1*newpdf2/pdf2);
+	iWeightSum += prod*prod;
+	++nWeightSum;
+	// sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
+	// 	newpdf1, newpdf2, prod
+	// 	);
+	// std::cout << buff << std::endl;
+      }
+    } else {
+      // Here is where we normalize to the central value (0th PDF)
+      LHAPDF::usePDFMember(0);
       double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
       double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
       double prod =  (newpdf1/pdf1*newpdf2/pdf2);
@@ -602,10 +620,14 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
       // sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
       // 	      newpdf1, newpdf2, prod
       // 	      );
-      // std::cout << buff << std::endl;
+      // std::cout << buff << std::endl;    
     }
+    
+    if (nWeightSum > 0 )
+      iWeightSum = TMath::Sqrt(iWeightSum) / TMath::Sqrt((double)nWeightSum) ;
+    else 
+      iWeightSum = 1.0;
 
-    iWeightSum = TMath::Sqrt(iWeightSum) / TMath::Sqrt((double)nWeightSum) ;
     
     globalWeight_ *= iWeightSum ;
     // std::cout << "Global weight = " << globalWeight_ << std::endl;
@@ -620,7 +642,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     assert ( heavyFlavorCategory.isValid() );
     if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( *heavyFlavorCategory, globalWeight_ );
   }
-  
+
   secvtxname = sampleNameInput;
   //find the sample name
   if(!calcSampleName(iEvent, secvtxname) ) {
@@ -629,7 +651,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   
   if (passOneLepton) 
     {
-      
+
       histograms["nJets"]->Fill( jets.size(), globalWeight_ );
   
       make_templates(jets, met, muons, electrons);
