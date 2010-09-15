@@ -85,7 +85,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   secvtxName[0]+="1j_"; secvtxName[1]+="2j_"; secvtxName[2]+="3j_"; secvtxName[3]+="4j_"; secvtxName[4]+="5j_";
   
   std::vector<std::string> secvtxEnd;
-  if(doMC_) {
+  if(doMC_ && !doTagWeight_) {
     secvtxEnd.push_back("1t_b");  secvtxEnd.push_back("1t_c");  secvtxEnd.push_back("1t_q");
     secvtxEnd.push_back("1t_x");  secvtxEnd.push_back("1t");    secvtxEnd.push_back("2t_bb");
     secvtxEnd.push_back("2t_bc"); secvtxEnd.push_back("2t_bq"); secvtxEnd.push_back("2t_cc");
@@ -101,7 +101,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     for(int i=1;i<12;++i) {
       tmpString.str("");
       tmpString << i;
-      sampleName.push_back(sampleNameInput+"_path"+tmpString.str());
+      if(!useHFcat_)
+        sampleName.push_back(sampleNameInput+"_path"+tmpString.str());
       if(sampleNameInput != "Zjets")
         sampleName.push_back(sampleNameInput+"W_path"+tmpString.str());
       if(sampleNameInput=="Vqq"  || sampleNameInput == "Zjets") {
@@ -150,7 +151,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     string jtNum = Form("_%dj",i);
     histograms[sampleNameInput+"_muPt"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_muPt"+jtNum).c_str(), "muon p_{T}", 100, 0, 200);
     histograms[sampleNameInput+"_hT"+jtNum]   = theDir.make<TH1F>( (sampleNameInput+"_hT"+jtNum).c_str(), "HT (sum Jet Et + mu Pt + MET)", 50, 0, 1200);
-    histograms[sampleNameInput+"_hT"+jtNum+"_0t"]  = theDir.make<TH1F>( (sampleNameInput+"_hT"+jtNum+"_0t").c_str(), "HT (sum Jet Et + mu Pt + MET, 0-Tag)", 50, 50, 1200);
+    histograms[sampleNameInput+"_hT"+jtNum+"_0t"]  = theDir.make<TH1F>( (sampleNameInput+"_hT"+jtNum+"_0t").c_str(), "HT (sum Jet Et + mu Pt + MET, 0-Tag)", 50, 0, 1200);
     histograms[sampleNameInput+"_hT_Lep"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_hT_Lep"+jtNum).c_str(), "HTlep (sum Jet Et + mu Pt)", 50, 0, 1200);
     histograms[sampleNameInput+"_hT_Lep"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_hT_Lep"+jtNum+"_0t").c_str(), "HTlep (sum Jet Et + mu Pt, 0-Tag)", 50, 0, 1200);
     histograms[sampleNameInput+"_wMT"+jtNum]  = theDir.make<TH1F>( (sampleNameInput+"_wMT"+jtNum).c_str(), "W Trans. Mass, 0 Jets", 25, 0, 500);
@@ -164,7 +165,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
         std::string temp = sampleName[j]+secvtxName[k]+secvtxEnd[l];
         histograms[temp] = theDir.make<TH1F>(temp.c_str(), "secvtxmass", 40,    0,   10);
         if(k==0 && l==4) break;
-        else if(!doMC_ && k==0 && l==0) break;
+        else if( (!doMC_ || doTagWeight_) && k==0 && l==0) break;
         //std::cout << temp << std::endl;
       }
     }
@@ -182,7 +183,6 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     std::cout << "Done initializing pdfs" << std::endl;
   }
 }
-
 
 // fill the plots for the electrons
 bool SHyFT::analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons)
@@ -348,7 +348,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       double jetPt  = std::abs( jet->pt() );
       hT += jet->et();
       
-      //histograms["tag_jet_pt"]->Fill( jetPt );
       histograms2d["massVsPt"]->Fill( jetPt, jet->mass(), globalWeight_ );
 
       //Here we determine what kind of flavor we have in this jet	
@@ -393,7 +392,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 
       // Check to see if the actual jet is tagged
       if( jet->bDiscriminator(btaggerString_) < btagOP_ ) continue;
-      ++numTags;
+      //      ++numTags;
 
       // Take the template info from the first tag (ordered by jet pt)
       if ( firstTag ) {
@@ -422,89 +421,88 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
         firstTag = false;
       }// end if first tag
     }// end loop over jets
-  
-  histograms["nTags"]->Fill(numTags, globalWeight_);
 
   // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
   numTags = std::min( allNumTags_, 2 );
   numJets = std::min( allNumJets_, 5 );
-  string muName = sampleNameInput + Form("_muPt_%dj", numJets);
-  
-  string htName = sampleNameInput + Form("_hT_%dj", numJets);
-  string htLepName = sampleNameInput + Form("_hT_Lep_%dj", numJets);
-  string wmtName = sampleNameInput + Form("_wMT_%dj", numJets);
-  string metName = sampleNameInput + Form("_MET_%dj", numJets);
-  
-  string htName0 = sampleNameInput + Form("_hT_%dj_0t", numJets);
-  string htLepName0 = sampleNameInput + Form("_hT_Lep_%dj_0t", numJets);
-  string wmtName0 = sampleNameInput + Form("_wMT_%dj_0t", numJets);
-  string metName0 = sampleNameInput + Form("_MET_%dj_0t", numJets);
 
-  histograms[muName]->Fill( muons[0].pt(), globalWeight_ );
-  histograms[sampleNameInput + Form("_hT")]->Fill( hT, globalWeight_ );
-  histograms[sampleNameInput + Form("_hT_Lep")]->Fill( hT_lep, globalWeight_ );
-  histograms[sampleNameInput + Form("_wMT")]->Fill( wMT, globalWeight_ );
-  histograms[sampleNameInput + Form("_MET")]->Fill( met.pt(), globalWeight_ );
+  if(!doTagWeight_)
+    histograms["nTags"]->Fill(numTags, globalWeight_);
+  else {
+    histograms["nTags"]->Fill((double)0,globalWeight_0t);
+    histograms["nTags"]->Fill((double)1,globalWeight_1t);
+    histograms["nTags"]->Fill((double)2,globalWeight_2t);
+  }
+
+  histograms[sampleNameInput + Form("_hT")    ]->Fill( hT,       globalWeight_ );
+  histograms[sampleNameInput + Form("_hT_Lep")]->Fill( hT_lep,   globalWeight_ );
+  histograms[sampleNameInput + Form("_wMT")   ]->Fill( wMT,      globalWeight_ );
+  histograms[sampleNameInput + Form("_MET")   ]->Fill( met.pt(), globalWeight_ );
 
   // Now, if we have jets, fill 0, 1, and >=2 tag histograms.
   // The 0-tag histograms are hT, met, and mT_w.
   // The 1-tag and >=2-tag histogram is the secondary vertex mass
   // of the highest pt tagged jet.
 
-  histograms[htName]->Fill( hT, globalWeight_ );
-  histograms[htLepName]->Fill( hT_lep, globalWeight_ );
-  histograms[wmtName]->Fill( wMT, globalWeight_ );
-  histograms[metName]->Fill( met.pt(), globalWeight_ );
+  histograms[sampleNameInput + Form("_muPt_%dj",   numJets)]->Fill( muons[0].pt(), globalWeight_ );
+  histograms[sampleNameInput + Form("_hT_%dj",     numJets)]->Fill( hT,            globalWeight_ );
+  histograms[sampleNameInput + Form("_hT_Lep_%dj", numJets)]->Fill( hT_lep,        globalWeight_ );
+  histograms[sampleNameInput + Form("_wMT_%dj",    numJets)]->Fill( wMT,           globalWeight_ );
+  histograms[sampleNameInput + Form("_MET_%dj",    numJets)]->Fill( met.pt(),      globalWeight_ );
+
   if ( numJets > 0 ) {    
-    if ( numTags == 0 ) {
-      histograms[htName0]->Fill( hT, globalWeight_ );
-      histograms[htLepName0]->Fill( hT_lep, globalWeight_ );
-      histograms[wmtName0]->Fill( wMT, globalWeight_ );
-      histograms[metName0]->Fill( met.pt(), globalWeight_ );
+    if ( numTags == 0 || doTagWeight_ ) {
+      histograms[sampleNameInput + Form("_hT_%dj_0t",     numJets)]->Fill( hT,       globalWeight_0t );
+      histograms[sampleNameInput + Form("_hT_Lep_%dj_0t", numJets)]->Fill( hT_lep,   globalWeight_0t );
+      histograms[sampleNameInput + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,      globalWeight_0t );
+      histograms[sampleNameInput + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(), globalWeight_0t );
     }
-    else if( numTags > 0 ) {
+    if( numTags > 0 || doTagWeight_) {
       string whichtag = "";
-      if( doMC_ ) {
-        if (1 == numTags)
-          {
-            // single tag
-            if      (numBottom)              whichtag = "_b";
-            else if (numCharm)               whichtag = "_c";
-            else if (numLight)               whichtag = "_q";
-            else                             whichtag = "_x";
-          }
-        else
-          {
-            // double tags
-            if      (2 == numBottom)         whichtag = "_bb";
-            else if (2 == numCharm)          whichtag = "_cc";
-            else if (2 == numLight)          whichtag = "_qq";
-            else if (numBottom && numCharm)  whichtag = "_bc";
-            else if (numBottom && numLight)  whichtag = "_bq";
-            else if (numCharm  && numLight)  whichtag = "_cq";
-            else                             whichtag = "_xx";
-          } // if two tags
+      if( doMC_ && !doTagWeight_) {
+        if (1 == numTags) {
+          // single tag
+          if      (numBottom)              whichtag = "_b";
+          else if (numCharm)               whichtag = "_c";
+          else if (numLight)               whichtag = "_q";
+          else                             whichtag = "_x";
+        }
+        else {
+          // double tags
+          if      (2 == numBottom)         whichtag = "_bb";
+          else if (2 == numCharm)          whichtag = "_cc";
+          else if (2 == numLight)          whichtag = "_qq";
+          else if (numBottom && numCharm)  whichtag = "_bc";
+          else if (numBottom && numLight)  whichtag = "_bq";
+          else if (numCharm  && numLight)  whichtag = "_cq";
+          else                             whichtag = "_xx";
+        } // if two tags
       }
-      string massName = secvtxname
-        + Form("_secvtxMass_%dj_%dt", numJets, numTags);
-      string massName_comb = sampleNameInput
-        + Form("_secvtxMass_%dj_%dt", numJets, numTags);
-      string htName = sampleNameInput + Form("_hT_%dj", numJets);
-      histograms[massName           ]-> Fill (vertexMass, globalWeight_);
-      if( doMC_ )
-        histograms[massName + whichtag]-> Fill (vertexMass, globalWeight_);	 
+      
+      string massName  = secvtxname + Form("_secvtxMass_%dj_%dt", numJets, numTags);
+      string massName1 = secvtxname + Form("_secvtxMass_%dj_1t",  numJets);
+      string massName2 = secvtxname + Form("_secvtxMass_%dj_2t",  numJets);
+
+      if(!doTagWeight_) {
+        histograms[massName             ]-> Fill (vertexMass, globalWeight_);
+        if( doMC_ )
+          histograms[massName + whichtag]-> Fill (vertexMass, globalWeight_);
+      }
+      else {
+        histograms[massName1            ]-> Fill (vertexMass, globalWeight_1t);
+
+        if (numJets>1) {
+          histograms[massName2            ]-> Fill (vertexMass, globalWeight_2t);
+        }
+      }
     } // end if numTags > 0
   } // end if numJets > 0 
   // This is the 0-jet bin
-  else {
-    histograms[sampleNameInput + Form("_hT_0j")]->Fill( hT , globalWeight_);
-    histograms[sampleNameInput + Form("_hT_Lep_0j")]->Fill( hT_lep , globalWeight_);
-    histograms[sampleNameInput + Form("_wMT_0j")]->Fill( wMT , globalWeight_);
-    histograms[sampleNameInput + Form("_MET_0j")]->Fill( met.pt() , globalWeight_);
-    histograms[sampleNameInput + Form("_hT_0j_0t")]->Fill( hT , globalWeight_);
-    histograms[sampleNameInput + Form("_hT_Lep_0j_0t")]->Fill( hT_lep , globalWeight_);
-    histograms[sampleNameInput + Form("_wMT_0j_0t")]->Fill( wMT , globalWeight_);
-    histograms[sampleNameInput + Form("_MET_0j_0t")]->Fill( met.pt() , globalWeight_);
+  if(numJets==0) {
+    histograms[sampleNameInput + Form("_hT_0j_0t")    ]->Fill( hT ,       globalWeight_);
+    histograms[sampleNameInput + Form("_hT_Lep_0j_0t")]->Fill( hT_lep ,   globalWeight_);
+    histograms[sampleNameInput + Form("_wMT_0j_0t")   ]->Fill( wMT ,      globalWeight_);
+    histograms[sampleNameInput + Form("_MET_0j_0t")   ]->Fill( met.pt() , globalWeight_);
   }
   return true;
 }
@@ -522,14 +520,47 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
 {
   globalWeight_ = 1.0;
 
+  pat::strbitset ret = wPlusJets.getBitTemplate();
+  
+  bool passed = wPlusJets(iEvent, ret);
+  std::vector<reco::ShallowClonePtrCandidate> const & electrons = wPlusJets.selectedElectrons();
+  std::vector<reco::ShallowClonePtrCandidate> const & muons     = wPlusJets.selectedMuons();
+  std::vector<reco::ShallowClonePtrCandidate> const & jets      = wPlusJets.cleanedJets();
+  reco::ShallowClonePtrCandidate const & met = wPlusJets.selectedMET();
 
+  //Check if the BTagPerformanceRecord exists
+  recId_ = es_.recordID("BTagPerformanceRecord");
+  es_.syncTo( iEvent.id(), edm::Timestamp());
+  
+  string bit_;
+
+  bit_ = "Trigger" ;
+  bool passTrigger = ret[ bit_ ];
+  bit_ = "== 1 Lepton";
+  bool passOneLepton = ret[ bit_ ];
+  bit_ = ">=1 Jets";
+  bool jet1 = ret[bit_];
+  bit_ = ">=2 Jets";
+  bool jet2 = ret[bit_];
+  bit_ = ">=3 Jets";
+  bool jet3 = ret[bit_];
+  bit_ = ">=4 Jets";
+  bool jet4 = ret[bit_];
+  bit_ = ">=5 Jets";
+  bool jet5 = ret[bit_];
+  
+  bool anyJets = passed;
+  
+  // if not passed trigger, next event
+  if ( !passTrigger )  return;
+  
   if (doMC_ && reweightPDF_) {
     // 
     // NOTA BENE!!!!
     //
     //     The values "pdf1" and "pdf2" below are *wrong* for madgraph or alpgen samples.
     //     They must be taken from the "zeroth" PDF in the PDF set, assuming that is set
-
+    
     double iWeightSum = 0.0;
     unsigned int nWeightSum = 0;
     edm::Handle<GenEventInfoProduct> pdfstuff;
@@ -550,7 +581,6 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     // 	    Q, id1, id2, x1, x2, pdf1, pdf2
     // 	    );
     // std::cout << buff << std::endl;
-
 
     unsigned int nweights = 1;
     unsigned int neigen = 0;
@@ -575,57 +605,21 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
       // std::cout << buff << std::endl;
     }
 
-    
-
     iWeightSum = TMath::Sqrt(iWeightSum) / TMath::Sqrt((double)nWeightSum) ;
     
     globalWeight_ *= iWeightSum ;
     // std::cout << "Global weight = " << globalWeight_ << std::endl;
     histograms["pdfWeight"]->Fill( globalWeight_ );
   }
-
-  pat::strbitset ret = wPlusJets.getBitTemplate();
   
-  bool passed = wPlusJets(iEvent, ret);
-  std::vector<reco::ShallowClonePtrCandidate> const & electrons = wPlusJets.selectedElectrons();
-  std::vector<reco::ShallowClonePtrCandidate> const & muons     = wPlusJets.selectedMuons();
-  std::vector<reco::ShallowClonePtrCandidate> const & jets      = wPlusJets.cleanedJets();
-  reco::ShallowClonePtrCandidate const & met = wPlusJets.selectedMET();
-
-  //Check if the BTagPerformanceRecord exists
-  recId_ = es_.recordID("BTagPerformanceRecord");
-  es_.syncTo( iEvent.id(), edm::Timestamp());
+  calcTagWeight(jets);
   
-  calcTagWeight(globalWeight_,jets);
-
   if(useHFcat_) {
     edm::Handle< unsigned int > heavyFlavorCategory;
     iEvent.getByLabel ( edm::InputTag("flavorHistoryFilter"),heavyFlavorCategory);
     assert ( heavyFlavorCategory.isValid() );
     if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( *heavyFlavorCategory, globalWeight_ );
   }
-  
-  string bit_;
-
-  bit_ = "Trigger" ;
-  bool passTrigger = ret[ bit_ ];
-  bit_ = "== 1 Lepton";
-  bool passOneLepton = ret[ bit_ ];
-  bit_ = ">=1 Jets";
-  bool jet1 = ret[bit_];
-  bit_ = ">=2 Jets";
-  bool jet2 = ret[bit_];
-  bit_ = ">=3 Jets";
-  bool jet3 = ret[bit_];
-  bit_ = ">=4 Jets";
-  bool jet4 = ret[bit_];
-  bit_ = ">=5 Jets";
-  bool jet5 = ret[bit_];
-  
-  bool anyJets = passed;
-  
-  // if not passed trigger, next event
-  if ( !passTrigger )  return;
   
   secvtxname = sampleNameInput;
   //find the sample name
@@ -638,32 +632,30 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
       
       histograms["nJets"]->Fill( jets.size(), globalWeight_ );
   
-
-      
       make_templates(jets, met, muons, electrons);
       analyze_met( met );
       if ( muPlusJets_ ) analyze_muons(muons);
       if ( ePlusJets_ ) analyze_electrons(electrons);          
 
       if ( !doMC_) {
-	summary_.push_back( SHyFTSummary(iEvent.id().run(),
-					 iEvent.id().luminosityBlock(),
-					 iEvent.id().event(),
-					 allNumJets_,
-					 allNumTags_
-					 ) );
-      }
-      
+        summary_.push_back( SHyFTSummary(iEvent.id().run(),
+                                         iEvent.id().luminosityBlock(),
+                                         iEvent.id().event(),
+                                         allNumJets_,
+                                         allNumTags_
+                                         ) );
+      }    
     }
 }
-
-void SHyFT::calcTagWeight(double & weight_, const std::vector<reco::ShallowClonePtrCandidate>& jets)
+  
+void SHyFT::calcTagWeight(const std::vector<reco::ShallowClonePtrCandidate>& jets)
 {
   allNumTags_ = 0;
   allNumJets_ = (int) jets.size();
 
+  double weight0t = 0;
   double weight1t = 0;
-  double weight2t = 0;
+  //  double weight2t = 0;
 
   //Get Payload and Working Point
   fwlite::ESHandle< PerformancePayload >   plBHandle;
@@ -694,10 +686,10 @@ void SHyFT::calcTagWeight(double & weight_, const std::vector<reco::ShallowClone
   //Normalization for "1 tag" events
   for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
           jetEnd = jets.end(), jetIter = jetBegin;
-        jetIter != jetEnd; ++jetIter)
+      jetIter != jetEnd; ++jetIter)
     {
       const pat::Jet* jet = dynamic_cast<const pat::Jet *>(jetIter->masterClonePtr().get());
-      
+
       // We need to check out how many tags we have, so we know how to classify this event
       // Get the secondary vertex tag info
       reco::SecondaryVertexTagInfo const * svTagInfos
@@ -798,9 +790,16 @@ void SHyFT::calcTagWeight(double & weight_, const std::vector<reco::ShallowClone
               }
           } // end for jet2Iter
         weight1t += weight*untagRate;
+        if(jetIter==jetBegin)
+          weight0t = (1-weight)*untagRate;
+        else if (std::abs(weight0t - (1.0-weight)*untagRate) > 0.0001)
+          cout << "Error with weight: weight0t = " << weight0t << " , 1-weight = " << 1.0-weight << " , untagRate = " << untagRate
+               << "new weight0t = " << (1.0-weight)*untagRate << endl;
         histograms3d["normalization"]->Fill(  allNumJets_,	1,	whichtag,	weight*untagRate );
       } // end if doMC
     } // end for jetIter
+  //This isn't correct
+  /*
   if( doMC_ ) {
     if( allNumJets_ >= 2 ) {
       //Normalization for double tagged events
@@ -879,14 +878,18 @@ void SHyFT::calcTagWeight(double & weight_, const std::vector<reco::ShallowClone
         }  // end jetIter1, jetIter2
     } // end if >=2 jets
   } // end if doMC
+  */
   if (doTagWeight_) {
-    if (allNumTags_==2) {
-      weight_ = weight2t;
-    }
-    else if (allNumTags_==1) {
-      weight_ = weight1t;
-    }
-    else weight_ = 1.0-weight2t-weight1t;
+    globalWeight_0t = globalWeight_*weight0t;
+    globalWeight_1t = globalWeight_*weight1t;
+    globalWeight_2t = globalWeight_*(1.0-weight0t-weight1t);
+    /*    cout << "njets,ntags = " << allNumJets_ << "," << allNumTags_ << " "
+          << "weights:0,1,2 = " << globalWeight_0t << "," << globalWeight_1t << "," << globalWeight_2t << std::endl;*/
+  }
+  else {
+    globalWeight_2t = globalWeight_;
+    globalWeight_1t = globalWeight_;
+    globalWeight_0t = globalWeight_;
   }
 }
 

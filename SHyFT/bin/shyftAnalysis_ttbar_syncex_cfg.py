@@ -6,6 +6,7 @@ process = cms.Process("FWLitePlots")
 process.load('Analysis.SHyFT.shyftAnalysis_cfi')
 process.shyftAnalysis.btaggerString = cms.string('simpleSecondaryVertexBJetTags')
 process.shyftAnalysis.doMC = cms.bool(True)
+process.shyftAnalysis.doTagWeight = cms.bool(True)
 
 process.inputs = cms.PSet (
     maxEvents = cms.int32(-1),

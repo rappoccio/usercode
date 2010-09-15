@@ -89,7 +89,7 @@ class SHyFT {
     bool analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons);
     bool analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons);    
     bool analyze_met( const reco::ShallowClonePtrCandidate & met );
-    void calcTagWeight (double & weight, const std::vector<reco::ShallowClonePtrCandidate>& jets);
+    void calcTagWeight (const std::vector<reco::ShallowClonePtrCandidate>& jets);
     bool calcSampleName (const edm::EventBase& iEvent, std::string &sampleName);
 
     bool make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
@@ -131,6 +131,9 @@ class SHyFT {
     std::vector<SHyFTSummary> summary_;
 
     double globalWeight_;  // For reweighting the entire event for, e.g., pdf reweighting
+    double globalWeight_0t;  // For reweighting the entire event for probabaility to not tag
+    double globalWeight_1t;  // For reweighting the entire event for probabaility to have 1 tag
+    double globalWeight_2t;  // For reweighting the entire event for probabaility to have 2 tags
     bool reweightPDF_;
     edm::InputTag pdfInputTag_; 
     std::string pdfToUse_;
