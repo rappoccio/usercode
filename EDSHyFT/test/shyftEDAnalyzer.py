@@ -53,7 +53,7 @@ if options.doMC > 0 :
 else :
     inputDoMC = False
     # get JSON file correctly parced
-    JSONfile = 'Cert_132440-144114_7TeV_StreamExpress_Collisions10_JSON.txt'
+    JSONfile = 'Cert_132440-144114_7TeV_StreamExpress_Collisions10_JSON_v2.txt'
     myList = LumiList.LumiList (filename = JSONfile).getCMSSWString().split(',')
 
 
@@ -63,7 +63,8 @@ inputSampleName = options.sampleNameInput
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/InclusiveMu15/shyft_38xOn35x_v1/91f2fc34c53b68691c104fb43fa3e9f4/shyft_382_mc_1_1_rw3.root'
+#                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
                                     )
                                 )
 else :
@@ -78,7 +79,7 @@ if inputDoMC == False :
     process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( myList )
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 
@@ -94,7 +95,7 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         metSrc = cms.InputTag('patMETsPFlow'),
                                         jetSrc = cms.InputTag('selectedPatJetsPFlow'),
                                         jetPtMin = cms.double(25.0),
-                                        minJets = cms.int32(1),
+                                        minJets = cms.int32(5),
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
                                         sampleName = cms.string(inputSampleName),
@@ -107,7 +108,7 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                          metSrc = cms.InputTag('patMETsTC'),
                                          jetSrc = cms.InputTag('selectedPatJetsAK5JPT'),                                         
                                          jetPtMin = cms.double(30.0),
-                                         minJets = cms.int32(1),
+                                         minJets = cms.int32(5),
                                          heavyFlavour = cms.bool( useFlavorHistory ),
                                          doMC = cms.bool( inputDoMC),
                                          sampleName = cms.string(inputSampleName),
@@ -116,23 +117,25 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                      
                                      )
 
+if inputDoMC :
+    caloBTag = 'simpleSecondaryVertexBJetTags'
+else :
+    caloBTag = 'simpleSecondaryVertexBJetTagsHighEff'
+
 process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
                                       shyftAnalysis = inputShyftAnalysis.clone(
                                           jetPtMin = cms.double(30.0),
-                                          minJets = cms.int32(1),
+                                          minJets = cms.int32(5),
                                           heavyFlavour = cms.bool( useFlavorHistory ),
                                           doMC = cms.bool( inputDoMC),
                                           sampleName = cms.string(inputSampleName),
-                                          btaggerString = cms.string('simpleSecondaryVertexBJetTags'),
+                                          btaggerString = cms.string(caloBTag),
                                           identifier = cms.string('CALO')
                                           )                                      
                                       )
 
-
 process.p = cms.Path(
-#    process.pfShyftAna
     process.pfShyftAna*process.jptShyftAna*process.caloShyftAna
-#    process.jptShyftAna
     )
 
-process.MessageLogger.cerr.FwkReport.reportEvery = 10000
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
