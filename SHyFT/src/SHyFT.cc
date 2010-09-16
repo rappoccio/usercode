@@ -85,7 +85,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   secvtxName[0]+="1j_"; secvtxName[1]+="2j_"; secvtxName[2]+="3j_"; secvtxName[3]+="4j_"; secvtxName[4]+="5j_";
   
   std::vector<std::string> secvtxEnd;
-  if(doMC_ && !doTagWeight_) {
+  if(doMC_) {
     secvtxEnd.push_back("1t_b");  secvtxEnd.push_back("1t_c");  secvtxEnd.push_back("1t_q");
     secvtxEnd.push_back("1t_x");  secvtxEnd.push_back("1t");    secvtxEnd.push_back("2t_bb");
     secvtxEnd.push_back("2t_bc"); secvtxEnd.push_back("2t_bq"); secvtxEnd.push_back("2t_cc");
@@ -165,7 +165,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
         std::string temp = sampleName[j]+secvtxName[k]+secvtxEnd[l];
         histograms[temp] = theDir.make<TH1F>(temp.c_str(), "secvtxmass", 40,    0,   10);
         if(k==0 && l==4) break;
-        else if( (!doMC_ || doTagWeight_) && k==0 && l==0) break;
+        else if( (!doMC_) && k==0 && l==0) break;
         //std::cout << temp << std::endl;
       }
     }
@@ -343,7 +343,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
         jetIter != jetEnd; ++jetIter)
     {
       const pat::Jet* jet = dynamic_cast<const pat::Jet *>(jetIter->masterClonePtr().get());
-      
       // We first get the flavor of the jet so we can fill look at btag efficiency.
       int jetFlavor = std::abs( jet->partonFlavour() );
       double jetPt  = std::abs( jet->pt() );
@@ -357,7 +356,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
           {
           case 5:
             // bottom
-            ++numBottom; 
+            ++numBottom;
             break;
           case 4:
             // charm
@@ -368,6 +367,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
             ++numLight;
           }
       }
+
       // Get the secondary vertex tag info
       reco::SecondaryVertexTagInfo const * svTagInfos
         = jet->tagInfoSecondaryVertex("secondaryVertex");
@@ -406,23 +406,24 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
             case 5:
               // bottom
               histograms["bmass"]->Fill(vertexMass, globalWeight_);
-              ++numBottom; 
               break;
             case 4:
               // charm
               histograms["cmass"]->Fill(vertexMass, globalWeight_);
-              ++numCharm;
               break;
             default:
               // light flavour
               histograms["lfmass"]->Fill(vertexMass, globalWeight_);
-              ++numLight;
             }
         }
         firstTag = false;
       }// end if first tag
     }// end loop over jets
 
+  if(numBottom>2) numBottom=2;
+  if(numCharm>2 ) numCharm =2;
+  if(numLight>2 ) numLight =2;
+  
   // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
   numTags = std::min( allNumTags_, 2 );
   numJets = std::min( allNumJets_, 5 );
@@ -459,43 +460,66 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       histograms[sampleNameInput + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(), globalWeight_0t );
     }
     if( numTags > 0 || doTagWeight_) {
-      string whichtag = "";
-      if( doMC_ && !doTagWeight_) {
-        if (1 == numTags) {
-          // single tag
-          if      (numBottom)              whichtag = "_b";
-          else if (numCharm)               whichtag = "_c";
-          else if (numLight)               whichtag = "_q";
-          else                             whichtag = "_x";
-        }
-        else {
-          // double tags
-          if      (2 == numBottom)         whichtag = "_bb";
-          else if (2 == numCharm)          whichtag = "_cc";
-          else if (2 == numLight)          whichtag = "_qq";
-          else if (numBottom && numCharm)  whichtag = "_bc";
-          else if (numBottom && numLight)  whichtag = "_bq";
-          else if (numCharm  && numLight)  whichtag = "_cq";
-          else                             whichtag = "_xx";
-        } // if two tags
-      }
-      
       string massName  = secvtxname + Form("_secvtxMass_%dj_%dt", numJets, numTags);
       string massName1 = secvtxname + Form("_secvtxMass_%dj_1t",  numJets);
       string massName2 = secvtxname + Form("_secvtxMass_%dj_2t",  numJets);
-
-      if(!doTagWeight_) {
-        histograms[massName             ]-> Fill (vertexMass, globalWeight_);
-        if( doMC_ )
-          histograms[massName + whichtag]-> Fill (vertexMass, globalWeight_);
-      }
-      else {
-        histograms[massName1            ]-> Fill (vertexMass, globalWeight_1t);
-
-        if (numJets>1) {
-          histograms[massName2            ]-> Fill (vertexMass, globalWeight_2t);
-        }
-      }
+      
+      string whichtag = "";
+      if( doMC_ ) {
+        if( !doTagWeight_ ) {
+          if (1 == numTags) {
+            // single tag
+            if      (numBottom)              whichtag = "_b";
+            else if (numCharm)               whichtag = "_c";
+            else if (numLight)               whichtag = "_q";
+            else                             whichtag = "_x";
+          }
+          else {
+            // double tags
+            if      (2 == numBottom)         whichtag = "_bb";
+            else if (2 == numCharm)          whichtag = "_cc";
+            else if (2 == numLight)          whichtag = "_qq";
+            else if (numBottom && numCharm)  whichtag = "_bc";
+            else if (numBottom && numLight)  whichtag = "_bq";
+            else if (numCharm  && numLight)  whichtag = "_cq";
+            else                             whichtag = "_xx";
+          } // if two tags
+          histograms[massName             ]-> Fill (vertexMass, globalWeight_);
+          histograms[massName + whichtag  ]-> Fill (vertexMass, globalWeight_);
+        } // if not doTagWeight
+        else {
+          if (numBottom>0) {
+            histograms[massName1 + "_b"   ]-> Fill (vertexMass, globalWeight_1t);
+            if (2==numBottom)
+              histograms[massName2 + "_bb"]-> Fill (vertexMass, globalWeight_2t);
+            else if (numBottom && numCharm ) 
+              histograms[massName2 + "_bc"]-> Fill (vertexMass, globalWeight_2t);
+            else if (numBottom && numLight )
+              histograms[massName2 + "_bq"]-> Fill (vertexMass, globalWeight_2t);
+          }
+          else if (numCharm>0) {
+            histograms[massName1 + "_c"   ]-> Fill (vertexMass, globalWeight_1t);
+            if (2==numCharm)
+              histograms[massName2 + "_cc"]-> Fill (vertexMass, globalWeight_2t);
+            else if (numCharm && numLight)
+              histograms[massName2 + "_cq"]-> Fill (vertexMass, globalWeight_2t);
+          }
+          else if (numLight>0) {
+            histograms[massName1 + "_q"   ]-> Fill (vertexMass, globalWeight_1t);
+            if (2==numLight)
+              histograms[massName2 + "_qq"]-> Fill (vertexMass, globalWeight_2t);
+          }
+          else {
+            histograms[massName1 + "_x"   ]-> Fill (vertexMass, globalWeight_1t);
+            histograms[massName2 + "_xx"  ]-> Fill (vertexMass, globalWeight_2t);
+          }
+          histograms[massName1            ]-> Fill (vertexMass, globalWeight_1t);
+          if (numJets>1)
+            histograms[massName2          ]-> Fill (vertexMass, globalWeight_2t);
+        } // end else (== if dotagweight)
+      } // end if doMC
+      else
+        histograms[massName               ]-> Fill (vertexMass, globalWeight_);
     } // end if numTags > 0
   } // end if numJets > 0 
   // This is the 0-jet bin
@@ -593,21 +617,20 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
 	neigen = nweights / 2;
       }
 
-      
       for (unsigned int i=0; i<neigen; ++i) {
-	int toGrab = 2*i;
-	if ( pdfVariation_ < 0 )
-	  toGrab = 2*i+1;
-	LHAPDF::usePDFMember(toGrab);
-	double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
-	double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
-	double prod =  (newpdf1/pdf1*newpdf2/pdf2);
-	iWeightSum += prod*prod;
-	++nWeightSum;
-	// sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
-	// 	newpdf1, newpdf2, prod
-	// 	);
-	// std::cout << buff << std::endl;
+        int toGrab = 2*i;
+        if ( pdfVariation_ < 0 )
+          toGrab = 2*i+1;
+        LHAPDF::usePDFMember(toGrab);
+        double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
+        double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
+        double prod =  (newpdf1/pdf1*newpdf2/pdf2);
+        iWeightSum += prod*prod;
+        ++nWeightSum;
+        // sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
+        // 	newpdf1, newpdf2, prod
+        // 	);
+        // std::cout << buff << std::endl;
       }
     } else {
       // Here is where we normalize to the central value (0th PDF)
@@ -651,7 +674,6 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   
   if (passOneLepton) 
     {
-
       histograms["nJets"]->Fill( jets.size(), globalWeight_ );
   
       make_templates(jets, met, muons, electrons);
