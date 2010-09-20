@@ -40,8 +40,15 @@ shyftAnalysis = cms.PSet(
 #        ] ),
     doTagWeight = cms.bool(False),
     bcEffScale = cms.double(1.0),
-    lfEffScale = cms.double(1.0)
+    lfEffScale = cms.double(1.0),
+    useDefaultDiscriminant = cms.bool(True),
+    bDiscriminantCut = cms.double(1.74),
+    cDiscriminantCut = cms.double(-1),
+    lDiscriminantCut = cms.double(-1),
+    useCustomPayload = cms.bool(False),
+    jetAlgo = cms.string("calo"),
+    customPayload = cms.string('ttbarEffSF.root')
     
 #    btaggerString = cms.string('simpleSecondaryVertexBJetTags')
 )
-#shyftAnalysis.pvSelector.maxZ = 24.0
+

@@ -142,6 +142,14 @@ class SHyFT {
     bool doTagWeight_;
     double bcEffScale_;
     double lfEffScale_;
+    bool useDefaultDiscr_;
+    double bDiscrCut_;
+    double cDiscrCut_;
+    double lDiscrCut_;
+    bool useCustomPayload_;
+    std::string customTagRootFile_;
+    std::string jetAlgo_;
+    TFile f1_;
 };
 
 
