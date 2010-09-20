@@ -150,6 +150,9 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   for(unsigned int i=0; i<6; ++i) {
     string jtNum = Form("_%dj",i);
     histograms[sampleNameInput+"_muPt"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_muPt"+jtNum).c_str(), "muon p_{T}", 100, 0, 200);
+    histograms[sampleNameInput+"_muEta"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_muEta"+jtNum).c_str(), "muon #eta", 60, 0, 2.4);
+    histograms[sampleNameInput+"_muPt"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_muPt"+jtNum).c_str(), "muon p_{T}", 100, 0, 200);
+    histograms[sampleNameInput+"_muEta"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_muEta"+jtNum).c_str(), "muon #eta", 60, 0, 2.4);
     histograms[sampleNameInput+"_hT"+jtNum]   = theDir.make<TH1F>( (sampleNameInput+"_hT"+jtNum).c_str(), "HT (sum Jet Et + mu Pt + MET)", 50, 0, 1200);
     histograms[sampleNameInput+"_hT"+jtNum+"_0t"]  = theDir.make<TH1F>( (sampleNameInput+"_hT"+jtNum+"_0t").c_str(), "HT (sum Jet Et + mu Pt + MET, 0-Tag)", 50, 0, 1200);
     histograms[sampleNameInput+"_hT_Lep"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_hT_Lep"+jtNum).c_str(), "HTlep (sum Jet Et + mu Pt)", 50, 0, 1200);
@@ -447,6 +450,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   // of the highest pt tagged jet.
 
   histograms[sampleNameInput + Form("_muPt_%dj",   numJets)]->Fill( muons[0].pt(), globalWeight_ );
+  histograms[sampleNameInput + Form("_muEta_%dj",   numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
   histograms[sampleNameInput + Form("_hT_%dj",     numJets)]->Fill( hT,            globalWeight_ );
   histograms[sampleNameInput + Form("_hT_Lep_%dj", numJets)]->Fill( hT_lep,        globalWeight_ );
   histograms[sampleNameInput + Form("_wMT_%dj",    numJets)]->Fill( wMT,           globalWeight_ );
@@ -454,6 +458,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 
   if ( numJets > 0 ) {    
     if ( numTags == 0 || doTagWeight_ ) {
+      histograms[sampleNameInput + Form("_muPt_%dj_0t",   numJets)]->Fill( muons[0].pt(), globalWeight_ );
+      histograms[sampleNameInput + Form("_muEta_%dj_0t",   numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
       histograms[sampleNameInput + Form("_hT_%dj_0t",     numJets)]->Fill( hT,       globalWeight_0t );
       histograms[sampleNameInput + Form("_hT_Lep_%dj_0t", numJets)]->Fill( hT_lep,   globalWeight_0t );
       histograms[sampleNameInput + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,      globalWeight_0t );
@@ -524,6 +530,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   } // end if numJets > 0 
   // This is the 0-jet bin
   if(numJets==0) {
+    histograms[sampleNameInput + Form("_muPt_0j_0t")]->Fill( muons[0].pt(), globalWeight_ );
+    histograms[sampleNameInput + Form("_muEta_0j_0t")]->Fill( fabs(muons[0].eta()), globalWeight_ );
     histograms[sampleNameInput + Form("_hT_0j_0t")    ]->Fill( hT ,       globalWeight_);
     histograms[sampleNameInput + Form("_hT_Lep_0j_0t")]->Fill( hT_lep ,   globalWeight_);
     histograms[sampleNameInput + Form("_wMT_0j_0t")   ]->Fill( wMT ,      globalWeight_);
