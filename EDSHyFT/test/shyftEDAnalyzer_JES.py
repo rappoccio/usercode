@@ -32,6 +32,27 @@ options.register('sampleNameInput',
                  VarParsing.varType.string,
                  "Sample name to give histograms")
 
+options.register('caloMetMin',
+                 0.,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.float,
+                  "Min MET for calo met")
+
+options.register('jptMetMin',
+                 0.,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.float,
+                  "Min MET for jpt met")
+
+
+options.register('pfMetMin',
+                 0.,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.float,
+                  "Min MET for pf met")
+
+
+
 options.parseArguments()
 
 print options
@@ -65,13 +86,13 @@ else :
 inputDoMC = True
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("shyftStudies.root")
+                                   fileName = cms.string("shyftStudies_metcut.root")
                                    )
 
 
@@ -83,6 +104,7 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         metSrc = cms.InputTag('patMETsPFlow'),
                                         jetSrc = cms.InputTag('selectedPatJetsPFlow'),
                                         jetPtMin = cms.double(25.0),
+                                        metMin = cms.double(options.pfMetMin),
                                         minJets = cms.int32(5),
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
@@ -96,6 +118,7 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                          metSrc = cms.InputTag('patMETsTC'),
                                          jetSrc = cms.InputTag('selectedPatJetsAK5JPT'),                                         
                                          jetPtMin = cms.double(30.0),
+                                         metMin = cms.double(options.jptMetMin),
                                          minJets = cms.int32(5),
                                          heavyFlavour = cms.bool( useFlavorHistory ),
                                          doMC = cms.bool( inputDoMC),
@@ -108,6 +131,7 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
 process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
                                       shyftAnalysis = inputShyftAnalysis.clone(
                                           jetPtMin = cms.double(30.0),
+                                          metMin = cms.double(options.caloMetMin),
                                           minJets = cms.int32(5),
                                           heavyFlavour = cms.bool( useFlavorHistory ),
                                           doMC = cms.bool( inputDoMC),
