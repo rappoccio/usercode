@@ -91,6 +91,7 @@ class SHyFT {
     bool analyze_met( const reco::ShallowClonePtrCandidate & met );
     void calcTagWeight (const std::vector<reco::ShallowClonePtrCandidate>& jets);
     bool calcSampleName (const edm::EventBase& iEvent, std::string &sampleName);
+    void weightPDF( edm::EventBase const & iEvent );
 
     bool make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
 			const reco::ShallowClonePtrCandidate & met,
@@ -115,9 +116,10 @@ class SHyFT {
     int HFcat_;
     std::string secvtxname;
     bool doMC_;
+    bool doBTagPerformance_;
     std::string plRootFile_;
-    TFile f_;
-    fwlite::EventSetup es_;
+    boost::shared_ptr<TFile> btagPayloadFile_;
+    boost::shared_ptr<fwlite::EventSetup> es_;
     fwlite::RecordID  recId_;
     double btagOP_;
     std::string bPerformanceTag_;
@@ -149,7 +151,14 @@ class SHyFT {
     bool useCustomPayload_;
     std::string customTagRootFile_;
     std::string jetAlgo_;
-    TFile f1_;
+    boost::shared_ptr<TFile> customBtagFile_;
+
+
+    // for closure test of tag rates
+    double nExpectedTaggedJets_;
+    double nObservedTaggedJets_;
+    double nExpectedTaggedEvents_;
+    double nObservedTaggedEvents_;
 };
 
 

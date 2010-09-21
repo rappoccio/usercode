@@ -32,8 +32,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   nJetsCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("minJets")),  
   sampleNameInput(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("sampleName")),
   doMC_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doMC") ),
+  doBTagPerformance_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doBTagPerformance") ),
   plRootFile_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("payload")  ),
-  f_( plRootFile_.c_str(), "READ"),  es_(&f_),
   bPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("bPerformanceTag")  ),
   cPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("cPerformanceTag")  ),
   lPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("lPerformanceTag")  ),
@@ -52,10 +52,18 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   lDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("lDiscriminantCut")),
   useCustomPayload_ (iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("useCustomPayload")),
   customTagRootFile_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("customPayload")),
-  jetAlgo_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("jetAlgo")),
-  f1_(customTagRootFile_.c_str(), "READ")
-  
+  jetAlgo_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("jetAlgo"))
 {
+
+  if ( doBTagPerformance_ ) {
+    btagPayloadFile_ = boost::shared_ptr<TFile>( new TFile( plRootFile_.c_str(), "READ") );
+    es_  = boost::shared_ptr<fwlite::EventSetup>( new fwlite::EventSetup(&*btagPayloadFile_) );
+  }
+
+  if ( useCustomPayload_ ) {
+    customBtagFile_ = boost::shared_ptr<TFile>( new TFile(customTagRootFile_.c_str(), "READ") );
+  }
+
   //book all the histograms for muons
   if(muPlusJets_) {
     histograms["muPt"]       = theDir.make<TH1F>("muPt",       "Muon p_{T} (GeV/c) ",   100,    0, 200);
@@ -194,6 +202,13 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     LHAPDF::initPDFSet(pdfToUse_);
     std::cout << "Done initializing pdfs" << std::endl;
   }
+
+
+  // for closure test
+  nExpectedTaggedJets_ = 0.;
+  nObservedTaggedJets_ = 0.;
+  nExpectedTaggedEvents_ = 0.;
+  nObservedTaggedEvents_ = 0.;
 }
 
 // fill the plots for the electrons
@@ -571,8 +586,10 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   reco::ShallowClonePtrCandidate const & met = wPlusJets.selectedMET();
 
   //Check if the BTagPerformanceRecord exists
-  recId_ = es_.recordID("BTagPerformanceRecord");
-  es_.syncTo( iEvent.id(), edm::Timestamp());
+  if ( doBTagPerformance_ ) {
+    recId_ = es_->recordID("BTagPerformanceRecord");
+    es_->syncTo( iEvent.id(), edm::Timestamp());
+  }
   
   string bit_;
 
@@ -590,92 +607,20 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   bool jet4 = ret[bit_];
   bit_ = ">=5 Jets";
   bool jet5 = ret[bit_];
-  bit_ = "MET Cut";
-  bool passMET = ret[bit_];
-  bool anyJets = passed;
+  bit_ = "Cosmic Veto";
+  bool passPre = ret[bit_];
+  bool anyJets = jet1 || jet2 || jet3 || jet4 || jet5;
   
   // if not passed trigger, next event
   if ( !passTrigger )  return;
   
   if (doMC_ && reweightPDF_) {
-    // 
-    // NOTA BENE!!!!
-    //
-    //     The values "pdf1" and "pdf2" below are *wrong* for madgraph or alpgen samples.
-    //     They must be taken from the "zeroth" PDF in the PDF set, assuming that is set
-    
-    double iWeightSum = 0.0;
-    unsigned int nWeightSum = 0;
-    edm::Handle<GenEventInfoProduct> pdfstuff;
-    iEvent.getByLabel(pdfInputTag_, pdfstuff);
-       
-    float Q = pdfstuff->pdf()->scalePDF;
-    int id1 = pdfstuff->pdf()->id.first;
-    double x1 = pdfstuff->pdf()->x.first;
-    int id2 = pdfstuff->pdf()->id.second;
-    double x2 = pdfstuff->pdf()->x.second;
-
-    // BROKEN for Madgraph productions:
-    double pdf1 = pdfstuff->pdf()->xPDF.first;
-    double pdf2 = pdfstuff->pdf()->xPDF.second;  
-
-    // char buff[1000];
-    // sprintf(buff, "Q = %6.2f, id1 = %4d, id2 = %4d, x1 = %6.2f, x2 = %6.2f, pdf1 = %6.2f, pdf2 = %6.2f",
-    // 	    Q, id1, id2, x1, x2, pdf1, pdf2
-    // 	    );
-    // std::cout << buff << std::endl;
-
-
-    if ( pdfVariation_ != 0 ) {
-      // Here is where we check the varied systematic PDF's
-      unsigned int nweights = 1;
-      unsigned int neigen = 0;
-      if (LHAPDF::numberPDF()>1) {
-	nweights += LHAPDF::numberPDF();
-	neigen = nweights / 2;
-      }
-
-      for (unsigned int i=0; i<neigen; ++i) {
-        int toGrab = 2*i;
-        if ( pdfVariation_ < 0 )
-          toGrab = 2*i+1;
-        LHAPDF::usePDFMember(toGrab);
-        double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
-        double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
-        double prod =  (newpdf1/pdf1*newpdf2/pdf2);
-        iWeightSum += prod*prod;
-        ++nWeightSum;
-        // sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
-        // 	newpdf1, newpdf2, prod
-        // 	);
-        // std::cout << buff << std::endl;
-      }
-    } else {
-      // Here is where we normalize to the central value (0th PDF)
-      LHAPDF::usePDFMember(0);
-      double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
-      double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
-      double prod =  (newpdf1/pdf1*newpdf2/pdf2);
-      iWeightSum += prod*prod;
-      ++nWeightSum;
-      // sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
-      // 	      newpdf1, newpdf2, prod
-      // 	      );
-      // std::cout << buff << std::endl;    
-    }
-    
-    if (nWeightSum > 0 )
-      iWeightSum = TMath::Sqrt(iWeightSum) / TMath::Sqrt((double)nWeightSum) ;
-    else 
-      iWeightSum = 1.0;
-
-    
-    globalWeight_ *= iWeightSum ;
-    // std::cout << "Global weight = " << globalWeight_ << std::endl;
-    histograms["pdfWeight"]->Fill( globalWeight_ );
+    weightPDF(iEvent);
   }
-  
-  calcTagWeight(jets);
+
+  if ( doBTagPerformance_ ) {
+    calcTagWeight(jets);
+  }
   
   if(useHFcat_) {
     edm::Handle< unsigned int > heavyFlavorCategory;
@@ -690,7 +635,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     throw cms::Exception("InvalidLogic") << " Calculating sample name broke on me... I'm outta here" << std::endl;
   }
   
-  if (passOneLepton && passMET) 
+  if (passPre) 
     {
       histograms["nJets"]->Fill( jets.size(), globalWeight_ );
   
@@ -726,12 +671,14 @@ void SHyFT::calcTagWeight(const std::vector<reco::ShallowClonePtrCandidate>& jet
   fwlite::ESHandle< PerformanceWorkingPoint >   wpBHandle;
   fwlite::ESHandle< PerformanceWorkingPoint >   wpLHandle;
   fwlite::ESHandle< PerformanceWorkingPoint >   wpCHandle;
-  es_.get(recId_).get(plBHandle, bPerformanceTag_.c_str() );
-  es_.get(recId_).get(wpBHandle, bPerformanceTag_.c_str() );
-  es_.get(recId_).get(plCHandle, cPerformanceTag_.c_str() );
-  es_.get(recId_).get(wpCHandle, cPerformanceTag_.c_str() );
-  es_.get(recId_).get(plLHandle, lPerformanceTag_.c_str() );
-  es_.get(recId_).get(wpLHandle, lPerformanceTag_.c_str() );
+  if ( es_ != 0 ) {
+    es_->get(recId_).get(plBHandle, bPerformanceTag_.c_str() );
+    es_->get(recId_).get(wpBHandle, bPerformanceTag_.c_str() );
+    es_->get(recId_).get(plCHandle, cPerformanceTag_.c_str() );
+    es_->get(recId_).get(wpCHandle, cPerformanceTag_.c_str() );
+    es_->get(recId_).get(plLHandle, lPerformanceTag_.c_str() );
+    es_->get(recId_).get(wpLHandle, lPerformanceTag_.c_str() );
+  }
   if( !(plBHandle.isValid() && wpBHandle.isValid() ) )
     std::cout<<"BEff BtagPerformance is not valid !!"<<std::endl;
   if( !(plLHandle.isValid() && wpLHandle.isValid() ) )
@@ -748,9 +695,9 @@ void SHyFT::calcTagWeight(const std::vector<reco::ShallowClonePtrCandidate>& jet
   TH2F * eff_lf=0;
   
   if(useCustomPayload_) {
-    eff_b  = (TH2F*)f1_.Get((jetAlgo_+"BEff").c_str());
-    eff_c  = (TH2F*)f1_.Get((jetAlgo_+"CEff").c_str());
-    eff_lf = (TH2F*)f1_.Get((jetAlgo_+"LFEff").c_str());
+    eff_b  = (TH2F*)customBtagFile_->Get((jetAlgo_+"BEff").c_str());
+    eff_c  = (TH2F*)customBtagFile_->Get((jetAlgo_+"CEff").c_str());
+    eff_lf = (TH2F*)customBtagFile_->Get((jetAlgo_+"LFEff").c_str());
   }
 
   btagOP_ = perfB.workingPoint().cut();
@@ -782,6 +729,7 @@ void SHyFT::calcTagWeight(const std::vector<reco::ShallowClonePtrCandidate>& jet
         if ( svTagInfos->nVertices() > 0 ) {
           // Check to see if the actual jet is tagged
           if( jet->bDiscriminator(btaggerString_) > btagOP_ ) {
+	    nObservedTaggedJets_ += 1.0;
             ++allNumTags_;
           }
         }
@@ -803,6 +751,10 @@ void SHyFT::calcTagWeight(const std::vector<reco::ShallowClonePtrCandidate>& jet
         double lEff = 0;
         
         if(useCustomPayload_) {
+	  if ( eff_b == 0 || eff_c == 0 || eff_lf == 0 ) {
+	    throw cms::Exception("InvalidEfficiencyFile") <<
+	      "The efficiencies from the custom payload are not valid" << std::endl;
+	  }
           if ( jetPt > 300 ) jetPt = 299.0;
           jetEta = std::abs(jetEta);
           
@@ -871,6 +823,10 @@ void SHyFT::calcTagWeight(const std::vector<reco::ShallowClonePtrCandidate>& jet
                 if( jetEta2 > 3.0 )		jetEta2 = 2.99;
 
                 if(useCustomPayload_) {
+		  if ( eff_b == 0 || eff_c == 0 || eff_lf == 0 ) {
+		    throw cms::Exception("InvalidEfficiencyFile") <<
+		      "The efficiencies from the custom payload are not valid" << std::endl;
+		  }
                   if ( jetPt2 > 300 ) jetPt2 = 299.0;
                   jetEta2 = std::abs(jetEta2);
                   int i2bin_b  = eff_b ->GetXaxis()->FindBin( jetPt2 );
@@ -923,88 +879,7 @@ void SHyFT::calcTagWeight(const std::vector<reco::ShallowClonePtrCandidate>& jet
           histograms3d["normalization"]->Fill(  allNumJets_,	1,	whichtag,	weight*untagRate );
       } // end if doMC
     } // end for jetIter
-  //This isn't correct
-  /*
-  if( doMC_ ) {
-    if( allNumJets_ >= 2 ) {
-      //Normalization for double tagged events
-      for( ShallowCloneCollection::const_iterator jetBegin = jets.begin(), jetEnd = jets.end(),
-             jetIter1 = jetBegin;  jetIter1 != jetEnd;  jetIter1 ++ ) 
-        for( ShallowCloneCollection::const_iterator jetIter2 = jetIter1 + 1;  jetIter2 != jetEnd; jetIter2 ++ ) {
-          const pat::Jet* jet1 = dynamic_cast<const pat::Jet *>(jetIter1->masterClonePtr().get());
-          const pat::Jet* jet2 = dynamic_cast<const pat::Jet *>(jetIter2->masterClonePtr().get());
-          double jetPt1 = jet1->pt();
-          double jetPt2 = jet2->pt();
-          double jetEta1 = jet1->eta();
-          double jetEta2 = jet2->eta();
-          if( jetPt1 < 30 )   jetPt1 = 30.5;
-          if( jetPt1 > 400 )  jetPt1 = 399.5;
-          if( jetPt2 < 30 )   jetPt2 = 30.5;
-          if( jetPt2 > 400 )  jetPt2 = 399.5;
-          if( jetEta1 < -3.0 )  jetEta1 = -2.99;
-          if( jetEta1 > 3.0  )  jetEta1 = 2.99;
-          if( jetEta2 < -3.0 )  jetEta2 = -2.99;
-          if( jetEta2 > 3.0  )  jetEta2 = 2.99;
-          BinningPointByMap p1;
-          p1.insert( BinningVariables::JetEt,  jetPt1 );
-          p1.insert( BinningVariables::JetEta, jetEta1 );
-          p1.insert( BinningVariables::JetAbsEta,  abs(jetEta1) );
-          BinningPointByMap p2;
-          p2.insert( BinningVariables::JetEt,  jetPt2 );
-          p2.insert( BinningVariables::JetEta, jetEta2 );
-          p2.insert( BinningVariables::JetAbsEta,  abs(jetEta2) );
-          
-          int flavour1 = std::abs( jet1->partonFlavour() );
-          int flavour2 = std::abs( jet2->partonFlavour() );
-          double weight1 = 1.0;
-          double weight2 = 1.0;
-          double whichtag = 0;
-          //norm the flavour value as follow, b -> 5, c -> 4, l -> 0
-          switch( flavour1 )
-            {
-            case 5:
-              if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p1 )  )
-                std::cout<<"No reasonable result for b effi !"<<std::endl;
-              weight1 = perfB.getResult( PerformanceResult::BTAGBEFF, p1 ) * bcEffScale_;
-              break;
-            case 4:
-              if( !perfC.isResultOk( PerformanceResult::BTAGCEFF, p1 )  )
-                std::cout<<"No reasonable result for c effi !"<<std::endl;
-              weight1 = perfC.getResult( PerformanceResult::BTAGCEFF, p1 ) * bcEffScale_;
-              break;
-            default:
-              if( !perfL.isResultOk( PerformanceResult::BTAGLEFF, p1 ) )
-                std::cout<<"No reasonable result for lf effi !"<<std::endl;
-              weight1 = perfL.getResult( PerformanceResult::BTAGLEFF, p1 ) * lfEffScale_;
-              flavour1 = 0;
-            }
-          switch ( flavour2 )
-            {
-            case 5:
-              if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p2 )  )
-                std::cout<<"No reasonable result for b effi !"<<std::endl;
-              weight2 = perfB.getResult( PerformanceResult::BTAGBEFF, p2 ) * bcEffScale_;
-              break;
-            case 4:
-              if( !perfC.isResultOk( PerformanceResult::BTAGCEFF, p2 ) )
-              std::cout<<"No reasonable result for c effi !"<<std::endl;
-              weight2 = perfC.getResult( PerformanceResult::BTAGCEFF, p2 ) * bcEffScale_;
-              break;
-            default:
-              if( !perfL.isResultOk( PerformanceResult::BTAGLEFF, p2 )  )
-                std::cout<<"No reasonable result for lf effi !"<<std::endl;
-              weight2  = perfL.getResult( PerformanceResult::BTAGLEFF, p2 ) * lfEffScale_;
-              flavour2 = 0;
-            }
-          int flavourSum = flavour1 + flavour2 ;
-          whichtag = flavourSum;
-          histograms3d["normalization"]->Fill( allNumJets_,  2,  whichtag,  weight1*weight2 );
-          weight2t+=weight1*weight2;
-        }  // end jetIter1, jetIter2
-    } // end if >=2 jets
-  } // end if doMC
-  */
-  
+
   if (doTagWeight_) {
     if(weight0t>=1) {
       cout << "Weight 0t >=1 : " << weight0t << ", weight1t = " << weight1t << ", weight2t = " << weight2t << endl;
@@ -1038,6 +913,13 @@ void SHyFT::calcTagWeight(const std::vector<reco::ShallowClonePtrCandidate>& jet
     globalWeight_1t = globalWeight_;
     globalWeight_0t = globalWeight_;
   }
+
+  // perform closure test...
+  // If there are at least 1 tagged jets, increment the number of observed >=1 tag events.
+  // Always fill the number of expected tagged events with the weights estimated. 
+  if ( allNumTags_ > 0 )
+    nObservedTaggedEvents_ += 1.0;
+  nExpectedTaggedEvents_ += (1.0 - globalWeight_0t);
 }
 
 
@@ -1096,6 +978,7 @@ bool SHyFT::calcSampleName (const edm::EventBase& iEvent, std::string &sampleNam
 
 void SHyFT::endJob()
 {
+
   std::cout << "----------------------------------------------------------------------------------------" << std::endl;
   std::cout << "      So long, and thanks for all the fish..." << std::endl;
   std::cout << "                 -- " << identifier_ << std::endl;
@@ -1108,6 +991,89 @@ void SHyFT::endJob()
     copy(summary_.begin(), summary_.end(), std::ostream_iterator<SHyFTSummary>(std::cout, "\n"));  
     std::cout << "** End **" << std::endl;
   }
+  std::cout << "  Btagging closure test: " << std::endl;
+  std::cout << "  N_exp_>=1     : " << nExpectedTaggedEvents_ << std::endl;
+  std::cout << "  N_obs_>=1     : " << nObservedTaggedEvents_ << std::endl;
+  std::cout << "  N_obs jettags : " << nObservedTaggedJets_ << std::endl;
 }
 
 
+void SHyFT::weightPDF(  edm::EventBase const & iEvent) 
+{
+  // 
+  // NOTA BENE!!!!
+  //
+  //     The values "pdf1" and "pdf2" below are *wrong* for madgraph or alpgen samples.
+  //     They must be taken from the "zeroth" PDF in the PDF set, assuming that is set
+    
+  double iWeightSum = 0.0;
+  unsigned int nWeightSum = 0;
+  edm::Handle<GenEventInfoProduct> pdfstuff;
+  iEvent.getByLabel(pdfInputTag_, pdfstuff);
+       
+  float Q = pdfstuff->pdf()->scalePDF;
+  int id1 = pdfstuff->pdf()->id.first;
+  double x1 = pdfstuff->pdf()->x.first;
+  int id2 = pdfstuff->pdf()->id.second;
+  double x2 = pdfstuff->pdf()->x.second;
+
+  // BROKEN for Madgraph productions:
+  double pdf1 = pdfstuff->pdf()->xPDF.first;
+  double pdf2 = pdfstuff->pdf()->xPDF.second;  
+
+  // char buff[1000];
+  // sprintf(buff, "Q = %6.2f, id1 = %4d, id2 = %4d, x1 = %6.2f, x2 = %6.2f, pdf1 = %6.2f, pdf2 = %6.2f",
+  // 	    Q, id1, id2, x1, x2, pdf1, pdf2
+  // 	    );
+  // std::cout << buff << std::endl;
+
+
+  if ( pdfVariation_ != 0 ) {
+    // Here is where we check the varied systematic PDF's
+    unsigned int nweights = 1;
+    unsigned int neigen = 0;
+    if (LHAPDF::numberPDF()>1) {
+      nweights += LHAPDF::numberPDF();
+      neigen = nweights / 2;
+    }
+
+    for (unsigned int i=0; i<neigen; ++i) {
+      int toGrab = 2*i;
+      if ( pdfVariation_ < 0 )
+	toGrab = 2*i+1;
+      LHAPDF::usePDFMember(toGrab);
+      double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
+      double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
+      double prod =  (newpdf1/pdf1*newpdf2/pdf2);
+      iWeightSum += prod*prod;
+      ++nWeightSum;
+      // sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
+      // 	newpdf1, newpdf2, prod
+      // 	);
+      // std::cout << buff << std::endl;
+    }
+  } else {
+    // Here is where we normalize to the central value (0th PDF)
+    LHAPDF::usePDFMember(0);
+    double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
+    double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
+    double prod =  (newpdf1/pdf1*newpdf2/pdf2);
+    iWeightSum += prod*prod;
+    ++nWeightSum;
+    // sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
+    // 	      newpdf1, newpdf2, prod
+    // 	      );
+    // std::cout << buff << std::endl;    
+  }
+    
+  if (nWeightSum > 0 )
+    iWeightSum = TMath::Sqrt(iWeightSum) / TMath::Sqrt((double)nWeightSum) ;
+  else 
+    iWeightSum = 1.0;
+
+    
+  globalWeight_ *= iWeightSum ;
+  // std::cout << "Global weight = " << globalWeight_ << std::endl;
+  histograms["pdfWeight"]->Fill( globalWeight_ );
+
+}

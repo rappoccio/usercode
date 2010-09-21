@@ -18,6 +18,7 @@ shyftAnalysis = cms.PSet(
     sampleName = cms.string("top"),
     heavyFlavour = cms.bool(False),
     doMC           = cms.bool(False),
+    doBTagPerformance = cms.bool(True),
     payload = cms.string( "PayLoad.root" ),
     bPerformanceTag = cms.string( "MCSSVMb" ),
     cPerformanceTag = cms.string( "MCSSVMc" ),
@@ -38,7 +39,7 @@ shyftAnalysis = cms.PSet(
 #        , "MRST2007lomod"
 #        
 #        ] ),
-    doTagWeight = cms.bool(False),
+    doTagWeight = cms.bool(True),
     bcEffScale = cms.double(1.0),
     lfEffScale = cms.double(1.0),
     useDefaultDiscriminant = cms.bool(True),
