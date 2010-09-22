@@ -36,7 +36,11 @@ options.register ('useTrigger',
                   VarParsing.varType.int,
                   "Select events with the HLT_Mu9 trigger only")
                   
-
+options.register ('muonIdIgnoredCuts',
+                  [],
+                  VarParsing.multiplicity.list,
+                  VarParsing.varType.string,
+                  "Cuts to ignore for tight muon definition")
                   
 options.parseArguments()
 
@@ -353,7 +357,10 @@ process.shyftMuCalo = cms.EDFilter( 'EDWPlusJets',
                                                                      '>=3 Jets'       ,
                                                                      '>=4 Jets'       ,
                                                                      '>=5 Jets'                                                                     
-                                                                     ] )
+                                                                     ] ),
+                                        muonIdTight = inputwplusjetsAnalysis.muonIdTight.clone(
+                                            cutsToIgnore=cms.vstring(options.muonIdIgnoredCuts)
+                                            )
                                         )
                                     )
 
@@ -371,7 +378,10 @@ process.shyftMuJPT = process.shyftMuCalo.clone(
                                  '>=3 Jets'       ,
                                  '>=4 Jets'       ,
                                  '>=5 Jets'                                                                     
-                                 ] )
+                                 ] ),
+    muonIdTight = inputwplusjetsAnalysis.muonIdTight.clone(
+        cutsToIgnore=cms.vstring(options.muonIdIgnoredCuts)
+        )
     )
 
 process.shyftMuPF = process.shyftMuCalo.clone(
@@ -391,7 +401,10 @@ process.shyftMuPF = process.shyftMuCalo.clone(
                                  '>=3 Jets'       ,
                                  '>=4 Jets'       ,
                                  '>=5 Jets'                                                                     
-                                 ] )
+                                 ] ),
+    muonIdTight = inputwplusjetsAnalysis.muonIdTight.clone(
+        cutsToIgnore=cms.vstring(options.muonIdIgnoredCuts)
+        )
     )
 
 process.shyftSeqCalo = cms.Sequence( process.shyftMuCalo )
@@ -431,7 +444,7 @@ else :
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
 # process all the events
-process.maxEvents.input = 1000
+process.maxEvents.input = 50000
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 
@@ -472,3 +485,5 @@ process.out.outputCommands = [
     'keep *_kludgedJPTJets_*_*'
     ]
 
+if useData :
+    process.out.outputCommands.append( 'keep *_towerMaker_*_*' )
