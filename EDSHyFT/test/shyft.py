@@ -182,6 +182,13 @@ process.kludgedJPTJets = cms.EDProducer( 'KludgeJPTID',
                                          jetSrc = cms.InputTag( 'selectedPatJetsAK5JPT' )
                                          )
 
+if len(options.muonIdIgnoredCuts) > 0 :
+    print '------ SWITCHING PF Muons to use non-PF-isolated muons, we are ignoring cuts ----------'
+    process.patMuonsPFlow.pfMuonSource = 'pfAllMuonsPFlow'
+    process.patMuonsPFlow.isoDeposits = cms.PSet()
+    process.patMuonsPFlow.isolationValues = cms.PSet()
+    print 'For PAT PF Muons: '
+    print process.patMuonsPFlow.pfMuonSource
 
 process.selectedPatMuons.cut = cms.string("pt > 3")
 process.selectedPatMuonsPFlow.cut = cms.string("pt > 3")
@@ -406,6 +413,8 @@ process.shyftMuPF = process.shyftMuCalo.clone(
         cutsToIgnore=cms.vstring(options.muonIdIgnoredCuts)
         )
     )
+
+
 
 process.shyftSeqCalo = cms.Sequence( process.shyftMuCalo )
 process.shyftSeqPF = cms.Sequence( process.shyftMuPF )
