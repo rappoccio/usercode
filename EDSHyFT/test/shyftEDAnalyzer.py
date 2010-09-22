@@ -37,6 +37,32 @@ options.register('sampleNameInput',
                  VarParsing.varType.string,
                  "Sample name to give histograms")
 
+
+options.register('caloMetMin',
+                 0.,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.float,
+                  "Min MET for calo met")
+
+options.register('jptMetMin',
+                 0.,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.float,
+                  "Min MET for jpt met")
+
+
+options.register('pfMetMin',
+                 0.,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.float,
+                  "Min MET for pf met")
+
+options.register('outputRootFile',
+                 'shyftStudies.root',
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.string,
+                 "OUtput root file name")
+
 options.parseArguments()
 
 print options
@@ -63,8 +89,8 @@ inputSampleName = options.sampleNameInput
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/InclusiveMu15/shyft_38xOn35x_v1/91f2fc34c53b68691c104fb43fa3e9f4/shyft_382_mc_1_1_rw3.root'
-#                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
+#                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/InclusiveMu15/shyft_38xOn35x_v1/91f2fc34c53b68691c104fb43fa3e9f4/shyft_382_mc_1_1_rw3.root'
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
                                     )
                                 )
 else :
@@ -79,12 +105,12 @@ if inputDoMC == False :
     process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( myList )
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("shyftStudies.root")
+                                   fileName = cms.string(options.outputRootFile)
                                    )
 
 
@@ -96,6 +122,7 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         jetSrc = cms.InputTag('selectedPatJetsPFlow'),
                                         jetPtMin = cms.double(25.0),
                                         minJets = cms.int32(5),
+                                        metMin = cms.double(options.pfMetMin),
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
                                         sampleName = cms.string(inputSampleName),
@@ -108,6 +135,7 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                          metSrc = cms.InputTag('patMETsTC'),
                                          jetSrc = cms.InputTag('selectedPatJetsAK5JPT'),                                         
                                          jetPtMin = cms.double(30.0),
+                                         metMin = cms.double(options.jptMetMin),
                                          minJets = cms.int32(5),
                                          heavyFlavour = cms.bool( useFlavorHistory ),
                                          doMC = cms.bool( inputDoMC),
@@ -120,11 +148,12 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
 if inputDoMC :
     caloBTag = 'simpleSecondaryVertexBJetTags'
 else :
-    caloBTag = 'simpleSecondaryVertexBJetTagsHighEff'
+    caloBTag = 'simpleSecondaryVertexHighEffBJetTags'
 
 process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
                                       shyftAnalysis = inputShyftAnalysis.clone(
                                           jetPtMin = cms.double(30.0),
+                                          metMin = cms.double(options.caloMetMin),
                                           minJets = cms.int32(5),
                                           heavyFlavour = cms.bool( useFlavorHistory ),
                                           doMC = cms.bool( inputDoMC),
