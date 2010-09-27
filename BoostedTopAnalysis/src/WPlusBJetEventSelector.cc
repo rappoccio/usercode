@@ -99,7 +99,7 @@ bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candida
   }  // end if hasWJets
 
   //Found the min DeltaR pair of jets
-  double minDeltaR = 2.0 ;
+  double minDeltaR = 9999. ;
   for( size_t i=0; i<nonTags.size(); i++ ) {
     for( size_t j=i+1; j<nonTags.size(); j++ ) {
       double deltaR_ = reco::deltaR<double>( nonTags.at(i)->eta(), nonTags.at(i)->phi(),

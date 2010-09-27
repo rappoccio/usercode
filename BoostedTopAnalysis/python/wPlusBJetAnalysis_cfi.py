@@ -16,6 +16,7 @@ wPlusBJetAnalysis = cms.PSet(
           bTagAlgorithm = cms.string( "trackCountingHighEffBJetTags" ),
           bTagOP   = cms.double( 3.3 )
 
-      )
+      ),
+      leadJetPtCut = cms.double(150)
 
 )

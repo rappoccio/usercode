@@ -39,6 +39,7 @@ class WPlusBJetAnalysis{
     WPlusBJetEventSelector    owPlusBJetSelection_; //opposite direction selector
     std::map<std::string, TH1F*> histograms1d;
     std::map<std::string, TH2F*> histograms2d;
+    double leadJetPtCut_;
 
 };
 
