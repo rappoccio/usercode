@@ -13,8 +13,8 @@
 <use name=Analysis/BoostedTopAnalysis>
 
 <environment>
- <bin file="semilep_analysis_WTag.C"> </bin>
- <bin file="hadronic_analysis.C"> </bin>
- <bin file="gen_analysis.C"> </bin>
- <bin file="testSelection_boostedtop.C"> </bin>
+ #<bin file="semilep_analysis_WTag.C"> </bin>
+ #<bin file="hadronic_analysis.C"> </bin>
+ #<bin file="gen_analysis.C"> </bin>
+ #<bin file="testSelection_boostedtop.C"> </bin>
 </environment>

@@ -7,38 +7,50 @@
 #include "DataFormats/Candidate/interface/ShallowClonePtrCandidate.h"
 #include "Analysis/BoostedTopAnalysis/interface/BoostedTopWTagFunctor.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
+#include "DataFormats/PatCandidates/interface/TriggerEvent.h"
+
 
 using namespace std;
 
 class WPlusBJetEventSelector : public EventSelector {
   public:
     WPlusBJetEventSelector( edm::ParameterSet const & params );
+    virtual ~WPlusBJetEventSelector() { }
     virtual bool operator()( edm::EventBase const & t, reco::Candidate::LorentzVector const & v, pat::strbitset & ret, bool towards);
 
-    vector<reco::ShallowClonePtrCandidate> const & wJets ()  const { return wJets_; }
-    vector<reco::ShallowClonePtrCandidate> const & bJets ()  const { return bJets_; }
+    boost::shared_ptr<PFJetIDSelectionFunctor> const & pfJetSel()   const { return pfJetSel_;}
+    std::vector<edm::Ptr<pat::Jet> >  const & wJets ()  const { return wJets_; }
+    std::vector<edm::Ptr<pat::Jet> >  const & bJets ()  const { return bJets_; }
     //For type III top reconstruction, a pair of jets with min deltaR
-    vector<reco::ShallowClonePtrCandidate> const & minDrPair () const { return minDrPair_ ; } 
+    std::vector<edm::Ptr<pat::Jet> >  const & minDrPair () const { return minDrPair_ ; } 
     //For type II top, when a W jet is found, but no b jet
-    reco::ShallowClonePtrCandidate const & aJet()  const { return aJet_ ; }
+    edm::Ptr<pat::Jet> const & aJet()  const { return aJet_ ; }
     bool hasWJets ()  const { return wJets_.size() > 0 ; }
     bool hasBJets ()  const { return bJets_.size() > 0 ; }
     bool aJetFound () const { return aJetFound_ ; }
 
   private:
 
+    //Not for use at all
+    virtual bool operator() (edm::EventBase const & t, pat::strbitset & ret ) { return true;}
+    edm::InputTag               trigSrc_;
+    std::string                 trig_;
+    edm::ParameterSet const &   pfJetIdParams_;
+    boost::shared_ptr<PFJetIDSelectionFunctor>   pfJetSel_;
     edm::InputTag               jetTag_;
-    std::vector<reco::ShallowClonePtrCandidate>  wJets_;
-    std::vector<reco::ShallowClonePtrCandidate>  bJets_;
-    std::vector<reco::ShallowClonePtrCandidate>  minDrPair_;
-    reco::ShallowClonePtrCandidate		 aJet_;
+    std::vector<edm::Ptr<pat::Jet> >          wJets_;
+    std::vector<edm::Ptr<pat::Jet> >          bJets_;
+    std::vector<edm::Ptr<pat::Jet> >          minDrPair_;
+    edm::Ptr<pat::Jet>          	      aJet_;
     bool aJetFound_ ;
     BoostedTopWTagFunctor  wJetSelector_;
     double  jetPtMin_;
     double  jetEtaMax_;
-    double  dR_;  //hemisphere cone size
     string  bTagAlgo_;
     double  bTagOP_;
+
+    std::vector<edm::Ptr<pat::Jet> >           pfJets_;
 
 };
 

@@ -4,25 +4,31 @@
 
 
 WPlusBJetEventSelector::WPlusBJetEventSelector ( edm::ParameterSet const & params ) :
+  trigSrc_               (params.getParameter<edm::InputTag>("trigSrc") ),
+  trig_                  (params.getParameter<std::string>("trig") ),
+  pfJetIdParams_         (params.getParameter<edm::ParameterSet>("pfJetIDParams") ),
+  pfJetSel_              (new PFJetIDSelectionFunctor(pfJetIdParams_)),
   jetTag_	(params.getParameter<edm::InputTag>("jetSrc")  ),
   wJetSelector_ (params.getParameter<edm::ParameterSet>("BoostedTopWJetParameters") ),
   jetPtMin_	(params.getParameter<double>("jetPtMin") ),
   jetEtaMax_	(params.getParameter<double>("jetEtaMax") ),
-  dR_		(params.getParameter<double>("coneSize")  ),
   bTagAlgo_	(params.getParameter<string>("bTagAlgorithm") ),
   bTagOP_	(params.getParameter<double>("bTagOP")  )
 {
   //make the bitset
   push_back("Inclusive");
+  push_back("Trigger"   );
+  push_back("Jet Preselection"  );
   push_back(">= 1 WJet");
   push_back(">= 1 bJet");
 
   //turn on
   set("Inclusive");
+  set("Trigger"   );
+  set("Jet Preselection" );
   set(">= 1 WJet");
   set(">= 1 bJet");
 
-  aJetFound_ = false;
 }
 
 bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candidate::LorentzVector const & v, pat::strbitset & ret, bool towards)
@@ -30,8 +36,9 @@ bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candida
   ret.set(false);
   wJets_.clear();
   bJets_.clear();
-
-  passCut( ret, "Inclusive" );
+  pfJets_.clear();
+  minDrPair_.clear();
+  aJetFound_ = false;
 
   edm::Handle<vector<pat::Jet>  >   jetHandle;
   t.getByLabel( jetTag_, jetHandle );
@@ -39,26 +46,38 @@ bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candida
   //Get the towards Lorentz vector
   reco::Candidate::LorentzVector vtowards = (towards) ? v : (-1)*v ;
   //Contain non-tagged jets inside the cone
-  vector<pair<const pat::Jet *, size_t> >  nonTags;
+  std::vector<edm::Ptr<pat::Jet> >  nonTags;
 
-  //Search for top jets
+  pat::strbitset retPFJet = pfJetSel_->getBitTemplate();
+  //Apply pfJets ID
   for( vector<pat::Jet>::const_iterator jetBegin=jetHandle->begin(), jetEnd=jetHandle->end(), ijet=jetBegin ;
     ijet!=jetEnd; ijet++ )
   {
+    retPFJet.set(false);
+    bool passJetID = (*pfJetSel_)( *ijet, retPFJet );
+    if( passJetID )
+      pfJets_.push_back( edm::Ptr<pat::Jet>(jetHandle, ijet-jetBegin )  );
+  }
+
+  //Search for W, b jets
+  for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=pfJets_.begin(), jetEnd=pfJets_.end(), ijet=jetBegin ;
+    ijet!=jetEnd; ijet++ )
+  {
+    pat::Jet const & jet = **ijet;
     //Only consider jets in the towards hemisphere
-    double deltaR_ = reco::deltaR<double>( vtowards.eta(), vtowards.phi(), ijet->eta(), ijet->phi()  );
-    if( deltaR_ < dR_ ) {
-      if( ijet->pt() > jetPtMin_ && fabs( ijet->eta() ) < jetEtaMax_ ) {
+    double dPhi_ = fabs( reco::deltaPhi<double>( vtowards.phi(), jet.phi()  ) );
+    if( dPhi_ < TMath::Pi()/2 ) {
+      if( jet.pt() > jetPtMin_ && fabs( jet.eta() ) < jetEtaMax_ ) {
         pat::strbitset iret = wJetSelector_.getBitTemplate();
-	if( wJetSelector_( *ijet, iret )  ) {
-	  wJets_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Jet>( jetHandle, ijet-jetBegin )  )  );
+	if( wJetSelector_( jet, iret )  ) {
+	  wJets_.push_back( *ijet  );
 	} // end if wjet selector
 	// not W jet, check b tag
 	else {
-	  if( ijet->bDiscriminator( bTagAlgo_ ) > bTagOP_ )
-	    bJets_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Jet>( jetHandle, ijet-jetBegin )  )  );
+	  if( jet.bDiscriminator( bTagAlgo_ ) > bTagOP_ )
+	    bJets_.push_back( *ijet );
 	  else  // put inside the nonTags container
-	    nonTags.push_back( make_pair(&(*ijet), ijet-jetBegin)  );
+	    nonTags.push_back( *ijet  );
 	}  // end else
       }  // end if pt, eta
     } // end if deltaR
@@ -69,37 +88,63 @@ bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candida
   if( hasWJets() ) {
     double minDeltaR = 99999. ;
     for( size_t i=0; i<nonTags.size(); i++ ) {
-      double deltaR_ = reco::deltaR<double>( wJets_.at(0).eta(), wJets_.at(0).phi(), 
-      						nonTags.at(i).first->eta(), nonTags.at(i).first->phi() );
+      double deltaR_ = reco::deltaR<double>( wJets_.at(0)->eta(), wJets_.at(0)->phi(), 
+      						nonTags.at(i)->eta(), nonTags.at(i)->phi() );
       if( deltaR_ < minDeltaR ) {
         minDeltaR = deltaR_;
 	aJetFound_ = true;
-	aJet_ = reco::ShallowClonePtrCandidate( edm::Ptr<pat::Jet>( jetHandle, nonTags.at(i).second ) );
+	aJet_ = nonTags.at(i);
       }  //end if < minDeltaR 
     }  // end i
   }  // end if hasWJets
 
   //Found the min DeltaR pair of jets
-  double minDeltaR = 99999. ;
+  double minDeltaR = 9999. ;
   for( size_t i=0; i<nonTags.size(); i++ ) {
-    for( size_t j=i; j<nonTags.size(); j++ ) {
-      double deltaR_ = reco::deltaR<double>( nonTags.at(i).first->eta(), nonTags.at(i).first->phi(),
-      						nonTags.at(j).first->eta(), nonTags.at(j).first->phi() );
+    for( size_t j=i+1; j<nonTags.size(); j++ ) {
+      double deltaR_ = reco::deltaR<double>( nonTags.at(i)->eta(), nonTags.at(i)->phi(),
+      						nonTags.at(j)->eta(), nonTags.at(j)->phi() );
       if( deltaR_ < minDeltaR ) {
+        minDrPair_.clear();
         minDeltaR = deltaR_ ;
-	minDrPair_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Jet>( jetHandle, nonTags.at(i).second ) )  );
-	minDrPair_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Jet>( jetHandle, nonTags.at(j).second ) )  );
+	minDrPair_.push_back( nonTags.at(i)  );
+	minDrPair_.push_back( nonTags.at(j)  );
       }
     }  // end for j
   }  // end for i
 
-  if( ignoreCut(">= 1 WJet") || hasWJets() )  {
-    passCut( ret, ">= 1 WJet" );
+  passCut( ret, "Inclusive" );
 
-    if( ignoreCut(">= 1 bJet") || hasBJets() ) {
-      passCut( ret, ">= 1 bJet" );
-    }  // end >= 1 bjet
-  }  // end >= 1 wjet
+  //Get the trigger
+  edm::Handle<pat::TriggerEvent>  triggerEvent;
+  t.getByLabel( trigSrc_, triggerEvent);
+  if( !triggerEvent.isValid() )   return (bool)ret;
+
+  // Check the trigger requirement
+  pat::TriggerEvent const * trig = &*triggerEvent;
+
+  bool passTrig = false;
+  if( trig->wasRun() && trig->wasAccept() ) {
+    pat::TriggerPath const * jetPath = trig->path(trig_);
+    if( jetPath != 0 && jetPath->wasAccept() )  {
+      passTrig = true;
+    }
+  }
+
+  if( ignoreCut( "Trigger" ) || passTrig )  {
+    passCut( ret, "Trigger" );
+
+    if( ignoreCut( "Jet Preselection" ) || pfJets_.size() >= 2 )  {
+      passCut( ret, "Jet Preselection" );
+      if( ignoreCut(">= 1 WJet") || hasWJets() )  {
+        passCut( ret, ">= 1 WJet" );
+
+        if( ignoreCut(">= 1 bJet") || hasBJets() ) {
+          passCut( ret, ">= 1 bJet" );
+        }  // end >= 1 bjet
+      }  // end >= 1 wjet
+    } // pass jet preselection
+  } //pass trigger
 
   return (bool)ret;
 }
