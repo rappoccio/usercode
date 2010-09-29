@@ -22,6 +22,12 @@ options.register ('use35x',
                   VarParsing.varType.int,
                   "Run on samples produced with <= 35x")
 
+options.register ('use38x',
+                  1,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Run on samples produced with >= 38x")
+
 
 options.register ('useWJetsFilter',
                   0,
@@ -117,7 +123,7 @@ from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
 switchOnTrigger( process )
 
 # switch to 8e29 menu. Note this is needed to match SD production
-if useData == False :
+if useData == False and options.use38x == False :
     process.patTriggerEvent.processName = cms.string( 'REDIGI' )
     process.patTrigger.processName = cms.string( 'REDIGI' )
 
@@ -177,11 +183,6 @@ process.patJetsAK5JPT.tagInfoSources = cms.VInputTag(
     cms.InputTag("secondaryVertexTagInfosAK5JPT")
     )
 
-# apply my kludge for JPT Jet ID
-process.kludgedJPTJets = cms.EDProducer( 'KludgeJPTID',
-                                         jetSrc = cms.InputTag( 'selectedPatJetsAK5JPT' )
-                                         )
-
 if len(options.muonIdIgnoredCuts) > 0 :
     print '------ SWITCHING PF Muons to use non-PF-isolated muons, we are ignoring cuts ----------'
     process.patMuonsPFlow.pfMuonSource = 'pfAllMuonsPFlow'
@@ -229,81 +230,35 @@ process.prunedGenParticles = cms.EDProducer("GenParticlePruner",
                                             )
 
 
-####################
-# make some quick-access shallow clones for speeding up read access
-
-process.goodCaloJets = cms.EDFilter("CandViewShallowCloneProducer",
-                                   src = cms.InputTag('selectedPatJets'),
-                                   cut = cms.string('pt > 20 & abs(eta) < 2.4')
-                                   )
-
-process.goodPFJets = cms.EDFilter("CandViewShallowCloneProducer",
-                                   src = cms.InputTag('selectedPatJetsPFlow'),
-                                   cut = cms.string('pt > 10 & abs(eta) < 2.4')
-                                   )
-
-
 # Add the files 
 readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 
 if useData :
     readFiles.extend( [
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0160/9CF95657-2E98-DF11-AD1B-0017A4770C2C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0160/4C8C296F-2E98-DF11-8009-0017A477082C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0159/A6CBE127-2E98-DF11-88BB-0017A477083C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0159/989FEAAD-2E98-DF11-B111-0017A4770C2C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0159/8296D8FD-2D98-DF11-B1F4-00237DA13C16.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0159/784926DF-2D98-DF11-8A14-001E0B471C92.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0159/5C1EEC96-2E98-DF11-870B-0017A4771024.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0159/4A41F991-2E98-DF11-AEC3-0017A477100C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0158/EC8712FE-F797-DF11-B69A-0017A4770C3C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0158/EA2FA044-FB97-DF11-AB67-0017A4771008.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0158/DE11BA4C-F997-DF11-9BBA-0017A4770C08.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0158/CCDDA631-FA97-DF11-8BAE-0017A4771008.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0158/B0ACA57B-F997-DF11-9A9D-0017A4770C28.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0158/7C8EDD97-FC97-DF11-AE40-0017A4770C1C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0158/62C95FEC-FF97-DF11-97A5-0017A4770C2C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0158/38CAB533-FA97-DF11-802A-0017A477081C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/F83A0240-AD97-DF11-BF65-001E0B48E92A.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/EE19768C-B397-DF11-8980-0017A4770820.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/DCF1D923-B197-DF11-A86D-002481A60370.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/DC20688E-B197-DF11-B56C-0017A4770C28.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/D6A37406-BA97-DF11-ACEE-0017A4770C28.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/D6A0488B-C397-DF11-AEC4-0017A477080C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/D25E50CD-B597-DF11-84D3-0017A4770C2C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/C80654AB-8697-DF11-8335-00237DA15C66.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/C444FA8D-C397-DF11-85D4-0017A4770400.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/C2438902-B497-DF11-8241-0017A4770434.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/BA541A4A-9197-DF11-96B2-0017A4771034.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/BA51862D-AE97-DF11-B74C-0017A4770C28.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/B44D958C-B397-DF11-8995-0017A4770C08.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/AE698DAD-C597-DF11-AAE9-001E0B48E92A.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/ACCBDA28-C097-DF11-A93B-0017A4771030.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/9E4661D3-B397-DF11-8D04-0017A4770830.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/9CA6F4C6-B597-DF11-9090-001E0B476CB8.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/9C654480-B197-DF11-A0B6-0017A477100C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/9A906381-B397-DF11-8489-0017A477100C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/943DFF7E-C397-DF11-BB3B-001E0B48E92A.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/8E2A6DC1-B897-DF11-A22D-0017A4771030.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/8C7960C7-C297-DF11-9164-0017A4770C28.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/8C0F6A34-B197-DF11-8D6A-0017A477102C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/6CC8F31C-B097-DF11-A964-0017A4770C2C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/6877ED8F-C597-DF11-9F09-0017A4770420.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/64E8FD8D-B397-DF11-A5F6-0017A477083C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/6044B94A-B697-DF11-8A2B-0017A4770424.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/5C28C196-C397-DF11-A083-0017A4770404.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/505E0F0B-C397-DF11-96A2-00237DA24DE0.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/3CF9C0AF-B897-DF11-90F1-0017A477100C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/3CE4BA4F-B697-DF11-A295-0017A4771004.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/3CA430EF-BD97-DF11-93FE-0017A4770800.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/2EC17D81-B197-DF11-B3D5-0017A4770C0C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/22E67103-B497-DF11-94CA-0017A4770800.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/1E66E778-B197-DF11-9AAF-0017A4770C28.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/108B9680-C097-DF11-AA1A-0017A477100C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/0AC80A6D-B597-DF11-ABB6-0017A4771008.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0157/0A111481-B397-DF11-B8EB-0017A477080C.root',
-'/store/data/Run2010A/Mu/RECO/Jul23ReReco_PreProd_v1/0156/5E455BE7-7897-DF11-94D9-0022649C40A8.root'
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/511/0E57A1DF-A7C7-DF11-B2E1-003048F1C836.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/F8CFD025-7AC7-DF11-970C-001617C3B76A.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/D4C82E6A-85C7-DF11-8B24-0019B9F709A4.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/B01897AD-7BC7-DF11-A16B-001D09F241F0.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/ACFB1223-8DC7-DF11-9D6D-001D09F232B9.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/72745CEC-81C7-DF11-B136-0030487A1990.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/5895BD1D-7FC7-DF11-B488-0030487C635A.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/4C8075C0-86C7-DF11-AB7A-0030487C635A.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/24A944A4-7DC7-DF11-B7C2-003048D373AE.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/22CC2E69-85C7-DF11-8C63-001D09F2B30B.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/0A2B7AA7-7DC7-DF11-A0EB-003048D2BE12.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/509/62C11A97-45C7-DF11-BBB7-001D09F241F0.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/506/8AA215A3-4EC7-DF11-8999-003048F118DE.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/445/BCA934AE-FAC6-DF11-9143-003048F024FA.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/442/289F629E-F3C6-DF11-BB6E-001D09F231B0.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/440/AE467D73-E5C6-DF11-91E6-003048F01E88.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/438/DE0A4969-D5C6-DF11-9DA2-003048F024DE.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/437/D0C578A5-E4C6-DF11-837B-0030487CD7B4.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/437/A660F145-F6C6-DF11-A67F-001D09F2516D.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/437/60BD2F82-DDC6-DF11-AA84-001D09F2910A.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/437/42BD67BF-F4C6-DF11-9704-0030487C608C.root',
+        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/437/4030584E-D7C6-DF11-BDB0-000423D9890C.root',
+    
 
         ] );
 else : 

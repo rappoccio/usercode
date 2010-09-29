@@ -6,6 +6,10 @@ import array
 import math
 from DataFormats.FWLite import Events, Handle
 
+filesLong = [
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_10_1_VxQ.root'
+]
+
 files = [
 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_10_1_VxQ.root',
 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_11_1_rEG.root',
@@ -56,6 +60,8 @@ binsEta = array.array( 'f', [0., 1.4, 2.4] )
 nbinsPt = len(binsPt)
 nbinsEta = len(binsEta)
 
+caloFbcp = ROOT.TH3F("caloFbcp", "Calo F_{bcp}", 3, 0, 3, 3, 0, 3, 6, 0, 6 )
+
 caloBTags  = ROOT.TH2F("caloBTags", "Calo BTags", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 caloBJets  = ROOT.TH2F("caloBJets", "Calo BJets", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 caloBDisc  = ROOT.TH1F("caloBDisc", "Calo BDisc", 50, 0., 5.0 )
@@ -71,6 +77,8 @@ caloLFDisc  = ROOT.TH1F("caloLFDisc", "Calo LFDisc", 50, 0., 5.0 )
 caloGTags  = ROOT.TH2F("caloGTags", "Calo GTags", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 caloGJets  = ROOT.TH2F("caloGJets", "Calo GJets", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 caloGDisc  = ROOT.TH1F("caloGDisc", "Calo GDisc", 50, 0., 5.0 )
+
+pfFbcp = ROOT.TH3F("pfFbcp", "Calo F_{bcp}", 3, 0, 3, 3, 0, 3, 6, 0, 6 )
 
 
 pfBTags  = ROOT.TH2F("pfBTags", "Pf BTags", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
@@ -88,6 +96,8 @@ pfLFDisc  = ROOT.TH1F("pfLFDisc", "Pf LFDisc", 50, 0., 5.0 )
 pfGTags  = ROOT.TH2F("pfGTags", "Pf GTags", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 pfGJets  = ROOT.TH2F("pfGJets", "Pf GJets", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 pfGDisc  = ROOT.TH1F("pfGDisc", "Pf GDisc", 50, 0., 5.0 )
+
+jptFbcp = ROOT.TH3F("jptFbcp", "Calo F_{bcp}", 3, 0, 3, 3, 0, 3, 6, 0, 6 )
 
 jptBTags  = ROOT.TH2F("jptBTags", "Jpt BTags", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 jptBJets  = ROOT.TH2F("jptBJets", "Jpt BJets", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
@@ -160,16 +170,26 @@ def fillHists( jet, discname, bhists, chists, ghists, lfhists ) :
 ### Helper class to get the jet product, and drive the helper to
 ### fill histograms
 def runJets( disc, ptCut, handle, label, hists ) :
-    
+
+    nb = 0
+    nc = 0
+    np = 0
     # use getByLabel, just like in cmsRun
     event.getByLabel (label, handle)
     # get the product
     jets = handle.product()
     for jet in jets :
+        if abs(jet.partonFlavour()) == 5:
+            nb += 1
+        elif abs(jet.partonFlavour()) == 4:
+            nc += 1
+        else :
+            np += 1
         if jet.pt() > ptCut :
             fillHists( jet,disc,
                        hists[0], hists[1], hists[2], hists[3]
-                       )    
+                       )
+    return [nb,nc,np]
 
 # loop over events
 i = 0
@@ -177,24 +197,48 @@ for event in events:
     i = i + 1
     if i % 10000 == 0:
         print 'Processing event ' + str(i)
-    runJets( 'simpleSecondaryVertexBJetTags',
-             30.,
-             calohandle,
-             calolabel,
-             calohists )
 
-    runJets( 'simpleSecondaryVertexHighEffBJetTags',
-             30.,
-             jpthandle,
-             jptlabel,
-             jpthists )
 
-    runJets( 'simpleSecondaryVertexHighEffBJetTags',
-             25.,
-             pfhandle,
-             pflabel,
-             pfhists )
+    [caloNb, caloNc, caloNp] = runJets(  'simpleSecondaryVertexBJetTags',             
+                                         30.,
+                                         calohandle,
+                                         calolabel,
+                                         calohists )
+    if caloNb > 2 :
+        caloNb = 2
+    if caloNc > 2 :
+        caloNc = 2
+    if caloNp > 5 :
+        caloNp = 5
+    caloFbcp.Fill( caloNb, caloNc, caloNp )
 
+
+    [jptNb, jptNc, jptNp] = runJets( 'simpleSecondaryVertexHighEffBJetTags',             
+                                     30.,
+                                     jpthandle,
+                                     jptlabel,
+                                     jpthists )
+    if jptNb > 2 :
+        jptNb = 2
+    if jptNc > 2 :
+        jptNc = 2
+    if jptNp > 5 :
+        jptNp = 5
+    jptFbcp.Fill( jptNb, jptNc, jptNp )
+
+
+    [pfNb, pfNc, pfNp] = runJets( 'simpleSecondaryVertexHighEffBJetTags',             
+                                  25.,
+                                  pfhandle,
+                                  pflabel,
+                                  pfhists )
+    if pfNb > 2 :
+        pfNb = 2
+    if pfNc > 2 :
+        pfNc = 2
+    if pfNp > 5 :
+        pfNp = 5
+    pfFbcp.Fill( pfNb, pfNc, pfNp )
 
 f.cd()
 for iihist in calohists :
@@ -208,5 +252,10 @@ for iihist in pfhists :
 for iihist in jpthists :
     for jjhist in iihist :
         jjhist.Write()
+
+
+caloFbcp.Write()
+jptFbcp.Write()
+pfFbcp.Write()
 f.Close()
 
