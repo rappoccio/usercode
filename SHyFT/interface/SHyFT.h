@@ -139,6 +139,7 @@ class SHyFT {
     bool reweightPDF_;
     edm::InputTag pdfInputTag_; 
     std::string pdfToUse_;
+    int         pdfEigenToUse_;
     int         pdfVariation_;
 
     bool doTagWeight_;
@@ -150,6 +151,10 @@ class SHyFT {
     double lDiscrCut_;
     bool useCustomPayload_;
     std::string customTagRootFile_;
+    bool simpleSFCalc_; // Use the simple scale factor calculation where you just treat the SF
+                        // as a probability to throw away an MC event. Only works for SF < 1.0.
+                        // Technically, for systematics, SF < 1-dSF, since then you'd set this 
+                        // up and down by dSF. 
     std::string jetAlgo_;
     boost::shared_ptr<TFile> customBtagFile_;
 

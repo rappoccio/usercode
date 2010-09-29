@@ -2,6 +2,7 @@
 #include "TVector3.h"
 #include "TLorentzVector.h"
 #include <sstream>
+#include "TRandom.h"
 // #include "/uscmst1/prod/sw/cms/slc5_ia32_gcc434/external/lhapdf/5.6.0/full/include/LHAPDF/LHAPDF.h"
 #include "/uscmst1/prod/sw/cms/slc5_ia32_gcc434/external/lhapdf/5.6.0-cms2/share/lhapdf/PDFsets/../../../include/LHAPDF/LHAPDF.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
@@ -42,6 +43,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   reweightPDF_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPDF")),
   pdfInputTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("pdfSrc")),
   pdfToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("pdfToUse")),
+  pdfEigenToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("pdfEigenToUse")),
   pdfVariation_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("pdfVariation")),
   doTagWeight_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doTagWeight")),
   bcEffScale_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("bcEffScale")),
@@ -52,6 +54,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   lDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("lDiscriminantCut")),
   useCustomPayload_ (iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("useCustomPayload")),
   customTagRootFile_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("customPayload")),
+  simpleSFCalc_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("simpleSFCalc")),
   jetAlgo_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("jetAlgo"))
 {
 
@@ -252,6 +255,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     // your sample. 
     std::cout << "PDF to use = " << pdfToUse_ << std::endl;
     LHAPDF::initPDFSet(pdfToUse_);
+    LHAPDF::usePDFMember(pdfEigenToUse_);
     std::cout << "Done initializing pdfs" << std::endl;
   }
 
@@ -460,11 +464,16 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       // Get the secondary vertex tag info
       reco::SecondaryVertexTagInfo const * svTagInfos
         = jet->tagInfoSecondaryVertex("secondaryVertex");
-      if ( svTagInfos == 0 ) continue;
+      if ( svTagInfos == 0 ) { 
+	continue;
+      }
       histograms["nVertices"]-> Fill( svTagInfos->nVertices(), globalWeight_ );
       
       // Check to make sure we have a vertex
-      if ( svTagInfos->nVertices() <= 0 )  continue;
+      
+      if ( svTagInfos->nVertices() <= 0 ) {
+	continue;
+      }
       
       // This discriminator is only filled when we have a secondary vertex
       // tag info and a vertex in it
@@ -480,8 +489,22 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       // 	std::cout << " disc : " << ipair->first << " = " << ipair->second << std::endl;
       // }
 
+      // If desired to use the simple SF inclusion, throw a random variable between 1 and 0,
+      // if it is less than the SF, keep going, else, throw the jet away
+      bool keepGoing = true;
+      if ( simpleSFCalc_ ) {
+	double irand = gRandom->Uniform();
+	double max = 0;
+	if ( jetFlavor == 5 || jetFlavor == 4 )
+	  max = bcEffScale_;
+	else
+	  max = lfEffScale_;
+	if ( irand < max ) keepGoing=true;
+	else keepGoing=false;
+      }
+
       // Check to see if the actual jet is tagged
-      if( jet->bDiscriminator(btaggerString_) < btagOP_ ) continue;
+      if( jet->bDiscriminator(btaggerString_) < btagOP_ || !keepGoing ) continue;
       //      ++numTags;
 
       // Take the template info from the first tag (ordered by jet pt)
@@ -983,8 +1006,6 @@ void SHyFT::calcTagWeight(const std::vector<reco::ShallowClonePtrCandidate>& jet
     globalWeight_0t = globalWeight_*weight0t;
     globalWeight_1t = globalWeight_*weight1t;
     globalWeight_2t = globalWeight_*weight2t;
-    /*    cout << "njets,ntags = " << allNumJets_ << "," << allNumTags_ << " "
-          << "weights:0,1,2 = " << globalWeight_0t << "," << globalWeight_1t << "," << globalWeight_2t << std::endl;*/
   }
   else {
     globalWeight_2t = globalWeight_;
@@ -1085,7 +1106,6 @@ void SHyFT::weightPDF(  edm::EventBase const & iEvent)
   //     They must be taken from the "zeroth" PDF in the PDF set, assuming that is set
     
   double iWeightSum = 0.0;
-  unsigned int nWeightSum = 0;
   edm::Handle<GenEventInfoProduct> pdfstuff;
   iEvent.getByLabel(pdfInputTag_, pdfstuff);
        
@@ -1099,59 +1119,20 @@ void SHyFT::weightPDF(  edm::EventBase const & iEvent)
   double pdf1 = pdfstuff->pdf()->xPDF.first;
   double pdf2 = pdfstuff->pdf()->xPDF.second;  
 
-  // char buff[1000];
-  // sprintf(buff, "Q = %6.2f, id1 = %4d, id2 = %4d, x1 = %6.2f, x2 = %6.2f, pdf1 = %6.2f, pdf2 = %6.2f",
-  // 	    Q, id1, id2, x1, x2, pdf1, pdf2
-  // 	    );
-  // std::cout << buff << std::endl;
 
-
-  if ( pdfVariation_ != 0 ) {
-    // Here is where we check the varied systematic PDF's
-    unsigned int nweights = 1;
-    unsigned int neigen = 0;
-    if (LHAPDF::numberPDF()>1) {
-      nweights += LHAPDF::numberPDF();
-      neigen = nweights / 2;
-    }
-
-    for (unsigned int i=0; i<neigen; ++i) {
-      int toGrab = 2*i;
-      if ( pdfVariation_ < 0 )
-	toGrab = 2*i+1;
-      LHAPDF::usePDFMember(toGrab);
-      double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
-      double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
-      double prod =  (newpdf1/pdf1*newpdf2/pdf2);
-      iWeightSum += prod*prod;
-      ++nWeightSum;
-      // sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
-      // 	newpdf1, newpdf2, prod
-      // 	);
-      // std::cout << buff << std::endl;
-    }
-  } else {
-    // Here is where we normalize to the central value (0th PDF)
-    LHAPDF::usePDFMember(0);
-    double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
-    double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
-    double prod =  (newpdf1/pdf1*newpdf2/pdf2);
-    iWeightSum += prod*prod;
-    ++nWeightSum;
-    // sprintf(buff, "         pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
-    // 	      newpdf1, newpdf2, prod
-    // 	      );
-    // std::cout << buff << std::endl;    
-  }
-    
-  if (nWeightSum > 0 )
-    iWeightSum = TMath::Sqrt(iWeightSum) / TMath::Sqrt((double)nWeightSum) ;
-  else 
-    iWeightSum = 1.0;
-
+  // Eigenvector already set up for this job.
+  // It is, contrary to the LHAPDF documentation, ABYSMALLY SLOW
+  // to switch between PDF sets and so we will run
+  // one single PDF with one single eigenvector *per job*
+  
+  double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
+  double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
+  double prod =  (newpdf1/pdf1*newpdf2/pdf2);
+  iWeightSum += prod*prod;    
+  iWeightSum = TMath::Sqrt(iWeightSum) ;
     
   globalWeight_ *= iWeightSum ;
-  // std::cout << "Global weight = " << globalWeight_ << std::endl;
+  std::cout << "Global weight = " << globalWeight_ << std::endl;
   histograms["pdfWeight"]->Fill( globalWeight_ );
 
 }

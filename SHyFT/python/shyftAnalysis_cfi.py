@@ -26,6 +26,7 @@ shyftAnalysis = cms.PSet(
     btaggerString = cms.string('simpleSecondaryVertexHighEffBJetTags'),
     identifier = cms.string('Douglas Adams'),
     reweightPDF = cms.bool(False),
+    pdfEigenToUse = cms.int32(0),    
     pdfSrc = cms.InputTag('generator'),
     pdfToUse = cms.string('cteq6ll.LHpdf'),
     pdfVariation = cms.int32(1),
@@ -47,6 +48,7 @@ shyftAnalysis = cms.PSet(
     cDiscriminantCut = cms.double(-1),
     lDiscriminantCut = cms.double(-1),
     useCustomPayload = cms.bool(False),
+    simpleSFCalc = cms.bool(False),
     jetAlgo = cms.string("calo"),
     customPayload = cms.string('ttbarEffSF.root')
     
