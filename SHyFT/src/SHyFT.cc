@@ -96,6 +96,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   histograms["metPt"]      = theDir.make<TH1F>("metPt", "Missing p_{T} (GeV/c)", 100, 0, 200 );
   histograms2d["massVsPt"] = theDir.make<TH2F>("massVsPt", "Mass vs pt", 25, 0, 250, 25, 0, 500);
 
+
   std::vector<std::string> sampleNameBase;
   std::vector<std::string> sampleName;
   std::vector<std::string> secvtxName(5,"_secvtxMass_");
@@ -164,6 +165,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   histograms[sampleNameInput+"_hT_Lep"] = theDir.make<TH1F>( (sampleNameInput+"_hT_lep").c_str(), "HT (sum Jet Et plus mu Pt)",       100, 0, 1200);
   histograms[sampleNameInput+"_wMT"]    = theDir.make<TH1F>( (sampleNameInput+"_wMT").c_str(),    "W Transverse Mass, total",          50, 0,  500);
   histograms[sampleNameInput+"_MET"]    = theDir.make<TH1F>( (sampleNameInput+"_MET").c_str(),    "Missing E_{T}, total" ,             50, 0,  200);
+
+  
   for(unsigned int i=0; i<6; ++i) {
     string jtNum = Form("_%dj",i);
     histograms[sampleNameInput+"_muPt"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_muPt"+jtNum).c_str(), "muon p_{T}", 100, 0, 200);
@@ -178,12 +181,61 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     histograms[sampleNameInput+"_wMT"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_wMT"+jtNum+"_0t").c_str(), "W Trans. Mass, 0 Jets, 0-Tag", 25,0,500);
     histograms[sampleNameInput+"_MET"+jtNum]  = theDir.make<TH1F>( (sampleNameInput+"_MET"+jtNum).c_str(), "Missing E_{T}, 0 Jets", 20, 0, 200);
     histograms[sampleNameInput+"_MET"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_MET"+jtNum+"_0t").c_str(), "Missing E_{T}, 0 Jets, 0-Tag", 20,0,200);
+    histograms2d[sampleNameInput+"_muisoVsMuEta"+jtNum] = 
+      theDir.make<TH2F>( (sampleNameInput+"_muisoVsMuEta"+jtNum).c_str(), "Muon isolation vs Muon Eta", 
+			 6, 0., 2.4,
+			 10, 0., 1.0
+			 );
+    histograms2d[sampleNameInput+"_muisoVsHt"+jtNum] = 
+      theDir.make<TH2F>( (sampleNameInput+"_muisoVsHt"+jtNum).c_str(), "Muon isolation vs H_{T}", 
+			 20., 0., 400,
+			 10, 0., 1.0
+			 );
+
+    histograms2d[sampleNameInput+"_muisoVsMET"+jtNum] = 
+      theDir.make<TH2F>( (sampleNameInput+"_muisoVsMET"+jtNum).c_str(), "Muon isolation vs MET", 
+			 20., 0., 200,
+			 10, 0., 1.0
+			 );
+    histograms2d[sampleNameInput+"_muisoVswMT"+jtNum] = 
+      theDir.make<TH2F>( (sampleNameInput+"_muisoVswMT"+jtNum).c_str(), "Muon isolation vs wMT", 
+			 20., 0., 200,
+			 10, 0., 1.0
+			 );
+
+    histograms2d[sampleNameInput+"_muisoVsMuEta"+jtNum+"_0t"] = 
+      theDir.make<TH2F>( (sampleNameInput+"_muisoVsMuEta"+jtNum+"_0t").c_str(), "Muon isolation vs Muon Eta, 0-Tag", 
+			 6, 0., 2.4,
+			 10, 0., 1.0
+			 );
+    histograms2d[sampleNameInput+"_muisoVsHt"+jtNum+"_0t"] = 
+      theDir.make<TH2F>( (sampleNameInput+"_muisoVsHt"+jtNum+"_0t").c_str(), "Muon isolation vs H_{T}", 
+			 20., 0., 400,
+			 10, 0., 1.0
+			 );
+
+    histograms2d[sampleNameInput+"_muisoVsMET"+jtNum+"_0t"] = 
+      theDir.make<TH2F>( (sampleNameInput+"_muisoVsMET"+jtNum+"_0t").c_str(), "Muon isolation vs MET", 
+			 20., 0., 200,
+			 10, 0., 1.0
+			 );
+    histograms2d[sampleNameInput+"_muisoVswMT"+jtNum+"_0t"] = 
+      theDir.make<TH2F>( (sampleNameInput+"_muisoVswMT"+jtNum+"_0t").c_str(), "Muon isolation vs wMT", 
+			 20., 0., 200,
+			 10, 0., 1.0
+			 );
+
+
+
   }
   for (unsigned int j=0;j<sampleName.size();++j) {
     for(unsigned int k=0;k<secvtxName.size();++k) {
       for(unsigned int l=0;l<secvtxEnd.size();++l) {
         std::string temp = sampleName[j]+secvtxName[k]+secvtxEnd[l];
         histograms[temp] = theDir.make<TH1F>(temp.c_str(), "secvtxmass", 40,    0,   10);
+        std::string temp2 = sampleName[j]+secvtxName[k]+secvtxEnd[l]+"_vs_iso";
+        histograms2d[temp2] = theDir.make<TH2F>(temp2.c_str(), "secvtxmass", 40,    0,   10,
+						10, 0., 1.0 );
         if(k==0 && l==4) break;
         else if( (!doMC_) && k==0 && l==0) break;
         //std::cout << temp << std::endl;
@@ -291,6 +343,16 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   double wMT = (lep_p4 + nu_p4).mt();
   double hT = lep_p4.pt() + nu_p4.Et();
   double hT_lep = lep_p4.pt();
+  pat::Muon const * patMuon = dynamic_cast<pat::Muon const *>(&* muons[0].masterClonePtr());
+  if ( patMuon == 0 )
+    throw cms::Exception("InvalidMuonPointer") << "Muon pointer is invalid you schmuck." << std::endl;
+  double hcalIso = patMuon->hcalIso();
+  double ecalIso = patMuon->ecalIso();
+  double trkIso  = patMuon->trackIso();
+  double pt      = patMuon->pt() ;
+  
+  double relIso = (ecalIso + hcalIso + trkIso) / pt;
+
 
   unsigned int maxJets = jets.size();
   unsigned int ibjet = 0;
@@ -479,6 +541,10 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   histograms[sampleNameInput + Form("_hT_Lep_%dj", numJets)]->Fill( hT_lep,               globalWeight_ );
   histograms[sampleNameInput + Form("_wMT_%dj",    numJets)]->Fill( wMT,                  globalWeight_ );
   histograms[sampleNameInput + Form("_MET_%dj",    numJets)]->Fill( met.pt(),             globalWeight_ );
+  histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
+  histograms2d[sampleNameInput + Form("_muisoVsHt_%dj", numJets)]->Fill( hT, relIso, globalWeight_ );
+  histograms2d[sampleNameInput + Form("_muisoVsMET_%dj", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
+  histograms2d[sampleNameInput + Form("_muisoVswMT_%dj", numJets)]->Fill( wMT, relIso, globalWeight_ );
 
   if ( numJets > 0 ) {    
     if ( numTags == 0 || doTagWeight_ ) {
@@ -488,6 +554,10 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       histograms[sampleNameInput + Form("_hT_Lep_%dj_0t", numJets)]->Fill( hT_lep,               globalWeight_0t );
       histograms[sampleNameInput + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                  globalWeight_0t );
       histograms[sampleNameInput + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_0t );
+      histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj_0t", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_0t );
+      histograms2d[sampleNameInput + Form("_muisoVsHt_%dj_0t", numJets)]->Fill( hT, relIso, globalWeight_ );
+      histograms2d[sampleNameInput + Form("_muisoVsMET_%dj_0t", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
+      histograms2d[sampleNameInput + Form("_muisoVswMT_%dj_0t", numJets)]->Fill( wMT, relIso, globalWeight_ );
     }
     if( numTags > 0 || doTagWeight_) {
       string massName  = secvtxname + Form("_secvtxMass_%dj_%dt", numJets, numTags);
@@ -516,6 +586,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
           } // if two tags
           histograms[massName             ]-> Fill (vertexMass, globalWeight_);
           histograms[massName + whichtag  ]-> Fill (vertexMass, globalWeight_);
+          histograms2d[massName +"_vs_iso"            ]-> Fill (vertexMass, relIso, globalWeight_);
+          histograms2d[massName + whichtag + "_vs_iso"  ]-> Fill (vertexMass, relIso, globalWeight_);
         } // if not doTagWeight
         else {
           if (numBottom>0) {
@@ -548,8 +620,10 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
             histograms[massName2          ]-> Fill (vertexMass, globalWeight_2t);
         } // end else (== if dotagweight)
       } // end if doMC
-      else
+      else {
+	histograms2d[massName +"_vs_iso"    ]-> Fill (vertexMass, relIso, globalWeight_);
         histograms[massName               ]-> Fill (vertexMass, globalWeight_);
+      }
     } // end if numTags > 0
   } // end if numJets > 0 
   // This is the 0-jet bin
@@ -560,6 +634,10 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     histograms[sampleNameInput + Form("_hT_Lep_0j_0t")]->Fill( hT_lep ,              globalWeight_ );
     histograms[sampleNameInput + Form("_wMT_0j_0t")   ]->Fill( wMT ,                 globalWeight_ );
     histograms[sampleNameInput + Form("_MET_0j_0t")   ]->Fill( met.pt() ,            globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsMuEta_0j_0t")]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsHt_0j_0t")]->Fill( hT, relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVswMT_0j_0t")]->Fill( wMT, relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsMET_0j_0t")]->Fill( met.pt(), relIso, globalWeight_ );
   }
   return true;
 }
