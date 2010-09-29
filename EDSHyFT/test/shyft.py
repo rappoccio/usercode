@@ -23,7 +23,7 @@ options.register ('use35x',
                   "Run on samples produced with <= 35x")
 
 options.register ('use38x',
-                  1,
+                  0,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
                   "Run on samples produced with >= 38x")
