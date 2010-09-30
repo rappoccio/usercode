@@ -11,11 +11,11 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    'file:/uscms_data/d2/guofan/TTbarJets-madgraph/ttbsm_361_10_1.root'
+    'dcap://cmsdca.fnal.gov:24136/pnfs/fnal.gov/usr/cms/WAX/11/store/user/guofan/Zprime_M750GeV_W7500MeV-madgraph/ttbsm_38on35/bb725c5f06fa9bd285bf64e68c9e6c07/ttbsm_381_7_1_Ugj.root'
     )
 )
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(3000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(6000) )
 
 from Analysis.BoostedTopAnalysis.wPlusBJetAnalysis_cfi import *
 
