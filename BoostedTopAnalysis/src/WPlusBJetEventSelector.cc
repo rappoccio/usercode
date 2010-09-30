@@ -4,8 +4,6 @@
 
 
 WPlusBJetEventSelector::WPlusBJetEventSelector ( edm::ParameterSet const & params ) :
-  trigSrc_               (params.getParameter<edm::InputTag>("trigSrc") ),
-  trig_                  (params.getParameter<std::string>("trig") ),
   pfJetIdParams_         (params.getParameter<edm::ParameterSet>("pfJetIDParams") ),
   pfJetSel_              (new PFJetIDSelectionFunctor(pfJetIdParams_)),
   jetTag_	(params.getParameter<edm::InputTag>("jetSrc")  ),
@@ -17,14 +15,12 @@ WPlusBJetEventSelector::WPlusBJetEventSelector ( edm::ParameterSet const & param
 {
   //make the bitset
   push_back("Inclusive");
-  push_back("Trigger"   );
   push_back("Jet Preselection"  );
   push_back(">= 1 WJet");
   push_back(">= 1 bJet");
 
   //turn on
   set("Inclusive");
-  set("Trigger"   );
   set("Jet Preselection" );
   set(">= 1 WJet");
   set(">= 1 bJet");
@@ -115,36 +111,16 @@ bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candida
 
   passCut( ret, "Inclusive" );
 
-  //Get the trigger
-  edm::Handle<pat::TriggerEvent>  triggerEvent;
-  t.getByLabel( trigSrc_, triggerEvent);
-  if( !triggerEvent.isValid() )   return (bool)ret;
+  if( ignoreCut( "Jet Preselection" ) || pfJets_.size() >= 2 )  {
+    passCut( ret, "Jet Preselection" );
+    if( ignoreCut(">= 1 WJet") || hasWJets() )  {
+      passCut( ret, ">= 1 WJet" );
 
-  // Check the trigger requirement
-  pat::TriggerEvent const * trig = &*triggerEvent;
-
-  bool passTrig = false;
-  if( trig->wasRun() && trig->wasAccept() ) {
-    pat::TriggerPath const * jetPath = trig->path(trig_);
-    if( jetPath != 0 && jetPath->wasAccept() )  {
-      passTrig = true;
-    }
-  }
-
-  if( ignoreCut( "Trigger" ) || passTrig )  {
-    passCut( ret, "Trigger" );
-
-    if( ignoreCut( "Jet Preselection" ) || pfJets_.size() >= 2 )  {
-      passCut( ret, "Jet Preselection" );
-      if( ignoreCut(">= 1 WJet") || hasWJets() )  {
-        passCut( ret, ">= 1 WJet" );
-
-        if( ignoreCut(">= 1 bJet") || hasBJets() ) {
-          passCut( ret, ">= 1 bJet" );
-        }  // end >= 1 bjet
-      }  // end >= 1 wjet
-    } // pass jet preselection
-  } //pass trigger
+      if( ignoreCut(">= 1 bJet") || hasBJets() ) {
+        passCut( ret, ">= 1 bJet" );
+      }  // end >= 1 bjet
+    }  // end >= 1 wjet
+  } // pass jet preselection
 
   return (bool)ret;
 }

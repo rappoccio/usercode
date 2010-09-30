@@ -34,8 +34,6 @@ class WPlusBJetEventSelector : public EventSelector {
 
     //Not for use at all
     virtual bool operator() (edm::EventBase const & t, pat::strbitset & ret ) { return true;}
-    edm::InputTag               trigSrc_;
-    std::string                 trig_;
     edm::ParameterSet const &   pfJetIdParams_;
     boost::shared_ptr<PFJetIDSelectionFunctor>   pfJetSel_;
     edm::InputTag               jetTag_;

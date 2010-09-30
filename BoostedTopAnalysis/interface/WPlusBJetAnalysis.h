@@ -1,7 +1,9 @@
 #ifndef Analysis_BoostedTopAnalysis_interface_WPlusBJetAnalysis_h
 #define Analysis_BoostedTopAnalysis_interface_WPlusBJetAnalysis_h
 
-#include "Analysis/BoostedTopAnalysis/interface/WPlusBJetEventSelector.h"
+#include "Analysis/BoostedTopAnalysis/interface/WPlusBJetType22Selection.h"
+#include "Analysis/BoostedTopAnalysis/interface/WPlusBJetType23Selection.h"
+#include "Analysis/BoostedTopAnalysis/interface/WPlusBJetType33Selection.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "Math/GenVector/PxPyPzM4D.h"
 
@@ -28,18 +30,21 @@ class WPlusBJetAnalysis{
     virtual void beginJob() {}
     virtual void analyze( const edm::EventBase& iEvent ) ;
     virtual void endJob() {
-      twPlusBJetSelection_.print( std::cout );
-      owPlusBJetSelection_.print( std::cout );
+      cout<<"Type 2 + Type 2 selection: "<<endl;
+      wPlusBJetType22Selection_.print(cout);
+      cout<<"Type 2 + Type 3 selection: "<<endl;
+      wPlusBJetType23Selection_.print(cout);
+      cout<<"Type 3 + Type 3 selection: "<<endl;
+      wPlusBJetType33Selection_.print(cout);
     }
 
   private:
     TFileDirectory& theDir;
-    edm::InputTag     jetSrc_;
-    WPlusBJetEventSelector    twPlusBJetSelection_; //towards direction selector
-    WPlusBJetEventSelector    owPlusBJetSelection_; //opposite direction selector
     std::map<std::string, TH1F*> histograms1d;
     std::map<std::string, TH2F*> histograms2d;
-    double leadJetPtCut_;
+    WPlusBJetType22Selection  wPlusBJetType22Selection_;
+    WPlusBJetType23Selection  wPlusBJetType23Selection_;
+    WPlusBJetType33Selection  wPlusBJetType33Selection_;
 
 };
 
