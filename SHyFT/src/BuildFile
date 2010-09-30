@@ -10,8 +10,6 @@
 <use name=PhysicsTools/SelectorUtils>
 <use name=PhysicsTools/FWLite>
 <use name=PhysicsTools/Utilities>
-<use name=CondFormats/PhysicsToolsObjects>
-<use name=RecoBTag/PerformanceDB>
 <use name=lhapdf>
 
 <export>

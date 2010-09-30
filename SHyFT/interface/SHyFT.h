@@ -8,10 +8,10 @@
 #include "Math/GenVector/PxPyPzM4D.h"
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/FWLite/interface/Record.h"
-#include "DataFormats/FWLite/interface/EventSetup.h"
-#include "DataFormats/FWLite/interface/ESHandle.h"
-#include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h"
-#include "RecoBTag/PerformanceDB/interface/BtagPerformance.h"
+/* #include "DataFormats/FWLite/interface/EventSetup.h" */
+/* #include "DataFormats/FWLite/interface/ESHandle.h" */
+/* #include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h" */
+/* #include "RecoBTag/PerformanceDB/interface/BtagPerformance.h" */
 
 
 #include <iostream>
@@ -89,7 +89,6 @@ class SHyFT {
     bool analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons);
     bool analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons);    
     bool analyze_met( const reco::ShallowClonePtrCandidate & met );
-    void calcTagWeight (const std::vector<reco::ShallowClonePtrCandidate>& jets);
     bool calcSampleName (const edm::EventBase& iEvent, std::string &sampleName);
     void weightPDF( edm::EventBase const & iEvent );
 
@@ -116,16 +115,6 @@ class SHyFT {
     int HFcat_;
     std::string secvtxname;
     bool doMC_;
-    bool doBTagPerformance_;
-    std::string plRootFile_;
-    boost::shared_ptr<TFile> btagPayloadFile_;
-    boost::shared_ptr<fwlite::EventSetup> es_;
-    fwlite::RecordID  recId_;
-    double btagOP_;
-    std::string bPerformanceTag_;
-    std::string cPerformanceTag_;
-    std::string lPerformanceTag_;
-    std::string btaggerString_;
     std::string identifier_;
 
     int allNumTags_;
@@ -142,10 +131,11 @@ class SHyFT {
     int         pdfEigenToUse_;
     int         pdfVariation_;
 
-    bool doTagWeight_;
+
+    std::string btaggerString_;
     double bcEffScale_;
     double lfEffScale_;
-    bool useDefaultDiscr_;
+    double allDiscrCut_;
     double bDiscrCut_;
     double cDiscrCut_;
     double lDiscrCut_;

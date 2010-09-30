@@ -33,22 +33,16 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   nJetsCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("minJets")),  
   sampleNameInput(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("sampleName")),
   doMC_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doMC") ),
-  doBTagPerformance_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doBTagPerformance") ),
-  plRootFile_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("payload")  ),
-  bPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("bPerformanceTag")  ),
-  cPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("cPerformanceTag")  ),
-  lPerformanceTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("lPerformanceTag")  ),
-  btaggerString_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("btaggerString")),
   identifier_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("identifier")),
   reweightPDF_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPDF")),
   pdfInputTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("pdfSrc")),
   pdfToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("pdfToUse")),
   pdfEigenToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("pdfEigenToUse")),
   pdfVariation_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("pdfVariation")),
-  doTagWeight_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doTagWeight")),
+  btaggerString_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("btaggerString")),
   bcEffScale_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("bcEffScale")),
   lfEffScale_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("lfEffScale")),
-  useDefaultDiscr_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("useDefaultDiscriminant")),
+  allDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("allDiscriminantCut")),
   bDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("bDiscriminantCut")),
   cDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("cDiscriminantCut")),
   lDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("lDiscriminantCut")),
@@ -58,10 +52,9 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   jetAlgo_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("jetAlgo"))
 {
 
-  if ( doBTagPerformance_ ) {
-    btagPayloadFile_ = boost::shared_ptr<TFile>( new TFile( plRootFile_.c_str(), "READ") );
-    es_  = boost::shared_ptr<fwlite::EventSetup>( new fwlite::EventSetup(&*btagPayloadFile_) );
-  }
+  if ( simpleSFCalc_) 
+    gRandom->SetSeed( 960622508 );
+  
 
   if ( useCustomPayload_ ) {
     customBtagFile_ = boost::shared_ptr<TFile>( new TFile(customTagRootFile_.c_str(), "READ") );
@@ -341,6 +334,10 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
                            const std::vector<reco::ShallowClonePtrCandidate>& muons,
                            const std::vector<reco::ShallowClonePtrCandidate>& electrons)
 {
+
+  allNumTags_ = 0;
+  allNumJets_ = (int) jets.size();
+ 
   // std::cout << "Filling global weight in make_templates : " << globalWeight_ << std::endl;
   reco::Candidate::LorentzVector nu_p4 = met.p4();
   reco::Candidate::LorentzVector lep_p4 = ( muPlusJets_  ? muons[0].p4() : electrons[0].p4() );
@@ -377,16 +374,12 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       }
     }
   } 
-  if ( maxJets >= 4 ) {
-    //std::cout << iEvent.id().run() << ":" << iEvent.id().event() <<":" << iEvent.id().luminosityBlock() << ":" << std::setprecision(8) << muons[0].pt() << std::endl;
-  }
-  // std::cout << "jets.size() = " << jets.size() << ", wMT = " << wMT << ", hT = " << hT 
-  // 	    << ", maxJets = " << maxJets << std::endl;
 
   //SecVtxMass and b-tagging related quantities
   int numBottom=0,numCharm=0,numLight=0;
   int numTags=0, numJets=0;
   double vertexMass = -1.0;
+  std::vector<double> vertexMasses;
   // --------------
   // Fill the M3 if there are more than 3 jets
   // --------------
@@ -417,6 +410,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     histograms["m3"]->Fill( M3, globalWeight_ );
   }
 
+
+  bool foundWeird = false;
   // --------------
   // Loop over the jets. Find the flavor of the *highest pt jet* that passes
   // the discriminator cuts. 
@@ -504,10 +499,21 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       }
 
       // Check to see if the actual jet is tagged
-      if( jet->bDiscriminator(btaggerString_) < btagOP_ || !keepGoing ) continue;
+      double discCut = allDiscrCut_;
+      if ( doMC_ ) {
+	if ( bDiscrCut_ > 0.0 && jetFlavor == 5 ) discCut = bDiscrCut_;
+	if ( cDiscrCut_ > 0.0 && jetFlavor == 4 ) discCut = cDiscrCut_;
+	if ( lDiscrCut_ > 0.0 && jetFlavor!=5 && jetFlavor != 4 ) discCut = lDiscrCut_;	
+      }
+      vertexMasses.push_back( svTagInfos->secondaryVertex(0).p4().mass() );
+
+
+      if( jet->bDiscriminator(btaggerString_) < discCut || !keepGoing ) continue;
+      ++allNumTags_;
       //      ++numTags;
 
       // Take the template info from the first tag (ordered by jet pt)
+
       if ( firstTag ) {
         vertexMass = svTagInfos->secondaryVertex(0).p4().mass();
         
@@ -540,13 +546,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   numTags = std::min( allNumTags_, 2 );
   numJets = std::min( allNumJets_, 5 );
 
-  if(!doTagWeight_)
-    histograms["nTags"]->Fill(numTags, globalWeight_);
-  else {
-    histograms["nTags"]->Fill((double)0,globalWeight_0t);
-    histograms["nTags"]->Fill((double)1,globalWeight_1t);
-    histograms["nTags"]->Fill((double)2,globalWeight_2t);
-  }
+
+  histograms["nTags"]->Fill(numTags, globalWeight_);
 
   histograms[sampleNameInput + Form("_hT")    ]->Fill( hT,       globalWeight_ );
   histograms[sampleNameInput + Form("_hT_Lep")]->Fill( hT_lep,   globalWeight_ );
@@ -570,83 +571,37 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   histograms2d[sampleNameInput + Form("_muisoVswMT_%dj", numJets)]->Fill( wMT, relIso, globalWeight_ );
 
   if ( numJets > 0 ) {    
-    if ( numTags == 0 || doTagWeight_ ) {
-      histograms[sampleNameInput + Form("_muPt_%dj_0t",   numJets)]->Fill( muons[0].pt(),        globalWeight_0t );
-      histograms[sampleNameInput + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_0t );
-      histograms[sampleNameInput + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_0t );
-      histograms[sampleNameInput + Form("_hT_Lep_%dj_0t", numJets)]->Fill( hT_lep,               globalWeight_0t );
-      histograms[sampleNameInput + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                  globalWeight_0t );
-      histograms[sampleNameInput + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_0t );
-      histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj_0t", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_0t );
-      histograms2d[sampleNameInput + Form("_muisoVsHt_%dj_0t", numJets)]->Fill( hT, relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsMET_%dj_0t", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVswMT_%dj_0t", numJets)]->Fill( wMT, relIso, globalWeight_ );
-    }
-    if( numTags > 0 || doTagWeight_) {
+    if( numTags > 0 ) {
       string massName  = secvtxname + Form("_secvtxMass_%dj_%dt", numJets, numTags);
       string massName1 = secvtxname + Form("_secvtxMass_%dj_1t",  numJets);
       string massName2 = secvtxname + Form("_secvtxMass_%dj_2t",  numJets);
       
+      histograms[massName             ]-> Fill (vertexMass, globalWeight_);
+      histograms2d[massName +"_vs_iso"            ]-> Fill (vertexMass, relIso, globalWeight_);
+
       string whichtag = "";
       if( doMC_ ) {
-        if( !doTagWeight_ ) {
-          if (1 == numTags) {
-            // single tag
-            if      (numBottom)              whichtag = "_b";
-            else if (numCharm)               whichtag = "_c";
-            else if (numLight)               whichtag = "_q";
-            else                             whichtag = "_x";
-          }
-          else {
-            // double tags
-            if      (2 == numBottom)         whichtag = "_bb";
-            else if (2 == numCharm)          whichtag = "_cc";
-            else if (2 == numLight)          whichtag = "_qq";
-            else if (numBottom && numCharm)  whichtag = "_bc";
-            else if (numBottom && numLight)  whichtag = "_bq";
-            else if (numCharm  && numLight)  whichtag = "_cq";
-            else                             whichtag = "_xx";
-          } // if two tags
-          histograms[massName             ]-> Fill (vertexMass, globalWeight_);
-          histograms[massName + whichtag  ]-> Fill (vertexMass, globalWeight_);
-          histograms2d[massName +"_vs_iso"            ]-> Fill (vertexMass, relIso, globalWeight_);
-          histograms2d[massName + whichtag + "_vs_iso"  ]-> Fill (vertexMass, relIso, globalWeight_);
-        } // if not doTagWeight
-        else {
-          if (numBottom>0) {
-            histograms[massName1 + "_b"   ]-> Fill (vertexMass, globalWeight_1t);
-            if (2==numBottom)
-              histograms[massName2 + "_bb"]-> Fill (vertexMass, globalWeight_2t);
-            else if (numBottom && numCharm ) 
-              histograms[massName2 + "_bc"]-> Fill (vertexMass, globalWeight_2t);
-            else if (numBottom && numLight )
-              histograms[massName2 + "_bq"]-> Fill (vertexMass, globalWeight_2t);
-          }
-          else if (numCharm>0) {
-            histograms[massName1 + "_c"   ]-> Fill (vertexMass, globalWeight_1t);
-            if (2==numCharm)
-              histograms[massName2 + "_cc"]-> Fill (vertexMass, globalWeight_2t);
-            else if (numCharm && numLight)
-              histograms[massName2 + "_cq"]-> Fill (vertexMass, globalWeight_2t);
-          }
-          else if (numLight>0) {
-            histograms[massName1 + "_q"   ]-> Fill (vertexMass, globalWeight_1t);
-            if (2==numLight)
-              histograms[massName2 + "_qq"]-> Fill (vertexMass, globalWeight_2t);
-          }
-          else {
-            histograms[massName1 + "_x"   ]-> Fill (vertexMass, globalWeight_1t);
-            histograms[massName2 + "_xx"  ]-> Fill (vertexMass, globalWeight_2t);
-          }
-          histograms[massName1            ]-> Fill (vertexMass, globalWeight_1t);
-          if (numJets>1)
-            histograms[massName2          ]-> Fill (vertexMass, globalWeight_2t);
-        } // end else (== if dotagweight)
+	if (1 == numTags) {
+	  // single tag
+	  if      (numBottom)              whichtag = "_b";
+	  else if (numCharm)               whichtag = "_c";
+	  else if (numLight)               whichtag = "_q";
+	  else                             whichtag = "_x";
+	}
+	else {
+	  // double tags
+	  if      (2 == numBottom)         whichtag = "_bb";
+	  else if (2 == numCharm)          whichtag = "_cc";
+	  else if (2 == numLight)          whichtag = "_qq";
+	  else if (numBottom && numCharm)  whichtag = "_bc";
+	  else if (numBottom && numLight)  whichtag = "_bq";
+	  else if (numCharm  && numLight)  whichtag = "_cq";
+	  else                             whichtag = "_xx";
+	} // if two tags
+	
+	histograms[massName + whichtag  ]-> Fill (vertexMass, globalWeight_);	
+	histograms2d[massName + whichtag + "_vs_iso"  ]-> Fill (vertexMass, relIso, globalWeight_);
       } // end if doMC
-      else {
-	histograms2d[massName +"_vs_iso"    ]-> Fill (vertexMass, relIso, globalWeight_);
-        histograms[massName               ]-> Fill (vertexMass, globalWeight_);
-      }
     } // end if numTags > 0
   } // end if numJets > 0 
   // This is the 0-jet bin
@@ -685,12 +640,6 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   std::vector<reco::ShallowClonePtrCandidate> const & muons     = wPlusJets.selectedMuons();
   std::vector<reco::ShallowClonePtrCandidate> const & jets      = wPlusJets.cleanedJets();
   reco::ShallowClonePtrCandidate const & met = wPlusJets.selectedMET();
-
-  //Check if the BTagPerformanceRecord exists
-  if ( doBTagPerformance_ ) {
-    recId_ = es_->recordID("BTagPerformanceRecord");
-    es_->syncTo( iEvent.id(), edm::Timestamp());
-  }
   
   string bit_;
 
@@ -719,9 +668,6 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     weightPDF(iEvent);
   }
 
-  if ( doBTagPerformance_ ) {
-    calcTagWeight(jets);
-  }
   
   if(useHFcat_) {
     edm::Handle< unsigned int > heavyFlavorCategory;
@@ -756,270 +702,6 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     }
 }
   
-void SHyFT::calcTagWeight(const std::vector<reco::ShallowClonePtrCandidate>& jets)
-{
-  allNumTags_ = 0;
-  allNumJets_ = (int) jets.size();
-
-  double weight0t = 0;
-  double weight1t = 0;
-  double weight2t = 0;
-
-  //Get Payload and Working Point
-  fwlite::ESHandle< PerformancePayload >   plBHandle;
-  fwlite::ESHandle< PerformancePayload >   plLHandle;
-  fwlite::ESHandle< PerformancePayload >   plCHandle;
-  fwlite::ESHandle< PerformanceWorkingPoint >   wpBHandle;
-  fwlite::ESHandle< PerformanceWorkingPoint >   wpLHandle;
-  fwlite::ESHandle< PerformanceWorkingPoint >   wpCHandle;
-  if ( es_ != 0 ) {
-    es_->get(recId_).get(plBHandle, bPerformanceTag_.c_str() );
-    es_->get(recId_).get(wpBHandle, bPerformanceTag_.c_str() );
-    es_->get(recId_).get(plCHandle, cPerformanceTag_.c_str() );
-    es_->get(recId_).get(wpCHandle, cPerformanceTag_.c_str() );
-    es_->get(recId_).get(plLHandle, lPerformanceTag_.c_str() );
-    es_->get(recId_).get(wpLHandle, lPerformanceTag_.c_str() );
-  }
-  if( !(plBHandle.isValid() && wpBHandle.isValid() ) )
-    std::cout<<"BEff BtagPerformance is not valid !!"<<std::endl;
-  if( !(plLHandle.isValid() && wpLHandle.isValid() ) )
-    std::cout<<"LEff BtagPerformance is not valid !!"<<std::endl;
-  if( !(plCHandle.isValid() && wpCHandle.isValid() ) )
-    std::cout<<"CEff BtagPerformance is not valid !!"<<std::endl;
-  
-  BtagPerformance  perfB( *plBHandle, *wpBHandle );
-  BtagPerformance  perfL( *plLHandle, *wpLHandle );
-  BtagPerformance  perfC( *plCHandle, *wpCHandle );
-
-  TH2F * eff_b=0;
-  TH2F * eff_c=0;
-  TH2F * eff_lf=0;
-  
-  if(useCustomPayload_) {
-    eff_b  = (TH2F*)customBtagFile_->Get((jetAlgo_+"BEff").c_str());
-    eff_c  = (TH2F*)customBtagFile_->Get((jetAlgo_+"CEff").c_str());
-    eff_lf = (TH2F*)customBtagFile_->Get((jetAlgo_+"LFEff").c_str());
-  }
-
-  btagOP_ = perfB.workingPoint().cut();
-  // Now get the normalization of the tag bins from the BVTX POG efficiency
-  //Normalization for "1 tag" events
-  for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
-          jetEnd = jets.end(), jetIter = jetBegin;
-      jetIter != jetEnd; ++jetIter)
-    {
-      const pat::Jet* jet = dynamic_cast<const pat::Jet *>(jetIter->masterClonePtr().get());
-
-      // We first get the flavor of the jet so we can fill look at btag efficiency.
-      int jetFlavor = std::abs( jet->partonFlavour() );
-      if(!useDefaultDiscr_) {
-        if(jetFlavor==5 && bDiscrCut_!=-1)
-          btagOP_ = bDiscrCut_;
-        else if(jetFlavor==4 && cDiscrCut_!=-1)
-          btagOP_ = cDiscrCut_;
-        else if(jetFlavor!=4 && jetFlavor!=5 && lDiscrCut_!=-1)
-          btagOP_ = lDiscrCut_;
-      }
-
-      // We need to check out how many tags we have, so we know how to classify this event
-      // Get the secondary vertex tag info
-      reco::SecondaryVertexTagInfo const * svTagInfos
-        = jet->tagInfoSecondaryVertex("secondaryVertex");
-      if ( svTagInfos != 0 ) {
-        // Check to make sure we have a vertex
-        if ( svTagInfos->nVertices() > 0 ) {
-          // Check to see if the actual jet is tagged
-          if( jet->bDiscriminator(btaggerString_) > btagOP_ ) {
-	    nObservedTaggedJets_ += 1.0;
-            ++allNumTags_;
-          }
-        }
-      }
-    
-      if( doMC_ ) {
-        
-        double jetPt = jet->pt();
-        //jetPt range from BTag POG, [30, 400]
-        if( jetPt < 30 )    jetPt = 30.5;
-        if( jetPt > 400 )	  jetPt = 399.5;
-        double jetEta = jet->eta();
-        //jetEta range from BTag POG, [-3.0, 3.0]
-        if( jetEta < -3.0 )	jetEta = -2.99;
-        if( jetEta > 3.0 )	jetEta = 2.99;
-
-        double bEff = 0;
-        double cEff = 0;
-        double lEff = 0;
-        
-        if(useCustomPayload_) {
-	  if ( eff_b == 0 || eff_c == 0 || eff_lf == 0 ) {
-	    throw cms::Exception("InvalidEfficiencyFile") <<
-	      "The efficiencies from the custom payload are not valid" << std::endl;
-	  }
-          if ( jetPt > 300 ) jetPt = 299.0;
-          jetEta = std::abs(jetEta);
-          
-          int ibin_b  = eff_b ->GetXaxis()->FindBin( jetPt );
-          int jbin_b  = eff_b ->GetYaxis()->FindBin( jetEta );
-          int ibin_c  = eff_c ->GetXaxis()->FindBin( jetPt );
-          int jbin_c  = eff_c ->GetYaxis()->FindBin( jetEta );
-          int ibin_lf = eff_lf->GetXaxis()->FindBin( jetPt );
-          int jbin_lf = eff_lf->GetYaxis()->FindBin( jetEta );
-
-          bEff = eff_b ->GetBinContent(ibin_b,  jbin_b)  * bcEffScale_;
-          cEff = eff_c ->GetBinContent(ibin_c,  jbin_c)  * bcEffScale_;
-          lEff = eff_lf->GetBinContent(ibin_lf, jbin_lf) * lfEffScale_;
-        }
-        else {
-          BinningPointByMap p;
-          p.insert( BinningVariables::JetEt,  jetPt );
-          p.insert( BinningVariables::JetEta, jetEta );
-          p.insert( BinningVariables::JetAbsEta,  abs(jetEta) );
-          
-          //btag scale factor and mistag rate
-          if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p )  )
-            std::cout<<"No reasonable result for b effi !"<<std::endl;
-          if( !perfC.isResultOk( PerformanceResult::BTAGCEFF, p )  )
-            std::cout<<"No reasonable result for c effi !"<<std::endl;
-          if( !perfL.isResultOk( PerformanceResult::BTAGLEFF, p )  )
-            std::cout<<"No reasonable result for lf effi !"<<std::endl;
-          
-          bEff = perfB.getResult( PerformanceResult::BTAGBEFF, p ) * bcEffScale_;
-          cEff = perfC.getResult( PerformanceResult::BTAGCEFF, p ) * bcEffScale_;
-          lEff = perfL.getResult( PerformanceResult::BTAGLEFF, p ) * lfEffScale_;
-        }
-        
-        //Probability to tag this jet
-        double weight = 1.0;
-        int whichtag = 0;
-        switch( jetFlavor )
-          {
-          case 5:
-            whichtag = 5;
-            weight *= bEff;
-            break;
-          case 4:
-            whichtag = 4;
-            weight *= cEff;
-            break;
-          default:
-            whichtag = 0;
-            weight *= lEff;
-          }
-        //Probability to untag the rest jets
-        double untagRate = 1.0;
-        for( ShallowCloneCollection::const_iterator jet2Iter = jetBegin;  jet2Iter != jetEnd; ++jet2Iter )
-          {
-            const pat::Jet* jet2 = dynamic_cast<const pat::Jet *>(jet2Iter->masterClonePtr().get());
-            if( jet2Iter != jetIter )
-              {
-                int jetFlavor2 = std::abs( jet2->partonFlavour() );
-                double jetPt2	= jet2->pt();
-                //jetPt range from BTag POG, [30, 400]
-                if( jetPt2 < 30 )	jetPt2 = 30.5;
-                if( jetPt2 > 400 )   jetPt2 = 399.5;
-                double jetEta2	= jet2->eta();
-                //jetEta range from BTag POG, [-3.0, 3.0]
-                if( jetEta2 < -3.0 )	jetEta2 = -2.99;
-                if( jetEta2 > 3.0 )		jetEta2 = 2.99;
-
-                if(useCustomPayload_) {
-		  if ( eff_b == 0 || eff_c == 0 || eff_lf == 0 ) {
-		    throw cms::Exception("InvalidEfficiencyFile") <<
-		      "The efficiencies from the custom payload are not valid" << std::endl;
-		  }
-                  if ( jetPt2 > 300 ) jetPt2 = 299.0;
-                  jetEta2 = std::abs(jetEta2);
-                  int i2bin_b  = eff_b ->GetXaxis()->FindBin( jetPt2 );
-                  int j2bin_b  = eff_b ->GetYaxis()->FindBin( jetEta2 );
-                  int i2bin_c  = eff_c ->GetXaxis()->FindBin( jetPt2 );
-                  int j2bin_c  = eff_c ->GetYaxis()->FindBin( jetEta2 );
-                  int i2bin_lf = eff_lf->GetXaxis()->FindBin( jetPt2 );
-                  int j2bin_lf = eff_lf->GetYaxis()->FindBin( jetEta2 );
-                  
-                  if      ( jetFlavor2==5 ) 
-                    untagRate *= 1 - ( eff_b ->GetBinContent(i2bin_b,  j2bin_b)  * bcEffScale_ );
-                  else if ( jetFlavor2==4 )
-                    untagRate *= 1 - ( eff_c ->GetBinContent(i2bin_c,  j2bin_c)  * bcEffScale_ );
-                  else 
-                    untagRate *= 1 - ( eff_lf->GetBinContent(i2bin_lf, j2bin_lf) * lfEffScale_ );
-
-                }
-                else {
-                  BinningPointByMap p2;
-                  p2.insert( BinningVariables::JetEt,  jetPt2 );
-                  p2.insert( BinningVariables::JetEta, jetEta2 );
-                  p2.insert( BinningVariables::JetAbsEta,  abs(jetEta2) );
-                  
-                  switch( jetFlavor2 )
-                    {
-                    case 5:
-                      if( !perfB.isResultOk( PerformanceResult::BTAGBEFF, p2 )  )
-                        std::cout<<"No reasonable result for b effi !"<<std::endl;
-                      untagRate *= (1.-perfB.getResult( PerformanceResult::BTAGBEFF, p2 ) * bcEffScale_ );
-                      break;
-                    case 4:
-                      if( !perfC.isResultOk( PerformanceResult::BTAGCEFF, p2 )  )
-                        std::cout<<"No reasonable result for c effi !"<<std::endl;
-                      untagRate *= (1.-perfC.getResult( PerformanceResult::BTAGCEFF, p2 ) * bcEffScale_  );
-                      break;
-                    default:
-                      if( !perfL.isResultOk( PerformanceResult::BTAGLEFF, p2 )  )
-                        std::cout<<"No reasonable result for lf effi !"<<std::endl;
-                      untagRate *= (1.-perfL.getResult( PerformanceResult::BTAGLEFF, p2 ) * lfEffScale_ );
-                    }
-                }
-              } // end if jet1Iter != jet2Iter
-          } // end for jet2Iter
-        weight1t += weight*untagRate;
-        if(jetIter==jetBegin)
-          weight0t = (1-weight)*untagRate;
-        else if (std::abs(weight0t - (1.0-weight)*untagRate) > 0.0001)
-          cout << "Error with weight: weight0t = " << weight0t << " , 1-weight = " << 1.0-weight << " , untagRate = " << untagRate
-               << " , new weight0t = " << (1.0-weight)*untagRate << " , njets = " << allNumJets_ << " , nTags = " << allNumTags_ << endl;
-          histograms3d["normalization"]->Fill(  allNumJets_,	1,	whichtag,	weight*untagRate );
-      } // end if doMC
-    } // end for jetIter
-
-  if (doTagWeight_) {
-    if(weight0t>=1) {
-      cout << "Weight 0t >=1 : " << weight0t << ", weight1t = " << weight1t << ", weight2t = " << weight2t << endl;
-      weight0t=1;
-      weight1t=0;
-      weight2t=0;
-    }
-    else if(weight1t>=1) {
-      cout << "Weight 1t >=1 : " << weight1t << ", weight0t = " << weight0t << ", weight2t = " << weight2t << endl;
-      weight1t=1;
-      weight0t=0;
-      weight2t=0;
-    }
-    else
-      weight2t = 1-weight0t-weight1t;
-    
-    if(allNumJets_==0) {
-      weight0t=1;
-      weight1t=0;
-      weight2t=0;
-    }
-
-    globalWeight_0t = globalWeight_*weight0t;
-    globalWeight_1t = globalWeight_*weight1t;
-    globalWeight_2t = globalWeight_*weight2t;
-  }
-  else {
-    globalWeight_2t = globalWeight_;
-    globalWeight_1t = globalWeight_;
-    globalWeight_0t = globalWeight_;
-  }
-
-  // perform closure test...
-  // If there are at least 1 tagged jets, increment the number of observed >=1 tag events.
-  // Always fill the number of expected tagged events with the weights estimated. 
-  if ( allNumTags_ > 0 )
-    nObservedTaggedEvents_ += 1.0;
-  nExpectedTaggedEvents_ += (1.0 - globalWeight_0t);
-}
 
 
 bool SHyFT::calcSampleName (const edm::EventBase& iEvent, std::string &sampleName)

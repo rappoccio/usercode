@@ -30,28 +30,17 @@ shyftAnalysis = cms.PSet(
     pdfSrc = cms.InputTag('generator'),
     pdfToUse = cms.string('cteq6ll.LHpdf'),
     pdfVariation = cms.int32(1),
-#    pdfUsed = cms.string('cteq61'),
-#    pdfSetNames = cms.vstring( [
-#        'cteq61',
-#        'cteq6AB',
-#        'MRST2007lomod'
-#        , "cteq65"
-#        , "MRST2006nnlo"
-#        , "MRST2007lomod"
-#        
-#        ] ),
     doTagWeight = cms.bool(False),
     bcEffScale = cms.double(1.0),
     lfEffScale = cms.double(1.0),
     useDefaultDiscriminant = cms.bool(True),
-    bDiscriminantCut = cms.double(1.74),
-    cDiscriminantCut = cms.double(-1),
-    lDiscriminantCut = cms.double(-1),
-    useCustomPayload = cms.bool(False),
+    bDiscriminantCut = cms.double(-1.0),
+    cDiscriminantCut = cms.double(-1.0),
+    lDiscriminantCut = cms.double(-1.0),
+    allDiscriminantCut = cms.double(1.74),
     simpleSFCalc = cms.bool(False),
     jetAlgo = cms.string("calo"),
-    customPayload = cms.string('ttbarEffSF.root')
-    
-#    btaggerString = cms.string('simpleSecondaryVertexBJetTags')
+    useCustomPayload = cms.bool(False),
+    customPayload = cms.string('ttbarEffSF.root')   
 )
 
