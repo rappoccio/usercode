@@ -1,5 +1,0 @@
-run_gen ttbar_v6_fixed
-run_gen zprime_fullsim_m1000_w10_v6_fixed
-run_gen zprime_fullsim_m2000_w20_v6_fixed
-run_gen zprime_fullsim_m3000_w30_v6_fixed
-run_gen zprime_fullsim_m4000_w40_v6_fixed
