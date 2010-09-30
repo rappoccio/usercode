@@ -109,7 +109,10 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
                                         sampleName = cms.string(inputSampleName),
-                                        identifier = cms.string('PF')
+                                        identifier = cms.string('PF'),
+                                        simpleSFCalc = cms.bool(True),                                                  
+                                        bcEffScale = cms.double(0.88),
+                                        lfEffScale = cms.double(0.87)                                        
                                         )                                    
                                     )
 
@@ -123,7 +126,10 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                          heavyFlavour = cms.bool( useFlavorHistory ),
                                          doMC = cms.bool( inputDoMC),
                                          sampleName = cms.string(inputSampleName),
-                                         identifier = cms.string('JPT')
+                                         identifier = cms.string('JPT'),
+                                         simpleSFCalc = cms.bool(True),                                                  
+                                         bcEffScale = cms.double(0.88),
+                                         lfEffScale = cms.double(0.87),                                         
                                         )
                                      
                                      )
@@ -137,7 +143,10 @@ process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
                                           doMC = cms.bool( inputDoMC),
                                           sampleName = cms.string(inputSampleName),
                                           btaggerString = cms.string('simpleSecondaryVertexBJetTags'),
-                                          identifier = cms.string('CALO')
+                                          identifier = cms.string('CALO'),
+                                          simpleSFCalc = cms.bool(True),                                                  
+                                          bcEffScale = cms.double(0.88),
+                                          lfEffScale = cms.double(0.87),                                          
                                           )                                      
                                       )
 

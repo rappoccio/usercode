@@ -8,14 +8,14 @@ idir='/uscms_data/d2/rappocc/analysis/SHyFT/CMSSW_3_8_3_SHyFT/src/Analysis/EDSHy
 
 
 crabFiles = [
-    ['crab_InclusiveMu15_shyftana_38xOn35x_v9_bdisc_anashyft.cfg',                  'InclusiveMu15_shyftana_38xOn35x_v9_bdisc'],
-    ['crab_SingleTop_sChannel-madgraph_shyftana_38xOn35x_v9_bdisc_anashyft.cfg',    'SingleTop_sChannel-madgraph_shyftana_38xOn35x_v9_bdisc'],
-    ['crab_SingleTop_tChannel-madgraph_shyftana_38xOn35x_v9_bdisc_anashyft.cfg',    'SingleTop_tChannel-madgraph_shyftana_38xOn35x_v9_bdisc'],
-    ['crab_SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v9_bdisc_anashyft.cfg',   'SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v9_bdisc'],
-    ['crab_TTbarJets-madgraph_shyftana_38xOn35x_v9_bdisc_anashyft.cfg',             'TTbarJets-madgraph_shyftana_38xOn35x_v9_bdisc'],
-    ['crab_WJets-madgraph_shyftana_38xOn35x_v9_bdisc_anashyft.cfg',                 'WJets-madgraph_shyftana_38xOn35x_v9_bdisc'],
-    ['crab_ZJets-madgraph_shyftana_38xOn35x_v9_bdisc_anashyft.cfg',                 'ZJets-madgraph_shyftana_38xOn35x_v9_bdisc'],
-    ['crab_VqqJets-madgraph_shyftana_38xOn35x_v9_bdisc_anashyft.cfg',               'VqqJets-madgraph_shyftana_38xOn35x_v9_bdisc']
+    ['crab_InclusiveMu15_shyftana_38xOn35x_v10_btagReweighted_anashyft.cfg',                  'InclusiveMu15_shyftana_38xOn35x_v10_btagReweighted'],
+    ['crab_SingleTop_sChannel-madgraph_shyftana_38xOn35x_v10_btagReweighted_anashyft.cfg',    'SingleTop_sChannel-madgraph_shyftana_38xOn35x_v10_btagReweighted'],
+    ['crab_SingleTop_tChannel-madgraph_shyftana_38xOn35x_v10_btagReweighted_anashyft.cfg',    'SingleTop_tChannel-madgraph_shyftana_38xOn35x_v10_btagReweighted'],
+    ['crab_SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v10_btagReweighted_anashyft.cfg',   'SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v10_btagReweighted'],
+    ['crab_TTbarJets-madgraph_shyftana_38xOn35x_v10_btagReweighted_anashyft.cfg',             'TTbarJets-madgraph_shyftana_38xOn35x_v10_btagReweighted'],
+    ['crab_WJets-madgraph_shyftana_38xOn35x_v10_btagReweighted_anashyft.cfg',                 'WJets-madgraph_shyftana_38xOn35x_v10_btagReweighted'],
+    ['crab_ZJets-madgraph_shyftana_38xOn35x_v10_btagReweighted_anashyft.cfg',                 'ZJets-madgraph_shyftana_38xOn35x_v10_btagReweighted'],
+    ['crab_VqqJets-madgraph_shyftana_38xOn35x_v10_btagReweighted_anashyft.cfg',               'VqqJets-madgraph_shyftana_38xOn35x_v10_btagReweighted']
     ]
 
 

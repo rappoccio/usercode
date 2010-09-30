@@ -131,7 +131,7 @@ if useData == False and options.use38x == False :
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                            vertexCollection = cms.InputTag('offlinePrimaryVertices'),
                                            minimumNDOF = cms.uint32(4) ,
-                                           maxAbsZ = cms.double(15), 
+                                           maxAbsZ = cms.double(24.0), 
                                            maxd0 = cms.double(2) 
                                            )
 

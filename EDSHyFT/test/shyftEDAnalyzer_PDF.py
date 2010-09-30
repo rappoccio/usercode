@@ -87,39 +87,25 @@ process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
                                       )
 
 
-process.caloShyftAnaUP = process.caloShyftAna.clone(
-    shyftAnalysis = process.caloShyftAna.shyftAnalysis.clone(
-        reweightPDF = cms.bool(True),
-        pdfToUse = cms.string('cteq66.LHgrid'),
-        pdfVariation =cms.int32( 1 ),
-        identifier=cms.string('CALOUP')
-        )
-    )
 
-
-process.caloShyftAnaNOMINAL = process.caloShyftAna.clone(
-    shyftAnalysis = process.caloShyftAna.shyftAnalysis.clone(
-        reweightPDF = cms.bool(True),
-        pdfToUse = cms.string('cteq66.LHgrid'),
-        pdfVariation =cms.int32( 0 ),
-        identifier=cms.string('CALONOMINAL')
-        )
-    )
-
-process.caloShyftAnaDOWN = process.caloShyftAna.clone(
-    shyftAnalysis = process.caloShyftAna.shyftAnalysis.clone(
-        reweightPDF = cms.bool(True),
-        pdfToUse = cms.string('cteq66.LHgrid'),
-        pdfVariation =cms.int32( -1 ),
-        identifier=cms.string('CALODOWN')
-        )
-    )
 
 process.p = cms.Path(
-    process.caloShyftAna*
-    process.caloShyftAnaUP*
-    process.caloShyftAnaNOMINAL*
-    process.caloShyftAnaDOWN
+    process.caloShyftAna
     )
+
+for ipdf in range(0, 3) :
+
+    setattr( process, 'caloShyftAnaPDF' + str(ipdf),  process.caloShyftAna.clone(
+        shyftAnalysis = process.caloShyftAna.shyftAnalysis.clone(
+            reweightPDF = cms.bool(True),
+            pdfToUse = cms.string('cteq66.LHgrid'),
+            pdfEigenToUse = cms.int32( ipdf ),
+            identifier=cms.string('CALO_PDF_' + str(ipdf))
+            )
+        )
+             )
+    process.p *= cms.Sequence( getattr( process, 'caloShyftAnaPDF' + str(ipdf) ) )
+
+
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
