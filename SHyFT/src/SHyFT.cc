@@ -80,9 +80,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     histograms["ePt"]       = theDir.make<TH1F>("ePt",       "Electron p_{T} (GeV/c) ", 100,    0, 200);
     histograms["eEta"]      = theDir.make<TH1F>("eEta",      "Electron eta",             50, -3.0, 3.0);
     histograms["ePhi"]      = theDir.make<TH1F>("ePhi",      "Electron Phi",             50, -3.2, 3.2);
-    //  histograms["eNhits"]    = theDir.make<TH1F>("eNhits",    "Electron N Hits",          35,    0,  35);
     histograms["eD0"]       = theDir.make<TH1F>("eD0",       "Electron D0",              60, -0.2, 0.2);
-    histograms["eChi2"]     = theDir.make<TH1F>("eChi2",     "Electron Chi2",            20,    0,   5);
     histograms["eTrackIso"] = theDir.make<TH1F>("eTrackIso", "Electron Track Iso",       30,    0,  30);
     histograms["eECalIso"]  = theDir.make<TH1F>("eECalIso",  "Electron ECal Iso",        30,    0,  30);
     histograms["eHCalIso"]  = theDir.make<TH1F>("eHCalIso",  "Electron HCal Iso",        30,    0,  30);
@@ -263,15 +261,20 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
 // fill the plots for the electrons
 bool SHyFT::analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons)
 {
+  
   if ( electrons.size() == 0 )  return false;
-  const pat::Electron * electron_ = dynamic_cast<const pat::Electron*>(&electrons[0]);
+   
+  const pat::Electron * electron_ = dynamic_cast<const pat::Electron*>(electrons[0].masterClonePtr().get());
+  
+  if ( electron_ == NULL ) return false; 
+
   double ePt_      = electron_ ->pt();
   double eEta_     = electron_ ->eta();
   double ePhi_     = electron_ ->phi();
   double eD0_      = electron_ ->dB();
-  double trackIso_ = electron_ ->trackIso();
-  double eCalIso_  = electron_ ->ecalIso();
-  double hCalIso_  = electron_ ->hcalIso();
+  double trackIso_ = electron_ ->dr03TkSumPt();
+  double eCalIso_  = electron_ ->dr03EcalRecHitSumEt();
+  double hCalIso_  = electron_ ->dr03HcalTowerSumEt();
   double relIso_   = ( trackIso_ + eCalIso_ + hCalIso_ )/ePt_ ;
 
   histograms["ePt"      ]->Fill( ePt_        , globalWeight_);
@@ -282,9 +285,11 @@ bool SHyFT::analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>&
   histograms["eECalIso" ]->Fill( eCalIso_    , globalWeight_);
   histograms["eHCalIso" ]->Fill( hCalIso_    , globalWeight_);
   histograms["eRelIso"  ]->Fill( relIso_     , globalWeight_);
-  
   return true;
 }
+
+
+
 
 // fill the plots for the muons
 bool SHyFT::analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons)
@@ -339,6 +344,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   allNumJets_ = (int) jets.size();
  
   // std::cout << "Filling global weight in make_templates : " << globalWeight_ << std::endl;
+
   reco::Candidate::LorentzVector nu_p4 = met.p4();
   reco::Candidate::LorentzVector lep_p4 = ( muPlusJets_  ? muons[0].p4() : electrons[0].p4() );
   double wMT = (lep_p4 + nu_p4).mt();
@@ -408,10 +414,12 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       }
     }
     histograms["m3"]->Fill( M3, globalWeight_ );
+    //std::cout <<"m3 = " << M3 << ",highest pt = " << highestPt <<  std::endl;
   }
 
 
   bool foundWeird = false;
+
   // --------------
   // Loop over the jets. Find the flavor of the *highest pt jet* that passes
   // the discriminator cuts. 
@@ -435,7 +443,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       int jetFlavor = std::abs( jet->partonFlavour() );
       double jetPt  = std::abs( jet->pt() );
       hT += jet->et();
-      
+      //std::cout << "jetFlavor =" << jetFlavor << ", jetPt =" <<  jetPt << ", hT = " << hT << std::endl;
       histograms2d["massVsPt"]->Fill( jetPt, jet->mass(), globalWeight_ );
 
       //Here we determine what kind of flavor we have in this jet	
@@ -459,11 +467,12 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       // Get the secondary vertex tag info
       reco::SecondaryVertexTagInfo const * svTagInfos
         = jet->tagInfoSecondaryVertex("secondaryVertex");
+
       if ( svTagInfos == 0 ) { 
 	continue;
       }
+
       histograms["nVertices"]-> Fill( svTagInfos->nVertices(), globalWeight_ );
-      
       // Check to make sure we have a vertex
       
       if ( svTagInfos->nVertices() <= 0 ) {
@@ -474,7 +483,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       // tag info and a vertex in it
       histograms["discriminator"]-> Fill ( jet->bDiscriminator(btaggerString_), globalWeight_ );
 
-      // std::cout << "Jet " << jetIter - jetBegin << ", pt = " << jet->pt() << std::endl;
+      std::cout << "Jet " << jetIter - jetBegin << ", pt = " << jet->pt() << std::endl;
       // typedef std::pair<std::string,float> sfpair;
       // typedef std::vector<sfpair> sfpair_coll;
       // sfpair_coll const & discs = jet->getPairDiscri();
@@ -536,6 +545,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
         }
         firstTag = false;
       }// end if first tag
+      std::cout <<"ending the loop over jets -------> " << std::endl;
     }// end loop over jets
 
   if(numBottom>2) numBottom=2;
@@ -545,7 +555,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
   numTags = std::min( allNumTags_, 2 );
   numJets = std::min( allNumJets_, 5 );
-
 
   histograms["nTags"]->Fill(numTags, globalWeight_);
 
@@ -559,8 +568,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   // The 1-tag and >=2-tag histogram is the secondary vertex mass
   // of the highest pt tagged jet.
 
-  histograms[sampleNameInput + Form("_muPt_%dj",   numJets)]->Fill( muons[0].pt(),        globalWeight_ );
-  histograms[sampleNameInput + Form("_muEta_%dj",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
+  histograms[sampleNameInput + Form("_muPt_%dj",   numJets)]->Fill( muPlusJets_ ? muons[0].pt():electrons[0].pt(), globalWeight_ );
+  histograms[sampleNameInput + Form("_muEta_%dj",  numJets)]->Fill( muPlusJets_ ? fabs(muons[0].eta()):fabs(electrons[0].eta()), globalWeight_ );
   histograms[sampleNameInput + Form("_hT_%dj",     numJets)]->Fill( hT,                   globalWeight_ );
   histograms[sampleNameInput + Form("_hT_Lep_%dj", numJets)]->Fill( hT_lep,               globalWeight_ );
   histograms[sampleNameInput + Form("_wMT_%dj",    numJets)]->Fill( wMT,                  globalWeight_ );
@@ -569,6 +578,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   histograms2d[sampleNameInput + Form("_muisoVsHt_%dj", numJets)]->Fill( hT, relIso, globalWeight_ );
   histograms2d[sampleNameInput + Form("_muisoVsMET_%dj", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
   histograms2d[sampleNameInput + Form("_muisoVswMT_%dj", numJets)]->Fill( wMT, relIso, globalWeight_ );
+
 
   if ( numJets > 0 ) {    
     if( numTags > 0 ) {
@@ -606,8 +616,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   } // end if numJets > 0 
   // This is the 0-jet bin
   if(numJets==0) {
-    histograms[sampleNameInput + Form("_muPt_0j_0t")  ]->Fill( muons[0].pt(),        globalWeight_ );
-    histograms[sampleNameInput + Form("_muEta_0j_0t") ]->Fill( fabs(muons[0].eta()), globalWeight_ );
+    histograms[sampleNameInput + Form("_muPt_0j_0t")  ]->Fill( muPlusJets_ ? muons[0].pt():electrons[0].pt(), globalWeight_ );
+    histograms[sampleNameInput + Form("_muEta_0j_0t") ]->Fill( muPlusJets_ ? fabs(muons[0].eta()):fabs(electrons[0].eta()), globalWeight_ );
     histograms[sampleNameInput + Form("_hT_0j_0t")    ]->Fill( hT ,                  globalWeight_ );
     histograms[sampleNameInput + Form("_hT_Lep_0j_0t")]->Fill( hT_lep ,              globalWeight_ );
     histograms[sampleNameInput + Form("_wMT_0j_0t")   ]->Fill( wMT ,                 globalWeight_ );
@@ -688,9 +698,12 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   
       make_templates(jets, met, muons, electrons);
       analyze_met( met );
+      
       if ( muPlusJets_ ) analyze_muons(muons);
+
       if ( ePlusJets_ ) analyze_electrons(electrons);          
 
+      
       if ( !doMC_) {
         summary_.push_back( SHyFTSummary(iEvent.id().run(),
                                          iEvent.id().luminosityBlock(),
@@ -702,7 +715,6 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     }
 }
   
-
 
 bool SHyFT::calcSampleName (const edm::EventBase& iEvent, std::string &sampleName)
 {
