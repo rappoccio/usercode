@@ -646,7 +646,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   pat::strbitset ret = wPlusJets.getBitTemplate();
   
   bool passed = wPlusJets(iEvent, ret);
-  std::vector<reco::ShallowClonePtrCandidate> const & electrons = wPlusJets.selectedElectrons();
+  std::vector<reco::ShallowClonePtrCandidate> const & electrons = wPlusJets.seidElectrons();
   std::vector<reco::ShallowClonePtrCandidate> const & muons     = wPlusJets.selectedMuons();
   std::vector<reco::ShallowClonePtrCandidate> const & jets      = wPlusJets.cleanedJets();
   reco::ShallowClonePtrCandidate const & met = wPlusJets.selectedMET();
