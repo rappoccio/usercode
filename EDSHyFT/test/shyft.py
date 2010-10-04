@@ -29,11 +29,11 @@ options.register ('use38x',
                   "Run on samples produced with >= 38x")
 
 
-options.register ('useWJetsFilter',
+options.register ('useLooseLeptonPresel',
                   0,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
-                  "Select events with the W+jets selector")
+                  "Select events with a very loose W+jets selector, consisting of a simple lepton count")
 
 
 options.register ('useTrigger',
@@ -59,7 +59,7 @@ useData = options.useData
 # Set to true to run on < 36x samples
 use35x = options.use35x
 # run the W+Jets selector filter
-useWJetsFilter = options.useWJetsFilter
+useLooseLeptonPresel = options.useLooseLeptonPresel
 # check the trigger
 useTrigger = options.useTrigger
 
@@ -135,25 +135,28 @@ process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                            maxd0 = cms.double(2) 
                                            )
 
+# JPT
+process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+process.load('RecoJets.Configuration.RecoJPTJets_cff')
+
+
 from PhysicsTools.PatAlgos.tools.pfTools import *
 postfix = "PFlow"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC= not useData, postfix=postfix) 
+
+postfixLoose = "PFlowLoose"
+usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC= not useData, postfix=postfixLoose)
+
 
 
 # turn to false when running on data
 if useData :
     getattr(process, "patElectrons"+postfix).embedGenMatch = False
     getattr(process, "patMuons"+postfix).embedGenMatch = False
+    getattr(process, "patElectrons"+postfixLoose).embedGenMatch = False
+    getattr(process, "patMuons"+postfixLoose).embedGenMatch = False
     removeMCMatching(process, ['All'])
 
-
-# tcMET
-from PhysicsTools.PatAlgos.tools.metTools import *
-addTcMET(process, 'TC')
-
-# JPT
-process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
-process.load('RecoJets.Configuration.RecoJPTJets_cff')
 
 addJetCollection(process,cms.InputTag('JetPlusTrackZSPCorJetAntiKt5'),
                  'AK5', 'JPT',
@@ -168,44 +171,94 @@ addJetCollection(process,cms.InputTag('JetPlusTrackZSPCorJetAntiKt5'),
                  jetIdLabel   = "ak5"
                  )
 
+# PF from RECO and not using PF2PAT
+addJetCollection(process,cms.InputTag('ak5PFJets'),
+                 'AK5', 'PF',
+                 doJTA        = True,
+                 doBTagging   = True,
+                 jetCorrLabel = ('AK5','PF'),
+                 doType1MET   = False,
+                 doL1Cleaning = False,
+                 doL1Counters = False,                 
+                 genJetCollection = cms.InputTag("ak5GenJets"),
+                 doJetID      = True,
+                 jetIdLabel   = "ak5"
+                 )
+
+# tcMET
+from PhysicsTools.PatAlgos.tools.metTools import *
+addTcMET(process, 'TC')
+addPfMET(process, 'PF')
+
+
+
+
 
 # Selection
 process.selectedPatJetsPFlow.cut = cms.string('pt > 15 & abs(eta) < 2.4')
+process.selectedPatJetsPFlowLoose.cut = cms.string('pt > 15 & abs(eta) < 2.4')
 process.selectedPatJetsAK5JPT.cut = cms.string('pt > 15 & abs(eta) < 2.4')
+process.selectedPatJetsAK5PF.cut = cms.string('pt > 15 & abs(eta) < 2.4')
 process.selectedPatJets.cut = cms.string('pt > 20 & abs(eta) < 2.4')
 process.patJets.tagInfoSources = cms.VInputTag(
     cms.InputTag("secondaryVertexTagInfos")
     )
 process.patJetsPFlow.tagInfoSources = cms.VInputTag(
-    cms.InputTag("secondaryVertexTagInfosAOD")
+    cms.InputTag("secondaryVertexTagInfosAOD" + postfix)
+    )
+process.patJetsPFlowLoose.tagInfoSources = cms.VInputTag(
+    cms.InputTag("secondaryVertexTagInfosAOD" + postfixLoose)
     )
 process.patJetsAK5JPT.tagInfoSources = cms.VInputTag(
     cms.InputTag("secondaryVertexTagInfosAK5JPT")
     )
+process.patJetsAK5PF.tagInfoSources = cms.VInputTag(
+    cms.InputTag("secondaryVertexTagInfosAK5PF")
+    )
 
-if len(options.muonIdIgnoredCuts) > 0 :
-    print '------ SWITCHING PF Muons to use non-PF-isolated muons, we are ignoring cuts ----------'
-    process.patMuonsPFlow.pfMuonSource = 'pfAllMuonsPFlow'
-    process.patMuonsPFlow.isoDeposits = cms.PSet()
-    process.patMuonsPFlow.isolationValues = cms.PSet()
-    print 'For PAT PF Muons: '
-    print process.patMuonsPFlow.pfMuonSource
+
+process.patMuonsPFlowLoose.pfMuonSource = 'pfAllMuonsPFlowLoose'
+process.patMuonsPFlowLoose.isoDeposits = cms.PSet()
+process.patMuonsPFlowLoose.isolationValues = cms.PSet()
+
+
+
+print 'For PAT PF Muons: '
+print process.patMuonsPFlowLoose.pfMuonSource
 
 process.selectedPatMuons.cut = cms.string("pt > 3")
 process.selectedPatMuonsPFlow.cut = cms.string("pt > 3")
+process.selectedPatMuonsPFlowLoose.cut = cms.string("pt > 3")
 process.patMuons.usePV = False
 process.patMuonsPFlow.usePV = False
+process.patMuonsPFlowLoose.usePV = False
 process.selectedPatElectrons.cut = cms.string("pt > 3")
 process.selectedPatElectronsPFlow.cut = cms.string("pt > 3")
+process.selectedPatElectronsPFlowLoose.cut = cms.string("pt > 3")
 process.patElectrons.usePV = False
 process.patElectronsPFlow.usePV = False
+process.patElectronsPFlowLoose.usePV = False
 
-#process.patJets.userData.userFunctions = cms.vstring( "? tagInfoSecondaryVertex('secondaryVertex') != void ? "
-#                                                      "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
-#process.patJets.userData.userFunctionLabels = cms.vstring('secvtxMass')
+process.patJets.userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
+                                                      "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
+process.patJets.userData.userFunctionLabels = cms.vstring('secvtxMass')
+
+
+process.patJetsPFlow.userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
+                                                      "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
+process.patJetsPFlow.userData.userFunctionLabels = cms.vstring('secvtxMass')
+
+
+process.patJetsPFlowLoose.userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
+                                                      "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
+process.patJetsPFlowLoose.userData.userFunctionLabels = cms.vstring('secvtxMass')
+
 
 # remove trigger matching for PF2PAT as that is currently broken
 process.patPF2PATSequencePFlow.remove(process.patTriggerSequencePFlow)
+process.patPF2PATSequencePFlowLoose.remove(process.patTriggerSequencePFlowLoose)
+process.patPF2PATSequencePFlow.remove(process.patTriggerEventPFlow)
+process.patPF2PATSequencePFlowLoose.remove(process.patTriggerEventPFlowLoose)
 process.patTaus.isoDeposits = cms.PSet()
 
 #-- Tuning of Monte Carlo matching --------------------------------------------
@@ -282,7 +335,6 @@ process.source.fileNames = readFiles
 #print "primary vertex filter:       DISABLED"
 
 process.patseq = cms.Sequence(
-#    process.makeGenEvt *
     process.step1*
     process.scrapingVeto*
     process.primaryVertexFilter*
@@ -290,13 +342,12 @@ process.patseq = cms.Sequence(
     process.recoJPTJets*
     process.patDefaultSequence* 
     getattr(process,"patPF2PATSequence"+postfix)*
+    getattr(process,"patPF2PATSequence"+postfixLoose)*    
     process.flavorHistorySeq *
     process.prunedGenParticles
-    #    process.kludgedJPTJets
 )
 
 if useData :
-#    process.patseq.remove( process.makeGenEvt )
     process.patseq.remove( process.flavorHistorySeq )
     process.patseq.remove( process.prunedGenParticles )
 else :
@@ -304,98 +355,36 @@ else :
     process.patseq.remove( process.primaryVertexFilter )
     process.patseq.remove( process.HBHENoiseFilter )    
 
-from PhysicsTools.SelectorUtils.wplusjetsAnalysis_cfi import wplusjetsAnalysis as inputwplusjetsAnalysis
 
-process.shyftMuCalo = cms.EDFilter( 'EDWPlusJets',
-                                    inputwplusjetsAnalysis.clone(
-                                        jetPtMin = cms.double(25.0),
-                                        muJetDR = cms.double(0.),
-                                        cutsToIgnore = cms.vstring( ['MET Cut'        ,
-                                                                     'Z Veto'         ,
-                                                                     'Conversion Veto',
-                                                                     'Cosmic Veto'    ,
-                                                                     '>=1 Jets'       ,
-                                                                     '>=2 Jets'       ,
-                                                                     '>=3 Jets'       ,
-                                                                     '>=4 Jets'       ,
-                                                                     '>=5 Jets'                                                                     
-                                                                     ] ),
-                                        muonIdTight = inputwplusjetsAnalysis.muonIdTight.clone(
-                                            cutsToIgnore=cms.vstring(options.muonIdIgnoredCuts)
-                                            )
-                                        )
-                                    )
+process.isolatedPatMuons = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("selectedPatMuons"),
+    cut = cms.string("(trackIso+caloIso)/pt < 0.1"),
+    filter=cms.bool(True)                                       
+)
 
-process.shyftMuJPT = process.shyftMuCalo.clone(
-    jetSrc = cms.InputTag('selectedPatJetsAK5JPT'),
-    metSrc = cms.InputTag('patMETsTC'),
-    jetPtMin = cms.double(25.0),
-    muJetDR = cms.double(0.),
-    cutsToIgnore = cms.vstring( ['MET Cut'        ,
-                                 'Z Veto'         ,
-                                 'Conversion Veto',
-                                 'Cosmic Veto'    ,
-                                 '>=1 Jets'       ,
-                                 '>=2 Jets'       ,
-                                 '>=3 Jets'       ,
-                                 '>=4 Jets'       ,
-                                 '>=5 Jets'                                                                     
-                                 ] ),
-    muonIdTight = inputwplusjetsAnalysis.muonIdTight.clone(
-        cutsToIgnore=cms.vstring(options.muonIdIgnoredCuts)
-        )
-    )
-
-process.shyftMuPF = process.shyftMuCalo.clone(
-    muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
-    electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
-    jetSrc = cms.InputTag('selectedPatJetsPFlow'),
-    metSrc = cms.InputTag('patMETsPFlow'),
-    trigSrc = cms.InputTag('patTriggerEvent'),
-    muJetDR = cms.double(0.),
-    jetPtMin = cms.double(20.0),
-    cutsToIgnore = cms.vstring( ['MET Cut'        ,
-                                 'Z Veto'         ,
-                                 'Conversion Veto',
-                                 'Cosmic Veto'    ,
-                                 '>=1 Jets'       ,
-                                 '>=2 Jets'       ,
-                                 '>=3 Jets'       ,
-                                 '>=4 Jets'       ,
-                                 '>=5 Jets'                                                                     
-                                 ] ),
-    muonIdTight = inputwplusjetsAnalysis.muonIdTight.clone(
-        cutsToIgnore=cms.vstring(options.muonIdIgnoredCuts)
-        )
-    )
-
-
-
-process.shyftSeqCalo = cms.Sequence( process.shyftMuCalo )
-process.shyftSeqPF = cms.Sequence( process.shyftMuPF )
-process.shyftSeqJPT = cms.Sequence( process.shyftMuJPT )
+process.isolatedPatMuonsPFlow = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("selectedPatMuonsPFlow"),
+    cut = cms.string(""),
+    filter=cms.bool(True)
+)
 
 process.p1 = cms.Path(
     process.patseq
     )
 
-if not useWJetsFilter :
+if not useLooseLeptonPresel :
     process.out.SelectEvents.SelectEvents = cms.vstring('p1')
 else : 
     process.p2 = cms.Path(
         process.patseq *
-        process.shyftSeqCalo
+        process.isolatedPatMuons
         )
-
     process.p3 = cms.Path(
         process.patseq *
-        process.shyftSeqPF
-        )
-    process.p4 = cms.Path(
-        process.patseq *
-        process.shyftSeqJPT
-        )
-    process.out.SelectEvents.SelectEvents = cms.vstring('p2', 'p3', 'p4')    
+        process.isolatedPatMuonsPFlow
+        )    
+
+    process.out.SelectEvents.SelectEvents = cms.vstring('p2', 'p3')    
 
 
 # rename output file
@@ -408,7 +397,7 @@ else :
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
 # process all the events
-process.maxEvents.input = 50000
+process.maxEvents.input = 1000
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 
@@ -445,8 +434,7 @@ process.out.outputCommands = [
     'keep *_patMETsTriggerMatch_*_*',
     'drop *_MEtoEDMConverter_*_*',
     'keep *_*goodCaloJets_*_*',
-    'keep *_*goodPFJets_*_*',
-    'keep *_kludgedJPTJets_*_*'
+    'keep *_*goodPFJets_*_*'
     ]
 
 if useData :

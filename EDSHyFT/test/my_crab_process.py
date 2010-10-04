@@ -6,17 +6,15 @@ import sys
 command = sys.argv[1]
 
 dirs = [
-'InclusiveMu15_shyft_38xOn35x_v2',
-'SingleTop_sChannel-madgraph_shyft_38xOn35x_v2',
-'SingleTop_tChannel-madgraph_shyft_38xOn35x_v2',
-'SingleTop_tWChannel-madgraph_shyft_38xOn35x_v2',
-'TTbarJets-madgraph_shyft_38xOn35x_v2',
-'VqqJets-madgraph_shyft_38xOn35x_v2',
-'WJets-madgraph_shyft_38xOn35x_v2',
-'ZJets-madgraph_shyft_38xOn35x_v2',
-'shyft_38xOn35x_v2_r1',
-'shyft_38xOn35x_v2_r2',
-'shyft_38xOn35x_v2_r3'
+'InclusiveMu15_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'SingleTop_sChannel-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'SingleTop_tChannel-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'TTbarJets-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'WJets-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'ZJets-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'VqqJets-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+
 ]
 
 for idir in dirs :

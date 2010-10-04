@@ -33,20 +33,20 @@ options.register('sampleNameInput',
                  "Sample name to give histograms")
 
 options.register('caloMetMin',
-                 0.,
+                 30.,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.float,
                   "Min MET for calo met")
 
 options.register('jptMetMin',
-                 0.,
+                 20.,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.float,
                   "Min MET for jpt met")
 
 
 options.register('pfMetMin',
-                 0.,
+                 20.,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.float,
                   "Min MET for pf met")
@@ -202,4 +202,4 @@ process.p = cms.Path(
     )
 
 
-process.MessageLogger.cerr.FwkReport.reportEvery = 10000
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
