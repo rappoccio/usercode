@@ -90,7 +90,7 @@ if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
 #                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/InclusiveMu15/shyft_38xOn35x_v1/91f2fc34c53b68691c104fb43fa3e9f4/shyft_382_mc_1_1_rw3.root'
-                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_1_1_BHn.root'
                                     )
                                 )
 else :
@@ -120,6 +120,22 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
                                         metSrc = cms.InputTag('patMETsPFlow'),
                                         jetSrc = cms.InputTag('selectedPatJetsPFlow'),
+                                        jetPtMin = cms.double(25.0),
+                                        minJets = cms.int32(5),
+                                        metMin = cms.double(options.pfMetMin),
+                                        heavyFlavour = cms.bool( useFlavorHistory ),
+                                        doMC = cms.bool( inputDoMC),
+                                        sampleName = cms.string(inputSampleName),
+                                        identifier = cms.string('PF')
+                                        )                                    
+                                    )
+
+process.pfRecoShyftAna = cms.EDAnalyzer('EDSHyFT',
+                                    shyftAnalysis = inputShyftAnalysis.clone(
+                                        muonSrc = cms.InputTag('selectedPatMuons'),
+                                        electronSrc = cms.InputTag('selectedPatElectrons'),
+                                        metSrc = cms.InputTag('patMETsPF'),
+                                        jetSrc = cms.InputTag('selectedPatJetsAK5PF'),
                                         jetPtMin = cms.double(25.0),
                                         minJets = cms.int32(5),
                                         metMin = cms.double(options.pfMetMin),
@@ -164,7 +180,7 @@ process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
                                       )
 
 process.p = cms.Path(
-    process.pfShyftAna*process.jptShyftAna*process.caloShyftAna
+    process.pfShyftAna*process.pfRecoShyftAna*process.jptShyftAna*process.caloShyftAna
     )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

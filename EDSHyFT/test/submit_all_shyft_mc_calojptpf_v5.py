@@ -15,7 +15,7 @@ datasets = [
 ]
 
 datasetsServer = [
-    ['/VqqJets-madgraph/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO', 25]
+#    ['/VqqJets-madgraph/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO', 25]
 #    ['/WCJets_7TeV-madgraph/Spring10-START3X_V26-v1/GEN-SIM-RECO', 25]
     ]
 

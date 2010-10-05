@@ -8,26 +8,28 @@ import tokenize
 from event_flow_crab import event_flow_crab
 
 tokens = ['step1',
-          'scrapingVeto',
-          'primaryVertexFilter',
-          'HBHENoiseFilter',
-          'shyftMuCalo',          
-          'shyftMuPF',
-          'shyftMuJPT'
+          'isolatedPatMuons',
+          'isolatedPatMuonsPFlow'
+#          'scrapingVeto',
+#          'primaryVertexFilter',
+#          'HBHENoiseFilter',
+#          'shyftMuCalo',          
+#          'shyftMuPF',
+#          'shyftMuJPT'
           ]
 
 dirs = [
-#'InclusiveMu15_shyft_38xOn35x_v2',
-#'SingleTop_sChannel-madgraph_shyft_38xOn35x_v2',
-'SingleTop_tChannel-madgraph_shyft_38xOn35x_v2',
-#'SingleTop_tWChannel-madgraph_shyft_38xOn35x_v2',
-#'TTbarJets-madgraph_shyft_38xOn35x_v2',
-#'VqqJets-madgraph_shyft_38xOn35x_v2',
-#'WJets-madgraph_shyft_38xOn35x_v2',
-#'ZJets-madgraph_shyft_38xOn35x_v2',
-#'shyft_38xOn35x_v2_r1',
-#'shyft_38xOn35x_v2_r2',
-#'shyft_38xOn35x_v2_r3'
+#'InclusiveMu15_shyft_38xOn35x_v5',
+#'SingleTop_sChannel-madgraph_shyft_38xOn35x_v5',
+#'SingleTop_tChannel-madgraph_shyft_38xOn35x_v5',
+#'SingleTop_tWChannel-madgraph_shyft_38xOn35x_v5',
+#'TTbarJets-madgraph_shyft_38xOn35x_v5',
+#'VqqJets-madgraph_shyft_38xOn35x_v5',
+'WJets-madgraph_shyft_38xOn35x_v5',
+#'ZJets-madgraph_shyft_38xOn35x_v5',
+#'shyft_38xOn35x_v5_r1',
+#'shyft_38xOn35x_v5_r2',
+#'shyft_38xOn35x_v5_r3'
 ]
 
 for idir in dirs :
