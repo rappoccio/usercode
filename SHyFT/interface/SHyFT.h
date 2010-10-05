@@ -89,7 +89,7 @@ class SHyFT {
     bool analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons);
     bool analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons);    
     bool analyze_met( const reco::ShallowClonePtrCandidate & met );
-    bool calcSampleName (const edm::EventBase& iEvent, std::string &sampleName);
+    std::string calcSampleName (const edm::EventBase& iEvent);
     void weightPDF( edm::EventBase const & iEvent );
 
     bool make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
@@ -113,7 +113,7 @@ class SHyFT {
     std::string sampleNameInput;
     // used to be a global, what a shit!
     int HFcat_;
-    std::string secvtxname;
+    std::string sampleHistName_;
     bool doMC_;
     std::string identifier_;
 
