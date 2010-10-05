@@ -9,7 +9,10 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
+#include "Analysis/BoostedTopAnalysis/interface/WPlusBJetTypes.h"
 
+#include "TFile.h"
+#include "TH1F.h"
 
 using namespace std;
 
@@ -29,6 +32,9 @@ class WPlusBJetEventSelector : public EventSelector {
     bool hasWJets ()  const { return wJets_.size() > 0 ; }
     bool hasBJets ()  const { return bJets_.size() > 0 ; }
     bool aJetFound () const { return aJetFound_ ; }
+    std::vector<Type2L>     const & looseTops () const { return looseTops_; }
+    std::vector<Type2T>     const & tightTops () const { return tightTops_; }
+    std::vector<Type3>      const & type3Tops () const { return type3Tops_; }
 
   private:
 
@@ -47,9 +53,21 @@ class WPlusBJetEventSelector : public EventSelector {
     double  jetEtaMax_;
     string  bTagAlgo_;
     double  bTagOP_;
+    reco::Candidate::LorentzVector vtowards;  //towards direction
 
     std::vector<edm::Ptr<pat::Jet> >           pfJets_;
+    std::vector<edm::Ptr<pat::Jet> >           allJets_;
 
+    std::vector<Type2L>             looseTops_;
+    std::vector<Type2T>             tightTops_;
+    std::vector<Type3>              type3Tops_;
+    void      fillLooseTops();
+    void      fillTightTops();
+    void      fillType3Tops();
+    string    mistagFileName_;
+    TFile *   mistagFile_;
+    TH1F  *   wMistag_;
+    TH1F  *   bMistag_;
 };
 
 #endif

@@ -34,6 +34,14 @@ class WPlusBJetType22Selection : public EventSelector {
     reco::Candidate::LorentzVector  const & p4_top0() const { return p4_top0_; }
     reco::Candidate::LorentzVector  const & p4_top1() const { return p4_top1_; }
 
+    std::vector<Type2L>     const & looseTops0 () const { return twPlusBJetSelection_.looseTops(); }
+    std::vector<Type2T>     const & tightTops0 () const { return twPlusBJetSelection_.tightTops(); }
+    std::vector<Type3>      const & type3Tops0 () const { return twPlusBJetSelection_.type3Tops(); }
+    std::vector<Type2L>     const & looseTops1 () const { return owPlusBJetSelection_.looseTops(); }
+    std::vector<Type2T>     const & tightTops1 () const { return owPlusBJetSelection_.tightTops(); }
+    std::vector<Type3>      const & type3Tops1 () const { return owPlusBJetSelection_.type3Tops(); }
+
+
   private :
     edm::InputTag               jetTag_;
     edm::InputTag               trigSrc_;

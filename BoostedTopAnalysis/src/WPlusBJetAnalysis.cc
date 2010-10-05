@@ -67,6 +67,11 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   histograms1d["ttMassType23"]    = theDir.make<TH1F>("ttMassType23",   "t#bar{t} Inv Mass Type23",   200,  0,  2000 );
   histograms1d["ttMassType33"]    = theDir.make<TH1F>("ttMassType33",   "t#bar{t} Inv Mass Type33",   200,  0,  2000 );
 
+  histograms1d["ttMassType22_pred"]    = theDir.make<TH1F>("ttMassType22_pred",   "t#bar{t} Inv Mass Type22",   200,  0,  2000 );
+  histograms1d["ttMassType23_pred"]    = theDir.make<TH1F>("ttMassType23_pred",   "t#bar{t} Inv Mass Type23",   200,  0,  2000 );
+  histograms1d["ttMassType33_pred"]    = theDir.make<TH1F>("ttMassType33_pred",   "t#bar{t} Inv Mass Type33",   200,  0,  2000 );
+
+
   histograms2d["jetMassVsPt"]     = theDir.make<TH2F>("jetMassVsPt",    "Jet Mass Vs Pt; Jet Pt (GeV/c^{2}); Jet Mass (GeV/c^{2})",    200,  0,    1000,   100,    0,    500 );
 
 }
@@ -238,4 +243,87 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
     }  // hasMinPair1
   }  // end if !>= 1 WJet
 
+  std::vector<Type2L>     const & looseTops0  = wPlusBJetType22Selection_.looseTops0();
+  std::vector<Type2T>     const & tightTops0  = wPlusBJetType22Selection_.tightTops0();
+  std::vector<Type3>      const & type3Tops0  = wPlusBJetType22Selection_.type3Tops0();  
+  std::vector<Type2L>     const & looseTops1  = wPlusBJetType22Selection_.looseTops1();
+  std::vector<Type2T>     const & tightTops1  = wPlusBJetType22Selection_.tightTops1();
+  std::vector<Type3>      const & type3Tops1  = wPlusBJetType22Selection_.type3Tops1();
+
+  //cout<<"bein here"<<endl;
+  //for type2+type2
+  for( size_t i=0; i<tightTops0.size(); i++ ) {
+    for( size_t j=0; j<tightTops1.size(); j++ ) {
+      FourVector top0 = tightTops0.at(i).top();
+      FourVector top1 = tightTops1.at(j).top();
+      if( top0.mass() > 140 && top0.mass() < 230 && top1.mass() > 140 && top1.mass() < 230 ) {
+        double weight = tightTops0.at(i).weight * tightTops1.at(j).weight;
+        histograms1d["ttMassType22_pred"]   ->  Fill( (top0+top1).mass(), weight );
+      }
+    } // end j
+    for( size_t j=0; j<looseTops1.size(); j++ ) {
+      const FourVector top0 = tightTops0.at(i).top();
+      const FourVector top1 = looseTops1.at(j).top();
+      if( top0.mass() > 140 && top0.mass() < 230 && top1.mass() > 140 && top1.mass() < 230 ) {
+        double weight = tightTops0.at(i).weight * looseTops1.at(j).weight;
+        histograms1d["ttMassType22_pred"]   ->  Fill( (top0+top1).mass(), weight );
+      }
+    }  // end j
+  } // end i
+
+  //cout<<"Point1"<<endl;
+
+  for( size_t i=0; i<looseTops0.size(); i++ ) {
+    for( size_t j=0; j<tightTops1.size(); j++ ) {
+      const FourVector top0 = looseTops0.at(i).top();
+      const FourVector top1 = tightTops1.at(j).top();
+      if( top0.mass() > 140 && top0.mass() < 230 && top1.mass() > 140 && top1.mass() < 230 ) {
+        double weight = looseTops0.at(i).weight * tightTops1.at(j).weight;
+        histograms1d["ttMassType22_pred"]   ->  Fill( (top0+top1).mass(), weight );
+      }
+    } // end j
+  } // end i
+
+  //cout<<"Point2"<<endl;
+  // for type2+type3
+  for( size_t i=0; i<tightTops0.size(); i++ ) {
+    for( size_t j=0; j<type3Tops1.size(); j++ ) {
+      const FourVector top0 = tightTops0.at(i).top();
+      const FourVector top1 = type3Tops1.at(j).top();
+      if( top0.mass() > 140 && top0.mass() < 230 && top1.mass() > 140 && top1.mass() < 230 && 
+          type3Tops1.at(j).minMass() > 50 && type3Tops1.at(j).minMass() < 100) {
+        double weight = tightTops0.at(i).weight * type3Tops1.at(j).weight;
+        histograms1d["ttMassType23_pred"]   ->  Fill( (top0+top1).mass(), weight );
+      }
+    } // end j
+  } // end i
+
+  //cout<<"Point3"<<endl;
+  for( size_t i=0; i<type3Tops0.size(); i++ ) {
+    for( size_t j=0; j<tightTops1.size(); j++ ) {
+      const FourVector top0 = type3Tops0.at(i).top();
+      const FourVector top1 = tightTops1.at(j).top();
+      if( top0.mass() > 140 && top0.mass() < 230 && top1.mass() > 140 && top1.mass() < 230 &&
+          type3Tops0.at(i).minMass() > 50 && type3Tops0.at(i).minMass() < 100 ) {
+        double weight = type3Tops0.at(i).weight * tightTops1.at(j).weight;
+        histograms1d["ttMassType23_pred"]   ->  Fill( (top0+top1).mass(), weight );
+      }
+    } // end j
+  } // end i
+  //cout<<"Point4"<<endl;
+
+  // for type3+type3
+  for( size_t i=0; i<type3Tops0.size(); i++ ) {
+    for( size_t j=0; j<type3Tops1.size(); j++ ) {
+      const FourVector top0 = type3Tops0.at(i).top();
+      const FourVector top1 = type3Tops1.at(j).top();
+      if( top0.mass() > 140 && top0.mass() < 230 && top1.mass() > 140 && top1.mass() < 230 &&
+          type3Tops0.at(i).minMass() > 50 && type3Tops0.at(i).minMass() < 100 && 
+          type3Tops1.at(j).minMass() > 50 && type3Tops1.at(j).minMass() < 100 ) {
+        double weight = type3Tops0.at(i).weight * type3Tops1.at(j).weight;
+        histograms1d["ttMassType23_pred"]   ->  Fill( (top0+top1).mass(), weight );
+      }
+    } // end j
+  } // end i
+  //cout<<"end"<<endl;
 }
