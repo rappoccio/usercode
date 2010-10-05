@@ -521,10 +521,13 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       ++allNumTags_;
       //      ++numTags;
 
-      // Take the template info from the first tag (ordered by jet pt)
-
+      // Take the template info from the first tag (ordered by jet pt)      
       if ( firstTag ) {
-        vertexMass = svTagInfos->secondaryVertex(0).p4().mass();
+
+	if ( jet->hasUserData("secvtxMass") )
+	  vertexMass = jet->userFloat("secvtxMass");
+	else 
+	  vertexMass = svTagInfos->secondaryVertex(0).p4().mass();
         
         //Here we determine what kind of flavor we have in this jet	
         if( doMC_ ) {
