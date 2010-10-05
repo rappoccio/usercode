@@ -45,6 +45,8 @@ class WPlusBJetAnalysis{
     WPlusBJetType22Selection  wPlusBJetType22Selection_;
     WPlusBJetType23Selection  wPlusBJetType23Selection_;
     WPlusBJetType33Selection  wPlusBJetType33Selection_;
+    double wMassMin_, wMassMax_;
+    double topMassMin_, topMassMax_;
 
 };
 

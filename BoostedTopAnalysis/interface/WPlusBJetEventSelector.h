@@ -36,6 +36,9 @@ class WPlusBJetEventSelector : public EventSelector {
     std::vector<Type2T>     const & tightTops () const { return tightTops_; }
     std::vector<Type3>      const & type3Tops () const { return type3Tops_; }
 
+    //all jets in this hemisphere
+    std::vector<edm::Ptr<pat::Jet> > const & allJets() const { return allJets_ ; }
+
   private:
 
     //Not for use at all
