@@ -26,6 +26,8 @@ class WPlusBJetType22Selection : public EventSelector {
     std::vector<edm::Ptr<pat::Jet> >    const & bJet1 () const {  return owPlusBJetSelection_.bJets(); }
     std::vector<edm::Ptr<pat::Jet> >  const &  minDrPair0 () const {  return twPlusBJetSelection_.minDrPair(); }
     std::vector<edm::Ptr<pat::Jet> >  const &  minDrPair1 () const {  return owPlusBJetSelection_.minDrPair(); }
+    std::vector<edm::Ptr<pat::Jet> >  const &  allJets0()    const {  return twPlusBJetSelection_.allJets(); }
+    std::vector<edm::Ptr<pat::Jet> >  const &  allJets1()    const {  return owPlusBJetSelection_.allJets(); }
     edm::Ptr<pat::Jet>    const & aJet0 () const {  return twPlusBJetSelection_.aJet(); }
     edm::Ptr<pat::Jet>    const & aJet1 () const {  return owPlusBJetSelection_.aJet(); }
     std::vector<edm::Ptr<pat::Jet> >  const &  pfJets() const { return pfJets_ ; }

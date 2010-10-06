@@ -36,6 +36,10 @@ WPlusBJetType23Selection::WPlusBJetType23Selection ( edm::ParameterSet const & p
   set("minPairMassCut");
   set("topMassCut");
 
+  if ( params.exists("cutsToIgnore") )
+    setIgnoredCuts( params.getParameter<vector<string> >("cutsToIgnore") );
+
+
 }
 
 bool WPlusBJetType23Selection::operator()( edm::EventBase const & t, pat::strbitset & ret )

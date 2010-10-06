@@ -34,6 +34,9 @@ WPlusBJetType22Selection::WPlusBJetType22Selection ( edm::ParameterSet const & p
   set("hasTwoTops");
   set("topMassCut");
 
+  if ( params.exists("cutsToIgnore") )
+    setIgnoredCuts( params.getParameter<vector<string> >("cutsToIgnore") );
+
 }
 
 bool WPlusBJetType22Selection::operator()( edm::EventBase const & t, pat::strbitset & ret )
@@ -48,6 +51,24 @@ bool WPlusBJetType22Selection::operator()( edm::EventBase const & t, pat::strbit
   p4_top1_ = reco::Candidate::LorentzVector(0,0,0,0);
 
   passCut( ret, "Inclusive" );
+
+  //Get the trigger
+  edm::Handle<pat::TriggerEvent>  triggerEvent;
+  t.getByLabel( trigSrc_, triggerEvent);
+  if( !triggerEvent.isValid() )   return (bool)ret;
+
+  // Check the trigger requirement
+  pat::TriggerEvent const * trig = &*triggerEvent;
+
+  bool passTrig = false;
+  if( trig->wasRun() && trig->wasAccept() ) {
+    pat::TriggerPath const * jetPath = trig->path(trig_);
+    if( jetPath != 0 && jetPath->wasAccept() )  {
+      passTrig = true;
+    }
+  }
+
+  if( ignoreCut( "Trigger" ) || passTrig )   passCut( ret, "Trigger" );
 
   edm::Handle<vector<pat::Jet>  >   jetHandle;
   t.getByLabel( jetTag_, jetHandle );
@@ -85,24 +106,7 @@ bool WPlusBJetType22Selection::operator()( edm::EventBase const & t, pat::strbit
   edm::Ptr<pat::Jet> const & taJet = twPlusBJetSelection_.aJet();
   edm::Ptr<pat::Jet> const & oaJet = owPlusBJetSelection_.aJet();
 
-  //Get the trigger
-  edm::Handle<pat::TriggerEvent>  triggerEvent;
-  t.getByLabel( trigSrc_, triggerEvent);
-  if( !triggerEvent.isValid() )   return (bool)ret;
-
-  // Check the trigger requirement
-  pat::TriggerEvent const * trig = &*triggerEvent;
-
-  bool passTrig = false;
-  if( trig->wasRun() && trig->wasAccept() ) {
-    pat::TriggerPath const * jetPath = trig->path(trig_);
-    if( jetPath != 0 && jetPath->wasAccept() )  {
-      passTrig = true;
-    }
-  }
-
   if( ignoreCut( "Trigger" ) || passTrig )  {
-    passCut( ret, "Trigger" );
 
     if( ignoreCut( "Leading Jet Pt" ) || theJet->pt() > leadJetPtCut_ ) {
       passCut( ret, "Leading Jet Pt" );
