@@ -13,7 +13,10 @@ shyftAnalysis = cms.PSet(
         jetPtMin = cms.double(30.0),
         jetEtaMax = cms.double(2.4),
         jetScale=cms.double(1.0),
-        minJets = cms.int32(5)
+        minJets = cms.int32(5),
+        pvSelector = cms.PSet( wplusjetsAnalysis.pvSelector.clone(
+            maxZ=cms.double(24.0)
+            ) )
         ) ,
     sampleName = cms.string("top"),
     heavyFlavour = cms.bool(False),
