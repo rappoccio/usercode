@@ -25,12 +25,6 @@ options.register ('useFlavorHistory',
                   VarParsing.varType.int,
                   "Flavor History Mode")
 
-options.register ('doMC',
-                  0,
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "Use MC truth")
-
 options.register('sampleNameInput',
                  'top',
                  VarParsing.multiplicity.singleton,
@@ -48,14 +42,7 @@ if options.useFlavorHistory > 0 :
 else :
     useFlavorHistory = False
 
-if options.doMC > 0 :
-    inputDoMC = True
-else :
-    inputDoMC = False
-    # get JSON file correctly parced
-    JSONfile = 'Cert_132440-144114_7TeV_StreamExpress_Collisions10_JSON_v2.txt'
-    myList = LumiList.LumiList (filename = JSONfile).getCMSSWString().split(',')
-
+inputDoMC=True
 
 inputSampleName = options.sampleNameInput
 
@@ -63,8 +50,9 @@ inputSampleName = options.sampleNameInput
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
+                                    'file:shyft_382_mc.root'                                    
 #                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/InclusiveMu15/shyft_38xOn35x_v1/91f2fc34c53b68691c104fb43fa3e9f4/shyft_382_mc_1_1_rw3.root'
-                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
+#                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
                                     )
                                 )
 else :
@@ -115,7 +103,7 @@ process.pfShyftAnaReweightedUnity = process.pfShyftAna.clone(
     )
 
 
-process.pfShyftAnaReweighted = process.pfShyftAna.clone(
+process.pfShyftAnaReweightedNominal = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         identifier = cms.string('PF Reweighted'),
         simpleSFCalc = cms.bool(True),                                                       
@@ -124,12 +112,98 @@ process.pfShyftAnaReweighted = process.pfShyftAna.clone(
         )
     )
 
+process.pfShyftAnaReweightedBTag076 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF Reweighted'),
+        simpleSFCalc = cms.bool(True),                                                       
+        bcEffScale = cms.double(0.76),
+        lfEffScale = cms.double(0.87),        
+        )
+    )
+
+process.pfShyftAnaReweightedBTag082 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF Reweighted'),
+        simpleSFCalc = cms.bool(True),                                                       
+        bcEffScale = cms.double(0.82),
+        lfEffScale = cms.double(0.87),        
+        )
+    )
+
+
+process.pfShyftAnaReweightedBTag094 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF Reweighted'),
+        simpleSFCalc = cms.bool(True),                                                       
+        bcEffScale = cms.double(0.94),
+        lfEffScale = cms.double(0.87),        
+        )
+    )
+
+process.pfShyftAnaReweightedBTag100 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF Reweighted'),
+        simpleSFCalc = cms.bool(True),                                                       
+        bcEffScale = cms.double(1.00),
+        lfEffScale = cms.double(0.87),        
+        )
+    )
+
+
+
+
+
+
+process.pfShyftAnaReweightedLFTag074 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF Reweighted'),
+        simpleSFCalc = cms.bool(True),                                                       
+        lfEffScale = cms.double(0.74),
+        bcEffScale = cms.double(0.88),        
+        )
+    )
+
+process.pfShyftAnaReweightedLFTag080 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF Reweighted'),
+        simpleSFCalc = cms.bool(True),                                                       
+        lfEffScale = cms.double(0.80),
+        bcEffScale = cms.double(0.88),        
+        )
+    )
+
+
+process.pfShyftAnaReweightedLFTag094 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF Reweighted'),
+        simpleSFCalc = cms.bool(True),                                                       
+        lfEffScale = cms.double(0.94),
+        bcEffScale = cms.double(0.88),        
+        )
+    )
+
+process.pfShyftAnaReweightedLFTag100 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF Reweighted'),
+        simpleSFCalc = cms.bool(True),                                                       
+        lfEffScale = cms.double(1.00),
+        bcEffScale = cms.double(0.88),        
+        )
+    )
 
 
 process.p = cms.Path(
     process.pfShyftAna*
     process.pfShyftAnaReweightedUnity*
-    process.pfShyftAnaReweighted
+    process.pfShyftAnaReweightedNominal*
+    process.pfShyftAnaReweightedBTag076*
+    process.pfShyftAnaReweightedBTag082*
+    process.pfShyftAnaReweightedBTag094*
+    process.pfShyftAnaReweightedBTag100*
+    process.pfShyftAnaReweightedLFTag074*
+    process.pfShyftAnaReweightedLFTag080*
+    process.pfShyftAnaReweightedLFTag094*
+    process.pfShyftAnaReweightedLFTag100    
     )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
