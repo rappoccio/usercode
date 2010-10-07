@@ -57,12 +57,6 @@ options.register('pfMetMin',
                   VarParsing.varType.float,
                   "Min MET for pf met")
 
-options.register('outputRootFile',
-                 'shyftStudies.root',
-                 VarParsing.multiplicity.singleton,
-                 VarParsing.varType.string,
-                 "OUtput root file name")
-
 options.parseArguments()
 
 print options
@@ -89,10 +83,8 @@ inputSampleName = options.sampleNameInput
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    'file:shyft_382_mc.root'
-#                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/WJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_1_1_5ci.root'
 #                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/InclusiveMu15/shyft_38xOn35x_v1/91f2fc34c53b68691c104fb43fa3e9f4/shyft_382_mc_1_1_rw3.root'
-#                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_1_1_BHn.root'
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
                                     )
                                 )
 else :
@@ -112,7 +104,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string(options.outputRootFile)
+                                   fileName = cms.string("gooddata_7oct2010_v5_noiso.root")
                                    )
 
 
@@ -128,23 +120,10 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
                                         sampleName = cms.string(inputSampleName),
-                                        identifier = cms.string('PF')
-                                        )                                    
-                                    )
-
-process.pfRecoShyftAna = cms.EDAnalyzer('EDSHyFT',
-                                    shyftAnalysis = inputShyftAnalysis.clone(
-                                        muonSrc = cms.InputTag('selectedPatMuons'),
-                                        electronSrc = cms.InputTag('selectedPatElectrons'),
-                                        metSrc = cms.InputTag('patMETsPF'),
-                                        jetSrc = cms.InputTag('selectedPatJetsAK5PF'),
-                                        jetPtMin = cms.double(25.0),
-                                        minJets = cms.int32(5),
-                                        metMin = cms.double(options.pfMetMin),
-                                        heavyFlavour = cms.bool( useFlavorHistory ),
-                                        doMC = cms.bool( inputDoMC),
-                                        sampleName = cms.string(inputSampleName),
-                                        identifier = cms.string('PF')
+                                        identifier = cms.string('PF'),
+                                        muonIdTight = inputShyftAnalysis.muonIdTight.clone(
+                                            cutsToIgnore=cms.vstring('RelIso','D0')
+                                            )
                                         )                                    
                                     )
 
@@ -158,7 +137,10 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                          heavyFlavour = cms.bool( useFlavorHistory ),
                                          doMC = cms.bool( inputDoMC),
                                          sampleName = cms.string(inputSampleName),
-                                         identifier = cms.string('JPT')
+                                         identifier = cms.string('JPT'),
+                                         muonIdTight = inputShyftAnalysis.muonIdTight.clone(
+                                             cutsToIgnore=cms.vstring('RelIso', 'D0')
+                                             )
                                         )
                                      
                                      )
@@ -177,12 +159,15 @@ process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
                                           doMC = cms.bool( inputDoMC),
                                           sampleName = cms.string(inputSampleName),
                                           btaggerString = cms.string(caloBTag),
-                                          identifier = cms.string('CALO')
+                                          identifier = cms.string('CALO'),
+                                          muonIdTight = inputShyftAnalysis.muonIdTight.clone(
+                                              cutsToIgnore=cms.vstring('RelIso', 'D0')
+                                              )
                                           )                                      
                                       )
 
 process.p = cms.Path(
-    process.pfShyftAna*process.pfRecoShyftAna*process.jptShyftAna*process.caloShyftAna
+    process.pfShyftAna*process.jptShyftAna*process.caloShyftAna
     )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
