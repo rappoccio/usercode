@@ -11,7 +11,7 @@ crabFiles = [
     [ 'crab_TTbarJets-madgraph_shyftana_38xOn35x_v13_anashyft.cfg',               'TTbarJets-madgraph_shyftana_38xOn35x_v13'],             
     [ 'crab_WJets-madgraph_shyftana_38xOn35x_v13_anashyft.cfg',                   'WJets-madgraph_shyftana_38xOn35x_v13'],                 
     [ 'crab_ZJets-madgraph_shyftana_38xOn35x_v13_anashyft.cfg',                   'ZJets-madgraph_shyftana_38xOn35x_v13'],
-#    [ 'crab_VqqJets-madgraph_shyftana_38xOn35x_v13_anashyft.cfg',                 'VqqJets-madgraph_shyftana_38xOn35x_v13']
+    [ 'crab_VqqJets-madgraph_shyftana_38xOn35x_v13_anashyft.cfg',                 'VqqJets-madgraph_shyftana_38xOn35x_v13']
     ]
 
 
