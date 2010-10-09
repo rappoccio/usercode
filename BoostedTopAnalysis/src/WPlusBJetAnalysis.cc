@@ -9,7 +9,8 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   wMassMin_     ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("wMassMin") ),
   wMassMax_     ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("wMassMax") ),
   topMassMin_   ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("topMassMin") ),
-  topMassMax_   ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("topMassMax") )
+  topMassMax_   ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("topMassMax") ),
+  runOnData_    ( iConfig.getParameter<bool>("runOnData") )
 {
   cout<< "Instantiate WPlusBJetAnalysis" << endl;
   histograms1d["nJet"]  = theDir.make<TH1F>("nJet",   "Number of Jets",     20,   0,    20);
@@ -105,21 +106,21 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
   edm::Ptr<pat::Jet>   const  & taJet = wPlusBJetType22Selection_.aJet0();
   edm::Ptr<pat::Jet>   const  & oaJet = wPlusBJetType22Selection_.aJet1();
 
-  histograms2d["nJets0vsNJets1"]      ->  Fill( allJets0.size(), allJets1.size() );
-  histograms1d["nJet"]      ->  Fill( pfJets.size() );
-  for( size_t i=0; i<pfJets.size(); i++ ) {
-    histograms1d["jetPt"]     ->  Fill( pfJets.at(i)->pt() );
-    histograms1d["jetEta"]    ->  Fill( pfJets.at(i)->eta() );
-    histograms1d["jetMass"]   ->  Fill( pfJets.at(i)->mass() );
-    if( i==0 ) {
-      histograms1d["leadJetPt"]       ->  Fill( pfJets.at(0)->pt() );
-      histograms1d["leadJetEta"]      ->  Fill( pfJets.at(0)->eta() );
-    }
-    if( pfJets.at(i)->pt() > 200 )
-      histograms2d["jetMassVsPt"]     ->  Fill( pfJets.at(i)->pt() , pfJets.at(i)->mass() );
-  }
-
   if( retType22[string("Leading Jet Pt")] ) {
+    histograms2d["nJets0vsNJets1"]      ->  Fill( allJets0.size(), allJets1.size() );
+    histograms1d["nJet"]      ->  Fill( pfJets.size() );
+    for( size_t i=0; i<pfJets.size(); i++ ) {
+      histograms1d["jetPt"]     ->  Fill( pfJets.at(i)->pt() );
+      histograms1d["jetEta"]    ->  Fill( pfJets.at(i)->eta() );
+      histograms1d["jetMass"]   ->  Fill( pfJets.at(i)->mass() );
+      if( i==0 ) {
+        histograms1d["leadJetPt"]       ->  Fill( pfJets.at(0)->pt() );
+        histograms1d["leadJetEta"]      ->  Fill( pfJets.at(0)->eta() );
+      }
+      if( pfJets.at(i)->pt() > 200 )
+        histograms2d["jetMassVsPt"]     ->  Fill( pfJets.at(i)->pt() , pfJets.at(i)->mass() );
+    }
+
     int numWJets = tWJets.size() + oWJets.size();
     int numBJets = tbJets.size() + obJets.size();
 
@@ -180,13 +181,14 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
 
       if( passType22 ) {
         histograms1d["ttMassType22"]    ->  Fill( (p4_top0+p4_top1).mass() );
+        if( runOnData_ )  cout<<"Woohoo, Type2+Type2, Event id, "<<iEvent.id()<<endl;
         double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
         double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) );
         histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
         histograms1d["topPairDr"]       ->  Fill( deltaR );
       }
     } // end if ret hasTwoTops
-  } // end if ret leading jet pt
+  } // end if leading Jet Pt
 
 
   if( retType22[string(">= 1 WJet")] && !retType22[string(">= 2 WJet")] ) {
@@ -213,6 +215,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
       } // end else
       if( passType23 ) {
         histograms1d["ttMassType23"]    ->  Fill( (p4_top0+p4_top1).mass() );
+        if(runOnData_)    cout<<"Woohoo, Type2+Type3, Event id, run "<<iEvent.id()<<endl;
         double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
         double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) );
         histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
@@ -221,7 +224,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
     }  // hasMinPair    
   }  // end if >= 1 WJet and !>= 2 WJet
 
-  if( !retType22[string(">= 1 WJet")] ) {
+  if( !retType22[string(">= 1 WJet")] && retType22[string("Leading Jet Pt")] ) {
     pat::strbitset  retType33 = wPlusBJetType33Selection_.getBitTemplate();
     bool passType33 = wPlusBJetType33Selection_( iEvent, retType33 );
 
@@ -248,6 +251,18 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
       }
       if( passType33 )  {
         histograms1d["ttMassType33"]    ->  Fill( (p4_top0+p4_top1).mass() );
+        if(runOnData_)    {
+          cout<<"Woohoo, Type3+Type3, Event id, "<<iEvent.id()<<endl;
+          cout<<"px,py,pz,E,mass "<<endl;
+          cout<<"bJet0, "<<tbJets.at(0)->px()<<" "<<tbJets.at(0)->py()<<" "<<tbJets.at(0)->pz()<<" "<<tbJets.at(0)->energy()<<" "<<tbJets.at(0)->mass()<<endl;
+          cout<<"bJet1, "<<obJets.at(0)->px()<<" "<<obJets.at(0)->py()<<" "<<obJets.at(0)->pz()<<" "<<obJets.at(0)->energy()<<" "<<obJets.at(0)->mass()<<endl;
+          reco::Candidate::LorentzVector  w0 = p4_first0 + p4_second0 ;
+          reco::Candidate::LorentzVector  w1 = p4_first1 + p4_second1 ;
+          cout<<"w0, "<<w0.px()<<" "<<w0.py()<<" "<<w0.pz()<<" "<<w0.energy()<<" "<<w0.mass()<<endl;
+          cout<<"w1, "<<w1.px()<<" "<<w1.py()<<" "<<w1.pz()<<" "<<w1.energy()<<" "<<w1.mass()<<endl;
+          cout<<"top0, "<<p4_top0.px()<<" "<<p4_top0.py()<<" "<<p4_top0.pz()<<" "<<p4_top0.energy()<<" "<<p4_top0.mass()<<endl;
+          cout<<"top1, "<<p4_top1.px()<<" "<<p4_top1.py()<<" "<<p4_top1.pz()<<" "<<p4_top1.energy()<<" "<<p4_top1.mass()<<endl;
+        }
         double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
         double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) ) ;
         histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
@@ -256,100 +271,103 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
     }  // hasMinPair1
   }  // end if !>= 1 WJet
 
-  std::vector<Type2L>     const & looseTops0  = wPlusBJetType22Selection_.looseTops0();
-  std::vector<Type2T>     const & tightTops0  = wPlusBJetType22Selection_.tightTops0();
-  std::vector<Type3>      const & type3Tops0  = wPlusBJetType22Selection_.type3Tops0();  
-  std::vector<Type2L>     const & looseTops1  = wPlusBJetType22Selection_.looseTops1();
-  std::vector<Type2T>     const & tightTops1  = wPlusBJetType22Selection_.tightTops1();
-  std::vector<Type3>      const & type3Tops1  = wPlusBJetType22Selection_.type3Tops1();
+  if( retType22[string("Leading Jet Pt")] ) {
 
-  //cout<<"bein here"<<endl;
-  //for type2+type2
-  for( size_t i=0; i<tightTops0.size(); i++ ) {
-    for( size_t j=0; j<tightTops1.size(); j++ ) {
-      FourVector top0 = tightTops0.at(i).top();
-      FourVector top1 = tightTops1.at(j).top(); 
-      histograms2d["topMass0vsTopMass1Type22"]    ->  Fill( top0.mass(), top1.mass() );
-      if( top0.mass() > topMassMin_ && top0.mass() < topMassMax_ && top1.mass() > topMassMin_ && top1.mass() < topMassMax_ ) {
-        double weight = tightTops0.at(i).weight * tightTops1.at(j).weight;
-        histograms1d["ttMassType22_pred"]   ->  Fill( (top0+top1).mass(), weight );
-      }
-    } // end j
-    for( size_t j=0; j<looseTops1.size(); j++ ) {
-      const FourVector top0 = tightTops0.at(i).top();
-      const FourVector top1 = looseTops1.at(j).top();
-      histograms2d["topMass0vsTopMass1Type22"]    ->  Fill( top0.mass(), top1.mass() );
-      if( top0.mass() > topMassMin_ && top0.mass() < topMassMax_ && top1.mass() > topMassMin_ && top1.mass() < topMassMax_ ) {
-        double weight = tightTops0.at(i).weight * looseTops1.at(j).weight;
-        histograms1d["ttMassType22_pred"]   ->  Fill( (top0+top1).mass(), weight );
-      }
-    }  // end j
-  } // end i
+    std::vector<Type2L>     const & looseTops0  = wPlusBJetType22Selection_.looseTops0();
+    std::vector<Type2T>     const & tightTops0  = wPlusBJetType22Selection_.tightTops0();
+    std::vector<Type3>      const & type3Tops0  = wPlusBJetType22Selection_.type3Tops0();  
+    std::vector<Type2L>     const & looseTops1  = wPlusBJetType22Selection_.looseTops1();
+    std::vector<Type2T>     const & tightTops1  = wPlusBJetType22Selection_.tightTops1();
+    std::vector<Type3>      const & type3Tops1  = wPlusBJetType22Selection_.type3Tops1();
 
-  //cout<<"Point1"<<endl;
-
-  for( size_t i=0; i<looseTops0.size(); i++ ) {
-    for( size_t j=0; j<tightTops1.size(); j++ ) {
-      const FourVector top0 = looseTops0.at(i).top();
-      const FourVector top1 = tightTops1.at(j).top();
-      histograms2d["topMass0vsTopMass1Type22"]    ->  Fill( top0.mass(), top1.mass() );
-      if( top0.mass() > topMassMin_ && top0.mass() < topMassMax_ && top1.mass() > topMassMin_ && top1.mass() < topMassMax_ ) {
-        double weight = looseTops0.at(i).weight * tightTops1.at(j).weight;
-        histograms1d["ttMassType22_pred"]   ->  Fill( (top0+top1).mass(), weight );
-      }
-    } // end j
-  } // end i
-
-  //cout<<"Point2"<<endl;
-  // for type2+type3
-  for( size_t i=0; i<tightTops0.size(); i++ ) {
-    for( size_t j=0; j<type3Tops1.size(); j++ ) {
-      const FourVector top0 = tightTops0.at(i).top();
-      const FourVector top1 = type3Tops1.at(j).top();
-      if( type3Tops1.at(j).minMass() > wMassMin_ && type3Tops1.at(j).minMass() < wMassMax_ ) {
-        histograms2d["topMass0vsTopMass1Type23"]    ->  Fill( top0.mass(), top1.mass() );
+    //cout<<"bein here"<<endl;
+    //for type2+type2
+    for( size_t i=0; i<tightTops0.size(); i++ ) {
+      for( size_t j=0; j<tightTops1.size(); j++ ) {
+        FourVector top0 = tightTops0.at(i).top();
+        FourVector top1 = tightTops1.at(j).top(); 
+        histograms2d["topMass0vsTopMass1Type22"]    ->  Fill( top0.mass(), top1.mass() );
         if( top0.mass() > topMassMin_ && top0.mass() < topMassMax_ && top1.mass() > topMassMin_ && top1.mass() < topMassMax_ ) {
-          double weight = tightTops0.at(i).weight * type3Tops1.at(j).weight;
-          histograms1d["ttMassType23_pred"]   ->  Fill( (top0+top1).mass(), weight );
+          double weight = tightTops0.at(i).weight * tightTops1.at(j).weight;
+          histograms1d["ttMassType22_pred"]   ->  Fill( (top0+top1).mass(), weight );
         }
-      }
-    } // end j
-  } // end i
-
-  //cout<<"Point3"<<endl;
-  for( size_t i=0; i<type3Tops0.size(); i++ ) {
-    for( size_t j=0; j<tightTops1.size(); j++ ) {
-      const FourVector top0 = type3Tops0.at(i).top();
-      const FourVector top1 = tightTops1.at(j).top();
-      if( type3Tops0.at(i).minMass() > wMassMin_ && type3Tops0.at(i).minMass() < wMassMax_ ) {
-        histograms2d["topMass0vsTopMass1Type23"]    ->  Fill( top0.mass(), top1.mass() );
+      } // end j
+      for( size_t j=0; j<looseTops1.size(); j++ ) {
+        const FourVector top0 = tightTops0.at(i).top();
+        const FourVector top1 = looseTops1.at(j).top();
+        histograms2d["topMass0vsTopMass1Type22"]    ->  Fill( top0.mass(), top1.mass() );
         if( top0.mass() > topMassMin_ && top0.mass() < topMassMax_ && top1.mass() > topMassMin_ && top1.mass() < topMassMax_ ) {
-          double weight = type3Tops0.at(i).weight * tightTops1.at(j).weight;
-          histograms1d["ttMassType23_pred"]   ->  Fill( (top0+top1).mass(), weight );
+          double weight = tightTops0.at(i).weight * looseTops1.at(j).weight;
+          histograms1d["ttMassType22_pred"]   ->  Fill( (top0+top1).mass(), weight );
         }
-      }
-    } // end j
-  } // end i
-  //cout<<"Point4"<<endl;
+      }  // end j
+    } // end i
 
-  // for type3+type3
-  for( size_t i=0; i<type3Tops0.size(); i++ ) {
-    for( size_t j=0; j<type3Tops1.size(); j++ ) {
-      const FourVector top0 = type3Tops0.at(i).top();
-      const FourVector top1 = type3Tops1.at(j).top();
-      double minPairMass0 = type3Tops0.at(i).minMass();
-      double minPairMass1 = type3Tops1.at(j).minMass();
-      histograms2d["minMass0vsMinMass1Type33"]    ->  Fill( minPairMass0, minPairMass1 );
-      if( minPairMass0 > wMassMin_ && minPairMass0 < wMassMax_ &&
-          minPairMass1 > wMassMin_ && minPairMass1 < wMassMax_ )  {
+    //cout<<"Point1"<<endl;
 
-        histograms2d["topMass0vsTopMass1Type33"]      ->  Fill( top0.mass(), top1.mass() );
+    for( size_t i=0; i<looseTops0.size(); i++ ) {
+      for( size_t j=0; j<tightTops1.size(); j++ ) {
+        const FourVector top0 = looseTops0.at(i).top();
+        const FourVector top1 = tightTops1.at(j).top();
+        histograms2d["topMass0vsTopMass1Type22"]    ->  Fill( top0.mass(), top1.mass() );
         if( top0.mass() > topMassMin_ && top0.mass() < topMassMax_ && top1.mass() > topMassMin_ && top1.mass() < topMassMax_ ) {
-          double weight = type3Tops0.at(i).weight * type3Tops1.at(j).weight;
-          histograms1d["ttMassType33_pred"]   ->  Fill( (top0+top1).mass(), weight );
+          double weight = looseTops0.at(i).weight * tightTops1.at(j).weight;
+          histograms1d["ttMassType22_pred"]   ->  Fill( (top0+top1).mass(), weight );
         }
-      } // end minPairMass
-    } // end j
-  } // end i
-  //cout<<"end"<<endl;
+      } // end j
+    } // end i
+
+    //cout<<"Point2"<<endl;
+    // for type2+type3
+    for( size_t i=0; i<tightTops0.size(); i++ ) {
+      for( size_t j=0; j<type3Tops1.size(); j++ ) {
+        const FourVector top0 = tightTops0.at(i).top();
+        const FourVector top1 = type3Tops1.at(j).top();
+        if( type3Tops1.at(j).minMass() > wMassMin_ && type3Tops1.at(j).minMass() < wMassMax_ ) {
+          histograms2d["topMass0vsTopMass1Type23"]    ->  Fill( top0.mass(), top1.mass() );
+          if( top0.mass() > topMassMin_ && top0.mass() < topMassMax_ && top1.mass() > topMassMin_ && top1.mass() < topMassMax_ ) {
+            double weight = tightTops0.at(i).weight * type3Tops1.at(j).weight;
+            histograms1d["ttMassType23_pred"]   ->  Fill( (top0+top1).mass(), weight );
+          }
+        }
+      } // end j
+    } // end i
+
+    //cout<<"Point3"<<endl;
+    for( size_t i=0; i<type3Tops0.size(); i++ ) {
+      for( size_t j=0; j<tightTops1.size(); j++ ) {
+        const FourVector top0 = type3Tops0.at(i).top();
+        const FourVector top1 = tightTops1.at(j).top();
+        if( type3Tops0.at(i).minMass() > wMassMin_ && type3Tops0.at(i).minMass() < wMassMax_ ) {
+          histograms2d["topMass0vsTopMass1Type23"]    ->  Fill( top0.mass(), top1.mass() );
+          if( top0.mass() > topMassMin_ && top0.mass() < topMassMax_ && top1.mass() > topMassMin_ && top1.mass() < topMassMax_ ) {
+            double weight = type3Tops0.at(i).weight * tightTops1.at(j).weight;
+            histograms1d["ttMassType23_pred"]   ->  Fill( (top0+top1).mass(), weight );
+          }
+        }
+      } // end j
+    } // end i
+    //cout<<"Point4"<<endl;
+
+    // for type3+type3
+    for( size_t i=0; i<type3Tops0.size(); i++ ) {
+      for( size_t j=0; j<type3Tops1.size(); j++ ) {
+        const FourVector top0 = type3Tops0.at(i).top();
+        const FourVector top1 = type3Tops1.at(j).top();
+        double minPairMass0 = type3Tops0.at(i).minMass();
+        double minPairMass1 = type3Tops1.at(j).minMass();
+        histograms2d["minMass0vsMinMass1Type33"]    ->  Fill( minPairMass0, minPairMass1 );
+        if( minPairMass0 > wMassMin_ && minPairMass0 < wMassMax_ &&
+            minPairMass1 > wMassMin_ && minPairMass1 < wMassMax_ )  {
+
+          histograms2d["topMass0vsTopMass1Type33"]      ->  Fill( top0.mass(), top1.mass() );
+          if( top0.mass() > topMassMin_ && top0.mass() < topMassMax_ && top1.mass() > topMassMin_ && top1.mass() < topMassMax_ ) {
+            double weight = type3Tops0.at(i).weight * type3Tops1.at(j).weight;
+            histograms1d["ttMassType33_pred"]   ->  Fill( (top0+top1).mass(), weight );
+          }
+        } // end minPairMass
+      } // end j
+    } // end i
+    //cout<<"end"<<endl;
+  } // end if retType22 leading jet pt
 }

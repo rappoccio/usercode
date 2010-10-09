@@ -7,7 +7,7 @@ wPlusBJetAnalysis = cms.PSet(
       WPlusBJetEventSelection = cms.PSet( 
           jetSrc = cms.InputTag( "selectedPatJetsCA8PrunedPF" ),
           trigSrc = cms.InputTag( "patTriggerEvent" ),
-          trig    = cms.string( "HLT_Jet30U" ),
+          trig    = cms.string( "HLT_Jet50U" ),
           WPlusBJetSelection = cms.PSet(
               pfJetIDParams = cms.PSet( pfJetIDSelector.clone() ),
               jetSrc = cms.InputTag( "selectedPatJetsCA8PrunedPF" ),
@@ -23,5 +23,7 @@ wPlusBJetAnalysis = cms.PSet(
           wMassMax    = cms.double(100),
           topMassMin  = cms.double(140),
           topMassMax  = cms.double(230)
-      )
+      ),
+
+      runOnData = cms.bool( False )
 )
