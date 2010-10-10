@@ -220,7 +220,9 @@ process.patJetsAK5PF.tagInfoSources = cms.VInputTag(
 process.patMuonsPFlowLoose.pfMuonSource = 'pfAllMuonsPFlowLoose'
 process.patMuonsPFlowLoose.isoDeposits = cms.PSet()
 process.patMuonsPFlowLoose.isolationValues = cms.PSet()
-
+#process.patElectronsPFlowLoose.pfElectronSource = 'pfAllElectronsPFlowLoose'
+#process.patElectronsPFlowLoose.isoDeposits = cms.PSet()
+#process.patElectronsPFlowLoose.isolationValues = cms.PSet()
 
 
 print 'For PAT PF Muons: '
@@ -316,10 +318,9 @@ if useData :
         ] );
 else : 
     readFiles.extend( [
-        '/store/mc/Spring10/TTbarJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0005/B8E00316-AD46-DF11-A92F-0030487D5EBD.root',
-        '/store/mc/Spring10/TTbarJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0005/B8558647-9D46-DF11-AD71-003048D3CA06.root',
-        '/store/mc/Spring10/TTbarJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0005/B8499034-A346-DF11-B3C5-00304889D562.root',
-        '/store/mc/Spring10/TTbarJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0005/B833FD14-9946-DF11-9D0C-0030487F1BCF.root'        
+        '/store/mc/Spring10/TTbarJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0006/4C4A0E8D-C946-DF11-BCAC-003048D437D2.root',
+        '/store/mc/Spring10/TTbarJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0006/D87D77D2-C946-DF11-AD67-0030487D5E81.root',
+        '/store/mc/Spring10/TTbarJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0006/B47C6690-C946-DF11-8BC0-003048C692FA.root'
         ] );
 
     
@@ -397,7 +398,7 @@ else :
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
 # process all the events
-process.maxEvents.input = 1000
+process.maxEvents.input = 10000
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 

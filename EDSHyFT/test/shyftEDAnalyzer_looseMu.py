@@ -83,8 +83,9 @@ inputSampleName = options.sampleNameInput
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
+                                    'file:syncex_shyft_382_mc.root'
 #                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/InclusiveMu15/shyft_38xOn35x_v1/91f2fc34c53b68691c104fb43fa3e9f4/shyft_382_mc_1_1_rw3.root'
-                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
+#                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
                                     )
                                 )
 else :
@@ -110,10 +111,10 @@ process.TFileService = cms.Service("TFileService",
 
 process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                     shyftAnalysis = inputShyftAnalysis.clone(
-                                        muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
-                                        electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
-                                        metSrc = cms.InputTag('patMETsPFlow'),
-                                        jetSrc = cms.InputTag('selectedPatJetsPFlow'),
+                                        muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose'),
+                                        electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose'),
+                                        metSrc = cms.InputTag('patMETsPFlowLoose'),
+                                        jetSrc = cms.InputTag('selectedPatJetsPFlowLoose'),
                                         jetPtMin = cms.double(25.0),
                                         minJets = cms.int32(5),
                                         metMin = cms.double(options.pfMetMin),

@@ -33,7 +33,7 @@ options.register('sampleNameInput',
                  "Sample name to give histograms")
 
 options.register('jetRecoType',
-                 'calo',
+                 'pf',
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.string,
                  "Jet reco type to run, one of calo,jpt,pf")
@@ -93,7 +93,8 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
                                         sampleName = cms.string(inputSampleName),
-                                        identifier = cms.string('PF')
+                                        identifier = cms.string('PF'),
+                                        metMin = cms.double(20.0)
                                         )                                    
                                     )
 
@@ -106,7 +107,8 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                          heavyFlavour = cms.bool( useFlavorHistory ),
                                          doMC = cms.bool( inputDoMC),
                                          sampleName = cms.string(inputSampleName),
-                                         identifier = cms.string('JPT')
+                                         identifier = cms.string('JPT'),
+                                         metMin = cms.double(20.0)
                                         )
                                      
                                      )
@@ -119,7 +121,8 @@ process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
                                           doMC = cms.bool( inputDoMC),
                                           sampleName = cms.string(inputSampleName),
                                           btaggerString = cms.string('simpleSecondaryVertexBJetTags'),
-                                          identifier = cms.string('CALO')
+                                          identifier = cms.string('CALO'),
+                                          metMin = cms.double(30.0)
                                           )                                      
                                       )
 
