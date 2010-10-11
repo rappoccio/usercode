@@ -121,7 +121,8 @@ process.pfShyftAnaNoMET = process.pfShyftAna.clone(
     )
 
 
-process.pfShyftAna2 = cms.EDAnalyzer('EDSHyFT',
+
+process.pfShyftAnaLooseNoMET = cms.EDAnalyzer('EDSHyFT',
                                     shyftAnalysis = inputShyftAnalysis.clone(
                                         muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose'),
                                         electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose'),
@@ -129,13 +130,18 @@ process.pfShyftAna2 = cms.EDAnalyzer('EDSHyFT',
                                         jetSrc = cms.InputTag('selectedPatJetsPFlowLoose'),
                                         jetPtMin = cms.double(25.0),
                                         minJets = cms.int32(5),
-                                        metMin = cms.double(20.0),
+                                        metMin = cms.double(0.0),
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
                                         sampleName = cms.string(inputSampleName),
-                                        identifier = cms.string('PF')
+                                        identifier = cms.string('PF'),
+                                        muonIdTight = inputShyftAnalysis.muonIdTight.clone(
+                                            cutsToIgnore=cms.vstring('RelIso','D0')
+                                            )
+                                                  
                                         )                                    
                                     )
+
 
 process.pfRecoShyftAna = cms.EDAnalyzer('EDSHyFT',
                                     shyftAnalysis = inputShyftAnalysis.clone(
@@ -152,6 +158,42 @@ process.pfRecoShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         identifier = cms.string('PF')
                                         )                                    
                                     )
+
+
+process.pfRecoShyftAnaNoMET = cms.EDAnalyzer('EDSHyFT',
+                                    shyftAnalysis = inputShyftAnalysis.clone(
+                                        muonSrc = cms.InputTag('selectedPatMuons'),
+                                        electronSrc = cms.InputTag('selectedPatElectrons'),
+                                        metSrc = cms.InputTag('patMETsPF'),
+                                        jetSrc = cms.InputTag('selectedPatJetsAK5PF'),
+                                        jetPtMin = cms.double(25.0),
+                                        minJets = cms.int32(5),
+                                        metMin = cms.double(0.0),
+                                        heavyFlavour = cms.bool( useFlavorHistory ),
+                                        doMC = cms.bool( inputDoMC),
+                                        sampleName = cms.string(inputSampleName),
+                                        identifier = cms.string('PF')
+                                        )                                    
+                                    )
+
+process.pfRecoShyftAnaNoMETLoose = cms.EDAnalyzer('EDSHyFT',
+                                                  shyftAnalysis = inputShyftAnalysis.clone(
+                                                      muonSrc = cms.InputTag('selectedPatMuons'),
+                                                      electronSrc = cms.InputTag('selectedPatElectrons'),
+                                                      metSrc = cms.InputTag('patMETsPF'),
+                                                      jetSrc = cms.InputTag('selectedPatJetsAK5PF'),
+                                                      jetPtMin = cms.double(25.0),
+                                                      minJets = cms.int32(5),
+                                                      metMin = cms.double(0.0),
+                                                      heavyFlavour = cms.bool( useFlavorHistory ),
+                                                      doMC = cms.bool( inputDoMC),
+                                                      sampleName = cms.string(inputSampleName),
+                                                                                identifier = cms.string('PF'),
+                                                      muonIdTight = inputShyftAnalysis.muonIdTight.clone(
+                                                          cutsToIgnore=cms.vstring('RelIso', 'D0')
+                                                          )                                                              
+                                                      )                                    
+                                                  )
 
 process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                      shyftAnalysis = inputShyftAnalysis.clone(
@@ -176,6 +218,15 @@ process.jptShyftAnaNoMET = process.jptShyftAna.clone(
         )
     )
 
+process.jptShyftAnaLooseNoMET = process.jptShyftAna.clone(
+    shyftAnalysis=process.jptShyftAna.shyftAnalysis.clone(
+        metMin = cms.double(0.0),
+        identifier = cms.string('JPT no MET'),
+        muonIdTight = inputShyftAnalysis.muonIdTight.clone(
+            cutsToIgnore=cms.vstring('RelIso', 'D0')
+            )        
+        )
+    )
 
 if inputDoMC :
     caloBTag = 'simpleSecondaryVertexBJetTags'
@@ -206,11 +257,14 @@ process.caloShyftAnaNoMET = process.caloShyftAna.clone(
 
 process.p = cms.Path(
     process.pfShyftAna*
-    process.pfShyftAnaNoMET*    
-    process.pfShyftAna2*
+    process.pfShyftAnaNoMET*
+    process.pfShyftAnaLooseNoMET*    
     process.pfRecoShyftAna*
+    process.pfRecoShyftAnaNoMET*
+    process.pfRecoShyftAnaNoMETLoose*
     process.jptShyftAna*
-    process.jptShyftAnaNoMET*    
+    process.jptShyftAnaNoMET*
+    process.jptShyftAnaLooseNoMET*    
     process.caloShyftAna*
     process.caloShyftAnaNoMET    
     )
