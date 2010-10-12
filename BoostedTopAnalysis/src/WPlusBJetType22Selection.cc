@@ -5,6 +5,9 @@ WPlusBJetType22Selection::WPlusBJetType22Selection ( edm::ParameterSet const & p
   trigSrc_              (params.getParameter<edm::InputTag>("trigSrc") ),
   trig_                 (params.getParameter<std::string>("trig") ),
   leadJetPtCut_         (params.getParameter<double>( "leadJetPtCut" ) ),
+  secondJetPtCut_       (params.getParameter<double>( "secondJetPtCut" ) ),
+  thirdJetPtCut_        (params.getParameter<double>( "thirdJetPtCut" ) ),
+  fourthJetPtCut_       (params.getParameter<double>( "fourthJetPtCut") ),
   wMassMin_             (params.getParameter<double>("wMassMin") ),
   wMassMax_             (params.getParameter<double>("wMassMax") ),
   topMassMin_           (params.getParameter<double>("topMassMin") ) ,
@@ -17,6 +20,9 @@ WPlusBJetType22Selection::WPlusBJetType22Selection ( edm::ParameterSet const & p
   push_back("Trigger");
   push_back("nJets >= 4");
   push_back("Leading Jet Pt");
+  push_back("Second Jet Pt");
+  push_back("Third Jet Pt");
+  push_back("Fourth Jet Pt");
   push_back(">= 1 WJet");
   push_back(">= 2 WJet");
   push_back("wMassCut");
@@ -29,6 +35,9 @@ WPlusBJetType22Selection::WPlusBJetType22Selection ( edm::ParameterSet const & p
   set("Trigger");
   set("nJets >= 4");
   set("Leading Jet Pt");
+  set("Second Jet Pt");
+  set("Third Jet Pt");
+  set("Fourth Jet Pt");
   set(">= 1 WJet");
   set(">= 2 WJet");
   set("wMassCut");
@@ -96,82 +105,94 @@ bool WPlusBJetType22Selection::operator()( edm::EventBase const & t, pat::strbit
       if( ignoreCut( "Leading Jet Pt" ) || theJet->pt() > leadJetPtCut_ ) {
         passCut( ret, "Leading Jet Pt" );
 
-        pat::strbitset tret = twPlusBJetSelection_.getBitTemplate();
-        //Analyze the towards direction
-        bool tpassWPlusBJet  = twPlusBJetSelection_( t, theJet->p4(), tret, true );
+        if( ignoreCut( "Second Jet Pt" ) || pfJets_.at(1)->pt() > secondJetPtCut_ ) {
+          passCut( ret, "Second Jet Pt" );
 
-        pat::strbitset oret = owPlusBJetSelection_.getBitTemplate();
-        //Analyze the opposite direction
-        bool opassWPlusBJet  = owPlusBJetSelection_( t, theJet->p4(), oret, false );
+          if( ignoreCut( "Third Jet Pt" ) || pfJets_.at(2)->pt() > thirdJetPtCut_ ) {
+            passCut( ret, "Third Jet Pt" );
+
+            if( ignoreCut( "Fourth Jet Pt" ) || pfJets_.at(3)->pt() > fourthJetPtCut_ ) {
+              passCut( ret, "Fourth Jet Pt" );
+
+              pat::strbitset tret = twPlusBJetSelection_.getBitTemplate();
+              //Analyze the towards direction
+              bool tpassWPlusBJet  = twPlusBJetSelection_( t, theJet->p4(), tret, true );
+
+              pat::strbitset oret = owPlusBJetSelection_.getBitTemplate();
+              //Analyze the opposite direction
+              bool opassWPlusBJet  = owPlusBJetSelection_( t, theJet->p4(), oret, false );
 
 
-        std::vector<edm::Ptr<pat::Jet> >  const & tWJets = twPlusBJetSelection_.wJets();
-        std::vector<edm::Ptr<pat::Jet> >  const & oWJets = owPlusBJetSelection_.wJets();
-        std::vector<edm::Ptr<pat::Jet> >  const & tbJets = twPlusBJetSelection_.bJets();
-        std::vector<edm::Ptr<pat::Jet> >  const & obJets = owPlusBJetSelection_.bJets();
-        edm::Ptr<pat::Jet> const & taJet = twPlusBJetSelection_.aJet();
-        edm::Ptr<pat::Jet> const & oaJet = owPlusBJetSelection_.aJet();
+              std::vector<edm::Ptr<pat::Jet> >  const & tWJets = twPlusBJetSelection_.wJets();
+              std::vector<edm::Ptr<pat::Jet> >  const & oWJets = owPlusBJetSelection_.wJets();
+              std::vector<edm::Ptr<pat::Jet> >  const & tbJets = twPlusBJetSelection_.bJets();
+              std::vector<edm::Ptr<pat::Jet> >  const & obJets = owPlusBJetSelection_.bJets();
+              edm::Ptr<pat::Jet> const & taJet = twPlusBJetSelection_.aJet();
+              edm::Ptr<pat::Jet> const & oaJet = owPlusBJetSelection_.aJet();
 
-        int numWJets = 0;
-        int numBJets = 0;
-        if( tWJets.size() >= 1 )  numWJets++;
-        if( oWJets.size() >= 1 )  numWJets++;
-        if( tbJets.size() >= 1 )  numBJets++;
-        if( obJets.size() >= 1 )  numBJets++;
+              int numWJets = 0;
+              int numBJets = 0;
+              if( tWJets.size() >= 1 )  numWJets++;
+              if( oWJets.size() >= 1 )  numWJets++;
+              if( tbJets.size() >= 1 )  numBJets++;
+              if( obJets.size() >= 1 )  numBJets++;
 
-        if( ignoreCut(">= 1 WJet") || numWJets >= 1 ) {
-          passCut( ret, ">= 1 WJet" );
-          if( ignoreCut(">= 2 WJet") || numWJets >= 2 ) {
-            passCut( ret, ">= 2 WJet" );
+              if( ignoreCut(">= 1 WJet") || numWJets >= 1 ) {
+                passCut( ret, ">= 1 WJet" );
+                if( ignoreCut(">= 2 WJet") || numWJets >= 2 ) {
+                  passCut( ret, ">= 2 WJet" );
 
-            //Get W mass
-            double wMass0 = tWJets.at(0)->mass();
-            double wMass1 = oWJets.at(0)->mass();
-            bool passWMass = ( wMass0 > wMassMin_ && wMass0 < wMassMax_ && wMass1 > wMassMin_ && wMass1 < wMassMax_ );
-            if( ignoreCut("wMassCut") || passWMass ) {
-              passCut( ret, "wMassCut" );
-              if( ignoreCut("has Tight Top") || numBJets >= 1 ) {
-                passCut( ret, "has Tight Top" );
+                  //Get W mass
+                  double wMass0 = tWJets.at(0)->mass();
+                  double wMass1 = oWJets.at(0)->mass();
+                  bool passWMass = ( wMass0 > wMassMin_ && wMass0 < wMassMax_ && wMass1 > wMassMin_ && wMass1 < wMassMax_ );
+                  if( ignoreCut("wMassCut") || passWMass ) {
+                    passCut( ret, "wMassCut" );
+                    if( ignoreCut("has Tight Top") || numBJets >= 1 ) {
+                      passCut( ret, "has Tight Top" );
 
-                bool hasTop0 = false, hasTop1 = false;
-                if( tbJets.size() >= 1 ) {
-                  p4_top0_ = tWJets.at(0)->p4() + tbJets.at(0)->p4()  ;
-                  tightTop0_ = true;
-                  hasTop0 = true;
-                }
-                else if( twPlusBJetSelection_.aJetFound() )  {
-                  p4_top0_ = tWJets.at(0)->p4() + taJet->p4();
-                  tightTop0_ = false;
-                  hasTop0 = true;
-                }
-                if( obJets.size() >= 1 ) {
-                  p4_top1_ = oWJets.at(0)->p4() + obJets.at(0)->p4()  ;
-                  tightTop1_ = true;
-                  hasTop1 = true;
-                }
-                else if( owPlusBJetSelection_.aJetFound() ) {
-                  p4_top1_ = oWJets.at(0)->p4() + oaJet->p4();
-                  tightTop1_ = false;
-                  hasTop1 = true;
-                }
+                      bool hasTop0 = false, hasTop1 = false;
+                      if( tbJets.size() >= 1 ) {
+                        p4_top0_ = tWJets.at(0)->p4() + tbJets.at(0)->p4()  ;
+                        tightTop0_ = true;
+                        hasTop0 = true;
+                      }
+                      else if( twPlusBJetSelection_.aJetFound() )  {
+                        p4_top0_ = tWJets.at(0)->p4() + taJet->p4();
+                        tightTop0_ = false;
+                        hasTop0 = true;
+                      }
+                      if( obJets.size() >= 1 ) {
+                        p4_top1_ = oWJets.at(0)->p4() + obJets.at(0)->p4()  ;
+                        tightTop1_ = true;
+                        hasTop1 = true;
+                      }
+                      else if( owPlusBJetSelection_.aJetFound() ) {
+                        p4_top1_ = oWJets.at(0)->p4() + oaJet->p4();
+                        tightTop1_ = false;
+                        hasTop1 = true;
+                      }
 
-                bool hasTwoTops = hasTop0 && hasTop1 ;
-                if( ignoreCut("hasTwoTops") || hasTwoTops ) {
-                  passCut( ret, "hasTwoTops" );
+                      bool hasTwoTops = hasTop0 && hasTop1 ;
+                      if( ignoreCut("hasTwoTops") || hasTwoTops ) {
+                        passCut( ret, "hasTwoTops" );
 
-                  double topMass0 = p4_top0_.mass();
-                  double topMass1 = p4_top1_.mass();
-                  double passTopMass = ( topMass0 > topMassMin_ && topMass0 < topMassMax_ && topMass1 > topMassMin_ && topMass1 < topMassMax_ );
-                  if( ignoreCut("topMassCut") || passTopMass ) {
-                    passCut( ret, "topMassCut" );
-                    //cout<<"Top Mass 0 "<<topMass0<<endl;
-                    //cout<<"Top Mass 1 "<<topMass1<<endl;
-                  } // topMassCut
-                }// hasTwoTops
-              } // has Tight Top
-            } // wMassCut
-          }  // >= 2 WJet
-        }  // >= 1 WJet
+                        double topMass0 = p4_top0_.mass();
+                        double topMass1 = p4_top1_.mass();
+                        double passTopMass = ( topMass0 > topMassMin_ && topMass0 < topMassMax_ && topMass1 > topMassMin_ && topMass1 < topMassMax_ );
+                        if( ignoreCut("topMassCut") || passTopMass ) {
+                          passCut( ret, "topMassCut" );
+                          //cout<<"Top Mass 0 "<<topMass0<<endl;
+                          //cout<<"Top Mass 1 "<<topMass1<<endl;
+                        } // topMassCut
+                      }// hasTwoTops
+                    } // has Tight Top
+                  } // wMassCut
+                }  // >= 2 WJet
+              }  // >= 1 WJet
+            }  // fourth Jet Pt
+          } // third Jet Pt
+        } // second Jet Pt
       } // Leading Jet Pt
     } // nJets >= 4 
   }  // pass trigger

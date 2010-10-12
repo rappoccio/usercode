@@ -14,8 +14,9 @@ WPlusBJetType23Selection::WPlusBJetType23Selection ( edm::ParameterSet const & p
 {
   //make the bitset
   push_back("Inclusive");
-  push_back("Trigger");
-  push_back("Leading Jet Pt");
+  //push_back("Trigger");
+  //push_back("Leading Jet Pt");
+  push_back("nJets >= 5");
   push_back(">= 1 WJet");
   push_back(">= 1 bJet");
   push_back(">= 2 bJet");
@@ -26,8 +27,9 @@ WPlusBJetType23Selection::WPlusBJetType23Selection ( edm::ParameterSet const & p
 
   //turn on bit
   set("Inclusive");
-  set("Trigger");
-  set("Leading Jet Pt");
+  //set("Trigger");
+  //set("Leading Jet Pt");
+  set("nJets >= 5");
   set(">= 1 WJet");
   set(">= 1 bJet");
   set(">= 2 bJet");
@@ -61,7 +63,6 @@ bool WPlusBJetType23Selection::operator()( edm::EventBase const & t, pat::strbit
   const boost::shared_ptr<PFJetIDSelectionFunctor> & pfJetSel = twPlusBJetSelection_.pfJetSel();
   pat::strbitset retPFJet = pfJetSel->getBitTemplate();
 
-  const pat::Jet * theJet;
   for( vector<pat::Jet>::const_iterator jetBegin=jetHandle->begin(), jetEnd=jetHandle->end(), ijet=jetBegin ;
     ijet!=jetEnd; ijet++ )
   {
@@ -72,9 +73,11 @@ bool WPlusBJetType23Selection::operator()( edm::EventBase const & t, pat::strbit
     }
   } // end ijet
 
+
+  const pat::Jet * theJet;
   if( pfJets_.size() < 1 )   return false;
   theJet = &(*pfJets_.at(0));
-
+/*
   //Get the trigger
   edm::Handle<pat::TriggerEvent>  triggerEvent;
   t.getByLabel( trigSrc_, triggerEvent);
@@ -96,7 +99,9 @@ bool WPlusBJetType23Selection::operator()( edm::EventBase const & t, pat::strbit
 
     if( ignoreCut( "Leading Jet Pt" ) || theJet->pt() > leadJetPtCut_ ) {
       passCut( ret, "Leading Jet Pt" );
-
+*/
+  if( ignoreCut("nJets >= 5") || pfJets_.size() >= 5 ) {
+      passCut( ret, "nJets >= 5" );
       pat::strbitset tret = twPlusBJetSelection_.getBitTemplate();
       //Analyze the towards direction
       bool tpassWPlusBJet  = twPlusBJetSelection_( t, theJet->p4(), tret, true );
@@ -179,8 +184,9 @@ bool WPlusBJetType23Selection::operator()( edm::EventBase const & t, pat::strbit
           } // >= 2 bJet
         }  // >= 1 bJet
       }  // >= 1 WJet
-    } // Leading Jet Pt
-  }  // pass trigger
+  } // nJets >= 5
+//    } // Leading Jet Pt
+//  }  // pass trigger
 
   return (bool)ret;
 

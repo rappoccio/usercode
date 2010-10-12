@@ -51,6 +51,9 @@ class WPlusBJetType22Selection : public EventSelector {
     bool      tightTop0_;
     bool      tightTop1_;
     double    leadJetPtCut_;
+    double    secondJetPtCut_;
+    double    thirdJetPtCut_;
+    double    fourthJetPtCut_;
     double    wMassMin_;
     double    wMassMax_;
     double    topMassMin_;

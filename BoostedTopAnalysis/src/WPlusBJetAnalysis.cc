@@ -1,5 +1,8 @@
 #include "Analysis/BoostedTopAnalysis/interface/WPlusBJetAnalysis.h"
+#include "TRandom3.h"
+
 using namespace std;
+
 
 WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileDirectory & iDir ) :
   theDir( iDir ),
@@ -41,8 +44,18 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   histograms1d["minPairMass0Type33"]     = theDir.make<TH1F>("minPairMass0Type33",    "Min Pair Inv Mass; Mass (GeV/c^{2})",  100,  0,  500 );
   histograms1d["minPairMass1Type33"]     = theDir.make<TH1F>("minPairMass1Type33",    "Min Pair Inv Mass; Mass (GeV/c^{2})",  100,  0,  500 );
 
+  histograms1d["minPairMassType33_sel"]     = theDir.make<TH1F>("minPairMassType33_sel",    "Min Pair Inv Mass; Mass (GeV/c^{2})",  100,  0,  500 );
+  histograms1d["minPairMassType33_pred"]     = theDir.make<TH1F>("minPairMassType33_pred",    "Min Pair Inv Mass; Mass (GeV/c^{2})",  100,  0,  500 );
+
   histograms1d["leadJetPt"]       = theDir.make<TH1F>("leadJetPt",      "Leading Jet Pt",           200,  0,    1000 );
   histograms1d["leadJetEta"]      = theDir.make<TH1F>("leadJetEta",     "Leading Jet #eta",         50,   -4.0, 4.0 );
+  histograms1d["secJetPt"]       = theDir.make<TH1F>("secJetPt",      "Second Jet Pt",           200,  0,    1000 );
+  histograms1d["secJetEta"]      = theDir.make<TH1F>("secJetEta",     "Second Jet #eta",         50,   -4.0, 4.0 );
+  histograms1d["thirdJetPt"]       = theDir.make<TH1F>("thirdJetPt",      "Third Jet Pt",           200,  0,    1000 );
+  histograms1d["thirdJetEta"]      = theDir.make<TH1F>("thirdJetEta",     "Third Jet #eta",         50,   -4.0, 4.0 );
+  histograms1d["fourthJetPt"]       = theDir.make<TH1F>("fourthJetPt",      "Fourth Jet Pt",           200,  0,    1000 );
+  histograms1d["fourthJetEta"]      = theDir.make<TH1F>("fourthJetEta",     "Fourth Jet #eta",         50,   -4.0, 4.0 );
+
   histograms1d["minPairDr0Type33"]       = theDir.make<TH1F>("minPairDr0Type33",      "Min Pair #Delta R",        50,   0.0, 6.0 );
   histograms1d["minPairDPhi0Type33"]     = theDir.make<TH1F>("minPairDPhi0Type33",    "Min Pair #Delta Phi",      50,   0,    3. );
   histograms1d["minPairDr1Type33"]       = theDir.make<TH1F>("minPairDr1Type33",      "Min Pair #Delta R",        50,   0.0, 6.0 );
@@ -94,32 +107,38 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
   pat::strbitset retType22 = wPlusBJetType22Selection_.getBitTemplate();
   bool passType22 = wPlusBJetType22Selection_( iEvent, retType22 );
 
-  std::vector<edm::Ptr<pat::Jet> >  const &  pfJets = wPlusBJetType22Selection_.pfJets();
-  std::vector<edm::Ptr<pat::Jet> >  const &  tWJets = wPlusBJetType22Selection_.wJet0();
-  std::vector<edm::Ptr<pat::Jet> >  const &  oWJets = wPlusBJetType22Selection_.wJet1();
-  std::vector<edm::Ptr<pat::Jet> >  const &  tbJets = wPlusBJetType22Selection_.bJet0();
-  std::vector<edm::Ptr<pat::Jet> >  const &  obJets = wPlusBJetType22Selection_.bJet1();
-  std::vector<edm::Ptr<pat::Jet> >  const &  tMinDrPair = wPlusBJetType22Selection_.minDrPair0();
-  std::vector<edm::Ptr<pat::Jet> >  const &  oMinDrPair = wPlusBJetType22Selection_.minDrPair1();
-  std::vector<edm::Ptr<pat::Jet> >  const &  allJets0 = wPlusBJetType22Selection_.allJets0();
-  std::vector<edm::Ptr<pat::Jet> >  const &  allJets1 = wPlusBJetType22Selection_.allJets1();
-  edm::Ptr<pat::Jet>   const  & taJet = wPlusBJetType22Selection_.aJet0();
-  edm::Ptr<pat::Jet>   const  & oaJet = wPlusBJetType22Selection_.aJet1();
+  //baseline selection
+  if( retType22[string("Fourth Jet Pt")] ) {
 
-  if( retType22[string("Leading Jet Pt")] ) {
+    std::vector<edm::Ptr<pat::Jet> >  const &  pfJets = wPlusBJetType22Selection_.pfJets();
+    std::vector<edm::Ptr<pat::Jet> >  const &  tWJets = wPlusBJetType22Selection_.wJet0();
+    std::vector<edm::Ptr<pat::Jet> >  const &  oWJets = wPlusBJetType22Selection_.wJet1();
+    std::vector<edm::Ptr<pat::Jet> >  const &  tbJets = wPlusBJetType22Selection_.bJet0();
+    std::vector<edm::Ptr<pat::Jet> >  const &  obJets = wPlusBJetType22Selection_.bJet1();
+    std::vector<edm::Ptr<pat::Jet> >  const &  tMinDrPair = wPlusBJetType22Selection_.minDrPair0();
+    std::vector<edm::Ptr<pat::Jet> >  const &  oMinDrPair = wPlusBJetType22Selection_.minDrPair1();
+    std::vector<edm::Ptr<pat::Jet> >  const &  allJets0 = wPlusBJetType22Selection_.allJets0();
+    std::vector<edm::Ptr<pat::Jet> >  const &  allJets1 = wPlusBJetType22Selection_.allJets1();
+    edm::Ptr<pat::Jet>   const  & taJet = wPlusBJetType22Selection_.aJet0();
+    edm::Ptr<pat::Jet>   const  & oaJet = wPlusBJetType22Selection_.aJet1();
+
     histograms2d["nJets0vsNJets1"]      ->  Fill( allJets0.size(), allJets1.size() );
     histograms1d["nJet"]      ->  Fill( pfJets.size() );
     for( size_t i=0; i<pfJets.size(); i++ ) {
       histograms1d["jetPt"]     ->  Fill( pfJets.at(i)->pt() );
       histograms1d["jetEta"]    ->  Fill( pfJets.at(i)->eta() );
       histograms1d["jetMass"]   ->  Fill( pfJets.at(i)->mass() );
-      if( i==0 ) {
-        histograms1d["leadJetPt"]       ->  Fill( pfJets.at(0)->pt() );
-        histograms1d["leadJetEta"]      ->  Fill( pfJets.at(0)->eta() );
-      }
       if( pfJets.at(i)->pt() > 200 )
         histograms2d["jetMassVsPt"]     ->  Fill( pfJets.at(i)->pt() , pfJets.at(i)->mass() );
     }
+    histograms1d["leadJetPt"]       ->  Fill( pfJets.at(0)->pt() );
+    histograms1d["leadJetEta"]      ->  Fill( pfJets.at(0)->eta() );
+    histograms1d["secJetPt"]        ->  Fill( pfJets.at(1)->pt() );
+    histograms1d["secJetEta"]       ->  Fill( pfJets.at(1)->eta() );
+    histograms1d["thirdJetPt"]       ->  Fill( pfJets.at(2)->pt() );
+    histograms1d["thirdJetEta"]      ->  Fill( pfJets.at(2)->eta() );
+    histograms1d["fourthJetPt"]        ->  Fill( pfJets.at(3)->pt() );
+    histograms1d["fourthJetEta"]       ->  Fill( pfJets.at(3)->eta() );
 
     int numWJets = tWJets.size() + oWJets.size();
     int numBJets = tbJets.size() + obJets.size();
@@ -188,91 +207,125 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         histograms1d["topPairDr"]       ->  Fill( deltaR );
       }
     } // end if ret hasTwoTops
-  } // end if leading Jet Pt
 
 
-  if( retType22[string(">= 1 WJet")] && !retType22[string(">= 2 WJet")] ) {
-    pat::strbitset retType23 = wPlusBJetType23Selection_.getBitTemplate();
-    bool passType23 = wPlusBJetType23Selection_( iEvent, retType23 );
-    if( retType23[string("hasMinPair")] ) {
-      reco::Candidate::LorentzVector const p4_top0 = wPlusBJetType23Selection_.p4_top0();
-      reco::Candidate::LorentzVector const p4_top1 = wPlusBJetType23Selection_.p4_top1();
-      if( tMinDrPair.size() == 2 ) {
-        double minPairMass = (tMinDrPair.at(0)->p4()+tMinDrPair.at(1)->p4()).mass();
-        histograms1d["minPairMass0Type23"]      ->  Fill( minPairMass );
-        if( retType23[string("minPairMassCut")] ) {
-          histograms1d["type3TopMass0Type23"]   ->  Fill( p4_top0.mass() );
-          histograms1d["tightTopMass1Type23"]   ->  Fill( p4_top1.mass() );
+    if( retType22[string(">= 1 WJet")] && !retType22[string(">= 2 WJet")] ) {
+      pat::strbitset retType23 = wPlusBJetType23Selection_.getBitTemplate();
+      bool passType23 = wPlusBJetType23Selection_( iEvent, retType23 );
+      if( retType23[string("hasMinPair")] ) {
+        reco::Candidate::LorentzVector const p4_top0 = wPlusBJetType23Selection_.p4_top0();
+        reco::Candidate::LorentzVector const p4_top1 = wPlusBJetType23Selection_.p4_top1();
+        if( tMinDrPair.size() == 2 ) {
+          double minPairMass = (tMinDrPair.at(0)->p4()+tMinDrPair.at(1)->p4()).mass();
+          histograms1d["minPairMass0Type23"]      ->  Fill( minPairMass );
+          if( retType23[string("minPairMassCut")] ) {
+            histograms1d["type3TopMass0Type23"]   ->  Fill( p4_top0.mass() );
+            histograms1d["tightTopMass1Type23"]   ->  Fill( p4_top1.mass() );
+          }
+        } // end tMinDrPair
+        else {
+          double minPairMass = (oMinDrPair.at(0)->p4()+oMinDrPair.at(1)->p4()).mass();
+          histograms1d["minPairMass1Type23"]      ->  Fill( minPairMass );
+          if( retType23[string("minPairMassCut")] ) {
+            histograms1d["type3TopMass1Type23"]   ->  Fill( p4_top1.mass() );
+            histograms1d["tightTopMass0Type23"]   ->  Fill( p4_top0.mass() );
+          }
+        } // end else
+        if( passType23 ) {
+          histograms1d["ttMassType23"]    ->  Fill( (p4_top0+p4_top1).mass() );
+          if(runOnData_)    cout<<"Woohoo, Type2+Type3, Event id, run "<<iEvent.id()<<endl;
+          double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
+          double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) );
+          histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
+          histograms1d["topPairDr"]       ->  Fill( deltaR );        
+        } // end passType23
+      }  // hasMinPair    
+    }  // end if >= 1 WJet and !>= 2 WJet
+
+    if( !retType22[string(">= 1 WJet")]  ) {
+      pat::strbitset  retType33 = wPlusBJetType33Selection_.getBitTemplate();
+      bool passType33 = wPlusBJetType33Selection_( iEvent, retType33 );
+
+      if( retType33[string("hasMinPair0")] && retType33[string("hasMinPair1")] )  {
+        reco::Candidate::LorentzVector const p4_top0 = wPlusBJetType33Selection_.p4_top0();
+        reco::Candidate::LorentzVector const p4_top1 = wPlusBJetType33Selection_.p4_top1();
+        reco::Candidate::LorentzVector  p4_first0 = tMinDrPair.at(0)->p4();
+        reco::Candidate::LorentzVector  p4_second0  = tMinDrPair.at(1)->p4();
+        reco::Candidate::LorentzVector  p4_first1 = oMinDrPair.at(0)->p4();
+        reco::Candidate::LorentzVector  p4_second1  = oMinDrPair.at(1)->p4();
+        double dR0 = reco::deltaR<double>( p4_first0.eta(), p4_first0.phi(), p4_second0.eta(), p4_second0.phi() );
+        double dR1 = reco::deltaR<double>( p4_first1.eta(), p4_first1.phi(), p4_second1.eta(), p4_second1.phi() );
+        double dPhi0 = fabs( reco::deltaPhi<double> ( p4_first0.phi(), p4_second0.phi() ) );
+        double dPhi1 = fabs( reco::deltaPhi<double> ( p4_first1.phi(), p4_second1.phi() ) );
+        histograms1d["minPairDr0Type33"]    ->  Fill( dR0 );
+        histograms1d["minPairDPhi0Type33"]  ->  Fill( dPhi0 );
+        histograms1d["minPairDr1Type33"]    ->  Fill( dR1 );
+        histograms1d["minPairDPhi1Type33"]  ->  Fill( dPhi1 );
+        histograms1d["minPairMass0Type33"]  ->  Fill( (p4_first0+p4_second0).mass() );
+        histograms1d["minPairMass1Type33"]  ->  Fill( (p4_first1+p4_second1).mass() );
+        if( retType33[string("minPairMassCut")] ) {
+          histograms1d["type3TopMass0Type33"]   ->  Fill( p4_top0.mass() );
+          histograms1d["type3TopMass1Type33"]   ->  Fill( p4_top1.mass() );
         }
-      } // end tMinDrPair
-      else {
-        double minPairMass = (oMinDrPair.at(0)->p4()+oMinDrPair.at(1)->p4()).mass();
-        histograms1d["minPairMass1Type23"]      ->  Fill( minPairMass );
-        if( retType23[string("minPairMassCut")] ) {
-          histograms1d["type3TopMass1Type23"]   ->  Fill( p4_top1.mass() );
-          histograms1d["tightTopMass0Type23"]   ->  Fill( p4_top0.mass() );
+        if( passType33 )  {
+          histograms1d["ttMassType33"]    ->  Fill( (p4_top0+p4_top1).mass() );
+          if(runOnData_)    {
+            cout<<"Woohoo, Type3+Type3, Event id, "<<iEvent.id()<<endl;
+            cout<<"px,py,pz,E,mass "<<endl;
+            cout<<"bJet0, "<<tbJets.at(0)->px()<<" "<<tbJets.at(0)->py()<<" "<<tbJets.at(0)->pz()<<" "<<tbJets.at(0)->energy()<<" "<<tbJets.at(0)->mass()<<endl;
+            cout<<"bJet1, "<<obJets.at(0)->px()<<" "<<obJets.at(0)->py()<<" "<<obJets.at(0)->pz()<<" "<<obJets.at(0)->energy()<<" "<<obJets.at(0)->mass()<<endl;
+            reco::Candidate::LorentzVector  w0 = p4_first0 + p4_second0 ;
+            reco::Candidate::LorentzVector  w1 = p4_first1 + p4_second1 ;
+            cout<<"w0, "<<w0.px()<<" "<<w0.py()<<" "<<w0.pz()<<" "<<w0.energy()<<" "<<w0.mass()<<endl;
+            cout<<"w1, "<<w1.px()<<" "<<w1.py()<<" "<<w1.pz()<<" "<<w1.energy()<<" "<<w1.mass()<<endl;
+            cout<<"top0, "<<p4_top0.px()<<" "<<p4_top0.py()<<" "<<p4_top0.pz()<<" "<<p4_top0.energy()<<" "<<p4_top0.mass()<<endl;
+            cout<<"top1, "<<p4_top1.px()<<" "<<p4_top1.py()<<" "<<p4_top1.pz()<<" "<<p4_top1.energy()<<" "<<p4_top1.mass()<<endl;
+          }
+          double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
+          double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) ) ;
+          histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
+          histograms1d["topPairDr"]       ->  Fill( deltaR );
         }
-      } // end else
-      if( passType23 ) {
-        histograms1d["ttMassType23"]    ->  Fill( (p4_top0+p4_top1).mass() );
-        if(runOnData_)    cout<<"Woohoo, Type2+Type3, Event id, run "<<iEvent.id()<<endl;
-        double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
-        double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) );
-        histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
-        histograms1d["topPairDr"]       ->  Fill( deltaR );        
-      } // end passType23
-    }  // hasMinPair    
-  }  // end if >= 1 WJet and !>= 2 WJet
+      }  // hasMinPair0 && hasMinPair1
 
-  if( !retType22[string(">= 1 WJet")] && retType22[string("Leading Jet Pt")] ) {
-    pat::strbitset  retType33 = wPlusBJetType33Selection_.getBitTemplate();
-    bool passType33 = wPlusBJetType33Selection_( iEvent, retType33 );
+      if( retType33[string("nJets >= 6")] ) {
+        TRandom3 r;
+        double x = r.Uniform( 0, 1 );
+        bool towards = false;
+        if( x < 0.5 )  towards = true;
+        if( towards ) {
+          //selection only
+          if( retType33[string("hasMinPair0")] )  {
+            reco::Candidate::LorentzVector  p4_first0 = tMinDrPair.at(0)->p4();
+            reco::Candidate::LorentzVector  p4_second0  = tMinDrPair.at(1)->p4();
+            histograms1d["minPairMassType33_sel"]     ->  Fill( (p4_first0+p4_second0).mass() );
+          }  // hasMinPair0
+          //Do combinatorics
+          std::vector<Type3>      const & type3Tops0  = wPlusBJetType22Selection_.type3Tops0();
+          for( size_t i=0; i<type3Tops0.size(); i++ ) {
+            double weight = type3Tops0.at(i).weight ;
+            double minPairMass = type3Tops0.at(i).minMass();
+            histograms1d["minPairMassType33_pred"]    ->  Fill( minPairMass, weight );
+          }  // end for
+        } // end towards
+        else  {
+          if( retType33[string("hasMinPair1")] ) {
+            reco::Candidate::LorentzVector  p4_first1 = oMinDrPair.at(0)->p4();
+            reco::Candidate::LorentzVector  p4_second1  = oMinDrPair.at(1)->p4();
+            histograms1d["minPairMassType33_sel"]     ->  Fill( (p4_first1+p4_second1).mass() );
+          } // hasMinPair1
+          //Do combinatorics
+          std::vector<Type3>      const & type3Tops1  = wPlusBJetType22Selection_.type3Tops1();
+          for( size_t i=0; i<type3Tops1.size(); i++ ) {
+            double weight = type3Tops1.at(i).weight ;
+            double minPairMass = type3Tops1.at(i).minMass();
+            histograms1d["minPairMassType33_pred"]    ->  Fill( minPairMass, weight );
+          }  // end for
+        }  // end else
+      } // end nJets >= 6
+    }  // end if !>= 1 WJet
 
-    if( retType33[string("hasMinPair1")] )  {
-      reco::Candidate::LorentzVector const p4_top0 = wPlusBJetType33Selection_.p4_top0();
-      reco::Candidate::LorentzVector const p4_top1 = wPlusBJetType33Selection_.p4_top1();
-      reco::Candidate::LorentzVector  p4_first0 = tMinDrPair.at(0)->p4();
-      reco::Candidate::LorentzVector  p4_second0  = tMinDrPair.at(1)->p4();
-      reco::Candidate::LorentzVector  p4_first1 = oMinDrPair.at(0)->p4();
-      reco::Candidate::LorentzVector  p4_second1  = oMinDrPair.at(1)->p4();
-      double dR0 = reco::deltaR<double>( p4_first0.eta(), p4_first0.phi(), p4_second0.eta(), p4_second0.phi() );
-      double dR1 = reco::deltaR<double>( p4_first1.eta(), p4_first1.phi(), p4_second1.eta(), p4_second1.phi() );
-      double dPhi0 = fabs( reco::deltaPhi<double> ( p4_first0.phi(), p4_second0.phi() ) );
-      double dPhi1 = fabs( reco::deltaPhi<double> ( p4_first1.phi(), p4_second1.phi() ) );
-      histograms1d["minPairDr0Type33"]    ->  Fill( dR0 );
-      histograms1d["minPairDPhi0Type33"]  ->  Fill( dPhi0 );
-      histograms1d["minPairDr1Type33"]    ->  Fill( dR1 );
-      histograms1d["minPairDPhi1Type33"]  ->  Fill( dPhi1 );
-      histograms1d["minPairMass0Type33"]  ->  Fill( (p4_first0+p4_second0).mass() );
-      histograms1d["minPairMass1Type33"]  ->  Fill( (p4_first1+p4_second1).mass() );
-      if( retType33[string("minPairMassCut")] ) {
-        histograms1d["type3TopMass0Type33"]   ->  Fill( p4_top0.mass() );
-        histograms1d["type3TopMass1Type33"]   ->  Fill( p4_top1.mass() );
-      }
-      if( passType33 )  {
-        histograms1d["ttMassType33"]    ->  Fill( (p4_top0+p4_top1).mass() );
-        if(runOnData_)    {
-          cout<<"Woohoo, Type3+Type3, Event id, "<<iEvent.id()<<endl;
-          cout<<"px,py,pz,E,mass "<<endl;
-          cout<<"bJet0, "<<tbJets.at(0)->px()<<" "<<tbJets.at(0)->py()<<" "<<tbJets.at(0)->pz()<<" "<<tbJets.at(0)->energy()<<" "<<tbJets.at(0)->mass()<<endl;
-          cout<<"bJet1, "<<obJets.at(0)->px()<<" "<<obJets.at(0)->py()<<" "<<obJets.at(0)->pz()<<" "<<obJets.at(0)->energy()<<" "<<obJets.at(0)->mass()<<endl;
-          reco::Candidate::LorentzVector  w0 = p4_first0 + p4_second0 ;
-          reco::Candidate::LorentzVector  w1 = p4_first1 + p4_second1 ;
-          cout<<"w0, "<<w0.px()<<" "<<w0.py()<<" "<<w0.pz()<<" "<<w0.energy()<<" "<<w0.mass()<<endl;
-          cout<<"w1, "<<w1.px()<<" "<<w1.py()<<" "<<w1.pz()<<" "<<w1.energy()<<" "<<w1.mass()<<endl;
-          cout<<"top0, "<<p4_top0.px()<<" "<<p4_top0.py()<<" "<<p4_top0.pz()<<" "<<p4_top0.energy()<<" "<<p4_top0.mass()<<endl;
-          cout<<"top1, "<<p4_top1.px()<<" "<<p4_top1.py()<<" "<<p4_top1.pz()<<" "<<p4_top1.energy()<<" "<<p4_top1.mass()<<endl;
-        }
-        double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
-        double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) ) ;
-        histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
-        histograms1d["topPairDr"]       ->  Fill( deltaR );
-      }
-    }  // hasMinPair1
-  }  // end if !>= 1 WJet
-
-  if( retType22[string("Leading Jet Pt")] ) {
-
+    //combinatoric background estimation afterwards
     std::vector<Type2L>     const & looseTops0  = wPlusBJetType22Selection_.looseTops0();
     std::vector<Type2T>     const & tightTops0  = wPlusBJetType22Selection_.tightTops0();
     std::vector<Type3>      const & type3Tops0  = wPlusBJetType22Selection_.type3Tops0();  
@@ -369,5 +422,5 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
       } // end j
     } // end i
     //cout<<"end"<<endl;
-  } // end if retType22 leading jet pt
+  } // end retType22 fourth Jet Pt, baseline selection
 }

@@ -14,22 +14,24 @@ WPlusBJetType33Selection::WPlusBJetType33Selection ( edm::ParameterSet const & p
 {
   //make the bitset
   push_back("Inclusive");
-  push_back("Trigger");
-  push_back("Leading Jet Pt");
-  push_back(">= 1 bJet");
-  push_back(">= 2 bJet");
+  //push_back("Trigger");
+  push_back("nJets >= 6");
+  //push_back("Leading Jet Pt");
+  push_back("has bJet0");
   push_back("hasMinPair0");
+  push_back("has bJet1");
   push_back("hasMinPair1");
   push_back("minPairMassCut");
   push_back("topMassCut");
 
   //turn on bit
   set("Inclusive");
-  set("Trigger");
-  set("Leading Jet Pt");
-  set(">= 1 bJet");
-  set(">= 2 bJet");
+  //set("Trigger");
+  set("nJets >= 6");
+  //set("Leading Jet Pt");
+  set("has bJet0");
   set("hasMinPair0");
+  set("has bJet1");
   set("hasMinPair1");
   set("minPairMassCut");
   set("topMassCut");
@@ -56,7 +58,6 @@ bool WPlusBJetType33Selection::operator()( edm::EventBase const & t, pat::strbit
   const boost::shared_ptr<PFJetIDSelectionFunctor> & pfJetSel = twPlusBJetSelection_.pfJetSel();
   pat::strbitset retPFJet = pfJetSel->getBitTemplate();
 
-  const pat::Jet * theJet;
   for( vector<pat::Jet>::const_iterator jetBegin=jetHandle->begin(), jetEnd=jetHandle->end(), ijet=jetBegin ;
     ijet!=jetEnd; ijet++ )
   {
@@ -67,10 +68,11 @@ bool WPlusBJetType33Selection::operator()( edm::EventBase const & t, pat::strbit
     }
   } // end ijet
 
+  const pat::Jet * theJet;
   if( pfJets_.size() < 1 )   return false;
   theJet = &(*pfJets_.at(0));
-
-  //Get the trigger
+/*
+  Get the trigger
   edm::Handle<pat::TriggerEvent>  triggerEvent;
   t.getByLabel( trigSrc_, triggerEvent);
   if( !triggerEvent.isValid() )   return (bool)ret;
@@ -85,13 +87,16 @@ bool WPlusBJetType33Selection::operator()( edm::EventBase const & t, pat::strbit
       passTrig = true;
     }
   }
-
+*/
+/*
   if( ignoreCut( "Trigger" ) || passTrig )  {
     passCut( ret, "Trigger" );
 
     if( ignoreCut( "Leading Jet Pt" ) || theJet->pt() > leadJetPtCut_ ) {
       passCut( ret, "Leading Jet Pt" );
-
+*/
+  if( ignoreCut( "nJets >= 6" ) || pfJets_.size() >= 6 ) {
+      passCut( ret, "nJets >= 6" );
       pat::strbitset tret = twPlusBJetSelection_.getBitTemplate();
       //Analyze the towards direction
       bool tpassWPlusBJet  = twPlusBJetSelection_( t, theJet->p4(), tret, true );
@@ -106,44 +111,49 @@ bool WPlusBJetType33Selection::operator()( edm::EventBase const & t, pat::strbit
       std::vector<edm::Ptr<pat::Jet> >  const & oMinDrPair = owPlusBJetSelection_.minDrPair();
 
       int numBJets = 0;
-      if( tbJets.size() >= 1 )  numBJets++;
-      if( obJets.size() >= 1 )  numBJets++;
+      bool hasBJet0 = false, hasBJet1 = false;
+      if( tbJets.size() >= 1 )  hasBJet0 = true;
+      if( obJets.size() >= 1 )  hasBJet1 = true;
 
-      if( ignoreCut(">= 1 bJet") || numBJets >= 1 ) {
-        passCut( ret, ">= 1 bJet" );
-        if( ignoreCut(">= 2 bJet") || numBJets >= 2 ) {
-          passCut(ret, ">= 2 bJet");
-          bool hasMinPair0 = tMinDrPair.size()==2 ;
-          bool hasMinPair1 = oMinDrPair.size()==2 ;
-          if( ignoreCut("hasMinPair0") || hasMinPair0 ) {
-            passCut( ret, "hasMinPair0" );
-            if( ignoreCut("hasMinPair1") || hasMinPair1 ) {
-              passCut( ret, "hasMinPair1" );
+      if( ignoreCut("has bJet0") || hasBJet0 ) {
+        passCut( ret, "has bJet0" );
+        bool hasMinPair0 = tMinDrPair.size()==2 ;
+        if( ignoreCut("hasMinPair0") || hasMinPair0 ) {
+          passCut( ret, "hasMinPair0" );
+        }  // end if hasMinPair0
+      } //end if has bJet0
 
-              p4_top0_  = tbJets.at(0)->p4() + tMinDrPair.at(0)->p4() + tMinDrPair.at(1)->p4();
-              double minPairMass0 = (tMinDrPair.at(0)->p4() + tMinDrPair.at(1)->p4()).mass();
-              p4_top1_  = obJets.at(0)->p4() + oMinDrPair.at(0)->p4() + oMinDrPair.at(1)->p4();
-              double minPairMass1 = (oMinDrPair.at(0)->p4() + oMinDrPair.at(1)->p4()).mass();
+      if( ignoreCut("has bJet1") || hasBJet1 ) {
+        passCut(ret, "has bJet1");
+        bool hasMinPair1 = oMinDrPair.size()==2 ;
+        if( ignoreCut("hasMinPair1") || hasMinPair1 ) {
+           passCut( ret, "hasMinPair1" );
+        } // end if hasMinPair1
+      } // end if has bJet1
 
-              bool passMinPairMass = ( minPairMass0 > wMassMin_ && minPairMass0 < wMassMax_ && minPairMass1 > wMassMin_ && minPairMass1 < wMassMax_ );
-              if( ignoreCut("minPairMassCut") || passMinPairMass ) {
-                passCut( ret, "minPairMassCut" );
+      if( ret[string("hasMinPair0")] && ret[string("hasMinPair1")] )  {
+        p4_top0_  = tbJets.at(0)->p4() + tMinDrPair.at(0)->p4() + tMinDrPair.at(1)->p4();
+        double minPairMass0 = (tMinDrPair.at(0)->p4() + tMinDrPair.at(1)->p4()).mass();
+        p4_top1_  = obJets.at(0)->p4() + oMinDrPair.at(0)->p4() + oMinDrPair.at(1)->p4();
+        double minPairMass1 = (oMinDrPair.at(0)->p4() + oMinDrPair.at(1)->p4()).mass();
 
-                double topMass0 = p4_top0_.mass();
-                double topMass1 = p4_top1_.mass();
-                double passTopMass = ( topMass0 > topMassMin_ && topMass0 < topMassMax_ && topMass1 > topMassMin_ && topMass1 < topMassMax_ );
-                if( ignoreCut("topMassCut") || passTopMass ) {
-                  passCut( ret, "topMassCut" );
-                  //cout<<"Top Mass 0 "<<topMass0<<endl;
-                  //cout<<"Top Mass 1 "<<topMass1<<endl;
-                } // topMassCut
-              } // minPairMassCut
-            } // hasMinPair1
-          } // hasMinPair0
-        } // >= 2 bJet
-      }  // >= 1 bJet
-    } // Leading Jet Pt
-  }  // pass trigger
+        bool passMinPairMass = ( minPairMass0 > wMassMin_ && minPairMass0 < wMassMax_ && minPairMass1 > wMassMin_ && minPairMass1 < wMassMax_ );
+        if( ignoreCut("minPairMassCut") || passMinPairMass ) {
+          passCut( ret, "minPairMassCut" );
+
+          double topMass0 = p4_top0_.mass();
+          double topMass1 = p4_top1_.mass();
+          double passTopMass = ( topMass0 > topMassMin_ && topMass0 < topMassMax_ && topMass1 > topMassMin_ && topMass1 < topMassMax_ );
+          if( ignoreCut("topMassCut") || passTopMass ) {
+            passCut( ret, "topMassCut" );
+            //cout<<"Top Mass 0 "<<topMass0<<endl;
+            //cout<<"Top Mass 1 "<<topMass1<<endl;
+          } // topMassCut
+        } // minPairMassCut
+      } // end if ret[string("hasMinPair0")] && ret[string("hasMinPair1")]
+  } // nJets >= 6
+//    } // Leading Jet Pt
+//  }  // pass trigger
 
   return (bool)ret;
 

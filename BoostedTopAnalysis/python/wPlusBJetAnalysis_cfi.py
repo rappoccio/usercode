@@ -18,7 +18,10 @@ wPlusBJetAnalysis = cms.PSet(
               bTagOP   = cms.double( 3.3 ),
               mistagFileName = cms.string("mistag.root")
             ),
-          leadJetPtCut = cms.double(150),
+          leadJetPtCut = cms.double(120),
+          secondJetPtCut  = cms.double(100),
+          thirdJetPtCut   = cms.double(50),
+          fourthJetPtCut  = cms.double(30),
           wMassMin    = cms.double(50),
           wMassMax    = cms.double(100),
           topMassMin  = cms.double(140),
