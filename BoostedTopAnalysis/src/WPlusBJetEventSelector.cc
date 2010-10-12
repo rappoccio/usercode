@@ -90,6 +90,12 @@ bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candida
 
   }  // end for pat jets
 
+  //Since only the bJet, wJet on the top be used, put the rest back in the nonTags
+  for( size_t i=1; i<wJets_.size(); i++ )
+    nonTags.push_back( wJets_.at(i) );
+  for( size_t i=1; i<bJets_.size(); i++ )
+    nonTags.push_back( bJets_.at(i) );
+
   //If W is found, search for the nearest jet
   if( hasWJets() ) {
     double minDeltaR = 99999. ;
@@ -103,12 +109,6 @@ bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candida
       }  //end if < minDeltaR 
     }  // end i
   }  // end if hasWJets
-
-  //Since only the bJet, wJet on the top be used, put the rest back in the nonTags
-  for( size_t i=1; i<wJets_.size(); i++ )
-    nonTags.push_back( wJets_.at(i) );
-  for( size_t i=1; i<bJets_.size(); i++ )
-    nonTags.push_back( bJets_.at(i) );
 
   //Found the min DeltaR pair of jets
   double minDeltaR = 9999. ;
