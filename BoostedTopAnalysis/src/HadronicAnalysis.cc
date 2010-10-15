@@ -1,5 +1,4 @@
 #include "Analysis/BoostedTopAnalysis/interface/HadronicAnalysis.h"
-#include "TRandom3.h"
 
 using namespace std;
 
@@ -174,6 +173,16 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms1d["WjetID_dR"]    = theDir.make<TH1F>("WjetID_dR", "WjetID_dR",  100,    0,  1 );
   histograms2d["WjetID_yVsMu"] = theDir.make<TH2F> ("WjetID_yVsMu", "WjetID_yVsMu", 50,   0,  1,  50, 0,    1 );
 
+  edm::Service<edm::RandomNumberGenerator> rng;
+  if ( ! rng.isAvailable()) {
+    throw cms::Exception("Configuration")
+      << "Module requires the RandomNumberGeneratorService\n";
+  }
+
+  CLHEP::HepRandomEngine& engine = rng->getEngine();
+  flatDistribution_ = new CLHEP::RandFlat(engine, 0., 1.);
+
+
 }
 
 void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
@@ -230,8 +239,8 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 
       // Derive mis tag rate 
       // todo: simplify the next few lines  
-      TRandom3 r;
-      double x = r.Uniform( 0, 1 );
+      double x = flatDistribution_->fire();
+      //cout<<"Random number is "<<x<<endl;
       int probe_index(0);
       if( x < 0.5 )  probe_index = 0;
       else      probe_index = 1;

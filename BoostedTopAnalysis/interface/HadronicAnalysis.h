@@ -6,7 +6,11 @@
 #include "DataFormats/FWLite/interface/Event.h"
 #include "Math/GenVector/PxPyPzM4D.h"
 #include "DataFormats/FWLite/interface/Handle.h"
-
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Utilities/interface/RandomNumberGenerator.h"
+#include "CLHEP/Random/RandFlat.h"
+#include "CLHEP/Random/RandPoissonQ.h"
+#include "FWCore/Utilities/interface/Exception.h"
 
 #include <iostream>
 #include <iomanip>
@@ -86,6 +90,7 @@ class HadronicAnalysis {
     std::map<std::string, TH2F*> histograms2d;
 
     std::vector<EventSummary>  summary;
+    CLHEP::RandFlat *flatDistribution_;
 };
 
 #endif

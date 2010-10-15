@@ -13,6 +13,7 @@
 <use name=FWCore/Common>
 <use name=PhysicsTools/CandUtils>
 <use name=Analysis/BoostedTopObjects>
+<use name=FWCore/ServiceRegistry>
 
 <export>
   <lib name=AnalysisBoostedTopAnalysis>

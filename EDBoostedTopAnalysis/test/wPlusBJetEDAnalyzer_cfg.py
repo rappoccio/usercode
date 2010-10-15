@@ -35,4 +35,11 @@ process.p = cms.Path(
     process.wPlusBJetAna
     )
 
+process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+                      wPlusBJetAna = cms.PSet(
+                      initialSeed = cms.untracked.uint32(81)
+                      )
+)
+
+
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

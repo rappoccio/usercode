@@ -58,4 +58,10 @@ process.p = cms.Path(
     process.hadronicAnaUnweighted
     )
 
+process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+                      hadronicAnaUnweighted = cms.PSet(
+                      initialSeed = cms.untracked.uint32(157)
+                      )
+)
+
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

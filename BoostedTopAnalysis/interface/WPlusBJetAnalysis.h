@@ -6,6 +6,12 @@
 #include "Analysis/BoostedTopAnalysis/interface/WPlusBJetType33Selection.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "Math/GenVector/PxPyPzM4D.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Utilities/interface/RandomNumberGenerator.h"
+#include "CLHEP/Random/RandFlat.h"
+#include "CLHEP/Random/RandPoissonQ.h"
+#include "FWCore/Utilities/interface/Exception.h"
+
 
 #include <iostream>
 #include <iomanip>
@@ -26,7 +32,7 @@ class WPlusBJetAnalysis{
 
   public:
     WPlusBJetAnalysis( const edm::ParameterSet & iConfig, TFileDirectory & iDir );
-    virtual ~WPlusBJetAnalysis() { }
+    virtual ~WPlusBJetAnalysis() { } //delete flatDistribution_; 
     virtual void beginJob() {}
     virtual void analyze( const edm::EventBase& iEvent ) ;
     virtual void endJob() {
@@ -48,6 +54,7 @@ class WPlusBJetAnalysis{
     double wMassMin_, wMassMax_;
     double topMassMin_, topMassMax_;
     bool   runOnData_;
+    CLHEP::RandFlat *flatDistribution_;
 
 };
 

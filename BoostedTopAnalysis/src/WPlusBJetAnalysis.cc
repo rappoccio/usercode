@@ -1,5 +1,4 @@
 #include "Analysis/BoostedTopAnalysis/interface/WPlusBJetAnalysis.h"
-#include "TRandom3.h"
 
 using namespace std;
 
@@ -46,6 +45,11 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
 
   histograms1d["minPairMassType33_sel"]     = theDir.make<TH1F>("minPairMassType33_sel",    "Min Pair Inv Mass; Mass (GeV/c^{2})",  100,  0,  500 );
   histograms1d["minPairMassType33_pred"]     = theDir.make<TH1F>("minPairMassType33_pred",    "Min Pair Inv Mass; Mass (GeV/c^{2})",  100,  0,  500 );
+  histograms1d["minPairMass0Type33_sel"]     = theDir.make<TH1F>("minPairMass0Type33_sel",    "Min Pair Inv Mass; Mass (GeV/c^{2})",  100,  0,  500 );
+  histograms1d["minPairMass0Type33_pred"]     = theDir.make<TH1F>("minPairMass0Type33_pred",    "Min Pair Inv Mass; Mass (GeV/c^{2})",  100,  0,  500 );
+  histograms1d["minPairMass1Type33_sel"]     = theDir.make<TH1F>("minPairMass1Type33_sel",    "Min Pair Inv Mass; Mass (GeV/c^{2})",  100,  0,  500 );
+  histograms1d["minPairMass1Type33_pred"]     = theDir.make<TH1F>("minPairMass1Type33_pred",    "Min Pair Inv Mass; Mass (GeV/c^{2})",  100,  0,  500 );
+
 
   histograms1d["leadJetPt"]       = theDir.make<TH1F>("leadJetPt",      "Leading Jet Pt",           200,  0,    1000 );
   histograms1d["leadJetEta"]      = theDir.make<TH1F>("leadJetEta",     "Leading Jet #eta",         50,   -4.0, 4.0 );
@@ -97,6 +101,17 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
 
 
   histograms2d["jetMassVsPt"]     = theDir.make<TH2F>("jetMassVsPt",    "Jet Mass Vs Pt; Jet Pt (GeV/c^{2}); Jet Mass (GeV/c^{2})",    200,  0,    1000,   100,    0,    500 );
+
+  TDirectory * dir = theDir.cd();
+
+  edm::Service<edm::RandomNumberGenerator> rng;
+  if ( ! rng.isAvailable()) {
+    throw cms::Exception("Configuration")
+      << "Module requires the RandomNumberGeneratorService\n";
+  }
+
+  CLHEP::HepRandomEngine& engine = rng->getEngine();
+  flatDistribution_ = new CLHEP::RandFlat(engine, 0., 1.);
 
 }
 
@@ -289,39 +304,43 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
       }  // hasMinPair0 && hasMinPair1
 
       if( retType33[string("nJets >= 6")] ) {
-        TRandom3 r;
-        double x = r.Uniform( 0, 1 );
+        double x = flatDistribution_->fire();
+        //cout<<"Random number is "<<x<<endl;
         bool towards = false;
         if( x < 0.5 )  towards = true;
-        if( towards ) {
-          //selection only
-          if( retType33[string("hasMinPair0")] )  {
-            reco::Candidate::LorentzVector  p4_first0 = tMinDrPair.at(0)->p4();
-            reco::Candidate::LorentzVector  p4_second0  = tMinDrPair.at(1)->p4();
+        //selection only
+        if( retType33[string("hasMinPair0")] )  {
+          reco::Candidate::LorentzVector  p4_first0 = tMinDrPair.at(0)->p4();
+          reco::Candidate::LorentzVector  p4_second0  = tMinDrPair.at(1)->p4();
+          histograms1d["minPairMass0Type33_sel"]     ->  Fill( (p4_first0+p4_second0).mass() );
+          if( towards )
             histograms1d["minPairMassType33_sel"]     ->  Fill( (p4_first0+p4_second0).mass() );
-          }  // hasMinPair0
-          //Do combinatorics
-          std::vector<Type3>      const & type3Tops0  = wPlusBJetType22Selection_.type3Tops0();
-          for( size_t i=0; i<type3Tops0.size(); i++ ) {
-            double weight = type3Tops0.at(i).weight ;
-            double minPairMass = type3Tops0.at(i).minMass();
+        }  // hasMinPair0
+        //Do combinatorics
+        std::vector<Type3>      const & type3Tops0  = wPlusBJetType22Selection_.type3Tops0();
+        for( size_t i=0; i<type3Tops0.size(); i++ ) {
+          double weight = type3Tops0.at(i).weight ;
+          double minPairMass = type3Tops0.at(i).minMass();
+          histograms1d["minPairMass0Type33_pred"]    ->  Fill( minPairMass, weight );
+          if( towards )
             histograms1d["minPairMassType33_pred"]    ->  Fill( minPairMass, weight );
-          }  // end for
-        } // end towards
-        else  {
-          if( retType33[string("hasMinPair1")] ) {
-            reco::Candidate::LorentzVector  p4_first1 = oMinDrPair.at(0)->p4();
-            reco::Candidate::LorentzVector  p4_second1  = oMinDrPair.at(1)->p4();
+        }  // end for
+        if( retType33[string("hasMinPair1")] ) {
+          reco::Candidate::LorentzVector  p4_first1 = oMinDrPair.at(0)->p4();
+          reco::Candidate::LorentzVector  p4_second1  = oMinDrPair.at(1)->p4();
+          histograms1d["minPairMass1Type33_sel"]     ->  Fill( (p4_first1+p4_second1).mass() );
+          if( !towards )
             histograms1d["minPairMassType33_sel"]     ->  Fill( (p4_first1+p4_second1).mass() );
-          } // hasMinPair1
-          //Do combinatorics
-          std::vector<Type3>      const & type3Tops1  = wPlusBJetType22Selection_.type3Tops1();
-          for( size_t i=0; i<type3Tops1.size(); i++ ) {
-            double weight = type3Tops1.at(i).weight ;
-            double minPairMass = type3Tops1.at(i).minMass();
+        } // hasMinPair1
+        //Do combinatorics
+        std::vector<Type3>      const & type3Tops1  = wPlusBJetType22Selection_.type3Tops1();
+        for( size_t i=0; i<type3Tops1.size(); i++ ) {
+          double weight = type3Tops1.at(i).weight ;
+          double minPairMass = type3Tops1.at(i).minMass();
+          histograms1d["minPairMass1Type33_pred"]    ->  Fill( minPairMass, weight );
+          if( !towards )
             histograms1d["minPairMassType33_pred"]    ->  Fill( minPairMass, weight );
-          }  // end for
-        }  // end else
+        }  // end for
       } // end nJets >= 6
     }  // end if !>= 1 WJet
 
