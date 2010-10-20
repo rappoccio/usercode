@@ -102,6 +102,10 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
 
   histograms2d["jetMassVsPt"]     = theDir.make<TH2F>("jetMassVsPt",    "Jet Mass Vs Pt; Jet Pt (GeV/c^{2}); Jet Mass (GeV/c^{2})",    200,  0,    1000,   100,    0,    500 );
 
+  //For mistag parameterization
+  histograms1d["jetTotal"]     = theDir.make<TH1F>("jetTotal", "jetTotal",    200,    0,    1000 );
+  histograms1d["bTag"]         = theDir.make<TH1F>("bTag", "B Jet Mistag",    200,    0,    1000 );
+
   TDirectory * dir = theDir.cd();
 
   edm::Service<edm::RandomNumberGenerator> rng;
@@ -304,6 +308,13 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
       }  // hasMinPair0 && hasMinPair1
 
       if( retType33[string("nJets >= 6")] ) {
+        //Check b tagging rates in multijets events
+        for( size_t i=0; i<pfJets.size(); i++ ) {
+          histograms1d["jetTotal"]      ->  Fill( pfJets.at(i)->pt() );
+          if( pfJets.at(i)->bDiscriminator("trackCountingHighEffBJetTags") > 3.3 ) {
+            histograms1d["bTag"]        ->  Fill( pfJets.at(i)->pt() );
+          } // end if > 3.3
+        }  // end pfJets
         double x = flatDistribution_->fire();
         //cout<<"Random number is "<<x<<endl;
         bool towards = false;
