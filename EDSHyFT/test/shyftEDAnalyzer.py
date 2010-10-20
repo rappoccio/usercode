@@ -134,10 +134,10 @@ process.pfShyftAnaLooseNoMET = cms.EDAnalyzer('EDSHyFT',
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
                                         sampleName = cms.string(inputSampleName),
-                                        identifier = cms.string('PF'),
                                         muonIdTight = inputShyftAnalysis.muonIdTight.clone(
                                             cutsToIgnore=cms.vstring('RelIso','D0')
-                                            )
+                                            ),
+                                        identifier = cms.string('PF Loose No MET')
                                                   
                                         )                                    
                                     )
@@ -154,10 +154,10 @@ process.pfShyftAnaLooseNoMETWithD0 = cms.EDAnalyzer('EDSHyFT',
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
                                         sampleName = cms.string(inputSampleName),
-                                        identifier = cms.string('PF'),
                                         muonIdTight = inputShyftAnalysis.muonIdTight.clone(
                                             cutsToIgnore=cms.vstring('RelIso')
-                                            )
+                                            ),
+                                        identifier = cms.string('PF Loose No MET With D0 Cut')
                                                   
                                         )                                    
                                     )
@@ -175,7 +175,7 @@ process.pfRecoShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
                                         sampleName = cms.string(inputSampleName),
-                                        identifier = cms.string('PF')
+                                        identifier = cms.string('PF With RECO Leptons')
                                         )                                    
                                     )
 
@@ -192,7 +192,7 @@ process.pfRecoShyftAnaNoMET = cms.EDAnalyzer('EDSHyFT',
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
                                         sampleName = cms.string(inputSampleName),
-                                        identifier = cms.string('PF')
+                                        identifier = cms.string('PF With RECO Leptons No MET')
                                         )                                    
                                     )
 
@@ -208,10 +208,10 @@ process.pfRecoShyftAnaNoMETLoose = cms.EDAnalyzer('EDSHyFT',
                                                       heavyFlavour = cms.bool( useFlavorHistory ),
                                                       doMC = cms.bool( inputDoMC),
                                                       sampleName = cms.string(inputSampleName),
-                                                                                identifier = cms.string('PF'),
                                                       muonIdTight = inputShyftAnalysis.muonIdTight.clone(
                                                           cutsToIgnore=cms.vstring('RelIso', 'D0')
-                                                          )                                                              
+                                                          ),
+                                                      identifier = cms.string('PF With RECO Leptons No MET LOOSE')                                                              
                                                       )                                    
                                                   )
 
@@ -241,10 +241,10 @@ process.jptShyftAnaNoMET = process.jptShyftAna.clone(
 process.jptShyftAnaLooseNoMET = process.jptShyftAna.clone(
     shyftAnalysis=process.jptShyftAna.shyftAnalysis.clone(
         metMin = cms.double(0.0),
-        identifier = cms.string('JPT no MET'),
         muonIdTight = inputShyftAnalysis.muonIdTight.clone(
             cutsToIgnore=cms.vstring('RelIso', 'D0')
-            )        
+            ),
+        identifier = cms.string('JPT Loose No MET')        
         )
     )
 
@@ -252,10 +252,10 @@ process.jptShyftAnaLooseNoMET = process.jptShyftAna.clone(
 process.jptShyftAnaLooseNoMETWithD0 = process.jptShyftAna.clone(
     shyftAnalysis=process.jptShyftAna.shyftAnalysis.clone(
         metMin = cms.double(0.0),
-        identifier = cms.string('JPT no MET'),
         muonIdTight = inputShyftAnalysis.muonIdTight.clone(
             cutsToIgnore=cms.vstring('RelIso')
-            )        
+            ),
+        identifier = cms.string('JPT Loose No MET With D0 Cut')        
         )
     )
 

@@ -6,37 +6,34 @@ import array
 import math
 from DataFormats.FWLite import Events, Handle
 
-filesLong = [
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_10_1_VxQ.root'
-]
 
 files = [
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_10_1_VxQ.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_11_1_rEG.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_12_1_bNX.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_13_1_zpn.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_14_1_7Jl.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_15_1_zO3.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_16_1_Cmr.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_17_1_rCB.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_18_1_lqt.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_19_1_3p7.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_1_1_6sD.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_20_1_6AT.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_21_1_0Ea.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_22_1_gd5.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_23_1_SQA.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_24_1_FXF.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_25_1_dtq.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_26_1_25I.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_2_1_q0c.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_3_1_CPU.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_4_1_jsa.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_5_1_eho.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_6_1_Zrb.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_7_1_Hxz.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_8_1_wSc.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_9_1_PA5.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_10_1_omY.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_11_1_EoX.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_12_1_7yr.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_13_1_4pY.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_14_1_jIQ.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_15_1_uXr.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_16_1_FPf.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_17_1_DvC.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_18_1_vBV.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_19_1_JiO.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_1_1_BHn.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_20_1_Z47.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_21_1_4xp.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_22_1_qzz.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_23_1_qM4.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_24_1_a7u.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_25_1_0XM.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_26_1_fEZ.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_2_1_e0f.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_3_1_0t6.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_4_1_sD2.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_5_1_wfr.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_6_1_WS3.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_7_1_9Pp.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_8_1_xTH.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_9_1_kzv.root'
     
     ]
 events = Events (files)
@@ -54,8 +51,8 @@ pflabel = ("selectedPatJetsPFlow")
 f = ROOT.TFile("ttbarEff.root", "RECREATE")
 f.cd()
 
-binsPt = array.array( 'f', [0., 15., 20., 25., 30., 40., 60., 80., 100., 150., 300.] )
-binsEta = array.array( 'f', [0., 1.4, 2.4] )
+binsPt = array.array( 'f', [0., 15., 20., 25., 30., 40., 50., 60., 80., 100., 140., 300.] )
+binsEta = array.array( 'f', [0., 0.4, 0.8, 1.4, 2.4] )
 
 nbinsPt = len(binsPt)
 nbinsEta = len(binsEta)
