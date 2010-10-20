@@ -33,7 +33,7 @@ shyftAnalysis = cms.PSet(
     pdfSrc = cms.InputTag('generator'),
     pdfToUse = cms.string('cteq6ll.LHpdf'),
     pdfVariation = cms.int32(1),
-    doTagWeight = cms.bool(False),
+    reweightBTagEff = cms.bool(False),
     bcEffScale = cms.double(1.0),
     lfEffScale = cms.double(1.0),
     useDefaultDiscriminant = cms.bool(True),
@@ -42,8 +42,8 @@ shyftAnalysis = cms.PSet(
     lDiscriminantCut = cms.double(-1.0),
     allDiscriminantCut = cms.double(1.74),
     simpleSFCalc = cms.bool(False),
-    jetAlgo = cms.string("calo"),
+    jetAlgo = cms.string("pf"),
     useCustomPayload = cms.bool(False),
-    customPayload = cms.string('ttbarEffSF.root')   
+    customPayload = cms.string('ttbarEffSF_unity.root')   
 )
 

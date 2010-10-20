@@ -122,10 +122,8 @@ class SHyFT {
     std::vector<SHyFTSummary> summary_;
 
     double globalWeight_;  // For reweighting the entire event for, e.g., pdf reweighting
-    double globalWeight_0t;  // For reweighting the entire event for probabaility to not tag
-    double globalWeight_1t;  // For reweighting the entire event for probabaility to have 1 tag
-    double globalWeight_2t;  // For reweighting the entire event for probabaility to have 2 tags
     bool reweightPDF_;
+    bool reweightBTagEff_;
     edm::InputTag pdfInputTag_; 
     std::string pdfToUse_;
     int         pdfEigenToUse_;
