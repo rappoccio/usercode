@@ -58,10 +58,12 @@ bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candida
   for( vector<pat::Jet>::const_iterator jetBegin=jetHandle->begin(), jetEnd=jetHandle->end(), ijet=jetBegin ;
     ijet!=jetEnd; ijet++ )
   {
-    retPFJet.set(false);
-    bool passJetID = (*pfJetSel_)( *ijet, retPFJet );
-    if( passJetID )
-      pfJets_.push_back( edm::Ptr<pat::Jet>(jetHandle, ijet-jetBegin )  );
+    if( ijet->pt() > jetPtMin_ && fabs( ijet->eta() ) < jetEtaMax_ )  {
+      retPFJet.set(false);
+      bool passJetID = (*pfJetSel_)( *ijet, retPFJet );
+      if( passJetID )
+        pfJets_.push_back( edm::Ptr<pat::Jet>(jetHandle, ijet-jetBegin )  );
+    } // end if jetPt, jetEta
   }
 
   //Search for W, b jets
@@ -72,22 +74,19 @@ bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candida
     //Only consider jets in the towards hemisphere
     double dPhi_ = fabs( reco::deltaPhi<double>( vtowards.phi(), jet.phi()  ) );
     if( dPhi_ < TMath::Pi()/2 ) {
-      if( jet.pt() > jetPtMin_ && fabs( jet.eta() ) < jetEtaMax_ ) {
-        allJets_.push_back( *ijet );
-        pat::strbitset iret = wJetSelector_.getBitTemplate();
-	if( wJetSelector_( jet, iret )  ) {
-	  wJets_.push_back( *ijet  );
-	} // end if wjet selector
-	// not W jet, check b tag
-	else {
-	  if( jet.bDiscriminator( bTagAlgo_ ) > bTagOP_ )
-	    bJets_.push_back( *ijet );
-	  else  // put inside the nonTags container
-	    nonTags.push_back( *ijet  );
-	}  // end else
-      }  // end if pt, eta
+      allJets_.push_back( *ijet );
+      pat::strbitset iret = wJetSelector_.getBitTemplate();
+      if( wJetSelector_( jet, iret )  ) {
+        wJets_.push_back( *ijet  );
+      } // end if wjet selector
+      // not W jet, check b tag
+      else {
+        if( jet.bDiscriminator( bTagAlgo_ ) > bTagOP_ )
+          bJets_.push_back( *ijet );
+        else  // put inside the nonTags container
+          nonTags.push_back( *ijet  );
+      }  // end else
     } // end if deltaR
-
   }  // end for pat jets
 
   //Since only the bJet, wJet on the top be used, put the rest back in the nonTags
