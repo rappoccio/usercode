@@ -25,31 +25,31 @@ using namespace std;
 
 
 SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
-   wPlusJets(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis")),
-   theDir(iDir),
-   muPlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("muPlusJets")),
-   ePlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("ePlusJets")),
-   useHFcat_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("heavyFlavour")),
-   nJetsCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("minJets")),  
-   sampleNameInput(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("sampleName")),
-   doMC_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doMC") ),
-   identifier_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("identifier")),
-   reweightPDF_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPDF")),
-   pdfInputTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("pdfSrc")),
-   pdfToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("pdfToUse")),
-   pdfEigenToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("pdfEigenToUse")),
-   pdfVariation_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("pdfVariation")),
-   btaggerString_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("btaggerString")),
-   bcEffScale_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("bcEffScale")),
-   lfEffScale_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("lfEffScale")),
-   allDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("allDiscriminantCut")),
-   bDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("bDiscriminantCut")),
-   cDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("cDiscriminantCut")),
-   lDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("lDiscriminantCut")),
-   useCustomPayload_ (iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("useCustomPayload")),
-   customTagRootFile_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("customPayload")),
-   simpleSFCalc_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("simpleSFCalc")),
-   jetAlgo_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("jetAlgo"))
+  wPlusJets(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis")),
+  theDir(iDir),
+  muPlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("muPlusJets")),
+  ePlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("ePlusJets")),
+  useHFcat_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("heavyFlavour")),
+  nJetsCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("minJets")),  
+  sampleNameInput(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("sampleName")),
+  doMC_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("doMC") ),
+  identifier_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("identifier")),
+  reweightPDF_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPDF")),
+  pdfInputTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("pdfSrc")),
+  pdfToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("pdfToUse")),
+  pdfEigenToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("pdfEigenToUse")),
+  pdfVariation_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("pdfVariation")),
+  btaggerString_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("btaggerString")),
+  bcEffScale_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("bcEffScale")),
+  lfEffScale_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("lfEffScale")),
+  allDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("allDiscriminantCut")),
+  bDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("bDiscriminantCut")),
+  cDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("cDiscriminantCut")),
+  lDiscrCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<double>("lDiscriminantCut")),
+  useCustomPayload_ (iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("useCustomPayload")),
+  customTagRootFile_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("customPayload")),
+  simpleSFCalc_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("simpleSFCalc")),
+  jetAlgo_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("jetAlgo"))
 {
 
    if ( simpleSFCalc_) 
@@ -472,113 +472,113 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
                            const std::vector<reco::ShallowClonePtrCandidate>& electrons)
 {
 
-   allNumTags_ = 0;
-   allNumJets_ = (int) jets.size();
+  allNumTags_ = 0;
+  allNumJets_ = (int) jets.size();
  
-   // std::cout << "Filling global weight in make_templates : " << globalWeight_ << std::endl;
-   reco::Candidate::LorentzVector nu_p4 = met.p4();
-   reco::Candidate::LorentzVector lep_p4 = ( muPlusJets_  ? muons[0].p4() : electrons[0].p4() );
-   double wMT = (lep_p4 + nu_p4).mt();
-   double hT = lep_p4.pt() + nu_p4.Et();
-   double hT_lep = lep_p4.pt();
-   double hcalIso(-99.), ecalIso(-99.), trkIso(-99.), pt(-99.), relIso(-99.), d0(-99);
-   if(muPlusJets_){
-      pat::Muon const * patMuon = dynamic_cast<pat::Muon const *>(&* muons[0].masterClonePtr());
-      if ( patMuon == 0 )
-         throw cms::Exception("InvalidMuonPointer") << "Muon pointer is invalid you schmuck." << std::endl;
-      hcalIso = patMuon->hcalIso();
-      ecalIso = patMuon->ecalIso();
-      trkIso  = patMuon->trackIso();
-      pt      = patMuon->pt() ;
-      d0      = fabs(patMuon->dB());  
-      relIso = (ecalIso + hcalIso + trkIso) / pt;
-   }
-   else if(ePlusJets_){
-      pat::Electron const * patElectron = dynamic_cast<pat::Electron const *>(&* electrons[0].masterClonePtr());
-      if ( patElectron == 0 )
-         throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
-      hcalIso = patElectron->dr03HcalTowerSumEt();
-      ecalIso = patElectron->dr03EcalRecHitSumEt();
-      trkIso  = patElectron->dr03TkSumPt();
-      pt      = patElectron->pt() ;
-      d0      = fabs(patElectron->dB());
-      relIso = (ecalIso + hcalIso + trkIso) / pt;
-   }
-   unsigned int maxJets = jets.size();
-   unsigned int ibjet = 0;
-   if ( (int)maxJets >= nJetsCut_ ) {
-      if ( maxJets > 4 ) maxJets = 4;
-      for ( unsigned int i=0; i<maxJets; ++i) {
-         histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Pt"] ->Fill( jets[i].pt()  , globalWeight_);
-         histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Eta"]->Fill( jets[i].eta() , globalWeight_);
-         histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Phi"]->Fill( jets[i].phi() , globalWeight_);
-         histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Mass"]->Fill( jets[i].mass() , globalWeight_);
-         pat::Jet const * patJet = dynamic_cast<pat::Jet const *>( &* jets[i].masterClonePtr()  );
-         if ( doMC_ && patJet != 0 && patJet->genJet() != 0 ) {
-            histograms2d["jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt() , globalWeight_ );
-            if ( abs(patJet->partonFlavour()) == 5 ) {
-               ++ibjet;
-               histograms2d["jet" + boost::lexical_cast<std::string>(ibjet) + "PtTrueResBJets"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt(), globalWeight_  );
-            }
-         }
+  // std::cout << "Filling global weight in make_templates : " << globalWeight_ << std::endl;
+  reco::Candidate::LorentzVector nu_p4 = met.p4();
+  reco::Candidate::LorentzVector lep_p4 = ( muPlusJets_  ? muons[0].p4() : electrons[0].p4() );
+  double wMT = (lep_p4 + nu_p4).mt();
+  double hT = lep_p4.pt() + nu_p4.Et();
+  double hT_lep = lep_p4.pt();
+  double hcalIso(-99.), ecalIso(-99.), trkIso(-99.), pt(-99.), relIso(-99.), d0(-99);
+  if(muPlusJets_){
+    pat::Muon const * patMuon = dynamic_cast<pat::Muon const *>(&* muons[0].masterClonePtr());
+    if ( patMuon == 0 )
+      throw cms::Exception("InvalidMuonPointer") << "Muon pointer is invalid you schmuck." << std::endl;
+    hcalIso = patMuon->hcalIso();
+    ecalIso = patMuon->ecalIso();
+    trkIso  = patMuon->trackIso();
+    pt      = patMuon->pt() ;
+    d0      = fabs(patMuon->dB());  
+    relIso = (ecalIso + hcalIso + trkIso) / pt;
+  }
+  else if(ePlusJets_){
+    pat::Electron const * patElectron = dynamic_cast<pat::Electron const *>(&* electrons[0].masterClonePtr());
+    if ( patElectron == 0 )
+      throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
+    hcalIso = patElectron->dr03HcalTowerSumEt();
+    ecalIso = patElectron->dr03EcalRecHitSumEt();
+    trkIso  = patElectron->dr03TkSumPt();
+    pt      = patElectron->pt() ;
+    d0      = fabs(patElectron->dB());
+    relIso = (ecalIso + hcalIso + trkIso) / pt;
+  }
+  unsigned int maxJets = jets.size();
+  unsigned int ibjet = 0;
+  if ( (int)maxJets >= nJetsCut_ ) {
+    if ( maxJets > 4 ) maxJets = 4;
+    for ( unsigned int i=0; i<maxJets; ++i) {
+      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Pt"] ->Fill( jets[i].pt()  , globalWeight_);
+      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Eta"]->Fill( jets[i].eta() , globalWeight_);
+      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Phi"]->Fill( jets[i].phi() , globalWeight_);
+      histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Mass"]->Fill( jets[i].mass() , globalWeight_);
+      pat::Jet const * patJet = dynamic_cast<pat::Jet const *>( &* jets[i].masterClonePtr()  );
+      if ( doMC_ && patJet != 0 && patJet->genJet() != 0 ) {
+	histograms2d["jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt() , globalWeight_ );
+	if ( abs(patJet->partonFlavour()) == 5 ) {
+	  ++ibjet;
+	  histograms2d["jet" + boost::lexical_cast<std::string>(ibjet) + "PtTrueResBJets"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt(), globalWeight_  );
+	}
       }
-   } 
+    }
+  } 
 
-   //SecVtxMass and b-tagging related quantities
-   int numBottom=0,numCharm=0,numLight=0;
-   int numTags=0, numJets=0;
-   double vertexMass = -1.0;
-   std::vector<double> vertexMasses;
-   // --------------
-   // Fill the M3 if there are more than 3 jets
-   // --------------
-   reco::Candidate::LorentzVector p4_m3(0,0,0,0);
-   if ( jets.size() >= 3 ) {
+  //SecVtxMass and b-tagging related quantities
+  int numBottom=0,numCharm=0,numLight=0;
+  int numTags=0, numJets=0;
+  double vertexMass = -1.0;
+  std::vector<double> vertexMasses;
+  // --------------
+  // Fill the M3 if there are more than 3 jets
+  // --------------
+  reco::Candidate::LorentzVector p4_m3(0,0,0,0);
+  if ( jets.size() >= 3 ) {
 
-      // std::vector<TVector3> JetEnergy;
-      std::vector<TLorentzVector> jets_p4;
-      for (unsigned i=0; i< jets.size(); ++i) {
-         // JetEnergy.push_back( TVector3( jets[i].px(), jets[i].py(), jets[i].pz() ) );
-         jets_p4.push_back( TLorentzVector( jets[i].px(), jets[i].py(), jets[i].pz(), jets[i].energy() ) );
-      }
+    // std::vector<TVector3> JetEnergy;
+    std::vector<TLorentzVector> jets_p4;
+    for (unsigned i=0; i< jets.size(); ++i) {
+      // JetEnergy.push_back( TVector3( jets[i].px(), jets[i].py(), jets[i].pz() ) );
+      jets_p4.push_back( TLorentzVector( jets[i].px(), jets[i].py(), jets[i].pz(), jets[i].energy() ) );
+    }
     
-      double M3 = 0.0;
-      double highestPt = 0.0;
+    double M3 = 0.0;
+    double highestPt = 0.0;
 
-      for (unsigned int j=0;j<jets.size() - 2;++j) {
-         for (unsigned int k=j+1;k<jets.size() - 1;++k) {
-            for (unsigned int l = k+1; l<jets.size(); ++l) {
-               TLorentzVector threeJets = jets_p4[j] + jets_p4[k] + jets_p4[l];
-               if (highestPt < threeJets.Perp()) {
-                  M3 = threeJets.M();
-                  highestPt=threeJets.Perp();
-               }
-            }
-         }
+    for (unsigned int j=0;j<jets.size() - 2;++j) {
+      for (unsigned int k=j+1;k<jets.size() - 1;++k) {
+	for (unsigned int l = k+1; l<jets.size(); ++l) {
+	  TLorentzVector threeJets = jets_p4[j] + jets_p4[k] + jets_p4[l];
+	  if (highestPt < threeJets.Perp()) {
+	    M3 = threeJets.M();
+	    highestPt=threeJets.Perp();
+	  }
+	}
       }
-      histograms["m3"]->Fill( M3, globalWeight_ );
-   }
+    }
+    histograms["m3"]->Fill( M3, globalWeight_ );
+  }
 
 
-   bool foundWeird = false;
-   // --------------
-   // Loop over the jets. Find the flavor of the *highest pt jet* that passes
-   // the discriminator cuts. 
-   //    Check the parton flavor if MC
-   //    Plot pt versus mass 
-   //    If there is a SecondaryVertexTagInfo:
-   //        plot number of vertices
-   //        if there are >= 1 vertex:
-   //               fill discriminator
-   //               if MC, fill the tag eff.
-   //               if discriminator passes cuts (i.e. is tagged):
-   //                     fill secondary vertex mass
-   //                     if MC, fill template
-   bool firstTag = true;
-   for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
-            jetEnd = jets.end(), jetIter = jetBegin;
-         jetIter != jetEnd; ++jetIter)
-   {
+  bool foundWeird = false;
+  // --------------
+  // Loop over the jets. Find the flavor of the *highest pt jet* that passes
+  // the discriminator cuts. 
+  //    Check the parton flavor if MC
+  //    Plot pt versus mass 
+  //    If there is a SecondaryVertexTagInfo:
+  //        plot number of vertices
+  //        if there are >= 1 vertex:
+  //               fill discriminator
+  //               if MC, fill the tag eff.
+  //               if discriminator passes cuts (i.e. is tagged):
+  //                     fill secondary vertex mass
+  //                     if MC, fill template
+  bool firstTag = true;
+  for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
+	  jetEnd = jets.end(), jetIter = jetBegin;
+	jetIter != jetEnd; ++jetIter)
+    {
       const pat::Jet* jet = dynamic_cast<const pat::Jet *>(jetIter->masterClonePtr().get());
       // We first get the flavor of the jet so we can fill look at btag efficiency.
       int jetFlavor = std::abs( jet->partonFlavour() );
@@ -589,34 +589,34 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 
       //Here we determine what kind of flavor we have in this jet	
       if( doMC_ ) {
-         switch (jetFlavor)
-         {
-            case 5:
-               // bottom
-               ++numBottom;
-               break;
-            case 4:
-               // charm
-               ++numCharm;
-               break;
-            default:
-               // light flavour
-               ++numLight;
-         }
+	switch (jetFlavor)
+	  {
+	  case 5:
+	    // bottom
+	    ++numBottom;
+	    break;
+	  case 4:
+	    // charm
+	    ++numCharm;
+	    break;
+	  default:
+	    // light flavour
+	    ++numLight;
+	  }
       }
 
       // Get the secondary vertex tag info
       reco::SecondaryVertexTagInfo const * svTagInfos
-         = jet->tagInfoSecondaryVertex("secondaryVertex");
+	= jet->tagInfoSecondaryVertex("secondaryVertex");
       if ( svTagInfos == 0 ) { 
-         continue;
+	continue;
       }
       histograms["nVertices"]-> Fill( svTagInfos->nVertices(), globalWeight_ );
       
       // Check to make sure we have a vertex
       
       if ( svTagInfos->nVertices() <= 0 ) {
-         continue;
+	continue;
       }
       
       // This discriminator is only filled when we have a secondary vertex
@@ -637,22 +637,22 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       // if it is less than the SF, keep going, else, throw the jet away
       bool keepGoing = true;
       if ( simpleSFCalc_ ) {
-         double irand = gRandom->Uniform();
-         double max = 0;
-         if ( jetFlavor == 5 || jetFlavor == 4 )
-            max = bcEffScale_;
-         else
-            max = lfEffScale_;
-         if ( irand < max ) keepGoing=true;
-         else keepGoing=false;
+	double irand = gRandom->Uniform();
+	double max = 0;
+	if ( jetFlavor == 5 || jetFlavor == 4 )
+	  max = bcEffScale_;
+	else
+	  max = lfEffScale_;
+	if ( irand < max ) keepGoing=true;
+	else keepGoing=false;
       }
 
       // Check to see if the actual jet is tagged
       double discCut = allDiscrCut_;
       if ( doMC_ ) {
-         if ( bDiscrCut_ > 0.0 && jetFlavor == 5 ) discCut = bDiscrCut_;
-         if ( cDiscrCut_ > 0.0 && jetFlavor == 4 ) discCut = cDiscrCut_;
-         if ( lDiscrCut_ > 0.0 && jetFlavor!=5 && jetFlavor != 4 ) discCut = lDiscrCut_;	
+	if ( bDiscrCut_ > 0.0 && jetFlavor == 5 ) discCut = bDiscrCut_;
+	if ( cDiscrCut_ > 0.0 && jetFlavor == 4 ) discCut = cDiscrCut_;
+	if ( lDiscrCut_ > 0.0 && jetFlavor!=5 && jetFlavor != 4 ) discCut = lDiscrCut_;	
       }
       vertexMasses.push_back( svTagInfos->secondaryVertex(0).p4().mass() );
 
@@ -664,170 +664,170 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       // Take the template info from the first tag (ordered by jet pt)      
       if ( firstTag ) {
 
-         if ( jet->hasUserData("secvtxMass") )
-            vertexMass = jet->userFloat("secvtxMass");
-         else 
-            vertexMass = svTagInfos->secondaryVertex(0).p4().mass();
+	if ( jet->hasUserData("secvtxMass") )
+	  vertexMass = jet->userFloat("secvtxMass");
+	else 
+	  vertexMass = svTagInfos->secondaryVertex(0).p4().mass();
         
-         //Here we determine what kind of flavor we have in this jet	
-         if( doMC_ ) {
-            switch (jetFlavor)
+	//Here we determine what kind of flavor we have in this jet	
+	if( doMC_ ) {
+	  switch (jetFlavor)
             {
-               case 5:
-                  // bottom
-                  histograms["bmass"]->Fill(vertexMass, globalWeight_);
-                  break;
-               case 4:
-                  // charm
-                  histograms["cmass"]->Fill(vertexMass, globalWeight_);
-                  break;
-               default:
-                  // light flavour
-                  histograms["lfmass"]->Fill(vertexMass, globalWeight_);
+	    case 5:
+	      // bottom
+	      histograms["bmass"]->Fill(vertexMass, globalWeight_);
+	      break;
+	    case 4:
+	      // charm
+	      histograms["cmass"]->Fill(vertexMass, globalWeight_);
+	      break;
+	    default:
+	      // light flavour
+	      histograms["lfmass"]->Fill(vertexMass, globalWeight_);
             }
-         }
-         firstTag = false;
+	}
+	firstTag = false;
       }// end if first tag
-   }// end loop over jets
+    }// end loop over jets
 
-   if(numBottom>2) numBottom=2;
-   if(numCharm>2 ) numCharm =2;
-   if(numLight>2 ) numLight =2;
+  if(numBottom>2) numBottom=2;
+  if(numCharm>2 ) numCharm =2;
+  if(numLight>2 ) numLight =2;
   
-   // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
-   numTags = std::min( allNumTags_, 2 );
-   numJets = std::min( allNumJets_, 5 );
+  // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
+  numTags = std::min( allNumTags_, 2 );
+  numJets = std::min( allNumJets_, 5 );
 
 
-   histograms["nTags"]->Fill(numTags, globalWeight_);
+  histograms["nTags"]->Fill(numTags, globalWeight_);
 
-   // Now, if we have jets, fill 0, 1, and >=2 tag histograms.
-   // The 0-tag histograms are hT, met, and mT_w.
-   // The 1-tag and >=2-tag histogram is the secondary vertex mass
-   // of the highest pt tagged jet.
+  // Now, if we have jets, fill 0, 1, and >=2 tag histograms.
+  // The 0-tag histograms are hT, met, and mT_w.
+  // The 1-tag and >=2-tag histogram is the secondary vertex mass
+  // of the highest pt tagged jet.
    
-   if(useHFcat_){
-      histograms[sampleHistName_ + Form("_hT_%dj",     numJets)]->Fill( hT,                   globalWeight_ );
-      histograms[sampleHistName_ + Form("_MET_%dj",    numJets)]->Fill( met.pt(),             globalWeight_ );
-      if(muPlusJets_) histograms[sampleHistName_ + Form("_muEta_%dj",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ ); 
-      if(ePlusJets_)  histograms[sampleHistName_ + Form("_elEta_%dj",  numJets)]->Fill( fabs(electrons[0].eta()), globalWeight_ );
-   }
+  if(useHFcat_){
+    histograms[sampleHistName_ + Form("_hT_%dj",     numJets)]->Fill( hT,                   globalWeight_ );
+    histograms[sampleHistName_ + Form("_MET_%dj",    numJets)]->Fill( met.pt(),             globalWeight_ );
+    if(muPlusJets_) histograms[sampleHistName_ + Form("_muEta_%dj",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ ); 
+    if(ePlusJets_)  histograms[sampleHistName_ + Form("_elEta_%dj",  numJets)]->Fill( fabs(electrons[0].eta()), globalWeight_ );
+  }
    
-   histograms[sampleNameInput + Form("_hT_%dj",     numJets)]->Fill( hT,                   globalWeight_ );
-   histograms[sampleNameInput + Form("_MET_%dj",    numJets)]->Fill( met.pt(),             globalWeight_ );
-   histograms[sampleNameInput + Form("_hT_Lep_%dj", numJets)]->Fill( hT_lep ,              globalWeight_ );
-   histograms[sampleNameInput + Form("_wMT_%dj",    numJets)]->Fill( wMT,                  globalWeight_ ); 
+  histograms[sampleNameInput + Form("_hT_%dj",     numJets)]->Fill( hT,                   globalWeight_ );
+  histograms[sampleNameInput + Form("_MET_%dj",    numJets)]->Fill( met.pt(),             globalWeight_ );
+  histograms[sampleNameInput + Form("_hT_Lep_%dj", numJets)]->Fill( hT_lep ,              globalWeight_ );
+  histograms[sampleNameInput + Form("_wMT_%dj",    numJets)]->Fill( wMT,                  globalWeight_ ); 
 
-   if(muPlusJets_){       
-      histograms[sampleNameInput + Form("_muEta_%dj",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ ); 
-      histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsHt_%dj", numJets)]->Fill( hT, relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsMET_%dj", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsD0_%dj", numJets)]->Fill( d0, relIso, globalWeight_ );
-   }
+  if(muPlusJets_){       
+    histograms[sampleNameInput + Form("_muEta_%dj",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ ); 
+    histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsHt_%dj", numJets)]->Fill( hT, relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsMET_%dj", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsD0_%dj", numJets)]->Fill( d0, relIso, globalWeight_ );
+  }
    
-   else if(ePlusJets_){
-      histograms[sampleNameInput + Form("_elPt_%dj",  numJets)]->Fill( electrons[0].pt() , globalWeight_ );
-      histograms[sampleNameInput + Form("_elEta_%dj",  numJets)]->Fill( electrons[0].eta() , globalWeight_ );
-   }
+  else if(ePlusJets_){
+    histograms[sampleNameInput + Form("_elPt_%dj",  numJets)]->Fill( electrons[0].pt() , globalWeight_ );
+    histograms[sampleNameInput + Form("_elEta_%dj",  numJets)]->Fill( electrons[0].eta() , globalWeight_ );
+  }
 
-   if ( numTags == 0 ) {
+  if ( numTags == 0 ) {
 
-      if(useHFcat_){
-         histograms[sampleHistName_ + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
-         histograms[sampleHistName_ + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
-         if(muPlusJets_) histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ ); 
-         if(ePlusJets_)  histograms[sampleHistName_ + Form("_elEta_%dj_0t",  numJets)]->Fill( fabs(electrons[0].eta()), globalWeight_ );
-      }
+    if(useHFcat_){
+      histograms[sampleHistName_ + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
+      histograms[sampleHistName_ + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
+      if(muPlusJets_) histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ ); 
+      if(ePlusJets_)  histograms[sampleHistName_ + Form("_elEta_%dj_0t",  numJets)]->Fill( fabs(electrons[0].eta()), globalWeight_ );
+    }
       
-      histograms[sampleNameInput + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
-      histograms[sampleNameInput + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
-      histograms[sampleNameInput + Form("_hT_Lep_%dj_0t", numJets)]->Fill( hT_lep ,              globalWeight_ );
-      histograms[sampleNameInput + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                  globalWeight_ ); 
+    histograms[sampleNameInput + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
+    histograms[sampleNameInput + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
+    histograms[sampleNameInput + Form("_hT_Lep_%dj_0t", numJets)]->Fill( hT_lep ,              globalWeight_ );
+    histograms[sampleNameInput + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                  globalWeight_ ); 
       
-      if(muPlusJets_){
-         histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );    
-         histograms[sampleNameInput + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );         
-         histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj_0t", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
-         histograms2d[sampleNameInput + Form("_muisoVsHt_%dj_0t", numJets)]->Fill( hT, relIso, globalWeight_ );
-         histograms2d[sampleNameInput + Form("_muisoVsMET_%dj_0t", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
-         histograms2d[sampleNameInput + Form("_muisoVsD0_%dj_0t", numJets)]->Fill( d0, relIso, globalWeight_ );
-      }
-      else if(ePlusJets_){
-         histograms[sampleNameInput + Form("_elPt_%dj_0t",  numJets)]->Fill( electrons[0].pt(), globalWeight_ );
-         histograms[sampleNameInput + Form("_elEta_%dj_0t",  numJets)]->Fill( electrons[0].eta(), globalWeight_ );   
-      }
-   }
+    if(muPlusJets_){
+      histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );    
+      histograms[sampleNameInput + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );         
+      histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj_0t", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
+      histograms2d[sampleNameInput + Form("_muisoVsHt_%dj_0t", numJets)]->Fill( hT, relIso, globalWeight_ );
+      histograms2d[sampleNameInput + Form("_muisoVsMET_%dj_0t", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
+      histograms2d[sampleNameInput + Form("_muisoVsD0_%dj_0t", numJets)]->Fill( d0, relIso, globalWeight_ );
+    }
+    else if(ePlusJets_){
+      histograms[sampleNameInput + Form("_elPt_%dj_0t",  numJets)]->Fill( electrons[0].pt(), globalWeight_ );
+      histograms[sampleNameInput + Form("_elEta_%dj_0t",  numJets)]->Fill( electrons[0].eta(), globalWeight_ );   
+    }
+  }
 
    
   
-   //histograms[sampleNameInput + Form("_hT_Lep_%dj", numJets)]->Fill( hT_lep,               globalWeight_ );
-   //histograms[sampleNameInput + Form("_wMT_%dj",    numJets)]->Fill( wMT,                  globalWeight_ );
+  //histograms[sampleNameInput + Form("_hT_Lep_%dj", numJets)]->Fill( hT_lep,               globalWeight_ );
+  //histograms[sampleNameInput + Form("_wMT_%dj",    numJets)]->Fill( wMT,                  globalWeight_ );
    
-   // histograms2d[sampleNameInput + Form("_muisoVswMT_%dj", numJets)]->Fill( wMT, relIso, globalWeight_ );
+  // histograms2d[sampleNameInput + Form("_muisoVswMT_%dj", numJets)]->Fill( wMT, relIso, globalWeight_ );
 
   
-   // > 0_Tag histos
-   //---------------
-   if ( numJets > 0 ) {
+  // > 0_Tag histos
+  //---------------
+  if ( numJets > 0 ) {
  
-      if( numTags > 0 ) {
-         string massName  = sampleHistName_ + Form("_secvtxMass_%dj_%dt", numJets, numTags);
-         string massName1 = sampleHistName_ + Form("_secvtxMass_%dj_1t",  numJets);
-         string massName2 = sampleHistName_ + Form("_secvtxMass_%dj_2t",  numJets);
+    if( numTags > 0 ) {
+      string massName  = sampleHistName_ + Form("_secvtxMass_%dj_%dt", numJets, numTags);
+      string massName1 = sampleHistName_ + Form("_secvtxMass_%dj_1t",  numJets);
+      string massName2 = sampleHistName_ + Form("_secvtxMass_%dj_2t",  numJets);
       
-         histograms[massName             ]-> Fill (vertexMass, globalWeight_);
-         histograms2d[massName +"_vs_iso"            ]-> Fill (vertexMass, relIso, globalWeight_);
+      histograms[massName             ]-> Fill (vertexMass, globalWeight_);
+      histograms2d[massName +"_vs_iso"            ]-> Fill (vertexMass, relIso, globalWeight_);
 
-         string whichtag = "";
-         if( doMC_ ) {
-            if (1 == numTags) {
-               // single tag
-               if      (numBottom)              whichtag = "_b";
-               else if (numCharm)               whichtag = "_c";
-               else if (numLight)               whichtag = "_q";
-               else                             whichtag = "_x";
-            }
-            else {
-               // double tags
-               if      (2 == numBottom)         whichtag = "_bb";
-               else if (2 == numCharm)          whichtag = "_cc";
-               else if (2 == numLight)          whichtag = "_qq";
-               else if (numBottom && numCharm)  whichtag = "_bc";
-               else if (numBottom && numLight)  whichtag = "_bq";
-               else if (numCharm  && numLight)  whichtag = "_cq";
-               else                             whichtag = "_xx";
-            } // if two tags
+      string whichtag = "";
+      if( doMC_ ) {
+	if (1 == numTags) {
+	  // single tag
+	  if      (numBottom)              whichtag = "_b";
+	  else if (numCharm)               whichtag = "_c";
+	  else if (numLight)               whichtag = "_q";
+	  else                             whichtag = "_x";
+	}
+	else {
+	  // double tags
+	  if      (2 == numBottom)         whichtag = "_bb";
+	  else if (2 == numCharm)          whichtag = "_cc";
+	  else if (2 == numLight)          whichtag = "_qq";
+	  else if (numBottom && numCharm)  whichtag = "_bc";
+	  else if (numBottom && numLight)  whichtag = "_bq";
+	  else if (numCharm  && numLight)  whichtag = "_cq";
+	  else                             whichtag = "_xx";
+	} // if two tags
 	
-            histograms[massName + whichtag  ]-> Fill (vertexMass, globalWeight_);	
-            histograms2d[massName + whichtag + "_vs_iso"  ]-> Fill (vertexMass, relIso, globalWeight_);
-         } // end if doMC
-      } // end if numTags > 0
-   } // end if numJets > 0 
-   // This is the 0-jet bin
+	histograms[massName + whichtag  ]-> Fill (vertexMass, globalWeight_);	
+	histograms2d[massName + whichtag + "_vs_iso"  ]-> Fill (vertexMass, relIso, globalWeight_);
+      } // end if doMC
+    } // end if numTags > 0
+  } // end if numJets > 0 
+  // This is the 0-jet bin
   
-   if(numJets==0 && muPlusJets_){
-      histograms[sampleHistName_ + Form("_muEta_0j_0t") ]->Fill( fabs(muons[0].eta()), globalWeight_ );
-      histograms[sampleHistName_ + Form("_hT_0j_0t")    ]->Fill( hT ,                  globalWeight_ );
-      histograms[sampleHistName_ + Form("_MET_0j_0t")   ]->Fill( met.pt() ,            globalWeight_ );
+  if(numJets==0 && muPlusJets_){
+    histograms[sampleHistName_ + Form("_muEta_0j_0t") ]->Fill( fabs(muons[0].eta()), globalWeight_ );
+    histograms[sampleHistName_ + Form("_hT_0j_0t")    ]->Fill( hT ,                  globalWeight_ );
+    histograms[sampleHistName_ + Form("_MET_0j_0t")   ]->Fill( met.pt() ,            globalWeight_ );
       
-      histograms[sampleNameInput + Form("_muPt_0j_0t")  ]->Fill( muons[0].pt(),        globalWeight_ );
-      histograms[sampleNameInput + Form("_hT_Lep_0j_0t")]->Fill( hT_lep ,              globalWeight_ );
-      histograms[sampleNameInput + Form("_wMT_0j_0t")   ]->Fill( wMT ,                 globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsMuEta_0j_0t")]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsHt_0j_0t")]->Fill( hT, relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVswMT_0j_0t")]->Fill( wMT, relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsMET_0j_0t")]->Fill( met.pt(), relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsD0_0j_0t")]->Fill( d0, relIso, globalWeight_ );
-   }
+    histograms[sampleNameInput + Form("_muPt_0j_0t")  ]->Fill( muons[0].pt(),        globalWeight_ );
+    histograms[sampleNameInput + Form("_hT_Lep_0j_0t")]->Fill( hT_lep ,              globalWeight_ );
+    histograms[sampleNameInput + Form("_wMT_0j_0t")   ]->Fill( wMT ,                 globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsMuEta_0j_0t")]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsHt_0j_0t")]->Fill( hT, relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVswMT_0j_0t")]->Fill( wMT, relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsMET_0j_0t")]->Fill( met.pt(), relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsD0_0j_0t")]->Fill( d0, relIso, globalWeight_ );
+  }
 
-   return true;
+  return true;
 }
 
 bool SHyFT::analyze_met(const reco::ShallowClonePtrCandidate & met)
 {
-   histograms["metPt"]->Fill( met.pt(), globalWeight_ );
-   return true;
+  histograms["metPt"]->Fill( met.pt(), globalWeight_ );
+  return true;
 }
 
 ///////////////////
@@ -835,55 +835,55 @@ bool SHyFT::analyze_met(const reco::ShallowClonePtrCandidate & met)
 //////////////////
 void SHyFT::analyze(const edm::EventBase& iEvent)
 {
-   globalWeight_ = 1.0;
+  globalWeight_ = 1.0;
 
-   pat::strbitset ret = wPlusJets.getBitTemplate();
+  pat::strbitset ret = wPlusJets.getBitTemplate();
   
-   bool passed = wPlusJets(iEvent, ret);
-   std::vector<reco::ShallowClonePtrCandidate> const & electrons = wPlusJets.selectedElectrons();
-   std::vector<reco::ShallowClonePtrCandidate> const & muons     = wPlusJets.selectedMuons();
-   std::vector<reco::ShallowClonePtrCandidate> const & jets      = wPlusJets.cleanedJets();
-   reco::ShallowClonePtrCandidate const & met = wPlusJets.selectedMET();
+  bool passed = wPlusJets(iEvent, ret);
+  std::vector<reco::ShallowClonePtrCandidate> const & electrons = wPlusJets.selectedElectrons();
+  std::vector<reco::ShallowClonePtrCandidate> const & muons     = wPlusJets.selectedMuons();
+  std::vector<reco::ShallowClonePtrCandidate> const & jets      = wPlusJets.cleanedJets();
+  reco::ShallowClonePtrCandidate const & met = wPlusJets.selectedMET();
   
-   string bit_;
+  string bit_;
 
-   bit_ = "Trigger" ;
-   bool passTrigger = ret[ bit_ ];
-   bit_ = "== 1 Lepton";
-   bool passOneLepton = ret[ bit_ ];
-   bit_ = ">=1 Jets";
-   bool jet1 = ret[bit_];
-   bit_ = ">=2 Jets";
-   bool jet2 = ret[bit_];
-   bit_ = ">=3 Jets";
-   bool jet3 = ret[bit_];
-   bit_ = ">=4 Jets";
-   bool jet4 = ret[bit_];
-   bit_ = ">=5 Jets";
-   bool jet5 = ret[bit_];
-   bit_ = "Cosmic Veto";
-   bool passPre = ret[bit_];
-   bool anyJets = jet1 || jet2 || jet3 || jet4 || jet5;
+  bit_ = "Trigger" ;
+  bool passTrigger = ret[ bit_ ];
+  bit_ = "== 1 Lepton";
+  bool passOneLepton = ret[ bit_ ];
+  bit_ = ">=1 Jets";
+  bool jet1 = ret[bit_];
+  bit_ = ">=2 Jets";
+  bool jet2 = ret[bit_];
+  bit_ = ">=3 Jets";
+  bool jet3 = ret[bit_];
+  bit_ = ">=4 Jets";
+  bool jet4 = ret[bit_];
+  bit_ = ">=5 Jets";
+  bool jet5 = ret[bit_];
+  bit_ = "Cosmic Veto";
+  bool passPre = ret[bit_];
+  bool anyJets = jet1 || jet2 || jet3 || jet4 || jet5;
   
-   // if not passed trigger, next event
-   if ( !passTrigger )  return;
+  // if not passed trigger, next event
+  if ( !passTrigger )  return;
   
-   if (doMC_ && reweightPDF_) {
-      weightPDF(iEvent);
-   }
+  if (doMC_ && reweightPDF_) {
+    weightPDF(iEvent);
+  }
 
   
-   if(useHFcat_) {
-      edm::Handle< unsigned int > heavyFlavorCategory;
-      iEvent.getByLabel ( edm::InputTag("flavorHistoryFilter"),heavyFlavorCategory);
-      assert ( heavyFlavorCategory.isValid() );
-      if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( *heavyFlavorCategory, globalWeight_ );
-   }
+  if(useHFcat_) {
+    edm::Handle< unsigned int > heavyFlavorCategory;
+    iEvent.getByLabel ( edm::InputTag("flavorHistoryFilter"),heavyFlavorCategory);
+    assert ( heavyFlavorCategory.isValid() );
+    if ( useHFcat_ ) histograms["flavorHistory"]-> Fill ( *heavyFlavorCategory, globalWeight_ );
+  }
 
-   sampleHistName_ = sampleNameInput + calcSampleName(iEvent);
+  sampleHistName_ = sampleNameInput + calcSampleName(iEvent);
   
-   if (passPre) 
-   {
+  if (passPre) 
+    {
       histograms["nJets"]->Fill( jets.size(), globalWeight_ );
   
       make_templates(jets, met, muons, electrons);
@@ -892,129 +892,129 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
       if ( ePlusJets_ ) analyze_electrons(electrons);          
 
       if ( !doMC_) {
-         summary_.push_back( SHyFTSummary(iEvent.id().run(),
-                                          iEvent.id().luminosityBlock(),
-                                          iEvent.id().event(),
-                                          allNumJets_,
-                                          allNumTags_
-                                ) );
+	summary_.push_back( SHyFTSummary(iEvent.id().run(),
+					 iEvent.id().luminosityBlock(),
+					 iEvent.id().event(),
+					 allNumJets_,
+					 allNumTags_
+					 ) );
       }    
-   }
+    }
 }
   
 
 
 std::string SHyFT::calcSampleName (const edm::EventBase& iEvent)
 {
-   std::string sampleName("");
-   // Get the heavy flavor category - we first want to make sure we have flavorHistory
-   if(useHFcat_) {
-      edm::Handle< unsigned int > heavyFlavorCategory;
-      iEvent.getByLabel ( edm::InputTag("flavorHistoryFilter"),heavyFlavorCategory);
-      assert ( heavyFlavorCategory.isValid() );
-      HFcat_ = (*heavyFlavorCategory);
-      // For Vqq, we don't know if it is a W, a Z, or neither
-      edm::Handle< vector< reco::GenParticle > > genParticleCollection;
-      iEvent.getByLabel (edm::InputTag("prunedGenParticles"),genParticleCollection);
-      assert ( genParticleCollection.isValid() );
-      // Iterate over genParticles
-      const vector< reco::GenParticle>::const_iterator 
-         kGenPartEnd = genParticleCollection->end();
-      for (vector< reco::GenParticle>::const_iterator gpIter =
-              genParticleCollection->begin(); 
-           gpIter != kGenPartEnd; ++gpIter ) 
+  std::string sampleName("");
+  // Get the heavy flavor category - we first want to make sure we have flavorHistory
+  if(useHFcat_) {
+    edm::Handle< unsigned int > heavyFlavorCategory;
+    iEvent.getByLabel ( edm::InputTag("flavorHistoryFilter"),heavyFlavorCategory);
+    assert ( heavyFlavorCategory.isValid() );
+    HFcat_ = (*heavyFlavorCategory);
+    // For Vqq, we don't know if it is a W, a Z, or neither
+    edm::Handle< vector< reco::GenParticle > > genParticleCollection;
+    iEvent.getByLabel (edm::InputTag("prunedGenParticles"),genParticleCollection);
+    assert ( genParticleCollection.isValid() );
+    // Iterate over genParticles
+    const vector< reco::GenParticle>::const_iterator 
+      kGenPartEnd = genParticleCollection->end();
+    for (vector< reco::GenParticle>::const_iterator gpIter =
+	   genParticleCollection->begin(); 
+	 gpIter != kGenPartEnd; ++gpIter ) 
+      {
+	if (gpIter->status() == 3 && std::abs(gpIter->pdgId()) == 23)
 	  {
-         if (gpIter->status() == 3 && std::abs(gpIter->pdgId()) == 23)
-         {
             sampleName += "Z";
             break;
-         }
-         else if (gpIter->status() == 3 && std::abs(gpIter->pdgId()) == 24)
-         {
+	  }
+	else if (gpIter->status() == 3 && std::abs(gpIter->pdgId()) == 24)
+	  {
             sampleName += "W";
             break;
-         }
 	  }
-      // from:
-      // https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideFlavorHistory
-      //  1. W+bb with >= 2 jets from the ME (dr > 0.5)
-      //  2. W+b or W+bb with 1 jet from the ME
-      //  3. W+cc from the ME (dr > 0.5)
-      //  4. W+c or W+cc with 1 jet from the ME
-      //  5. W+bb with 1 jet from the part[on shower (dr == 0.0)
-      //  6. W+cc with 1 jet from the parton shower (dr == 0.0)
-      //  7. W+bb with >= 2 partons but 1 jet from the ME (dr == 0.0)
-      //  8. W+cc with >= 2 partons but 1 jet from the ME (dr == 0.0)
-      //  9. W+bb with >= 2 partons but 2 jets from the PS (dr > 0.5)
-      // 10. W+cc with >= 2 partons but 2 jets from the PS (dr > 0.5)
-      // 11. Veto of all the previous (W+ light jets)
-      sampleName+="_path";
-      stringstream tmpString;
-      tmpString.str("");
-      tmpString << *heavyFlavorCategory;
-      sampleName+=tmpString.str();
-   }
-   return sampleName;
+      }
+    // from:
+    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideFlavorHistory
+    //  1. W+bb with >= 2 jets from the ME (dr > 0.5)
+    //  2. W+b or W+bb with 1 jet from the ME
+    //  3. W+cc from the ME (dr > 0.5)
+    //  4. W+c or W+cc with 1 jet from the ME
+    //  5. W+bb with 1 jet from the part[on shower (dr == 0.0)
+    //  6. W+cc with 1 jet from the parton shower (dr == 0.0)
+    //  7. W+bb with >= 2 partons but 1 jet from the ME (dr == 0.0)
+    //  8. W+cc with >= 2 partons but 1 jet from the ME (dr == 0.0)
+    //  9. W+bb with >= 2 partons but 2 jets from the PS (dr > 0.5)
+    // 10. W+cc with >= 2 partons but 2 jets from the PS (dr > 0.5)
+    // 11. Veto of all the previous (W+ light jets)
+    sampleName+="_path";
+    stringstream tmpString;
+    tmpString.str("");
+    tmpString << *heavyFlavorCategory;
+    sampleName+=tmpString.str();
+  }
+  return sampleName;
 }
 
 void SHyFT::endJob()
 {
 
-   std::cout << "----------------------------------------------------------------------------------------" << std::endl;
-   std::cout << "      So long, and thanks for all the fish..." << std::endl;
-   std::cout << "                 -- " << identifier_ << std::endl;
-   std::cout << "----------------------------------------------------------------------------------------" << std::endl;
-   wPlusJets.print(std::cout);
-   wPlusJets.printSelectors(std::cout);
-   if ( !doMC_ ) {
-      sort(summary_.begin(), summary_.end());
-      std::cout << "** Start " << identifier_ << " **" << std::endl;
-      copy(summary_.begin(), summary_.end(), std::ostream_iterator<SHyFTSummary>(std::cout, "\n"));  
-      std::cout << "** End **" << std::endl;
-   }
-   std::cout << "  Btagging closure test: " << std::endl;
-   std::cout << "  N_exp_>=1     : " << nExpectedTaggedEvents_ << std::endl;
-   std::cout << "  N_obs_>=1     : " << nObservedTaggedEvents_ << std::endl;
-   std::cout << "  N_obs jettags : " << nObservedTaggedJets_ << std::endl;
+  std::cout << "----------------------------------------------------------------------------------------" << std::endl;
+  std::cout << "      So long, and thanks for all the fish..." << std::endl;
+  std::cout << "                 -- " << identifier_ << std::endl;
+  std::cout << "----------------------------------------------------------------------------------------" << std::endl;
+  wPlusJets.print(std::cout);
+  wPlusJets.printSelectors(std::cout);
+  if ( !doMC_ ) {
+    sort(summary_.begin(), summary_.end());
+    std::cout << "** Start " << identifier_ << " **" << std::endl;
+    copy(summary_.begin(), summary_.end(), std::ostream_iterator<SHyFTSummary>(std::cout, "\n"));  
+    std::cout << "** End **" << std::endl;
+  }
+  std::cout << "  Btagging closure test: " << std::endl;
+  std::cout << "  N_exp_>=1     : " << nExpectedTaggedEvents_ << std::endl;
+  std::cout << "  N_obs_>=1     : " << nObservedTaggedEvents_ << std::endl;
+  std::cout << "  N_obs jettags : " << nObservedTaggedJets_ << std::endl;
 }
 
 
 void SHyFT::weightPDF(  edm::EventBase const & iEvent) 
 {
-   // 
-   // NOTA BENE!!!!
-   //
-   //     The values "pdf1" and "pdf2" below are *wrong* for madgraph or alpgen samples.
-   //     They must be taken from the "zeroth" PDF in the PDF set, assuming that is set
+  // 
+  // NOTA BENE!!!!
+  //
+  //     The values "pdf1" and "pdf2" below are *wrong* for madgraph or alpgen samples.
+  //     They must be taken from the "zeroth" PDF in the PDF set, assuming that is set
     
-   double iWeightSum = 0.0;
-   edm::Handle<GenEventInfoProduct> pdfstuff;
-   iEvent.getByLabel(pdfInputTag_, pdfstuff);
+  double iWeightSum = 0.0;
+  edm::Handle<GenEventInfoProduct> pdfstuff;
+  iEvent.getByLabel(pdfInputTag_, pdfstuff);
        
-   float Q = pdfstuff->pdf()->scalePDF;
-   int id1 = pdfstuff->pdf()->id.first;
-   double x1 = pdfstuff->pdf()->x.first;
-   int id2 = pdfstuff->pdf()->id.second;
-   double x2 = pdfstuff->pdf()->x.second;
+  float Q = pdfstuff->pdf()->scalePDF;
+  int id1 = pdfstuff->pdf()->id.first;
+  double x1 = pdfstuff->pdf()->x.first;
+  int id2 = pdfstuff->pdf()->id.second;
+  double x2 = pdfstuff->pdf()->x.second;
 
-   // BROKEN for Madgraph productions:
-   double pdf1 = pdfstuff->pdf()->xPDF.first;
-   double pdf2 = pdfstuff->pdf()->xPDF.second;  
+  // BROKEN for Madgraph productions:
+  double pdf1 = pdfstuff->pdf()->xPDF.first;
+  double pdf2 = pdfstuff->pdf()->xPDF.second;  
 
 
-   // Eigenvector already set up for this job.
-   // It is, contrary to the LHAPDF documentation, ABYSMALLY SLOW
-   // to switch between PDF sets and so we will run
-   // one single PDF with one single eigenvector *per job*
+  // Eigenvector already set up for this job.
+  // It is, contrary to the LHAPDF documentation, ABYSMALLY SLOW
+  // to switch between PDF sets and so we will run
+  // one single PDF with one single eigenvector *per job*
   
-   double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
-   double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
-   double prod =  (newpdf1/pdf1*newpdf2/pdf2);
-   iWeightSum += prod*prod;    
-   iWeightSum = TMath::Sqrt(iWeightSum) ;
+  double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
+  double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
+  double prod =  (newpdf1/pdf1*newpdf2/pdf2);
+  iWeightSum += prod*prod;    
+  iWeightSum = TMath::Sqrt(iWeightSum) ;
     
-   globalWeight_ *= iWeightSum ;
-   std::cout << "Global weight = " << globalWeight_ << std::endl;
-   histograms["pdfWeight"]->Fill( globalWeight_ );
+  globalWeight_ *= iWeightSum ;
+  std::cout << "Global weight = " << globalWeight_ << std::endl;
+  histograms["pdfWeight"]->Fill( globalWeight_ );
 
 }
