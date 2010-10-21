@@ -7,7 +7,9 @@ import tokenize
 
 from event_flow_selectors import event_flow_selectors
 
-tokens = ['== 1 Lepton',
+tokens = ['>= 1 Lepton',
+          '== 1 Tight Lepton, Mu Veto',
+          '== 1 Lepton',
           'MET Cut',
           '>=1 Jets',
           '>=3 Jets'
