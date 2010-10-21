@@ -439,7 +439,18 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   //SecVtxMass and b-tagging related quantities
   int numBottom=0,numCharm=0,numLight=0;
   int numTags=0, numJets=0;
-  double vertexMass = 0.0;
+  // A bit of explanation:
+  // The vertex mass is only defined (obviously) for jets with a vertex. So,
+  // if we are counting tags from MC, there's no problem. However, if we are reweighting the jets
+  // based on the tag efficiencies, there's an issue, because if we set this to "-1", then 
+  // there's no way to achieve a correct event counting since "Integral" won't count the underflow
+  // bins. Furthermore, the shape is meaningless because lots of jets with mass=-1 will be
+  // included in the weighting of the distribution.
+  // Thus, we set this to -1 for the straight counting, and 0 for the weighted version.
+  // At the end we use the shape from counting but the rates from weighting. 
+  double vertexMass = -1.0;
+  if ( reweightBTagEff_ )
+    vertexMass = 0.0;
   std::vector<double> vertexMasses;
   // --------------
   // Fill the M3 if there are more than 3 jets
