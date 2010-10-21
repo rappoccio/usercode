@@ -12,7 +12,9 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   wMassMax_     ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("wMassMax") ),
   topMassMin_   ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("topMassMin") ),
   topMassMax_   ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("topMassMax") ),
-  runOnData_    ( iConfig.getParameter<bool>("runOnData") )
+  runOnData_    ( iConfig.getParameter<bool>("runOnData") ),
+  bTagAlgo_     ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<string>("bTagAlgorithm") ),
+  bTagOP_       ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("bTagOP") )
 {
   cout<< "Instantiate WPlusBJetAnalysis" << endl;
   histograms1d["nJet"]  = theDir.make<TH1F>("nJet",   "Number of Jets",     20,   0,    20);
@@ -311,7 +313,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         //Check b tagging rates in multijets events
         for( size_t i=0; i<pfJets.size(); i++ ) {
           histograms1d["jetTotal"]      ->  Fill( pfJets.at(i)->pt() );
-          if( pfJets.at(i)->bDiscriminator("trackCountingHighEffBJetTags") > 3.3 ) {
+          if( pfJets.at(i)->bDiscriminator( bTagAlgo_ ) > bTagOP_ ) {
             histograms1d["bTag"]        ->  Fill( pfJets.at(i)->pt() );
           } // end if > 3.3
         }  // end pfJets

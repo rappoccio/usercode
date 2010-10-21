@@ -9,7 +9,9 @@ WPlusBJetType33Selection::WPlusBJetType33Selection ( edm::ParameterSet const & p
   wMassMax_             (params.getParameter<double>("wMassMax") ),
   topMassMin_           (params.getParameter<double>("topMassMin") ) ,
   topMassMax_           (params.getParameter<double>("topMassMax") ),
-  twPlusBJetSelection_  (params.getParameter<edm::ParameterSet>("WPlusBJetSelection") ),
+  jetPt_                (params.getParameter<double>("jetPtMin") ),
+  jetEta_               (params.getParameter<double>("jetEtaMax") ),
+  twPlusBJetSelection_  (params),
   owPlusBJetSelection_  (twPlusBJetSelection_)
 {
   //make the bitset
@@ -61,11 +63,13 @@ bool WPlusBJetType33Selection::operator()( edm::EventBase const & t, pat::strbit
   for( vector<pat::Jet>::const_iterator jetBegin=jetHandle->begin(), jetEnd=jetHandle->end(), ijet=jetBegin ;
     ijet!=jetEnd; ijet++ )
   {
-    retPFJet.set(false);
-    bool passJetID = (*pfJetSel)( *ijet, retPFJet );
-    if( passJetID ) {
-      pfJets_.push_back( edm::Ptr<pat::Jet>(jetHandle, ijet-jetBegin )  );
-    }
+    if( ijet->pt() > jetPt_ && fabs( ijet->eta() ) < jetEta_ ) {
+      retPFJet.set(false);
+      bool passJetID = (*pfJetSel)( *ijet, retPFJet );
+      if( passJetID ) {
+        pfJets_.push_back( edm::Ptr<pat::Jet>(jetHandle, ijet-jetBegin )  );
+      }
+    } // end if jetPt, jetEta
   } // end ijet
 
   const pat::Jet * theJet;

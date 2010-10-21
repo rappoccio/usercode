@@ -54,6 +54,8 @@ class WPlusBJetAnalysis{
     double wMassMin_, wMassMax_;
     double topMassMin_, topMassMax_;
     bool   runOnData_;
+    std::string   bTagAlgo_;
+    double        bTagOP_;
     CLHEP::RandFlat *flatDistribution_;
 
 };

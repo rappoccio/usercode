@@ -12,9 +12,9 @@ WPlusBJetType22Selection::WPlusBJetType22Selection ( edm::ParameterSet const & p
   wMassMax_             (params.getParameter<double>("wMassMax") ),
   topMassMin_           (params.getParameter<double>("topMassMin") ) ,
   topMassMax_           (params.getParameter<double>("topMassMax") ),
-  jetPt_                (params.getParameter<edm::ParameterSet>("WPlusBJetSelection").getParameter<double>("jetPtMin") ),
-  jetEta_               (params.getParameter<edm::ParameterSet>("WPlusBJetSelection").getParameter<double>("jetEtaMax") ),
-  twPlusBJetSelection_  (params.getParameter<edm::ParameterSet>("WPlusBJetSelection") ),
+  jetPt_                (params.getParameter<double>("jetPtMin") ),
+  jetEta_               (params.getParameter<double>("jetEtaMax") ),
+  twPlusBJetSelection_  (params),
   owPlusBJetSelection_  (twPlusBJetSelection_)
 {
   //make the bitset

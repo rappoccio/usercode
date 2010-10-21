@@ -43,6 +43,8 @@ class WPlusBJetType23Selection : public EventSelector {
     double    wMassMax_;
     double    topMassMin_;
     double    topMassMax_;
+    double    jetPt_;
+    double    jetEta_;
     WPlusBJetEventSelector    twPlusBJetSelection_; //towards direction selector
     WPlusBJetEventSelector    owPlusBJetSelection_; //opposite direction selector
     std::vector<edm::Ptr<pat::Jet> >           pfJets_;
