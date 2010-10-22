@@ -162,6 +162,25 @@ process.pfShyftAnaLooseNoMETWithD0 = cms.EDAnalyzer('EDSHyFT',
                                         )                                    
                                     )
 
+process.pfShyftAnaLooseWithD0 = cms.EDAnalyzer('EDSHyFT',
+                                    shyftAnalysis = inputShyftAnalysis.clone(
+                                        muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose'),
+                                        electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose'),
+                                        metSrc = cms.InputTag('patMETsPFlowLoose'),
+                                        jetSrc = cms.InputTag('selectedPatJetsPFlowLoose'),
+                                        jetPtMin = cms.double(25.0),
+                                        minJets = cms.int32(5),
+                                        metMin = cms.double(20.0),
+                                        heavyFlavour = cms.bool( useFlavorHistory ),
+                                        doMC = cms.bool( inputDoMC),
+                                        sampleName = cms.string(inputSampleName),
+                                        muonIdTight = inputShyftAnalysis.muonIdTight.clone(
+                                            cutsToIgnore=cms.vstring('RelIso')
+                                            ),
+                                        identifier = cms.string('PF Loose With D0 Cut')                                                  
+                                        )                                    
+                                    )
+
 
 process.pfRecoShyftAna = cms.EDAnalyzer('EDSHyFT',
                                     shyftAnalysis = inputShyftAnalysis.clone(
@@ -259,6 +278,17 @@ process.jptShyftAnaLooseNoMETWithD0 = process.jptShyftAna.clone(
         )
     )
 
+
+process.jptShyftAnaLooseWithD0 = process.jptShyftAna.clone(
+    shyftAnalysis=process.jptShyftAna.shyftAnalysis.clone(
+        metMin = cms.double(20.0),
+        muonIdTight = inputShyftAnalysis.muonIdTight.clone(
+            cutsToIgnore=cms.vstring('RelIso')
+            ),
+        identifier = cms.string('JPT Loose With D0 Cut')        
+        )
+    )
+
 if inputDoMC :
     caloBTag = 'simpleSecondaryVertexBJetTags'
 else :
@@ -290,14 +320,16 @@ process.p = cms.Path(
     process.pfShyftAna*
     process.pfShyftAnaNoMET*
     process.pfShyftAnaLooseNoMET*
-    process.pfShyftAnaLooseNoMETWithD0*        
+    process.pfShyftAnaLooseNoMETWithD0*
+    process.pfShyftAnaLooseWithD0*            
     process.pfRecoShyftAna*
     process.pfRecoShyftAnaNoMET*
     process.pfRecoShyftAnaNoMETLoose*
     process.jptShyftAna*
     process.jptShyftAnaNoMET*
     process.jptShyftAnaLooseNoMET*
-    process.jptShyftAnaLooseNoMETWithD0*        
+    process.jptShyftAnaLooseNoMETWithD0*
+    process.jptShyftAnaLooseWithD0*            
     process.caloShyftAna*
     process.caloShyftAnaNoMET    
     )
