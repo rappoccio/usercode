@@ -44,6 +44,8 @@ class WPlusBJetAnalysis{
       wPlusBJetType33Selection_.print(cout);
     }
 
+    bool hasHeavyFlavor( const edm::EventBase& iEvent );
+
   private:
     TFileDirectory& theDir;
     std::map<std::string, TH1F*> histograms1d;

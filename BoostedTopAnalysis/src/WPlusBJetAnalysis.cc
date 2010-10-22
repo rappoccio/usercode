@@ -100,6 +100,7 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   histograms2d["topMass0vsTopMass1Type23"]    = theDir.make<TH2F>("topMass0vsTopMass1Type23",   "Top Mass",    100,  0,  500 , 100,  0,  500 );
   histograms2d["topMass0vsTopMass1Type22"]    = theDir.make<TH2F>("topMass0vsTopMass1Type22",   "Top Mass",    100,  0,  500 , 100,  0,  500 );
   histograms2d["nJets0vsNJets1"]              = theDir.make<TH2F>("nJets0vsNJets1",             "N Jets",       10,  0,  10,  10, 0, 10 );
+  histograms2d["nB0vsNB1"]                    = theDir.make<TH2F>("nB0vsNB1",                   "N BJets",      10,  0,  10,  10, 0, 10 );
 
 
   histograms2d["jetMassVsPt"]     = theDir.make<TH2F>("jetMassVsPt",    "Jet Mass Vs Pt; Jet Pt (GeV/c^{2}); Jet Mass (GeV/c^{2})",    200,  0,    1000,   100,    0,    500 );
@@ -166,6 +167,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
 
     histograms1d["nW"]      ->  Fill( numWJets );
     histograms1d["nB"]      ->  Fill( numBJets );
+    histograms2d["nB0vsNB1"]      ->  Fill( tbJets.size(),  obJets.size() );
     if( tWJets.size() >= 1 ) {
       histograms1d["wMass0"]      ->  Fill( tWJets.at(0)->mass() );
       histograms1d["wJetPt"]      ->  Fill( tWJets.at(0)->pt() );
@@ -309,11 +311,16 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         }
       }  // hasMinPair0 && hasMinPair1
 
-      if( retType33[string("nJets >= 6")] ) {
+      bool hasHF = hasHeavyFlavor( iEvent );
+
+      if( retType33[string("nJets >= 6")] && !hasHF ) {
         //Check b tagging rates in multijets events
         for( size_t i=0; i<pfJets.size(); i++ ) {
           histograms1d["jetTotal"]      ->  Fill( pfJets.at(i)->pt() );
-          if( pfJets.at(i)->bDiscriminator( bTagAlgo_ ) > bTagOP_ ) {
+          //toy tagger
+          double flatTagger = flatDistribution_->fire();
+          //if( pfJets.at(i)->bDiscriminator( bTagAlgo_ ) > bTagOP_ ) {
+          if( flatTagger < 1./3. )  {
             histograms1d["bTag"]        ->  Fill( pfJets.at(i)->pt() );
           } // end if > 3.3
         }  // end pfJets
@@ -455,4 +462,22 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
     } // end i
     //cout<<"end"<<endl;
   } // end retType22 fourth Jet Pt, baseline selection
+}
+
+bool WPlusBJetAnalysis::hasHeavyFlavor( const edm::EventBase& iEvent ) 
+{
+  //Get genParticles
+  edm::Handle< vector<reco::GenParticle> >  h_genParticles;
+  iEvent.getByLabel( edm::InputTag("genParticles") , h_genParticles );
+  if( !h_genParticles.isValid() )   return false;
+  bool hasHF = false;
+  for( vector<reco::GenParticle>::const_iterator igen = h_genParticles->begin(); igen != h_genParticles->end(); igen++ )
+  {
+    int pdgId = fabs( igen->pdgId() );
+    if( pdgId == 4 || pdgId == 5 )  hasHF = true;
+    if( hasHF )   { //cout<<"Has HF"<<endl;
+                    return true; }
+  } // end for igen
+
+  return false;
 }

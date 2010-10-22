@@ -10,6 +10,11 @@
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 #include "Analysis/BoostedTopAnalysis/interface/WPlusBJetTypes.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Utilities/interface/RandomNumberGenerator.h"
+#include "CLHEP/Random/RandFlat.h"
+#include "CLHEP/Random/RandPoissonQ.h"
+
 
 #include "TFile.h"
 #include "TH1F.h"
@@ -71,6 +76,7 @@ class WPlusBJetEventSelector : public EventSelector {
     TFile *   mistagFile_;
     TH1F  *   wMistag_;
     TH1F  *   bMistag_;
+    CLHEP::RandFlat *flatDistribution_;
 };
 
 #endif

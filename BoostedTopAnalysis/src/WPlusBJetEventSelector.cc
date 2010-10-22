@@ -30,6 +30,15 @@ WPlusBJetEventSelector::WPlusBJetEventSelector ( edm::ParameterSet const & param
   wMistag_      = (TH1F*)mistagFile_   -> Get("wMistag");
   bMistag_      = (TH1F*)mistagFile_   -> Get("bMistag");
 
+  edm::Service<edm::RandomNumberGenerator> rng;
+  if ( ! rng.isAvailable()) {
+    throw cms::Exception("Configuration")
+      << "Module requires the RandomNumberGeneratorService\n";
+  }
+
+  CLHEP::HepRandomEngine& engine = rng->getEngine();
+  flatDistribution_ = new CLHEP::RandFlat(engine, 0., 1.);
+
 }
 
 bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candidate::LorentzVector const & v, pat::strbitset & ret, bool towards)
@@ -81,7 +90,10 @@ bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candida
       } // end if wjet selector
       // not W jet, check b tag
       else {
-        if( jet.bDiscriminator( bTagAlgo_ ) > bTagOP_ )
+        //toy tagger
+        double randomTag = flatDistribution_->fire();
+        //if( jet.bDiscriminator( bTagAlgo_ ) > bTagOP_ )
+        if( randomTag < 1./3. ) 
           bJets_.push_back( *ijet );
         else  // put inside the nonTags container
           nonTags.push_back( *ijet  );
