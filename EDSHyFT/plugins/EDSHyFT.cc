@@ -10,7 +10,7 @@
 
 
 typedef edm::FWLiteAnalyzerWrapper<SHyFT> EDSHyFT;
-typedef edm::FWLiteFilterWrapper<WPlusJetsEventSelector> EDWPlusJets;
+typedef edm::FWLiteFilterWrapper<SHyFTSelector> EDWPlusJets;
 
 DEFINE_FWK_MODULE(EDSHyFT);
 DEFINE_FWK_MODULE(EDWPlusJets);
