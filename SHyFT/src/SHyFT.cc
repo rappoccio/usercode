@@ -54,60 +54,72 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   jetAlgo_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("jetAlgo"))
 {
 
-  if ( simpleSFCalc_) 
-    gRandom->SetSeed( 960622508 );
+   if ( simpleSFCalc_) 
+      gRandom->SetSeed( 960622508 );
   
 
-  if ( useCustomPayload_ ) {
-    customBtagFile_ = boost::shared_ptr<TFile>( new TFile(customTagRootFile_.c_str(), "READ") );
-  }
+   if ( useCustomPayload_ ) {
+      customBtagFile_ = boost::shared_ptr<TFile>( new TFile(customTagRootFile_.c_str(), "READ") );
+   }
 
-  //book all the histograms for muons
-  if(muPlusJets_) {
-    histograms["muPt"]       = theDir.make<TH1F>("muPt",       "Muon p_{T} (GeV/c) ",   100,    0, 200);
-    histograms["muEta"]      = theDir.make<TH1F>("muEta",      "Muon eta",               50, -3.0, 3.0);
-    histograms["muNhits"]    = theDir.make<TH1F>("muNhits",    "Muon N Hits",            35,    0,  35);
-    histograms["muD0"]       = theDir.make<TH1F>("muD0",       "Muon D0",                60, -0.2, 0.2);
-    histograms["muChi2"]     = theDir.make<TH1F>("muChi2",     "Muon Chi2",              20,    0,   5);
-    histograms["muHCalVeto"] = theDir.make<TH1F>("muHCalVeto", "Muon hCalVeto",          30,    0,  30);
-    histograms["muECalVeto"] = theDir.make<TH1F>("muECalVeto", "Muon eCalVeto",          30,    0,  30);
-    histograms["muTrackIso"] = theDir.make<TH1F>("muTrackIso", "Muon Track Iso",         30,    0,  30);
-    histograms["muECalIso"]  = theDir.make<TH1F>("muECalIso",  "Muon ECal Iso",          30,    0,  30);
-    histograms["muHCalIso"]  = theDir.make<TH1F>("muHCalIso",  "Muon HCal Iso",          30,    0,  30);
-    histograms["muRelIso"]   = theDir.make<TH1F>("muRelIso",   "Muon Rel Iso",           30,    0,  30);
-  }
+   //book all the histograms for muons
+   if(muPlusJets_) {
+      histograms["muPt"]       = theDir.make<TH1F>("muPt",       "Muon p_{T} (GeV/c) ",   100,    0, 200);
+      histograms["muEta"]      = theDir.make<TH1F>("muEta",      "Muon eta",               50, -3.0, 3.0);
+      histograms["muNhits"]    = theDir.make<TH1F>("muNhits",    "Muon N Hits",            35,    0,  35);
+      histograms["muD0"]       = theDir.make<TH1F>("muD0",       "Muon D0",                60, -0.2, 0.2);
+      histograms["muChi2"]     = theDir.make<TH1F>("muChi2",     "Muon Chi2",              20,    0,   5);
+      histograms["muHCalVeto"] = theDir.make<TH1F>("muHCalVeto", "Muon hCalVeto",          30,    0,  30);
+      histograms["muECalVeto"] = theDir.make<TH1F>("muECalVeto", "Muon eCalVeto",          30,    0,  30);
+      histograms["muTrackIso"] = theDir.make<TH1F>("muTrackIso", "Muon Track Iso",         30,    0,  30);
+      histograms["muECalIso"]  = theDir.make<TH1F>("muECalIso",  "Muon ECal Iso",          30,    0,  30);
+      histograms["muHCalIso"]  = theDir.make<TH1F>("muHCalIso",  "Muon HCal Iso",          30,    0,  30);
+      histograms["muRelIso"]   = theDir.make<TH1F>("muRelIso",   "Muon Rel Iso",           30,    0,  30);
+   }
   
-  // book all the histograms for electrons
-  if(ePlusJets_) {
-    histograms["ePt"]       = theDir.make<TH1F>("ePt",       "Electron p_{T} (GeV/c) ", 100,    0, 200);
-    histograms["eEta"]      = theDir.make<TH1F>("eEta",      "Electron eta",             50, -3.0, 3.0);
-    histograms["ePhi"]      = theDir.make<TH1F>("ePhi",      "Electron Phi",             50, -3.2, 3.2);
-    //  histograms["eNhits"]    = theDir.make<TH1F>("eNhits",    "Electron N Hits",          35,    0,  35);
-    histograms["eD0"]       = theDir.make<TH1F>("eD0",       "Electron D0",              60, -0.2, 0.2);
-    histograms["eChi2"]     = theDir.make<TH1F>("eChi2",     "Electron Chi2",            20,    0,   5);
-    histograms["eTrackIso"] = theDir.make<TH1F>("eTrackIso", "Electron Track Iso",       30,    0,  30);
-    histograms["eECalIso"]  = theDir.make<TH1F>("eECalIso",  "Electron ECal Iso",        30,    0,  30);
-    histograms["eHCalIso"]  = theDir.make<TH1F>("eHCalIso",  "Electron HCal Iso",        30,    0,  30);
-    histograms["eRelIso"]   = theDir.make<TH1F>("eRelIso",   "Electron Rel Iso",         30,    0,  30);
-  }
+   // book all the histograms for electrons
+   if(ePlusJets_) {
+      histograms["ePt"]       = theDir.make<TH1F>("ePt",       "Electron p_{T} (GeV/c) ", 100,    0, 200);
+      histograms["eEta"]      = theDir.make<TH1F>("eEta",      "Electron eta",             50, -3.0, 3.0);
+      histograms["ePhi"]      = theDir.make<TH1F>("ePhi",      "Electron Phi",             50, -3.2, 3.2);
+      //  histograms["eNhits"]    = theDir.make<TH1F>("eNhits",    "Electron N Hits",          35,    0,  35);
+      histograms["eD0"]       = theDir.make<TH1F>("eD0",       "Electron D0",              60, -0.2, 0.2);
+      //histograms["eChi2"]     = theDir.make<TH1F>("eChi2",     "Electron Chi2",            20,    0,   5);
+      histograms["eTrackIso"] = theDir.make<TH1F>("eTrackIso", "Electron Track Iso",       30,    0,  30);
+      histograms["eECalIso"]  = theDir.make<TH1F>("eECalIso",  "Electron ECal Iso",        30,    0,  30);
+      histograms["eHCalIso"]  = theDir.make<TH1F>("eHCalIso",  "Electron HCal Iso",        30,    0,  30);
+      histograms["eRelIso"]   = theDir.make<TH1F>("eRelIso",   "Electron Rel Iso",         30,    0,  30);
+
+      histograms["eDelEta_EE"]  = theDir.make<TH1F>("eDelEta_EE",  "#Delta #eta in EE", 36, -0.04, 0.04);
+      histograms["eDelEta_EB"]  = theDir.make<TH1F>("eDelEta_EB",  "#Delta #eta in EB", 36, -0.04, 0.04);
+      histograms["eDelPhi_EE"]  = theDir.make<TH1F>("eDelPhi_EE",  "#Delta #phi in EE", 50, -0.25, 0.25);
+      histograms["eDelPhi_EB"]  = theDir.make<TH1F>("eDelPhi_EB",  "#Delta #phi in EB", 50, -0.25, 0.25);
+      histograms["eSigihih_EE"] = theDir.make<TH1F>("eSigihih_EE", "#sigma #eta in EE", 50, 0, 0.05);
+      histograms["eSigihih_EB"] = theDir.make<TH1F>("eSigihih_EB", "#sigma #eta in EB", 20, 0, 0.02);
+      histograms["eHoE_EE"]     = theDir.make<TH1F>("eHoE_EE", "HoE in EE", 30, 0, 0.15);
+      histograms["eHoE_EB"]     = theDir.make<TH1F>("eHoE_EB", "HoE in EB", 30, 0, 0.15);  
+   }
   
-  histograms["metPt"]      = theDir.make<TH1F>("metPt", "Missing p_{T} (GeV/c)", 100, 0, 200 );
-  histograms2d["massVsPt"] = theDir.make<TH2F>("massVsPt", "Mass vs pt", 25, 0, 250, 25, 0, 500);
+   histograms["metPt"]      = theDir.make<TH1F>("metPt", "Missing p_{T} (GeV/c)", 100, 0, 200 );
+   histograms2d["massVsPt"] = theDir.make<TH2F>("massVsPt", "Mass vs pt", 25, 0, 250, 25, 0, 500);
 
-  sampleHistName_ = "";
-  std::vector<std::string> sampleNameBase;
-  std::vector<std::string> sampleName;
-  std::vector<std::string> secvtxName(5,"_secvtxMass_");
-  secvtxName[0]+="1j_"; secvtxName[1]+="2j_"; secvtxName[2]+="3j_"; secvtxName[3]+="4j_"; secvtxName[4]+="5j_";
+   sampleHistName_ = "";
+   std::vector<std::string> sampleNameBase;
+   std::vector<std::string> sampleName;
+   std::vector<std::string> secvtxName(5,"_secvtxMass_");
+   secvtxName[0]+="1j_"; secvtxName[1]+="2j_"; secvtxName[2]+="3j_"; secvtxName[3]+="4j_"; secvtxName[4]+="5j_";
 
-  std::vector<std::string> hTName(6,"_hT_");
-  hTName[0]+="0j";hTName[1]+="1j"; hTName[2]+="2j"; hTName[3]+="3j"; hTName[4]+="4j"; hTName[5]+="5j";
+   std::vector<std::string> hTName(6,"_hT_");
+   hTName[0]+="0j";hTName[1]+="1j"; hTName[2]+="2j"; hTName[3]+="3j"; hTName[4]+="4j"; hTName[5]+="5j";
 
-  std::vector<std::string> METName(6,"_MET_");
-  METName[0]+="0j";METName[1]+="1j"; METName[2]+="2j"; METName[3]+="3j"; METName[4]+="4j"; METName[5]+="5j";
+   std::vector<std::string> METName(6,"_MET_");
+   METName[0]+="0j";METName[1]+="1j"; METName[2]+="2j"; METName[3]+="3j"; METName[4]+="4j"; METName[5]+="5j";
 
-  std::vector<std::string> muEtaName(6,"_muEta_");
-  muEtaName[0]+="0j";muEtaName[1]+="1j"; muEtaName[2]+="2j"; muEtaName[3]+="3j"; muEtaName[4]+="4j"; muEtaName[5]+="5j";
+   std::vector<std::string> muEtaName(6,"_muEta_");
+   muEtaName[0]+="0j";muEtaName[1]+="1j"; muEtaName[2]+="2j"; muEtaName[3]+="3j"; muEtaName[4]+="4j"; muEtaName[5]+="5j";
+
+   std::vector<std::string> elEtaName(6,"_elEta_");
+   elEtaName[0]+="0j";elEtaName[1]+="1j"; elEtaName[2]+="2j"; elEtaName[3]+="3j"; elEtaName[4]+="4j"; elEtaName[5]+="5j";
 
   
   std::vector<std::string> secvtxEnd;
@@ -126,266 +138,341 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   else {
     secvtxEnd.push_back("1t"); secvtxEnd.push_back("2t");
   }
-  
-  if(sampleNameInput=="Vqq" || sampleNameInput=="Wjets" || sampleNameInput=="Wc" || sampleNameInput=="Zjets") {
-    stringstream tmpString;
-    for(int i=1;i<12;++i) {
-      tmpString.str("");
-      tmpString << i;
-      if(!useHFcat_)
-        sampleName.push_back(sampleNameInput+"_path"+tmpString.str());
-      if(sampleNameInput != "Zjets")
-        sampleName.push_back(sampleNameInput+"W_path"+tmpString.str());
-      if(sampleNameInput=="Vqq"  || sampleNameInput == "Zjets") {
-        sampleName.push_back(sampleNameInput+"Z_path"+tmpString.str());
-      }
-    }
-  }
-  else sampleName.push_back(sampleNameInput);
 
-  histograms["nJets"]         = theDir.make<TH1F>("nJets",    "N Jets, pt>30, eta<2.4",  15,    0,   15);
-  for(unsigned int i=1; i<5; ++i) {
-    string jtNum = Form("%d",i);
-    histograms["jet"+jtNum+"Pt"]   = theDir.make<TH1F>(("jet"+jtNum+"Pt").c_str(),   ("jet "+jtNum+" leading jet pt").c_str(),     150,    0,  300);
-    histograms["jet"+jtNum+"Eta"]  = theDir.make<TH1F>(("jet"+jtNum+"Eta").c_str(),  ("jet "+jtNum+" leading jet eta").c_str(),     50, -3.0,  3.0);
-    histograms["jet"+jtNum+"Phi"]  = theDir.make<TH1F>(("jet"+jtNum+"Phi").c_str(),  ("jet "+jtNum+" leading jet phi").c_str(),     60, -3.5,  3.5);
-    histograms["jet"+jtNum+"Mass"] = theDir.make<TH1F>(("jet"+jtNum+"Mass").c_str(), ("jet "+jtNum+" leading jet mass").c_str(),    50,    0,  150);
-    if(doMC_) {
-      histograms2d["jet"+jtNum+"PtTrueRes"]      = theDir.make<TH2F>(("jet"+jtNum+"PtTrueRes").c_str(),("jet "+jtNum+" leading jet pt / gen pt").c_str(), 25, -5.0, 5.0, 50, 0, 3);
-      histograms2d["jet"+jtNum+"PtTrueResBJets"] = theDir.make<TH2F>(("jet"+jtNum+"PtTrueResBJets").c_str(),("jet "+jtNum+" leading bjet pt / gen pt").c_str(), 25, -5.0, 5.0, 50, 0, 3);
-    }
-  }
-  if(doMC_) {
-    histograms["bmass"]         = theDir.make<TH1F>("bmass",    "B Sec Vtx Mass",          40,    0,   10);
-    histograms["cmass"]         = theDir.make<TH1F>("cmass",    "C Sec Vtx Mass",          40,    0,   10);
-    histograms["lfmass"]        = theDir.make<TH1F>("lfmass",   "LF Sec Vtx Mass",         40,    0,   10);
-    histograms["flavorHistory"] = theDir.make<TH1F>("flavorHistory", "Flavor History",     12,    0,   12);
-    if ( reweightPDF_ )
-      histograms["pdfWeight"] = theDir.make<TH1F>("pdfWeight", "PDF Weight", 50, 0., 2.0);
-  }
-  histograms["discriminator"] = theDir.make<TH1F>("discriminator", "BTag Discriminator", 30,    2,    8);
-  histograms["nVertices"]     = theDir.make<TH1F>("nVertices",     "num sec Vertices",    5,    0,    5);
-  histograms["nTags"]         = theDir.make<TH1F>("nTags",     "number of Tags",          3,    0,    3);
   
-  //Using btagging and mistag to do normalization
-  histograms3d["normalization"]	= theDir.make<TH3F>("normalization",	"Normalization",	5,	1,	6,	2,	1,	3,   11,  0,  11 );
-  //Store stat errors
-  histograms3d["normalization"]		->  Sumw2();
+   if(sampleNameInput=="Vqq" || sampleNameInput=="Wjets" || sampleNameInput=="Wc" || sampleNameInput=="Zjets") {
+      stringstream tmpString;
+      for(int i=1;i<12;++i) {
+         tmpString.str("");
+         tmpString << i;
+         if(!useHFcat_)
+            sampleName.push_back(sampleNameInput+"_path"+tmpString.str());
+         if(sampleNameInput != "Zjets")
+            sampleName.push_back(sampleNameInput+"W_path"+tmpString.str());
+         if(sampleNameInput=="Vqq"  || sampleNameInput == "Zjets") {
+            sampleName.push_back(sampleNameInput+"Z_path"+tmpString.str());
+         }
+      }
+   }
+   else sampleName.push_back(sampleNameInput);
+
+
+   histograms["nJets"]         = theDir.make<TH1F>("nJets",    "N Jets, pt>30, eta<2.4",  15,    0,   15);
+   for(unsigned int i=1; i<5; ++i) {
+      string jtNum = Form("%d",i);
+      histograms["jet"+jtNum+"Pt"]   = theDir.make<TH1F>(("jet"+jtNum+"Pt").c_str(),   ("jet "+jtNum+" leading jet pt").c_str(),     150,    0,  300);
+      histograms["jet"+jtNum+"Eta"]  = theDir.make<TH1F>(("jet"+jtNum+"Eta").c_str(),  ("jet "+jtNum+" leading jet eta").c_str(),     50, -3.0,  3.0);
+      histograms["jet"+jtNum+"Phi"]  = theDir.make<TH1F>(("jet"+jtNum+"Phi").c_str(),  ("jet "+jtNum+" leading jet phi").c_str(),     60, -3.5,  3.5);
+      histograms["jet"+jtNum+"Mass"] = theDir.make<TH1F>(("jet"+jtNum+"Mass").c_str(), ("jet "+jtNum+" leading jet mass").c_str(),    50,    0,  150);
+      if(doMC_) {
+         histograms2d["jet"+jtNum+"PtTrueRes"]      = theDir.make<TH2F>(("jet"+jtNum+"PtTrueRes").c_str(),("jet "+jtNum+" leading jet pt / gen pt").c_str(), 25, -5.0, 5.0, 50, 0, 3);
+         histograms2d["jet"+jtNum+"PtTrueResBJets"] = theDir.make<TH2F>(("jet"+jtNum+"PtTrueResBJets").c_str(),("jet "+jtNum+" leading bjet pt / gen pt").c_str(), 25, -5.0, 5.0, 50, 0, 3);
+      }
+   }
+
+   if(doMC_) {
+      histograms["bmass"]         = theDir.make<TH1F>("bmass",    "B Sec Vtx Mass",          40,    0,   10);
+      histograms["cmass"]         = theDir.make<TH1F>("cmass",    "C Sec Vtx Mass",          40,    0,   10);
+      histograms["lfmass"]        = theDir.make<TH1F>("lfmass",   "LF Sec Vtx Mass",         40,    0,   10);
+      histograms["flavorHistory"] = theDir.make<TH1F>("flavorHistory", "Flavor History",     12,    0,   12);
+      if ( reweightPDF_ )
+         histograms["pdfWeight"] = theDir.make<TH1F>("pdfWeight", "PDF Weight", 50, 0., 2.0);
+   }
+   histograms["discriminator"] = theDir.make<TH1F>("discriminator", "BTag Discriminator", 30,    2,    8);
+   histograms["nVertices"]     = theDir.make<TH1F>("nVertices",     "num sec Vertices",    5,    0,    5);
+   histograms["nTags"]         = theDir.make<TH1F>("nTags",     "number of Tags",          3,    0,    3);
   
-  histograms["m3"] = theDir.make<TH1F>("m3", "M3", 60, 0, 600);
+   //Using btagging and mistag to do normalization
+   histograms3d["normalization"]	= theDir.make<TH3F>("normalization",	"Normalization",	5,	1,	6,	2,	1,	3,   11,  0,  11 );
+   //Store stat errors
+   histograms3d["normalization"]		->  Sumw2();
   
+   histograms["m3"] = theDir.make<TH1F>("m3", "M3", 60, 0, 600);
+/*
   histograms[sampleNameInput+"_hT"]     = theDir.make<TH1F>( (sampleNameInput+"_hT").c_str(),     "HT (sum Jet Et plus mu Pt + MET)", 120, 0, 1200);
   histograms[sampleNameInput+"_hT_Lep"] = theDir.make<TH1F>( (sampleNameInput+"_hT_lep").c_str(), "HT (sum Jet Et plus mu Pt)",       120, 0, 1200);
   histograms[sampleNameInput+"_wMT"]    = theDir.make<TH1F>( (sampleNameInput+"_wMT").c_str(),    "W Transverse Mass, total",          50, 0,  500);
   histograms[sampleNameInput+"_MET"]    = theDir.make<TH1F>( (sampleNameInput+"_MET").c_str(),    "Missing E_{T}, total" ,            120, 0,  300);
-
+*/
   
-  for(unsigned int i=0; i<6; ++i) {
-    string jtNum = Form("_%dj",i);
-    histograms[sampleNameInput+"_muPt"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_muPt"+jtNum).c_str(), "muon p_{T}", 100, 0, 200);
-    histograms[sampleNameInput+"_muEta"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_muEta"+jtNum).c_str(), "muon #eta", 120, 0, 2.4);
-    histograms[sampleNameInput+"_muPt"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_muPt"+jtNum+"_0t").c_str(), "muon p_{T}", 100, 0, 200);
-    histograms[sampleNameInput+"_muEta"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_muEta"+jtNum+"_0t").c_str(), "muon #eta", 120, 0, 2.4);
-    histograms[sampleNameInput+"_hT"+jtNum]   = theDir.make<TH1F>( (sampleNameInput+"_hT"+jtNum).c_str(), "HT (sum Jet Et + mu Pt + MET)", 120, 0, 1200);
-    histograms[sampleNameInput+"_hT"+jtNum+"_0t"]  = theDir.make<TH1F>( (sampleNameInput+"_hT"+jtNum+"_0t").c_str(), "HT (sum Jet Et + mu Pt + MET, 0-Tag)", 120, 0, 1200);
-    histograms[sampleNameInput+"_hT_Lep"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_hT_Lep"+jtNum).c_str(), "HTlep (sum Jet Et + mu Pt)", 120, 0, 1200);
-    histograms[sampleNameInput+"_hT_Lep"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_hT_Lep"+jtNum+"_0t").c_str(), "HTlep (sum Jet Et + mu Pt, 0-Tag)", 120, 0, 1200);
-    histograms[sampleNameInput+"_wMT"+jtNum]  = theDir.make<TH1F>( (sampleNameInput+"_wMT"+jtNum).c_str(), "W Trans. Mass, 0 Jets", 50, 0, 500);
-    histograms[sampleNameInput+"_wMT"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_wMT"+jtNum+"_0t").c_str(), "W Trans. Mass, 0 Jets, 0-Tag", 50,0,500);
-    histograms[sampleNameInput+"_MET"+jtNum]  = theDir.make<TH1F>( (sampleNameInput+"_MET"+jtNum).c_str(), "Missing E_{T}, 0 Jets", 120,0.,300.);
-    histograms[sampleNameInput+"_MET"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_MET"+jtNum+"_0t").c_str(), "Missing E_{T}, 0 Jets, 0-Tag", 120,0,300);
-    histograms2d[sampleNameInput+"_muisoVsMuEta"+jtNum] = 
-      theDir.make<TH2F>( (sampleNameInput+"_muisoVsMuEta"+jtNum).c_str(), "Muon isolation vs Muon Eta", 
-			 12, 0., 2.4,
-			 20, 0., 1.0
-			 );
-    histograms2d[sampleNameInput+"_muisoVsHt"+jtNum] = 
-      theDir.make<TH2F>( (sampleNameInput+"_muisoVsHt"+jtNum).c_str(), "Muon isolation vs H_{T}", 
-			 20., 0., 400,
-			 20, 0., 1.0
-			 );
+   TString lep, histTitle;
+   if(muPlusJets_)     { lep = "mu";}
+   else if(ePlusJets_) { lep = "el";}
+   
+   for(unsigned int i=0; i<6; ++i) {
+      string jtNum = Form("_%dj",i);
+      string jt; 
+      if(i==0 || i==1) jt = Form("%d Jet", i);
+      else if(i>1)     jt = Form("%d Jets", i);
 
-    histograms2d[sampleNameInput+"_muisoVsMET"+jtNum] = 
-      theDir.make<TH2F>( (sampleNameInput+"_muisoVsMET"+jtNum).c_str(), "Muon isolation vs MET", 
-			 20., 0., 200,
-			 20, 0., 1.0
-			 );
-    histograms2d[sampleNameInput+"_muisoVswMT"+jtNum] = 
-      theDir.make<TH2F>( (sampleNameInput+"_muisoVswMT"+jtNum).c_str(), "Muon isolation vs wMT", 
-			 20., 0., 200,
-			 20, 0., 1.0
-			 );
-
-    histograms2d[sampleNameInput+"_muisoVsD0"+jtNum] = 
-      theDir.make<TH2F>( (sampleNameInput+"_muisoVsD0"+jtNum).c_str(), "Muon isolation vs D0", 
-			 100., 0., 0.2,
-			 20, 0., 1.0
-			 );
-
-    histograms2d[sampleNameInput+"_muisoVsMuEta"+jtNum+"_0t"] = 
-      theDir.make<TH2F>( (sampleNameInput+"_muisoVsMuEta"+jtNum+"_0t").c_str(), "Muon isolation vs Muon Eta, 0-Tag", 
-			 12, 0., 2.4,
-			 20, 0., 1.0
-			 );
-    histograms2d[sampleNameInput+"_muisoVsHt"+jtNum+"_0t"] = 
-      theDir.make<TH2F>( (sampleNameInput+"_muisoVsHt"+jtNum+"_0t").c_str(), "Muon isolation vs H_{T}", 
-			 20., 0., 400,
-			 20, 0., 1.0
-			 );
-
-    histograms2d[sampleNameInput+"_muisoVsMET"+jtNum+"_0t"] = 
-      theDir.make<TH2F>( (sampleNameInput+"_muisoVsMET"+jtNum+"_0t").c_str(), "Muon isolation vs MET", 
-			 20., 0., 200,
-			 20, 0., 1.0
-			 );
-    histograms2d[sampleNameInput+"_muisoVswMT"+jtNum+"_0t"] = 
-      theDir.make<TH2F>( (sampleNameInput+"_muisoVswMT"+jtNum+"_0t").c_str(), "Muon isolation vs wMT", 
-			 20., 0., 200,
-			 20, 0., 1.0
-			 );
-    histograms2d[sampleNameInput+"_muisoVsD0"+jtNum+"_0t"] = 
-      theDir.make<TH2F>( (sampleNameInput+"_muisoVsD0"+jtNum+"_0t").c_str(), "Muon isolation vs D0", 
-			 100., 0., 0.2,
-			 20, 0., 1.0
-			 );
-
-
-
-  }
-  for (unsigned int j=0;j<sampleName.size();++j) {
-
-    // hT
-    for ( unsigned int k=0; k < hTName.size(); ++k ) {
-      // First do the pretagged histograms by flavor path
-      std::string pretemp = sampleName[j]+hTName[k];
-      histograms[pretemp] = theDir.make<TH1F>(pretemp.c_str(), "hT", 120, 0, 1200);
-      // Next do the untagged histograms by flavor path
-      std::string untemp = sampleName[j]+hTName[k]+"_0t";
-      histograms[untemp] = theDir.make<TH1F>(untemp.c_str(), "hT", 120, 0, 1200);
-    }
-
-    // MET
-    for ( unsigned int k=0; k < METName.size(); ++k ) {
-      // First do the pretagged histograms by flavor path
-      std::string pretemp = sampleName[j]+METName[k];
-      histograms[pretemp] = theDir.make<TH1F>(pretemp.c_str(), "MET", 120, 0,  300);
-      // Next do the untagged histograms by flavor path
-      std::string untemp = sampleName[j]+METName[k]+"_0t";
-      histograms[untemp] = theDir.make<TH1F>(untemp.c_str(), "MET", 120, 0,  300);
-    }
-
-    // muEta
-    for ( unsigned int k=0; k < muEtaName.size(); ++k ) {
-      // First do the pretagged histograms by flavor path
-      std::string pretemp = sampleName[j]+muEtaName[k];
-      histograms[pretemp] = theDir.make<TH1F>(pretemp.c_str(), "muEta",  120, 0, 2.4);
-      // Next do the untagged histograms by flavor path
-      std::string untemp = sampleName[j]+muEtaName[k]+"_0t";
-      histograms[untemp] = theDir.make<TH1F>(untemp.c_str(), "muEta",  120, 0, 2.4);
-    }
+      //Declare common pretag and 0-Tag histos
+      //--------------------------------------
     
+      histTitle = "HT (sum Jet Et + "+lep+" Pt + MET), "+jt;
+      histograms[sampleNameInput+"_hT"+jtNum]   = theDir.make<TH1F>( (sampleNameInput+"_hT"+jtNum).c_str(), histTitle, 120, 0, 1200);
 
-    // secvtx mass
-    for(unsigned int k=0;k<secvtxName.size();++k) {
-      for(unsigned int l=0;l<secvtxEnd.size();++l) {
-        std::string temp = sampleName[j]+secvtxName[k]+secvtxEnd[l];
-        histograms[temp] = theDir.make<TH1F>(temp.c_str(), "secvtxmass", 40,    0,   10);
-        std::string temp2 = sampleName[j]+secvtxName[k]+secvtxEnd[l]+"_vs_iso";
-        histograms2d[temp2] = theDir.make<TH2F>(temp2.c_str(), "secvtxmass", 40,    0,   10,
-						10, 0., 1.0 );
-        if(k==0 && l==4) break;
-        else if( (!doMC_) && k==0 && l==0) break;
-        //std::cout << temp << std::endl;
+      histTitle = "HT (sum Jet Et + "+lep+" Pt + MET), 0-Tag, "+jt;
+      histograms[sampleNameInput+"_hT"+jtNum+"_0t"]  = theDir.make<TH1F>( (sampleNameInput+"_hT"+jtNum+"_0t").c_str(), histTitle, 120, 0, 1200);
+
+      histTitle = "HTlep (sum Jet Et + "+lep+"Pt), "+jt;
+      histograms[sampleNameInput+"_hT_Lep"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_hT_Lep"+jtNum).c_str(), histTitle, 120, 0, 1200);
+
+      histTitle = "HTlep (sum Jet Et + "+lep+" Pt), 0-Tag, "+jt;
+      histograms[sampleNameInput+"_hT_Lep"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_hT_Lep"+jtNum+"_0t").c_str(), histTitle, 120, 0, 1200);
+       
+      histTitle = "Missing E_{T}, "+jt;
+      histograms[sampleNameInput+"_MET"+jtNum]  = theDir.make<TH1F>( (sampleNameInput+"_MET"+jtNum).c_str(), histTitle, 120,0.,300.);
+
+      histTitle = "Missing E_{T}, 0 Tag, "+jt;
+      histograms[sampleNameInput+"_MET"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_MET"+jtNum+"_0t").c_str(), histTitle, 120,0,300);
+
+      histTitle = "W Trans Mass, "+jt;
+      histograms[sampleNameInput+"_wMT"+jtNum]  = theDir.make<TH1F>( (sampleNameInput+"_wMT"+jtNum).c_str(), histTitle, 50, 0, 500);
+
+      histTitle = "W Trans Mass, 0 Tag, "+jt;
+      histograms[sampleNameInput+"_wMT"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_wMT"+jtNum+"_0t").c_str(), histTitle, 50,0,500);
+
+     
+      //Declare the muon pretag and 0-Tag histos
+      //----------------------------------------
+      if(muPlusJets_){
+         histograms[sampleNameInput+"_muPt"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_muPt"+jtNum).c_str(), "muon p_{T}", 100, 0, 200);
+         histograms[sampleNameInput+"_muEta"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_muEta"+jtNum).c_str(), "muon #eta", 120, 0, 2.4);
+         histograms[sampleNameInput+"_muPt"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_muPt"+jtNum+"_0t").c_str(), "muon p_{T}", 100, 0, 200);
+         histograms[sampleNameInput+"_muEta"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_muEta"+jtNum+"_0t").c_str(), "muon #eta", 120, 0, 2.4);
+    
+         histograms2d[sampleNameInput+"_muisoVsMuEta"+jtNum] = 
+            theDir.make<TH2F>( (sampleNameInput+"_muisoVsMuEta"+jtNum).c_str(), "Muon isolation vs Muon Eta", 
+                               12, 0., 2.4,
+                               20, 0., 1.0
+               );
+         histograms2d[sampleNameInput+"_muisoVsHt"+jtNum] = 
+            theDir.make<TH2F>( (sampleNameInput+"_muisoVsHt"+jtNum).c_str(), "Muon isolation vs H_{T}", 
+                               20., 0., 400,
+                               20, 0., 1.0
+               );
+
+         histograms2d[sampleNameInput+"_muisoVsMET"+jtNum] = 
+            theDir.make<TH2F>( (sampleNameInput+"_muisoVsMET"+jtNum).c_str(), "Muon isolation vs MET", 
+                               20., 0., 200,
+                               20, 0., 1.0
+               );
+         histograms2d[sampleNameInput+"_muisoVswMT"+jtNum] = 
+            theDir.make<TH2F>( (sampleNameInput+"_muisoVswMT"+jtNum).c_str(), "Muon isolation vs wMT", 
+                               20., 0., 200,
+                               20, 0., 1.0
+               );
+
+         histograms2d[sampleNameInput+"_muisoVsD0"+jtNum] = 
+            theDir.make<TH2F>( (sampleNameInput+"_muisoVsD0"+jtNum).c_str(), "Muon isolation vs D0", 
+                               100., 0., 0.2,
+                               20, 0., 1.0
+               );
+
+         histograms2d[sampleNameInput+"_muisoVsMuEta"+jtNum+"_0t"] = 
+            theDir.make<TH2F>( (sampleNameInput+"_muisoVsMuEta"+jtNum+"_0t").c_str(), "Muon isolation vs Muon Eta, 0-Tag", 
+                               12, 0., 2.4,
+                               20, 0., 1.0
+               );
+         histograms2d[sampleNameInput+"_muisoVsHt"+jtNum+"_0t"] = 
+            theDir.make<TH2F>( (sampleNameInput+"_muisoVsHt"+jtNum+"_0t").c_str(), "Muon isolation vs H_{T}", 
+                               20., 0., 400,
+                               20, 0., 1.0
+               );
+
+         histograms2d[sampleNameInput+"_muisoVsMET"+jtNum+"_0t"] = 
+            theDir.make<TH2F>( (sampleNameInput+"_muisoVsMET"+jtNum+"_0t").c_str(), "Muon isolation vs MET", 
+                               20., 0., 200,
+                               20, 0., 1.0
+               );
+         histograms2d[sampleNameInput+"_muisoVswMT"+jtNum+"_0t"] = 
+            theDir.make<TH2F>( (sampleNameInput+"_muisoVswMT"+jtNum+"_0t").c_str(), "Muon isolation vs wMT", 
+                               20., 0., 200,
+                               20, 0., 1.0
+               );
+         histograms2d[sampleNameInput+"_muisoVsD0"+jtNum+"_0t"] = 
+            theDir.make<TH2F>( (sampleNameInput+"_muisoVsD0"+jtNum+"_0t").c_str(), "Muon isolation vs D0", 
+                               100., 0., 0.2,
+                               20, 0., 1.0
+               );
       }
-    }
-  }
-  
-  allNumTags_ = 0;
-  allNumJets_ = 0;
+      //Declare electron pretag and 0-Tag histos
+      //----------------------------------------
+      else if (ePlusJets_) {
 
-  if ( reweightPDF_ ) {
-    std::cout << "Initializing pdfs, identifier = " << identifier_ << std::endl;
-    // For the first one, MAKE ABSOLUTELY SURE it is the one used to generate
-    // your sample. 
-    std::cout << "PDF to use = " << pdfToUse_ << std::endl;
-    LHAPDF::initPDFSet(pdfToUse_);
-    LHAPDF::usePDFMember(pdfEigenToUse_);
-    std::cout << "Done initializing pdfs" << std::endl;
-  }
+         histograms[sampleNameInput+"_elPt"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_elPt"+jtNum).c_str(), "electron p_{T}", 100, 0, 200);
+         histograms[sampleNameInput+"_elEta"+jtNum] = theDir.make<TH1F>( (sampleNameInput+"_elEta"+jtNum).c_str(), "electron #eta", 250, -2.5, 2.5);
+         histograms[sampleNameInput+"_elPt"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_elPt"+jtNum+"_0t").c_str(), "electron p_{T}, 0-Tag", 100, 0, 200);
+         histograms[sampleNameInput+"_elEta"+jtNum+"_0t"] = theDir.make<TH1F>( (sampleNameInput+"_elEta"+jtNum+"_0t").c_str(), "electron #eta, 0-Tag", 250, -2.5, 2.5);
+
+      }
+
+   }
+   for (unsigned int j=0;j<sampleName.size();++j) {
+      if(useHFcat_){
+         // hT
+         for ( unsigned int k=0; k < hTName.size(); ++k ) {
+            // First do the pretagged histograms by flavor path
+            std::string pretemp = sampleName[j]+hTName[k];
+            histograms[pretemp] = theDir.make<TH1F>(pretemp.c_str(), "hT", 120, 0, 1200);
+            // Next do the untagged histograms by flavor path
+            std::string untemp = sampleName[j]+hTName[k]+"_0t";
+            histograms[untemp] = theDir.make<TH1F>(untemp.c_str(), "hT", 120, 0, 1200);
+         }
+         
+         // MET
+         for ( unsigned int k=0; k < METName.size(); ++k ) {
+            // First do the pretagged histograms by flavor path
+            std::string pretemp = sampleName[j]+METName[k];
+            histograms[pretemp] = theDir.make<TH1F>(pretemp.c_str(), "MET", 120, 0,  300);
+            // Next do the untagged histograms by flavor path
+            std::string untemp = sampleName[j]+METName[k]+"_0t";
+            histograms[untemp] = theDir.make<TH1F>(untemp.c_str(), "MET", 120, 0,  300);
+         }
+         if(muPlusJets_){
+            // muEta
+            for ( unsigned int k=0; k < muEtaName.size(); ++k ) {
+            // First do the pretagged histograms by flavor path
+               std::string pretemp = sampleName[j]+muEtaName[k];
+               histograms[pretemp] = theDir.make<TH1F>(pretemp.c_str(), "muEta",  120, 0, 2.4);
+               // Next do the untagged histograms by flavor path
+               std::string untemp = sampleName[j]+muEtaName[k]+"_0t";
+               histograms[untemp] = theDir.make<TH1F>(untemp.c_str(), "muEta",  120, 0, 2.4);
+            }
+         }  
+         if(ePlusJets_){
+         // elEta
+            for ( unsigned int k=0; k < muEtaName.size(); ++k ) {
+               // First do the pretagged histograms by flavor path
+               std::string pretemp = sampleName[j]+elEtaName[k];
+               histograms[pretemp] = theDir.make<TH1F>(pretemp.c_str(), "elEta",  120, 0, 2.4);
+               // Next do the untagged histograms by flavor path
+               std::string untemp = sampleName[j]+muEtaName[k]+"_0t";
+               histograms[untemp] = theDir.make<TH1F>(untemp.c_str(), "elEta",  120, 0, 2.4);
+            }         
+         }
+      }//if HF
+
+      // secvtx mass
+      for(unsigned int k=0;k<secvtxName.size();++k) {
+         for(unsigned int l=0;l<secvtxEnd.size();++l) {
+            std::string temp = sampleName[j]+secvtxName[k]+secvtxEnd[l];
+            histograms[temp] = theDir.make<TH1F>(temp.c_str(), "secvtxmass", 40,    0,   10);
+            std::string temp2 = sampleName[j]+secvtxName[k]+secvtxEnd[l]+"_vs_iso";
+            histograms2d[temp2] = theDir.make<TH2F>(temp2.c_str(), "secvtxmass", 40,    0,   10,
+                                                    10, 0., 1.0 );
+            if(k==0 && l==4) break;
+            else if( (!doMC_) && k==0 && l==0) break;
+         }
+      }
+   
+   }
+   allNumTags_ = 0;
+   allNumJets_ = 0;
+
+   if ( reweightPDF_ ) {
+      std::cout << "Initializing pdfs, identifier = " << identifier_ << std::endl;
+      // For the first one, MAKE ABSOLUTELY SURE it is the one used to generate
+      // your sample. 
+      std::cout << "PDF to use = " << pdfToUse_ << std::endl;
+      LHAPDF::initPDFSet(pdfToUse_);
+      LHAPDF::usePDFMember(pdfEigenToUse_);
+      std::cout << "Done initializing pdfs" << std::endl;
+   }
 
 
-  // for closure test
-  nExpectedTaggedJets_ = 0.;
-  nObservedTaggedJets_ = 0.;
-  nExpectedTaggedEvents_ = 0.;
-  nObservedTaggedEvents_ = 0.;
+   // for closure test
+   nExpectedTaggedJets_ = 0.;
+   nObservedTaggedJets_ = 0.;
+   nExpectedTaggedEvents_ = 0.;
+   nObservedTaggedEvents_ = 0.;
 }
 
 // fill the plots for the electrons
 bool SHyFT::analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons)
 {
-  if ( electrons.size() == 0 )  return false;
-  const pat::Electron * electron_ = dynamic_cast<const pat::Electron*>(&electrons[0]);
-  double ePt_      = electron_ ->pt();
-  double eEta_     = electron_ ->eta();
-  double ePhi_     = electron_ ->phi();
-  double eD0_      = electron_ ->dB();
-  double trackIso_ = electron_ ->trackIso();
-  double eCalIso_  = electron_ ->ecalIso();
-  double hCalIso_  = electron_ ->hcalIso();
-  double relIso_   = ( trackIso_ + eCalIso_ + hCalIso_ )/ePt_ ;
+   if ( electrons.size() == 0 )  return false;
+   const pat::Electron * electron_ = dynamic_cast<const pat::Electron*>(electrons[0].masterClonePtr().get());
+   if ( electron_ == NULL ) return false;
+   double ePt_      = electron_ ->pt();
+   double eEta_     = electron_ ->eta();
+   double ePhi_     = electron_ ->phi();
+   double eD0_      = electron_ ->dB();
+   double trackIso_ = electron_ ->dr03TkSumPt();
+   double eCalIso_  = electron_ ->dr03EcalRecHitSumEt();
+   double hCalIso_  = electron_ ->dr03HcalTowerSumEt();
+   double relIso_   = ( trackIso_ + eCalIso_ + hCalIso_ )/ePt_ ;
 
-  histograms["ePt"      ]->Fill( ePt_        , globalWeight_);
-  histograms["eEta"     ]->Fill( eEta_       , globalWeight_);
-  histograms["ePhi"     ]->Fill( ePhi_       , globalWeight_);
-  histograms["eD0"      ]->Fill( eD0_        , globalWeight_);
-  histograms["eTrackIso"]->Fill( trackIso_   , globalWeight_);
-  histograms["eECalIso" ]->Fill( eCalIso_    , globalWeight_);
-  histograms["eHCalIso" ]->Fill( hCalIso_    , globalWeight_);
-  histograms["eRelIso"  ]->Fill( relIso_     , globalWeight_);
+   double deta_     =  electron_ ->deltaEtaSuperClusterTrackAtVtx();
+   double dphi_     =  electron_ ->deltaPhiSuperClusterTrackAtVtx();
+   double sihih_    =  electron_ ->sigmaIetaIeta();
+   double hoe_      =  electron_ ->hadronicOverEm();
+   
+   histograms["ePt"      ]->Fill( ePt_        , globalWeight_);
+   histograms["eEta"     ]->Fill( eEta_       , globalWeight_);
+   histograms["ePhi"     ]->Fill( ePhi_       , globalWeight_);
+   histograms["eD0"      ]->Fill( eD0_        , globalWeight_);
+   histograms["eTrackIso"]->Fill( trackIso_   , globalWeight_);
+   histograms["eECalIso" ]->Fill( eCalIso_    , globalWeight_);
+   histograms["eHCalIso" ]->Fill( hCalIso_    , globalWeight_);
+   histograms["eRelIso"  ]->Fill( relIso_     , globalWeight_);
   
-  return true;
+   if(electron_->isEE()){
+      histograms["eDelEta_EE"] ->Fill( deta_     , globalWeight_); 
+      histograms["eDelPhi_EE"] ->Fill( dphi_     , globalWeight_);
+      histograms["eSigihih_EE"]->Fill( sihih_    , globalWeight_);
+      histograms["eHoE_EE"]    ->Fill( hoe_      , globalWeight_);
+   }
+
+   else if(electron_->isEB()){
+      histograms["eDelEta_EB"] ->Fill( deta_     , globalWeight_); 
+      histograms["eDelPhi_EB"] ->Fill( dphi_     , globalWeight_);
+      histograms["eSigihih_EB"]->Fill( sihih_    , globalWeight_);
+      histograms["eHoE_EB"]    ->Fill( hoe_      , globalWeight_);
+   }
+
+   return true;
 }
 
 // fill the plots for the muons
 bool SHyFT::analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons)
 {
-  const pat::Muon * globalMuon = NULL;
-  for ( ShallowCloneCollection::const_iterator muonBegin = muons.begin(),
-          muonEnd = muons.end(), imuon = muonBegin;
-        imuon != muonEnd; ++imuon ) {
-    if ( imuon->isGlobalMuon() ) {
-      globalMuon = dynamic_cast<const pat::Muon *>(imuon->masterClonePtr().get());
-      break;
-    }
-  }
+   const pat::Muon * globalMuon = NULL;
+   for ( ShallowCloneCollection::const_iterator muonBegin = muons.begin(),
+            muonEnd = muons.end(), imuon = muonBegin;
+         imuon != muonEnd; ++imuon ) {
+      if ( imuon->isGlobalMuon() ) {
+         globalMuon = dynamic_cast<const pat::Muon *>(imuon->masterClonePtr().get());
+         break;
+      }
+   }
 
-  if ( globalMuon == NULL ) {  cout<<"No Global Muon is found"<<endl; return false; }
-  double muPt_       = globalMuon->pt();
-  double muEta_      = globalMuon->eta();
-  double nhits_      = static_cast<int>( globalMuon->numberOfValidHits() );
-  double muD0_       = globalMuon->dB();
-  double norm_chi2_  = globalMuon->normChi2();
-  double muHCalVeto_ = globalMuon->isolationR03().hadVetoEt;
-  double muECalVeto_ = globalMuon->isolationR03().emVetoEt;
-  double trackIso_   = globalMuon->trackIso();
-  double eCalIso_    = globalMuon->ecalIso();
-  double hCalIso_    = globalMuon->hcalIso();
-  double relIso_     = ( trackIso_ + eCalIso_ + hCalIso_ )/muPt_ ;
+   if ( globalMuon == NULL ) {  cout<<"No Global Muon is found"<<endl; return false; }
+   double muPt_       = globalMuon->pt();
+   double muEta_      = globalMuon->eta();
+   double nhits_      = static_cast<int>( globalMuon->numberOfValidHits() );
+   double muD0_       = globalMuon->dB();
+   double norm_chi2_  = globalMuon->normChi2();
+   double muHCalVeto_ = globalMuon->isolationR03().hadVetoEt;
+   double muECalVeto_ = globalMuon->isolationR03().emVetoEt;
+   double trackIso_   = globalMuon->trackIso();
+   double eCalIso_    = globalMuon->ecalIso();
+   double hCalIso_    = globalMuon->hcalIso();
+   double relIso_     = ( trackIso_ + eCalIso_ + hCalIso_ )/muPt_ ;
 
-  histograms["muPt"      ]->Fill( muPt_        , globalWeight_);
-  histograms["muEta"     ]->Fill( muEta_       , globalWeight_);
-  histograms["muNhits"   ]->Fill( nhits_       , globalWeight_);
-  histograms["muD0"      ]->Fill( muD0_        , globalWeight_);
-  histograms["muChi2"    ]->Fill( norm_chi2_   , globalWeight_);
-  histograms["muHCalVeto"]->Fill( muHCalVeto_  , globalWeight_);
-  histograms["muECalVeto"]->Fill( muECalVeto_  , globalWeight_);
-  histograms["muTrackIso"]->Fill( trackIso_    , globalWeight_);
-  histograms["muECalIso" ]->Fill( eCalIso_     , globalWeight_);
-  histograms["muHCalIso" ]->Fill( hCalIso_     , globalWeight_);
-  histograms["muRelIso"  ]->Fill( relIso_      , globalWeight_);
+   histograms["muPt"      ]->Fill( muPt_        , globalWeight_);
+   histograms["muEta"     ]->Fill( muEta_       , globalWeight_);
+   histograms["muNhits"   ]->Fill( nhits_       , globalWeight_);
+   histograms["muD0"      ]->Fill( muD0_        , globalWeight_);
+   histograms["muChi2"    ]->Fill( norm_chi2_   , globalWeight_);
+   histograms["muHCalVeto"]->Fill( muHCalVeto_  , globalWeight_);
+   histograms["muECalVeto"]->Fill( muECalVeto_  , globalWeight_);
+   histograms["muTrackIso"]->Fill( trackIso_    , globalWeight_);
+   histograms["muECalIso" ]->Fill( eCalIso_     , globalWeight_);
+   histograms["muHCalIso" ]->Fill( hCalIso_     , globalWeight_);
+   histograms["muRelIso"  ]->Fill( relIso_      , globalWeight_);
   
-  return true;
+   return true;
 }
 
 
@@ -402,20 +489,32 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   // std::cout << "Filling global weight in make_templates : " << globalWeight_ << std::endl;
   reco::Candidate::LorentzVector nu_p4 = met.p4();
   reco::Candidate::LorentzVector lep_p4 = ( muPlusJets_  ? muons[0].p4() : electrons[0].p4() );
-  // double wMT = (lep_p4 + nu_p4).mt();
+  double wMT = (lep_p4 + nu_p4).mt();
   double hT = lep_p4.pt() + nu_p4.Et();
-  // double hT_lep = lep_p4.pt();
-  pat::Muon const * patMuon = dynamic_cast<pat::Muon const *>(&* muons[0].masterClonePtr());
-  if ( patMuon == 0 )
-    throw cms::Exception("InvalidMuonPointer") << "Muon pointer is invalid you schmuck." << std::endl;
-  double hcalIso = patMuon->hcalIso();
-  double ecalIso = patMuon->ecalIso();
-  double trkIso  = patMuon->trackIso();
-  double pt      = patMuon->pt() ;
-  double d0      = fabs(patMuon->dB());
-  
-  double relIso = (ecalIso + hcalIso + trkIso) / pt;
-
+  double hT_lep = lep_p4.pt();
+  double hcalIso(-99.), ecalIso(-99.), trkIso(-99.), pt(-99.), relIso(-99.), d0(-99);
+  if(muPlusJets_){
+    pat::Muon const * patMuon = dynamic_cast<pat::Muon const *>(&* muons[0].masterClonePtr());
+    if ( patMuon == 0 )
+      throw cms::Exception("InvalidMuonPointer") << "Muon pointer is invalid you schmuck." << std::endl;
+    hcalIso = patMuon->hcalIso();
+    ecalIso = patMuon->ecalIso();
+    trkIso  = patMuon->trackIso();
+    pt      = patMuon->pt() ;
+    d0      = fabs(patMuon->dB());  
+    relIso = (ecalIso + hcalIso + trkIso) / pt;
+  }
+  else if(ePlusJets_){
+    pat::Electron const * patElectron = dynamic_cast<pat::Electron const *>(&* electrons[0].masterClonePtr());
+    if ( patElectron == 0 )
+      throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
+    hcalIso = patElectron->dr03HcalTowerSumEt();
+    ecalIso = patElectron->dr03EcalRecHitSumEt();
+    trkIso  = patElectron->dr03TkSumPt();
+    pt      = patElectron->pt() ;
+    d0      = fabs(patElectron->dB());
+    relIso = (ecalIso + hcalIso + trkIso) / pt;
+  }
   unsigned int maxJets = jets.size();
   unsigned int ibjet = 0;
   if ( (int)maxJets >= nJetsCut_ ) {
@@ -427,11 +526,11 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       histograms["jet" + boost::lexical_cast<std::string>(i+1) + "Mass"]->Fill( jets[i].mass() , globalWeight_);
       pat::Jet const * patJet = dynamic_cast<pat::Jet const *>( &* jets[i].masterClonePtr()  );
       if ( doMC_ && patJet != 0 && patJet->genJet() != 0 ) {
-        histograms2d["jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt() , globalWeight_ );
-        if ( abs(patJet->partonFlavour()) == 5 ) {
-          ++ibjet;
-          histograms2d["jet" + boost::lexical_cast<std::string>(ibjet) + "PtTrueResBJets"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt(), globalWeight_  );
-        }
+	histograms2d["jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt() , globalWeight_ );
+	if ( abs(patJet->partonFlavour()) == 5 ) {
+	  ++ibjet;
+	  histograms2d["jet" + boost::lexical_cast<std::string>(ibjet) + "PtTrueResBJets"] ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt(), globalWeight_  );
+	}
       }
     }
   } 
@@ -451,6 +550,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   double vertexMass = -1.0;
   if ( reweightBTagEff_ )
     vertexMass = 0.0;
+
   std::vector<double> vertexMasses;
   // --------------
   // Fill the M3 if there are more than 3 jets
@@ -470,13 +570,13 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 
     for (unsigned int j=0;j<jets.size() - 2;++j) {
       for (unsigned int k=j+1;k<jets.size() - 1;++k) {
-        for (unsigned int l = k+1; l<jets.size(); ++l) {
-          TLorentzVector threeJets = jets_p4[j] + jets_p4[k] + jets_p4[l];
-          if (highestPt < threeJets.Perp()) {
-            M3 = threeJets.M();
-            highestPt=threeJets.Perp();
-          }
-        }
+	for (unsigned int l = k+1; l<jets.size(); ++l) {
+	  TLorentzVector threeJets = jets_p4[j] + jets_p4[k] + jets_p4[l];
+	  if (highestPt < threeJets.Perp()) {
+	    M3 = threeJets.M();
+	    highestPt=threeJets.Perp();
+	  }
+	}
       }
     }
     histograms["m3"]->Fill( M3, globalWeight_ );
@@ -499,8 +599,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   //                     if MC, fill template
   bool firstTag = true;
   for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
-          jetEnd = jets.end(), jetIter = jetBegin;
-        jetIter != jetEnd; ++jetIter)
+	  jetEnd = jets.end(), jetIter = jetBegin;
+	jetIter != jetEnd; ++jetIter)
     {
       const pat::Jet* jet = dynamic_cast<const pat::Jet *>(jetIter->masterClonePtr().get());
       // We first get the flavor of the jet so we can fill look at btag efficiency.
@@ -512,25 +612,25 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 
       //Here we determine what kind of flavor we have in this jet	
       if( doMC_ ) {
-        switch (jetFlavor)
-          {
-          case 5:
-            // bottom
-            ++numBottom;
-            break;
-          case 4:
-            // charm
-            ++numCharm;
-            break;
-          default:
-            // light flavour
-            ++numLight;
-          }
+	switch (jetFlavor)
+	  {
+	  case 5:
+	    // bottom
+	    ++numBottom;
+	    break;
+	  case 4:
+	    // charm
+	    ++numCharm;
+	    break;
+	  default:
+	    // light flavour
+	    ++numLight;
+	  }
       }
 
       // Get the secondary vertex tag info
       reco::SecondaryVertexTagInfo const * svTagInfos
-        = jet->tagInfoSecondaryVertex("secondaryVertex");
+	= jet->tagInfoSecondaryVertex("secondaryVertex");
       if ( svTagInfos == 0 ) { 
 	continue;
       }
@@ -673,14 +773,50 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   histograms[sampleNameInput + Form("_muEta_%dj",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
   histograms[sampleNameInput + Form("_hT_%dj",     numJets)]->Fill( hT,                   globalWeight_ );
   histograms[sampleNameInput + Form("_MET_%dj",    numJets)]->Fill( met.pt(),             globalWeight_ );
-  histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
-  histograms2d[sampleNameInput + Form("_muisoVsHt_%dj", numJets)]->Fill( hT, relIso, globalWeight_ );
-  histograms2d[sampleNameInput + Form("_muisoVsMET_%dj", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
-  histograms2d[sampleNameInput + Form("_muisoVsD0_%dj", numJets)]->Fill( d0, relIso, globalWeight_ );
+
+  if(muPlusJets_){       
+    histograms[sampleNameInput + Form("_muEta_%dj",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ ); 
+    histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsHt_%dj", numJets)]->Fill( hT, relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsMET_%dj", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVsD0_%dj", numJets)]->Fill( d0, relIso, globalWeight_ );
+  }
+   
+  else if(ePlusJets_){
+    histograms[sampleNameInput + Form("_elPt_%dj",  numJets)]->Fill( electrons[0].pt() , globalWeight_ );
+    histograms[sampleNameInput + Form("_elEta_%dj",  numJets)]->Fill( electrons[0].eta() , globalWeight_ );
+  }
+
+  if ( numTags == 0 ) {
+
+    if(useHFcat_){
+      histograms[sampleHistName_ + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
+      histograms[sampleHistName_ + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
+      if(muPlusJets_) histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ ); 
+      if(ePlusJets_)  histograms[sampleHistName_ + Form("_elEta_%dj_0t",  numJets)]->Fill( fabs(electrons[0].eta()), globalWeight_ );
+    }
+      
+    histograms[sampleNameInput + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
+    histograms[sampleNameInput + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
+    histograms[sampleNameInput + Form("_hT_Lep_%dj_0t", numJets)]->Fill( hT_lep ,              globalWeight_ );
+    histograms[sampleNameInput + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                  globalWeight_ ); 
+      
+    if(muPlusJets_){
+      histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );    
+      histograms[sampleNameInput + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );         
+      histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj_0t", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
+      histograms2d[sampleNameInput + Form("_muisoVsHt_%dj_0t", numJets)]->Fill( hT, relIso, globalWeight_ );
+      histograms2d[sampleNameInput + Form("_muisoVsMET_%dj_0t", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
+      histograms2d[sampleNameInput + Form("_muisoVsD0_%dj_0t", numJets)]->Fill( d0, relIso, globalWeight_ );
+    }
+    else if(ePlusJets_){
+      histograms[sampleNameInput + Form("_elPt_%dj_0t",  numJets)]->Fill( electrons[0].pt(), globalWeight_ );
+      histograms[sampleNameInput + Form("_elEta_%dj_0t",  numJets)]->Fill( electrons[0].eta(), globalWeight_ );   
+    }
+  }
 
 
 
-  
   if ( !reweightBTagEff_ )  {
     if( numTags > 0 ) {
       string massName  = sampleHistName_ + Form("_secvtxMass_%dj_%dt", numJets, numTags);
@@ -699,13 +835,16 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	histograms[sampleHistName_ + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
 	histograms[sampleHistName_ + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
       }
-      histograms[sampleNameInput + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
       histograms[sampleNameInput + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
       histograms[sampleNameInput + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj_0t", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsHt_%dj_0t", numJets)]->Fill( hT, relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsMET_%dj_0t", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsD0_%dj_0t", numJets)]->Fill( d0, relIso, globalWeight_ );
+
+      if ( muPlusJets_ ) {
+	histograms[sampleNameInput + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
+	histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj_0t", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
+	histograms2d[sampleNameInput + Form("_muisoVsHt_%dj_0t", numJets)]->Fill( hT, relIso, globalWeight_ );
+	histograms2d[sampleNameInput + Form("_muisoVsMET_%dj_0t", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
+	histograms2d[sampleNameInput + Form("_muisoVsD0_%dj_0t", numJets)]->Fill( d0, relIso, globalWeight_ );
+      }
     } // end ntags = 0
   }// end if not reweighting b-tag eff
 
@@ -723,9 +862,9 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 
     // get the efficiency parameterizations
     // std::cout << "Getting custom eff parameterizations" << std::endl;
-    TH2 * bEff = (TH2*)customBtagFile_->Get( bstr.c_str() );
-    TH2 * cEff = (TH2*)customBtagFile_->Get( cstr.c_str() );
-    TH2 * pEff = (TH2*)customBtagFile_->Get( pstr.c_str() );    
+    TH1 * bEff = (TH1*)customBtagFile_->Get( bstr.c_str() );
+    TH1 * cEff = (TH1*)customBtagFile_->Get( cstr.c_str() );
+    TH1 * pEff = (TH1*)customBtagFile_->Get( pstr.c_str() );    
 
     // Loop over jets, create the efficiency vector to be used in
     // the combinatoric calculations. 
@@ -759,24 +898,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 						 jetFlavor
 						 ) );
 	}
-
-	// if ( jbin >= bEff->GetNbinsY() ) jbin = bEff->GetNbinsY() - 1;
-	// if ( jetFlavor == 5 ) {
-	//   effs.push_back( shyft::helper::EffInfo(jetIter - jetBegin, 
-	// 					 bEff->GetBinContent( ibin, jbin ) * bcEffScale_,
-	// 					 jetFlavor
-	// 					 ) );
-	// } else if (jetFlavor == 4 ) {
-	//   effs.push_back( shyft::helper::EffInfo(jetIter - jetBegin, 
-	// 					 cEff->GetBinContent( ibin, jbin ) * bcEffScale_,
-	// 					 jetFlavor
-	// 					 ) );
-	// } else {
-	//   effs.push_back( shyft::helper::EffInfo(jetIter - jetBegin, 
-	// 					 pEff->GetBinContent( ibin, jbin ) * lfEffScale_,
-	// 					 jetFlavor
-	// 					 ) );
-	// }
       }
     
     double totalSum = 0.0;
@@ -831,9 +952,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     } // end loop over number of tags
     // std::cout << "Total probabilty = " << totalSum << std::endl;
   } // end if reweighting b-tag eff
-
-
-
   return true;
 }
 
@@ -904,12 +1022,12 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
       if ( ePlusJets_ ) analyze_electrons(electrons);          
 
       if ( !doMC_) {
-        summary_.push_back( SHyFTSummary(iEvent.id().run(),
-                                         iEvent.id().luminosityBlock(),
-                                         iEvent.id().event(),
-                                         allNumJets_,
-                                         allNumTags_
-                                         ) );
+	summary_.push_back( SHyFTSummary(iEvent.id().run(),
+					 iEvent.id().luminosityBlock(),
+					 iEvent.id().event(),
+					 allNumJets_,
+					 allNumTags_
+					 ) );
       }    
     }
 }
@@ -925,28 +1043,28 @@ std::string SHyFT::calcSampleName (const edm::EventBase& iEvent)
     iEvent.getByLabel ( edm::InputTag("flavorHistoryFilter"),heavyFlavorCategory);
     assert ( heavyFlavorCategory.isValid() );
     HFcat_ = (*heavyFlavorCategory);
-	// For Vqq, we don't know if it is a W, a Z, or neither
+    // For Vqq, we don't know if it is a W, a Z, or neither
     edm::Handle< vector< reco::GenParticle > > genParticleCollection;
-	iEvent.getByLabel (edm::InputTag("prunedGenParticles"),genParticleCollection);
-	assert ( genParticleCollection.isValid() );
-	// Iterate over genParticles
-	const vector< reco::GenParticle>::const_iterator 
-	  kGenPartEnd = genParticleCollection->end();
-	for (vector< reco::GenParticle>::const_iterator gpIter =
-	       genParticleCollection->begin(); 
-	     gpIter != kGenPartEnd; ++gpIter ) 
+    iEvent.getByLabel (edm::InputTag("prunedGenParticles"),genParticleCollection);
+    assert ( genParticleCollection.isValid() );
+    // Iterate over genParticles
+    const vector< reco::GenParticle>::const_iterator 
+      kGenPartEnd = genParticleCollection->end();
+    for (vector< reco::GenParticle>::const_iterator gpIter =
+	   genParticleCollection->begin(); 
+	 gpIter != kGenPartEnd; ++gpIter ) 
+      {
+	if (gpIter->status() == 3 && std::abs(gpIter->pdgId()) == 23)
 	  {
-	    if (gpIter->status() == 3 && std::abs(gpIter->pdgId()) == 23)
-	      {
             sampleName += "Z";
             break;
-	      }
-	    else if (gpIter->status() == 3 && std::abs(gpIter->pdgId()) == 24)
-	      {
+	  }
+	else if (gpIter->status() == 3 && std::abs(gpIter->pdgId()) == 24)
+	  {
             sampleName += "W";
             break;
-	      }
 	  }
+      }
     // from:
     // https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideFlavorHistory
     //  1. W+bb with >= 2 jets from the ME (dr > 0.5)

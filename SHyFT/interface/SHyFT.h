@@ -1,7 +1,7 @@
 #ifndef Analysis_SHyFT_interface_SHyFT_h
 #define Analysis_SHyFT_interface_SHyFT_h
 
-#include "PhysicsTools/SelectorUtils/interface/WPlusJetsEventSelector.h"
+#include "Analysis/SHyFT/interface/SHyFTSelector.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "DataFormats/FWLite/interface/Event.h"
@@ -98,7 +98,7 @@ class SHyFT {
 			const std::vector<reco::ShallowClonePtrCandidate>& electrons
 			);
 
-    WPlusJetsEventSelector wPlusJets;
+    SHyFTSelector wPlusJets;
     TFileDirectory& theDir;
     // 'registry' for the histograms                                                                                                                                                                    
     std::map<std::string, TH1F*> histograms;
