@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 
-from PhysicsTools.SelectorUtils.wplusjetsAnalysis_cfi import wplusjetsAnalysis
+from Analysis.SHyFT.shyftselection_cfi import wplusjetsAnalysis
 
 shyftAnalysis = cms.PSet(
     wplusjetsAnalysis.clone(     
