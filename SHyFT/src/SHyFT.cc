@@ -758,26 +758,25 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 
   histograms["nTags"]->Fill(numTags, globalWeight_);
 
-  // Now, if we have jets, fill 0, 1, and >=2 tag histograms.
-  // The 0-tag histograms are hT, met, and mT_w.
-  // The 1-tag and >=2-tag histogram is the secondary vertex mass
-  // of the highest pt tagged jet.
-
   // Fill a "summed" histogram without path name also, if we are using flavor history categories
   if ( useHFcat_ ) {
-    histograms[sampleHistName_ + Form("_muEta_%dj",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
+    if ( muPlusJets_ ) {
+      histograms[sampleHistName_ + Form("_muEta_%dj",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
+    }
     histograms[sampleHistName_ + Form("_hT_%dj",     numJets)]->Fill( hT,                   globalWeight_ );
+    histograms[sampleHistName_ + Form("_wMT_%dj",    numJets)]->Fill( wMT,                  globalWeight_ );
     histograms[sampleHistName_ + Form("_MET_%dj",    numJets)]->Fill( met.pt(),             globalWeight_ );
   }
 
-  histograms[sampleNameInput + Form("_muEta_%dj",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
   histograms[sampleNameInput + Form("_hT_%dj",     numJets)]->Fill( hT,                   globalWeight_ );
+  histograms[sampleNameInput + Form("_wMT_%dj",    numJets)]->Fill( wMT,                  globalWeight_ );
   histograms[sampleNameInput + Form("_MET_%dj",    numJets)]->Fill( met.pt(),             globalWeight_ );
 
   if(muPlusJets_){       
     histograms[sampleNameInput + Form("_muEta_%dj",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ ); 
     histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
     histograms2d[sampleNameInput + Form("_muisoVsHt_%dj", numJets)]->Fill( hT, relIso, globalWeight_ );
+    histograms2d[sampleNameInput + Form("_muisoVswMT_%dj", numJets)]->Fill( wMT, relIso, globalWeight_ );
     histograms2d[sampleNameInput + Form("_muisoVsMET_%dj", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
     histograms2d[sampleNameInput + Form("_muisoVsD0_%dj", numJets)]->Fill( d0, relIso, globalWeight_ );
   }
@@ -786,35 +785,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     histograms[sampleNameInput + Form("_elPt_%dj",  numJets)]->Fill( electrons[0].pt() , globalWeight_ );
     histograms[sampleNameInput + Form("_elEta_%dj",  numJets)]->Fill( electrons[0].eta() , globalWeight_ );
   }
-
-  if ( numTags == 0 ) {
-
-    if(useHFcat_){
-      histograms[sampleHistName_ + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
-      histograms[sampleHistName_ + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
-      if(muPlusJets_) histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ ); 
-      if(ePlusJets_)  histograms[sampleHistName_ + Form("_elEta_%dj_0t",  numJets)]->Fill( fabs(electrons[0].eta()), globalWeight_ );
-    }
-      
-    histograms[sampleNameInput + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
-    histograms[sampleNameInput + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
-    histograms[sampleNameInput + Form("_hT_Lep_%dj_0t", numJets)]->Fill( hT_lep ,              globalWeight_ );
-    histograms[sampleNameInput + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                  globalWeight_ ); 
-      
-    if(muPlusJets_){
-      histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );    
-      histograms[sampleNameInput + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );         
-      histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj_0t", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsHt_%dj_0t", numJets)]->Fill( hT, relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsMET_%dj_0t", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
-      histograms2d[sampleNameInput + Form("_muisoVsD0_%dj_0t", numJets)]->Fill( d0, relIso, globalWeight_ );
-    }
-    else if(ePlusJets_){
-      histograms[sampleNameInput + Form("_elPt_%dj_0t",  numJets)]->Fill( electrons[0].pt(), globalWeight_ );
-      histograms[sampleNameInput + Form("_elEta_%dj_0t",  numJets)]->Fill( electrons[0].eta(), globalWeight_ );   
-    }
-  }
-
 
 
   if ( !reweightBTagEff_ )  {
@@ -831,19 +801,27 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     else {  // if ( numTags == 0 ) {
       // Fill a "summed" histogram without path name also, if we are using flavor history categories
       if ( useHFcat_ ) {
-	histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
+	if ( muPlusJets_ )
+	  histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
 	histograms[sampleHistName_ + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
+	histograms[sampleHistName_ + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                  globalWeight_ );
 	histograms[sampleHistName_ + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
       }
       histograms[sampleNameInput + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
+      histograms[sampleNameInput + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                   globalWeight_ );
       histograms[sampleNameInput + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
 
       if ( muPlusJets_ ) {
 	histograms[sampleNameInput + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
 	histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj_0t", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
 	histograms2d[sampleNameInput + Form("_muisoVsHt_%dj_0t", numJets)]->Fill( hT, relIso, globalWeight_ );
+	histograms2d[sampleNameInput + Form("_muisoVswMT_%dj_0t", numJets)]->Fill( wMT, relIso, globalWeight_ );
 	histograms2d[sampleNameInput + Form("_muisoVsMET_%dj_0t", numJets)]->Fill( met.pt(), relIso, globalWeight_ );
 	histograms2d[sampleNameInput + Form("_muisoVsD0_%dj_0t", numJets)]->Fill( d0, relIso, globalWeight_ );
+      }
+      else if(ePlusJets_){
+	histograms[sampleNameInput + Form("_elPt_%dj_0t",  numJets)]->Fill( electrons[0].pt(), globalWeight_ );
+	histograms[sampleNameInput + Form("_elEta_%dj_0t",  numJets)]->Fill( electrons[0].eta(), globalWeight_ );   
       }
     } // end ntags = 0
   }// end if not reweighting b-tag eff
@@ -936,13 +914,16 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	  if ( useHFcat_ ) {
 	    histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ * iprob );
 	    histograms[sampleHistName_ + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ * iprob );
+	    histograms[sampleHistName_ + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                  globalWeight_ * iprob );
 	    histograms[sampleHistName_ + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ * iprob );
 	  }
 	  histograms  [sampleNameInput + Form("_muEta_%dj_0t",        numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ * iprob );
 	  histograms  [sampleNameInput + Form("_hT_%dj_0t",           numJets)]->Fill( hT,                   globalWeight_ * iprob );
+	  histograms  [sampleNameInput + Form("_wMT_%dj_0t",          numJets)]->Fill( wMT,                  globalWeight_ * iprob );
 	  histograms  [sampleNameInput + Form("_MET_%dj_0t",          numJets)]->Fill( met.pt(),             globalWeight_ * iprob );
 	  histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj_0t", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ * iprob );
 	  histograms2d[sampleNameInput + Form("_muisoVsHt_%dj_0t",    numJets)]->Fill( hT, relIso, globalWeight_ * iprob );
+	  histograms2d[sampleNameInput + Form("_muisoVswMT_%dj_0t",   numJets)]->Fill( wMT, relIso, globalWeight_ * iprob );
 	  histograms2d[sampleNameInput + Form("_muisoVsMET_%dj_0t",   numJets)]->Fill( met.pt(), relIso, globalWeight_ * iprob );
 	  histograms2d[sampleNameInput + Form("_muisoVsD0_%dj_0t",    numJets)]->Fill( d0, relIso, globalWeight_ * iprob );
 	} // end ntags = 0    
