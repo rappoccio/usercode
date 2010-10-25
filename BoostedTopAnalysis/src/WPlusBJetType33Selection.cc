@@ -110,6 +110,7 @@ bool WPlusBJetType33Selection::operator()( edm::EventBase const & t, pat::strbit
       bool opassWPlusBJet  = owPlusBJetSelection_( t, theJet->p4(), oret, false );
 
       std::vector<edm::Ptr<pat::Jet> >  const & tbJets = twPlusBJetSelection_.bJets();
+      //cout<<"Type33::BJets0 is "<<tbJets.size()<<endl;
       std::vector<edm::Ptr<pat::Jet> >  const & obJets = owPlusBJetSelection_.bJets();
       std::vector<edm::Ptr<pat::Jet> >  const & tMinDrPair = twPlusBJetSelection_.minDrPair();
       std::vector<edm::Ptr<pat::Jet> >  const & oMinDrPair = owPlusBJetSelection_.minDrPair();

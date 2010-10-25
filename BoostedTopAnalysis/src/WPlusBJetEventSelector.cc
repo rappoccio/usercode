@@ -232,6 +232,7 @@ void WPlusBJetEventSelector::fillTightTops()
 void WPlusBJetEventSelector::fillType3Tops()
 {
   //cout<<"Begin WPlusBJetEventSelector::fillType3Tops"<<endl;
+  //cout<<"allJets size "<<allJets_.size()<<endl;
   for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=allJets_.begin(), jetEnd=allJets_.end(),
     ijet=jetBegin; ijet != jetEnd; ijet++ )
   {

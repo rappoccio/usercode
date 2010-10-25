@@ -313,7 +313,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
 
       bool hasHF = hasHeavyFlavor( iEvent );
 
-      if( retType33[string("nJets >= 6")] && !hasHF ) {
+      if( retType33[string("nJets >= 6")] ) { //&& !hasHF ) {
         //Check b tagging rates in multijets events
         for( size_t i=0; i<pfJets.size(); i++ ) {
           histograms1d["jetTotal"]      ->  Fill( pfJets.at(i)->pt() );
@@ -326,6 +326,12 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         }  // end pfJets
         double x = flatDistribution_->fire();
         //cout<<"Random number is "<<x<<endl;
+        //for random tagger exercise
+        std::vector<edm::Ptr<pat::Jet> >  const &  tMinDrPair = wPlusBJetType33Selection_.minDrPair0();
+        std::vector<edm::Ptr<pat::Jet> >  const &  oMinDrPair = wPlusBJetType33Selection_.minDrPair1();
+        std::vector<edm::Ptr<pat::Jet> >  const &  tbJets = wPlusBJetType33Selection_.bJet0();
+        std::vector<edm::Ptr<pat::Jet> >  const &  obJets = wPlusBJetType33Selection_.bJet1();
+
         bool towards = false;
         if( x < 0.5 )  towards = true;
         //selection only
@@ -338,8 +344,13 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         }  // hasMinPair0
         //Do combinatorics
         std::vector<Type3>      const & type3Tops0  = wPlusBJetType22Selection_.type3Tops0();
+        //cout<<"nJets >= 6 allJets0 size "<<allJets0.size()<<endl;
+        //cout<<"type3Tops0 size "<<type3Tops0.size()<<endl;
+        //cout<<"BJets0 are "<<tbJets.size()<<endl;
+
         for( size_t i=0; i<type3Tops0.size(); i++ ) {
           double weight = type3Tops0.at(i).weight ;
+          //cout<<"Weight "<<weight<<endl;
           double minPairMass = type3Tops0.at(i).minMass();
           histograms1d["minPairMass0Type33_pred"]    ->  Fill( minPairMass, weight );
           if( towards )
@@ -354,8 +365,13 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         } // hasMinPair1
         //Do combinatorics
         std::vector<Type3>      const & type3Tops1  = wPlusBJetType22Selection_.type3Tops1();
+        //cout<<"nJets >= 6 allJets1 size "<<allJets1.size()<<endl;
+        //cout<<"type3Tops1 size "<<type3Tops1.size()<<endl;
+        //cout<<"BJets1 are "<<obJets.size()<<endl;
+
         for( size_t i=0; i<type3Tops1.size(); i++ ) {
           double weight = type3Tops1.at(i).weight ;
+          //cout<<"Weight "<<weight<<endl;
           double minPairMass = type3Tops1.at(i).minMass();
           histograms1d["minPairMass1Type33_pred"]    ->  Fill( minPairMass, weight );
           if( !towards )
