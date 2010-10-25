@@ -362,7 +362,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
                std::string pretemp = sampleName[j]+elEtaName[k];
                histograms[pretemp] = theDir.make<TH1F>(pretemp.c_str(), "elEta",  120, 0, 2.4);
                // Next do the untagged histograms by flavor path
-               std::string untemp = sampleName[j]+muEtaName[k]+"_0t";
+               std::string untemp = sampleName[j]+elEtaName[k]+"_0t";
                histograms[untemp] = theDir.make<TH1F>(untemp.c_str(), "elEta",  120, 0, 2.4);
             }         
          }
@@ -778,6 +778,9 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     if ( muPlusJets_ ) {
       histograms[sampleHistName_ + Form("_muEta_%dj",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
     }
+    else if(ePlusJets_) {
+      histograms[sampleHistName_ + Form("_elEta_%dj",  numJets)]->Fill( fabs(electrons[0].eta()), globalWeight_ );
+    }
     histograms[sampleHistName_ + Form("_hT_%dj",     numJets)]->Fill( hT,                   globalWeight_ );
     histograms[sampleHistName_ + Form("_wMT_%dj",    numJets)]->Fill( wMT,                  globalWeight_ );
     histograms[sampleHistName_ + Form("_MET_%dj",    numJets)]->Fill( met.pt(),             globalWeight_ );
@@ -816,11 +819,15 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     else {  // if ( numTags == 0 ) {
       // Fill a "summed" histogram without path name also, if we are using flavor history categories
       if ( useHFcat_ ) {
-	if ( muPlusJets_ )
-	  histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
-	histograms[sampleHistName_ + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
-	histograms[sampleHistName_ + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                  globalWeight_ );
-	histograms[sampleHistName_ + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
+         if ( muPlusJets_ ){
+            histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ );
+         }
+         else if(ePlusJets_) {
+            histograms[sampleHistName_ + Form("_elEta_%dj+0t",  numJets)]->Fill( fabs(electrons[0].eta()), globalWeight_ );
+         }
+         histograms[sampleHistName_ + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
+         histograms[sampleHistName_ + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                  globalWeight_ );
+         histograms[sampleHistName_ + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ );
       }
       histograms[sampleNameInput + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ );
       histograms[sampleNameInput + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                   globalWeight_ );
@@ -925,23 +932,37 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 
 	} // end if inumTags > 0
 	else {  // if ( inumTags == 0 ) {
-	  // Fill a "summed" histogram without path name also, if we are using flavor history categories
-	  if ( useHFcat_ ) {
-	    histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ * iprob );
-	    histograms[sampleHistName_ + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ * iprob );
-	    histograms[sampleHistName_ + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                  globalWeight_ * iprob );
-	    histograms[sampleHistName_ + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ * iprob );
-	  }
-	  histograms  [sampleNameInput + Form("_muEta_%dj_0t",        numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ * iprob );
-	  histograms  [sampleNameInput + Form("_hT_%dj_0t",           numJets)]->Fill( hT,                   globalWeight_ * iprob );
-	  histograms  [sampleNameInput + Form("_wMT_%dj_0t",          numJets)]->Fill( wMT,                  globalWeight_ * iprob );
-	  histograms  [sampleNameInput + Form("_MET_%dj_0t",          numJets)]->Fill( met.pt(),             globalWeight_ * iprob );
-	  histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj_0t", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ * iprob );
-	  histograms2d[sampleNameInput + Form("_muisoVsHt_%dj_0t",    numJets)]->Fill( hT, relIso, globalWeight_ * iprob );
-	  histograms2d[sampleNameInput + Form("_muisoVswMT_%dj_0t",   numJets)]->Fill( wMT, relIso, globalWeight_ * iprob );
-	  histograms2d[sampleNameInput + Form("_muisoVsMET_%dj_0t",   numJets)]->Fill( met.pt(), relIso, globalWeight_ * iprob );
-	  histograms2d[sampleNameInput + Form("_muisoVsD0_%dj_0t",    numJets)]->Fill( d0, relIso, globalWeight_ * iprob );
-	} // end ntags = 0    
+       // Fill a "summed" histogram without path name also, if we are using flavor history categories
+       if ( useHFcat_ ) {
+          if(muPlusJets_){
+             histograms[sampleHistName_ + Form("_muEta_%dj_0t",  numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ * iprob );
+          }
+          else if(ePlusJets_){
+             histograms[sampleHistName_ + Form("_elEta_%dj_0t",  numJets)]->Fill( fabs(electrons[0].eta()), globalWeight_ * iprob);
+          }
+          histograms[sampleHistName_ + Form("_hT_%dj_0t",     numJets)]->Fill( hT,                   globalWeight_ * iprob );
+          histograms[sampleHistName_ + Form("_wMT_%dj_0t",    numJets)]->Fill( wMT,                  globalWeight_ * iprob );
+          histograms[sampleHistName_ + Form("_MET_%dj_0t",    numJets)]->Fill( met.pt(),             globalWeight_ * iprob );
+       }//useHF
+       
+       histograms  [sampleNameInput + Form("_hT_%dj_0t",           numJets)]->Fill( hT,                   globalWeight_ * iprob );
+       histograms  [sampleNameInput + Form("_wMT_%dj_0t",          numJets)]->Fill( wMT,                  globalWeight_ * iprob );
+       histograms  [sampleNameInput + Form("_MET_%dj_0t",          numJets)]->Fill( met.pt(),             globalWeight_ * iprob );
+       
+       if(muPlusJets_){
+          histograms  [sampleNameInput + Form("_muEta_%dj_0t",        numJets)]->Fill( fabs(muons[0].eta()), globalWeight_ * iprob );	  
+          histograms2d[sampleNameInput + Form("_muisoVsMuEta_%dj_0t", numJets)]->Fill( fabs(muons[0].eta()), relIso, globalWeight_ * iprob );
+          histograms2d[sampleNameInput + Form("_muisoVsHt_%dj_0t",    numJets)]->Fill( hT, relIso, globalWeight_ * iprob );
+          histograms2d[sampleNameInput + Form("_muisoVswMT_%dj_0t",   numJets)]->Fill( wMT, relIso, globalWeight_ * iprob );
+          histograms2d[sampleNameInput + Form("_muisoVsMET_%dj_0t",   numJets)]->Fill( met.pt(), relIso, globalWeight_ * iprob );
+          histograms2d[sampleNameInput + Form("_muisoVsD0_%dj_0t",    numJets)]->Fill( d0, relIso, globalWeight_ * iprob );
+       }
+       else if(ePlusJets_){
+          histograms[sampleNameInput + Form("_elPt_%dj_0t",  numJets)]->Fill( electrons[0].pt(), globalWeight_  * iprob );
+          histograms[sampleNameInput + Form("_elEta_%dj_0t",  numJets)]->Fill( electrons[0].eta(), globalWeight_ * iprob );   
+       } 
+       
+    } // end ntags = 0    
       } while (shyft::helper::next_combination(effs.begin(),effs.begin() + inumTags, effs.end())); 
       // std::cout << "Combination probability = " << sum << std::endl;
       totalSum += sum;
