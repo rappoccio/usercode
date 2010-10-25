@@ -115,6 +115,10 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
    std::vector<std::string> METName(6,"_MET_");
    METName[0]+="0j";METName[1]+="1j"; METName[2]+="2j"; METName[3]+="3j"; METName[4]+="4j"; METName[5]+="5j";
 
+
+   std::vector<std::string> wMTName(6,"_wMT_");
+   wMTName[0]+="0j";wMTName[1]+="1j"; wMTName[2]+="2j"; wMTName[3]+="3j"; wMTName[4]+="4j"; wMTName[5]+="5j";
+
    std::vector<std::string> muEtaName(6,"_muEta_");
    muEtaName[0]+="0j";muEtaName[1]+="1j"; muEtaName[2]+="2j"; muEtaName[3]+="3j"; muEtaName[4]+="4j"; muEtaName[5]+="5j";
 
@@ -318,6 +322,17 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
             // Next do the untagged histograms by flavor path
             std::string untemp = sampleName[j]+hTName[k]+"_0t";
             histograms[untemp] = theDir.make<TH1F>(untemp.c_str(), "hT", 120, 0, 1200);
+         }
+
+         
+         // wMT
+         for ( unsigned int k=0; k < wMTName.size(); ++k ) {
+            // First do the pretagged histograms by flavor path
+            std::string pretemp = sampleName[j]+wMTName[k];
+            histograms[pretemp] = theDir.make<TH1F>(pretemp.c_str(), "wMT", 120, 0,  300);
+            // Next do the untagged histograms by flavor path
+            std::string untemp = sampleName[j]+wMTName[k]+"_0t";
+            histograms[untemp] = theDir.make<TH1F>(untemp.c_str(), "wMT", 120, 0,  300);
          }
          
          // MET
