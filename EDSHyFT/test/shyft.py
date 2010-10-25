@@ -40,7 +40,7 @@ options.register ('useTrigger',
                   0,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
-                  "Select events with the HLT_Mu9 trigger only")
+                  "Select events with the HLT_Mu9 or HLT_Mu11 triggers only")
                   
 options.register ('muonIdIgnoredCuts',
                   [],
@@ -74,7 +74,7 @@ else :
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 if useData == True :
     if useTrigger :
-        process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu9"])
+        process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu9", "HLT_Mu11"])
     else :
         process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["*"])
 else :
@@ -398,7 +398,7 @@ else :
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
 # process all the events
-process.maxEvents.input = 10000
+process.maxEvents.input = 100
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 
@@ -440,3 +440,5 @@ process.out.outputCommands = [
 
 if useData :
     process.out.outputCommands.append( 'keep *_towerMaker_*_*' )
+    process.out.outputCommands.append( 'keep LumiSummary_lumiProducer_*_*' )
+    
