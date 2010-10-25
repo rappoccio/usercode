@@ -91,9 +91,9 @@ bool WPlusBJetEventSelector::operator() (edm::EventBase const & t, reco::Candida
       // not W jet, check b tag
       else {
         //toy tagger
-        double randomTag = flatDistribution_->fire();
-        //if( jet.bDiscriminator( bTagAlgo_ ) > bTagOP_ )
-        if( randomTag < 1./3. ) 
+        //double randomTag = flatDistribution_->fire();
+        if( jet.bDiscriminator( bTagAlgo_ ) > bTagOP_ )
+        //if( randomTag < 1./3. ) 
           bJets_.push_back( *ijet );
         else  // put inside the nonTags container
           nonTags.push_back( *ijet  );

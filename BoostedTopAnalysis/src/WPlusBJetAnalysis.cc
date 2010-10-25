@@ -313,14 +313,14 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
 
       bool hasHF = hasHeavyFlavor( iEvent );
 
-      if( retType33[string("nJets >= 6")] ) { //&& !hasHF ) {
+      if( retType33[string("nJets >= 6")] && !hasHF ) {
         //Check b tagging rates in multijets events
         for( size_t i=0; i<pfJets.size(); i++ ) {
           histograms1d["jetTotal"]      ->  Fill( pfJets.at(i)->pt() );
           //toy tagger
-          double flatTagger = flatDistribution_->fire();
-          //if( pfJets.at(i)->bDiscriminator( bTagAlgo_ ) > bTagOP_ ) {
-          if( flatTagger < 1./3. )  {
+          //double flatTagger = flatDistribution_->fire();
+          if( pfJets.at(i)->bDiscriminator( bTagAlgo_ ) > bTagOP_ ) {
+          //if( flatTagger < 1./3. )  {
             histograms1d["bTag"]        ->  Fill( pfJets.at(i)->pt() );
           } // end if > 3.3
         }  // end pfJets
