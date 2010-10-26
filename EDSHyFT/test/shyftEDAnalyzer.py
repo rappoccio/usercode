@@ -65,7 +65,7 @@ if options.doMC > 0 :
 else :
     inputDoMC = False
     # get JSON file correctly parced
-    JSONfile = 'Cert_132440-147116_7TeV_StreamExpress_Collisions10_JSON.txt'
+    JSONfile = 'Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON_filteredMin147146.txt'
     myList = LumiList.LumiList (filename = JSONfile).getCMSSWString().split(',')
 
 
