@@ -14,7 +14,8 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   topMassMax_   ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("topMassMax") ),
   runOnData_    ( iConfig.getParameter<bool>("runOnData") ),
   bTagAlgo_     ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<string>("bTagAlgorithm") ),
-  bTagOP_       ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("bTagOP") )
+  bTagOP_       ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("bTagOP") ),
+  eventCount    (0)
 {
   cout<< "Instantiate WPlusBJetAnalysis" << endl;
   histograms1d["nJet"]  = theDir.make<TH1F>("nJet",   "Number of Jets",     20,   0,    20);
@@ -313,70 +314,81 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
 
       bool hasHF = hasHeavyFlavor( iEvent );
 
-      if( retType33[string("nJets >= 6")] ) { //&& !hasHF ) {
+      if( retType33[string("nJets >= 6")] ) { //&& !hasHF ) 
+        long eventId = iEvent.id().event();
+        eventCount++;
         //Check b tagging rates in multijets events
-        for( size_t i=0; i<pfJets.size(); i++ ) {
-          histograms1d["jetTotal"]      ->  Fill( pfJets.at(i)->pt() );
-          //toy tagger
-          //double flatTagger = flatDistribution_->fire();
-          if( pfJets.at(i)->bDiscriminator( bTagAlgo_ ) > bTagOP_ ) {
-          //if( flatTagger < 1./3. )  {
-            histograms1d["bTag"]        ->  Fill( pfJets.at(i)->pt() );
-          } // end if > 3.3
-        }  // end pfJets
-        double x = flatDistribution_->fire();
-        //cout<<"Random number is "<<x<<endl;
-        //for random tagger exercise
-        std::vector<edm::Ptr<pat::Jet> >  const &  tMinDrPair = wPlusBJetType33Selection_.minDrPair0();
-        std::vector<edm::Ptr<pat::Jet> >  const &  oMinDrPair = wPlusBJetType33Selection_.minDrPair1();
-        std::vector<edm::Ptr<pat::Jet> >  const &  tbJets = wPlusBJetType33Selection_.bJet0();
-        std::vector<edm::Ptr<pat::Jet> >  const &  obJets = wPlusBJetType33Selection_.bJet1();
+        //Get parameterization from odd events
+        if( 0 != eventCount%2 )  {
+          cout<<"Odd event"<<endl;
+          for( size_t i=0; i<pfJets.size(); i++ ) {
+            histograms1d["jetTotal"]      ->  Fill( pfJets.at(i)->pt() );
+            //toy tagger
+            //double flatTagger = flatDistribution_->fire();
+            if( pfJets.at(i)->bDiscriminator( bTagAlgo_ ) > bTagOP_ ) {
+              //if( flatTagger < 1./3. )  
+              histograms1d["bTag"]        ->  Fill( pfJets.at(i)->pt() );
+            } // end if > 3.3
+          }  // end pfJets
+        }  // end eventId
 
-        bool towards = false;
-        if( x < 0.5 )  towards = true;
-        //selection only
-        if( retType33[string("hasMinPair0")] )  {
-          reco::Candidate::LorentzVector  p4_first0 = tMinDrPair.at(0)->p4();
-          reco::Candidate::LorentzVector  p4_second0  = tMinDrPair.at(1)->p4();
-          histograms1d["minPairMass0Type33_sel"]     ->  Fill( (p4_first0+p4_second0).mass() );
-          if( towards )
-            histograms1d["minPairMassType33_sel"]     ->  Fill( (p4_first0+p4_second0).mass() );
-        }  // hasMinPair0
-        //Do combinatorics
-        std::vector<Type3>      const & type3Tops0  = wPlusBJetType22Selection_.type3Tops0();
-        //cout<<"nJets >= 6 allJets0 size "<<allJets0.size()<<endl;
-        //cout<<"type3Tops0 size "<<type3Tops0.size()<<endl;
-        //cout<<"BJets0 are "<<tbJets.size()<<endl;
+        //Apply the parameterization on even events
+        if( 0 == eventCount%2 )  {
+          cout<<"Even event"<<endl;
+          double x = flatDistribution_->fire();
+          //cout<<"Random number is "<<x<<endl;
+          //for random tagger exercise
+          std::vector<edm::Ptr<pat::Jet> >  const &  tMinDrPair = wPlusBJetType33Selection_.minDrPair0();
+          std::vector<edm::Ptr<pat::Jet> >  const &  oMinDrPair = wPlusBJetType33Selection_.minDrPair1();
+          std::vector<edm::Ptr<pat::Jet> >  const &  tbJets = wPlusBJetType33Selection_.bJet0();
+          std::vector<edm::Ptr<pat::Jet> >  const &  obJets = wPlusBJetType33Selection_.bJet1();
 
-        for( size_t i=0; i<type3Tops0.size(); i++ ) {
-          double weight = type3Tops0.at(i).weight ;
-          //cout<<"Weight "<<weight<<endl;
-          double minPairMass = type3Tops0.at(i).minMass();
-          histograms1d["minPairMass0Type33_pred"]    ->  Fill( minPairMass, weight );
-          if( towards )
-            histograms1d["minPairMassType33_pred"]    ->  Fill( minPairMass, weight );
-        }  // end for
-        if( retType33[string("hasMinPair1")] ) {
-          reco::Candidate::LorentzVector  p4_first1 = oMinDrPair.at(0)->p4();
-          reco::Candidate::LorentzVector  p4_second1  = oMinDrPair.at(1)->p4();
-          histograms1d["minPairMass1Type33_sel"]     ->  Fill( (p4_first1+p4_second1).mass() );
-          if( !towards )
-            histograms1d["minPairMassType33_sel"]     ->  Fill( (p4_first1+p4_second1).mass() );
-        } // hasMinPair1
-        //Do combinatorics
-        std::vector<Type3>      const & type3Tops1  = wPlusBJetType22Selection_.type3Tops1();
-        //cout<<"nJets >= 6 allJets1 size "<<allJets1.size()<<endl;
-        //cout<<"type3Tops1 size "<<type3Tops1.size()<<endl;
-        //cout<<"BJets1 are "<<obJets.size()<<endl;
+          bool towards = false;
+          if( x < 0.5 )  towards = true;
+          //selection only
+          if( retType33[string("hasMinPair0")] )  {
+            reco::Candidate::LorentzVector  p4_first0 = tMinDrPair.at(0)->p4();
+            reco::Candidate::LorentzVector  p4_second0  = tMinDrPair.at(1)->p4();
+            histograms1d["minPairMass0Type33_sel"]     ->  Fill( (p4_first0+p4_second0).mass() );
+            if( towards )
+              histograms1d["minPairMassType33_sel"]     ->  Fill( (p4_first0+p4_second0).mass() );
+          }  // hasMinPair0
+          //Do combinatorics
+          std::vector<Type3>      const & type3Tops0  = wPlusBJetType22Selection_.type3Tops0();
+          //cout<<"nJets >= 6 allJets0 size "<<allJets0.size()<<endl;
+          //cout<<"type3Tops0 size "<<type3Tops0.size()<<endl;
+          //cout<<"BJets0 are "<<tbJets.size()<<endl;
 
-        for( size_t i=0; i<type3Tops1.size(); i++ ) {
-          double weight = type3Tops1.at(i).weight ;
-          //cout<<"Weight "<<weight<<endl;
-          double minPairMass = type3Tops1.at(i).minMass();
-          histograms1d["minPairMass1Type33_pred"]    ->  Fill( minPairMass, weight );
-          if( !towards )
-            histograms1d["minPairMassType33_pred"]    ->  Fill( minPairMass, weight );
-        }  // end for
+          for( size_t i=0; i<type3Tops0.size(); i++ ) {
+            double weight = type3Tops0.at(i).weight ;
+            //cout<<"Weight "<<weight<<endl;
+            double minPairMass = type3Tops0.at(i).minMass();
+            histograms1d["minPairMass0Type33_pred"]    ->  Fill( minPairMass, weight );
+            if( towards )
+              histograms1d["minPairMassType33_pred"]    ->  Fill( minPairMass, weight );
+          }  // end for
+          if( retType33[string("hasMinPair1")] ) {
+            reco::Candidate::LorentzVector  p4_first1 = oMinDrPair.at(0)->p4();
+            reco::Candidate::LorentzVector  p4_second1  = oMinDrPair.at(1)->p4();
+            histograms1d["minPairMass1Type33_sel"]     ->  Fill( (p4_first1+p4_second1).mass() );
+            if( !towards )
+              histograms1d["minPairMassType33_sel"]     ->  Fill( (p4_first1+p4_second1).mass() );
+          } // hasMinPair1
+          //Do combinatorics
+          std::vector<Type3>      const & type3Tops1  = wPlusBJetType22Selection_.type3Tops1();
+          //cout<<"nJets >= 6 allJets1 size "<<allJets1.size()<<endl;
+          //cout<<"type3Tops1 size "<<type3Tops1.size()<<endl;
+          //cout<<"BJets1 are "<<obJets.size()<<endl;
+
+          for( size_t i=0; i<type3Tops1.size(); i++ ) {
+            double weight = type3Tops1.at(i).weight ;
+            //cout<<"Weight "<<weight<<endl;
+            double minPairMass = type3Tops1.at(i).minMass();
+            histograms1d["minPairMass1Type33_pred"]    ->  Fill( minPairMass, weight );
+            if( !towards )
+              histograms1d["minPairMassType33_pred"]    ->  Fill( minPairMass, weight );
+          }  // end for
+        } // eventId%2 == 0
       } // end nJets >= 6
     }  // end if !>= 1 WJet
 
