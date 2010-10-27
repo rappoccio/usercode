@@ -93,7 +93,7 @@ if inputDoMC == False :
     process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( myList )
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 
