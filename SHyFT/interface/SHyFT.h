@@ -100,10 +100,8 @@ class SHyFT {
 
     SHyFTSelector wPlusJets;
     TFileDirectory& theDir;
-    // 'registry' for the histograms                                                                                                                                                                    
-    std::map<std::string, TH1F*> histograms;
-    std::map<std::string, TH2F*> histograms2d;
-    std::map<std::string, TH3F*> histograms3d;
+    TDirectory * dir;
+
     // the following parameters need to come from the config
     bool muPlusJets_;
     bool ePlusJets_;
