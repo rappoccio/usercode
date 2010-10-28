@@ -353,9 +353,9 @@ if useDataQCD :
         if ijet > 1 :
             h2 = TH1F('QCD_B_secvtxMass_'+ str(ijet) + 'j_2t',
                       'QCD_B_secvtxMass_'+ str(ijet) + 'j_2t',
-                      h0.GetNbinsX(),
-                      h0.GetXaxis().GetBinLowEdge(1),
-                      h0.GetXaxis().GetBinLowEdge(h0.GetNbinsX()-1)+h0.GetXaxis().GetBinWidth(h0.GetNbinsX()-1),
+                      h1.GetNbinsX(),
+                      h1.GetXaxis().GetBinLowEdge(1),
+                      h1.GetXaxis().GetBinLowEdge(h1.GetNbinsX() + 1),
                       )
             qcdDataHists.append(h2)
 
