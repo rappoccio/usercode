@@ -14,6 +14,7 @@ wPlusBJetAnalysis = cms.PSet(
       jetEtaMax = cms.double(3.0),
       bTagAlgorithm = cms.string( "trackCountingHighEffBJetTags" ),
       bTagOP   = cms.double( 3.3 ),
+      bTagOPLoose = cms.double(1.7),
       mistagFileName = cms.string("mistag.root"),
       leadJetPtCut = cms.double(120),
       secondJetPtCut  = cms.double(100),

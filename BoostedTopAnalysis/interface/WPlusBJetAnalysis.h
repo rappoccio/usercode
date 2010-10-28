@@ -58,6 +58,7 @@ class WPlusBJetAnalysis{
     bool   runOnData_;
     std::string   bTagAlgo_;
     double        bTagOP_;
+    double        bTagOPL_;
     long          eventCount;
     CLHEP::RandFlat *flatDistribution_;
 

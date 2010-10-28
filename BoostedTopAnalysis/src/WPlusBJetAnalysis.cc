@@ -15,6 +15,7 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   runOnData_    ( iConfig.getParameter<bool>("runOnData") ),
   bTagAlgo_     ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<string>("bTagAlgorithm") ),
   bTagOP_       ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("bTagOP") ),
+  bTagOPL_      ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("bTagOPLoose") ),
   eventCount    (0)
 {
   cout<< "Instantiate WPlusBJetAnalysis" << endl;
@@ -108,7 +109,14 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
 
   //For mistag parameterization
   histograms1d["jetTotal"]     = theDir.make<TH1F>("jetTotal", "jetTotal",    200,    0,    1000 );
-  histograms1d["bTag"]         = theDir.make<TH1F>("bTag", "B Jet Mistag",    200,    0,    1000 );
+  histograms1d["jetTotalE"]    = theDir.make<TH1F>("jetTotalE", "jetTotal",    200,    0,    1000 );
+  histograms1d["jetTotalO"]    = theDir.make<TH1F>("jetTotalO", "jetTotal",     200,    0,    1000 );
+  histograms1d["bTag_M"]         = theDir.make<TH1F>("bTag_M", "B Tag Rates, Medium",    200,    0,    1000 );
+  histograms1d["bTag_L"]         = theDir.make<TH1F>("bTag_L", "B Tag Rates, Loose",    200,    0,    1000 );
+  histograms1d["bTag_ME"]        = theDir.make<TH1F>("bTag_ME", "B Tag Rates, Medium",  200,    0,    1000 );
+  histograms1d["bTag_MO"]        = theDir.make<TH1F>("bTag_MO", "B Tag Rates, Medium",  200,    0,    1000 );
+  histograms1d["bTag_LE"]        = theDir.make<TH1F>("bTag_LE", "B Tag Rates, Loose",  200,    0,    1000 );
+  histograms1d["bTag_LO"]        = theDir.make<TH1F>("bTag_LO", "B Tag Rates, Loose",  200,    0,    1000 );
 
   TDirectory * dir = theDir.cd();
 
@@ -318,19 +326,28 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         long eventId = iEvent.id().event();
         eventCount++;
         //Check b tagging rates in multijets events
-        //Get parameterization from odd events
-        if( 0 == eventCount%2 )  {
-          //cout<<"Odd event"<<endl;
-          for( size_t i=0; i<pfJets.size(); i++ ) {
-            histograms1d["jetTotal"]      ->  Fill( pfJets.at(i)->pt() );
-            //toy tagger
-            //double flatTagger = flatDistribution_->fire();
-            if( pfJets.at(i)->bDiscriminator( bTagAlgo_ ) > bTagOP_ ) {
-              //if( flatTagger < 1./3. )  
-              histograms1d["bTag"]        ->  Fill( pfJets.at(i)->pt() );
-            } // end if > 3.3
-          }  // end pfJets
-        }  // end eventId
+        //Get parameterization from both odd and even events
+        for( size_t i=0; i<pfJets.size(); i++ ) {
+          if( pfJets.at(i)->bDiscriminator( bTagAlgo_ ) > bTagOP_ ) {
+            histograms1d["bTag_M"]        ->  Fill( pfJets.at(i)->pt() );
+            if( 0 == eventCount%2 )  
+              histograms1d["bTag_ME"]     ->  Fill( pfJets.at(i)->pt() );
+            else
+              histograms1d["bTag_MO"]     ->  Fill( pfJets.at(i)->pt() );
+          }
+          if( pfJets.at(i)->bDiscriminator( bTagAlgo_ ) > bTagOPL_ ) {
+            histograms1d["bTag_L"]        ->  Fill( pfJets.at(i)->pt() );
+            if( 0 == eventCount%2 )
+              histograms1d["bTag_LE"]     ->  Fill( pfJets.at(i)->pt() );
+            else
+              histograms1d["bTag_LO"]     ->  Fill( pfJets.at(i)->pt() );
+          }
+          histograms1d["jetTotal"]      ->  Fill( pfJets.at(i)->pt() );
+          if( 0 == eventCount%2 )  
+            histograms1d["jetTotalE"]   ->  Fill( pfJets.at(i)->pt() );
+          else  
+            histograms1d["jetTotalO"]   ->  Fill( pfJets.at(i)->pt() );
+        } // end for i
 
         //Apply the parameterization on even events
         if( 0 != eventCount%2 )  {
