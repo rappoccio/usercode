@@ -319,8 +319,8 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         eventCount++;
         //Check b tagging rates in multijets events
         //Get parameterization from odd events
-        if( 0 != eventCount%2 )  {
-          cout<<"Odd event"<<endl;
+        if( 0 == eventCount%2 )  {
+          //cout<<"Odd event"<<endl;
           for( size_t i=0; i<pfJets.size(); i++ ) {
             histograms1d["jetTotal"]      ->  Fill( pfJets.at(i)->pt() );
             //toy tagger
@@ -333,8 +333,8 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         }  // end eventId
 
         //Apply the parameterization on even events
-        if( 0 == eventCount%2 )  {
-          cout<<"Even event"<<endl;
+        if( 0 != eventCount%2 )  {
+          //cout<<"Even event"<<endl;
           double x = flatDistribution_->fire();
           //cout<<"Random number is "<<x<<endl;
           //for random tagger exercise

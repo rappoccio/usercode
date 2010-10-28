@@ -163,32 +163,44 @@ void WPlusBJetEventSelector::fillLooseTops()
   for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=allJets_.begin(), jetEnd=allJets_.end(),
     ijet=jetBegin; ijet != jetEnd; ijet++ )
   {
-    for( vector<edm::Ptr<pat::Jet> >::const_iterator ijet1 = ijet+1; ijet1 != jetEnd; ijet1++ ) {
-      pat::Jet const & jet0 = **ijet;
-      pat::Jet const & jet1 = **ijet1;
-      int wBin, bBin;
-      double wRate, bRate, weight;
-      //jet0 as W jet, jet1 as a jet
-      if( jet0.pt() > 200 ) {
-        wBin  = wMistag_    ->  FindBin( jet0.pt() );
-        bBin  = bMistag_    ->  FindBin( jet1.pt() );
-        wRate = wMistag_    ->  GetBinContent( wBin );
+    pat::Jet const & jet0 = **ijet;
+    //ijet as a W jet
+    if( jet0.pt() > 200 )   {
+      pat::Jet const * jet1 = NULL;
+      double weight = 1.0, wRate;
+      int wBin;
+      wBin = wMistag_         ->  FindBin( jet0.pt() );
+      wRate = wMistag_        ->  GetBinContent( wBin );
+      weight = wRate;
+      double minDeltaR = 9999.0;
+      //All the other jets are not b-tagged, find the closest jet to W jet
+      for( vector<edm::Ptr<pat::Jet> >::const_iterator ijet1 = jetBegin; ijet1 != jetEnd; ijet1++ ) {
+        if( ijet1 == ijet )   continue;
+        int bBin;
+        double bRate;
+        bBin  = bMistag_    ->  FindBin( (**ijet1).pt() );
         bRate = bMistag_    ->  GetBinContent( bBin );
-        weight = wRate*(1.0-bRate);
-        Type2L  fakeTop (jet0.p4(), jet1.p4(), weight);
+        weight *= (1.0-bRate);
+        double dR = reco::deltaR<double>( jet0.eta(), jet0.phi(), (**ijet1).eta(), (**ijet1).phi() );
+        if( dR < minDeltaR )  {
+          minDeltaR = dR;
+          jet1 = &(**ijet1);
+        }  // if dR 
+      }  // end for ijet1
+
+      for( vector<edm::Ptr<pat::Jet> >::const_iterator ijet2 = jetBegin; ijet2 != ijet; ijet2++ ) {
+        int theBin;
+        double theWeight;
+        theBin = wMistag_       ->  FindBin( (**ijet2).pt() );
+        theWeight = wMistag_    ->  GetBinContent( theBin );
+        weight *= (1.0-theWeight);
+      }  // end ijet2
+
+      if( jet1 )  {
+        Type2L  fakeTop (jet0.p4(), jet1->p4(), weight);
         looseTops_.push_back( fakeTop );
-      }
-      //jet0 as a jet, jet1 as W jet
-      if( jet1.pt() > 200 ) {
-        wBin    = wMistag_    ->  FindBin( jet1.pt() );
-        bBin    = bMistag_    ->  FindBin( jet0.pt() );
-        wRate   = wMistag_    ->  GetBinContent( wBin );
-        bRate   = bMistag_    ->  GetBinContent( bBin );
-        weight  = wRate*(1.0-bRate);
-        Type2L fakeTop ( jet1.p4(), jet0.p4(), weight );
-        looseTops_.push_back( fakeTop );
-      } // if jet1.pt()
-    }  // for ijet1
+      } // end if jet1
+    } // end jet0.pt()
   }  //for ijet
   //cout<<"End WPlusBJetEventSelector::fillLooseTops"<<endl;
 }
@@ -199,7 +211,8 @@ void WPlusBJetEventSelector::fillTightTops()
   for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=allJets_.begin(), jetEnd=allJets_.end(),
     ijet=jetBegin; ijet != jetEnd; ijet++ )
   {
-    for( vector<edm::Ptr<pat::Jet> >::const_iterator ijet1 = ijet+1; ijet1 != jetEnd; ijet1++ ) {
+    for( vector<edm::Ptr<pat::Jet> >::const_iterator ijet1 = jetBegin; ijet1 != jetEnd; ijet1++ ) {
+      if( ijet1 == ijet )   continue;
       pat::Jet const & jet0 = **ijet;
       pat::Jet const & jet1 = **ijet1;
       int wBin, bBin;
@@ -211,19 +224,23 @@ void WPlusBJetEventSelector::fillTightTops()
         wRate = wMistag_    ->  GetBinContent( wBin );
         bRate = bMistag_    ->  GetBinContent( bBin );
         weight  = wRate*bRate;
+        for( vector<edm::Ptr<pat::Jet> >::const_iterator nowtag = jetBegin; nowtag != ijet; nowtag++ ) {
+          int theBin;
+          double theWeight;
+          theBin = wMistag_       ->  FindBin( (**nowtag).pt() );
+          theWeight = wMistag_    ->  GetBinContent( theBin );
+          weight *= (1.0-theWeight);
+        } //end nowtag
+        for( vector<edm::Ptr<pat::Jet> >::const_iterator nobtag = jetBegin; nobtag != ijet1; nobtag++ ) {
+          int theBin;
+          double theWeight;
+          theBin    = bMistag_    ->  FindBin( (**nobtag).pt() );
+          theWeight = bMistag_    ->  GetBinContent( theBin );
+          weight *= (1.0-theWeight);
+        }  // end nobtag
         Type2T  fakeTop (jet0.p4(), jet1.p4(), weight);
         tightTops_.push_back( fakeTop );
       }
-      //jet0 as b jet, jet1 as W jet
-      if( jet1.pt() > 200 ) {
-        wBin    = wMistag_    ->  FindBin( jet1.pt() );
-        bBin    = bMistag_    ->  FindBin( jet0.pt() );
-        wRate   = wMistag_    ->  GetBinContent( wBin );
-        bRate   = bMistag_    ->  GetBinContent( bBin );
-        weight  = wRate*bRate;
-        Type2T fakeTop ( jet1.p4(), jet0.p4(), weight);
-        tightTops_.push_back( fakeTop );
-      } // if jet1.pt()
     }  // for ijet1
   }  //for ijet
   //cout<<"End WPlusBJetEventSelector::fillTightTops"<<endl;
