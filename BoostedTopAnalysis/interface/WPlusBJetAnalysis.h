@@ -45,6 +45,7 @@ class WPlusBJetAnalysis{
     }
 
     bool hasHeavyFlavor( const edm::EventBase& iEvent );
+    double TTMass( const edm::EventBase& iEvent );
 
   private:
     TFileDirectory& theDir;
@@ -53,11 +54,13 @@ class WPlusBJetAnalysis{
     WPlusBJetType22Selection  wPlusBJetType22Selection_;
     WPlusBJetType23Selection  wPlusBJetType23Selection_;
     WPlusBJetType33Selection  wPlusBJetType33Selection_;
+    BoostedTopWTagFunctor     wJetSelector_;
     double wMassMin_, wMassMax_;
     double topMassMin_, topMassMax_;
     bool   runOnData_;
+    bool   runOnTTbar_;
     std::string   bTagAlgo_;
-    double        bTagOP_;
+    double        bTagOPM_;
     double        bTagOPL_;
     long          eventCount;
     CLHEP::RandFlat *flatDistribution_;

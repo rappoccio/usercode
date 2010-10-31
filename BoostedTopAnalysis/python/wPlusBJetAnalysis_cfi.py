@@ -14,6 +14,7 @@ wPlusBJetAnalysis = cms.PSet(
       jetEtaMax = cms.double(3.0),
       bTagAlgorithm = cms.string( "trackCountingHighEffBJetTags" ),
       bTagOP   = cms.double( 3.3 ),
+      bTagOPMedium = cms.double( 3.3 ),
       bTagOPLoose = cms.double(1.7),
       mistagFileName = cms.string("mistag.root"),
       leadJetPtCut = cms.double(120),
@@ -26,5 +27,6 @@ wPlusBJetAnalysis = cms.PSet(
       topMassMax  = cms.double(230)
     ),
 
-    runOnData = cms.bool( False )
+    runOnData = cms.bool( False ),
+    runOnTTbar = cms.bool( False )
 )

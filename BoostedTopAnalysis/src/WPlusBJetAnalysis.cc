@@ -1,4 +1,5 @@
 #include "Analysis/BoostedTopAnalysis/interface/WPlusBJetAnalysis.h"
+#include "AnalysisDataFormats/TopObjects/interface/TtGenEvent.h"
 
 using namespace std;
 
@@ -8,14 +9,16 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   wPlusBJetType22Selection_( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection")  ),
   wPlusBJetType23Selection_( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection")  ),
   wPlusBJetType33Selection_( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection")  ),
+  wJetSelector_ ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<edm::ParameterSet>("BoostedTopWJetParameters") ),
   wMassMin_     ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("wMassMin") ),
   wMassMax_     ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("wMassMax") ),
   topMassMin_   ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("topMassMin") ),
   topMassMax_   ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("topMassMax") ),
   runOnData_    ( iConfig.getParameter<bool>("runOnData") ),
   bTagAlgo_     ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<string>("bTagAlgorithm") ),
-  bTagOP_       ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("bTagOP") ),
+  bTagOPM_       ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("bTagOPMedium") ),
   bTagOPL_      ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("bTagOPLoose") ),
+  runOnTTbar_   ( iConfig.getParameter<bool>("runOnTTbar") ),
   eventCount    (0)
 {
   cout<< "Instantiate WPlusBJetAnalysis" << endl;
@@ -107,7 +110,7 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
 
   histograms2d["jetMassVsPt"]     = theDir.make<TH2F>("jetMassVsPt",    "Jet Mass Vs Pt; Jet Pt (GeV/c^{2}); Jet Mass (GeV/c^{2})",    200,  0,    1000,   100,    0,    500 );
 
-  //For mistag parameterization
+  //For b tag rate parameterization
   histograms1d["jetTotal"]     = theDir.make<TH1F>("jetTotal", "jetTotal",    200,    0,    1000 );
   histograms1d["jetTotalE"]    = theDir.make<TH1F>("jetTotalE", "jetTotal",    200,    0,    1000 );
   histograms1d["jetTotalO"]    = theDir.make<TH1F>("jetTotalO", "jetTotal",     200,    0,    1000 );
@@ -117,6 +120,13 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   histograms1d["bTag_MO"]        = theDir.make<TH1F>("bTag_MO", "B Tag Rates, Medium",  200,    0,    1000 );
   histograms1d["bTag_LE"]        = theDir.make<TH1F>("bTag_LE", "B Tag Rates, Loose",  200,    0,    1000 );
   histograms1d["bTag_LO"]        = theDir.make<TH1F>("bTag_LO", "B Tag Rates, Loose",  200,    0,    1000 );
+  //For W mistag parameterization
+  histograms1d["wTag"]          = theDir.make<TH1F>("wTag",       "wJet",         200,    0,    1000 );
+  //MC truth histograms
+  histograms1d["ttMass_truth"]  = theDir.make<TH1F>("ttMass_truth",   "t#bar{t} Inv Mass",   200,  0,  2000 );
+  histograms1d["ttMassType22_truth"]  = theDir.make<TH1F>("ttMassType22_truth",   "t#bar{t} Inv Mass Type22",   200,  0,  2000 );
+  histograms1d["ttMassType23_truth"]  = theDir.make<TH1F>("ttMassType23_truth",   "t#bar{t} Inv Mass Type23",   200,  0,  2000 );
+  histograms1d["ttMassType33_truth"]  = theDir.make<TH1F>("ttMassType33_truth",   "t#bar{t} Inv Mass Type33",   200,  0,  2000 );
 
   TDirectory * dir = theDir.cd();
 
@@ -134,6 +144,20 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
 void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
 {
   //cout<<"Point 1"<<endl;
+  //If run on ttbar MC, only analyze all hadronic events
+  if( runOnTTbar_ ) {
+    edm::Handle<TtGenEvent>     ttGen;
+    iEvent.getByLabel( edm::InputTag("genEvt") , ttGen );
+    if( !ttGen.isValid() )    throw cms::Exception("ProductNotFound") <<endl;
+    //cout<<"TT Events"<<endl;
+    if( !ttGen->isFullHadronic() )  {
+      //cout<<"Not Full Hadronic Events"<<endl;
+      return;
+    }
+  }  // end if runOnTTbar_
+
+  double ttTrueMass = TTMass( iEvent );
+  histograms1d["ttMass_truth"]        ->  Fill( ttTrueMass );
 
   pat::strbitset retType22 = wPlusBJetType22Selection_.getBitTemplate();
   bool passType22 = wPlusBJetType22Selection_( iEvent, retType22 );
@@ -157,6 +181,11 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
     histograms1d["nJet"]      ->  Fill( pfJets.size() );
     for( size_t i=0; i<pfJets.size(); i++ ) {
       histograms1d["jetPt"]     ->  Fill( pfJets.at(i)->pt() );
+      pat::strbitset wRet = wJetSelector_.getBitTemplate();
+      bool pass = wJetSelector_( *(pfJets.at(i)) , wRet );
+      bool passMass = (pfJets.at(i)->mass() > 50 && pfJets.at(i)->mass() < 100) ;
+      if( pass && passMass )
+        histograms1d["wTag"]    ->  Fill( pfJets.at(i)->pt() );
       histograms1d["jetEta"]    ->  Fill( pfJets.at(i)->eta() );
       histograms1d["jetMass"]   ->  Fill( pfJets.at(i)->mass() );
       if( pfJets.at(i)->pt() > 200 )
@@ -232,6 +261,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
 
       if( passType22 ) {
         histograms1d["ttMassType22"]    ->  Fill( (p4_top0+p4_top1).mass() );
+        histograms1d["ttMassType22_truth"]    ->  Fill( ttTrueMass );
         if( runOnData_ )  cout<<"Woohoo, Type2+Type2, Event id, "<<iEvent.id()<<endl;
         double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
         double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) );
@@ -265,6 +295,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         } // end else
         if( passType23 ) {
           histograms1d["ttMassType23"]    ->  Fill( (p4_top0+p4_top1).mass() );
+          histograms1d["ttMassType23_truth"]      ->  Fill( ttTrueMass );
           if(runOnData_)    cout<<"Woohoo, Type2+Type3, Event id, run "<<iEvent.id()<<endl;
           double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
           double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) );
@@ -301,6 +332,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         }
         if( passType33 )  {
           histograms1d["ttMassType33"]    ->  Fill( (p4_top0+p4_top1).mass() );
+          histograms1d["ttMassType33_truth"]      ->  Fill( ttTrueMass );
           if(runOnData_)    {
             cout<<"Woohoo, Type3+Type3, Event id, "<<iEvent.id()<<endl;
             cout<<"px,py,pz,E,mass "<<endl;
@@ -328,7 +360,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         //Check b tagging rates in multijets events
         //Get parameterization from both odd and even events
         for( size_t i=0; i<pfJets.size(); i++ ) {
-          if( pfJets.at(i)->bDiscriminator( bTagAlgo_ ) > bTagOP_ ) {
+          if( pfJets.at(i)->bDiscriminator( bTagAlgo_ ) > bTagOPM_ ) {
             histograms1d["bTag_M"]        ->  Fill( pfJets.at(i)->pt() );
             if( 0 == eventCount%2 )  
               histograms1d["bTag_ME"]     ->  Fill( pfJets.at(i)->pt() );
@@ -526,3 +558,24 @@ bool WPlusBJetAnalysis::hasHeavyFlavor( const edm::EventBase& iEvent )
 
   return false;
 }
+
+double WPlusBJetAnalysis::TTMass( const edm::EventBase& iEvent )
+{
+  //Get genParticles
+  edm::Handle< vector<reco::GenParticle> >  h_genParticles;
+  iEvent.getByLabel( edm::InputTag("genParticles") , h_genParticles );
+  if( !h_genParticles.isValid() )   return 0.0;
+  vector<const reco::GenParticle *>     tops;
+  for( vector<reco::GenParticle>::const_iterator igen = h_genParticles->begin(); igen != h_genParticles->end(); igen++ )
+  {
+    int pdgId = fabs( igen->pdgId() );
+    if( igen->status() == 3 && pdgId == 6 )
+      tops.push_back( &(*igen) );      
+  }  // end for
+  if( tops.size() != 2 )  return 1;
+  else {
+    double mass = (tops.at(0)->p4() + tops.at(1)->p4() ).mass();
+    return mass;
+  }
+}
+
