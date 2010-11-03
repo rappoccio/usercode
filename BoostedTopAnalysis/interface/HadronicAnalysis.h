@@ -76,6 +76,7 @@ class HadronicAnalysis {
 	std::cout << *i << std::endl;
       }
     }
+    void analyzeWJet(const edm::EventBase&);
 
   private:
     bool                plotTracks_;
