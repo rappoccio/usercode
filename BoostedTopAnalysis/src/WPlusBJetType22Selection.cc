@@ -27,7 +27,6 @@ WPlusBJetType22Selection::WPlusBJetType22Selection ( edm::ParameterSet const & p
   push_back("Fourth Jet Pt");
   push_back(">= 1 WJet");
   push_back(">= 2 WJet");
-  push_back("wMassCut");
   push_back("has Tight Top");
   push_back("hasTwoTops");
   push_back("topMassCut");
@@ -42,7 +41,6 @@ WPlusBJetType22Selection::WPlusBJetType22Selection ( edm::ParameterSet const & p
   set("Fourth Jet Pt");
   set(">= 1 WJet");
   set(">= 2 WJet");
-  set("wMassCut");
   set("has Tight Top");
   set("hasTwoTops");
   set("topMassCut");
@@ -134,64 +132,62 @@ bool WPlusBJetType22Selection::operator()( edm::EventBase const & t, pat::strbit
               edm::Ptr<pat::Jet> const & taJet = twPlusBJetSelection_.aJet();
               edm::Ptr<pat::Jet> const & oaJet = owPlusBJetSelection_.aJet();
 
-              int numWJets = 0;
+              bool hasW0 = false, hasW1 = false;
               int numBJets = 0;
-              if( tWJets.size() >= 1 )  numWJets++;
-              if( oWJets.size() >= 1 )  numWJets++;
+              //Get W mass
+              double wMass0 = 0.0, wMass1 = 0.0;
+              if( tWJets.size() >= 1 )  wMass0 = tWJets.at(0)->mass();;
+              if( oWJets.size() >= 1 )  wMass1 = oWJets.at(0)->mass();;
               if( tbJets.size() >= 1 )  numBJets++;
               if( obJets.size() >= 1 )  numBJets++;
 
-              if( ignoreCut(">= 1 WJet") || numWJets >= 1 ) {
+              if( wMass0 > wMassMin_ && wMass0 < wMassMax_ )    hasW0 = true;
+              if( wMass1 > wMassMin_ && wMass1 < wMassMax_ )    hasW1 = true;
+
+              if( ignoreCut(">= 1 WJet") || hasW0 || hasW1 ) {
                 passCut( ret, ">= 1 WJet" );
-                if( ignoreCut(">= 2 WJet") || numWJets >= 2 ) {
+                if( ignoreCut(">= 2 WJet") || (hasW0 && hasW1) ) {
                   passCut( ret, ">= 2 WJet" );
 
-                  //Get W mass
-                  double wMass0 = tWJets.at(0)->mass();
-                  double wMass1 = oWJets.at(0)->mass();
-                  bool passWMass = ( wMass0 > wMassMin_ && wMass0 < wMassMax_ && wMass1 > wMassMin_ && wMass1 < wMassMax_ );
-                  if( ignoreCut("wMassCut") || passWMass ) {
-                    passCut( ret, "wMassCut" );
-                    if( ignoreCut("has Tight Top") || numBJets >= 1 ) {
-                      passCut( ret, "has Tight Top" );
+                  if( ignoreCut("has Tight Top") || numBJets >= 1 ) {
+                    passCut( ret, "has Tight Top" );
 
-                      bool hasTop0 = false, hasTop1 = false;
-                      if( tbJets.size() >= 1 ) {
-                        p4_top0_ = tWJets.at(0)->p4() + tbJets.at(0)->p4()  ;
-                        tightTop0_ = true;
-                        hasTop0 = true;
-                      }
-                      else if( twPlusBJetSelection_.aJetFound() )  {
-                        p4_top0_ = tWJets.at(0)->p4() + taJet->p4();
-                        tightTop0_ = false;
-                        hasTop0 = true;
-                      }
-                      if( obJets.size() >= 1 ) {
-                        p4_top1_ = oWJets.at(0)->p4() + obJets.at(0)->p4()  ;
-                        tightTop1_ = true;
-                        hasTop1 = true;
-                      }
-                      else if( owPlusBJetSelection_.aJetFound() ) {
-                        p4_top1_ = oWJets.at(0)->p4() + oaJet->p4();
-                        tightTop1_ = false;
-                        hasTop1 = true;
-                      }
+                    bool hasTop0 = false, hasTop1 = false;
+                    if( tbJets.size() >= 1 ) {
+                      p4_top0_ = tWJets.at(0)->p4() + tbJets.at(0)->p4()  ;
+                      tightTop0_ = true;
+                      hasTop0 = true;
+                    }
+                    else if( twPlusBJetSelection_.aJetFound() )  {
+                      p4_top0_ = tWJets.at(0)->p4() + taJet->p4();
+                      tightTop0_ = false;
+                      hasTop0 = true;
+                    }
+                    if( obJets.size() >= 1 ) {
+                      p4_top1_ = oWJets.at(0)->p4() + obJets.at(0)->p4()  ;
+                      tightTop1_ = true;
+                      hasTop1 = true;
+                    }
+                    else if( owPlusBJetSelection_.aJetFound() ) {
+                      p4_top1_ = oWJets.at(0)->p4() + oaJet->p4();
+                      tightTop1_ = false;
+                      hasTop1 = true;
+                    }
 
-                      bool hasTwoTops = hasTop0 && hasTop1 ;
-                      if( ignoreCut("hasTwoTops") || hasTwoTops ) {
-                        passCut( ret, "hasTwoTops" );
+                    bool hasTwoTops = hasTop0 && hasTop1 ;
+                    if( ignoreCut("hasTwoTops") || hasTwoTops ) {
+                      passCut( ret, "hasTwoTops" );
 
-                        double topMass0 = p4_top0_.mass();
-                        double topMass1 = p4_top1_.mass();
-                        double passTopMass = ( topMass0 > topMassMin_ && topMass0 < topMassMax_ && topMass1 > topMassMin_ && topMass1 < topMassMax_ );
-                        if( ignoreCut("topMassCut") || passTopMass ) {
-                          passCut( ret, "topMassCut" );
-                          //cout<<"Top Mass 0 "<<topMass0<<endl;
-                          //cout<<"Top Mass 1 "<<topMass1<<endl;
-                        } // topMassCut
-                      }// hasTwoTops
-                    } // has Tight Top
-                  } // wMassCut
+                      double topMass0 = p4_top0_.mass();
+                      double topMass1 = p4_top1_.mass();
+                      double passTopMass = ( topMass0 > topMassMin_ && topMass0 < topMassMax_ && topMass1 > topMassMin_ && topMass1 < topMassMax_ );
+                      if( ignoreCut("topMassCut") || passTopMass ) {
+                        passCut( ret, "topMassCut" );
+                        //cout<<"Top Mass 0 "<<topMass0<<endl;
+                        //cout<<"Top Mass 1 "<<topMass1<<endl;
+                      } // topMassCut
+                    }// hasTwoTops
+                  } // has Tight Top
                 }  // >= 2 WJet
               }  // >= 1 WJet
             }  // fourth Jet Pt

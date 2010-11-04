@@ -89,6 +89,7 @@ class HadronicAnalysis {
 
     std::map<std::string, TH1F*> histograms1d;
     std::map<std::string, TH2F*> histograms2d;
+    double jetPtMin_;
 
     std::vector<EventSummary>  summary;
     CLHEP::RandFlat *flatDistribution_;

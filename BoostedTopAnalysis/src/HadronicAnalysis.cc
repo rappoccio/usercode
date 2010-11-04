@@ -9,7 +9,8 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   weightHist_(0),
   hadronicSelection_(iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis")),
   theDir(iDir),
-  boostedTopWTagFunctor_ (iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<edm::ParameterSet>("boostedTopWTagParams") )
+  boostedTopWTagFunctor_ (iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<edm::ParameterSet>("boostedTopWTagParams") ),
+  jetPtMin_ ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<edm::ParameterSet>("dijetSelectorParams").getParameter<double>("ptMin") )
 {
   std::cout << "Instantiated HadronicAnalysis" << std::endl;
 
@@ -70,6 +71,12 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
 
   histograms1d["jetMass0"] = theDir.make<TH1F>("jetMass0", "Jet Mass of First Jet", 100, 0, 500 );
   histograms1d["jetMass1"] = theDir.make<TH1F>("jetMass1", "Jet Mass of Second Jet", 100, 0, 500 );
+  histograms1d["jetMass0_0"]  = theDir.make<TH1F>("jetMass0_0",   "Jet Mass of First Jet", 100, 0, 500 );
+  histograms1d["jetMass1_0"]  = theDir.make<TH1F>("jetMass1_0",   "Jet Mass of Second Jet", 100, 0, 500 );
+  histograms2d["jetMassVsMu0"]  = theDir.make<TH2F>("jetMassVsMu0", "Jet Mass Vs #mu First Jet; #mu; Jet Mass (GeV/c^{2})",
+      500, 0.0,  1.0,  100,   0,    500 );
+  histograms2d["jetMassVsMu1"]  = theDir.make<TH2F>("jetMassVsMu1", "Jet Mass Vs #mu Second Jet; #mu; Jet Mass (GeV/c^{2})",
+      500, 0.0,  1.0,  100,   0,    500 );
   histograms1d["mu0"]     = theDir.make<TH1F>("mu0", "Mass Drop of First Jet", 500, -1.0, 1.0 );
   histograms1d["mu1"]     = theDir.make<TH1F>("mu1", "Mass Drop of Second Jet", 500, -1.0, 1.0 );
   histograms1d["y0"]     = theDir.make<TH1F>("y0", "Asymmetry of First Jet", 500, -1.0, 1.0 );
@@ -114,8 +121,9 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms1d["run"] = theDir.make<TH1F>("run", "Run Number", 135698 - 132440, 132440, 135698 );
   histograms1d["runSelected"] = theDir.make<TH1F>("runSelected", "Run Number, After selection", 135698 - 132440, 132440, 135698 );
 
-  histograms2d["jetMassVsPt0"] = theDir.make<TH2F>("jetMassVsPt0", "First Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
-  histograms2d["jetMassVsPt1"] = theDir.make<TH2F>("jetMassVsPt1", "Second Jet Mass Versus Jet Pt", 50, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt0"] = theDir.make<TH2F>("jetMassVsPt0", "First Jet Mass Versus Jet Pt", 100, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt1"] = theDir.make<TH2F>("jetMassVsPt1", "Second Jet Mass Versus Jet Pt", 100, 0, 500, 50, 0, 250 );
+  histograms2d["jetMassVsPt"] = theDir.make<TH2F>("jetMassVsPt",  "Jet Mass Vs Jet Pt; Jet Pt (GeV/c); Jet Mass (GeV/c^{2})", 100,  0,  500,  50, 0, 250 );
   histograms2d["muVsPt0"]     = theDir.make<TH2F>("muVsPt0", "Mass Drop of First Jet", 50, 0, 500, 50, 0.0, 1.0 );
   histograms2d["muVsPt1"]     = theDir.make<TH2F>("muVsPt1", "Mass Drop of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
   histograms2d["yVsPt0"]     = theDir.make<TH2F>("yVsPt0", "Asymmetry of First Jet", 50, 0, 500, 50, 0.0, 1.0 );
@@ -183,6 +191,7 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   //Some truth info
   histograms1d["WPt"]         = theDir.make<TH1F>("WPt",    "W Jet Pt",     200,  0,    1000 );
   histograms1d["WMass"]       = theDir.make<TH1F>("WMass",  "W Jet Mass",   100,  0,    500 );
+  histograms1d["WMass_0"]     = theDir.make<TH1F>("WMass_0",  "W Jet Mass", 100,  0,    500 );
   histograms1d["W_mu"]        = theDir.make<TH1F>("W_mu",   "W Jet Mu",     500,  -1.0, 1.0 );
   histograms1d["W_y"]         = theDir.make<TH1F>("W_y",    "W Jet y",      500,  -1.0, 1.0 );
   histograms1d["W_dR"]        = theDir.make<TH1F>("W_dR",   "W Jet dR",     500,  -1.0, 6.0 );
@@ -190,6 +199,10 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms1d["jetPartonDr"] = theDir.make<TH1F>("jetPartonDr",  "Jet Parton Dr",  50, 0,  6.0 );
   histograms1d["W_y_0"]         = theDir.make<TH1F>("W_y_0",    "W Jet y",      500,  -1.0, 1.0 );
   histograms1d["W_dR_0"]        = theDir.make<TH1F>("W_dR_0",   "W Jet dR",     500,  -1.0, 6.0 );
+  histograms2d["W_jetMassVsPt"] = theDir.make<TH2F>("W_jetMassVsPt",    "Jet Mass Vs Pt; Jet Pt (GeV/c); Jet Mass (GeV/c^{2})",
+  100,  0,  500,  50, 0,  250 );
+  histograms2d["W_jetMassVsMu"] = theDir.make<TH2F>("W_jetMassVsMu",    "Jet Mass Vs #mu; #mu; Jet Mass (GeV/c^{2})", 
+  500,  0,  1.0,  50, 0,  250 );
 
   edm::Service<edm::RandomNumberGenerator> rng;
   if ( ! rng.isAvailable()) {
@@ -377,11 +390,15 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       histograms1d["y0"]->Fill(y0, histoWeight_);
       histograms1d["dR0"]->Fill(dR0, histoWeight_);
       histograms2d["jetMassVsPt0"]->Fill( pretaggedJets[0]->pt(), pretaggedJets[0]->mass() , histoWeight_);
+      histograms2d["jetMassVsPt"] ->Fill( pretaggedJets[0]->pt(), pretaggedJets[0]->mass() );
       histograms2d["muVsPt0"]->Fill(pretaggedJets[0]->pt(), mu0, histoWeight_);
       histograms2d["yVsPt0"]->Fill(pretaggedJets[0]->pt(), y0, histoWeight_);
       histograms2d["dRVsPt0"]->Fill(pretaggedJets[0]->pt(), dR0, histoWeight_);
       histograms1d["nDaughters0"]   ->  Fill( pretaggedJets[0]->numberOfDaughters() );
-      if( pretaggedJets[0]->mass() > 50 && mu0 < 0.4 && p4_0.pt() > 80 )  {
+      histograms2d["jetMassVsMu0"]  ->  Fill( mu0, pretaggedJets[0]->mass() );
+      if( mu0 < 0.4 )
+        histograms1d["jetMass0_0"]  ->  Fill( pretaggedJets[0]->mass() );
+      if( pretaggedJets[0]->mass() > 50 && mu0 < 0.4 )  {
         histograms1d["y0_0"]    ->  Fill( y0 );
         histograms1d["dR0_0"]   ->  Fill( dR0 );
       }
@@ -391,11 +408,15 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       histograms1d["y1"]->Fill(y1, histoWeight_);
       histograms1d["dR1"]->Fill(dR1, histoWeight_);
       histograms2d["jetMassVsPt1"]->Fill( pretaggedJets[1]->pt(), pretaggedJets[1]->mass() , histoWeight_);
+      histograms2d["jetMassVsPt"] ->Fill( pretaggedJets[1]->pt(), pretaggedJets[1]->mass() );
       histograms2d["muVsPt1"]->Fill(pretaggedJets[1]->pt(), mu1, histoWeight_);
       histograms2d["yVsPt1"]->Fill(pretaggedJets[1]->pt(), y1, histoWeight_);
       histograms2d["dRVsPt1"]->Fill(pretaggedJets[1]->pt(), dR1, histoWeight_);
       histograms1d["nDaughters1"]   ->  Fill( pretaggedJets[1]->numberOfDaughters() );
-      if( pretaggedJets[1]->mass() > 50 && mu1 < 0.4 && p4_1.pt() > 80 )  {
+      histograms2d["jetMassVsMu1"]  ->  Fill( mu1, pretaggedJets[1]->mass() );
+      if( mu1 < 0.4 )
+        histograms1d["jetMass1_0"]    ->  Fill( pretaggedJets[1]->mass() );
+      if( pretaggedJets[1]->mass() > 50 && mu1 < 0.4 )  {
         histograms1d["y1_0"]    ->  Fill( y1 );
         histograms1d["dR1_0"]   ->  Fill( dR1 );
       }
@@ -522,6 +543,8 @@ void HadronicAnalysis::analyzeWJet( const edm::EventBase& iEvent )
   double minDr0 = 9999., minDr1 = 9999.;
   const pat::Jet * jet0=NULL, *jet1=NULL;
   for( vector<pat::Jet>::const_iterator ijet = jetHandle->begin(); ijet != jetHandle->end(); ijet++ ) {
+    if( ijet->pt() > jetPtMin_ )
+      histograms2d["W_jetMassVsPt"]     ->  Fill( ijet->pt(), ijet->mass() );
     double dR0 = reco::deltaR<double>( ijet->eta(), ijet->phi(), Ws[0]->eta(), Ws[0]->phi() );
     double dR1 = reco::deltaR<double>( ijet->eta(), ijet->phi(), Ws[1]->eta(), Ws[1]->phi() );
     if( dR0 < minDr0 )  {
@@ -545,17 +568,22 @@ void HadronicAnalysis::analyzeWJet( const edm::EventBase& iEvent )
     double mass = jet0->mass();
     double mu =0, y=0, dR=0;
     pat::subjetHelper( *jet0, y, mu, dR );
-    histograms1d["WPt"]       ->  Fill( pt );
-    histograms1d["WMass"]     ->  Fill( mass );
-    histograms1d["W_nD"]      ->  Fill( n );
-    histograms1d["W_mu"]      ->  Fill( mu );
-    histograms1d["W_y"]       ->  Fill( y );
-    histograms1d["W_dR"]      ->  Fill( dR );
-    histograms1d["jetPartonDr"]   ->  Fill( minDr0 );
-    if( pt > 80 && mu < 0.4 && mass > 50 ) {
-      histograms1d["W_y_0"]   ->  Fill( y );
-      histograms1d["W_dR_0"]  ->  Fill( dR );
-    }
+    if( pt > jetPtMin_ ) {
+      histograms1d["WPt"]       ->  Fill( pt );
+      histograms1d["WMass"]     ->  Fill( mass );
+      histograms1d["W_nD"]      ->  Fill( n );
+      histograms1d["W_mu"]      ->  Fill( mu );
+      histograms1d["W_y"]       ->  Fill( y );
+      histograms1d["W_dR"]      ->  Fill( dR );
+      histograms1d["jetPartonDr"]   ->  Fill( minDr0 );
+      histograms2d["W_jetMassVsMu"] ->  Fill( mu, mass );
+      if( mu < 0.4 )
+        histograms1d["WMass_0"]     ->  Fill( mass );
+      if( mu < 0.4 && mass > 50 ) {
+        histograms1d["W_y_0"]   ->  Fill( y );
+        histograms1d["W_dR_0"]  ->  Fill( dR );
+      } // mu && mass
+    } // pt > 150
   }
   if( minDr1 <= 1.0 && ptD1 < 15 ) {
     //cout<<"Found match "<<jet1<<endl;
@@ -564,17 +592,22 @@ void HadronicAnalysis::analyzeWJet( const edm::EventBase& iEvent )
     double mass = jet1->mass();
     double mu =0, y=0, dR=0;
     pat::subjetHelper( *jet1, y, mu, dR );
-    histograms1d["WPt"]       ->  Fill( pt );
-    histograms1d["WMass"]     ->  Fill( mass );
-    histograms1d["W_nD"]      ->  Fill( n );
-    histograms1d["W_mu"]      ->  Fill( mu );
-    histograms1d["W_y"]       ->  Fill( y );
-    histograms1d["W_dR"]      ->  Fill( dR );
-    histograms1d["jetPartonDr"]   ->  Fill( minDr1 );
-    if( pt > 80 && mu < 0.4 && mass > 50 ) {
-      histograms1d["W_y_0"]   ->  Fill( y );
-      histograms1d["W_dR_0"]  ->  Fill( dR );
-    }
+    if( pt > jetPtMin_ )  {
+      histograms1d["WPt"]       ->  Fill( pt );
+      histograms1d["WMass"]     ->  Fill( mass );
+      histograms1d["W_nD"]      ->  Fill( n );
+      histograms1d["W_mu"]      ->  Fill( mu );
+      histograms1d["W_y"]       ->  Fill( y );
+      histograms1d["W_dR"]      ->  Fill( dR );
+      histograms1d["jetPartonDr"]   ->  Fill( minDr1 );
+      histograms2d["W_jetMassVsMu"] ->  Fill( mu, mass );
+      if( mu < 0.4 )
+        histograms1d["WMass_0"]   ->  Fill( mass );
+      if( mu < 0.4 && mass > 50 ) {
+        histograms1d["W_y_0"]   ->  Fill( y );
+        histograms1d["W_dR_0"]  ->  Fill( dR );
+      } // mu and mass
+    } // pt > 150 
   }
 
 }
