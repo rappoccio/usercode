@@ -156,18 +156,16 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                passTrig = true;
             }
          }
-         else if(useEleMC_)  {passTrig = true;}
+         else if(useEleMC_)  passTrig = true;
       }
+      
    }
   
 
-
-  
    if ( ignoreCut(triggerIndex_) || 
         passTrig ) {
       passCut(ret, triggerIndex_);
-
-
+  
       bool passPV = false;
 
       passPV = pvSelector_( event );
@@ -193,10 +191,10 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 
          TopElectronSelector patEle70(TopElectronSelector::wp70, use36xData_);
          TopElectronSelector patEle95(TopElectronSelector::wp95, use36xData_);
-         TopElectronSelector EleSihih(TopElectronSelector::sigihih70, use36xData_);
-         TopElectronSelector EleDphi(TopElectronSelector::dphi70, use36xData_);
-         TopElectronSelector EleDeta(TopElectronSelector::deta70, use36xData_); 
-         TopElectronSelector EleHoE(TopElectronSelector::hoe70, use36xData_); 
+         TopElectronSelector EleSihih(TopElectronSelector::sigihih80, use36xData_);
+         TopElectronSelector EleDphi(TopElectronSelector::dphi80, use36xData_);
+         TopElectronSelector EleDeta(TopElectronSelector::deta80, use36xData_); 
+         TopElectronSelector EleHoE(TopElectronSelector::hoe80, use36xData_); 
       
          bool conversionVetoA = true;
          bool conversionVetoB = true;
@@ -231,7 +229,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             double nHits   = ielectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
             double relIso  = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + ielectron->dr03HcalTowerSumEt() ) / ielectron->p4().Pt();
 
-//Electron Selection for e+jets
+//Electron Selection for e+jetsema
 //-----------------------------
             if( (scEta > 2.5 || scEta <= 1.566 )  && scEta > 1.4442 ) continue;   
             if( fabs(ielectron->eta()) >= eleEtaMaxLoose_ ) continue;
@@ -240,8 +238,22 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             if(useAntiSelection_){
                if( Et       > eEt_                                         &&                   
                    relIso   < eRelIso_                                     &&
-                   vCut     < 1                                            && 
-                   ( fabs(dB) < 0.02  + pass_sihih + pass_dphi + pass_deta + pass_hoe ) <= 2 ){  //fail atleast two of the IDs                 
+                   vCut     < 1                                            &&
+                   fabs(dB) < 0.02                                         && 
+                   ( pass_sihih + pass_dphi + pass_deta + pass_hoe)  <= 2 ){  //fail atleast two of the IDs      
+                  /*              
+                  if(ielectron->isEE()){
+                     cout << "inside EE------->" << endl;
+                     cout << pass_sihih <<" ,"<<  pass_dphi <<", "<< pass_deta <<", " << pass_hoe <<endl;
+                     cout << ielectron->sigmaIetaIeta() <<", "<< fabs(ielectron->deltaPhiSuperClusterTrackAtVtx()) <<","<< fabs(ielectron->deltaEtaSuperClusterTrackAtVtx())<< ","<< ielectron->hadronicOverEm() << endl;
+                  }
+                  else if (ielectron->isEB()){
+                     cout << "inside EB------->" << endl;
+                     cout << pass_sihih <<" ,"<<  pass_dphi <<", "<< pass_deta <<", " << pass_hoe <<endl;
+                     cout << ielectron->sigmaIetaIeta() <<", "<< fabs(ielectron->deltaPhiSuperClusterTrackAtVtx()) <<","<< fabs(ielectron->deltaEtaSuperClusterTrackAtVtx())<< ","<< ielectron->hadronicOverEm() << endl;
+                  }
+                  */
+                  
                   selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                   if(nHits > 0 ) conversionVetoA = false;
                   if(nHits > 0 || isConv) conversionVetoB = false;                  

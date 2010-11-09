@@ -21,7 +21,7 @@ wplusjetsAnalysis = cms.PSet(
     pvSrc   = cms.InputTag('offlinePrimaryVertices'),
     use36xData = cms.bool(False),
     useAntiSelection = cms.bool(False),
-    useEleMC = cms.bool(False), 
+    useEleMC = cms.bool(True), 
     # tight muons
     muonIdTight = cms.PSet(
         version = cms.string('FALL10'),
@@ -90,8 +90,8 @@ wplusjetsAnalysis = cms.PSet(
     pfjetIdLoose = pfJetIDSelector.clone(),
     # kinematic cuts
     minJets        = cms.int32( 1 ),
-    muPlusJets     = cms.bool( True ),
-    ePlusJets      = cms.bool( False ),
+    muPlusJets     = cms.bool( False ),
+    ePlusJets      = cms.bool( True ),
     muPtMin        = cms.double( 20.0 ),
     muEtaMax       = cms.double( 2.1 ),
     eleEtMin       = cms.double( 20.0 ),

@@ -30,7 +30,7 @@ class TopElectronSelector : public Selector<pat::Electron>  {
 
    public: // interface  
   
-      enum Version_t { wp95, wp70, sigihih70, dphi70, deta70, hoe70, NONE };
+      enum Version_t { wp95, wp70, sigihih70, dphi70, deta70, hoe70, sigihih80, dphi80, deta80, hoe80, NONE };
       TopElectronSelector() {}
   
       // initialize it by inserting directly the cut values in a parameter set
@@ -114,30 +114,34 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          else if (version == sigihih70){
             set("sihih_EB",    1.0e-02);
             set("sihih_EE",    3.0e-02);
-            //set("relIso",      1.0e-01); 
-            //set("d0",          2.0e-02);
-            //set("Et",          30.0   );
          }
          else if (version == dphi70){
             set("dphi_EB",     3.0e-02);
             set("dphi_EE",     2.0e-02);
-            //set("relIso",      1.0e-01); 
-            //set("d0",          2.0e-02);
-            //set("Et",          30.0   );
          }
          else if (version == deta70){
             set("deta_EB",     4.0e-03);
             set("deta_EE",     5.0e-03);//10000.
-            //set("relIso",      1.0e-01); 
-            //set("d0",          2.0e-02);
-            //set("Et",          30.0   );
          }
          else if (version == hoe70){
             set("hoe_EB",      2.5e-02);
             set("hoe_EE",      2.5e-02);
-            //set("relIso",      1.0e-01); 
-            //set("d0",          2.0e-02);
-            //set("Et",          30.0   );
+         }
+         else if (version == sigihih80){
+            set("sihih_EB",    1.0e-02);
+            set("sihih_EE",    3.0e-02);
+         }
+         else if (version == dphi80){
+            set("dphi_EB",     6.0e-02);
+            set("dphi_EE",     3.0e-02);
+         }
+         else if (version == deta80){
+            set("deta_EB",     4.0e-03);
+            set("deta_EE",     7.0e-03);//10000.
+         }
+         else if (version == hoe80){
+            set("hoe_EB",      4.0e-02);
+            set("hoe_EE",      2.5e-02);
          }
 
          indexSinhih_EB_     = index_type(&bits_, "sihih_EB"     ); 
