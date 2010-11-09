@@ -895,18 +895,18 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
          //---------------------
          else if(patElectron->isEB()){  
             gethist<TH1F>(dir2,sampleHistName_ + Form("_elEta_%dj_%dt",   numJets, numTags))-> Fill (fabs(electrons[0].eta()), globalWeight_);	
-               if ( doMC_ ) 
-                  gethist<TH1F>(dir2, sampleHistName_ + Form("_elEta_%dj_%dt", numJets, numTags) + whichtag  )-> Fill (fabs(electrons[0].eta()), globalWeight_);
+            if ( doMC_ ) 
+               gethist<TH1F>(dir2, sampleHistName_ + Form("_elEta_%dj_%dt", numJets, numTags) + whichtag  )-> Fill (fabs(electrons[0].eta()), globalWeight_);
                
-               if(useHFcat_){            
-                  //gethist<TH1F>(dir2,sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-                  //gethist<TH1F>(dir2,sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-                  gethist<TH1F>(dir2,sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
-               }
-               gethist<TH1F>(dir2,sampleNameInput + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-               gethist<TH1F>(dir2,sampleNameInput + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-               gethist<TH1F>(dir2,sampleNameInput + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
-               gethist<TH1F>(dir2,sampleNameInput + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );         
+            if(useHFcat_){            
+               //gethist<TH1F>(dir2,sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
+               //gethist<TH1F>(dir2,sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
+               gethist<TH1F>(dir2,sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
+            }
+            gethist<TH1F>(dir2,sampleNameInput + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
+            gethist<TH1F>(dir2,sampleNameInput + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
+            gethist<TH1F>(dir2,sampleNameInput + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
+            gethist<TH1F>(dir2,sampleNameInput + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );         
          }//is EB
 
       }//ePlusJets
