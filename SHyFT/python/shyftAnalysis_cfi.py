@@ -44,6 +44,7 @@ shyftAnalysis = cms.PSet(
     simpleSFCalc = cms.bool(False),
     jetAlgo = cms.string("pf"),
     useCustomPayload = cms.bool(False),
-    customPayload = cms.string('ttbarEffSF_unity.root')   
+    customPayload = cms.string('ttbarEffSF_unity.root'),
+	heavyFlavourForMetHtEta = cms.bool(False)
 )
 

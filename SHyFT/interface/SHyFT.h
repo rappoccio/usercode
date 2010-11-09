@@ -101,6 +101,8 @@ class SHyFT {
     SHyFTSelector wPlusJets;
     TFileDirectory& theDir;
     TDirectory * dir;
+    TDirectory *dir1;
+    TDirectory *dir2;
 
     // the following parameters need to come from the config
     bool muPlusJets_;
@@ -150,6 +152,7 @@ class SHyFT {
     double nObservedTaggedJets_;
     double nExpectedTaggedEvents_;
     double nObservedTaggedEvents_;
+    bool useHFall_;
 };
 
 
