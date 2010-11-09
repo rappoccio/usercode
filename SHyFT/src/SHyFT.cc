@@ -246,8 +246,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
             histTitle = "HT (sum Jet Et + mu Pt + MET), "+jt;
             theDir.make<TH1F>( (sampleNameInput+"_hT"+jtNum + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120, 0, 1200);
 
-            //histTitle = "HTlep (sum Jet Et + mu Pt), 0-Tag, "+jt;
-            //theDir.make<TH1F>( (sampleNameInput+"_hT_Lep"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120, 0, 1200);
+            histTitle = "HTlep (sum Jet Et + mu Pt), "+jt;
+            theDir.make<TH1F>( (sampleNameInput+"_hT_Lep"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120, 0, 1200);
 
             histTitle = "Missing E_{T},  "+jt;
             theDir.make<TH1F>( (sampleNameInput+"_MET"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120,0,300);
