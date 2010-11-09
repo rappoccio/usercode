@@ -513,4 +513,4 @@ else :
                                    ]
 
 
-open('junk.py','w').write(process.dumpPython())
+#open('junk.py','w').write(process.dumpPython())
