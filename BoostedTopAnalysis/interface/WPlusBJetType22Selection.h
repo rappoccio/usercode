@@ -42,7 +42,7 @@ class WPlusBJetType22Selection : public EventSelector {
     std::vector<Type2L>     const & looseTops1 () const { return owPlusBJetSelection_.looseTops(); }
     std::vector<Type2T>     const & tightTops1 () const { return owPlusBJetSelection_.tightTops(); }
     std::vector<Type3>      const & type3Tops1 () const { return owPlusBJetSelection_.type3Tops(); }
-
+    ttTypes Type;
 
   private :
     edm::InputTag               jetTag_;

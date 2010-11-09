@@ -38,4 +38,6 @@ public :
 };
 
 
+enum ttTypes { Undef, Type22, Type23, Type33 };
+
 #endif

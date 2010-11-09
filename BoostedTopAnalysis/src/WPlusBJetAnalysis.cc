@@ -219,43 +219,47 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
     if( obJets.size() >=1 )
       histograms1d["bJetPt"]      ->  Fill( obJets.at(0)->pt() );
 
-    if( retType22[string("hasTwoTops")] ) {
+    if( wPlusBJetType22Selection_.Type == Type22 ) {
       int numTightTop=0, numLooseTop=0;
       reco::Candidate::LorentzVector const p4_top0 = wPlusBJetType22Selection_.p4_top0();
       reco::Candidate::LorentzVector const p4_top1 = wPlusBJetType22Selection_.p4_top1();
 
-      if ( wPlusBJetType22Selection_.hasTightTop0() ) {
-        numTightTop++;
-        double deltaR = reco::deltaR<double>( tWJets.at(0)->eta(), tWJets.at(0)->phi(), tbJets.at(0)->eta(), tbJets.at(0)->phi() );
-        double deltaPhi = fabs( reco::deltaPhi<double>( tWJets.at(0)->phi(), tbJets.at(0)->phi() ) );
-        histograms1d["wbJetDr0Type22"]            ->  Fill( deltaR );
-        histograms1d["wbJetDPhi0Type22"]          ->  Fill( deltaPhi );
-        histograms1d["tightTopMass0Type22"]       ->  Fill( p4_top0.mass() );
-      }
-      else {
-        numLooseTop++;
-        double deltaR = reco::deltaR<double>( tWJets.at(0)->eta(), tWJets.at(0)->phi(), taJet->eta(), taJet->phi() );
-        double deltaPhi = fabs( reco::deltaPhi<double>( tWJets.at(0)->phi(), taJet->phi() ) );
-        histograms1d["waJetDr0Type22"]            ->  Fill( deltaR );
-        histograms1d["waJetDPhi0Type22"]          ->  Fill( deltaPhi );
-        histograms1d["looseTopMass0Type22"]       ->  Fill( p4_top0.mass() );
-      }
-      if( wPlusBJetType22Selection_.hasTightTop1()  ) {
-        numTightTop++;
-        double deltaR = reco::deltaR<double>( oWJets.at(0)->eta(), oWJets.at(0)->phi(), obJets.at(0)->eta(), obJets.at(0)->phi() );
-        double deltaPhi = fabs( reco::deltaPhi<double>( oWJets.at(0)->phi(), obJets.at(0)->phi() ) );
-        histograms1d["wbJetDr1Type22"]            ->  Fill( deltaR );
-        histograms1d["wbJetDPhi1Type22"]          ->  Fill( deltaPhi );
-        histograms1d["tightTopMass1Type22"]       ->  Fill( p4_top1.mass() );
-      }
-      else  {
-        numLooseTop++;
-        double deltaR = reco::deltaR<double>( oWJets.at(0)->eta(), oWJets.at(0)->phi(), oaJet->eta(), oaJet->phi() );
-        double deltaPhi = fabs( reco::deltaPhi<double>( oWJets.at(0)->phi(), oaJet->phi() ) );
-        histograms1d["waJetDr1Type22"]            ->  Fill( deltaR );
-        histograms1d["waJetDPhi1Type22"]          ->  Fill( deltaPhi );
-        histograms1d["looseTopMass1Type22"]       ->  Fill( p4_top1.mass() );
-      }
+      if( retType22[string("has Top0")] ) {
+        if ( wPlusBJetType22Selection_.hasTightTop0() ) {
+          numTightTop++;
+          double deltaR = reco::deltaR<double>( tWJets.at(0)->eta(), tWJets.at(0)->phi(), tbJets.at(0)->eta(), tbJets.at(0)->phi() );
+          double deltaPhi = fabs( reco::deltaPhi<double>( tWJets.at(0)->phi(), tbJets.at(0)->phi() ) );
+          histograms1d["wbJetDr0Type22"]            ->  Fill( deltaR );
+          histograms1d["wbJetDPhi0Type22"]          ->  Fill( deltaPhi );
+          histograms1d["tightTopMass0Type22"]       ->  Fill( p4_top0.mass() );
+        }
+        else {
+          numLooseTop++;
+          double deltaR = reco::deltaR<double>( tWJets.at(0)->eta(), tWJets.at(0)->phi(), taJet->eta(), taJet->phi() );
+          double deltaPhi = fabs( reco::deltaPhi<double>( tWJets.at(0)->phi(), taJet->phi() ) );
+          histograms1d["waJetDr0Type22"]            ->  Fill( deltaR );
+          histograms1d["waJetDPhi0Type22"]          ->  Fill( deltaPhi );
+          histograms1d["looseTopMass0Type22"]       ->  Fill( p4_top0.mass() );
+        }
+      } // has Top0
+      if( retType22[string("has Top1")]   )   {
+        if( wPlusBJetType22Selection_.hasTightTop1()  ) {
+          numTightTop++;
+          double deltaR = reco::deltaR<double>( oWJets.at(0)->eta(), oWJets.at(0)->phi(), obJets.at(0)->eta(), obJets.at(0)->phi() );
+          double deltaPhi = fabs( reco::deltaPhi<double>( oWJets.at(0)->phi(), obJets.at(0)->phi() ) );
+          histograms1d["wbJetDr1Type22"]            ->  Fill( deltaR );
+          histograms1d["wbJetDPhi1Type22"]          ->  Fill( deltaPhi );
+          histograms1d["tightTopMass1Type22"]       ->  Fill( p4_top1.mass() );
+        }
+        else  {
+          numLooseTop++;
+          double deltaR = reco::deltaR<double>( oWJets.at(0)->eta(), oWJets.at(0)->phi(), oaJet->eta(), oaJet->phi() );
+          double deltaPhi = fabs( reco::deltaPhi<double>( oWJets.at(0)->phi(), oaJet->phi() ) );
+          histograms1d["waJetDr1Type22"]            ->  Fill( deltaR );
+          histograms1d["waJetDPhi1Type22"]          ->  Fill( deltaPhi );
+          histograms1d["looseTopMass1Type22"]       ->  Fill( p4_top1.mass() );
+        }
+      } // has Top1
       histograms1d["nTightTopType22"]   ->  Fill( numTightTop );
       histograms1d["nLooseTopType22"]   ->  Fill( numLooseTop );
 
@@ -271,7 +275,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
     } // end if ret hasTwoTops
 
 
-    if( retType22[string(">= 1 WJet")] && !retType22[string(">= 2 WJet")] ) {
+    if( wPlusBJetType22Selection_.Type == Type23 ) {
       pat::strbitset retType23 = wPlusBJetType23Selection_.getBitTemplate();
       bool passType23 = wPlusBJetType23Selection_( iEvent, retType23 );
       if( retType23[string("hasMinPair")] ) {
@@ -305,7 +309,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
       }  // hasMinPair    
     }  // end if >= 1 WJet and !>= 2 WJet
 
-    if( !retType22[string(">= 1 WJet")]  ) {
+    if( wPlusBJetType22Selection_.Type == Type33  ) {
       pat::strbitset  retType33 = wPlusBJetType33Selection_.getBitTemplate();
       bool passType33 = wPlusBJetType33Selection_( iEvent, retType33 );
 
