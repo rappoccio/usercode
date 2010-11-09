@@ -330,8 +330,10 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         histograms1d["minPairDPhi1Type33"]  ->  Fill( dPhi1 );
         histograms1d["minPairMass0Type33"]  ->  Fill( (p4_first0+p4_second0).mass() );
         histograms1d["minPairMass1Type33"]  ->  Fill( (p4_first1+p4_second1).mass() );
-        if( retType33[string("minPairMassCut")] ) {
+        if( retType33[string("minPairMassCut0")] ) {
           histograms1d["type3TopMass0Type33"]   ->  Fill( p4_top0.mass() );
+        }
+        if( retType33[string("minPairMassCut1")] ) {
           histograms1d["type3TopMass1Type33"]   ->  Fill( p4_top1.mass() );
         }
         if( passType33 )  {
