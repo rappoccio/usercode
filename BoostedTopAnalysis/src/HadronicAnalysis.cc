@@ -10,7 +10,13 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   hadronicSelection_(iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis")),
   theDir(iDir),
   boostedTopWTagFunctor_ (iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<edm::ParameterSet>("boostedTopWTagParams") ),
-  jetPtMin_ ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<edm::ParameterSet>("dijetSelectorParams").getParameter<double>("ptMin") )
+  jetPtMin_ ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<edm::ParameterSet>("dijetSelectorParams").getParameter<double>("ptMin") ),
+  wMinMass_ ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<double>("wMinMass") ),
+  wMaxMass_ ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<double>("wMaxMass") ),
+  mu_(iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<edm::ParameterSet>("boostedTopWTagParams").getParameter<double>("muMax") ),
+  y_(iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<edm::ParameterSet>("boostedTopWTagParams").getParameter<double>("ycut") ),
+  bTagMedium_ ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<double>("bTagOPMedium") ),
+  bTagLoose_  ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<double>("bTagOPLoose") )
 {
   std::cout << "Instantiated HadronicAnalysis" << std::endl;
 
@@ -180,7 +186,8 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms2d["doubleTagMassVsPt1"] = theDir.make<TH2F> ("doubleTagMassVsPt1", "Double Tags Mass",         50,   0,  500,  50, 0,    250 );
 
   histograms1d["wTag"]         = theDir.make<TH1F>("wTag", "W Jet Mistag",    200,    0,    1000 );
-  histograms1d["bTag"]         = theDir.make<TH1F>("bTag", "B Jet Mistag",    200,    0,    1000 );
+  histograms1d["bTagMedium"]   = theDir.make<TH1F>("bTagMedium", "B Jet Mistag",    200,    0,    1000 );
+  histograms1d["bTagLoose"]    = theDir.make<TH1F>("bTagLoose", "B Jet Mistag",    200,    0,    1000 );
   histograms1d["jetTotal"]     = theDir.make<TH1F>("jetTotal", "jetTotal",    200,    0,    1000 );
   histograms1d["WjetID_mu"]    = theDir.make<TH1F>("WjetID_mu", "WjetID_mu",  100,    0,    1 );
   histograms1d["WjetID_y"]     = theDir.make<TH1F>("WjetID_y", "WjetID_y",    100,    0,    1 );
@@ -285,7 +292,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       histograms1d["jetTotal"]    ->  Fill( probe.pt() );
       pat::strbitset wRet = boostedTopWTagFunctor_.getBitTemplate();
       double theWMass = probe.mass() ;
-      bool passMass = theWMass > 50 && theWMass < 100 ;
+      bool passMass = theWMass > wMinMass_ && theWMass < wMaxMass_ ;
       bool passWCut = boostedTopWTagFunctor_( probe, wRet );
       if (passWCut) {
 	histograms1d["WjetID_mass"] -> Fill( theWMass );
@@ -299,9 +306,13 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 	histograms1d["WjetID_dR"] -> Fill( dR );
         histograms2d["WjetID_yVsMu"] -> Fill( y,mu );
       }
-      if( probe.bDiscriminator("trackCountingHighEffBJetTags") > 3.3 ) {
-        histograms1d["bTag"]    ->  Fill( probe.pt() );
+      if( probe.bDiscriminator("trackCountingHighEffBJetTags") > bTagLoose_ ) {
+        histograms1d["bTagLoose"]     ->  Fill( probe.pt() );
+        if( probe.bDiscriminator("trackCountingHighEffBJetTags") > bTagMedium_ ) {
+          histograms1d["bTagMedium"]    ->  Fill( probe.pt() );
+        }
       }
+
       // end derive mis tag rate
 
       histograms1d["eventType"]     ->  Fill(1);
@@ -396,9 +407,9 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       histograms2d["dRVsPt0"]->Fill(pretaggedJets[0]->pt(), dR0, histoWeight_);
       histograms1d["nDaughters0"]   ->  Fill( pretaggedJets[0]->numberOfDaughters() );
       histograms2d["jetMassVsMu0"]  ->  Fill( mu0, pretaggedJets[0]->mass() );
-      if( mu0 < 0.4 )
+      if( mu0 < mu_ )
         histograms1d["jetMass0_0"]  ->  Fill( pretaggedJets[0]->mass() );
-      if( pretaggedJets[0]->mass() > 50 && mu0 < 0.4 )  {
+      if( pretaggedJets[0]->mass() > wMinMass_ && mu0 < mu_ )  {
         histograms1d["y0_0"]    ->  Fill( y0 );
         histograms1d["dR0_0"]   ->  Fill( dR0 );
       }
@@ -414,9 +425,9 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       histograms2d["dRVsPt1"]->Fill(pretaggedJets[1]->pt(), dR1, histoWeight_);
       histograms1d["nDaughters1"]   ->  Fill( pretaggedJets[1]->numberOfDaughters() );
       histograms2d["jetMassVsMu1"]  ->  Fill( mu1, pretaggedJets[1]->mass() );
-      if( mu1 < 0.4 )
+      if( mu1 < mu_ )
         histograms1d["jetMass1_0"]    ->  Fill( pretaggedJets[1]->mass() );
-      if( pretaggedJets[1]->mass() > 50 && mu1 < 0.4 )  {
+      if( pretaggedJets[1]->mass() > wMinMass_ && mu1 < mu_ )  {
         histograms1d["y1_0"]    ->  Fill( y1 );
         histograms1d["dR1_0"]   ->  Fill( dR1 );
       }
@@ -577,9 +588,9 @@ void HadronicAnalysis::analyzeWJet( const edm::EventBase& iEvent )
       histograms1d["W_dR"]      ->  Fill( dR );
       histograms1d["jetPartonDr"]   ->  Fill( minDr0 );
       histograms2d["W_jetMassVsMu"] ->  Fill( mu, mass );
-      if( mu < 0.4 )
+      if( mu < mu_ )
         histograms1d["WMass_0"]     ->  Fill( mass );
-      if( mu < 0.4 && mass > 50 ) {
+      if( mu < mu_ && mass > wMinMass_ ) {
         histograms1d["W_y_0"]   ->  Fill( y );
         histograms1d["W_dR_0"]  ->  Fill( dR );
       } // mu && mass
@@ -601,9 +612,9 @@ void HadronicAnalysis::analyzeWJet( const edm::EventBase& iEvent )
       histograms1d["W_dR"]      ->  Fill( dR );
       histograms1d["jetPartonDr"]   ->  Fill( minDr1 );
       histograms2d["W_jetMassVsMu"] ->  Fill( mu, mass );
-      if( mu < 0.4 )
+      if( mu < mu_ )
         histograms1d["WMass_0"]   ->  Fill( mass );
-      if( mu < 0.4 && mass > 50 ) {
+      if( mu < mu_ && mass > wMinMass_ ) {
         histograms1d["W_y_0"]   ->  Fill( y );
         histograms1d["W_dR_0"]  ->  Fill( dR );
       } // mu and mass
