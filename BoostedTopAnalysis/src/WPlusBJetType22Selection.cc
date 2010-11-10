@@ -149,8 +149,8 @@ bool WPlusBJetType22Selection::operator()( edm::EventBase const & t, pat::strbit
               int numBJets = 0;
               //Get W mass
               double wMass0 = 0.0, wMass1 = 0.0;
-              if( tWJets.size() >= 1 )  wMass0 = tWJets.at(0)->mass();;
-              if( oWJets.size() >= 1 )  wMass1 = oWJets.at(0)->mass();;
+              if( tWJets.size() >= 1 )  wMass0 = tWJets.at(0)->mass();
+              if( oWJets.size() >= 1 )  wMass1 = oWJets.at(0)->mass();
               if( tbJets.size() >= 1 )  numBJets++;
               if( obJets.size() >= 1 )  numBJets++;
 

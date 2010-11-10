@@ -11,11 +11,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-'/store/user/srappocc/MinimumBias/ttbsmAug10_381on36x_r1/4e8cc640dce80838a57cdc6e0cf49d2e/ttbsm_381_1_1_qpg.root',
-'/store/user/srappocc/MinimumBias/ttbsmAug10_381on36x_r1/4e8cc640dce80838a57cdc6e0cf49d2e/ttbsm_381_19_1_ZCG.root',
-'/store/user/srappocc/MinimumBias/ttbsmAug10_381on36x_r1/4e8cc640dce80838a57cdc6e0cf49d2e/ttbsm_381_18_1_MDf.root',
-'/store/user/srappocc/MinimumBias/ttbsmAug10_381on36x_r1/4e8cc640dce80838a57cdc6e0cf49d2e/ttbsm_381_17_1_fkw.root'
-
+'/store/user/guofan/Jet/ttbsm_383_Oct25_147146_148058/e6b092d68d75aab417dfeee8751d8b0a/ttbsm_381_1_1_Ieu.root'
     )
 )
 ## Maximal Number of Events
@@ -37,7 +33,7 @@ process.hadronicAna = cms.EDAnalyzer('EDHadronicAnalysis',
                                              pfMetSrc = cms.InputTag('patMETsPFlow'),
                                              ptMin = cms.double(50.0)
                                              ),
-                                         trig = cms.string('HLT_Jet30U')
+                                         trig = cms.string('HLT_Jet100U_v2')
                                          )
                                      )
 
