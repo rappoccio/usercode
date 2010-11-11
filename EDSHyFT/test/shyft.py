@@ -1,3 +1,4 @@
+
 # SHyFT configuration
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
@@ -16,37 +17,17 @@ options.register ('useData',
                   VarParsing.varType.int,
                   "Run this on real data")
 
-options.register ('use35x',
-                  0,
+options.register ('hltProcess',
+                  'HLT',
                   VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "Run on samples produced with <= 35x")
-
-options.register ('use38x',
-                  0,
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "Run on samples produced with >= 38x")
-
-
-options.register ('useLooseLeptonPresel',
-                  0,
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "Select events with a very loose W+jets selector, consisting of a simple lepton count")
-
-
-options.register ('useTrigger',
-                  0,
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "Select events with the HLT_Mu9 or HLT_Mu11 triggers only")
-                  
-options.register ('muonIdIgnoredCuts',
-                  [],
-                  VarParsing.multiplicity.list,
                   VarParsing.varType.string,
-                  "Cuts to ignore for tight muon definition")
+                  "HLT process name to use.")
+
+options.register ('useMuon',
+                  1,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Use muons (1) or electrons (0)")
                   
 options.parseArguments()
 
@@ -56,33 +37,34 @@ import sys
 
 # Set to true for running on data
 useData = options.useData
-# Set to true to run on < 36x samples
-use35x = options.use35x
-# run the W+Jets selector filter
-useLooseLeptonPresel = options.useLooseLeptonPresel
-# check the trigger
-useTrigger = options.useTrigger
 
-## global tag for data
-if useData :
-    process.GlobalTag.globaltag = cms.string('GR_R_38X_V9::All')
+if options.useData == False :
+    # Make sure to NOT apply L2L3Residual to MC
+    corrections = ['L2Relative', 'L3Absolute']
+    # global tag for 384 MC
+    process.GlobalTag.globaltag = cms.string('START38_V13::All')
 else :
-    process.GlobalTag.globaltag = cms.string('START38_V9::All')
+    # Make sure to apply L2L3Residual to data
+    corrections = ['L2Relative', 'L3Absolute', 'L2L3Residual']
+    # global tag for 386 data
+    process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
 
+
+
+# Add the L1 JPT offset correction for JPT jets
+jptcorrections = ['L1JPTOffset']
+jptcorrections += corrections 
 
 # require HLT_Mu9 trigger
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-if useData == True :
-    if useTrigger :
-        process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu9", "HLT_Mu11"])
-    else :
-        process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["*"])
-else :
-    if useTrigger :
-        process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::REDIGI", HLTPaths = ["HLT_Mu9"])
-    else :
-        process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::REDIGI", HLTPaths = ["*"])
 
+if options.useMuon :
+    process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::" + options.hltProcess, HLTPaths = ["HLT_Mu9*", "HLT_Mu15*"])
+else :
+    process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::" + options.hltProcess, HLTPaths = ["HLT_EGDunnowhagoeshere*"])
+
+
+process.step1.throw = False
 
 # HB + HE noise filtering
 process.load('CommonTools/RecoAlgos/HBHENoiseFilter_cfi')
@@ -93,7 +75,7 @@ process.load("PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi")
  
 # get the 7 TeV jet corrections
 from PhysicsTools.PatAlgos.tools.jetTools import *
-switchJECSet( process, "Spring10")
+
 
 
 # require physics declared
@@ -108,24 +90,12 @@ process.scrapingVeto = cms.EDFilter("FilterOutScraping",
                                     thresh = cms.untracked.double(0.2)
                                     )
 
-# Run b-tagging and ak5 genjets sequences on 35x inputs
-from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
-if use35x :
-    if useData :
-        run36xOn35Input( process )
-    else :
-        run36xOn35xInput( process, "ak5GenJets")
-
-
 
 # switch on PAT trigger
 from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
 switchOnTrigger( process )
-
-# switch to 8e29 menu. Note this is needed to match SD production
-if useData == False and options.use38x == False :
-    process.patTriggerEvent.processName = cms.string( 'REDIGI' )
-    process.patTrigger.processName = cms.string( 'REDIGI' )
+process.patTriggerEvent.processName = cms.string( options.hltProcess )
+process.patTrigger.processName = cms.string( options.hltProcess )
 
 
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
@@ -135,10 +105,8 @@ process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                            maxd0 = cms.double(2) 
                                            )
 
-# JPT
-process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
-process.load('RecoJets.Configuration.RecoJPTJets_cff')
-
+# Now add the two PF sequences, one for the tight leptons, the other for the loose.
+# For both, do the fastjet area calculation for possible pileup subtraction correction. 
 
 from PhysicsTools.PatAlgos.tools.pfTools import *
 postfix = "PFlow"
@@ -148,42 +116,57 @@ postfixLoose = "PFlowLoose"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC= not useData, postfix=postfixLoose)
 
 
-
 # turn to false when running on data
 if useData :
-    getattr(process, "patElectrons"+postfix).embedGenMatch = False
-    getattr(process, "patMuons"+postfix).embedGenMatch = False
-    getattr(process, "patElectrons"+postfixLoose).embedGenMatch = False
-    getattr(process, "patMuons"+postfixLoose).embedGenMatch = False
     removeMCMatching(process, ['All'])
+
+
+
+# We'll be using a lot of AOD so re-run b-tagging to get the
+# tag infos which are dropped in AOD
+switchJetCollection(process,cms.InputTag('ak5CaloJets'),
+                 doJTA        = True,
+                 doBTagging   = True,
+                 jetCorrLabel = ('AK5Calo', cms.vstring(corrections)),
+                 doType1MET   = True,
+                 genJetCollection=cms.InputTag("ak5GenJets"),
+                 doJetID      = True
+                 )
+
+
+# Add the other 6,000 jet collections that someone might hypothetically
+# maybe someday think about possibly including as a cross check. 
+
 
 
 addJetCollection(process,cms.InputTag('JetPlusTrackZSPCorJetAntiKt5'),
                  'AK5', 'JPT',
                  doJTA        = True,
                  doBTagging   = True,
-                 jetCorrLabel = ('AK5','JPT'),
+                 jetCorrLabel = ('AK5JPT', cms.vstring(jptcorrections)),
                  doType1MET   = False,
                  doL1Cleaning = False,
-                 doL1Counters = False,                 
+                 doL1Counters = True,                 
                  genJetCollection = cms.InputTag("ak5GenJets"),
                  doJetID      = True,
                  jetIdLabel   = "ak5"
                  )
+
 
 # PF from RECO and not using PF2PAT
 addJetCollection(process,cms.InputTag('ak5PFJets'),
                  'AK5', 'PF',
                  doJTA        = True,
                  doBTagging   = True,
-                 jetCorrLabel = ('AK5','PF'),
+                 jetCorrLabel = ('AK5PF',corrections),
                  doType1MET   = False,
                  doL1Cleaning = False,
                  doL1Counters = False,                 
                  genJetCollection = cms.InputTag("ak5GenJets"),
-                 doJetID      = True,
+                 doJetID      = False,
                  jetIdLabel   = "ak5"
                  )
+
 
 # tcMET
 from PhysicsTools.PatAlgos.tools.metTools import *
@@ -195,13 +178,13 @@ addPfMET(process, 'PF')
 
 
 # Selection
-process.selectedPatJetsPFlow.cut = cms.string('pt > 15 & abs(eta) < 2.4')
-process.selectedPatJetsPFlowLoose.cut = cms.string('pt > 15 & abs(eta) < 2.4')
-process.selectedPatJetsAK5JPT.cut = cms.string('pt > 15 & abs(eta) < 2.4')
-process.selectedPatJetsAK5PF.cut = cms.string('pt > 15 & abs(eta) < 2.4')
+process.selectedPatJetsPFlow.cut = cms.string('pt > 20 & abs(eta) < 2.4')
+process.selectedPatJetsPFlowLoose.cut = cms.string('pt > 20 & abs(eta) < 2.4')
+process.selectedPatJetsAK5JPT.cut = cms.string('pt > 20 & abs(eta) < 2.4')
+process.selectedPatJetsAK5PF.cut = cms.string('pt > 20 & abs(eta) < 2.4')
 process.selectedPatJets.cut = cms.string('pt > 20 & abs(eta) < 2.4')
 process.patJets.tagInfoSources = cms.VInputTag(
-    cms.InputTag("secondaryVertexTagInfos")
+    cms.InputTag("secondaryVertexTagInfosAOD")
     )
 process.patJetsPFlow.tagInfoSources = cms.VInputTag(
     cms.InputTag("secondaryVertexTagInfosAOD" + postfix)
@@ -223,10 +206,6 @@ process.patMuonsPFlowLoose.isolationValues = cms.PSet()
 #process.patElectronsPFlowLoose.pfElectronSource = 'pfAllElectronsPFlowLoose'
 #process.patElectronsPFlowLoose.isoDeposits = cms.PSet()
 #process.patElectronsPFlowLoose.isolationValues = cms.PSet()
-
-
-print 'For PAT PF Muons: '
-print process.patMuonsPFlowLoose.pfMuonSource
 
 process.selectedPatMuons.cut = cms.string("pt > 3")
 process.selectedPatMuonsPFlow.cut = cms.string("pt > 3")
@@ -255,21 +234,14 @@ process.patJetsPFlowLoose.userData.userFunctions = cms.vstring( "? hasTagInfo('s
                                                       "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
 process.patJetsPFlowLoose.userData.userFunctionLabels = cms.vstring('secvtxMass')
 
-
-# remove trigger matching for PF2PAT as that is currently broken
-process.patPF2PATSequencePFlow.remove(process.patTriggerSequencePFlow)
-process.patPF2PATSequencePFlowLoose.remove(process.patTriggerSequencePFlowLoose)
-process.patPF2PATSequencePFlow.remove(process.patTriggerEventPFlow)
-process.patPF2PATSequencePFlowLoose.remove(process.patTriggerEventPFlowLoose)
 process.patTaus.isoDeposits = cms.PSet()
 
-#-- Tuning of Monte Carlo matching --------------------------------------------
-# Also match with leptons of opposite charge
-process.electronMatch.checkCharge = False
-process.muonMatch.checkCharge = False
-
-## produce ttGenEvent
-process.load("TopQuarkAnalysis.TopEventProducers.sequences.ttGenEvent_cff")
+process.patJetsPFlow.embedCaloTowers = False
+process.patJetsPFlow.embedPFCandidates = False
+process.patJetsPFlowLoose.embedCaloTowers = False
+process.patJetsPFlowLoose.embedPFCandidates = False
+process.patJetsAK5PF.embedCaloTowers = False
+process.patJetsAK5PF.embedPFCandidates = False
 
 # prune gen particles
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
@@ -318,9 +290,16 @@ if useData :
         ] );
 else : 
     readFiles.extend( [
-        '/store/mc/Spring10/TTbarJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0006/4C4A0E8D-C946-DF11-BCAC-003048D437D2.root',
-        '/store/mc/Spring10/TTbarJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0006/D87D77D2-C946-DF11-AD67-0030487D5E81.root',
-        '/store/mc/Spring10/TTbarJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0006/B47C6690-C946-DF11-8BC0-003048C692FA.root'
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/E8B2CA4D-42E7-DF11-988C-90E6BA442F16.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/E847D402-12E7-DF11-97C5-003048D4EF1D.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/6EE559BE-11E7-DF11-B575-00145E5513C1.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/DC4963A1-E0E5-DF11-807E-00D0680BF898.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/D8F33E3F-58E5-DF11-9FCC-0026B9548CB5.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/B2D39D4C-63E6-DF11-8CFA-003048CEB070.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/B28EE7AE-48E5-DF11-9F45-001F29651428.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/9C7AD216-ACE5-DF11-BE50-001517255D36.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/788BCB6C-ACE5-DF11-A13C-90E6BA442F1F.root',
+
         ] );
 
     
@@ -340,7 +319,6 @@ process.patseq = cms.Sequence(
     process.scrapingVeto*
     process.primaryVertexFilter*
     process.HBHENoiseFilter*
-    process.recoJPTJets*
     process.patDefaultSequence* 
     getattr(process,"patPF2PATSequence"+postfix)*
     getattr(process,"patPF2PATSequence"+postfixLoose)*    
@@ -357,42 +335,18 @@ else :
     process.patseq.remove( process.HBHENoiseFilter )    
 
 
-process.isolatedPatMuons = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("selectedPatMuons"),
-    cut = cms.string("(trackIso+caloIso)/pt < 0.1"),
-    filter=cms.bool(True)                                       
-)
-
-process.isolatedPatMuonsPFlow = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("selectedPatMuonsPFlow"),
-    cut = cms.string(""),
-    filter=cms.bool(True)
-)
-
 process.p1 = cms.Path(
     process.patseq
     )
 
-if not useLooseLeptonPresel :
-    process.out.SelectEvents.SelectEvents = cms.vstring('p1')
-else : 
-    process.p2 = cms.Path(
-        process.patseq *
-        process.isolatedPatMuons
-        )
-    process.p3 = cms.Path(
-        process.patseq *
-        process.isolatedPatMuonsPFlow
-        )    
-
-    process.out.SelectEvents.SelectEvents = cms.vstring('p2', 'p3')    
+process.out.SelectEvents.SelectEvents = cms.vstring('p1')
 
 
 # rename output file
 if useData :
-    process.out.fileName = cms.untracked.string('shyft_382.root')
+    process.out.fileName = cms.untracked.string('shyft_386.root')
 else :
-    process.out.fileName = cms.untracked.string('shyft_382_mc.root')
+    process.out.fileName = cms.untracked.string('shyft_386_mc.root')
 
 # reduce verbosity
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
@@ -418,7 +372,7 @@ process.out.outputCommands = [
     'drop *_cleanPat*_*_*',
     'keep *_selectedPat*_*_*',
     'keep *_patMETs*_*_*',
-#    'keep recoPFCandidates_particleFlow_*_*',
+    'keep recoPFCandidates_particleFlow_*_*',
     'keep *_offlineBeamSpot_*_*',
     'keep *_offlinePrimaryVertices_*_*',
     'keep recoTracks_generalTracks_*_*',
@@ -433,9 +387,7 @@ process.out.outputCommands = [
     'keep *_cleanPatTausTriggerMatch_*_*',
     'keep *_cleanPatJetsTriggerMatch_*_*',
     'keep *_patMETsTriggerMatch_*_*',
-    'drop *_MEtoEDMConverter_*_*',
-    'keep *_*goodCaloJets_*_*',
-    'keep *_*goodPFJets_*_*'
+    'drop *_MEtoEDMConverter_*_*'
     ]
 
 if useData :
