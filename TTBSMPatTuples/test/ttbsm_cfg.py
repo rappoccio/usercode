@@ -27,7 +27,18 @@ options.parseArguments()
 if not options.useData :
     mytrigs = ['HLT_Jet100U*']
     inputJetCorrLabel = ('AK5PF', ['L2Relative', 'L3Absolute'])
-    process.source.fileNames = ['/store/mc/Fall10/QCD_Pt_15to3000_TuneZ2_Flat_7TeV_pythia6/GEN-SIM-RECO/START38_V12-v1/0000/02AFCD3B-BECD-DF11-9F32-00215E21DD50.root']
+    process.source.fileNames = [
+#        '/store/mc/Fall10/QCD_Pt_15to3000_TuneZ2_Flat_7TeV_pythia6/GEN-SIM-RECO/START38_V12-v1/0000/02AFCD3B-BECD-DF11-9F32-00215E21DD50.root'
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/E8B2CA4D-42E7-DF11-988C-90E6BA442F16.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/E847D402-12E7-DF11-97C5-003048D4EF1D.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/6EE559BE-11E7-DF11-B575-00145E5513C1.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/DC4963A1-E0E5-DF11-807E-00D0680BF898.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/D8F33E3F-58E5-DF11-9FCC-0026B9548CB5.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/B2D39D4C-63E6-DF11-8CFA-003048CEB070.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/B28EE7AE-48E5-DF11-9F45-001F29651428.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/9C7AD216-ACE5-DF11-BE50-001517255D36.root',
+       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/788BCB6C-ACE5-DF11-A13C-90E6BA442F1F.root',
+        ]
 else :
     mytrigs = ['HLT_Jet100U*', 'HLT_Jet140U*','HLT_DiJet50U_PT50U*']    
     inputJetCorrLabel = ('AK5PF', ['L2Relative', 'L3Absolute', 'L2L3Residual'])
@@ -125,7 +136,6 @@ process.allPfJetsPFlow.rParam       = 0.8
 process.allPfJetsPFlow.doAreaFastjet = True
 process.allPfJetsPFlow.doRhoFastjet = True
 process.allPfJetsPFlow.Ghost_EtaMax = 6.0
-
 
 # PF2PAT with only charged hadrons from first PV
 postfixPUSub = "PFlowPUSub"
@@ -273,6 +283,17 @@ for ipostfix in [postfix, postfixPUSub] :
         ) :
         getattr(process,"patPF2PATSequence"+ipostfix).replace( getattr(process,"pfNoElectron"+ipostfix), getattr(process,"pfNoElectron"+ipostfix)*module )
 
+# We'll be using a lot of AOD so re-run b-tagging to get the
+# tag infos which are dropped in AOD
+switchJetCollection(process,cms.InputTag('ak5PFJets'),
+                 doJTA        = True,
+                 doBTagging   = True,
+                 jetCorrLabel = inputJetCorrLabel,
+                 doType1MET   = True,
+                 genJetCollection=cms.InputTag("ak5GenJets"),
+                 doJetID      = True
+                 )
+
 
 addJetCollection(process, 
                  cms.InputTag('caPrunedPFlow'),         # Jet collection; must be already in the event when patLayer0 sequence is executed
@@ -357,6 +378,7 @@ for jetcoll in (process.patJetsPFlow,
 #### Selections Setup #########
 ###############################
 
+process.patJets.addTagInfos = False
 
 # AK5 Jets
 #   PF
@@ -441,8 +463,8 @@ process.patseq = cms.Sequence(
     process.genJetParticles*
     process.ca8GenJets*
     getattr(process,"patPF2PATSequence"+postfix)*
-    getattr(process,"patPF2PATSequence"+postfixPUSub)
-#    process.patDefaultSequence
+    getattr(process,"patPF2PATSequence"+postfixPUSub)*
+    process.patDefaultSequence
     )
 
 if options.useData == True :
