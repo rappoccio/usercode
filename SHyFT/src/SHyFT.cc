@@ -37,6 +37,7 @@ T * gethist( TDirectory * dir, std::string const & toget ) {
 
 
 SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
+  edm::BasicAnalyzer(iConfig,iDir),
   wPlusJets(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis")),
   theDir(iDir),
   muPlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("muPlusJets")),

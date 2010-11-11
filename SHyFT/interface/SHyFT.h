@@ -1,6 +1,7 @@
 #ifndef Analysis_SHyFT_interface_SHyFT_h
 #define Analysis_SHyFT_interface_SHyFT_h
 
+#include "PhysicsTools/UtilAlgos/interface/BasicAnalyzer.h"
 #include "Analysis/SHyFT/interface/SHyFTSelector.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
@@ -33,7 +34,7 @@
 
 typedef std::vector<reco::ShallowClonePtrCandidate> ShallowCloneCollection;
 
-class SHyFT {
+class SHyFT : public edm::BasicAnalyzer {
 
   public:
 
