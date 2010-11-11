@@ -64,10 +64,22 @@ parser.add_option('--useData', metavar='B', action='store_true',
                   dest='useData',
                   help='Use data in estimates')
 
+parser.add_option('--dataFile', metavar='F', type='string', action='store',
+                  default='data_anashyft_15invpb_v3.root',
+                  dest='dataFile',
+                  help='If useData is True, this is the file from which to get the data histograms')
+
 parser.add_option('--useDataQCD', metavar='B', action='store_true',
                   default=False,
                   dest='useDataQCD',
                   help='Use data-driven QCD in estimates')
+
+
+parser.add_option('--dataQCDFile', metavar='F', type='string', action='store',
+                  default='pf_metvsiso_normalized_qcd_templates.root',
+                  dest='dataQCDFile',
+                  help='If useDataQCD is True, this is the file from which to get the data QCD histograms')
+
 
 parser.add_option('--lum', metavar='L', action='store',
                   default=15.0,
@@ -114,14 +126,14 @@ f_st_t  = TFile('SingleTop_tChannel-madgraph_shyftana_38xOn35x_'+inFileEnd+'.roo
 f_st_tW = TFile('SingleTop_tWChannel-madgraph_shyftana_38xOn35x_'+inFileEnd+'.root')
 
 #f_data   = TFile('shyftStudies_data_2sep2010.root')
-f_data = TFile('data_15invpb_anashyft_v2.root')
+f_data = TFile(options.dataFile)
 if useDataQCD :
-    if tempstr.find('pf') > -1 :
-        f_qcd_data = TFile('pf_normalized_qcd_templates.root')
-        f_qcd_data_0tag_templates = TFile('pf_0tag_scaled_qcd_templates.root')
-    elif tempstr.find('jpt') > -1 :
-        f_qcd_data = TFile('jpt_normalized_qcd_templates.root')    
-        f_qcd_data_0tag_templates = TFile('jpt_0tag_scaled_qcd_templates.root')
+    f_qcd_data = TFile(options.dataQCDFile)
+
+if  (options.dataFile.find('pf') >= 0 and options.dataQCDFile.find('pf') == -1) or (options.dataFile.find('jpt') >= 0 and options.dataQCDFile.find('jpt') == -1) :
+    print 'Inconsistent files! Data file is ' + options.dataFile + 'and QCD file is ' + options.dataQCDFile
+    quit
+    
 
 # ---------------------------------------------
 # Assumed luminosity (pb-1)
@@ -324,11 +336,11 @@ qcdDataHists = []
 if useDataQCD :
 
     qcd_0tag_data_names = [
-    'proj_Data_muEta_QCD_1_0t',
-    'proj_Data_muEta_QCD_2_0t',
-    'proj_Data_muEta_QCD_3_0t',
-    'proj_Data_muEta_QCD_4_0t',
-    'proj_Data_muEta_QCD_5_0t'
+    'proj_Data_muEta_1_0t',
+    'proj_Data_muEta_2_0t',
+    'proj_Data_muEta_3_0t',
+    'proj_Data_muEta_4_0t',
+    'proj_Data_muEta_5_0t'
 
         ]
 
@@ -343,7 +355,7 @@ if useDataQCD :
         ]
 
     for ijet in range (1, maxJets):
-        h0 = f_qcd_data_0tag_templates.Get( qcd_0tag_data_names[ijet-1]).Clone()
+        h0 = f_qcd_data.Get( qcd_0tag_data_names[ijet-1]).Clone()
         h0.SetName('QCD_B_muEta_'+ str(ijet) + 'j_0t')
         qcdDataHists.append( h0 )
         
