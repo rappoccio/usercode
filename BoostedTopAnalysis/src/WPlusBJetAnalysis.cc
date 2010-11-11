@@ -278,15 +278,22 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
     if( wPlusBJetType22Selection_.Type == Type23 ) {
       pat::strbitset retType23 = wPlusBJetType23Selection_.getBitTemplate();
       bool passType23 = wPlusBJetType23Selection_( iEvent, retType23 );
+      reco::Candidate::LorentzVector const p4_top0 = wPlusBJetType23Selection_.p4_top0();
+      reco::Candidate::LorentzVector const p4_top1 = wPlusBJetType23Selection_.p4_top1();
+      if( retType23[string("has Top2")] ) {
+        if( wPlusBJetType23Selection_.hasTightTop0() )  { 
+          histograms1d["tightTopMass0Type23"]   ->  Fill( p4_top0.mass() );
+        }
+        else  {
+          histograms1d["tightTopMass1Type23"]   ->  Fill( p4_top1.mass() );
+        } 
+      }  // end if has Top2
       if( retType23[string("hasMinPair")] ) {
-        reco::Candidate::LorentzVector const p4_top0 = wPlusBJetType23Selection_.p4_top0();
-        reco::Candidate::LorentzVector const p4_top1 = wPlusBJetType23Selection_.p4_top1();
         if( tMinDrPair.size() == 2 ) {
           double minPairMass = (tMinDrPair.at(0)->p4()+tMinDrPair.at(1)->p4()).mass();
           histograms1d["minPairMass0Type23"]      ->  Fill( minPairMass );
           if( retType23[string("minPairMassCut")] ) {
             histograms1d["type3TopMass0Type23"]   ->  Fill( p4_top0.mass() );
-            histograms1d["tightTopMass1Type23"]   ->  Fill( p4_top1.mass() );
           }
         } // end tMinDrPair
         else {
@@ -294,19 +301,18 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
           histograms1d["minPairMass1Type23"]      ->  Fill( minPairMass );
           if( retType23[string("minPairMassCut")] ) {
             histograms1d["type3TopMass1Type23"]   ->  Fill( p4_top1.mass() );
-            histograms1d["tightTopMass0Type23"]   ->  Fill( p4_top0.mass() );
           }
         } // end else
-        if( passType23 ) {
-          histograms1d["ttMassType23"]    ->  Fill( (p4_top0+p4_top1).mass() );
-          histograms1d["ttMassType23_truth"]      ->  Fill( ttTrueMass );
-          if(runOnData_)    cout<<"Woohoo, Type2+Type3, Event id, run "<<iEvent.id()<<endl;
-          double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
-          double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) );
-          histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
-          histograms1d["topPairDr"]       ->  Fill( deltaR );        
-        } // end passType23
-      }  // hasMinPair    
+      }  // hasMinPair
+      if( passType23 ) {
+        histograms1d["ttMassType23"]    ->  Fill( (p4_top0+p4_top1).mass() );
+        histograms1d["ttMassType23_truth"]      ->  Fill( ttTrueMass );
+        if(runOnData_)    cout<<"Woohoo, Type2+Type3, Event id, run "<<iEvent.id()<<endl;
+        double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
+        double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) );
+        histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
+        histograms1d["topPairDr"]       ->  Fill( deltaR );        
+      } // end passType23
     }  // end if >= 1 WJet and !>= 2 WJet
 
     if( wPlusBJetType22Selection_.Type == Type33  ) {
