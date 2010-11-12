@@ -43,14 +43,23 @@ else :
     mytrigs = ['HLT_Jet100U*', 'HLT_Jet140U*','HLT_DiJet50U_PT50U*']    
     inputJetCorrLabel = ('AK5PF', ['L2Relative', 'L3Absolute', 'L2L3Residual'])
     process.source.fileNames = [
-       '/store/data/Run2010B/Jet/AOD/PromptReco-v2/000/149/304/30B9CEA8-DDE4-DF11-B709-0030487CD718.root',
-       '/store/data/Run2010B/Jet/AOD/PromptReco-v2/000/149/294/8E477C21-F8E4-DF11-8937-0030487CD6D2.root',
-       '/store/data/Run2010B/Jet/AOD/PromptReco-v2/000/149/294/20681FD0-F8E4-DF11-9267-001617E30E2C.root',
-       '/store/data/Run2010B/Jet/AOD/PromptReco-v2/000/149/294/12EB1F94-05E5-DF11-A954-0030487A18A4.root',
-       '/store/data/Run2010B/Jet/AOD/PromptReco-v2/000/149/293/649330C7-C2E4-DF11-9ED2-003048F1182E.root',
-       '/store/data/Run2010B/Jet/AOD/PromptReco-v2/000/149/291/F8941D92-F7E4-DF11-BF83-003048F024DC.root',
-       '/store/data/Run2010B/Jet/AOD/PromptReco-v2/000/149/291/BCA59158-D4E4-DF11-9B51-001D09F252DA.root',
-       '/store/data/Run2010B/Jet/AOD/PromptReco-v2/000/149/291/B2092557-D4E4-DF11-B75C-0030487C90C2.root',        
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/BC010982-C8E9-DF11-BC86-001A92810AE6.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/BA550932-C1E9-DF11-B5E7-002618943961.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/B8DF4C2F-C1E9-DF11-97B7-002618943856.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/B8A3DB31-C1E9-DF11-9B82-001A92971BB8.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/B84D66D0-CAE9-DF11-928B-001A92810AA6.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/B67B11F1-C3E9-DF11-A05F-0018F3D0967A.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/B2F41ECD-BFE9-DF11-A93E-0030486792B8.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/B0A3D59B-BAE9-DF11-AAED-0026189438A2.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/B05DF82F-BDE9-DF11-B516-00248C55CC3C.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/A876C29F-C2E9-DF11-9DD6-0026189438A2.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/A68C5218-CEE9-DF11-B7BB-0030486792B4.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/A4CED181-C8E9-DF11-8E0F-0018F3D0960E.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/A48C8A2F-BDE9-DF11-9849-00304867BFBC.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/A43A1023-B9E9-DF11-BF1D-001A92971B3C.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/A23BA584-BEE9-DF11-8B4F-0026189438C1.root',
+        '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/9C6DE4B6-C6E9-DF11-9104-002618943977.root',
+        
         ]
 
 
@@ -92,7 +101,7 @@ if mytrigs is not None :
 else :
     process.hltSelection = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::' + options.hltProcess, HLTPaths = ['*'])    
     
-
+process.hltSelection.throw = False
 
 
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
