@@ -403,7 +403,7 @@ process.patJetsPFlow.userData.userFunctions = cms.vstring( "? hasTagInfo('second
                                                       "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
 process.patJetsPFlow.userData.userFunctionLabels = cms.vstring('secvtxMass')
 
-
+process.selectedPatJetsPFlowPUSub.cut = cms.string("pt > 50")
 process.patJetsPFlowPUSub.tagInfoSources = cms.VInputTag(
     cms.InputTag("secondaryVertexTagInfosAODPFlowPUSub")
     )
@@ -514,8 +514,8 @@ process.out.outputCommands = [
     'keep *_offlineBeamSpot_*_*',
     'keep *_offlinePrimaryVertices_*_*',
     'drop patPFParticles_*_*_*',
-    'keep recoPFJets_caPrunedPFJets*_*_*',
-    'keep recoPFJets_caTopTagPFJets*_*_*',
+    'keep recoPFJets_caPruned*_*_*',
+    'keep recoPFJets_caTopTag*_*_*',
     'keep patTriggerObjects_patTrigger*_*_*',
     'keep patTriggerFilters_patTrigger*_*_*',
     'keep patTriggerPaths_patTrigger*_*_*',
