@@ -35,5 +35,6 @@ hadronicAnalysis = cms.PSet(
     wMinMass = cms.double(60),
     wMaxMass = cms.double(100),
     bTagOPMedium = cms.double(3.3),
-    bTagOPLoose = cms.double(1.7)
+    bTagOPLoose = cms.double(1.7),
+    mistagFileName = cms.string("Mistag_Dijet.root")
 )

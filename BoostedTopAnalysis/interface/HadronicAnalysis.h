@@ -94,6 +94,11 @@ class HadronicAnalysis {
     double wMaxMass_;
     double mu_, y_;
     double bTagMedium_, bTagLoose_;
+    int eventCount_;
+    std::string mistagFileName_;
+    TFile * mistagFile_;
+    TH1 * bMistagMO_, * bMistagME_;
+    TH1 * wMistagO_, * wMistagE_;
 
     std::vector<EventSummary>  summary;
     CLHEP::RandFlat *flatDistribution_;

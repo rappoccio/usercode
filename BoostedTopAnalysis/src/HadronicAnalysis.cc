@@ -16,7 +16,9 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   mu_(iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<edm::ParameterSet>("boostedTopWTagParams").getParameter<double>("muMax") ),
   y_(iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<edm::ParameterSet>("boostedTopWTagParams").getParameter<double>("ycut") ),
   bTagMedium_ ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<double>("bTagOPMedium") ),
-  bTagLoose_  ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<double>("bTagOPLoose") )
+  bTagLoose_  ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<double>("bTagOPLoose") ),
+  eventCount_ (0),
+  mistagFileName_ ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<std::string>("mistagFileName")  )
 {
   std::cout << "Instantiated HadronicAnalysis" << std::endl;
 
@@ -186,9 +188,17 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms2d["doubleTagMassVsPt1"] = theDir.make<TH2F> ("doubleTagMassVsPt1", "Double Tags Mass",         50,   0,  500,  50, 0,    250 );
 
   histograms1d["wTag"]         = theDir.make<TH1F>("wTag", "W Jet Mistag",    200,    0,    1000 );
+  histograms1d["wTagOdd"]      = theDir.make<TH1F>("wTagOdd", "W Jet Mistag",    200,    0,    1000 );
+  histograms1d["wTagEven"]      = theDir.make<TH1F>("wTagEven", "W Jet Mistag",    200,    0,    1000 );
   histograms1d["bTagMedium"]   = theDir.make<TH1F>("bTagMedium", "B Jet Mistag",    200,    0,    1000 );
+  histograms1d["bTagMediumOdd"]= theDir.make<TH1F>("bTagMediumOdd", "B Jet Mistag",    200,    0,    1000 );
+  histograms1d["bTagMediumEven"]   = theDir.make<TH1F>("bTagMediumEven", "B Jet Mistag",    200,    0,    1000 );
   histograms1d["bTagLoose"]    = theDir.make<TH1F>("bTagLoose", "B Jet Mistag",    200,    0,    1000 );
+  histograms1d["bTagLooseOdd"] = theDir.make<TH1F>("bTagLooseOdd", "B Jet Mistag",    200,    0,    1000 );
+  histograms1d["bTagLooseEven"]= theDir.make<TH1F>("bTagLooseEven", "B Jet Mistag",    200,    0,    1000 );
   histograms1d["jetTotal"]     = theDir.make<TH1F>("jetTotal", "jetTotal",    200,    0,    1000 );
+  histograms1d["jetTotalOdd"]  = theDir.make<TH1F>("jetTotalOdd", "jetTotal",    200,    0,    1000 );
+  histograms1d["jetTotalEven"] = theDir.make<TH1F>("jetTotalEven", "jetTotal",    200,    0,    1000 );
   histograms1d["WjetID_mu"]    = theDir.make<TH1F>("WjetID_mu", "WjetID_mu",  100,    0,    1 );
   histograms1d["WjetID_y"]     = theDir.make<TH1F>("WjetID_y", "WjetID_y",    100,    0,    1 );
   histograms1d["WjetID_mass"]  = theDir.make<TH1F>("WjetID_mass", "WjetID_mass", 200,    40,    110 );
@@ -211,6 +221,25 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms2d["W_jetMassVsMu"] = theDir.make<TH2F>("W_jetMassVsMu",    "Jet Mass Vs #mu; #mu; Jet Mass (GeV/c^{2})", 
   500,  0,  1.0,  50, 0,  250 );
 
+  //Histograms for closure test
+  histograms1d["wTagPtO"]     = theDir.make<TH1F>("wTagPtO",  "W Jet PT",   200,  0,    1000 );
+  histograms1d["wTagPtPredO"] = theDir.make<TH1F>("wTagPtPredO",  "W Jet PT",   200,  0,    1000 );
+  histograms1d["wTagPtE"]     = theDir.make<TH1F>("wTagPtE",  "W Jet PT",   200,  0,    1000 );
+  histograms1d["wTagPtPredE"] = theDir.make<TH1F>("wTagPtPredE",  "W Jet PT",   200,  0,    1000 );
+  histograms1d["bTagPtO"]     = theDir.make<TH1F>("bTagPtO",  "b Jet PT",   200,  0,    1000 );
+  histograms1d["bTagPtPredO"] = theDir.make<TH1F>("bTagPtPredO",  "b Jet PT",   200,  0,    1000 );
+  histograms1d["bTagPtE"]     = theDir.make<TH1F>("bTagPtE",  "b Jet PT",   200,  0,    1000 );
+  histograms1d["bTagPtPredE"] = theDir.make<TH1F>("bTagPtPredE",  "b Jet PT",   200,  0,    1000 );
+
+  histograms1d["diWTagPtO"]       = theDir.make<TH1F>("diWTagPtO", "Double W Tag PT",   200,  0,  1000 );
+  histograms1d["diWTagPtPredO"]   = theDir.make<TH1F>("diWTagPtPredO", "Double W Tag PT",   200,  0,  1000 );
+  histograms1d["diWTagPtE"]       = theDir.make<TH1F>("diWTagPtE", "Double W Tag PT",   200,  0,  1000 );
+  histograms1d["diWTagPtPredE"]   = theDir.make<TH1F>("diWTagPtPredE", "Double W Tag PT",   200,  0,  1000 );
+  histograms1d["dibTagPtO"]       = theDir.make<TH1F>("dibTagPtO", "Double b Tag PT",   200,  0,  1000 );
+  histograms1d["dibTagPtPredO"]   = theDir.make<TH1F>("dibTagPtPredO", "Double b Tag PT",   200,  0,  1000 );
+  histograms1d["dibTagPtE"]       = theDir.make<TH1F>("dibTagPtE", "Double b Tag PT",   200,  0,  1000 );
+  histograms1d["dibTagPtPredE"]   = theDir.make<TH1F>("dibTagPtPredE", "Double b Tag PT",   200,  0,  1000 );
+
   edm::Service<edm::RandomNumberGenerator> rng;
   if ( ! rng.isAvailable()) {
     throw cms::Exception("Configuration")
@@ -220,6 +249,11 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   CLHEP::HepRandomEngine& engine = rng->getEngine();
   flatDistribution_ = new CLHEP::RandFlat(engine, 0., 1.);
 
+  mistagFile_ = TFile::Open( mistagFileName_.c_str() );
+  bMistagMO_  = (TH1*)mistagFile_->Get( "bMistagMOdd" );
+  bMistagME_  = (TH1*)mistagFile_->Get( "bMistagMEven" );
+  wMistagO_   = (TH1*)mistagFile_->Get( "wMistagOdd" );
+  wMistagE_   = (TH1*)mistagFile_->Get( "wMistagEven" );
 
 }
 
@@ -262,7 +296,9 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       double bDiscriminator1  = pretaggedJets[0]->bDiscriminator("trackCountingHighEffBJetTags");
       double bDiscriminator2  = pretaggedJets[1]->bDiscriminator("trackCountingHighEffBJetTags");
       //Classify double tagged events
-      if( bDiscriminator1 > 3.3 && bDiscriminator2 > 3.3 )  {
+      bool diBTag = false;
+      if( bDiscriminator1 > bTagMedium_ && bDiscriminator2 > bTagMedium_ )  {
+        diBTag = true;
         const pat::Jet & tag0 = (*pretaggedJets[0]);
         const pat::Jet & tag1 = (*pretaggedJets[1]);
         double mu0 = 0.0, y0 = 0.0, dR0 = 0.0;
@@ -278,22 +314,37 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
         histograms2d["doubleTagMassVsPt1"]  ->  Fill( tag1.pt(), tag1.mass() );
       }
 
+      eventCount_ ++;
+      reco::Candidate::LorentzVector p4_0( pretaggedJets[0]->p4() );
+      reco::Candidate::LorentzVector p4_1( pretaggedJets[1]->p4() );
+
+      reco::Candidate::LorentzVector p4 = p4_0 + p4_1;
 
       // Derive mis tag rate 
       // todo: simplify the next few lines  
       double x = flatDistribution_->fire();
       //cout<<"Random number is "<<x<<endl;
-      int probe_index(0);
-      if( x < 0.5 )  probe_index = 0;
-      else      probe_index = 1;
+      int probe_index(0), tag_index(0);
+      if( x < 0.5 )  { probe_index = 0; tag_index = 1; }
+      else      { probe_index = 1; tag_index = 0; }
 
       const pat::Jet & probe( *pretaggedJets[probe_index] );
+      const pat::Jet & tag( *pretaggedJets[tag_index] );
+      //Assuming same binning of all mistag TH1
+      int probeBin = wMistagO_-> FindBin( probe.pt() );
+      int tagBin   = wMistagO_-> FindBin( tag.pt() );
 
       histograms1d["jetTotal"]    ->  Fill( probe.pt() );
       pat::strbitset wRet = boostedTopWTagFunctor_.getBitTemplate();
       double theWMass = probe.mass() ;
+      double tagMass = tag.mass();
       bool passMass = theWMass > wMinMass_ && theWMass < wMaxMass_ ;
+      bool passTagMass = tagMass > wMinMass_ && tagMass < wMaxMass_;
       bool passWCut = boostedTopWTagFunctor_( probe, wRet );
+      bool passTagCut = boostedTopWTagFunctor_ ( tag, wRet );
+      bool passProbeW = passWCut && passMass;
+      bool passTagW = passTagCut && passTagMass ;
+      bool diWTag = passTagW && passProbeW ;
       if (passWCut) {
 	histograms1d["WjetID_mass"] -> Fill( theWMass );
       }
@@ -312,14 +363,64 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
           histograms1d["bTagMedium"]    ->  Fill( probe.pt() );
         }
       }
+      //Even events
+      if( eventCount_%2 == 0 )  {
+        histograms1d["jetTotalEven"]      ->  Fill( probe.pt() );
+        double probewWeight = wMistagO_ -> GetBinContent( probeBin );
+        double probebWeight = bMistagMO_ -> GetBinContent( probeBin );
+        double tagwWeight   = wMistagO_ -> GetBinContent( tagBin );
+        double tagbWeight   = bMistagMO_ -> GetBinContent( tagBin );
+        histograms1d["wTagPtPredE"]     ->  Fill( probe.pt(), probewWeight );
+        histograms1d["bTagPtPredE"]     ->  Fill( probe.pt(), probebWeight );
+        histograms1d["diWTagPtPredE"]   ->  Fill( p4.pt(), probewWeight*tagwWeight );
+        histograms1d["dibTagPtPredE"]   ->  Fill( p4.pt(), probebWeight*tagbWeight );
+        if( passWCut && passMass )  {
+          histograms1d["wTagEven"]        ->  Fill( probe.pt() );
+          histograms1d["wTagPtE"]       ->  Fill( probe.pt() );
+        }
+        if( probe.bDiscriminator("trackCountingHighEffBJetTags") > bTagLoose_ ) {
+          histograms1d["bTagLooseEven"]   ->  Fill( probe.pt() );
+          if( probe.bDiscriminator("trackCountingHighEffBJetTags") > bTagMedium_ ) {
+            histograms1d["bTagMediumEven"]    ->  Fill( probe.pt() );
+            histograms1d["bTagPtE"]         ->  Fill( probe.pt() );
+          }
+        }
+        if( diBTag )
+          histograms1d["dibTagPtE"]     ->  Fill( p4.pt() );
+        if( diWTag )
+          histograms1d["diWTagPtE"]     ->  Fill( p4.pt() );
+
+      }
+      else {  //Odd events
+        histograms1d["jetTotalOdd"]      ->  Fill( probe.pt() );
+        double probewWeight = wMistagE_ -> GetBinContent( probeBin );
+        double probebWeight = bMistagME_ -> GetBinContent( probeBin );
+        double tagwWeight   = wMistagE_ -> GetBinContent( tagBin );
+        double tagbWeight   = bMistagME_ -> GetBinContent( tagBin );
+        histograms1d["wTagPtPredO"]     ->  Fill( probe.pt(), probewWeight );
+        histograms1d["bTagPtPredO"]     ->  Fill( probe.pt(), probebWeight );
+        histograms1d["diWTagPtPredO"]   ->  Fill( p4.pt(), probewWeight*tagwWeight );
+        histograms1d["dibTagPtPredO"]   ->  Fill( p4.pt(), probebWeight*tagbWeight );
+        if( passWCut && passMass )  {
+          histograms1d["wTagOdd"]        ->  Fill( probe.pt() );
+          histograms1d["wTagPtO"]       ->  Fill( probe.pt() );
+        }
+        if( probe.bDiscriminator("trackCountingHighEffBJetTags") > bTagLoose_ ) {
+          histograms1d["bTagLooseOdd"]   ->  Fill( probe.pt() );
+          if( probe.bDiscriminator("trackCountingHighEffBJetTags") > bTagMedium_ ) {
+            histograms1d["bTagMediumOdd"]    ->  Fill( probe.pt() );
+            histograms1d["bTagPtO"]         ->  Fill( probe.pt() );
+          }
+        }
+        if( diBTag )
+          histograms1d["dibTagPtO"]     ->  Fill( p4.pt() );
+        if( diWTag )
+          histograms1d["diWTagPtO"]     ->  Fill( p4.pt() );
+      }
 
       // end derive mis tag rate
 
       histograms1d["eventType"]     ->  Fill(1);
-      reco::Candidate::LorentzVector p4_0( pretaggedJets[0]->p4() );
-      reco::Candidate::LorentzVector p4_1( pretaggedJets[1]->p4() );
-
-      reco::Candidate::LorentzVector p4 = p4_0 + p4_1;
 
       double mu0 = 0.0, y0 = 0.0, dR0 = 0.0;
       pat::subjetHelper( *pretaggedJets[0], y0, mu0, dR0);
