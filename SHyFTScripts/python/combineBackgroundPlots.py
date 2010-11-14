@@ -21,8 +21,7 @@
 #
 # ===================================================
 
-from sys import argv
-
+import sys
 
 from optparse import OptionParser
 
@@ -128,8 +127,6 @@ histdir = tempstr+'/'
 outfilestr = re.sub (r'/', '', tempstr + '_' + outlabel)
 histdirData = options.histdirData + '/'
 templatedir = options.templatedir + '/'
-
-argv = []
 
 
 from ROOT import *
@@ -478,6 +475,9 @@ table = [
     ['5 jet', '1 tag', []],
     ['5 jet', '2 tag', []]
     ]
+
+if options.noQCD:
+    sys.exit()
 
 headers = [
     'Wbx', 'Wcx', 'Wqq',
