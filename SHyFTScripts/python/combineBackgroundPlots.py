@@ -476,9 +476,6 @@ table = [
     ['5 jet', '2 tag', []]
     ]
 
-if options.noQCD:
-    sys.exit()
-
 headers = [
     'Wbx', 'Wcx', 'Wqq',
     'Zbx', 'Zcx', 'Zqq',
@@ -504,6 +501,8 @@ for histgroup in allHists :
         ihist.Write()
         itable = itable + 1        
 
+if options.noQCD:
+    sys.exit()
 
 from operator import itemgetter, attrgetter
 
