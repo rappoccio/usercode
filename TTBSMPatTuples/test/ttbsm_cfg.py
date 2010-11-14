@@ -371,15 +371,15 @@ for jetcoll in (process.patJetsPFlow,
                 process.patJetsCATopTagPUSubPF 
                 ) :
     if options.useData == False :
-        jetcoll.embedGenJetMatch = cms.bool(True)
-        jetcoll.getJetMCFlavour = cms.bool(True)
-        jetcoll.addGenPartonMatch = cms.bool(True)
+        jetcoll.embedGenJetMatch = True
+        jetcoll.getJetMCFlavour = True
+        jetcoll.addGenPartonMatch = True
     # Add CATopTag info... piggy-backing on b-tag functionality
-    jetcoll.addBTagInfo = cms.bool(True)
-    jetcoll.addTagInfos = cms.bool(True)
-    jetcoll.embedCaloTowers = cms.bool(False)
-    jetcoll.embedPFCandidates = cms.bool(False)
-    jetcoll.embedGenJetMatch = cms.bool(False)
+    jetcoll.addBTagInfo = True
+    jetcoll.addTagInfos = True
+    jetcoll.embedCaloTowers = False
+    jetcoll.embedPFCandidates = False
+#    jetcoll.embedGenJet = False
 
 
 
@@ -510,6 +510,7 @@ process.out.outputCommands = [
     'drop *_cleanPat*_*_*',
     'keep *_selectedPat*_*_*',
     'keep *_patMETs*_*_*',
+    'keep *_pfNoElectron*_*_*',
     'keep recoPFCandidates_particleFlow_*_*',
     'keep *_offlineBeamSpot_*_*',
     'keep *_offlinePrimaryVertices_*_*',
