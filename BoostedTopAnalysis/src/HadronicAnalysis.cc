@@ -272,13 +272,16 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
     histograms1d["nTracks"]->Fill( nTracks, histoWeight_ );
   }
 
+  //cout<<"Print 1"<<endl;
   pat::strbitset ret = hadronicSelection_.getBitTemplate();
   bool pass = hadronicSelection_(iEvent, ret);
+  //cout<<"Pring 2"<<endl;
 
   if ( ret[std::string("Jet Preselection")] ) {
     histograms1d["runSelected"]->Fill( iEvent.id().run() );
     std::vector<edm::Ptr<pat::Jet> > const & pretaggedJets = hadronicSelection_.pretaggedJets();
 
+    //cout<<"Print 3"<<endl;
     //Classify three jets event
     if( pretaggedJets.size() >= 3 && pretaggedJets[2]->pt() > 50 ) {
       const pat::Jet & thirdJet = (*pretaggedJets[2]);
@@ -293,9 +296,11 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       double dPhi = fabs( reco::deltaPhi<double>( pretaggedJets[0]->phi(), pretaggedJets[1]->phi() ) );
       histograms1d["jetsDPhi"]      ->  Fill( dPhi );
       //cout<<pretaggedJets.size()<<endl;
+      //cout<<"Print 4"<<endl;
       double bDiscriminator1  = pretaggedJets[0]->bDiscriminator("trackCountingHighEffBJetTags");
       double bDiscriminator2  = pretaggedJets[1]->bDiscriminator("trackCountingHighEffBJetTags");
       //Classify double tagged events
+      //cout<<"Print 5"<<endl;
       bool diBTag = false;
       if( bDiscriminator1 > bTagMedium_ && bDiscriminator2 > bTagMedium_ )  {
         diBTag = true;
@@ -314,6 +319,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
         histograms2d["doubleTagMassVsPt1"]  ->  Fill( tag1.pt(), tag1.mass() );
       }
 
+      //cout<<"Print 6"<<endl;
       eventCount_ ++;
       reco::Candidate::LorentzVector p4_0( pretaggedJets[0]->p4() );
       reco::Candidate::LorentzVector p4_1( pretaggedJets[1]->p4() );
@@ -419,7 +425,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       }
 
       // end derive mis tag rate
-
+      //cout<<"Print 7"<<endl;
       histograms1d["eventType"]     ->  Fill(1);
 
       double mu0 = 0.0, y0 = 0.0, dR0 = 0.0;
@@ -427,6 +433,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       double mu1 = 0.0, y1 = 0.0, dR1 = 0.0;
       pat::subjetHelper( *pretaggedJets[1], y1, mu1, dR1);	  
 
+      //cout<<"Print there"<<endl;
       if ( weightHist_ != 0 ) {
         int ibin = weightHist_->GetXaxis()->FindBin( p4_0.pt() );
         double iweight = weightHist_->GetBinContent(ibin);
@@ -435,16 +442,20 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 
       }
 
+      //cout<<"Print aa"<<endl;
       //Check leading jet
       pat::strbitset wtagRet = boostedTopWTagFunctor_.getBitTemplate();
       const pat::Jet & theJet = (*pretaggedJets[0]);
-
+      //cout<<"Print bb"<<endl;
       histograms1d["partonFlavor"]	->  Fill( theJet.partonFlavour() );
-      if( theJet.genParton() != 0 )
+      if( theJet.genParton() != 0 ) {
+        //cout<<"Print here"<<endl;
         histograms1d["genPartonFlavor"]	->  Fill( theJet.genParton()->pdgId() );
+      }
       else
         histograms1d["genPartonFlavor"]	->  Fill( 0 );
 
+      //cout<<"Print 8"<<endl;
       double mu=0.0, y=0.0, dR=0.0;
       pat::subjetHelper( theJet, y, mu, dR );
       double theMass = theJet.mass();

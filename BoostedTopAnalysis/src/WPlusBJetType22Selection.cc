@@ -222,7 +222,7 @@ bool WPlusBJetType22Selection::operator()( edm::EventBase const & t, pat::strbit
     } // nJets >= 4 
   }  // pass trigger
 
-  return (bool)ret;
+  return ret[string("has Tight Top")] ;
 
 
 }

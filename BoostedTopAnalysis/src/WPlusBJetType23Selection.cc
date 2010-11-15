@@ -60,6 +60,8 @@ bool WPlusBJetType23Selection::operator()( edm::EventBase const & t, pat::strbit
   ret.set(false);
   tightTop0_ = false;
   tightTop1_ = false;
+  type3Top0_ = false;
+  type3Top1_ = false;
   pfJets_.clear();
 
   p4_top0_ = reco::Candidate::LorentzVector(0,0,0,0);
@@ -172,10 +174,11 @@ bool WPlusBJetType23Selection::operator()( edm::EventBase const & t, pat::strbit
         if( !hasW0 )  {
           bool hasMinPair = (tMinDrPair.size() == 2);
           if( ignoreCut("hasMinPair") || hasMinPair ) {
+            passCut( ret, "hasMinPair" );
+            type3Top0_ = true;
             double minPairMass = (tMinDrPair.at(0)->p4() + tMinDrPair.at(1)->p4()).mass();
             p4_top0_  = tbJets.at(0)->p4() + tMinDrPair.at(0)->p4() + tMinDrPair.at(1)->p4();
             double topMass0 = p4_top0_.mass();
-            passCut( ret, "hasMinPair" );
             bool minMassCut = ( minPairMass > wMassMin_ && minPairMass < wMassMax_ );
             if( ignoreCut("minPairMassCut") || minMassCut ) {
               passCut( ret, "minPairMassCut" );
@@ -189,10 +192,11 @@ bool WPlusBJetType23Selection::operator()( edm::EventBase const & t, pat::strbit
         if( !hasW1 )  {
           bool hasMinPair = (oMinDrPair.size() == 2);
           if( ignoreCut("hasMinPair") || hasMinPair ) {
+            passCut( ret, "hasMinPair" );
+            type3Top1_  = true;
             double minPairMass = (oMinDrPair.at(0)->p4() + oMinDrPair.at(1)->p4()).mass();
             p4_top1_  = obJets.at(0)->p4() + oMinDrPair.at(0)->p4() + oMinDrPair.at(1)->p4();
             double topMass1 = p4_top1_.mass();
-            passCut( ret, "hasMinPair" );
             bool minMassCut = ( minPairMass > wMassMin_ && minPairMass < wMassMax_ );
             if( ignoreCut("minPairMassCut") || minMassCut ) {
               passCut( ret, "minPairMassCut" );
