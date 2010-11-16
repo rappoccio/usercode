@@ -29,15 +29,16 @@ if not options.useData :
     inputJetCorrLabel = ('AK5PF', ['L2Relative', 'L3Absolute'])
     process.source.fileNames = [
 #        '/store/mc/Fall10/QCD_Pt_15to3000_TuneZ2_Flat_7TeV_pythia6/GEN-SIM-RECO/START38_V12-v1/0000/02AFCD3B-BECD-DF11-9F32-00215E21DD50.root'
-       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/E8B2CA4D-42E7-DF11-988C-90E6BA442F16.root',
-       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/E847D402-12E7-DF11-97C5-003048D4EF1D.root',
-       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/6EE559BE-11E7-DF11-B575-00145E5513C1.root',
-       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/DC4963A1-E0E5-DF11-807E-00D0680BF898.root',
-       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/D8F33E3F-58E5-DF11-9FCC-0026B9548CB5.root',
-       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/B2D39D4C-63E6-DF11-8CFA-003048CEB070.root',
-       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/B28EE7AE-48E5-DF11-9F45-001F29651428.root',
-       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/9C7AD216-ACE5-DF11-BE50-001517255D36.root',
-       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/788BCB6C-ACE5-DF11-A13C-90E6BA442F1F.root',
+       #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/E8B2CA4D-42E7-DF11-988C-90E6BA442F16.root',
+       #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/E847D402-12E7-DF11-97C5-003048D4EF1D.root',
+       #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/6EE559BE-11E7-DF11-B575-00145E5513C1.root',
+       #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/DC4963A1-E0E5-DF11-807E-00D0680BF898.root',
+       #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/D8F33E3F-58E5-DF11-9FCC-0026B9548CB5.root',
+       #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/B2D39D4C-63E6-DF11-8CFA-003048CEB070.root',
+       #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/B28EE7AE-48E5-DF11-9F45-001F29651428.root',
+       #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/9C7AD216-ACE5-DF11-BE50-001517255D36.root',
+       #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/788BCB6C-ACE5-DF11-A13C-90E6BA442F1F.root',
+       'dcap:///pnfs/cms/WAX/11/store/mc/Fall10/QCD_Pt_15to3000_TuneZ2_Flat_7TeV_pythia6/GEN-SIM-RECO/START38_V12-v1/0005/F24E17D7-F3CD-DF11-89A4-00215E221938.root'
         ]
 else :
     mytrigs = ['HLT_Jet100U*', 'HLT_Jet140U*','HLT_DiJet50U_PT50U*']    
@@ -190,6 +191,8 @@ process.caPrunedPFlow = cms.EDProducer(
     jetCollInstanceName=cms.string("subjets")
     )
 
+process.caPrunedPFlow.nSubjets = cms.int32(2)
+
 # Pruned PF Jets, pileup removed
 process.caPrunedPFlowPUSub = cms.EDProducer(
     "SubJetProducer",
@@ -206,6 +209,7 @@ process.caPrunedPFlowPUSub = cms.EDProducer(
     jetCollInstanceName=cms.string("subjets")
     )
 
+process.caPrunedPFlowPUSub.nSubjets = cms.int32(2)
 
 ###############################
 #### CATopTag Setup ###########
@@ -495,7 +499,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 
 
 # process all the events
-process.maxEvents.input = 1000
+process.maxEvents.input = 100
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 
@@ -513,7 +517,7 @@ process.out.outputCommands = [
     'keep *_pfNoElectron*_*_*',
     'keep recoPFCandidates_particleFlow_*_*',
     'keep *_offlineBeamSpot_*_*',
-    'keep *_offlinePrimaryVertices_*_*',
+    'keep *_offlinePrimaryVertices*_*_*',
     'drop patPFParticles_*_*_*',
     'keep recoPFJets_caPruned*_*_*',
     'keep recoPFJets_caTopTag*_*_*',
@@ -527,7 +531,10 @@ process.out.outputCommands = [
     'keep *_cleanPatTausTriggerMatch*_*_*',
     'keep *_cleanPatJetsTriggerMatch*_*_*',
     'keep *_patMETsTriggerMatch*_*_*',
-    'keep double_*PFlow*_*_*'
+    'keep double_*PFlow*_*_*',
+    'keep *_TriggerResults_*_*',
+    'keep *_hltTriggerSummaryAOD_*_*',
+    'keep *_ak5GenJets_*_*'
     ]
 
 if options.useData :
