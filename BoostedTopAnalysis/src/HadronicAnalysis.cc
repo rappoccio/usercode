@@ -341,17 +341,22 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       int tagBin   = wMistagO_-> FindBin( tag.pt() );
 
       histograms1d["jetTotal"]    ->  Fill( probe.pt() );
-      pat::strbitset wRet = boostedTopWTagFunctor_.getBitTemplate();
+      pat::strbitset wRet0 = boostedTopWTagFunctor_.getBitTemplate();
+      pat::strbitset wRet1 = boostedTopWTagFunctor_.getBitTemplate();
       double theWMass = probe.mass() ;
       double tagMass = tag.mass();
-      bool passMass = theWMass > wMinMass_ && theWMass < wMaxMass_ ;
-      bool passTagMass = tagMass > wMinMass_ && tagMass < wMaxMass_;
-      bool passWCut = boostedTopWTagFunctor_( probe, wRet );
-      bool passTagCut = boostedTopWTagFunctor_ ( tag, wRet );
+      bool passMass = ( theWMass > wMinMass_ && theWMass < wMaxMass_ );
+      bool passTagMass = ( tagMass > wMinMass_ && tagMass < wMaxMass_ );
+      bool passWCut = boostedTopWTagFunctor_( probe, wRet0 );
+      bool passTagCut = boostedTopWTagFunctor_ ( tag, wRet1 );
       bool passProbeW = passWCut && passMass;
       bool passTagW = passTagCut && passTagMass ;
       bool diWTag = passTagW && passProbeW ;
       if (passWCut) {
+        //cout<<theWMass<<endl;
+        //double mu(0), y(0),dR(0);
+        //pat::subjetHelper( probe, y, mu, dR );
+        //cout<<mu<<" "<<y<<endl;
 	histograms1d["WjetID_mass"] -> Fill( theWMass );
       }
       if (passWCut && passMass) {

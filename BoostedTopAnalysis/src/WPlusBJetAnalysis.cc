@@ -188,7 +188,8 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
     std::vector<std::string>  prefix;
     prefix.push_back( "lead" );  prefix.push_back("sec"); prefix.push_back("third"); 
     prefix.push_back("fourth");  prefix.push_back("fifth"); prefix.push_back("sixth");
-    for( size_t i=0; i < pfJets.size(); i++ ) {
+    size_t nMax = pfJets.size() > 6 ? 6 : pfJets.size() ;
+    for( size_t i=0; i < nMax; i++ ) {
       std::string ptTemp = prefix.at(i) + "JetPt_MC";
       std::string etaTemp = prefix.at(i) + "JetEta_MC";
       histograms1d[ ptTemp.c_str() ]        ->  Fill( pfJets.at(i)->pt() );

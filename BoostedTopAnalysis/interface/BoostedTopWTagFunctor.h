@@ -52,13 +52,15 @@ class BoostedTopWTagFunctor : public Selector<pat::Jet> {
 	   set("ycut",		ycut );
 	   set("numOfDaughters",  (int) numOfDaughters );
 
-	   //cout<<cut("jetPtMin",  double())<<" "<<cut("jetEtaMax",  double() )<<" "
-	   //<<cut("mu", double() )<<" "<<cut("ycut", double() ) <<" "<<cut("numOfDaughters", int() ) <<endl;
+	   //std::cout<<cut("jetPtMin",  double())<<" "<<cut("jetEtaMax",  double() )<<" "
+	   //<<cut("mu", double() )<<" "<<cut("ycut", double() ) <<" "<<cut("numOfDaughters", int() ) <<std::endl;
 	   
 	}
 
      bool operator() ( const pat::Jet & jet , pat::strbitset & ret )
      {
+       //Clear cache
+       ret.set(false);
        int numOfDaughters 	= jet.numberOfDaughters();
        double pt		= jet.pt();
        double eta		= jet.eta();
