@@ -38,6 +38,14 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   histograms1d["looseTopMass1Type22"]    = theDir.make<TH1F>("looseTopMass1Type22",   "Loose Top Mass; Mass (GeV/c^{2})",   100,  0,  500 );
   histograms1d["probeWMass"]             = theDir.make<TH1F>("probeWMass",    "W Jet Mass",   40,   0,  200 );
   histograms1d["probeTopMass"]           = theDir.make<TH1F>("probeTopMass",  "Top Mass",   100,    0,  500 );
+  histograms1d["sideBandWMass0"]         = theDir.make<TH1F>("sideBandWMass0", "W Jet Mass",   40,   0,  200 );
+  histograms1d["sideBandTopMass0"]       = theDir.make<TH1F>("sideBandTopMass0", "Top Mass",   100,    0,  500 );
+  histograms1d["sideBandWMass1"]         = theDir.make<TH1F>("sideBandWMass1", "W Jet Mass",   40,   0,  200 );
+  histograms1d["sideBandTopMass1"]       = theDir.make<TH1F>("sideBandTopMass1", "Top Mass",   100,    0,  500 );
+  histograms1d["sideBandWMass2"]         = theDir.make<TH1F>("sideBandWMass2", "W Jet Mass",   40,   0,  200 );
+  histograms1d["sideBandWMass3"]         = theDir.make<TH1F>("sideBandWMass3", "W Jet Mass",   40,   0,  200 );
+  histograms1d["sideBandTopMass2"]       = theDir.make<TH1F>("sideBandTopMass2", "Top Mass",   100,    0,  500 );
+  histograms1d["sideBandTopMass3"]       = theDir.make<TH1F>("sideBandTopMass3", "Top Mass",   100,    0,  500 );
 
   histograms1d["tightTopMass0Type23"]    = theDir.make<TH1F>("tightTopMass0Type23",   "Tight Top Mass; Mass (GeV/c^{2})",   100,  0,  500 );
   histograms1d["tightTopMass1Type23"]    = theDir.make<TH1F>("tightTopMass1Type23",   "Tight Top Mass; Mass (GeV/c^{2})",   100,  0,  500 );
@@ -299,24 +307,6 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
       histograms1d["nTightTopType22"]   ->  Fill( numTightTop );
       histograms1d["nLooseTopType22"]   ->  Fill( numLooseTop );
 
-      //Tight tag one hemisphere and probe the other
-      if( wPlusBJetType22Selection_.hasTightTop0() && retType22[string("TopMassCut0")] )  {
-        for(size_t i=0; i<oWJets.size(); i++ )  {
-          histograms1d["probeWMass"]    ->  Fill( oWJets.at(i)->mass() );
-        }
-        if( retType22[string("has Top1")] ) {
-          histograms1d["probeTopMass"]  ->  Fill( p4_top1.mass() );
-        }
-      }  else if( wPlusBJetType22Selection_.hasTightTop1() && retType22[string("TopMassCut1")] )  {
-        for(size_t i=0; i<tWJets.size(); i++ )  {
-          histograms1d["probeWMass"]    ->  Fill( tWJets.at(i)->mass() );
-        }
-        if( retType22[string("has Top0")] ) {
-          histograms1d["probeTopMass"]  ->  Fill( p4_top0.mass() );
-        }
-      }  // end else if
-
-
       if( passType22 ) {
         histograms1d["ttMassType22"]    ->  Fill( (p4_top0+p4_top1).mass() );
         histograms1d["ttMassType22_truth"]    ->  Fill( ttTrueMass );
@@ -328,6 +318,91 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
       }
     } // end if ret hasTwoTops
 
+    //Tight tag one hemisphere and probe the other
+    if( wPlusBJetType22Selection_.hasTightTop0() && retType22[string("TopMassCut0")] )  {
+      reco::Candidate::LorentzVector const p4_top1 = wPlusBJetType22Selection_.p4_top1();
+
+      for(size_t i=0; i<oWJets.size(); i++ )  {
+        histograms1d["probeWMass"]    ->  Fill( oWJets.at(i)->mass() );
+      }
+      if( retType22[string("has Top1")] ) {
+        histograms1d["probeTopMass"]  ->  Fill( p4_top1.mass() );
+      }
+    }  else if( wPlusBJetType22Selection_.hasTightTop1() && retType22[string("TopMassCut1")] )  {
+      reco::Candidate::LorentzVector const p4_top0 = wPlusBJetType22Selection_.p4_top0();
+      for(size_t i=0; i<tWJets.size(); i++ )  {
+        histograms1d["probeWMass"]    ->  Fill( tWJets.at(i)->mass() );
+      }
+      if( retType22[string("has Top0")] ) {
+        histograms1d["probeTopMass"]  ->  Fill( p4_top0.mass() );
+      }
+    }  // end else if
+
+    //De-select top events and get the sideband distributions
+    if( retType22[string("has Top0")] )  {
+      reco::Candidate::LorentzVector const p4_top1 = wPlusBJetType22Selection_.p4_top1();
+      reco::Candidate::LorentzVector const p4_top0 = wPlusBJetType22Selection_.p4_top0();
+      if( p4_top0.mass() < topMassMin_ )  {
+        for( size_t i=0; i<oWJets.size(); i++ )  {
+          histograms1d["sideBandWMass0"]   ->  Fill( oWJets.at(i)->mass() );
+          if( wPlusBJetType22Selection_.hasTightTop0() )  {
+            histograms1d["sideBandWMass1"]  ->  Fill( oWJets.at(i)->mass() );
+          }
+        }
+        if( retType22[string("has Top1")] ) {
+          histograms1d["sideBandTopMass0"] ->  Fill( p4_top1.mass() );
+          if( wPlusBJetType22Selection_.hasTightTop0() )  {
+            histograms1d["sideBandTopMass1"] ->  Fill( p4_top1.mass() );
+          }
+        }
+      }  // top0 mass
+      if( p4_top0.mass() > topMassMax_ )  {
+        for( size_t i=0; i<oWJets.size(); i++ )  {  
+          histograms1d["sideBandWMass2"]   ->  Fill( oWJets.at(i)->mass() );
+          if( wPlusBJetType22Selection_.hasTightTop0() )  {
+            histograms1d["sideBandWMass3"]  ->  Fill( oWJets.at(i)->mass() );
+          }
+        }
+        if( retType22[string("has Top1")] ) {
+          histograms1d["sideBandTopMass2"] ->  Fill( p4_top1.mass() );
+          if( wPlusBJetType22Selection_.hasTightTop0() )  {
+            histograms1d["sideBandTopMass3"] ->  Fill( p4_top1.mass() );
+          }
+        }
+      }  // top0 mass
+    } // end if tight top0
+    else if( retType22[string("has Top1")] ) {
+      reco::Candidate::LorentzVector const p4_top1 = wPlusBJetType22Selection_.p4_top1();
+      reco::Candidate::LorentzVector const p4_top0 = wPlusBJetType22Selection_.p4_top0();
+      if( p4_top1.mass() < topMassMin_ ) {
+        for(size_t i=0; i<tWJets.size(); i++ )  {
+          histograms1d["sideBandWMass0"]   ->  Fill( tWJets.at(i)->mass() );
+          if(  wPlusBJetType22Selection_.hasTightTop1() ) {
+            histograms1d["sideBandWMass1"]  ->  Fill( tWJets.at(i)->mass() );
+          }
+        }
+        if( retType22[string("has Top0")] ) {
+          histograms1d["sideBandTopMass0"] ->  Fill( p4_top0.mass() );
+          if( wPlusBJetType22Selection_.hasTightTop1() ) {
+            histograms1d["sideBandTopMass1"] ->  Fill( p4_top0.mass() );
+          }
+        }
+      }  // end if top1 mass
+      if( p4_top1.mass() > topMassMax_ ) {
+        for(size_t i=0; i<tWJets.size(); i++ )  {
+          histograms1d["sideBandWMass2"]   ->  Fill( tWJets.at(i)->mass() );
+          if(  wPlusBJetType22Selection_.hasTightTop1() ) {
+            histograms1d["sideBandWMass3"]  ->  Fill( tWJets.at(i)->mass() );
+          }
+        }
+        if( retType22[string("has Top0")] ) {
+          histograms1d["sideBandTopMass2"] ->  Fill( p4_top0.mass() );
+          if( wPlusBJetType22Selection_.hasTightTop1() ) {
+            histograms1d["sideBandTopMass3"] ->  Fill( p4_top0.mass() );
+          }
+        }
+      }  // end if top1 mass
+    } // end if tight top1
 
     if( wPlusBJetType22Selection_.Type == Type23 ) {
       pat::strbitset retType23 = wPlusBJetType23Selection_.getBitTemplate();
