@@ -207,18 +207,29 @@ process.patMuonsPFlowLoose.isolationValues = cms.PSet()
 #process.patElectronsPFlowLoose.isoDeposits = cms.PSet()
 #process.patElectronsPFlowLoose.isolationValues = cms.PSet()
 
-process.selectedPatMuons.cut = cms.string("pt > 3")
-process.selectedPatMuonsPFlow.cut = cms.string("pt > 3")
-process.selectedPatMuonsPFlowLoose.cut = cms.string("pt > 3")
+process.selectedPatMuons.cut = cms.string("pt > 10")
+process.selectedPatMuonsPFlow.cut = cms.string("pt > 10")
+process.selectedPatMuonsPFlowLoose.cut = cms.string("pt > 10")
 process.patMuons.usePV = False
 process.patMuonsPFlow.usePV = False
 process.patMuonsPFlowLoose.usePV = False
-process.selectedPatElectrons.cut = cms.string("pt > 3")
-process.selectedPatElectronsPFlow.cut = cms.string("pt > 3")
-process.selectedPatElectronsPFlowLoose.cut = cms.string("pt > 3")
+
+process.patMuons.embedTrack = True
+process.patMuonsPFlow.embedTrack = True
+process.patMuonsPFlowLoose.embedTrack = True
+
+process.selectedPatElectrons.cut = cms.string("pt > 10")
+process.selectedPatElectronsPFlow.cut = cms.string("pt > 10")
+process.selectedPatElectronsPFlowLoose.cut = cms.string("pt > 10")
 process.patElectrons.usePV = False
 process.patElectronsPFlow.usePV = False
 process.patElectronsPFlowLoose.usePV = False
+
+process.patElectrons.embedTrack = True
+process.patElectronsPFlow.embedTrack = True
+process.patElectronsPFlowLoose.embedTrack = True
+
+
 
 process.patJets.userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
                                                       "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
@@ -234,14 +245,29 @@ process.patJetsPFlowLoose.userData.userFunctions = cms.vstring( "? hasTagInfo('s
                                                       "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
 process.patJetsPFlowLoose.userData.userFunctionLabels = cms.vstring('secvtxMass')
 
+
+process.patJetsAK5PF.userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
+                                                      "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
+process.patJetsAK5PF.userData.userFunctionLabels = cms.vstring('secvtxMass')
+
+process.patJetsAK5JPT.userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
+                                                      "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
+process.patJetsAK5JPT.userData.userFunctionLabels = cms.vstring('secvtxMass')
+
+
 process.patTaus.isoDeposits = cms.PSet()
 
+process.patJets.embedPFCandidates = False
+process.patJets.embedCaloTowers = False
 process.patJetsPFlow.embedCaloTowers = False
 process.patJetsPFlow.embedPFCandidates = False
 process.patJetsPFlowLoose.embedCaloTowers = False
 process.patJetsPFlowLoose.embedPFCandidates = False
 process.patJetsAK5PF.embedCaloTowers = False
 process.patJetsAK5PF.embedPFCandidates = False
+process.patJetsAK5JPT.embedCaloTowers = False
+process.patJetsAK5JPT.embedPFCandidates = False
+
 
 # prune gen particles
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
@@ -352,7 +378,7 @@ else :
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
 # process all the events
-process.maxEvents.input = 100
+process.maxEvents.input = 1000
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 
@@ -367,30 +393,29 @@ process.out.outputCommands = [
     'keep GenEventInfoProduct_generator_*_*',
     'keep *_flavorHistoryFilter_*_*',
     'keep *_prunedGenParticles_*_*',
-    'keep *_decaySubset_*_*',
-    'keep *_initSubset_*_*',
+#    'keep *_decaySubset_*_*',
+#    'keep *_initSubset_*_*',
     'drop *_cleanPat*_*_*',
     'keep *_selectedPat*_*_*',
     'keep *_patMETs*_*_*',
-    'keep recoPFCandidates_particleFlow_*_*',
+#    'keep recoPFCandidates_particleFlow_*_*',
     'keep *_offlineBeamSpot_*_*',
     'keep *_offlinePrimaryVertices_*_*',
-    'keep recoTracks_generalTracks_*_*',
+#    'keep recoTracks_generalTracks_*_*',
     'drop patPFParticles_*_*_*',
-    'keep patTriggerObjects_patTrigger_*_*',
-    'keep patTriggerFilters_patTrigger_*_*',
+#    'keep patTriggerObjects_patTrigger_*_*',
+#    'keep patTriggerFilters_patTrigger_*_*',
     'keep patTriggerPaths_patTrigger_*_*',
     'keep patTriggerEvent_patTriggerEvent_*_*',
-    'keep *_cleanPatPhotonsTriggerMatch_*_*',
-    'keep *_cleanPatElectronsTriggerMatch_*_*',
-    'keep *_cleanPatMuonsTriggerMatch_*_*',
-    'keep *_cleanPatTausTriggerMatch_*_*',
-    'keep *_cleanPatJetsTriggerMatch_*_*',
-    'keep *_patMETsTriggerMatch_*_*',
+#    'keep *_cleanPatPhotonsTriggerMatch_*_*',
+#    'keep *_cleanPatElectronsTriggerMatch_*_*',
+#    'keep *_cleanPatMuonsTriggerMatch_*_*',
+#    'keep *_cleanPatTausTriggerMatch_*_*',
+#    'keep *_cleanPatJetsTriggerMatch_*_*',
+#    'keep *_patMETsTriggerMatch_*_*',
     'drop *_MEtoEDMConverter_*_*'
     ]
 
 if useData :
-    process.out.outputCommands.append( 'keep *_towerMaker_*_*' )
     process.out.outputCommands.append( 'keep LumiSummary_lumiProducer_*_*' )
-    
+#    process.out.outputCommands.append( 'keep *_towerMaker_*_*' )
