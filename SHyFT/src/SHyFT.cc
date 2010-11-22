@@ -476,7 +476,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
                            const std::vector<reco::ShallowClonePtrCandidate>& muons,
                            const std::vector<reco::ShallowClonePtrCandidate>& electrons)
 {
-
   allNumTags_ = 0;
   allNumJets_ = (int) jets.size();
  
@@ -671,20 +670,30 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	if ( cDiscrCut_ > 0.0 && jetFlavor == 4 ) discCut = cDiscrCut_;
 	if ( lDiscrCut_ > 0.0 && jetFlavor!=5 && jetFlavor != 4 ) discCut = lDiscrCut_;	
       }
-      vertexMasses.push_back( svTagInfos->secondaryVertex(0).p4().mass() );
 
+      // copy ( jet->userDataNames().begin(), jet->userDataNames().end(), std::ostream_iterator<std::string>(std::cout, "\n"));
 
+      // if ( jet->hasUserData("secvtxMass") )
+	vertexMasses.push_back( jet->userFloat("secvtxMass") );
+      // else {
+      // 	std::cout << "Yuck... you forgot to add the userData." << std::endl;
+      // 	vertexMasses.push_back( svTagInfos->secondaryVertex(0).p4().mass() );
+      // }
+      
+      
       if( jet->bDiscriminator(btaggerString_) < discCut || !keepGoing ) continue;
       ++allNumTags_;
-
+      
       // Take the template info from the first tag (ordered by jet pt)      
       if ( firstTag ) {
-
-	if ( jet->hasUserData("secvtxMass") )
+	
+	// if ( jet->hasUserData("secvtxMass") )
 	  vertexMass = jet->userFloat("secvtxMass");
-	else 
-	  vertexMass = svTagInfos->secondaryVertex(0).p4().mass();
-        
+	// else {
+	//   std::cout << "Yuck... you forgot to add the userData." << std::endl;
+	//   vertexMass = svTagInfos->secondaryVertex(0).p4().mass();
+	// }
+	
         firstTag = false;
       }// end if first tag
     }// end loop over jets
