@@ -64,6 +64,7 @@ class WPlusBJetAnalysis{
     double        bTagOPL_;
     long          eventCount;
     CLHEP::RandFlat *flatDistribution_;
+    bool          debug_;
 
 };
 

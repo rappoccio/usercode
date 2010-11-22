@@ -19,8 +19,10 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   bTagOPM_       ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("bTagOPMedium") ),
   bTagOPL_      ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("bTagOPLoose") ),
   runOnTTbar_   ( iConfig.getParameter<bool>("runOnTTbar") ),
+  debug_        ( iConfig.getParameter<bool>("debugOn") ),
   eventCount    (0)
 {
+
   cout<< "Instantiate WPlusBJetAnalysis" << endl;
   histograms1d["nJet"]  = theDir.make<TH1F>("nJet",   "Number of Jets",     20,   0,    20);
   histograms1d["jetPt"] = theDir.make<TH1F>("jetPt",  "Jet Pt; Jet Pt (GeV/c^{2})",   200,    0,    1000 );
@@ -37,7 +39,10 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   histograms1d["tightTopMass1Type22"]    = theDir.make<TH1F>("tightTopMass1Type22",   "Tight Top Mass; Mass (GeV/c^{2})",   100,  0,  500 );
   histograms1d["looseTopMass1Type22"]    = theDir.make<TH1F>("looseTopMass1Type22",   "Loose Top Mass; Mass (GeV/c^{2})",   100,  0,  500 );
   histograms1d["probeWMass"]             = theDir.make<TH1F>("probeWMass",    "W Jet Mass",   40,   0,  200 );
+  histograms1d["probeWMass1"]             = theDir.make<TH1F>("probeWMass1",    "W Jet Mass",   40,   0,  200 );
+  histograms1d["probeWMass2"]             = theDir.make<TH1F>("probeWMass2",    "W Jet Mass",   40,   0,  200 );
   histograms1d["probeTopMass"]           = theDir.make<TH1F>("probeTopMass",  "Top Mass",   100,    0,  500 );
+  histograms1d["probeTopMass1"]           = theDir.make<TH1F>("probeTopMass1",  "Top Mass",   100,    0,  500 );
   histograms1d["sideBandWMass0"]         = theDir.make<TH1F>("sideBandWMass0", "W Jet Mass",   40,   0,  200 );
   histograms1d["sideBandTopMass0"]       = theDir.make<TH1F>("sideBandTopMass0", "Top Mass",   100,    0,  500 );
   histograms1d["sideBandWMass1"]         = theDir.make<TH1F>("sideBandWMass1", "W Jet Mass",   40,   0,  200 );
@@ -171,6 +176,7 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
 
 void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
 {
+  if( debug_ )    cout<<"Start Analyzer"<<endl;
   //cout<<"Point 1"<<endl;
   //If run on ttbar MC, only analyze all hadronic events
   if( runOnTTbar_ ) {
@@ -187,6 +193,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
   double ttTrueMass = TTMass( iEvent );
   histograms1d["ttMass_truth"]        ->  Fill( ttTrueMass );
 
+  if( debug_ )    cout<<"Start Type22 selection"<<endl;
   pat::strbitset retType22 = wPlusBJetType22Selection_.getBitTemplate();
   bool passType22 = wPlusBJetType22Selection_( iEvent, retType22 );
 
@@ -205,6 +212,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
     }
   } // end if tt > 700
 
+  if( debug_ )    cout<<"Start Fourth Jet Pt"<<endl;
   //baseline selection
   if( retType22[string("Fourth Jet Pt")] ) {
     std::vector<edm::Ptr<pat::Jet> >  const &  pfJets = wPlusBJetType22Selection_.pfJets();
@@ -318,26 +326,46 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
       }
     } // end if ret hasTwoTops
 
+    if( debug_ )    cout<<"Start Tag Tight and Probe"<<endl;
     //Tight tag one hemisphere and probe the other
     if( wPlusBJetType22Selection_.hasTightTop0() && retType22[string("TopMassCut0")] )  {
       reco::Candidate::LorentzVector const p4_top1 = wPlusBJetType22Selection_.p4_top1();
-
+      
+      //cout<<"aaa"<<endl;
       for(size_t i=0; i<oWJets.size(); i++ )  {
+        //cout<<"bbb"<<endl;
         histograms1d["probeWMass"]    ->  Fill( oWJets.at(i)->mass() );
+        if( obJets.size() >= 1 )  {
+          histograms1d["probeWMass1"]   ->  Fill( oWJets.at(i)->mass() );
+        }
       }
-      if( retType22[string("has Top1")] ) {
+      //cout<<"ccc"<<endl;
+      if( retType22[string("has Top1")] ) { 
+        //cout<<"111"<<endl;
         histograms1d["probeTopMass"]  ->  Fill( p4_top1.mass() );
+        if( obJets.size() >= 1 )  {
+          //cout<<"222"<<endl;
+          histograms1d["probeTopMass1"] ->  Fill( p4_top1.mass() );
+        }
       }
+      //cout<<"ddd"<<endl;
     }  else if( wPlusBJetType22Selection_.hasTightTop1() && retType22[string("TopMassCut1")] )  {
       reco::Candidate::LorentzVector const p4_top0 = wPlusBJetType22Selection_.p4_top0();
       for(size_t i=0; i<tWJets.size(); i++ )  {
         histograms1d["probeWMass"]    ->  Fill( tWJets.at(i)->mass() );
+        if( tbJets.size() >= 1 )  {
+          histograms1d["probeWMass1"]     ->  Fill(  tWJets.at(i)->mass() );
+        }
       }
       if( retType22[string("has Top0")] ) {
         histograms1d["probeTopMass"]  ->  Fill( p4_top0.mass() );
+        if( tbJets.size() >= 1 )  {
+          histograms1d["probeTopMass1"] ->  Fill(  p4_top0.mass() );
+        }
       }
     }  // end else if
 
+    if( debug_ )      cout<<"Start De-select top"<<endl;
     //De-select top events and get the sideband distributions
     if( retType22[string("has Top0")] )  {
       reco::Candidate::LorentzVector const p4_top1 = wPlusBJetType22Selection_.p4_top1();
@@ -404,6 +432,18 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
       }  // end if top1 mass
     } // end if tight top1
 
+    if( debug_ )    cout<<"Start lift W Mass"<<endl;
+    //Lift the W mass cut on both side, and require b tagging and top mass cut, check the W mass bump
+    if( retType22[string("hasTwoTops")] && tbJets.size() >=1 && obJets.size() >=1 ) {
+      for(size_t i=0; i<tWJets.size(); i++ )  {
+        histograms1d["probeWMass2"]         ->  Fill( tWJets.at(i)->mass() );
+      }
+      for(size_t i=0; i<oWJets.size(); i++ )  {
+        histograms1d["probeWMass2"]         ->  Fill( oWJets.at(i)->mass() );
+      }
+    }
+
+    if( debug_ )   cout<<"Start Type23"<<endl;
     if( wPlusBJetType22Selection_.Type == Type23 ) {
       pat::strbitset retType23 = wPlusBJetType23Selection_.getBitTemplate();
       bool passType23 = wPlusBJetType23Selection_( iEvent, retType23 );
@@ -455,6 +495,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
       } // end passType23
     }  // end if >= 1 WJet and !>= 2 WJet
 
+    if( debug_ )   cout<<"Start Type33"<<endl;
     if( wPlusBJetType22Selection_.Type == Type33  ) {
       pat::strbitset  retType33 = wPlusBJetType33Selection_.getBitTemplate();
       bool passType33 = wPlusBJetType33Selection_( iEvent, retType33 );
