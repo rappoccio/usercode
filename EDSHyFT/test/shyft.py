@@ -28,7 +28,13 @@ options.register ('useMuon',
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
                   "Use muons (1) or electrons (0)")
-                  
+
+options.register ('slimOutput',
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Remove several heavy collections for systematic samples")
+
 options.parseArguments()
 
 print options
@@ -42,12 +48,12 @@ if options.useData == False :
     # Make sure to NOT apply L2L3Residual to MC
     corrections = ['L2Relative', 'L3Absolute']
     # global tag for 384 MC
-    process.GlobalTag.globaltag = cms.string('START38_V13::All')
+    process.GlobalTag.globaltag = cms.string('START38_V14::All')
 else :
     # Make sure to apply L2L3Residual to data
     corrections = ['L2Relative', 'L3Absolute', 'L2L3Residual']
     # global tag for 386 data
-    process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_38X_V15::All')
 
 
 
@@ -203,9 +209,9 @@ process.patJetsAK5PF.tagInfoSources = cms.VInputTag(
 process.patMuonsPFlowLoose.pfMuonSource = 'pfAllMuonsPFlowLoose'
 process.patMuonsPFlowLoose.isoDeposits = cms.PSet()
 process.patMuonsPFlowLoose.isolationValues = cms.PSet()
-#process.patElectronsPFlowLoose.pfElectronSource = 'pfAllElectronsPFlowLoose'
-#process.patElectronsPFlowLoose.isoDeposits = cms.PSet()
-#process.patElectronsPFlowLoose.isolationValues = cms.PSet()
+process.patElectronsPFlowLoose.pfElectronSource = 'pfAllElectronsPFlowLoose'
+process.patElectronsPFlowLoose.isoDeposits = cms.PSet()
+process.patElectronsPFlowLoose.isolationValues = cms.PSet()
 
 process.selectedPatMuons.cut = cms.string("pt > 10")
 process.selectedPatMuonsPFlow.cut = cms.string("pt > 10")
@@ -256,17 +262,19 @@ process.patJetsAK5JPT.userData.userFunctionLabels = cms.vstring('secvtxMass')
 
 
 process.patTaus.isoDeposits = cms.PSet()
+process.patTausPFlow.isoDeposits = cms.PSet()
+process.patTausPFlowLoose.isoDeposits = cms.PSet()
 
-process.patJets.embedPFCandidates = False
-process.patJets.embedCaloTowers = False
-process.patJetsPFlow.embedCaloTowers = False
-process.patJetsPFlow.embedPFCandidates = False
-process.patJetsPFlowLoose.embedCaloTowers = False
-process.patJetsPFlowLoose.embedPFCandidates = False
-process.patJetsAK5PF.embedCaloTowers = False
-process.patJetsAK5PF.embedPFCandidates = False
-process.patJetsAK5JPT.embedCaloTowers = False
-process.patJetsAK5JPT.embedPFCandidates = False
+process.patJets.embedPFCandidates = True
+process.patJets.embedCaloTowers = True
+process.patJetsPFlow.embedCaloTowers = True
+process.patJetsPFlow.embedPFCandidates = True
+process.patJetsPFlowLoose.embedCaloTowers = True
+process.patJetsPFlowLoose.embedPFCandidates = True
+process.patJetsAK5PF.embedCaloTowers = True
+process.patJetsAK5PF.embedPFCandidates = True
+process.patJetsAK5JPT.embedCaloTowers = True
+process.patJetsAK5JPT.embedPFCandidates = True
 
 
 # prune gen particles
@@ -289,30 +297,20 @@ secFiles = cms.untracked.vstring()
 
 if useData :
     readFiles.extend( [
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/511/0E57A1DF-A7C7-DF11-B2E1-003048F1C836.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/F8CFD025-7AC7-DF11-970C-001617C3B76A.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/D4C82E6A-85C7-DF11-8B24-0019B9F709A4.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/B01897AD-7BC7-DF11-A16B-001D09F241F0.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/ACFB1223-8DC7-DF11-9D6D-001D09F232B9.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/72745CEC-81C7-DF11-B136-0030487A1990.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/5895BD1D-7FC7-DF11-B488-0030487C635A.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/4C8075C0-86C7-DF11-AB7A-0030487C635A.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/24A944A4-7DC7-DF11-B7C2-003048D373AE.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/22CC2E69-85C7-DF11-8C63-001D09F2B30B.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/510/0A2B7AA7-7DC7-DF11-A0EB-003048D2BE12.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/509/62C11A97-45C7-DF11-BBB7-001D09F241F0.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/506/8AA215A3-4EC7-DF11-8999-003048F118DE.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/445/BCA934AE-FAC6-DF11-9143-003048F024FA.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/442/289F629E-F3C6-DF11-BB6E-001D09F231B0.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/440/AE467D73-E5C6-DF11-91E6-003048F01E88.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/438/DE0A4969-D5C6-DF11-9DA2-003048F024DE.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/437/D0C578A5-E4C6-DF11-837B-0030487CD7B4.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/437/A660F145-F6C6-DF11-A67F-001D09F2516D.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/437/60BD2F82-DDC6-DF11-AA84-001D09F2910A.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/437/42BD67BF-F4C6-DF11-9704-0030487C608C.root',
-        '/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/437/4030584E-D7C6-DF11-BDB0-000423D9890C.root',
-    
-
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A82F71C-57EA-DF11-80A2-E0CB4E55365F.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A78BF54-84EA-DF11-A0CD-485B39800BCA.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A77B760-B9E9-DF11-B2F8-90E6BA442F2B.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A777C9D-02EA-DF11-B982-90E6BA0D09E2.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A69BA60-0FEA-DF11-9879-90E6BA442F3B.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A292691-A8EA-DF11-908E-E0CB4E29C4D5.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A1C4CCB-0FEA-DF11-9642-001EC9D8D08D.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/08E0BEAD-EEE9-DF11-80B2-90E6BA442EEE.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/083FAA15-28EA-DF11-96C1-90E6BA442EF2.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/06F1A9FA-36EC-DF11-AE50-001EC9D8D08D.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/06CC3F83-08EA-DF11-A05B-E0CB4E29C4CA.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/06A53695-A8EA-DF11-BAE4-485B39800C2B.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0683478B-0FEA-DF11-9729-00261834B575.root',
+        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/066D7924-0FEA-DF11-8ED7-E0CB4E55367A.root'
         ] );
 else : 
     readFiles.extend( [
@@ -401,7 +399,7 @@ process.out.outputCommands = [
 #    'keep recoPFCandidates_particleFlow_*_*',
     'keep *_offlineBeamSpot_*_*',
     'keep *_offlinePrimaryVertices_*_*',
-#    'keep recoTracks_generalTracks_*_*',
+    'keep recoTracks_generalTracks_*_*',
     'drop patPFParticles_*_*_*',
 #    'keep patTriggerObjects_patTrigger_*_*',
 #    'keep patTriggerFilters_patTrigger_*_*',
@@ -415,6 +413,14 @@ process.out.outputCommands = [
 #    'keep *_patMETsTriggerMatch_*_*',
     'drop *_MEtoEDMConverter_*_*'
     ]
+
+if options.slimOutput :
+    process.out.outputCommands += [ 'drop recoTracks_generalTracks_*_*',
+                                    'drop patTriggerPaths_patTrigger_*_*',
+                                    'drop patTriggerEvent_patTriggerEvent_*_*',
+                                    'drop GenRunInfoProduct_generator_*_*',
+                                    'drop GenEventInfoProduct_generator_*_*'
+                                    ]
 
 if useData :
     process.out.outputCommands.append( 'keep LumiSummary_lumiProducer_*_*' )

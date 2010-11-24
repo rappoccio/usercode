@@ -8,16 +8,26 @@ import tokenize
 from event_flow_crab import event_flow_crab
 
 tokens = ['step1',
+#          'isolatedPatMuons',
+#          'isolatedPatMuonsPFlow'
           'scrapingVeto',
           'primaryVertexFilter',
           'HBHENoiseFilter',
-          'shyftMuCalo',          
-          'shyftMuPF',
-          'shyftMuJPT'
+#          'shyftMuCalo',          
+#          'shyftMuPF',
+#          'shyftMuJPT'
           ]
 
 dirs = [
-    'TTbarJets-madgraph_shyft_38xOn35x_v2'
+'TTJets_TuneD6T_7TeV-madgraph-tauola_shyft_387_v1',
+'TTJets_TuneD6T_largerISRFSR_7TeV-madgraph-tauola_shyft_387_v1',
+'TTJets_TuneD6T_matchingdown_7TeV-madgraph-tauola_shyft_387_v1',
+'TTJets_TuneD6T_matchingup_7TeV-madgraph-tauola_shyft_387_v1',
+'TTJets_TuneD6T_scaledown_7TeV-madgraph-tauola_shyft_387_v1',
+'TTJets_TuneD6T_scaleup_7TeV-madgraph-tauola_shyft_387_v1',
+'TTJets_TuneD6T_smallerISRFSR_7TeV-madgraph-tauola_shyft_387_v1',
+'TTJets_TuneZ2_7TeV-madgraph-tauola_shyft_387_v1',
+
 ]
 
 for idir in dirs :
