@@ -20,7 +20,8 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   bTagOPL_      ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<double>("bTagOPLoose") ),
   runOnTTbar_   ( iConfig.getParameter<bool>("runOnTTbar") ),
   debug_        ( iConfig.getParameter<bool>("debugOn") ),
-  eventCount    (0)
+  eventCount    (0),
+  mistagFileName_   ( iConfig.getParameter<edm::ParameterSet>("WPlusBJetEventSelection").getParameter<string>("mistagFileName") )
 {
 
   cout<< "Instantiate WPlusBJetAnalysis" << endl;
@@ -39,6 +40,7 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   histograms1d["tightTopMass1Type22"]    = theDir.make<TH1F>("tightTopMass1Type22",   "Tight Top Mass; Mass (GeV/c^{2})",   100,  0,  500 );
   histograms1d["looseTopMass1Type22"]    = theDir.make<TH1F>("looseTopMass1Type22",   "Loose Top Mass; Mass (GeV/c^{2})",   100,  0,  500 );
   histograms1d["probeWMass"]             = theDir.make<TH1F>("probeWMass",    "W Jet Mass",   40,   0,  200 );
+  histograms1d["probeWMassExp"]          = theDir.make<TH1F>("probeWMassExp", "W Jet Mass",   40,   0,  200 );
   histograms1d["probeWMass1"]             = theDir.make<TH1F>("probeWMass1",    "W Jet Mass",   40,   0,  200 );
   histograms1d["probeWMass2"]             = theDir.make<TH1F>("probeWMass2",    "W Jet Mass",   40,   0,  200 );
   histograms1d["probeTopMass"]           = theDir.make<TH1F>("probeTopMass",  "Top Mass",   100,    0,  500 );
@@ -160,7 +162,9 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   histograms1d["sixthJetPt_MC"]       = theDir.make<TH1F>("sixthJetPt_MC",      "Sixth Jet Pt",           200,  0,    1000 );
   histograms1d["sixthJetEta_MC"]      = theDir.make<TH1F>("sixthJetEta_MC",     "Sixth Jet #eta",         50,   -4.0, 4.0 );
 
-
+  mistagFile_   = TFile::Open( mistagFileName_.c_str() );
+  wMistag_      = (TH1F*)mistagFile_   -> Get("wMistag");
+  bMistag_      = (TH1F*)mistagFile_   -> Get("bMistag");
   TDirectory * dir = theDir.cd();
 
   edm::Service<edm::RandomNumberGenerator> rng;
@@ -349,7 +353,8 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         }
       }
       //cout<<"ddd"<<endl;
-    }  else if( wPlusBJetType22Selection_.hasTightTop1() && retType22[string("TopMassCut1")] )  {
+    }  
+    if( wPlusBJetType22Selection_.hasTightTop1() && retType22[string("TopMassCut1")] )  {
       reco::Candidate::LorentzVector const p4_top0 = wPlusBJetType22Selection_.p4_top0();
       for(size_t i=0; i<tWJets.size(); i++ )  {
         histograms1d["probeWMass"]    ->  Fill( tWJets.at(i)->mass() );
@@ -363,7 +368,41 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
           histograms1d["probeTopMass1"] ->  Fill(  p4_top0.mass() );
         }
       }
-    }  // end else if
+    }  // end if
+
+    //Tag one hemisphere without b tagging, but take the b tagging parameterization
+    if( retType22[string("TopMassCut0")] )  {
+      const pat::Jet * wJet0 = &(*tWJets.at(0));
+      for( size_t i=0; i<allJets0.size(); i++ ) {
+        const pat::Jet * aJet = &(*allJets0.at(i));
+        if( !sameJet( wJet0, aJet ) ) {
+          int bBin;
+          double weight;
+          bBin = bMistag_   -> FindBin( aJet->pt() );
+          weight = bMistag_ -> GetBinContent( bBin );
+          for(size_t j=0; i<oWJets.size(); j++ )  {
+            histograms1d["probeWMassExp"]   ->  Fill( oWJets.at(j)->mass(), weight );
+          }
+        } // sameJet
+        else cout<<"Same Jet"<<endl;
+      } // end if allJet0 size
+    }  // end if TopMassCut0
+    if( retType22[string("TopMassCut1")] )  {
+      const pat::Jet * wJet1 = &(*oWJets.at(0));
+      for( size_t i=0; i<allJets1.size(); i++ ) {
+        const pat::Jet * aJet = &(*allJets1.at(i));
+        if( !sameJet( wJet1, aJet ) ) {
+          int bBin;
+          double weight;
+          bBin = bMistag_   -> FindBin( aJet->pt() );
+          weight = bMistag_ -> GetBinContent( bBin );
+          for(size_t j=0; i<tWJets.size(); j++ )  {
+            histograms1d["probeWMassExp"]   ->  Fill( tWJets.at(j)->mass(), weight );
+          }
+        } // sameJet
+        else cout<<"Same Jet"<<endl;
+      } // end if allJet0 size
+    }  // end if TopMassCut0
 
     if( debug_ )      cout<<"Start De-select top"<<endl;
     //De-select top events and get the sideband distributions
@@ -780,3 +819,9 @@ double WPlusBJetAnalysis::TTMass( const edm::EventBase& iEvent )
   }
 }
 
+bool WPlusBJetAnalysis::sameJet( const pat::Jet * jet1, const pat::Jet * jet2 )
+{
+  double dR = reco::deltaR<double>( jet1->eta(), jet1->phi(), jet2->eta(), jet2->phi() );
+  if( dR < 10e-6 )  return true;
+  else    return false;
+}
