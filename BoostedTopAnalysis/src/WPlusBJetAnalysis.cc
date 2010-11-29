@@ -380,11 +380,11 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
           double weight;
           bBin = bMistag_   -> FindBin( aJet->pt() );
           weight = bMistag_ -> GetBinContent( bBin );
-          for(size_t j=0; i<oWJets.size(); j++ )  {
+          for(size_t j=0; j<oWJets.size(); j++ )  {
             histograms1d["probeWMassExp"]   ->  Fill( oWJets.at(j)->mass(), weight );
           }
         } // sameJet
-        else cout<<"Same Jet"<<endl;
+        else ; //cout<<"Same Jet"<<endl;
       } // end if allJet0 size
     }  // end if TopMassCut0
     if( retType22[string("TopMassCut1")] )  {
@@ -396,11 +396,11 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
           double weight;
           bBin = bMistag_   -> FindBin( aJet->pt() );
           weight = bMistag_ -> GetBinContent( bBin );
-          for(size_t j=0; i<tWJets.size(); j++ )  {
+          for(size_t j=0; j<tWJets.size(); j++ )  {
             histograms1d["probeWMassExp"]   ->  Fill( tWJets.at(j)->mass(), weight );
           }
         } // sameJet
-        else cout<<"Same Jet"<<endl;
+        else ; //cout<<"Same Jet"<<endl;
       } // end if allJet0 size
     }  // end if TopMassCut0
 
