@@ -19,7 +19,8 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   bTagMedium_ ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<double>("bTagOPMedium") ),
   bTagLoose_  ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<double>("bTagOPLoose") ),
   eventCount_ (0),
-  mistagFileName_ ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<std::string>("mistagFileName")  )
+  mistagFileName_ ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<std::string>("mistagFileName")  ),
+  onePV_      ( iConfig.getParameter<edm::ParameterSet>("hadronicAnalysis").getParameter<bool>("onePV") )
 {
   std::cout << "Instantiated HadronicAnalysis" << std::endl;
 
@@ -139,6 +140,12 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms2d["yVsPt1"]     = theDir.make<TH2F>("yVsPt1", "Asymmetry of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
   histograms2d["dRVsPt0"]     = theDir.make<TH2F>("dRVsPt0", "#Delta R of First Jet", 50, 0, 500, 50, 0.0, 1.0 );
   histograms2d["dRVsPt1"]     = theDir.make<TH2F>("dRVsPt1", "#Delta R of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
+  histograms2d["muVsdR0"]     = theDir.make<TH2F>("muVsdR0", "Jet Mass Drop Vs Subjets #Delta R", 50, 0.0, 1.0 , 50, 0.0, 1.0 );
+  histograms2d["muVsdR1"]     = theDir.make<TH2F>("muVsdR1", "Jet Mass Drop Vs Subjets #Delta R", 50, 0.0, 1.0 , 50, 0.0, 1.0 );
+  histograms2d["muVsy0"]      = theDir.make<TH2F>("muVsy0", "Jet Mass Drop Vs Subjets Asymmetry", 50, 0.0, 1.0 , 50, 0.0, 1.0 );
+  histograms2d["muVsy1"]      = theDir.make<TH2F>("muVsy1", "Jet Mass Drop Vs Subjets Asymmetry", 50, 0.0, 1.0 , 50, 0.0, 1.0 );
+  histograms2d["dRVsy0"]      = theDir.make<TH2F>("dRVsy0", "Subjets #Delta R Vs Subjets Asymmetry",  50, 0.0, 1.0 , 50, 0.0, 1.0 );
+  histograms2d["dRVsy1"]      = theDir.make<TH2F>("dRVsy1", "Subjets #Delta R Vs Subjets Asymmetry",  50, 0.0, 1.0 , 50, 0.0, 1.0 );
 
   histograms2d["dRVsPt0_UDS"]	= theDir.make<TH2F>("dRVsPt0_UDS",	"#Delta R of First Jet", 50, 0, 500, 50, 0.0, 1.0 );
   histograms2d["dRVsPt1_UDS"]	= theDir.make<TH2F>("dRVsPt1_UDS",      "#Delta R of Second Jet", 50, 0, 500, 50, 0.0, 1.0 );
@@ -221,6 +228,9 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   100,  0,  500,  50, 0,  250 );
   histograms2d["W_jetMassVsMu"] = theDir.make<TH2F>("W_jetMassVsMu",    "Jet Mass Vs #mu; #mu; Jet Mass (GeV/c^{2})", 
   500,  0,  1.0,  50, 0,  250 );
+  histograms2d["W_jetMuVsdR"]   = theDir.make<TH2F>("W_jetMuVsdR",    "Jet Mass Drop Vs Subjets #Delta R", 50, 0.0, 1.0 , 50, 0.0, 1.0 );
+  histograms2d["W_jetMuVsy"]    = theDir.make<TH2F>("W_jetMuVsy",     "Jet Mass Drop Vs Subjets Asymmetry", 50, 0.0, 1.0 , 50, 0.0, 1.0 );
+  histograms2d["W_jetdRVsy"]    = theDir.make<TH2F>("W_jetdRVsy",     "Subjets #Delta R Vs Subjets Asymmetry",  50, 0.0, 1.0 , 50, 0.0, 1.0 );
 
   //Histograms for closure test
   histograms1d["wTagPtO"]     = theDir.make<TH1F>("wTagPtO",  "W Jet PT",   200,  0,    1000 );
@@ -264,6 +274,15 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 
   analyzeWJet( iEvent );
   histoWeight_ = 1.0;
+
+  if( onePV_ )  {
+    edm::Handle<vector<reco::Vertex> >   vertices;
+    iEvent.getByLabel( edm::InputTag("offlinePrimaryVertices") , vertices );
+    if( !vertices.isValid() )
+      throw cms::Exception("ProductNotFound") << "offlinePrimaryVertices is not found\n" ;
+    else if ( vertices->size() > 1 )
+      return;      
+  }
 
   edm::Handle<GenEventInfoProduct>    genEvt;
   iEvent.getByLabel( edm::InputTag("generator"),  genEvt );
@@ -521,6 +540,12 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       histograms1d["jetPt1"]->Fill( p4_1.pt(), histoWeight_ );
       histograms1d["jetEta0"]->Fill( p4_0.eta(), histoWeight_ );
       histograms1d["jetEta1"]->Fill( p4_1.eta(), histoWeight_ );
+      histograms2d["muVsdR0"]     ->  Fill( mu0, dR0, histoWeight_ );
+      histograms2d["muVsdR1"]     ->  Fill( mu1, dR1, histoWeight_ );
+      histograms2d["muVsy0"]      ->  Fill( mu0, y0,  histoWeight_ );
+      histograms2d["muVsy1"]      ->  Fill( mu1, y1,  histoWeight_ );
+      histograms2d["dRVsy0"]      ->  Fill( dR0, y0,  histoWeight_ );
+      histograms2d["dRVsy1"]      ->  Fill( dR1, y1,  histoWeight_ );
 
       histograms1d["dijetMass"]->Fill( p4.mass(), histoWeight_ );
       histograms1d["jetMass0"]->Fill( pretaggedJets[0]->mass() , histoWeight_);
@@ -669,7 +694,7 @@ void HadronicAnalysis::analyzeWJet( const edm::EventBase& iEvent )
   {
     int pdgId = fabs( igen->pdgId() );
     //cout<<igen->pt()<<endl;
-    if( igen->status() == 3 && pdgId == 24 && igen->pt() > 80 )
+    if( igen->status() == 3 && pdgId == 24 && igen->pt() > 150 )
       Ws.push_back( &(*igen) );
   }
 
@@ -715,6 +740,9 @@ void HadronicAnalysis::analyzeWJet( const edm::EventBase& iEvent )
       histograms1d["W_dR"]      ->  Fill( dR );
       histograms1d["jetPartonDr"]   ->  Fill( minDr0 );
       histograms2d["W_jetMassVsMu"] ->  Fill( mu, mass );
+      histograms2d["W_jetMuVsdR"]   ->  Fill( mu, dR );
+      histograms2d["W_jetMuVsy"]    ->  Fill( mu, y );
+      histograms2d["W_jetdRVsy"]    ->  Fill( dR, y );
       if( mu < mu_ )
         histograms1d["WMass_0"]     ->  Fill( mass );
       if( mu < mu_ && mass > wMinMass_ ) {
@@ -739,6 +767,9 @@ void HadronicAnalysis::analyzeWJet( const edm::EventBase& iEvent )
       histograms1d["W_dR"]      ->  Fill( dR );
       histograms1d["jetPartonDr"]   ->  Fill( minDr1 );
       histograms2d["W_jetMassVsMu"] ->  Fill( mu, mass );
+      histograms2d["W_jetMuVsdR"]   ->  Fill( mu, dR );
+      histograms2d["W_jetMuVsy"]    ->  Fill( mu, y );
+      histograms2d["W_jetdRVsy"]    ->  Fill( dR, y );
       if( mu < mu_ )
         histograms1d["WMass_0"]   ->  Fill( mass );
       if( mu < mu_ && mass > wMinMass_ ) {

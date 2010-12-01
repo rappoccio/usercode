@@ -99,6 +99,7 @@ class HadronicAnalysis {
     TFile * mistagFile_;
     TH1 * bMistagMO_, * bMistagME_;
     TH1 * wMistagO_, * wMistagE_;
+    bool  onePV_;
 
     std::vector<EventSummary>  summary;
     CLHEP::RandFlat *flatDistribution_;
