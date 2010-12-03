@@ -119,6 +119,27 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         )                                    
                                     )
 
+process.pfShyftAnaLoose = cms.EDAnalyzer('EDSHyFT',
+                                    shyftAnalysis = inputShyftAnalysis.clone(
+                                        muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose'),
+                                        electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose'),
+                                        metSrc = cms.InputTag('patMETsPFlowLoose'),
+                                        jetSrc = cms.InputTag('selectedPatJetsPFlowLoose'),
+                                        muTrig = cms.string(options.muTrig),                                                  
+                                        jetPtMin = cms.double(25.0),
+                                        minJets = cms.int32(5),
+                                        metMin = cms.double(20.0),
+                                        heavyFlavour = cms.bool( useFlavorHistory ),
+                                        doMC = cms.bool( inputDoMC),
+                                        sampleName = cms.string(inputSampleName),
+                                        muonIdTight = inputShyftAnalysis.muonIdTight.clone(
+                                            cutsToIgnore=cms.vstring('RelIso','D0')
+                                            ),
+                                        identifier = cms.string('PF Loose')
+                                                  
+                                        )                                    
+                                    )
+
 
 process.pfShyftAnaNoMET = process.pfShyftAna.clone(
     shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
@@ -334,6 +355,7 @@ process.caloShyftAnaNoMET = process.caloShyftAna.clone(
 process.p = cms.Path(
     process.pfShyftAna*
     process.pfShyftAnaNoMET*
+    process.pfShyftAnaLoose*
     process.pfShyftAnaLooseNoMET*
     process.pfShyftAnaLooseNoMETWithD0*
     process.pfShyftAnaLooseWithD0*            
