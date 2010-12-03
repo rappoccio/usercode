@@ -65,7 +65,7 @@ jptcorrections += corrections
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 
 if options.useMuon :
-    process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::" + options.hltProcess, HLTPaths = ["HLT_Mu9*", "HLT_Mu15*"])
+    process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::" + options.hltProcess, HLTPaths = ["HLT_Mu9", "HLT_Mu15*"])
 else :
     process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::" + options.hltProcess, HLTPaths = ["HLT_EGDunnowhagoeshere*"])
 
@@ -376,7 +376,7 @@ else :
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
 # process all the events
-process.maxEvents.input = 1000
+process.maxEvents.input = -1
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 

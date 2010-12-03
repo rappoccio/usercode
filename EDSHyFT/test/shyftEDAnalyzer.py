@@ -44,7 +44,7 @@ options.register('outputRootFile',
                  "OUtput root file name")
 
 options.register('muTrig',
-                 'HLT_Mu9',
+                 'HLT_Mu11',
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.string,
                  "Muon trigger to run")
@@ -65,7 +65,7 @@ if options.doMC > 0 :
 else :
     inputDoMC = False
     # get JSON file correctly parced
-    JSONfile = 'Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON_filteredMin147146.txt'
+    JSONfile = 'Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON_filteredMax147145.txt'
     myList = LumiList.LumiList (filename = JSONfile).getCMSSWString().split(',')
 
 
@@ -75,7 +75,7 @@ inputSampleName = options.sampleNameInput
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    'file:shyft_386_mc.root'
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyft_387_v1/806866a699de2045917e2f88bbb597f4/shyft_386_mc_1_1_n47.root'
 #                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/WJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_1_1_5ci.root'
 #                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/InclusiveMu15/shyft_38xOn35x_v1/91f2fc34c53b68691c104fb43fa3e9f4/shyft_382_mc_1_1_rw3.root'
 #                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_1_1_BHn.root'
