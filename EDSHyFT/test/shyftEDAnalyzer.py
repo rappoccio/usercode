@@ -44,7 +44,7 @@ options.register('outputRootFile',
                  "OUtput root file name")
 
 options.register('muTrig',
-                 'HLT_Mu11',
+                 'HLT_Mu9',
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.string,
                  "Muon trigger to run")
