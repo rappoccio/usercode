@@ -65,7 +65,7 @@ if options.doMC > 0 :
 else :
     inputDoMC = False
     # get JSON file correctly parced
-    JSONfile = 'Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON_filteredMax147145.txt'
+    JSONfile = 'Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON_Run2010B_HLT_Mu9Region.txt'
     myList = LumiList.LumiList (filename = JSONfile).getCMSSWString().split(',')
 
 
@@ -351,7 +351,6 @@ process.caloShyftAnaNoMET = process.caloShyftAna.clone(
         )
     )
 
-
 process.p = cms.Path(
     process.pfShyftAna*
     process.pfShyftAnaNoMET*
@@ -368,7 +367,8 @@ process.p = cms.Path(
     process.jptShyftAnaLooseNoMETWithD0*
     process.jptShyftAnaLooseWithD0*            
     process.caloShyftAna*
-    process.caloShyftAnaNoMET    
+    process.caloShyftAnaNoMET
     )
+
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
