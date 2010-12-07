@@ -38,6 +38,13 @@ options.register ('allSys',
                   "Run all systematics (1) or just the central one (0)")
 
 
+options.register('ignoreTrigger',
+                 0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Ignore trigger in selection")
+
+
 options.parseArguments()
 
 print options
@@ -52,6 +59,10 @@ else :
 inputDoMC=True
 
 inputSampleName = options.sampleNameInput
+
+inputCutsToIgnore = []
+if options.ignoreTrigger == 1 :
+    inputCutsToIgnore.append( 'Trigger' )
 
 ## Source
 if len(options.inputFiles) == 0 :
@@ -114,6 +125,7 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         useCustomPayload = cms.bool(True),
                                         bcEffScale = cms.double(1.00),
                                         lfEffScale = cms.double(0.9),
+                                        cutsToIgnore=cms.vstring(inputCutsToIgnore)
                                         )                                    
                                     )
 
@@ -133,7 +145,8 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                          reweightBTagEff = cms.bool(True),
                                          useCustomPayload = cms.bool(True),
                                          bcEffScale = cms.double(1.00),
-                                         lfEffScale = cms.double(0.9),                                         
+                                         lfEffScale = cms.double(0.9),
+                                         cutsToIgnore=cms.vstring(inputCutsToIgnore)
                                         )
                                      
                                      )

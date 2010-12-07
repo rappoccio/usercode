@@ -19,7 +19,7 @@ parser.add_option('--inputCMSSW', metavar='C', type='string', action='store',
                   help='input CMSSW py to be used')
 
 parser.add_option('--outLabel', metavar='L', type='string', action='store',
-                  default='_shyftana_387_v1',
+                  default='_shyftana_387_v1_simplesys',
                   dest='outLabel',
                   help='output tag to be used')
 

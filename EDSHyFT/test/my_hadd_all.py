@@ -5,14 +5,16 @@ import subprocess
 
 dirs = [
 
-'TTbarJets-madgraph_shyftana_38xOn35x_v20_allsys',
-'WJets-madgraph_shyftana_38xOn35x_v20_allsys',
-'ZJets-madgraph_shyftana_38xOn35x_v20_allsys',
-'SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v20_allsys',
-'SingleTop_tChannel-madgraph_shyftana_38xOn35x_v20_allsys',
-'SingleTop_sChannel-madgraph_shyftana_38xOn35x_v20_allsys',
-'InclusiveMu15_shyftana_38xOn35x_v20_allsys',
-'VqqJets-madgraph_shyftana_38xOn35x_v20_allsys',
+'VQQJetsToLL_TuneD6T_scaleup_7TeV-madgraph-tauola_shyftana_387_v1',
+'VQQJetsToLL_TuneD6T_scaledown_7TeV-madgraph-tauola_shyftana_387_v1',
+'TTJets_TuneD6T_7TeV-madgraph-tauola_shyftana_387_v1',
+'TTJets_TuneZ2_7TeV-madgraph-tauola_shyftana_387_v1',
+'TTJets_TuneD6T_smallerISRFSR_7TeV-madgraph-tauola_shyftana_387_v1',
+'TTJets_TuneD6T_scaleup_7TeV-madgraph-tauola_shyftana_387_v1',
+'TTJets_TuneD6T_scaledown_7TeV-madgraph-tauola_shyftana_387_v1',
+'TTJets_TuneD6T_matchingup_7TeV-madgraph-tauola_shyftana_387_v1',
+'TTJets_TuneD6T_matchingdown_7TeV-madgraph-tauola_shyftana_387_v1',
+'TTJets_TuneD6T_largerISRFSR_7TeV-madgraph-tauola_shyftana_387_v1',
 
 
 ]
