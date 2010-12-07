@@ -50,10 +50,11 @@ inputSampleName = options.sampleNameInput
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyft_387_v1/806866a699de2045917e2f88bbb597f4/shyft_386_mc_1_1_n47.root'
 #                                    'file:/uscms_data/d2/rappocc/analysis/SHyFT/CMSSW_3_8_3_SHyFT/src/Analysis/EDSHyFT/test/syncex_shyft_382_mc.root'
 #                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/InclusiveMu15/shyft_38xOn35x_v1/91f2fc34c53b68691c104fb43fa3e9f4/shyft_382_mc_1_1_rw3.root'
 #                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v2/b8014e49c41bd22a9b4664626194b599/shyft_382_mc_1_1_fU1.root'
-                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/WJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_100_1_DBn.root',
+#                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/WJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_100_1_DBn.root',
 #                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/WJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_101_1_Lpm.root',
 #                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/WJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_102_1_goD.root',
 #                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/WJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_103_1_fHI.root',
@@ -199,12 +200,12 @@ process.pfShyftAnaReweightedBTag120 = process.pfShyftAna.clone(
 
 
 
-process.pfShyftAnaReweightedLFTag074 = process.pfShyftAna.clone(
+process.pfShyftAnaReweightedLFTag070 = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-        identifier = cms.string('PF Reweighted LFTag 074'),
+        identifier = cms.string('PF Reweighted LFTag 070'),
         reweightBTagEff = cms.bool(True),
         useCustomPayload = cms.bool(True),                                                    
-        lfEffScale = cms.double(0.74),
+        lfEffScale = cms.double(0.70),
         bcEffScale = cms.double(1.00),        
         )
     )
@@ -220,12 +221,12 @@ process.pfShyftAnaReweightedLFTag080 = process.pfShyftAna.clone(
     )
 
 
-process.pfShyftAnaReweightedLFTag094 = process.pfShyftAna.clone(
+process.pfShyftAnaReweightedLFTag090 = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-        identifier = cms.string('PF Reweighted LFTag 094'),
+        identifier = cms.string('PF Reweighted LFTag 090'),
         reweightBTagEff = cms.bool(True),
         useCustomPayload = cms.bool(True),                                                    
-        lfEffScale = cms.double(0.94),
+        lfEffScale = cms.double(0.90),
         bcEffScale = cms.double(1.00),        
         )
     )
@@ -240,6 +241,16 @@ process.pfShyftAnaReweightedLFTag100 = process.pfShyftAna.clone(
         )
     )
 
+
+process.pfShyftAnaReweightedLFTag110 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF Reweighted LFTag 110'),
+        reweightBTagEff = cms.bool(True),
+        useCustomPayload = cms.bool(True),                                                       
+        lfEffScale = cms.double(1.10),
+        bcEffScale = cms.double(1.10),        
+        )
+    )
 
 # JES up and down with MET Cut
 
@@ -326,24 +337,24 @@ process.p = cms.Path(
     process.jptShyftAna*
     process.pfShyftAnaJES095*    
     process.pfShyftAnaJES105*
-    process.jptShyftAnaJES095*    
-    process.jptShyftAnaJES105*
-    process.pfShyftAnaNoMET*
-    process.jptShyftAnaNoMET*
-    process.pfShyftAnaJES095NoMET*    
-    process.pfShyftAnaJES105NoMET*
-    process.jptShyftAnaJES095NoMET*    
-    process.jptShyftAnaJES105NoMET*    
+#    process.jptShyftAnaJES095*    
+#    process.jptShyftAnaJES105*
+#    process.pfShyftAnaNoMET*
+#    process.jptShyftAnaNoMET*
+#    process.pfShyftAnaJES095NoMET*    
+#    process.pfShyftAnaJES105NoMET*
+#    process.jptShyftAnaJES095NoMET*    
+#    process.jptShyftAnaJES105NoMET*    
     process.pfShyftAnaReweightedUnity*
     process.pfShyftAnaReweightedBTag080*
     process.pfShyftAnaReweightedBTag090*
     process.pfShyftAnaReweightedBTag110*
     process.pfShyftAnaReweightedBTag120*
-    process.pfShyftAnaReweightedLFTag074*
+    process.pfShyftAnaReweightedLFTag070*    
     process.pfShyftAnaReweightedLFTag080*
-    process.pfShyftAnaReweightedLFTag094*
-    process.pfShyftAnaReweightedLFTag100*
-    process.pfShyftAnaMC
+    process.pfShyftAnaReweightedLFTag090*
+    process.pfShyftAnaReweightedLFTag110
+#    process.pfShyftAnaMC
 
     )
 
