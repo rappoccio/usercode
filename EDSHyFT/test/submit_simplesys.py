@@ -9,7 +9,7 @@ from optparse import OptionParser
 parser = OptionParser()
 
 parser.add_option('--inputCfg', metavar='C', type='string', action='store',
-                  default='crab_dummy_anashyft_allsys.cfg',
+                  default='crab_dummy_anashyft_simplesys.cfg',
                   dest='inputCfg',
                   help='input config tag to be used')
 
@@ -27,13 +27,16 @@ parser.add_option('--outLabel', metavar='L', type='string', action='store',
 
 
 crabFileStrs = [
+['/VQQJetsToLL_TuneD6T_scaleup_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',   15, 1, 'Vqq'],
+['/VQQJetsToLL_TuneD6T_scaledown_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER', 15, 1, 'Vqq'],
 ['/TTJets_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',            15, 0, 'Top'],
-['/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',   15, 1, 'Zjets'],
-['/VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',       15, 1, 'Vqq'],
-['/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph/srappocc-shyft_387_v1-9a4f16815707934fe8e1e1334c342e5c/USER',        15, 0, 'SingleToptW'],
-['/TToBLNu_TuneZ2_t-channel_7TeV-madgraph/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',         15, 0, 'SingleTopT'],
-['/TToBLNu_TuneZ2_s-channel_7TeV-madgraph/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',         15, 0, 'SingleTopS'],
-['/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/srappocc-shyft_387_v1-2f94777c47687658400e9bd1c4f72c89/USER',  15, 0, 'QCD'],
+['/TTJets_TuneZ2_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',                 15, 0, 'Top'],
+['/TTJets_TuneD6T_smallerISRFSR_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',  15, 0, 'Top'],
+['/TTJets_TuneD6T_scaleup_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',        15, 0, 'Top'],
+['/TTJets_TuneD6T_scaledown_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',      15, 0, 'Top'],
+['/TTJets_TuneD6T_matchingup_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',     15, 0, 'Top'],
+['/TTJets_TuneD6T_matchingdown_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',   15, 0, 'Top'],
+['/TTJets_TuneD6T_largerISRFSR_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',   15, 0, 'Top'],
     ]
 
 for crabFileStr in crabFileStrs :

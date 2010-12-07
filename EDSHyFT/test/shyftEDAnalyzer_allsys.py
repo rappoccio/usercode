@@ -31,6 +31,13 @@ options.register('sampleNameInput',
                  VarParsing.varType.string,
                  "Sample name to give histograms")
 
+options.register ('allSys',
+                  1,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Run all systematics (1) or just the central one (0)")
+
+
 options.parseArguments()
 
 print options
@@ -106,7 +113,7 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         reweightBTagEff = cms.bool(True),
                                         useCustomPayload = cms.bool(True),
                                         bcEffScale = cms.double(1.00),
-                                        lfEffScale = cms.double(0.87),
+                                        lfEffScale = cms.double(0.9),
                                         )                                    
                                     )
 
@@ -126,7 +133,7 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                          reweightBTagEff = cms.bool(True),
                                          useCustomPayload = cms.bool(True),
                                          bcEffScale = cms.double(1.00),
-                                         lfEffScale = cms.double(0.87),                                         
+                                         lfEffScale = cms.double(0.9),                                         
                                         )
                                      
                                      )
@@ -159,7 +166,7 @@ process.pfShyftAnaReweightedBTag080 = process.pfShyftAna.clone(
         reweightBTagEff = cms.bool(True),
         useCustomPayload = cms.bool(True),                                                   
         bcEffScale = cms.double(0.80),
-        lfEffScale = cms.double(0.87),        
+        lfEffScale = cms.double(0.9),        
         )
     )
 
@@ -169,7 +176,7 @@ process.pfShyftAnaReweightedBTag090 = process.pfShyftAna.clone(
         reweightBTagEff = cms.bool(True),
         useCustomPayload = cms.bool(True),
         bcEffScale = cms.double(0.90),
-        lfEffScale = cms.double(0.87),        
+        lfEffScale = cms.double(0.9),        
         )
     )
 
@@ -180,7 +187,7 @@ process.pfShyftAnaReweightedBTag110 = process.pfShyftAna.clone(
         reweightBTagEff = cms.bool(True),
         useCustomPayload = cms.bool(True),                                                    
         bcEffScale = cms.double(1.10),
-        lfEffScale = cms.double(0.87),        
+        lfEffScale = cms.double(0.9),        
         )
     )
 
@@ -190,7 +197,7 @@ process.pfShyftAnaReweightedBTag120 = process.pfShyftAna.clone(
         reweightBTagEff = cms.bool(True),
         useCustomPayload = cms.bool(True),                                                    
         bcEffScale = cms.double(1.20),
-        lfEffScale = cms.double(0.87),        
+        lfEffScale = cms.double(0.9),        
         )
     )
 
@@ -330,10 +337,7 @@ process.jptShyftAnaJES105NoMET = process.jptShyftAnaNoMET.clone(
     )
 
 
-
-
-process.p = cms.Path(
-    process.pfShyftAna*
+process.s = cms.Sequence(
     process.jptShyftAna*
     process.pfShyftAnaJES095*    
     process.pfShyftAnaJES105*
@@ -355,7 +359,13 @@ process.p = cms.Path(
     process.pfShyftAnaReweightedLFTag090*
     process.pfShyftAnaReweightedLFTag110
 #    process.pfShyftAnaMC
-
     )
+
+process.p = cms.Path(
+    process.pfShyftAna
+    )
+
+if options.allSys == 1 :
+    process.p *= process.s
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
