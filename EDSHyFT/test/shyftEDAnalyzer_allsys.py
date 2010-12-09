@@ -370,8 +370,8 @@ process.s = cms.Sequence(
     process.pfShyftAnaReweightedLFTag070*    
     process.pfShyftAnaReweightedLFTag080*
     process.pfShyftAnaReweightedLFTag090*
-    process.pfShyftAnaReweightedLFTag110
-#    process.pfShyftAnaMC
+    process.pfShyftAnaReweightedLFTag110*
+    process.pfShyftAnaMC
     )
 
 process.p = cms.Path(
