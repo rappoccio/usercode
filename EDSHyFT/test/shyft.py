@@ -207,11 +207,8 @@ process.patJetsAK5PF.tagInfoSources = cms.VInputTag(
 
 
 process.patMuonsPFlowLoose.pfMuonSource = 'pfAllMuonsPFlowLoose'
-process.patMuonsPFlowLoose.isoDeposits = cms.PSet()
-process.patMuonsPFlowLoose.isolationValues = cms.PSet()
 process.patElectronsPFlowLoose.pfElectronSource = 'pfAllElectronsPFlowLoose'
-process.patElectronsPFlowLoose.isoDeposits = cms.PSet()
-process.patElectronsPFlowLoose.isolationValues = cms.PSet()
+
 
 process.selectedPatMuons.cut = cms.string("pt > 10")
 process.selectedPatMuonsPFlow.cut = cms.string("pt > 10")
@@ -376,7 +373,7 @@ else :
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
 # process all the events
-process.maxEvents.input = -1
+process.maxEvents.input = 1000
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 

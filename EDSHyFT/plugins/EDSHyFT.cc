@@ -7,10 +7,11 @@
 #include "PhysicsTools/UtilAlgos/interface/FWLiteFilterWrapper.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-
+#include "Analysis/EDSHyFT/plugins/EDMuonInJetSelector.h"
 
 typedef edm::AnalyzerWrapper<SHyFT> EDSHyFT;
 typedef edm::FWLiteFilterWrapper<SHyFTSelector> EDWPlusJets;
+
 
 DEFINE_FWK_MODULE(EDSHyFT);
 DEFINE_FWK_MODULE(EDWPlusJets);
