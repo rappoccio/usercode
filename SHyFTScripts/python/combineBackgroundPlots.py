@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/bin/python
 
 # ===================================================
 #             stitchFlavorHistory.py
@@ -21,17 +21,16 @@
 #
 # ===================================================
 
-import sys
+from sys import argv
+
 
 from optparse import OptionParser
-
-import re
 
 
 parser = OptionParser()
 
 parser.add_option('--input', metavar='F', type='string', action='store',
-                  default='v17_allsys',
+                  default='shyftana_387_v1',
                   dest='input',
                   help='input file tag to be used')
 
@@ -55,26 +54,6 @@ parser.add_option('--outputLabel', metavar='L', type='string', action='store',
                   dest='outputLabel',
                   help='output label for the output root file')
 
-parser.add_option('--lepEta', metavar='ETA', type='string', action='store',
-                  default='muEta',
-                  dest='lepEta',
-                  help='name of lepton eta (default %default)')
-
-parser.add_option('--output', metavar='OUT', type='string', action='store',
-                  default='',
-                  dest='output',
-                  help='Force output name to be "OUT" instead of default name')
-
-parser.add_option('--massTemplateDir', metavar='MTD', type='string',
-                  default='pfShyftAna',
-                  dest='massTemplateDir',
-                  help='Directory from which to get high statistics mass templates')
-
-parser.add_option('--globalSF', metavar='SF', type='float',
-                  default=0.91,
-                  dest='globalSF',
-                  help='Global lepton SF (%default default)')
-
 parser.add_option('--minJets', metavar='N', type='int', action='store',
                   default=1,
                   dest='minJets',
@@ -86,14 +65,9 @@ parser.add_option('--useData', metavar='B', action='store_true',
                   help='Use data in estimates')
 
 parser.add_option('--dataFile', metavar='F', type='string', action='store',
-                  default='data_anashyft_15invpb_v3.root',
+                  default='Mu_Nov4ReReco_shyft_387_v1_shyftana_v1.root',
                   dest='dataFile',
                   help='If useData is True, this is the file from which to get the data histograms')
-
-parser.add_option('--noQCD', metavar='B', action='store_true',
-                  default=False,
-                  dest='noQCD',
-                  help='noQCD')
 
 parser.add_option('--useDataQCD', metavar='B', action='store_true',
                   default=False,
@@ -106,11 +80,16 @@ parser.add_option('--dataQCDFile', metavar='F', type='string', action='store',
                   dest='dataQCDFile',
                   help='If useDataQCD is True, this is the file from which to get the data QCD histograms')
 
+parser.add_option('--makePretagPlots', action='store_true',
+                  default=False,
+                  dest='makePretagPlots',
+                  help='Plot everything with muon eta rather than secvtx mass')
+
 
 parser.add_option('--lum', metavar='L', action='store',
-                  default=15.0,
+                  default=35.9,
                   dest='lum',
-                  help='Luminosity of the data (default %default/pb)')
+                  help='Luminosity of the data')
 
 (options, args) = parser.parse_args()
 
@@ -122,11 +101,11 @@ useData   = options.useData
 useDataQCD = options.useDataQCD
 
 histdir = tempstr+'/'
-
-# strip out any '/'s in the filename
-outfilestr = re.sub (r'/', '', tempstr + '_' + outlabel)
+outfilestr = tempstr + '_' + outlabel
 histdirData = options.histdirData + '/'
 templatedir = options.templatedir + '/'
+
+argv = []
 
 
 from ROOT import *
@@ -142,15 +121,14 @@ gROOT.Macro("rootlogon.C")
 # ---------------------------------------------
 # Get the files from whatever samples you want to stitch
 # ---------------------------------------------
-f_ttbar = TFile('TTbarJets-madgraph_shyftana_38xOn35x_'+inFileEnd+'.root')
-f_wjets = TFile('WJets-madgraph_shyftana_38xOn35x_'+inFileEnd+'.root')
-f_zjets = TFile('ZJets-madgraph_shyftana_38xOn35x_'+inFileEnd+'.root')
-f_vqq   = TFile('VqqJets-madgraph_shyftana_38xOn35x_'+inFileEnd+'.root')
-if not options.noQCD:
-    f_qcd   = TFile('InclusiveMu15_shyftana_38xOn35x_'+inFileEnd+'.root')
-f_st_s  = TFile('SingleTop_sChannel-madgraph_shyftana_38xOn35x_'+inFileEnd+'.root')
-f_st_t  = TFile('SingleTop_tChannel-madgraph_shyftana_38xOn35x_'+inFileEnd+'.root')
-f_st_tW = TFile('SingleTop_tWChannel-madgraph_shyftana_38xOn35x_'+inFileEnd+'.root')
+f_ttbar = TFile('TTJets_TuneD6T_7TeV-madgraph-tauola_'+inFileEnd+'.root')
+f_wjets = TFile('WJetsToLNu_TuneD6T_7TeV-madgraph-tauola_'+inFileEnd+'.root')
+f_zjets = TFile('DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_'+inFileEnd+'.root')
+f_vqq   = TFile('VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola_'+inFileEnd+'.root')
+f_qcd   = TFile('QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6_'+inFileEnd+'.root')
+f_st_s  = TFile('TToBLNu_TuneZ2_s-channel_7TeV-madgraph_'+inFileEnd+'.root')
+f_st_t  = TFile('TToBLNu_TuneZ2_t-channel_7TeV-madgraph_'+inFileEnd+'.root')
+f_st_tW = TFile('TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_'+inFileEnd+'.root')
 
 #f_data   = TFile('shyftStudies_data_2sep2010.root')
 f_data = TFile(options.dataFile)
@@ -167,7 +145,7 @@ if  (options.dataFile.find('pf') >= 0 and options.dataQCDFile.find('pf') == -1) 
 # ---------------------------------------------
 lum = options.lum
 
-globalSF = options.globalSF
+globalSF = 0.91 # From muon trigger efficiency
 
 # ---------------------------------------------
 # Leading order cross sections (pb)
@@ -178,8 +156,8 @@ xs_wtot  = 31314.0 * globalSF # NNLO
 xs_zjets =  3048.0 * globalSF
 xs_vqq   =    35.8 * globalSF
 xs_qcd   = 79688.0 * globalSF
-xs_st_t  =   20.93 * globalSF
-xs_st_s  =    1.49 * globalSF # xs_singS  =     4.6 * 0.32442 //was 0 before
+xs_st_t  =    20.93 * globalSF
+xs_st_s  =     0.0 * globalSF # xs_singS  =     4.6 * 0.32442
 xs_st_tW =    10.6 * globalSF
 
 
@@ -200,27 +178,26 @@ s_wqq = 1.0
 # ---------------------------------------------
 # Number of generated events
 # ---------------------------------------------
-n_ttbar =  1483404
-n_wjets = 10068895
-n_zjets =  1084921
-n_vqq   =   936242
-n_qcd   =  4377187
-n_st_t  =   528593
-n_st_s  =   412055
-n_st_tW =   466437
+n_ttbar =  1306182
+n_wjets = 14805546
+n_zjets =  2543727
+n_vqq   =   720613
+n_qcd   =  29504866
+n_st_s  =   494967
+n_st_t  =   484060
+n_st_tW =   494961
 
 # ---------------------------------------------
 # get the output file
 # ---------------------------------------------
-outputName = options.output or ('shyftPlots_stitched_' + outfilestr + '.root')
-f_out = TFile(outputName, 'RECREATE')
+f_out = TFile('shyftPlots_stitched_' + outfilestr + '.root', 'RECREATE')
 
 # ---------------------------------------------
 # Template name
 # ---------------------------------------------
 #histnameTag = 'secvtxMass_'
-#histnames0Tag = [options.lepEta]
-#histnames0Tag = ['MET', 'hT', 'wMT', options.lepEta]
+#histnames0Tag = ['muEta']
+#histnames0Tag = ['MET', 'hT', 'wMT', 'muEta']
 #histnamesSing = ['nJets', 'nTags', 'm3']
 
 
@@ -267,10 +244,9 @@ suffixes = [
 
 
 
-# now hard coded location
-bmass  = f_ttbar.Get( '%s/bmass'  % options.massTemplateDir)
-cmass  = f_ttbar.Get( '%s/cmass'  % options.massTemplateDir)
-lfmass = f_wjets.Get( '%s/lfmass' % options.massTemplateDir)
+bmass = f_ttbar.Get( templatedir + 'bmass')
+cmass = f_ttbar.Get( templatedir + 'cmass')
+lfmass = f_wjets.Get( templatedir + 'lfmass')
 
 bmass.Scale(1.0/bmass.Integral())
 cmass.Scale(1.0/cmass.Integral())
@@ -281,16 +257,29 @@ ibmass = 0
 icmass = 1
 ilfmass = 2
 
-tagDists = [
-    options.lepEta,
-    'secvtxMass',
-    'secvtxMass'
-    ]
-wjetsTemplates = [
-    None,
-    templates,
-    templates
-    ]
+if options.makePretagPlots is False :
+    tagDists = [
+        'muEta',
+        'secvtxMass',
+        'secvtxMass'
+        ]
+    wjetsTemplates = [
+        None,
+        templates,
+        templates
+        ]
+else :
+    tagDists = [
+        'muEta',
+        'muEta',
+        'muEta'
+        ]
+    wjetsTemplates = [
+        None,
+        None,
+        None
+        ]
+
 
 wbxHists = []
 wcxHists = []
@@ -338,9 +327,9 @@ singleTopHists = []
 
 
 singleTopSamples = [
-    ['SingleTopTWChan_', f_st_tW, xs_st_tW, n_st_tW],
-    ['SingleTopTChan_',  f_st_t,  xs_st_t,  n_st_t],
-    ['SingleTopSChan_',  f_st_s,  xs_st_s,  n_st_s]
+    ['SingleToptW_', f_st_tW, xs_st_tW, n_st_tW],
+    ['SingleTopT_',  f_st_t,  xs_st_t,  n_st_t],
+    ['SingleTopS_',  f_st_s,  xs_st_s,  n_st_s]
     ]
 
 singleTopLabel = 'SingleTop_'
@@ -373,15 +362,22 @@ if useDataQCD :
 
         ]
 
-    
-    qcd_data_names = [
-    'proj_Data_secvtxMass_1_1t',
-    'proj_Data_secvtxMass_2_1t',
-    'proj_Data_secvtxMass_3_1t',
-    'proj_Data_secvtxMass_4_1t',
-    'proj_Data_secvtxMass_5_1t'
-
-        ]
+    if options.makePretagPlots is False:
+        qcd_data_names = [
+            'proj_Data_secvtxMass_1_1t',
+            'proj_Data_secvtxMass_2_1t',
+            'proj_Data_secvtxMass_3_1t',
+            'proj_Data_secvtxMass_4_1t',
+            'proj_Data_secvtxMass_5_1t'            
+            ]
+    else :
+        qcd_data_names = [
+            'proj_Data_muEta_1_1t',
+            'proj_Data_muEta_2_1t',
+            'proj_Data_muEta_3_1t',
+            'proj_Data_muEta_4_1t',
+            'proj_Data_muEta_5_1t'            
+            ]        
 
     for ijet in range (1, maxJets):
         h0 = f_qcd_data.Get( qcd_0tag_data_names[ijet-1]).Clone()
@@ -389,17 +385,28 @@ if useDataQCD :
         qcdDataHists.append( h0 )
         
         h1 = f_qcd_data.Get( qcd_data_names[ijet-1]).Clone()
-        h1.SetName('QCD_B_secvtxMass_'+ str(ijet) + 'j_1t')
+        if options.makePretagPlots is False :
+            h1.SetName('QCD_B_secvtxMass_'+ str(ijet) + 'j_1t')
+        else :
+            h1.SetName('QCD_B_muEta_'+ str(ijet) + 'j_1t')            
         qcdDataHists.append( h1 )
         if ijet > 1 :
-            h2 = TH1F('QCD_B_secvtxMass_'+ str(ijet) + 'j_2t',
-                      'QCD_B_secvtxMass_'+ str(ijet) + 'j_2t',
-                      h1.GetNbinsX(),
-                      h1.GetXaxis().GetBinLowEdge(1),
-                      h1.GetXaxis().GetBinLowEdge(h1.GetNbinsX() + 1),
-                      )
-            qcdDataHists.append(h2)
-
+            if options.makePretagPlots is False :
+                h2 = TH1F('QCD_B_secvtxMass_'+ str(ijet) + 'j_2t',
+                          'QCD_B_secvtxMass_'+ str(ijet) + 'j_2t',
+                          h1.GetNbinsX(),
+                          h1.GetXaxis().GetBinLowEdge(1),
+                          h1.GetXaxis().GetBinLowEdge(h1.GetNbinsX() + 1),
+                          )
+                qcdDataHists.append(h2)
+            else :
+                h2 = TH1F('QCD_B_muEta_'+ str(ijet) + 'j_2t',
+                          'QCD_B_muEta_'+ str(ijet) + 'j_2t',
+                          h1.GetNbinsX(),
+                          h1.GetXaxis().GetBinLowEdge(1),
+                          h1.GetXaxis().GetBinLowEdge(h1.GetNbinsX() + 1),
+                          )
+                qcdDataHists.append(h2)                
 
 # ---------------------------------------------
 # ---------------------------------------------
@@ -409,7 +416,7 @@ if useDataQCD :
 
 quicksamples = []
 
-if not useDataQCD and not options.noQCD :
+if useDataQCD is False :
     quicksamples.append( ['QCD_', f_qcd,     xs_qcd,   n_qcd,   False] )
 
 quicksamples.append( ['Top_', f_ttbar,   xs_ttbar, n_ttbar, False] )
@@ -501,8 +508,6 @@ for histgroup in allHists :
         ihist.Write()
         itable = itable + 1        
 
-if options.noQCD:
-    sys.exit()
 
 from operator import itemgetter, attrgetter
 
