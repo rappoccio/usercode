@@ -153,7 +153,8 @@ globalSF = 0.91 # From muon trigger efficiency
 xs_ttbar =   157.5 * globalSF
 xs_wjets = 24170.0 * globalSF # LO
 xs_wtot  = 31314.0 * globalSF # NNLO
-xs_zjets =  3048.0 * globalSF
+xs_zjets =  2289.0 * globalSF # LO
+xs_ztot  =  3048.0 * globalSF # NNLO
 xs_vqq   =    35.8 * globalSF
 xs_qcd   = 79688.0 * globalSF
 xs_st_t  =    20.93 * globalSF
@@ -170,6 +171,7 @@ xs_st_tW =    10.6 * globalSF
 # ---------------------------------------------
 
 k_wtot = xs_wtot / xs_wjets
+k_ztot = xs_ztot / xs_zjets
 s_wbb = 1.0
 s_wcc = 1.0
 s_wqq = 1.0
@@ -223,6 +225,10 @@ pathNamesW = [
     ['WjetsW_path4'    , f_wjets ,n_wjets, xs_wjets ],# path 4
     ['WjetsW_path5'    , f_wjets ,n_wjets, xs_wjets ],# path 5
     ['WjetsW_path6'    , f_wjets ,n_wjets, xs_wjets ],# path 6
+    ['WjetsW_path7'    , f_wjets ,n_wjets, xs_wjets ],# path 7
+    ['WjetsW_path8'    , f_wjets ,n_wjets, xs_wjets ],# path 8
+    ['WjetsW_path9'    , f_wjets ,n_wjets, xs_wjets ],# path 9
+    ['WjetsW_path10'   , f_wjets ,n_wjets, xs_wjets ],# path 10        
     ['WjetsW_path11'   , f_wjets ,n_wjets, xs_wjets ],# path 11
     ]
 
@@ -233,6 +239,10 @@ pathNamesZ = [
     ['ZjetsZ_path4'    , f_zjets ,n_zjets, xs_zjets ],# path 4
     ['ZjetsZ_path5'    , f_zjets ,n_zjets, xs_zjets ],# path 5
     ['ZjetsZ_path6'    , f_zjets ,n_zjets, xs_zjets ],# path 6
+    ['ZjetsZ_path7'    , f_zjets ,n_zjets, xs_zjets ],# path 7
+    ['ZjetsZ_path8'    , f_zjets ,n_zjets, xs_zjets ],# path 8
+    ['ZjetsZ_path9'    , f_zjets ,n_zjets, xs_zjets ],# path 9
+    ['ZjetsZ_path10'   , f_zjets ,n_zjets, xs_zjets ],# path 10        
     ['ZjetsZ_path11'   , f_zjets ,n_zjets, xs_zjets ] # path 11    
     ]
 
@@ -309,7 +319,7 @@ for ijet in range(1,maxJets) :
 
         [izbx, izcx, izqq] = stitchFlavorHistory( ['Zbx_', 'Zcx_', 'Zqq_'],
                                                   lum,
-                                                  histdir , s, k_wtot,
+                                                  histdir , s, k_ztot,
                                                   pathNamesZ, itemplates, suffixes[itag], verbose=False )
         zbxHists.append( izbx )
         zcxHists.append( izcx )
@@ -417,12 +427,12 @@ if useDataQCD :
 quicksamples = []
 
 if useDataQCD is False :
-    quicksamples.append( ['QCD_', f_qcd,     xs_qcd,   n_qcd,   False] )
+    quicksamples.append( ['QCD_', f_qcd, f_qcd,    xs_qcd,   n_qcd,   False] )
 
-quicksamples.append( ['Top_', f_ttbar,   xs_ttbar, n_ttbar, False] )
+quicksamples.append( ['Top_', f_ttbar, f_ttbar,  xs_ttbar, n_ttbar, False] )
 
 if useData :
-    quicksamples.append( ['Data_', f_data, 1.0, None, True ] )
+    quicksamples.append( ['Data_', f_data, f_data, 1.0, None, True ] )
 
 allsimpleHists = []
 for isample in range(0,len(quicksamples)) :
