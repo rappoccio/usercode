@@ -16,6 +16,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Candidate/interface/ShallowClonePtrCandidate.h"
 #include "Analysis/SHyFT/interface/TopElectronSelector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
 class SHyFTSelector : public EventSelector {
    public:
@@ -27,6 +28,7 @@ class SHyFTSelector : public EventSelector {
       virtual bool operator()( edm::EventBase const & t, pat::strbitset & ret);
       using EventSelector::operator();
 
+      std::vector<reco::ShallowClonePtrCandidate> const & allJets           () const { return allJets_;     } 
       std::vector<reco::ShallowClonePtrCandidate> const & selectedJets      () const { return selectedJets_;     } 
       std::vector<reco::ShallowClonePtrCandidate> const & cleanedJets       () const { return cleanedJets_;      } 
       std::vector<reco::ShallowClonePtrCandidate> const & oldElectrons      () const { return oldElectrons_;}
@@ -63,15 +65,18 @@ class SHyFTSelector : public EventSelector {
       std::string                 muTrig_;
       std::string                 eleTrig_;
 
+      std::vector<reco::ShallowClonePtrCandidate> allJets_;
       std::vector<reco::ShallowClonePtrCandidate> selectedJets_;
+      std::vector<reco::ShallowClonePtrCandidate> selectedElectrons_;
+      std::vector<reco::ShallowClonePtrCandidate> allMuons_;
       std::vector<reco::ShallowClonePtrCandidate> selectedMuons_;
       std::vector<reco::ShallowClonePtrCandidate> oldElectrons_;
       std::vector<reco::ShallowClonePtrCandidate> looseMuons_;
+      std::vector<reco::ShallowClonePtrCandidate> allElectrons_;
       std::vector<reco::ShallowClonePtrCandidate> looseElectrons_;
       std::vector<reco::ShallowClonePtrCandidate> selectedMETs_;
       std::vector<reco::ShallowClonePtrCandidate> cleanedJets_;
       reco::ShallowClonePtrCandidate              met_;
-      std::vector<reco::ShallowClonePtrCandidate> selectedElectrons_;
       std::vector<reco::ShallowClonePtrCandidate> selectedLooseElectrons_;
       std::vector<reco::ShallowClonePtrCandidate> selectedLooseMuons_;
       PVSelector                           pvSelector_;
@@ -105,8 +110,10 @@ class SHyFTSelector : public EventSelector {
       double jetEtaMax_;
 
       double jetScale_;
-
+      double jetUncertainty_; // "flat" uncertainty after the L2L3 uncertainty
+      double jetSmear_;
       double metMin_;
+      double unclMetScale_; 
 
       index_type   inclusiveIndex_; 
       index_type   triggerIndex_;   
@@ -134,6 +141,11 @@ class SHyFTSelector : public EventSelector {
       bool           use36xData_;
       bool           useAntiSelection_;
       bool           useEleMC_;
+
+
+      // Jet energy corrections object
+      std::string    jecPayload_;
+      boost::shared_ptr<JetCorrectionUncertainty> jecUnc_;
 };
 
 

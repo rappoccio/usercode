@@ -10,6 +10,7 @@
 <use name=PhysicsTools/SelectorUtils>
 <use name=PhysicsTools/FWLite>
 <use name=PhysicsTools/Utilities>
+<use name=CondFormats/JetMETObjects>
 <use name=lhapdf>
 
 <export>
