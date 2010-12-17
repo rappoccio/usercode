@@ -106,10 +106,14 @@ wplusjetsAnalysis = cms.PSet(
     eEtCut         = cms.double( 30. ), 
     jetPtMin       = cms.double( 30.0 ),
     jetEtaMax      = cms.double( 2.4 ),
-    jetScale       = cms.double( 1.0 ),
+    jetScale       = cms.double( 0.0 ),
+    jetUncertainty = cms.double( 0.0 ),
+    jetSmear       = cms.double( 0.0 ),
     metMin         = cms.double( 0.0 ),
+    unclMetScale   = cms.double( 0.0 ),
     muJetDR        = cms.double( 0.3 ),
     useJetClones   = cms.bool(False),
     eleJetDR       = cms.double( 0.3 ),
-    rawJetPtCut    = cms.double( 0.0 )
+    rawJetPtCut    = cms.double( 0.0 ),
+    jecPayload     = cms.string('Spring10_Uncertainty_AK5PF.txt')
 )

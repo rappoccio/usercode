@@ -1086,23 +1086,43 @@ void SHyFT::weightPDF(  edm::EventBase const & iEvent)
   double x2 = pdfstuff->pdf()->x.second;
 
   // BROKEN for Madgraph productions:
-  double pdf1 = pdfstuff->pdf()->xPDF.first;
-  double pdf2 = pdfstuff->pdf()->xPDF.second;  
+  // double pdf1 = pdfstuff->pdf()->xPDF.first;
+  // double pdf2 = pdfstuff->pdf()->xPDF.second;  
 
+  // Instead check versus central PDF value here:
+  LHAPDF::usePDFMember(1,0);
+  double pdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
+  double pdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
 
   // Eigenvector already set up for this job.
   // It is, contrary to the LHAPDF documentation, ABYSMALLY SLOW
   // to switch between PDF sets and so we will run
   // one single PDF with one single eigenvector *per job*
   
+  LHAPDF::usePDFMember(1, pdfEigenToUse_);
+
   double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
   double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
   double prod =  (newpdf1/pdf1*newpdf2/pdf2);
   iWeightSum += prod*prod;    
   iWeightSum = TMath::Sqrt(iWeightSum) ;
+
+  // char buff[1000];
+  // sprintf(buff, "Q = %6.2f, id1 = %4d, id2 = %4d, x1 = %6.2f, x2 = %6.2f, pdf1 = %6.2f, pdf2 = %6.2f",
+  // 	  Q, id1, id2, x1, x2, pdf1, pdf2
+  // 	  );
+  // std::cout << buff << std::endl;
+  // sprintf(buff, "  New :  pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
+  // 	  newpdf1, newpdf2, prod
+  // 	  );
+  // std::cout << buff << std::endl;
+  
+
+
+
     
   globalWeight_ *= iWeightSum ;
-  std::cout << "Global weight = " << globalWeight_ << std::endl;
+  // std::cout << "Global weight = " << globalWeight_ << std::endl;
   gethist<TH1F>( dir, "pdfWeight")->Fill( globalWeight_ );
 
 }
