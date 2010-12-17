@@ -125,6 +125,7 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         useCustomPayload = cms.bool(True),
                                         bcEffScale = cms.double(1.00),
                                         lfEffScale = cms.double(0.9),
+                                        jetSmear = cms.double(0.1),
                                         cutsToIgnore=cms.vstring(inputCutsToIgnore)
                                         )                                    
                                     )
@@ -276,17 +277,51 @@ process.pfShyftAnaReweightedLFTag110 = process.pfShyftAna.clone(
 
 process.pfShyftAnaJES095 = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-        jetScale = cms.double(0.95),
+        jetScale = cms.double(-1.0),
+        jetUncertainty = cms.double(0.053),
         identifier = cms.string('PFJES095')
         )
     )
 
+
 process.pfShyftAnaJES105 = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-        jetScale = cms.double(1.05),
+        jetScale = cms.double(1.0),
+        jetUncertainty = cms.double(0.053),
         identifier = cms.string('PFJES105')
         )
     )
+
+
+process.pfShyftAnaJER000 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        jetSmear = cms.double(0.00),
+        identifier = cms.string('PFJER000')
+        )
+    )
+
+process.pfShyftAnaJER020 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        jetSmear = cms.double(0.20),
+        identifier = cms.string('PFJER020')
+        )
+    )
+
+
+process.pfShyftAnaMETRES090 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        unclMetScale = cms.double( 0.90 ),
+        identifier = cms.string('PFMETRES090')
+        )
+    )
+
+process.pfShyftAnaMETRES110 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        unclMetScale = cms.double( 1.10 ),
+        identifier = cms.string('PFMETRES110')
+        )
+    )
+
 
 process.jptShyftAnaJES095 = process.jptShyftAna.clone(
     shyftAnalysis = process.jptShyftAna.shyftAnalysis.clone(
@@ -354,6 +389,10 @@ process.s = cms.Sequence(
     process.jptShyftAna*
     process.pfShyftAnaJES095*    
     process.pfShyftAnaJES105*
+    process.pfShyftAnaMETRES090*
+    process.pfShyftAnaMETRES110*
+    process.pfShyftAnaJER000*
+    process.pfShyftAnaJER020*    
 #    process.jptShyftAnaJES095*    
 #    process.jptShyftAnaJES105*
 #    process.pfShyftAnaNoMET*

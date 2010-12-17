@@ -19,7 +19,7 @@ parser.add_option('--inputCMSSW', metavar='C', type='string', action='store',
                   help='input CMSSW py to be used')
 
 parser.add_option('--outLabel', metavar='L', type='string', action='store',
-                  default='_shyftana_387_v1',
+                  default='_shyftana_387_v3',
                   dest='outLabel',
                   help='output tag to be used')
 
@@ -27,10 +27,10 @@ parser.add_option('--outLabel', metavar='L', type='string', action='store',
 
 
 crabFileStrs = [
-#['/TTJets_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',            15, 0, 'Top', 0],
-#['/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-9a4f16815707934fe8e1e1334c342e5c/USER',        45, 1, 'Wjets', 0],
-#['/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',   15, 1, 'Zjets', 0],
-#['/VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',       15, 1, 'Vqq', 0],
+['/TTJets_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',            15, 0, 'Top', 0],
+['/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-9a4f16815707934fe8e1e1334c342e5c/USER',        80, 1, 'Wjets', 0],
+['/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',   15, 1, 'Zjets', 0],
+['/VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',       15, 1, 'Vqq', 0],
 #['/VQQJetsToLL_TuneD6T_scaledown_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',       15, 1, 'Vqq', 1],
 #['/VQQJetsToLL_TuneD6T_scaleup_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',       15, 1, 'Vqq', 1],
 ['/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph/srappocc-shyft_387_v1-9a4f16815707934fe8e1e1334c342e5c/USER',        15, 0, 'SingleToptW', 1],
