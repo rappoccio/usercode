@@ -56,7 +56,6 @@ int main ( int argc, char ** argv )
   WPlusJetsEventSelector wPlusJets( shyftParameters );
   std::strbitset ret = wPlusJets.getBitTemplate();
   
-  std::cout << "About to loop" << std::endl;
   //loop through each event
   for( ev.toBegin();
        ! ev.atEnd();
@@ -74,10 +73,7 @@ int main ( int argc, char ** argv )
     bool passTrigger = ret[ bit_ ];
     bit_ = "== 1 Lepton";
     bool passOneLepton = ret[ bit_ ];
-
-    if ( passed ) 
-      std::cout << "Passed, njet = " << jets.size() << std::endl;
-
+   
   } //end event loop
   
   //cout << "Printing" << endl;
