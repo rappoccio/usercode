@@ -269,7 +269,7 @@ process.pfShyftAnaReweightedLFTag110 = process.pfShyftAna.clone(
         reweightBTagEff = cms.bool(True),
         useCustomPayload = cms.bool(True),                                                       
         lfEffScale = cms.double(1.10),
-        bcEffScale = cms.double(1.10),        
+        bcEffScale = cms.double(1.00),        
         )
     )
 
