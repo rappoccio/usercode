@@ -9,7 +9,7 @@ def doCutAndCount( lum, Top, SingTop, QCD, Wbx, Wcx, Wqx, Zbx, Zcx, Zqx, Data, n
 
     # Get the central value
     bkg = SingTop + QCD + Wbx + Wcx + Wqx + Zbx + Zcx + Zqx
-    dbkg = sqrt( 0.15*0.15*SingTop*SingTop
+    dbkg = sqrt( 0.30*0.30*SingTop*SingTop
                  + 1.0*1.0*QCD*QCD
                  + 1.0*1.0*(Wbx+Wcx+Wqx+Zbx+Zcx+Zqx)*(Wbx+Wcx+Wqx+Zbx+Zcx+Zqx) )
     print 'Nbkg = {0:6.3f} +- {1:6.3f}'.format(
@@ -28,15 +28,19 @@ def doCutAndCount( lum, Top, SingTop, QCD, Wbx, Wcx, Wqx, Zbx, Zcx, Zqx, Data, n
     elif ntags is 2 :
         dsf_btag= 0.072 * 2.0
     fsf_btag= dsf_btag / sf_btag
-    sf_lep  = 1.0   # 0.96 From AN-2010-258, table 5 |eta|<2.1, trigger SF = 96 +- 1 %, eff SF = 100.0 +- 0.5%
-    dsf_lep = 0.011  / 0.96
+    sf_lep  = 1.0   # 0.965 from recent studies in top group
+    dsf_lep = 0.03
     fsf_lep = dsf_lep / sf_lep
 
     # the JEC is derived directly from this script, using the "up and down" JEC templates
-    deff_jec_up = 0.06
-    deff_jec_dn = 0.06    
+    deff_jec_up = 0.12
+    deff_jec_dn = 0.03    
 
     deff_jec_av = (deff_jec_up + deff_jec_dn) / 2.0
+
+    # the JER is derived directly from this script, using the "up and down" JER templates
+    
+
     eff = sig / (xs_ttbar * lum) * sf_btag * sf_lep
 
     xs = (Data - bkg) / (eff * lum)

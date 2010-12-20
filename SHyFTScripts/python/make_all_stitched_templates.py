@@ -12,6 +12,10 @@ options = [
     ['pfShyftAnaMETRES110', 'pfShyftAna', '35pb_fhmore_387v1data_387v1mc', 'Mu_Nov4ReReco_shyft_387_v1_shyftana_v1.root', 'pf_metvsiso_normalized_qcd_templates.root', 'pfShyftAnaMC', None],
 
 
+    ['pfShyftAnaJER000', 'pfShyftAna', '35pb_fhmore_387v1data_387v1mc', 'Mu_Nov4ReReco_shyft_387_v1_shyftana_v1.root', 'pf_metvsiso_normalized_qcd_templates.root', 'pfShyftAnaMC', None],
+    ['pfShyftAnaJER020', 'pfShyftAna', '35pb_fhmore_387v1data_387v1mc', 'Mu_Nov4ReReco_shyft_387_v1_shyftana_v1.root', 'pf_metvsiso_normalized_qcd_templates.root', 'pfShyftAnaMC', None],
+
+
     ['pfShyftAna',       'pfShyftAna', '35pb_fhmore_387v1data_387v1mc', 'Mu_Nov4ReReco_shyft_387_v1_shyftana_v1.root', 'pf_d0vsiso_metcut_normalized_qcd_templates.root', 'pfShyftAnaMC', None],    
 #    ['pfShyftAnaNoMET',  'pfShyftAnaNoMET', '35pb_fhmore_387v1data_387v1mc', 'Mu_Nov4ReReco_shyft_387_v1_shyftana_v1.root', 'pf_d0vsiso_nometcut_normalized_qcd_templates.root',  'pfShyftAnaMC', None],
 
