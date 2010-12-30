@@ -370,7 +370,6 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
       // your sample. 
       std::cout << "PDF to use = " << pdfToUse_ << std::endl;
       LHAPDF::initPDFSet(pdfToUse_);
-      LHAPDF::usePDFMember(pdfEigenToUse_);
       std::cout << "Done initializing pdfs" << std::endl;
    }
 
@@ -1089,22 +1088,20 @@ void SHyFT::weightPDF(  edm::EventBase const & iEvent)
   // double pdf1 = pdfstuff->pdf()->xPDF.first;
   // double pdf2 = pdfstuff->pdf()->xPDF.second;  
 
-  // Instead check versus central PDF value here:
   LHAPDF::usePDFMember(1,0);
-  double pdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
-  double pdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
+  double xpdf1 = LHAPDF::xfx(1, x1, Q, id1);
+  double xpdf2 = LHAPDF::xfx(1, x2, Q, id2);
+  double w0 = xpdf1 * xpdf2;
 
-  // Eigenvector already set up for this job.
-  // It is, contrary to the LHAPDF documentation, ABYSMALLY SLOW
-  // to switch between PDF sets and so we will run
-  // one single PDF with one single eigenvector *per job*
-  
-  LHAPDF::usePDFMember(1, pdfEigenToUse_);
+  for(int i=1; i <=44; ++i){
+    LHAPDF::usePDFMember(1,i);
+    double xpdf1_new = LHAPDF::xfx(1, x1, Q, id1);
+    double xpdf2_new = LHAPDF::xfx(1, x2, Q, id2);
+    double weight = xpdf1_new * xpdf2_new / w0;
+    iWeightSum += weight*weight;
+  }
 
-  double newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
-  double newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
-  double prod =  (newpdf1/pdf1*newpdf2/pdf2);
-  iWeightSum += prod*prod;    
+
   iWeightSum = TMath::Sqrt(iWeightSum) ;
 
   // char buff[1000];

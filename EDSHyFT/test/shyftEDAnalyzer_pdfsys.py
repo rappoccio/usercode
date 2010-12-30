@@ -117,20 +117,15 @@ process.pfShyftAnaUp = cms.EDAnalyzer('EDSHyFT',
                                         pdfEigenToUse = cms.int32(0),    
                                         pdfSrc = cms.InputTag('generator'),
                                         pdfToUse = cms.string(options.pdfSet),
-                                        pdfVariation= cms.int32(1),
                                         #pdfToUse = cms.string('cteq6ll.LHpdf'),
                                         #pdfToUse = cms.string('cteq6m.LHpdf'),
                                         cutsToIgnore=cms.vstring(inputCutsToIgnore)
                                         )                                    
                                     )
-process.pfShyftAnaDown = process.pfShyftAnaUp.clone(
-    pdfVariation=cms.int32(-1),
-    identifier=cms.string('PDF Down')
-    )
+
 
 process.p = cms.Path(
-    process.pfShyftAnaUp *
-    process.pfShyftAnaDown    
+    process.pfShyftAnaUp   
     )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
