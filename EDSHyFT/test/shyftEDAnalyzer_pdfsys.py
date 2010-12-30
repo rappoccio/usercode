@@ -97,7 +97,7 @@ process.TFileService = cms.Service("TFileService",
                                    )
 
 
-process.pfShyftAna0 = cms.EDAnalyzer('EDSHyFT',
+process.pfShyftAnaUp = cms.EDAnalyzer('EDSHyFT',
                                     shyftAnalysis = inputShyftAnalysis.clone(
                                         muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
                                         electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
@@ -109,7 +109,7 @@ process.pfShyftAna0 = cms.EDAnalyzer('EDSHyFT',
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
                                         sampleName = cms.string(inputSampleName),
-                                        identifier = cms.string('IPDF 0'),
+                                        identifier = cms.string('PDF Up'),
                                         jetAlgo = cms.string("pf"),
                                         reweightBTagEff = cms.bool(False),
                                         useCustomPayload = cms.bool(False),
@@ -117,20 +117,20 @@ process.pfShyftAna0 = cms.EDAnalyzer('EDSHyFT',
                                         pdfEigenToUse = cms.int32(0),    
                                         pdfSrc = cms.InputTag('generator'),
                                         pdfToUse = cms.string(options.pdfSet),
+                                        pdfVariation= cms.int32(1),
                                         #pdfToUse = cms.string('cteq6ll.LHpdf'),
                                         #pdfToUse = cms.string('cteq6m.LHpdf'),
                                         cutsToIgnore=cms.vstring(inputCutsToIgnore)
                                         )                                    
                                     )
-
-process.p = cms.Path(
-    process.pfShyftAna0
+process.pfShyftAnaDown = process.pfShyftAnaUp.clone(
+    pdfVariation=cms.int32(-1),
+    identifier=cms.string('PDF Down')
     )
 
-for ipdf in range(1, options.nEigen ) :
-    setattr(process, 'pfShyftAna' + str(ipdf), process.pfShyftAna0.clone(pdfEigenToUse = cms.int32(ipdf),
-                                                                         identifier = cms.string('IPDF ' + str(ipdf))
-                                                                         ) )
-    process.p *= cms.Sequence( getattr(process,'pfShyftAna'+str(ipdf)) )
+process.p = cms.Path(
+    process.pfShyftAnaUp *
+    process.pfShyftAnaDown    
+    )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
