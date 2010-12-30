@@ -7,7 +7,8 @@ import tokenize
 
 from event_flow_selectors import event_flow_selectors
 
-tokens = ['>= 1 Lepton',
+tokens = ['Inclusive',
+          '>= 1 Lepton',
           '== 1 Tight Lepton, Mu Veto',
           '== 1 Lepton',
           'MET Cut',
@@ -16,19 +17,23 @@ tokens = ['>= 1 Lepton',
           ]
 
 dirs = [
-'InclusiveMu15_shyftana_38xOn35x_v18_allsys',
-'SingleTop_sChannel-madgraph_shyftana_38xOn35x_v18_allsys',
-'SingleTop_tChannel-madgraph_shyftana_38xOn35x_v18_allsys',
-'SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v18_allsys',
-'TTbarJets-madgraph_shyftana_38xOn35x_v18_allsys',
-'VqqJets-madgraph_shyftana_38xOn35x_v18_allsys',
-'WJets-madgraph_shyftana_38xOn35x_v18_allsys',
-'ZJets-madgraph_shyftana_38xOn35x_v18_allsys'
+'Mu_Run2010A-Nov4ReReco_shyft_387_v1_shyftana_v1',
+'Mu_Run2010B-Nov4ReReco_shyft_387_v1_shyftana_v1_HLT_Mu15Region',
+'Mu_Run2010B-Nov4ReReco_shyft_387_v1_shyftana_v1_HLT_Mu9Region',
+'DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_shyftana_387_v3',
+'QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6_shyftana_387_v3',
+'TTJets_TuneD6T_7TeV-madgraph-tauola_shyftana_387_v3',
+'TTJets_TuneD6T_7TeV-madgraph-tauola_shyftana_387_v3_pu',
+'TToBLNu_TuneZ2_s-channel_7TeV-madgraph_shyftana_387_v3',
+'TToBLNu_TuneZ2_t-channel_7TeV-madgraph_shyftana_387_v3',
+'TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_shyftana_387_v3',
+'VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola_shyftana_387_v3',
+'WJetsToLNu_TuneD6T_7TeV-madgraph-tauola_shyftana_387_v3',
+
 ]
 
 labels = [
     'PF',
-    'JPT',
 #    'Calo'
     ]
 
