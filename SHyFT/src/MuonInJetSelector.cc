@@ -113,7 +113,7 @@ bool MuonInJetSelector::operator() ( edm::EventBase const & event, pat::strbitse
 	     if( dR < muJetDR_ )
 	       { indeltaR = true; }
 	   }
-	   if ( indeltaR ) {
+	   if ( ignoreCut(mu2_) || indeltaR ) {
 	     selectedJets_.push_back(scaledJet);
 	   }
        
