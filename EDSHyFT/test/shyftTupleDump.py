@@ -83,7 +83,7 @@ if inputDoMC == False :
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
-from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
+from Analysis.SHyFT.shyftselection_cfi import wplusjetsAnalysis as inputShyftAnalysis
 
 
 

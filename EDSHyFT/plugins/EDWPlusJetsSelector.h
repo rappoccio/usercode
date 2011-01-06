@@ -24,7 +24,7 @@ class EDWPlusJetsSelector : public edm::FWLiteFilterWrapper<SHyFTSelector> {
   {
     bool passed = edm::FWLiteFilterWrapper<SHyFTSelector>::filter( event, eventSetup );
 
-    std::vector<reco::ShallowClonePtrCandidate> const & ijets = filter_->selectedJets();
+    std::vector<reco::ShallowClonePtrCandidate> const & ijets = filter_->cleanedJets();
     std::vector<reco::ShallowClonePtrCandidate> const & imuons = filter_->selectedMuons();
     std::vector<reco::ShallowClonePtrCandidate> const & ielectrons = filter_->selectedElectrons();
 

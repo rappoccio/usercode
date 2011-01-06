@@ -25,20 +25,20 @@ dirs = [
 ##    'Mu_Run2010A-Nov4ReReco_shyft_387_v1',
 ##    'Mu_Run2010B-Nov4ReReco_shyft_387_v1'
 
-## 'TTJets_TuneD6T_7TeV-madgraph-tauola_shyftana_387_v3',
-## 'WJetsToLNu_TuneD6T_7TeV-madgraph-tauola_shyftana_387_v3',
-## 'DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_shyftana_387_v3',
-## 'VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola_shyftana_387_v3',
-## 'TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_shyftana_387_v3',
-## 'TToBLNu_TuneZ2_t-channel_7TeV-madgraph_shyftana_387_v3',
-## 'TToBLNu_TuneZ2_s-channel_7TeV-madgraph_shyftana_387_v3',
-## 'QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6_shyftana_387_v3',
+'TTJets_TuneD6T_7TeV-madgraph-tauola_shyftana_387_v4',
+'WJetsToLNu_TuneD6T_7TeV-madgraph-tauola_shyftana_387_v4',
+'DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_shyftana_387_v4',
+'VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola_shyftana_387_v4',
+'TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_shyftana_387_v4',
+'TToBLNu_TuneZ2_t-channel_7TeV-madgraph_shyftana_387_v4',
+'TToBLNu_TuneZ2_s-channel_7TeV-madgraph_shyftana_387_v4',
+'QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6_shyftana_387_v4',
 
-'Mu_Run2010A-Nov4ReReco_shyft_387_v1_shyftanaskim_v3_r1',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_shyftanaskim_v3_r2',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_shyftanaskim_v3_r3',
-'TTJets_TuneD6T_7TeV-madgraph-tauola_shyftanaskim_387_v3',
-'WJetsToLNu_TuneD6T_7TeV-madgraph-tauola_shyftanaskim_387_v3'
+'Mu_Run2010A-Nov4ReReco_shyft_387_v1_shyftanaskim_v4_r1',
+'Mu_Run2010B-Nov4ReReco_shyft_387_v1_shyftanaskim_v4_r2',
+'Mu_Run2010B-Nov4ReReco_shyft_387_v1_shyftanaskim_v4_r3',
+'TTJets_TuneD6T_7TeV-madgraph-tauola_shyftanaskim_387_v4',
+'WJetsToLNu_TuneD6T_7TeV-madgraph-tauola_shyftanaskim_387_v4'
     
     
 ]

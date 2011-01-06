@@ -13,6 +13,20 @@ parser.add_option('--doMC', action='store_true',
                   dest='doMC',
                   help='use MC')
 
+parser.add_option("--inputDir", action='store',
+                  default=None,
+                  dest='inputDir',
+                  help='Input directory to find files')
+
+parser.add_option("--inputFiles", action='store',
+                  default="input_files.txt",
+                  dest="inputFiles",
+                  help="Text file containing list of files you want to process")
+
+parser.add_option("--outputFile", action='store',
+                  default="plots.root",
+                  dest="outputFile",
+                  help="Output file name")
 
 # Parse and get arguments
 (options, args) = parser.parse_args()
@@ -28,60 +42,22 @@ import sys
 # Import what we need from FWLite
 from DataFormats.FWLite import Events, Handle
 
-# Get the input files
-if options.doMC :
-    files = [
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_10_1_erc.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_11_1_hBU.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_12_1_E8D.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_13_1_ZdT.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_14_1_xV3.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_15_1_8z1.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_16_1_FzP.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_16_1_QHD.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_16_1_YQt.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_1_1_mTC.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_2_1_Xpk.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_3_1_isl.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_4_1_Pk7.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_5_1_6SS.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_6_1_zDe.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_7_1_Dph.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_8_1_USp.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyftanaskim_387_v3/33b03c765ac393668d5be7f9ca26fb5d/shyft_skim_386_9_1_ywD.root',
+# Read the input file
+# Add the files in the input file
+infile = open( options.inputFiles )
+allInputFiles = infile.readlines()
+files = []
+for ifile in allInputFiles :
+    if options.inputDir is not None:
+        s = options.inputDir + '/' + ifile 
+    else :
+        s = ifile    
+    files.append(s.rstrip() ) # make sure to remove trailing whitespace
 
-
-        ]
-else :
-    files = [
-'Mu_Run2010A-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2/res/muonInJet_10_1_nE5.root',
-'Mu_Run2010A-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2/res/muonInJet_1_1_xKZ.root',
-'Mu_Run2010A-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2/res/muonInJet_2_1_5KI.root',
-'Mu_Run2010A-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2/res/muonInJet_3_1_RMe.root',
-'Mu_Run2010A-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2/res/muonInJet_4_1_p0T.root',
-'Mu_Run2010A-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2/res/muonInJet_5_1_HVI.root',
-'Mu_Run2010A-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2/res/muonInJet_6_1_2v6.root',
-'Mu_Run2010A-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2/res/muonInJet_7_1_XoF.root',
-'Mu_Run2010A-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2/res/muonInJet_8_1_S9s.root',
-'Mu_Run2010A-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2/res/muonInJet_9_1_1JL.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu15Region/res/muonInJet_1_1_qZV.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu15Region/res/muonInJet_2_1_JFY.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu15Region/res/muonInJet_3_1_y0P.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu15Region/res/muonInJet_4_1_9GO.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu15Region/res/muonInJet_5_1_dsU.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu9Region/res/muonInJet_1_1_WTq.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu9Region/res/muonInJet_2_1_mKs.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu9Region/res/muonInJet_3_1_loE.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu9Region/res/muonInJet_4_1_XkB.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu9Region/res/muonInJet_5_1_Gkh.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu9Region/res/muonInJet_6_1_nES.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu9Region/res/muonInJet_7_1_ZVt.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu9Region/res/muonInJet_8_1_4mi.root',
-'Mu_Run2010B-Nov4ReReco_shyft_387_v1_singlemuonInJet_v2_HLT_Mu9Region/res/muonInJet_9_1_xkV.root',
-
-
-        ]
-
+# Print it out
+print 'Processing files '
+for ifile in files :
+    print ifile
 
 # Get the FWLite "Events"
 events = Events (files)
@@ -94,7 +70,7 @@ jetsLabel = ("pfShyftSkim", "jets")
 
 
 # Create an output file and a histogram 
-f = ROOT.TFile("wjetsQuick.root", "RECREATE")
+f = ROOT.TFile(options.outputFile, "RECREATE")
 f.cd()
 secvtxMass = ROOT.TH1F("secvtxMass","secvtxMass",   100, 0.0,  10.0 )
 
