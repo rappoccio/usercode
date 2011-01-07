@@ -8,7 +8,9 @@ from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
 
 wplusjetsAnalysis = cms.PSet(
     # Primary vertex
-    pvSelector = cms.PSet( pvSel.clone() ),
+    pvSelector = cms.PSet( pvSel.clone(
+        maxZ=cms.double(24.0)
+        ) ),
     # input parameter sets
     muonSrc = cms.InputTag('selectedPatMuons'),
     electronSrc = cms.InputTag('selectedPatElectrons'),
