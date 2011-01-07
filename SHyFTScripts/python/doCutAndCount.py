@@ -24,9 +24,9 @@ def doCutAndCount( lum, Top, SingTop, QCD, Wbx, Wcx, Wqx, Zbx, Zcx, Zqx, Data, n
     # SF's are NOW SET IN THE TEMPLATES
     sf_btag = 1.0  # 0.914 From AN-2010-162, table 4, per-jet SF = 0.88, from ttbar MC, event SF = 0.914 (see getFbcp.py)
     if ntags is 1 :        
-        dsf_btag= 0.072
+        dsf_btag= 0.099 / 0.9
     elif ntags is 2 :
-        dsf_btag= 0.072 * 2.0
+        dsf_btag= 0.099 / 0.9 * 2.0
     fsf_btag= dsf_btag / sf_btag
     sf_lep  = 1.0   # 0.965 from recent studies in top group
     dsf_lep = 0.03

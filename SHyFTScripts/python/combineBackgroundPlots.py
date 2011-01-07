@@ -30,7 +30,7 @@ from optparse import OptionParser
 parser = OptionParser()
 
 parser.add_option('--input', metavar='F', type='string', action='store',
-                  default='shyftana_387_v1',
+                  default='shyftana_387_v4',
                   dest='input',
                   help='input file tag to be used')
 
@@ -85,6 +85,12 @@ parser.add_option('--makePretagPlots', action='store_true',
                   dest='makePretagPlots',
                   help='Plot everything with muon eta rather than secvtx mass')
 
+parser.add_option('--wjetsQ2Var', metavar='V', type='string', action='store',
+                  default=None,
+                  dest='wjetsQ2Var',
+                  help='Use a Q^2 variation for WJets and VQQ. Options are scaleup or scaledown')
+
+
 
 parser.add_option('--lum', metavar='L', action='store',
                   default=35.9,
@@ -122,13 +128,19 @@ gROOT.Macro("rootlogon.C")
 # Get the files from whatever samples you want to stitch
 # ---------------------------------------------
 f_ttbar = TFile('TTJets_TuneD6T_7TeV-madgraph-tauola_'+inFileEnd+'.root')
-f_wjets = TFile('WJetsToLNu_TuneD6T_7TeV-madgraph-tauola_'+inFileEnd+'.root')
 f_zjets = TFile('DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_'+inFileEnd+'.root')
-f_vqq   = TFile('VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola_'+inFileEnd+'.root')
 f_qcd   = TFile('QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6_'+inFileEnd+'.root')
 f_st_s  = TFile('TToBLNu_TuneZ2_s-channel_7TeV-madgraph_'+inFileEnd+'.root')
 f_st_t  = TFile('TToBLNu_TuneZ2_t-channel_7TeV-madgraph_'+inFileEnd+'.root')
 f_st_tW = TFile('TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_'+inFileEnd+'.root')
+
+if options.wjetsQ2Var is None :
+    f_wjets = TFile('WJetsToLNu_TuneD6T_7TeV-madgraph-tauola_'+inFileEnd+'.root')
+    f_vqq   = TFile('VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola_'+inFileEnd+'.root')
+else :
+    f_wjets = TFile('WJets_TuneD6T_' + options.wjetsQ2Var + '_7TeV-madgraph-tauola_'+inFileEnd+'.root')
+    f_vqq   = TFile('VQQJetsToLL_TuneD6T_' + options.wjetsQ2Var + '_7TeV-madgraph-tauola_'+inFileEnd+'.root')
+
 
 #f_data   = TFile('shyftStudies_data_2sep2010.root')
 f_data = TFile(options.dataFile)
@@ -181,13 +193,26 @@ s_wqq = 1.0
 # Number of generated events
 # ---------------------------------------------
 n_ttbar =  1306182
-n_wjets = 14805546
 n_zjets =  2543727
-n_vqq   =   720613
 n_qcd   =  29504866
 n_st_s  =   494967
 n_st_t  =   484060
 n_st_tW =   494961
+
+if options.wjetsQ2Var is None :
+    n_wjets = 14805546
+    n_vqq   =   720613
+elif options.wjetsQ2Var == 'scaledown' :
+    n_wjets =  4912028
+    n_vqq   =   800375
+elif options.wjetsQ2Var == 'scaleup' :
+    n_wjets =  6218255
+    n_vqq   =   742953
+else :
+    print 'ERROR! Cannot understand ' + options.wjetsQ2Var
+    exit()
+    
+
 
 # ---------------------------------------------
 # get the output file
