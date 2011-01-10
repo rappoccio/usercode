@@ -104,8 +104,8 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   histograms1d["waJetDPhi1Type22"]       = theDir.make<TH1F>("waJetDPhi1Type22",      "W and A Jet #Delta Phi",   50,   0.,   3. );
 
 
-  histograms1d["topPairDPhi"]     = theDir.make<TH1F>("topPairDPhi",    "Top Pair #Delta Phi",      50,   0.,   4. );
-  histograms1d["topPairDr"]       = theDir.make<TH1F>("topPairDr",      "Top Pair #Delta R",        50,   0.0,  6.0 );
+  histograms1d["topPairDPhiType22"]     = theDir.make<TH1F>("topPairDPhiType22",    "Top Pair #Delta Phi",      50,   0.,   4. );
+  histograms1d["topPairDrType22"]       = theDir.make<TH1F>("topPairDrType22",      "Top Pair #Delta R",        50,   0.0,  6.0 );
   histograms1d["pairBJetDPhi0"]    = theDir.make<TH1F>("pairBJetDPhi0",   "Min Pair and B Jet #Delta Phi",  50, 0.0, 3. );
   histograms1d["pairBJetDr0"]      = theDir.make<TH1F>("pairBJetDr0",     "Min Pair and B Jet #Delta R",  50,   0.0,  6 );
   histograms1d["pairBJetDPhi1"]    = theDir.make<TH1F>("pairBJetDPhi1",   "Min Pair and B Jet #Delta Phi",  50, 0.0, 3. );
@@ -113,9 +113,19 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
 
   histograms1d["wJetPt"]          = theDir.make<TH1F>("wJetPt",         "W Jet Pt",                 200,  0,    1000 );
   histograms1d["bJetPt"]          = theDir.make<TH1F>("bJetPt",         "b Jet Pt",                 200,  0,    1000 );
+  histograms1d["topPt0Type22"]    = theDir.make<TH1F>("topPt0Type22",         "Top Pt",                   200,  0,    1000 );
+  histograms1d["topPt1Type22"]    = theDir.make<TH1F>("topPt1Type22",         "Top Pt",                   200,  0,    1000 );
+  histograms1d["ttPtType22"]      = theDir.make<TH1F>("ttPtType22",     "t#bar{t} Pt",              200,  0,    1000 );
+  histograms1d["htType22"]        = theDir.make<TH1F>("htType22",               "HT",     400,    0,    2000 );
   histograms1d["ttMassType22"]    = theDir.make<TH1F>("ttMassType22",   "t#bar{t} Inv Mass Type22",   200,  0,  2000 );
   histograms1d["ttMassType23"]    = theDir.make<TH1F>("ttMassType23",   "t#bar{t} Inv Mass Type23",   200,  0,  2000 );
   histograms1d["ttMassType33"]    = theDir.make<TH1F>("ttMassType33",   "t#bar{t} Inv Mass Type33",   200,  0,  2000 );
+  histograms2d["topPt0VsttMassType22"]  = theDir.make<TH2F>("topPt0VsttMassType22",  "ttMass Vs Top Pt0", 200,  0,  1000,   200,  0,  1000 );
+  histograms2d["topPt1VsttMassType22"]  = theDir.make<TH2F>("topPt1VsttMassType22",   "ttMass Vs Top Pt1",  200,  0,  1000,   200,  0,  1000 );
+  histograms2d["ttPtVsttMassType22"]    = theDir.make<TH2F>("ttPtVsttMassType22",     "ttPt Vs ttMass",   200,    0,  1000,   200,  0,  1000 );
+  histograms2d["topPt0VsPt1Type22"]     = theDir.make<TH2F>("topPt0VsPt1Type22",      "Top Pt0 Vs Pt1",   200,    0,  1000,   200,  0,  1000 );
+  histograms2d["ttDrVsttMassType22"]    = theDir.make<TH2F>("ttDrVsttMassType22",     "tt #Delta R vs ttMass",    50,   0.0,  6.0,  200, 0, 1000 );
+  histograms2d["htVsttMassType22"]      = theDir.make<TH2F>("htVsttMassType22",       "ht Vs ttMass",   200,  0,  1000, 200,  0,  1000 );
 
   histograms1d["ttMassType22_pred"]    = theDir.make<TH1F>("ttMassType22_pred",   "t#bar{t} Inv Mass Type22",   200,  0,  2000 );
   histograms1d["ttMassType23_pred"]    = theDir.make<TH1F>("ttMassType23_pred",   "t#bar{t} Inv Mass Type23",   200,  0,  2000 );
@@ -233,7 +243,10 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
 
     histograms2d["nJets0vsNJets1"]      ->  Fill( allJets0.size(), allJets1.size() );
     histograms1d["nJet"]      ->  Fill( pfJets.size() );
+
+    double ht=0.0;
     for( size_t i=0; i<pfJets.size(); i++ ) {
+      ht += pfJets.at(i)->pt() ;
       histograms1d["jetPt"]     ->  Fill( pfJets.at(i)->pt() );
       histograms1d["jetEta"]    ->  Fill( pfJets.at(i)->eta() );
       histograms1d["jetMass"]   ->  Fill( pfJets.at(i)->mass() );
@@ -255,6 +268,7 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
     histograms1d["thirdJetEta"]      ->  Fill( pfJets.at(2)->eta() );
     histograms1d["fourthJetPt"]        ->  Fill( pfJets.at(3)->pt() );
     histograms1d["fourthJetEta"]       ->  Fill( pfJets.at(3)->eta() );
+    histograms1d["htType22"]           ->  Fill( ht );
 
     int numWJets = tWJets.size() + oWJets.size();
     int numBJets = tbJets.size() + obJets.size();
@@ -321,12 +335,25 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
 
       if( passType22 ) {
         histograms1d["ttMassType22"]    ->  Fill( (p4_top0+p4_top1).mass() );
+        histograms1d["ttPtType22"]      ->  Fill( (p4_top0+p4_top1).pt() );
+        histograms2d["ttPtVsttMassType22"]    ->  Fill( (p4_top0+p4_top1).pt(), (p4_top0+p4_top1).mass() );
+        histograms2d["htVsttMassType22"]      ->  Fill( ht, (p4_top0+p4_top1).mass() );
         histograms1d["ttMassType22_truth"]    ->  Fill( ttTrueMass );
         if( runOnData_ )  cout<<"Woohoo, Type2+Type2, Event id, "<<iEvent.id()<<endl;
         double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
         double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) );
-        histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
-        histograms1d["topPairDr"]       ->  Fill( deltaR );
+        histograms1d["topPairDPhiType22"]     ->  Fill( deltaPhi );
+        histograms1d["topPairDrType22"]       ->  Fill( deltaR );
+        histograms2d["ttDrVsttMassType22"]    ->  Fill( deltaR, (p4_top0+p4_top1).mass() );
+
+        double topPt0, topPt1;
+        topPt0 = p4_top0.pt() > p4_top1.pt() ? p4_top0.pt() : p4_top1.pt();
+        topPt1 = p4_top0.pt() < p4_top1.pt() ? p4_top0.pt() : p4_top1.pt();
+        histograms1d["topPt0Type22"]      ->  Fill( topPt0 );
+        histograms1d["topPt1Type22"]      ->  Fill( topPt1 );
+        histograms2d["topPt0VsttMassType22"]    ->  Fill( topPt0, (p4_top0+p4_top1).mass() );
+        histograms2d["topPt1VsttMassType22"]    ->  Fill( topPt1, (p4_top0+p4_top1).mass() );
+        histograms2d["topPt0VsPt1Type22"]       ->  Fill( topPt0, topPt1 );
       }
     } // end if ret hasTwoTops
 
@@ -529,8 +556,8 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         if(runOnData_)    cout<<"Woohoo, Type2+Type3, Event id, run "<<iEvent.id()<<endl;
         double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
         double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) );
-        histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
-        histograms1d["topPairDr"]       ->  Fill( deltaR );        
+        //histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
+        //histograms1d["topPairDr"]       ->  Fill( deltaR );        
       } // end passType23
     }  // end if >= 1 WJet and !>= 2 WJet
 
@@ -587,8 +614,8 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
           }
           double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
           double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) ) ;
-          histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
-          histograms1d["topPairDr"]       ->  Fill( deltaR );
+          //histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
+          //histograms1d["topPairDr"]       ->  Fill( deltaR );
         }
       }  // hasMinPair0 && hasMinPair1
 

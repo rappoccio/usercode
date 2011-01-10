@@ -37,5 +37,5 @@ hadronicAnalysis = cms.PSet(
     bTagOPMedium = cms.double(3.3),
     bTagOPLoose = cms.double(1.7),
     mistagFileName = cms.string("Mistag_Dijet.root"),
-    onePV = cms.bool(True)
+    onePV = cms.bool(False)
 )
