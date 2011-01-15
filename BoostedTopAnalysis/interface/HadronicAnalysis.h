@@ -100,6 +100,8 @@ class HadronicAnalysis {
     TH1 * bMistagMO_, * bMistagME_;
     TH1 * wMistagO_, * wMistagE_;
     bool  onePV_;
+    std::vector<double>     vMu;
+    std::vector<std::string>  vWp;
 
     std::vector<EventSummary>  summary;
     CLHEP::RandFlat *flatDistribution_;

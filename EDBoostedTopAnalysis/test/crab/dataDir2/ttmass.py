@@ -1,44 +1,57 @@
 from ROOT import *
 
 gROOT.Macro("rootlogon.C")
-gROOT.ForceStyle()
 
-lumi = 7.0
+f = TFile("allJet_data.root")
+ttbar = TFile( "TTbarJets-madgraph_ttbsm_38on35.root" )
 
-f = TFile("data.root")
+idir = "wPlusBJetAna/"
 
-h1 = f.Get("wPlusBJetAna/ttMassType22_pred")
-h2 = f.Get("wPlusBJetAna/ttMassType23_pred")
-h3 = f.Get("wPlusBJetAna/ttMassType33_pred")
-data = f.Get("wPlusBJetAna/ttMassType33")
+sel = f.Get( idir + "ttMassType22" )
+exp = f.Get( idir + "ttMassType22_pred" )
+ttsel = ttbar.Get( idir + "ttMassType22" )
+
+sel.Rebin(5)
+exp.Rebin(5)
+ttsel.Rebin(5)
+
+ttsel.Scale( 165.0*34.7/1482609.0 )
 
 
 c = TCanvas()
-h1.GetYaxis().SetTitle("Numbers in 7pb^{-1}")
-h1.GetXaxis().SetTitle("t#bar{t} Mass (GeV/c^{2})")
-h1.Rebin(5)
-h1.SetMaximum(1.1)
-h1.Draw()
-print h1.Integral()
-c.Print("tt22.png")
+leg = TLegend( 0.6, 0.7, 0.85, 0.82 )
+leg.SetBorderSize(1)
+leg.SetFillStyle(0)
 
-h2.GetYaxis().SetTitle("Numbers in 7pb^{-1}")
-h2.GetXaxis().SetTitle("t#bar{t} Mass (GeV/c^{2})")
-h2.Rebin(5)
-h2.SetMaximum(1.1)
-h2.Draw()
-print h2.Integral()
-c.Print("tt23.png")
 
-h3.GetYaxis().SetTitle("Numbers in 7pb^{-1}")
-h3.GetXaxis().SetTitle("t#bar{t} Mass (GeV/c^{2})")
-h3.Rebin(5)
-h3.SetMaximum(1.1)
-data.Rebin(5)
-data.SetMarkerStyle(20)
-data.SetLineColor(kRed)
-print h3.Integral()
-h3.Draw()
-data.Draw("same")
-c.Print("tt33.png")
+stack = THStack( "ttmass", ";t#bar{t} Mass (GeV/c^{2});Number of Events" )
+
+exp.SetLineColor(kBlack)
+ttsel.SetLineColor(kBlack)
+exp.SetFillColor(kYellow)
+ttsel.SetFillColor(kRed+1)
+sel.SetMarkerStyle(20)
+
+stack.Add(exp)
+stack.Add(ttsel)
+stack.SetMaximum(2.5)
+
+print "QCD Exp Integral %.2f" % exp.Integral()
+print "tt Integral %.2f" % ttsel.Integral()
+print "Data Integral %.2f" % sel.Integral()
+
+leg.AddEntry( exp, "QCD Exp" , "F")
+leg.AddEntry( ttsel, "t#bar{t}" , "F" )
+leg.AddEntry( sel, "Data" , "P" )
+
+stack.Draw()
+sel.Draw("samePE")
+leg.Draw()
+
+c.Print("ttmass.png")
+
+
+
+
+
 

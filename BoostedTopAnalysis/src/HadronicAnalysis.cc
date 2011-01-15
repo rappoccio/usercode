@@ -238,6 +238,7 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms2d["W_jetMuVsdR"]   = theDir.make<TH2F>("W_jetMuVsdR",    "Jet Mass Drop Vs Subjets #Delta R", 50, 0.0, 1.0 , 50, 0.0, 1.0 );
   histograms2d["W_jetMuVsy"]    = theDir.make<TH2F>("W_jetMuVsy",     "Jet Mass Drop Vs Subjets Asymmetry", 50, 0.0, 1.0 , 50, 0.0, 1.0 );
   histograms2d["W_jetdRVsy"]    = theDir.make<TH2F>("W_jetdRVsy",     "Subjets #Delta R Vs Subjets Asymmetry",  50, 0.0, 1.0 , 50, 0.0, 1.0 );
+  histograms2d["W_jetMuVsPt"]   = theDir.make<TH2F>("W_jetMuVsPt",    "Jet Mass Drop Vs Jet pT",    200,  0,  1000,   50, 0.0, 1.0 );
 
   //Histograms for closure test
   histograms1d["wTagPtO"]     = theDir.make<TH1F>("wTagPtO",  "W Jet PT",   200,  0,    1000 );
@@ -257,6 +258,34 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
   histograms1d["dibTagPtPredO"]   = theDir.make<TH1F>("dibTagPtPredO", "Double b Tag PT",   200,  0,  1000 );
   histograms1d["dibTagPtE"]       = theDir.make<TH1F>("dibTagPtE", "Double b Tag PT",   200,  0,  1000 );
   histograms1d["dibTagPtPredE"]   = theDir.make<TH1F>("dibTagPtPredE", "Double b Tag PT",   200,  0,  1000 );
+
+  vMu.push_back(0.0);
+  vMu.push_back(0.1);
+  vMu.push_back(0.2);
+  vMu.push_back(0.3);
+  vMu.push_back(0.4);
+  vMu.push_back(0.5);
+  vMu.push_back(0.6);
+  vMu.push_back(0.7);
+  vMu.push_back(0.8);
+  vMu.push_back(0.9);
+  vMu.push_back(1.0);
+  vWp.push_back("wp0");
+  vWp.push_back("wp1");
+  vWp.push_back("wp2");
+  vWp.push_back("wp3");
+  vWp.push_back("wp4");
+  vWp.push_back("wp5");
+  vWp.push_back("wp6");
+  vWp.push_back("wp7");
+  vWp.push_back("wp8");
+  vWp.push_back("wp9");
+  vWp.push_back("wp10");
+  for( size_t i=0; i<vWp.size(); i++ )  {
+    histograms1d[ vWp.at(i).c_str() ]   =  theDir.make<TH1F>( vWp.at(i).c_str(), "W Jet Mistag",    200,    0,    1000 );
+    histograms1d[ (vWp.at(i) + "WTag").c_str() ]    = theDir.make<TH1F>( (vWp.at(i) + "WTag").c_str(), "W Tag Pt", 200,    0,    1000 );
+  }
+
 
   edm::Service<edm::RandomNumberGenerator> rng;
   if ( ! rng.isAvailable()) {
@@ -278,6 +307,9 @@ HadronicAnalysis::HadronicAnalysis(const edm::ParameterSet& iConfig, TFileDirect
 void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 {
   histograms1d["run"]->Fill( iEvent.id().run() );
+
+  //histograms1d["wTag"]        -> Sumw2();
+  //histograms1d["jetTotal"]    ->  Sumw2();
 
   analyzeWJet( iEvent );
   histoWeight_ = 1.0;
@@ -388,6 +420,12 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
       bool passProbeW = passWCut && passMass;
       bool passTagW = passTagCut && passTagMass ;
       bool diWTag = passTagW && passProbeW ;
+
+      double muTag = 0.0, yTag = 0.0, dRTag = 0.0;
+      pat::subjetHelper( tag, yTag, muTag, dRTag );
+      double muP = 0.0, yP = 0.0, dRP = 0.0;
+      pat::subjetHelper( probe, yP, muP, dRP );
+
       if( passWCut && !passMass ) {
         histograms1d["totalPlusAnti"]     ->  Fill( tag.pt(), histoWeight_ );
         if( passTagW )
@@ -403,11 +441,24 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
         histograms1d["totalPlusAnti1"]     ->  Fill( tag.pt(), histoWeight_ );
         if( passTagW )
           histograms1d["wTagPlusAnti1"]    ->  Fill( tag.pt(), histoWeight_ );
+        for( size_t i=0; i<vMu.size(); i++ )  {
+          if( passTagMass ) {
+            if( muTag < vMu.at(i) ) {
+              histograms1d[ vWp.at(i).c_str() ]     ->  Fill( tag.pt(), histoWeight_ );
+            }
+          }
+        }
       } 
       if( !passTagCut || !passTagMass )   {
         histograms1d["totalPlusAnti1"]     ->  Fill( probe.pt(), histoWeight_ );
         if( passProbeW )
           histograms1d["wTagPlusAnti1"]    ->  Fill( probe.pt(), histoWeight_ );
+        for( size_t i=0; i<vMu.size(); i++ ) {
+          if( passMass )
+            if( muP < vMu.at(i) ) {
+              histograms1d[ vWp.at(i).c_str() ]     ->  Fill( probe.pt(), histoWeight_ );
+            }
+        }
       }
       if (passWCut) {
         //cout<<theWMass<<endl;
@@ -770,6 +821,10 @@ void HadronicAnalysis::analyzeWJet( const edm::EventBase& iEvent )
       bool pass = passCut && passMass ;
       if( pass )
         histograms1d["WTagPt"]  ->  Fill( pt );
+      if( passMass )
+        for( size_t i=0; i<vMu.size(); i++ )
+          if( mu < vMu.at(i) )
+            histograms1d[ (vWp.at(i)+"WTag").c_str() ]      ->  Fill( pt );
       histograms1d["WMass"]     ->  Fill( mass );
       histograms1d["W_nD"]      ->  Fill( n );
       histograms1d["W_mu"]      ->  Fill( mu );
@@ -780,6 +835,7 @@ void HadronicAnalysis::analyzeWJet( const edm::EventBase& iEvent )
       histograms2d["W_jetMuVsdR"]   ->  Fill( mu, dR );
       histograms2d["W_jetMuVsy"]    ->  Fill( mu, y );
       histograms2d["W_jetdRVsy"]    ->  Fill( dR, y );
+      histograms2d["W_jetMuVsPt"]   ->  Fill( pt,  mu );
       if( mu < mu_ )
         histograms1d["WMass_0"]     ->  Fill( mass );
       if( passMass )
@@ -805,6 +861,10 @@ void HadronicAnalysis::analyzeWJet( const edm::EventBase& iEvent )
       bool pass = passCut && passMass;
       if( pass )
         histograms1d["WTagPt"]  ->  Fill( pt );
+      if( passMass )
+        for(  size_t i=0; i<vMu.size(); i++ )
+          if( mu < vMu.at(i) )
+            histograms1d[ (vWp.at(i)+"WTag").c_str() ]      ->  Fill( pt );
       histograms1d["WMass"]     ->  Fill( mass );
       histograms1d["W_nD"]      ->  Fill( n );
       histograms1d["W_mu"]      ->  Fill( mu );
@@ -815,6 +875,7 @@ void HadronicAnalysis::analyzeWJet( const edm::EventBase& iEvent )
       histograms2d["W_jetMuVsdR"]   ->  Fill( mu, dR );
       histograms2d["W_jetMuVsy"]    ->  Fill( mu, y );
       histograms2d["W_jetdRVsy"]    ->  Fill( dR, y );
+      histograms2d["W_jetMuVsPt"]   ->  Fill( pt, mu );
       if( mu < mu_ )
         histograms1d["WMass_0"]   ->  Fill( mass );
       if( passMass )
