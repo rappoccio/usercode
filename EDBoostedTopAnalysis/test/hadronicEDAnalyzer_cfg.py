@@ -11,11 +11,11 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-'/store/user/guofan/Jet/ttbsm_383_Oct25_147146_148058/e6b092d68d75aab417dfeee8751d8b0a/ttbsm_381_1_1_Ieu.root'
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/ttbsm_383_Oct25_147146_148058/e6b092d68d75aab417dfeee8751d8b0a/ttbsm_381_1_1_Ieu.root'
     )
 )
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(3000) )
 
 from Analysis.BoostedTopAnalysis.hadronicAnalysis_cfi import hadronicAnalysis as inputHadronicAnalysis
 
@@ -23,7 +23,7 @@ from Analysis.BoostedTopAnalysis.hadronicAnalysis_cfi import hadronicAnalysis as
 
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("boostedTopHadronicStudies_pt_gt25.root")
+                                   fileName = cms.string("boostedTopHadronicStudies.root")
                                    )
 
 
@@ -31,9 +31,11 @@ process.hadronicAna = cms.EDAnalyzer('EDHadronicAnalysis',
                                      hadronicAnalysis = inputHadronicAnalysis.clone(
                                          dijetSelectorParams = inputHadronicAnalysis.dijetSelectorParams.clone(
                                              pfMetSrc = cms.InputTag('patMETsPFlow'),
-                                             ptMin = cms.double(50.0)
+                                             ptMin = cms.double(200)
+                                             #ptMin = cms.double(220)
                                              ),
-                                         trig = cms.string('HLT_Jet100U_v2')
+                                         trig = cms.string('HLT_Jet100U_v2'),
+                                         cutsToIgnore = cms.vstring("Trigger")
                                          )
                                      )
 
@@ -57,7 +59,8 @@ process.p = cms.Path(
 process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
                       hadronicAnaUnweighted = cms.PSet(
                       initialSeed = cms.untracked.uint32(157)
-                      )
+                      ),
+                      hadronic2 = cms.PSet( initialSeed = cms.untracked.uint32(11) )
 )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
