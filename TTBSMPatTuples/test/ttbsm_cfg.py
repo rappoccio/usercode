@@ -25,7 +25,8 @@ options.register ('hltProcess',
 options.parseArguments()
 
 if not options.useData :
-    mytrigs = ['HLT_Jet100U*']
+    #mytrigs = ['HLT_Jet100U*']
+    mytrigs = ['HLT_Jet30U*']
     inputJetCorrLabel = ('AK5PF', ['L2Relative', 'L3Absolute'])
     process.source.fileNames = [
 #        '/store/mc/Fall10/QCD_Pt_15to3000_TuneZ2_Flat_7TeV_pythia6/GEN-SIM-RECO/START38_V12-v1/0000/02AFCD3B-BECD-DF11-9F32-00215E21DD50.root'
@@ -38,10 +39,12 @@ if not options.useData :
        #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/B28EE7AE-48E5-DF11-9F45-001F29651428.root',
        #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/9C7AD216-ACE5-DF11-BE50-001517255D36.root',
        #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/788BCB6C-ACE5-DF11-A13C-90E6BA442F1F.root',
-       'dcap:///pnfs/cms/WAX/11/store/mc/Fall10/QCD_Pt_15to3000_TuneZ2_Flat_7TeV_pythia6/GEN-SIM-RECO/START38_V12-v1/0005/F24E17D7-F3CD-DF11-89A4-00215E221938.root'
+       #'dcap:///pnfs/cms/WAX/11/store/mc/Fall10/QCD_Pt_15to3000_TuneZ2_Flat_7TeV_pythia6/GEN-SIM-RECO/START38_V12-v1/0005/F24E17D7-F3CD-DF11-89A4-00215E221938.root'
+       'dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/mc/Fall10/QCD_Pt-30to50_TuneD6T_7TeV-pythia6/GEN-SIM-RECO/START38_V12-v1/0004/A68627E6-1ECF-DF11-8EE8-0023AEFDE6B8.root'
         ]
 else :
-    mytrigs = ['HLT_Jet100U*', 'HLT_Jet140U*','HLT_DiJet50U_PT50U*']    
+    mytrigs = ['HLT_Jet100U*', 'HLT_Jet140U*','HLT_DiJet50U_PT50U*', 'HLT_Jet70U*', 'HLT_Jet50U*']    
+    #mytrigs = ['HLT_Jet30U*']
     inputJetCorrLabel = ('AK5PF', ['L2Relative', 'L3Absolute', 'L2L3Residual'])
     process.source.fileNames = [
         '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/BC010982-C8E9-DF11-BC86-001A92810AE6.root',
@@ -78,7 +81,8 @@ if options.useData == False :
     process.GlobalTag.globaltag = cms.string('START38_V13::All')
 else :
     # global tag for 361 data
-    process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
+    #process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
+    process.GlobalTag.globaltag = cms.string('FT_R_38X_V14A::All')
 
 # require scraping filter
 process.scrapingVeto = cms.EDFilter("FilterOutScraping",
@@ -178,11 +182,11 @@ if options.useData :
 # Pruned PF Jets
 process.caPrunedPFlow = cms.EDProducer(
     "SubJetProducer",
-    PFJetParameters.clone( src = cms.InputTag('pfNoElectron'+postfix),
-                           doAreaFastjet = cms.bool(True),
-                           doRhoFastjet = cms.bool(True),
-                           inputEMin = cms.double(1.0),
-                           Ghost_EtaMax = cms.double(6.0)
+    PFJetParameters.clone( src = cms.InputTag('pfNoElectron'+postfix)
+                           #doAreaFastjet = cms.bool(True),
+                           #doRhoFastjet = cms.bool(True),
+                           #inputEMin = cms.double(1.0),
+                           #Ghost_EtaMax = cms.double(6.0)
                            ),
     AnomalousCellParameters,
     SubJetParameters,
@@ -535,13 +539,14 @@ process.out.outputCommands = [
     'keep *_TriggerResults_*_*',
     'keep *_hltTriggerSummaryAOD_*_*',
     'keep *_ak5GenJets_*_*'
+    #'keep recoTracks_generalTracks_*_*'
     ]
 
 if options.useData :
     process.out.outputCommands += ['keep *_towerMaker_*_*',
                                    'drop *_MEtoEDMConverter_*_*',
                                    'keep LumiSummary_lumiProducer_*_*',
-                                   'keep recoTracks_generalTracks_*_*',
+                                   #'keep recoTracks_generalTracks_*_*',
                                    ]
 else :
     process.out.outputCommands += ['keep *_genParticles_*_*',    
