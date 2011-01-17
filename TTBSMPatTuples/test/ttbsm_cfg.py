@@ -63,7 +63,6 @@ else :
         '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/A43A1023-B9E9-DF11-BF1D-001A92971B3C.root',
         '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/A23BA584-BEE9-DF11-8B4F-0026189438C1.root',
         '/store/data/Run2010A/JetMET/RECO/Nov4ReReco_v1/0115/9C6DE4B6-C6E9-DF11-9104-002618943977.root',
-        
         ]
 
 
@@ -103,6 +102,7 @@ switchOnTrigger( process, hltProcess=options.hltProcess )
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 if mytrigs is not None :
     process.hltSelection = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::' + options.hltProcess, HLTPaths = mytrigs)
+    process.hltSelection.throw = False
 else :
     process.hltSelection = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::' + options.hltProcess, HLTPaths = ['*'])    
     
@@ -145,21 +145,21 @@ from RecoJets.JetProducers.CATopJetParameters_cfi import *
 from PhysicsTools.PatAlgos.tools.pfTools import *
 postfix = "PFlow"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfix)
-process.allPfJetsPFlow.jetAlgorithm = "CambridgeAachen"
-process.allPfJetsPFlow.rParam       = 0.8
-process.allPfJetsPFlow.doAreaFastjet = True
-process.allPfJetsPFlow.doRhoFastjet = True
-process.allPfJetsPFlow.Ghost_EtaMax = 6.0
+process.pfJetsPFlow.jetAlgorithm = "CambridgeAachen"
+process.pfJetsPFlow.rParam       = 0.8
+process.pfJetsPFlow.doAreaFastjet = True
+process.pfJetsPFlow.doRhoFastjet = True
+process.pfJetsPFlow.Ghost_EtaMax = 6.0
 
 # PF2PAT with only charged hadrons from first PV
 postfixPUSub = "PFlowPUSub"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixPUSub)
 process.pfPileUpPFlowPUSub.Enable = True
-process.allPfJetsPFlowPUSub.jetAlgorithm = "CambridgeAachen"
-process.allPfJetsPFlowPUSub.rParam       = 0.8
-process.allPfJetsPFlowPUSub.doAreaFastjet = True
-process.allPfJetsPFlowPUSub.doRhoFastjet = True
-process.allPfJetsPFlowPUSub.Ghost_EtaMax = 6.0
+process.pfJetsPFlowPUSub.jetAlgorithm = "CambridgeAachen"
+process.pfJetsPFlowPUSub.rParam       = 0.8
+process.pfJetsPFlowPUSub.doAreaFastjet = True
+process.pfJetsPFlowPUSub.doRhoFastjet = True
+process.pfJetsPFlowPUSub.Ghost_EtaMax = 6.0
 
 
 
@@ -464,6 +464,16 @@ process.patPhotonsPFlow.isoDeposits = cms.PSet()
 process.patTausPFlow.isoDeposits = cms.PSet()
 
 
+process.goodPFJets = cms.EDFilter("CandViewShallowCloneProducer",
+                                   src = cms.InputTag('selectedPatJetsPFlow'),
+                                   cut = cms.string('pt > 200 & abs(eta) < 2.4')
+                                   )
+
+
+process.jetFilter = cms.EDFilter("CandViewCountFilter",
+                                  src = cms.InputTag("goodPFJets"),
+                                  minNumber = cms.uint32(2),
+                                  )
 
 
 # remove trigger matching for PF2PAT as that is currently broken
@@ -480,6 +490,7 @@ process.patseq = cms.Sequence(
     process.genJetParticles*
     process.ca8GenJets*
     getattr(process,"patPF2PATSequence"+postfix)*
+    process.goodPFJets*process.jetFilter*
     getattr(process,"patPF2PATSequence"+postfixPUSub)*
     process.patDefaultSequence
     )
@@ -503,7 +514,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 
 
 # process all the events
-process.maxEvents.input = 100
+process.maxEvents.input = 10000
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 
@@ -543,13 +554,11 @@ process.out.outputCommands = [
     ]
 
 if options.useData :
-    process.out.outputCommands += ['keep *_towerMaker_*_*',
-                                   'drop *_MEtoEDMConverter_*_*',
-                                   'keep LumiSummary_lumiProducer_*_*',
-                                   #'keep recoTracks_generalTracks_*_*',
+    process.out.outputCommands += ['drop *_MEtoEDMConverter_*_*',
+                                   'keep LumiSummary_lumiProducer_*_*'
                                    ]
 else :
-    process.out.outputCommands += ['keep *_genParticles_*_*',    
+    process.out.outputCommands += [#'keep *_genParticles_*_*',    
                                    'keep recoGenJets_ca8GenJets_*_*',
                                    'keep GenRunInfoProduct_generator_*_*',
                                    'keep GenEventInfoProduct_generator_*_*'
