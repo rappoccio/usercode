@@ -77,11 +77,11 @@ import sys
 
 if options.useData == False :
     # global tag for MC
-    process.GlobalTag.globaltag = cms.string('START38_V13::All')
+    process.GlobalTag.globaltag = cms.string('MC_38Y_V14::All')
 else :
     # global tag for 361 data
     #process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
-    process.GlobalTag.globaltag = cms.string('FT_R_38X_V14A::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_38X_V15::All')
 
 # require scraping filter
 process.scrapingVeto = cms.EDFilter("FilterOutScraping",
@@ -145,6 +145,7 @@ from RecoJets.JetProducers.CATopJetParameters_cfi import *
 from PhysicsTools.PatAlgos.tools.pfTools import *
 postfix = "PFlow"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfix)
+process.pfPileUpPFlow.Enable = False
 process.pfJetsPFlow.jetAlgorithm = "CambridgeAachen"
 process.pfJetsPFlow.rParam       = 0.8
 process.pfJetsPFlow.doAreaFastjet = True
