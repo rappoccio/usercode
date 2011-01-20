@@ -559,7 +559,7 @@ if options.useData :
                                    'keep LumiSummary_lumiProducer_*_*'
                                    ]
 else :
-    process.out.outputCommands += [#'keep *_genParticles_*_*',    
+    process.out.outputCommands += ['keep *_genParticles_*_*',    
                                    'keep recoGenJets_ca8GenJets_*_*',
                                    'keep GenRunInfoProduct_generator_*_*',
                                    'keep GenEventInfoProduct_generator_*_*'
