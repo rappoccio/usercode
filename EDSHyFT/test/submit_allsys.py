@@ -27,16 +27,18 @@ parser.add_option('--outLabel', metavar='L', type='string', action='store',
 
 
 crabFileStrs = [
-['/TTJets_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',            15, 0, 'Top', 0],
-['/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-9a4f16815707934fe8e1e1334c342e5c/USER',        80, 1, 'Wjets', 0],
-['/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',   15, 1, 'Zjets', 0],
-['/VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',       15, 1, 'Vqq', 0],
-#['/VQQJetsToLL_TuneD6T_scaledown_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',       15, 1, 'Vqq', 1],
-#['/VQQJetsToLL_TuneD6T_scaleup_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',       15, 1, 'Vqq', 1],
-['/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph/srappocc-shyft_387_v1-9a4f16815707934fe8e1e1334c342e5c/USER',        15, 0, 'SingleToptW', 1],
-['/TToBLNu_TuneZ2_t-channel_7TeV-madgraph/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',         15, 0, 'SingleTopT', 1],
-['/TToBLNu_TuneZ2_s-channel_7TeV-madgraph/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',         15, 0, 'SingleTopS', 1],
-['/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/srappocc-shyft_387_v1-2f94777c47687658400e9bd1c4f72c89/USER',  50, 0, 'QCD', 1],
+#['/TTJets_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',            15, 0, 'Top', 0],
+#['/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-9a4f16815707934fe8e1e1334c342e5c/USER',        80, 1, 'Wjets', 0],
+#['/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',   15, 1, 'Zjets', 0],
+#['/VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',       15, 1, 'Vqq', 0],
+['/VQQJetsToLL_TuneD6T_scaledown_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',     15, 1, 'Vqq', 1],
+['/VQQJetsToLL_TuneD6T_scaleup_7TeV-madgraph-tauola/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',       15, 1, 'Vqq', 1],
+['/WJets_TuneD6T_scaledown_7TeV-madgraph-tauola/srappocc-shyft_387_v1-9a4f16815707934fe8e1e1334c342e5c/USER',           80, 1, 'Wjets', 1],
+['/WJets_TuneD6T_scaleup_7TeV-madgraph-tauola/srappocc-shyft_387_v1-9a4f16815707934fe8e1e1334c342e5c/USER',             80, 1, 'Wjets', 1],
+#['/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph/srappocc-shyft_387_v1-9a4f16815707934fe8e1e1334c342e5c/USER',        15, 0, 'SingleToptW', 1],
+#['/TToBLNu_TuneZ2_t-channel_7TeV-madgraph/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',         15, 0, 'SingleTopT', 1],
+#['/TToBLNu_TuneZ2_s-channel_7TeV-madgraph/srappocc-shyft_387_v1-806866a699de2045917e2f88bbb597f4/USER',         15, 0, 'SingleTopS', 1],
+#['/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/srappocc-shyft_387_v1-2f94777c47687658400e9bd1c4f72c89/USER',  50, 0, 'QCD', 1],
     ]
 
 for crabFileStr in crabFileStrs :
