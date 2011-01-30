@@ -14,6 +14,8 @@ class Type22Selection_v1 : public EventSelector {
     Type22Selection_v1( edm::ParameterSet const & params );
     virtual ~Type22Selection_v1() { }
     virtual bool operator() ( edm::EventBase const & t, pat::strbitset & ret );
+    std::vector<edm::Ptr<pat::Jet> >  const &  pfJets() const { return pfJets_ ; }
+    BoostedTopWTagFunctor                   &  wJetSelector() { return wJetSelector_; }
 
   private :
     edm::ParameterSet const &                    pfJetIdParams_;

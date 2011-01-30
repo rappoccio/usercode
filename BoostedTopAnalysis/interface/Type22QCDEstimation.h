@@ -4,6 +4,8 @@
 #include "Analysis/BoostedTopAnalysis/interface/Type22Selection_v1.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 
+#include "TH1F.h"
+
 class Type22QCDEstimation {
   public :
     Type22QCDEstimation( const edm::ParameterSet & iConfig, TFileDirectory & iDir );
@@ -15,6 +17,10 @@ class Type22QCDEstimation {
   private :
     TFileDirectory& theDir;
     Type22Selection_v1   type22Selection_v1_;
+    double              bTagOP_;
+    string              bTagAlgo_;
+    BoostedTopWTagFunctor   *        wJetSelector_;
+    std::map<std::string, TH1F*>     histograms1d;
 
 };
 
