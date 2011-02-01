@@ -3,8 +3,13 @@
 
 #include "Analysis/BoostedTopAnalysis/interface/Type22Selection_v1.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Utilities/interface/RandomNumberGenerator.h"
+#include "CLHEP/Random/RandFlat.h"
+#include "CLHEP/Random/RandPoissonQ.h"
 
 #include "TH1F.h"
+#include "TFile.h"
 
 class Type22QCDEstimation {
   public :
@@ -21,6 +26,14 @@ class Type22QCDEstimation {
     string              bTagAlgo_;
     BoostedTopWTagFunctor   *        wJetSelector_;
     std::map<std::string, TH1F*>     histograms1d;
+    double              wMassMin_, wMassMax_;
+    double              topMassMin_, topMassMax_;
+    string              mistagFileName_;
+    TFile *             mistagFile_;
+    TH1F  *             wMistag_;
+    TH1F  *             bMistag_;
+    CLHEP::RandFlat *flatDistribution_;
+    double              prob;
 
 };
 
