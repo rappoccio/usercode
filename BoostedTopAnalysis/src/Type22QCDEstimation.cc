@@ -16,6 +16,9 @@ Type22QCDEstimation::Type22QCDEstimation( const edm::ParameterSet & iConfig,  TF
   histograms1d["topMassPred"]     = theDir.make<TH1F>("topMassPred",    "Top Mass",                   100,  0,  500 );
   histograms1d["ttMassType22Pred"]  = theDir.make<TH1F>("ttMassType22Pred",   "t#bar{t} Inv Mass Type22",   200,  0,  2000 );
 
+  mistagFile_   =  TFile::Open( mistagFileName_.c_str() );
+  wMistag_      =  (TH1F*)mistagFile_       ->  Get("wMistag");
+
   edm::Service<edm::RandomNumberGenerator> rng;
   if ( ! rng.isAvailable()) {
     throw cms::Exception("Configuration")
@@ -34,8 +37,8 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 
   std::vector<edm::Ptr<pat::Jet> >  const &  pfJets_ = type22Selection_v1_.pfJets();
   wJetSelector_  = &(type22Selection_v1_.wJetSelector() );
-  //if( passType22 )  {
-  if( retType22[string("nJets >= 4")] )  {
+  if( passType22 )  {
+  //if( retType22[string("nJets >= 4")] )  {
     pat::Jet const & leadJet = *pfJets_.at(0);
     std::vector<edm::Ptr<pat::Jet> >  hemisphere0, hemisphere1;
     std::vector<edm::Ptr<pat::Jet> >  wTags0,   wTags1;
@@ -57,9 +60,9 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
       double dPhi_ = fabs( reco::deltaPhi<double>( leadJet.phi(), jet.phi() ) );
       if( dPhi_ < TMath::Pi()/2 ) {
         hemisphere0.push_back( *ijet );
-        //if( wtagged && passWMass ) 
-        double x = flatDistribution_->fire();
-        if( x < prob )
+        if( wtagged && passWMass ) 
+        //double x = flatDistribution_->fire();
+        //if( x < prob )
           wTags0.push_back( *ijet );
         else if ( btagged )
           bTags0.push_back( *ijet );
@@ -67,9 +70,9 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
           noTags0.push_back( *ijet );
       }  else {
         hemisphere1.push_back( *ijet );
-        //if( wtagged && passWMass )
-        double x = flatDistribution_->fire();
-        if( x < prob )
+        if( wtagged && passWMass )
+        //double x = flatDistribution_->fire();
+        //if( x < prob )
           wTags1.push_back( *ijet );
         else if ( btagged )
           bTags1.push_back( *ijet );
@@ -153,8 +156,10 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
         if( hasTightTop0 )  { 
           //cout<<"case 10"<<endl;
           for( size_t i=0; i<noTags1.size(); i++ )  {
+
             double pt = noTags1.at(i)->pt();
-            double weight = prob;  //dummy value, depend on pt
+            int bin = wMistag_       ->  FindBin( pt );
+            double weight = wMistag_ ->  GetBinContent( bin );  //dummy value, depend on pt
             if( hasBTag1 )  {
               p4_top1 = noTags1.at(i)->p4() + bTags1.at(0)->p4();
               histograms1d["topMassPred"]     ->  Fill( p4_top1.mass(), weight );
@@ -179,6 +184,10 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
               if( nearestJet )  {
                 //cout<<"case 11"<<endl;
                 p4_top1 = noTags1.at(i)->p4() + nearestJet->p4();
+                int  bin1  = wMistag_      ->  FindBin( nearestJet->pt() );
+                double weight1 =  wMistag_ -> GetBinContent( bin1 );
+
+                weight *= (1-weight1);
                 histograms1d["topMassPred"]   ->  Fill( p4_top1.mass(), weight );
                 if( p4_top1.mass() > topMassMin_ && p4_top1.mass() < topMassMax_ )  {
                   passTopMass1 = true;
@@ -194,7 +203,8 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
           //cout<<bTags1.size()<<endl;
           for( size_t i=0; i<noTags1.size(); i++ )  {
             double pt = noTags1.at(i)->pt();
-            double weight = prob ; //dummy value
+            int bin     = wMistag_      ->  FindBin( pt );
+            double weight = wMistag_    ->  GetBinContent( bin ) ; //dummy value
             p4_top1 = noTags1.at(i)->p4() + bTags1.at(0)->p4();
             histograms1d["topMassPred"]     ->   Fill( p4_top1.mass(), weight );
             if( p4_top1.mass() > topMassMin_ && p4_top1.mass() < topMassMax_ )  {
@@ -213,7 +223,8 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
           //cout<<"case 20"<<endl;
           for( size_t i=0; i<noTags0.size(); i++ )  {
             double pt = noTags0.at(i)->pt();
-            double weight = prob;  //dummy value, depend on pt
+            int   bin   =   wMistag_      ->  FindBin( pt );
+            double weight = wMistag_      ->  GetBinContent( bin );  //dummy value, depend on pt
             if( hasBTag0 )  {
               p4_top0 = noTags0.at(i)->p4() + bTags0.at(0)->p4();
               histograms1d["topMassPred"]     ->  Fill( p4_top0.mass(), weight );
@@ -238,6 +249,9 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
               if( nearestJet )  {
                 //cout<<"case 22"<<endl;
                 p4_top0 = noTags0.at(i)->p4() + nearestJet->p4();
+                int   bin1  =  wMistag_       ->  FindBin( nearestJet->pt() );
+                double weight1  = wMistag_    ->  GetBinContent( bin1 );
+                weight *= (1-weight1);
                 histograms1d["topMassPred"]   ->  Fill( p4_top0.mass(), weight );
                 if( p4_top0.mass() > topMassMin_ && p4_top0.mass() < topMassMax_ )  {
                   passTopMass0 = true;
@@ -252,7 +266,8 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
           //cout<<"case 23"<<endl;
           for( size_t i=0; i<noTags0.size(); i++ )  {
             double pt = noTags0.at(i)->pt();
-            double weight = prob ; //dummy value
+            int   bin =   wMistag_    ->  FindBin( pt );
+            double weight = wMistag_  ->  GetBinContent( bin ); ; //dummy value
             p4_top0 = noTags0.at(i)->p4() + bTags0.at(0)->p4();
             histograms1d["topMassPred"]     ->   Fill( p4_top0.mass(), weight );
             if( p4_top0.mass() > topMassMin_ && p4_top0.mass() < topMassMax_ )  {
