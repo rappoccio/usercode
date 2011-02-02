@@ -33,40 +33,28 @@ process.source = cms.Source("PoolSource",
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
 
-from Analysis.BoostedTopAnalysis.Type22SelectionParams_cfi import *
+from Analysis.BoostedTopAnalysis.MistagMaker_cfi import *
 
 
 
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("Type22QCDEstimation.root")
+                                   fileName = cms.string("Mistag.root")
                                    )
 
-process.type22QCDAna15 = cms.EDAnalyzer('EDType22QCDEstimation',
-                                  Type22QCDEstimationParams
-                                     )
+process.mistagAna = cms.EDAnalyzer('EDMistagMaker',
+                                    MistagMakerParams
+                                  )
 
-#process.type22QCDAna10 = process.type22QCDAna15.clone( Probability = cms.double(0.10) )
-#process.type22QCDAna5 = process.type22QCDAna15.clone( Probability = cms.double(0.05) )
-#process.type22QCDAna33 = process.type22QCDAna15.clone( Probability = cms.double(0.33) )
 
 process.p = cms.Path(
-  process.type22QCDAna15#*process.type22QCDAna10*process.type22QCDAna5*process.type22QCDAna33
+  process.mistagAna
     )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
-                      type22QCDAna15 = cms.PSet(
-                      initialSeed = cms.untracked.uint32(81)
-                      ),
-                      type22QCDAna10 = cms.PSet(
-                      initialSeed = cms.untracked.uint32(81)
-                      ),
-                      type22QCDAna5 = cms.PSet(
-                      initialSeed = cms.untracked.uint32(81)
-                      ),
-                      type22QCDAna33 = cms.PSet(
+                      mistagAna = cms.PSet(
                       initialSeed = cms.untracked.uint32(81)
                       )
 
