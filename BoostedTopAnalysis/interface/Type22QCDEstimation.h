@@ -7,6 +7,7 @@
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandPoissonQ.h"
+#include "Analysis/BoostedTopAnalysis/interface/PredictedDistribution.h"
 
 #include "TH1F.h"
 #include "TFile.h"
@@ -17,7 +18,13 @@ class Type22QCDEstimation {
     virtual ~Type22QCDEstimation() { } //delete flatDistribution_; 
     virtual void beginJob() {}
     virtual void analyze( const edm::EventBase& iEvent ) ;
-    virtual void endJob() {  type22Selection_v1_.print(cout);  }
+    virtual void endJob() {  
+      type22Selection_v1_.print(cout); 
+      TDirectory * dir = theDir.cd();
+      ttMassPred    ->    SetCalculatedErrors();
+      dir ->  cd();
+      ttMassPred    ->    GetPredictedHist()->Write();
+    }
 
   private :
     TFileDirectory& theDir;
@@ -34,6 +41,8 @@ class Type22QCDEstimation {
     TH1F  *             bMistag_;
     CLHEP::RandFlat *flatDistribution_;
     double              prob;
+    bool                runOnData_;
+    PredictedDistribution * ttMassPred;
 
 };
 

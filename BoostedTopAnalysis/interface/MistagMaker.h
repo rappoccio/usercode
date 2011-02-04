@@ -7,6 +7,7 @@
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandPoissonQ.h"
 #include "Analysis/JetAnalysis/interface/DijetSelector.h"
+#include "Analysis/BoostedTopAnalysis/interface/BoostedTopWTagFunctor.h"
 
 
 #include "TH1F.h"
@@ -19,7 +20,7 @@ class MistagMaker {
     virtual ~MistagMaker() {}
     virtual void beginJob() {}
     virtual void analyze( const edm::EventBase& iEvent ) ;
-    virtual void endJob() {}
+    virtual void endJob() { dijetSelector_.print(cout); }
 
   private :
     DijetSelector             dijetSelector_;
@@ -27,6 +28,9 @@ class MistagMaker {
     TFileDirectory& theDir;
     std::map<std::string, TH1F*>     histograms1d;
     CLHEP::RandFlat *flatDistribution_;
+    BoostedTopWTagFunctor     boostedTopWTagFunctor_;
+    double      wMassMin_,  wMassMax_ ;
+    double      ptMin_;
 
 };
 

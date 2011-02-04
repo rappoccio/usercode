@@ -20,6 +20,7 @@ Type22QCDEstimationParams = cms.PSet(
   topMassMin = cms.double(140),
   topMassMax = cms.double(230),
   mistagFile = cms.string("mistag.root"),
-  Probability = cms.double(0.15)
+  Probability = cms.double(0.15),
+  runOnData = cms.bool(True)
 )
 

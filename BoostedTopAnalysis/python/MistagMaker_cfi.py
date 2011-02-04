@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.SelectorUtils.jetIDSelector_cfi import jetIDSelector
 from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
+from Analysis.BoostedTopAnalysis.BoostedTopWTagParams_cfi import boostedTopWTagParams as inputBoostedTopWTagParams
 
 MistagMakerParams = cms.PSet(
     dijetSelectorParams = cms.PSet(
@@ -18,4 +19,8 @@ MistagMakerParams = cms.PSet(
         ),
     jetIDParams = cms.PSet( jetIDSelector.clone() ),
     pfJetIDParams = cms.PSet( pfJetIDSelector.clone() ),
+    boostedTopWTagParams = cms.PSet( inputBoostedTopWTagParams ),
+    wMassMin  = cms.double(60),
+    wMassMax  = cms.double(100),
+    jetPtMin  = cms.double(200)
 )

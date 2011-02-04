@@ -1,4 +1,5 @@
 #include "Analysis/BoostedTopAnalysis/interface/Type22QCDEstimation.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 Type22QCDEstimation::Type22QCDEstimation( const edm::ParameterSet & iConfig,  TFileDirectory & iDir ) :
   theDir( iDir ),
@@ -10,7 +11,8 @@ Type22QCDEstimation::Type22QCDEstimation( const edm::ParameterSet & iConfig,  TF
   topMassMin_             ( iConfig.getParameter<double>("topMassMin") ),
   topMassMax_             ( iConfig.getParameter<double>("topMassMax") ),
   mistagFileName_         ( iConfig.getParameter<string>("mistagFile") ),
-  prob                    ( iConfig.getParameter<double>("Probability") )
+  prob                    ( iConfig.getParameter<double>("Probability") ),
+  runOnData_              ( iConfig.getParameter<bool>("runOnData") )
 {
   histograms1d["ttMassType22"]    = theDir.make<TH1F>("ttMassType22",   "t#bar{t} Inv Mass Type22",   200,  0,  2000 );
   histograms1d["topMassPred"]     = theDir.make<TH1F>("topMassPred",    "Top Mass",                   100,  0,  500 );
@@ -18,6 +20,9 @@ Type22QCDEstimation::Type22QCDEstimation( const edm::ParameterSet & iConfig,  TF
 
   mistagFile_   =  TFile::Open( mistagFileName_.c_str() );
   wMistag_      =  (TH1F*)mistagFile_       ->  Get("wMistag");
+  
+  //use the PredictedDistrubution class to get correct error
+  ttMassPred  =  new PredictedDistribution( (TH1D*)wMistag_ , "ttMassPred", "t#bar{t} Inv Mass",  200,  0,  2000 );
 
   edm::Service<edm::RandomNumberGenerator> rng;
   if ( ! rng.isAvailable()) {
@@ -32,6 +37,15 @@ Type22QCDEstimation::Type22QCDEstimation( const edm::ParameterSet & iConfig,  TF
 
 void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 {
+  double evtWeight = 1.0;
+
+  edm::Handle<GenEventInfoProduct>    genEvt;
+  iEvent.getByLabel( edm::InputTag("generator"),  genEvt );
+  if( genEvt.isValid() )  {
+    //evtWeight = genEvt->weight() ;
+  }
+
+
   pat::strbitset   retType22 = type22Selection_v1_.getBitTemplate();
   bool passType22 = type22Selection_v1_( iEvent, retType22 );
 
@@ -140,9 +154,9 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
     }
 
     if( (hasTightTop0 && hasTightTop1) || (hasTightTop0 && hasLooseTop1) || (hasLooseTop0 && hasTightTop1) )  {
-      cout<<"Woohoo, Type2+Type2, Event id, "<<iEvent.id()<<endl;
+      if(runOnData_)    cout<<"Woohoo, Type2+Type2, Event id, "<<iEvent.id()<<endl;
       double ttMass = (p4_top0+p4_top1).mass() ;
-      histograms1d["ttMassType22"]      ->  Fill( ttMass );
+      histograms1d["ttMassType22"]      ->  Fill( ttMass, evtWeight );
       //This is our signal, return
       return;
     }
@@ -162,11 +176,12 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
             double weight = wMistag_ ->  GetBinContent( bin );  //dummy value, depend on pt
             if( hasBTag1 )  {
               p4_top1 = noTags1.at(i)->p4() + bTags1.at(0)->p4();
-              histograms1d["topMassPred"]     ->  Fill( p4_top1.mass(), weight );
+              histograms1d["topMassPred"]     ->  Fill( p4_top1.mass(), weight*evtWeight );
               if( p4_top1.mass() > topMassMin_ && p4_top1.mass() < topMassMax_ )  {
                 passTopMass1 = true;
                 double ttMass = (p4_top0+p4_top1).mass() ;
-                histograms1d["ttMassType22Pred"]      ->  Fill( ttMass, weight );
+                histograms1d["ttMassType22Pred"]      ->  Fill( ttMass, weight*evtWeight );
+                ttMassPred      ->    Accumulate( ttMass, pt, 1,  evtWeight );
               }
             }
             else {  
@@ -188,11 +203,12 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
                 double weight1 =  wMistag_ -> GetBinContent( bin1 );
 
                 weight *= (1-weight1);
-                histograms1d["topMassPred"]   ->  Fill( p4_top1.mass(), weight );
+                histograms1d["topMassPred"]   ->  Fill( p4_top1.mass(), weight*evtWeight );
                 if( p4_top1.mass() > topMassMin_ && p4_top1.mass() < topMassMax_ )  {
                   passTopMass1 = true;
                   double ttMass = (p4_top0+p4_top1).mass() ;
-                  histograms1d["ttMassType22Pred"]    ->  Fill( ttMass, weight );
+                  histograms1d["ttMassType22Pred"]    ->  Fill( ttMass, weight*evtWeight );
+                  ttMassPred          ->      Accumulate( ttMass, pt, 1,  (1-weight1)*evtWeight );
                 }
               }
             }  // end else
@@ -206,11 +222,12 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
             int bin     = wMistag_      ->  FindBin( pt );
             double weight = wMistag_    ->  GetBinContent( bin ) ; //dummy value
             p4_top1 = noTags1.at(i)->p4() + bTags1.at(0)->p4();
-            histograms1d["topMassPred"]     ->   Fill( p4_top1.mass(), weight );
+            histograms1d["topMassPred"]     ->   Fill( p4_top1.mass(), weight*evtWeight );
             if( p4_top1.mass() > topMassMin_ && p4_top1.mass() < topMassMax_ )  {
               passTopMass1 = true;
               double ttMass = (p4_top0+p4_top1).mass() ;
-              histograms1d["ttMassType22Pred"]      ->  Fill( ttMass, weight );
+              histograms1d["ttMassType22Pred"]      ->  Fill( ttMass, weight*evtWeight );
+              ttMassPred          ->      Accumulate( ttMass, pt, 1,  evtWeight );
             }
           }
         }        
@@ -227,11 +244,12 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
             double weight = wMistag_      ->  GetBinContent( bin );  //dummy value, depend on pt
             if( hasBTag0 )  {
               p4_top0 = noTags0.at(i)->p4() + bTags0.at(0)->p4();
-              histograms1d["topMassPred"]     ->  Fill( p4_top0.mass(), weight );
+              histograms1d["topMassPred"]     ->  Fill( p4_top0.mass(), weight*evtWeight );
               if( p4_top0.mass() > topMassMin_ && p4_top0.mass() < topMassMax_ )  {
                 passTopMass0 = true;
                 double ttMass = (p4_top0+p4_top1).mass() ;
-                histograms1d["ttMassType22Pred"]      ->  Fill( ttMass, weight );
+                histograms1d["ttMassType22Pred"]      ->  Fill( ttMass, weight*evtWeight );
+                ttMassPred       ->      Accumulate( ttMass, pt, 1,  evtWeight );
               }
             }
             else {
@@ -252,11 +270,12 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
                 int   bin1  =  wMistag_       ->  FindBin( nearestJet->pt() );
                 double weight1  = wMistag_    ->  GetBinContent( bin1 );
                 weight *= (1-weight1);
-                histograms1d["topMassPred"]   ->  Fill( p4_top0.mass(), weight );
+                histograms1d["topMassPred"]   ->  Fill( p4_top0.mass(), weight*evtWeight );
                 if( p4_top0.mass() > topMassMin_ && p4_top0.mass() < topMassMax_ )  {
                   passTopMass0 = true;
                   double ttMass = (p4_top0+p4_top1).mass() ;
-                  histograms1d["ttMassType22Pred"]    ->  Fill( ttMass, weight );
+                  histograms1d["ttMassType22Pred"]    ->  Fill( ttMass, weight*evtWeight );
+                  ttMassPred      ->      Accumulate( ttMass, pt, 1,  (1-weight1)*evtWeight );
                 }
               }
             }  // end else
@@ -269,11 +288,12 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
             int   bin =   wMistag_    ->  FindBin( pt );
             double weight = wMistag_  ->  GetBinContent( bin ); ; //dummy value
             p4_top0 = noTags0.at(i)->p4() + bTags0.at(0)->p4();
-            histograms1d["topMassPred"]     ->   Fill( p4_top0.mass(), weight );
+            histograms1d["topMassPred"]     ->   Fill( p4_top0.mass(), weight*evtWeight );
             if( p4_top0.mass() > topMassMin_ && p4_top0.mass() < topMassMax_ )  {
               passTopMass0 = true;
               double ttMass = (p4_top0+p4_top1).mass() ;
-              histograms1d["ttMassType22Pred"]      ->  Fill( ttMass, weight );
+              histograms1d["ttMassType22Pred"]      ->  Fill( ttMass, weight*evtWeight );
+              ttMassPred      ->      Accumulate( ttMass, pt, 1, evtWeight );
             }
           }
         }
