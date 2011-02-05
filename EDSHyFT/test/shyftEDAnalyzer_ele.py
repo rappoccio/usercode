@@ -31,53 +31,65 @@ options.register ('doMC',
                   VarParsing.varType.int,
                   "Use MC truth")
 
-options.register('sampleNameInput',
-                 'top',
-                 VarParsing.multiplicity.singleton,
-                 VarParsing.varType.string,
-                 "Sample name to give histograms")
+options.register ('sampleNameInput',
+                  'top',
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.string,
+                  "Sample name to give histograms")
 
-options.register('outputRootFile',
-                 'shyftStudies.root',
-                 VarParsing.multiplicity.singleton,
-                 VarParsing.varType.string,
-                 "Output root file name")
+options.register ('outputRootFile',
+                  'shyftStudies.root',
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.string,
+                  "Output root file name")
 
-options.register('useTrigger',
-				 0,
-				 VarParsing.multiplicity.singleton,
-				 VarParsing.varType.int,
-				 "Use trigger only for dats")
+options.register ('useTrigger',
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Use trigger only for dats")
 				 
 options.register ('useRange135821to139980',
-				  0,
-				  VarParsing.multiplicity.singleton,
+                  0,
+                  VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
                   "Selected run range 135821-139980 for HLT_Ele10_LW_L1R")
 
 options.register ('useRange140058to143962',
-				  0,
-				  VarParsing.multiplicity.singleton,
+                  0,
+                  VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
-				  "Selected run range 140058_143962 for HLT_Ele15_SW_L1R")
+                  "Selected run range 140058_143962 for HLT_Ele15_SW_L1R")
 
 options.register ('useRange144010to146421',
-				  0,
-				  VarParsing.multiplicity.singleton,
-				  VarParsing.varType.int,
-				  "Selected run range 144010_146421 for HLT_Ele15_SW_CaloEleId_L1R")
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Selected run range 144010_146421 for HLT_Ele15_SW_CaloEleId_L1R")
 
 options.register ('useRange146428to147116',
-				  0,
-				  VarParsing.multiplicity.singleton,
-				  VarParsing.varType.int,
-				  "Selected run range 146428_147116 for HLT_Ele17_SW_CaloEleId_L1R")
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Selected run range 146428_147116 for HLT_Ele17_SW_CaloEleId_L1R")
 
-options.register ('useRange147196to148002',
-				  0,
-				  VarParsing.multiplicity.singleton,
-				  VarParsing.varType.int,
-				  "Selected run range 147196_148002 for HLT_Ele17_SW_TightEleId_L1R")
+options.register ('useRange147196to148058',
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Selected run range 147196_148058 for HLT_Ele17_SW_TightEleId_L1R")
+
+options.register ('useRange148819to149063',
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Selected run range 148819_149063 for HLT_Ele22_SW_TighterEleId_L1R_v2")
+
+options.register ('useRange149181to149442',
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Selected run range 149181_149442 for HLT_Ele22_SW_TighterEleId_L1R_v3")
 
 options.parseArguments()
 
@@ -92,7 +104,9 @@ useRange135821to139980 = options.useRange135821to139980
 useRange140058to143962 = options.useRange140058to143962
 useRange144010to146421 = options.useRange144010to146421
 useRange146428to147116 = options.useRange146428to147116
-useRange147196to148002 = options.useRange147196to148002
+useRange147196to148058 = options.useRange147196to148058
+useRange148819to149063 = options.useRange148819to149063
+useRange149181to149442 = options.useRange149181to149442
 
 if options.useFlavorHistory > 0 :
     useFlavorHistory = True
@@ -104,7 +118,7 @@ if options.doMC > 0 :
 else :
     inputDoMC = False
     # get JSON file correctly parced
-    JSONfile = 'Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt'
+    JSONfile = 'Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON.txt'
     myList = LumiList.LumiList (filename = JSONfile).getCMSSWString().split(',')
 
 
@@ -114,15 +128,15 @@ inputSampleName = options.sampleNameInput
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    'file:shyft_mc.root'
-                                    )
+                                'file:shyft_mc.root'
+                                   )
                                 )
 else :
     filelist = open( options.inputFiles[0], 'r' )
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    filelist.readlines()
-                                    )
+                                filelist.readlines()
+                                   )
                                 )
 
 if inputDoMC == False :
@@ -148,25 +162,29 @@ if useTrigger == True :
 		triggerName = "HLT_Ele15_SW_CaloEleId_L1R"
 	elif useRange146428to147116 :
 		triggerName = "HLT_Ele17_SW_CaloEleId_L1R"
-	elif useRange147196to148002 :
+	elif useRange147196to148058 :
 		triggerName = "HLT_Ele17_SW_TightEleId_L1R"
-	else :
-	    triggerName = "HLT_Ele10_LW_L1R"
-	    useMC = True #protection, no trigger requirement then
+   	elif useRange148819to149063 :
+		triggerName = "HLT_Ele22_SW_TighterEleId_L1R_v2"
+	elif useRange149181to149442 :
+       	        triggerName = "HLT_Ele22_SW_TighterEleId_L1R_v3"    
+	#else :
+	#    triggerName = "HLT_Ele10_LW_L1R"
+	#    useMC = True #protection, no trigger requirement then
 		
 else : #By default no trigger will be used in the selector if useMC == true
-	triggerName = "HLT_Ele10_LW_L1R" 
-        useMC = True
-
+    triggerName = "HLT_Ele10_LW_L1R" 
+    useMC = True
+    
 process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                     shyftAnalysis = inputShyftAnalysis.clone(
-                                        muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
-                                        electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
+                                        muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose'),
+                                        electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose'),
                                         metSrc = cms.InputTag('patMETsPFlow'),
                                         jetSrc = cms.InputTag('selectedPatJetsPFlow'),
-										eleTrig = cms.string(triggerName),
-										useEleMC = cms.bool(useMC),
-										useAntiSelection = cms.bool(False),
+                                        eleTrig = cms.string(triggerName),
+                                        useEleMC = cms.bool(useMC),
+                                        useAntiSelection = cms.bool(False),
                                         jetPtMin = cms.double(25.0),
                                         minJets = cms.int32(5),
                                         metMin = cms.double(20.0),
@@ -180,38 +198,54 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
 
 process.pfShyftAnaNoMET = process.pfShyftAna.clone(
     shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
-        metMin = cms.double(0.0),
-        identifier = cms.string('PFlow no MET')
-        )
+    metMin = cms.double(0.0),
+    identifier = cms.string('PFlow no MET')
+    )
     )
 
 
 process.pfShyftAnaDataQCD = process.pfShyftAna.clone(
     shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
-	    useAntiSelection = cms.bool(True),
-        identifier = cms.string('PFlow QCD')     
-        )
+	useAntiSelection = cms.bool(True),
+    identifier = cms.string('PFlow QCD')     
+    )
     )
 
 process.pfShyftAnaNoMETDataQCD = process.pfShyftAna.clone(
     shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
-	    useAntiSelection = cms.bool(True),
-		metMin = cms.double(0.0),
-        identifier = cms.string('PFlow QCD no MET')      
-        )
+	useAntiSelection = cms.bool(True),
+    metMin = cms.double(0.0),
+    identifier = cms.string('PFlow QCD no MET')      
+    )
     )
 
+process.pfShyftAnaDataQCDLoose = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+	useAntiSelection = cms.bool(True),
+	eRelIso = cms.double(0.15),
+    identifier = cms.string('PFlow QCD Loose')     
+    )
+    )
+
+process.pfShyftAnaNoMETDataQCDLoose = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+	useAntiSelection = cms.bool(True),
+	eRelIso = cms.double(0.15),
+    metMin = cms.double(0.0),
+    identifier = cms.string('PFlow QCD Loose no MET')     
+    )
+    )
 
 process.pfRecoShyftAna = cms.EDAnalyzer('EDSHyFT',
-                                    shyftAnalysis = inputShyftAnalysis.clone(
+                                        shyftAnalysis = inputShyftAnalysis.clone(
                                         muonSrc = cms.InputTag('selectedPatMuons'),
                                         electronSrc = cms.InputTag('selectedPatElectrons'),
                                         metSrc = cms.InputTag('patMETsPF'),
                                         jetSrc = cms.InputTag('selectedPatJetsAK5PF'),
-										eleTrig = cms.string(triggerName),	
-										useEleMC = cms.bool(useMC),
-										useAntiSelection = cms.bool(False),
-                                        jetPtMin = cms.double(25.0),
+                                        eleTrig = cms.string(triggerName),	
+                                        useEleMC = cms.bool(useMC),
+                                        useAntiSelection = cms.bool(False),
+                                        jetPtMin = cms.double(25.0), ############################### 25.0 in main analysis
                                         minJets = cms.int32(5),
                                         metMin = cms.double(20.0),
                                         heavyFlavour = cms.bool( useFlavorHistory ),
@@ -223,70 +257,137 @@ process.pfRecoShyftAna = cms.EDAnalyzer('EDSHyFT',
 
 process.pfRecoShyftAnaNoMET = process.pfRecoShyftAna.clone(
     shyftAnalysis=process.pfRecoShyftAna.shyftAnalysis.clone(
-        metMin = cms.double(0.0),
-        identifier = cms.string('PF no MET')
-        )
+    metMin = cms.double(0.0),
+    identifier = cms.string('PF no MET')
+    )
+    )
+
+process.pfRecoShyftAnaMETMax20 = process.pfRecoShyftAna.clone(
+    shyftAnalysis=process.pfRecoShyftAna.shyftAnalysis.clone(
+    metMin = cms.double(0.0),
+    metMax = cms.double(20.),
+    identifier = cms.string('PF MET < 20')
+    )
+    )
+
+process.pfRecoShyftAnaMETMin30 = process.pfRecoShyftAna.clone(
+    shyftAnalysis=process.pfRecoShyftAna.shyftAnalysis.clone(
+    metMin = cms.double(30.0),
+    identifier = cms.string('PF MET > 30')
+    )
     )
 
 
 process.pfRecoShyftAnaDataQCD = process.pfRecoShyftAna.clone(
     shyftAnalysis=process.pfRecoShyftAna.shyftAnalysis.clone(
-	    useAntiSelection = cms.bool(True),
-        identifier = cms.string('PF QCD')     
-        )
+	useAntiSelection = cms.bool(True),
+    identifier = cms.string('PF QCD')     
+    )
     )
 
 process.pfRecoShyftAnaNoMETDataQCD = process.pfRecoShyftAna.clone(
     shyftAnalysis=process.pfRecoShyftAna.shyftAnalysis.clone(
-	    useAntiSelection = cms.bool(True),
-		metMin = cms.double(0.0),
+	useAntiSelection = cms.bool(True),
+    metMin = cms.double(0.0),
         identifier = cms.string('PF QCD no MET')      
-        )
+    )
     )
 
+process.pfRecoShyftAnaDataQCDLoose = process.pfRecoShyftAna.clone(
+    shyftAnalysis=process.pfRecoShyftAna.shyftAnalysis.clone(
+	useAntiSelection = cms.bool(True),
+	eRelIso = cms.double(0.15),
+    identifier = cms.string('PF QCD Loose')     
+    )
+    )
 
+process.pfRecoShyftAnaNoMETDataQCDLoose = process.pfRecoShyftAna.clone(
+    shyftAnalysis=process.pfRecoShyftAna.shyftAnalysis.clone(
+	useAntiSelection = cms.bool(True),
+	eRelIso = cms.double(0.15),
+    metMin = cms.double(0.0),
+    identifier = cms.string('PF QCD Loose no MET')     
+    )
+    )
+
+process.pfRecoShyftAnaMETMax20DataQCDLoose = process.pfRecoShyftAna.clone(
+    shyftAnalysis=process.pfRecoShyftAna.shyftAnalysis.clone(
+	useAntiSelection = cms.bool(True),
+	eRelIso = cms.double(0.15),
+    metMin = cms.double(0.0),
+    metMax = cms.double(20.0),
+    identifier = cms.string('PF QCD Loose MET < 20')     
+    )
+    )
+
+process.pfRecoShyftAnaMETMin30DataQCDLoose = process.pfRecoShyftAna.clone(
+    shyftAnalysis=process.pfRecoShyftAna.shyftAnalysis.clone(
+	useAntiSelection = cms.bool(True),
+	eRelIso = cms.double(0.15),
+    metMin = cms.double(30.0),
+    identifier = cms.string('PF QCD Loose MET > 30')     
+    )
+    )
 
 process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                      shyftAnalysis = inputShyftAnalysis.clone(
-                                         metSrc = cms.InputTag('patMETsTC'),
-                                         jetSrc = cms.InputTag('selectedPatJetsAK5JPT'),
-										 eleTrig = cms.string(triggerName),
-										 useEleMC = cms.bool(useMC),
-										 useAntiSelection = cms.bool(False),
-                                         jetPtMin = cms.double(30.0),
-                                         metMin = cms.double(20.0),
-                                         minJets = cms.int32(5),
-                                         heavyFlavour = cms.bool( useFlavorHistory ),
-                                         doMC = cms.bool( inputDoMC),
-                                         sampleName = cms.string(inputSampleName),
-                                         identifier = cms.string('JPT')
-                                        )
+	                                 muonSrc = cms.InputTag('selectedPatMuons'),
+                                     electronSrc = cms.InputTag('selectedPatElectrons'),
+                                     metSrc = cms.InputTag('patMETsTC'),
+                                     jetSrc = cms.InputTag('selectedPatJetsAK5JPT'),
+                                     eleTrig = cms.string(triggerName),
+                                     useEleMC = cms.bool(useMC),
+                                     useAntiSelection = cms.bool(False),
+                                     jetPtMin = cms.double(30.0),
+                                     metMin = cms.double(20.0),
+                                     minJets = cms.int32(5),
+                                     heavyFlavour = cms.bool( useFlavorHistory ),
+                                     doMC = cms.bool( inputDoMC),
+                                     sampleName = cms.string(inputSampleName),
+                                     identifier = cms.string('JPT')
+                                     )
                                      
                                      )
 
 
 process.jptShyftAnaNoMET = process.jptShyftAna.clone(
     shyftAnalysis=process.jptShyftAna.shyftAnalysis.clone(
-        metMin = cms.double(0.0),
-        identifier = cms.string('JPT no MET')
-        )
+    metMin = cms.double(0.0),
+    identifier = cms.string('JPT no MET')
+    )
     )
 
 process.jptShyftAnaDataQCD = process.jptShyftAna.clone(
     shyftAnalysis=process.jptShyftAna.shyftAnalysis.clone(
-	    useAntiSelection = cms.bool(True),
-        identifier = cms.string('JPT QCD')     
-        )
+	useAntiSelection = cms.bool(True),
+    identifier = cms.string('JPT QCD')     
+    )
     )
 
 process.jptShyftAnaNoMETDataQCD = process.jptShyftAna.clone(
     shyftAnalysis=process.jptShyftAna.shyftAnalysis.clone(
-	    useAntiSelection = cms.bool(True),
-		metMin = cms.double(0.0),
-        identifier = cms.string('JPT QCD no MET')      
-        )
+	useAntiSelection = cms.bool(True),
+	metMin = cms.double(0.0),
+    identifier = cms.string('JPT QCD no MET')      
+    )
     )
 
+process.jptShyftAnaDataQCDLoose = process.jptShyftAna.clone(
+    shyftAnalysis=process.jptShyftAna.shyftAnalysis.clone(
+	useAntiSelection = cms.bool(True),
+    eRelIso = cms.double(0.15),
+    identifier = cms.string('JPT QCD Loose')     
+    )
+    )
+
+process.jptShyftAnaNoMETDataQCDLoose = process.jptShyftAna.clone(
+    shyftAnalysis=process.jptShyftAna.shyftAnalysis.clone(
+	useAntiSelection = cms.bool(True),
+	metMin = cms.double(0.0),
+    eRelIso = cms.double(0.15),
+    identifier = cms.string('JPT QCD no MET Loose')      
+    )
+    )
 
 if inputDoMC :
     caloBTag = 'simpleSecondaryVertexBJetTags'
@@ -295,60 +396,74 @@ else :
 
 process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
                                       shyftAnalysis = inputShyftAnalysis.clone(
-	                                      eleTrig = cms.string(triggerName),
-										  useEleMC = cms.bool(False),
-										  useAntiSelection = cms.bool(False),
-                                          jetPtMin = cms.double(30.0),
-                                          metMin = cms.double(30.0),
-                                          minJets = cms.int32(5),
-                                          heavyFlavour = cms.bool( useFlavorHistory ),
-                                          doMC = cms.bool( inputDoMC),
-                                          sampleName = cms.string(inputSampleName),
-                                          btaggerString = cms.string(caloBTag),
-                                          identifier = cms.string('CALO')
-                                          )                                      
+	                                  eleTrig = cms.string(triggerName),
+                                      useEleMC = cms.bool(False),
+                                      useAntiSelection = cms.bool(False),
+                                      jetPtMin = cms.double(30.0),
+                                      metMin = cms.double(30.0),
+                                      minJets = cms.int32(5),
+                                      heavyFlavour = cms.bool( useFlavorHistory ),
+                                      doMC = cms.bool( inputDoMC),
+                                      sampleName = cms.string(inputSampleName),
+                                      btaggerString = cms.string(caloBTag),
+                                      identifier = cms.string('CALO')
+                                      )                                      
                                       )
 
 
 process.caloShyftAnaNoMET = process.caloShyftAna.clone(
     shyftAnalysis=process.caloShyftAna.shyftAnalysis.clone(
-        metMin = cms.double(0.0),
-        identifier = cms.string('CALO no MET')
-        )
+    metMin = cms.double(0.0),
+    identifier = cms.string('CALO no MET')
+    )
     )
 
 process.caloShyftAnaDataQCD = process.caloShyftAna.clone(
     shyftAnalysis=process.caloShyftAna.shyftAnalysis.clone(
-	    useAntiSelection = cms.bool(True),
-        identifier = cms.string('CALO QCD')     
-        )
+	useAntiSelection = cms.bool(True),
+    identifier = cms.string('CALO QCD')     
+    )
     )
 
 process.caloShyftAnaNoMETDataQCD = process.caloShyftAna.clone(
     shyftAnalysis=process.caloShyftAna.shyftAnalysis.clone(
-	    useAntiSelection = cms.bool(True),
-		metMin = cms.double(0.0),
-        identifier = cms.string('CALO QCD no MET')      
-        )
+	useAntiSelection = cms.bool(True),
+    metMin = cms.double(0.0),
+    identifier = cms.string('CALO QCD no MET')      
+    )
     )
 
 process.p = cms.Path(
-    process.pfShyftAna*
-    process.pfShyftAnaNoMET*
-    process.pfShyftAnaDataQCD*
-    process.pfShyftAnaNoMETDataQCD*
-    process.pfRecoShyftAna*
+    process.pfRecoShyftAna*                     #Gsf+PF
+    #process.pfShyftAna*                        #Gsf+PF2PAT
+    ##process.jptShyftAna*                      #Gsf+JPT
+    
     process.pfRecoShyftAnaNoMET*
-    process.pfRecoShyftAnaDataQCD*
-    process.pfRecoShyftAnaNoMETDataQCD*
-    process.jptShyftAna*
-    process.jptShyftAnaNoMET*
-    process.jptShyftAnaDataQCD*
-	process.jptShyftAnaNoMETDataQCD*
-    process.caloShyftAna*
-    process.caloShyftAnaNoMET*
-	process.caloShyftAnaDataQCD*
-	process.caloShyftAnaNoMETDataQCD
+    process.pfRecoShyftAnaMETMax20 *            #Gsf+PF, MET<20
+    process.pfRecoShyftAnaMETMin30 *            #Gsf+PF, MET>30
+    #process.pfRecoShyftAnaDataQCD*
+    #process.pfRecoShyftAnaNoMETDataQCD* 
+    process.pfRecoShyftAnaDataQCDLoose*         #Default, MET>20 and reliso<0.15
+    process.pfRecoShyftAnaNoMETDataQCDLoose*    #No MET, reliso<0.15
+    process.pfRecoShyftAnaMETMax20DataQCDLoose* #MET<20, reliso<0.15
+    process.pfRecoShyftAnaMETMin30DataQCDLoose  #MET>30, reliso<0.15
+    
+    #process.pfShyftAnaNoMET*
+    #process.pfShyftAnaDataQCD*
+    #process.pfShyftAnaNoMETDataQCD*
+    #process.pfShyftAnaDataQCDLoose*
+    #process.pfShyftAnaNoMETDataQCDLoose
+    
+    #process.jptShyftAnaNoMET*
+    #process.jptShyftAnaDataQCD*
+    #process.jptShyftAnaNoMETDataQCD*
+    #process.jptShyftAnaDataQCDLoose*
+    #process.jptShyftAnaNoMETDataQCDLoose
+    
+    #process.caloShyftAna*
+    #process.caloShyftAnaNoMET*
+    #process.caloShyftAnaDataQCD*
+    #process.caloShyftAnaNoMETDataQCD
     )
 
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 100000
