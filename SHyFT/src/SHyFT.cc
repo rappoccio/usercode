@@ -175,7 +175,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   }
 
   
-   if(sampleNameInput=="Vqq" || sampleNameInput=="Wjets" || sampleNameInput=="Wc" || sampleNameInput=="Zjets") {
+  if(useHFcat_ && ( sampleNameInput=="Vqq" || sampleNameInput=="Wjets" || sampleNameInput=="Wc" || sampleNameInput=="Zjets")) {
       stringstream tmpString;
       for(int i=1;i<12;++i) {
          tmpString.str("");
@@ -481,7 +481,11 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   // std::cout << "Filling global weight in make_templates : " << globalWeight_ << std::endl;
   reco::Candidate::LorentzVector nu_p4 = met.p4();
   reco::Candidate::LorentzVector lep_p4 = ( muPlusJets_  ? muons[0].p4() : electrons[0].p4() );
-  double wMT = (lep_p4 + nu_p4).mt();
+
+  double wPt = lep_p4.Pt() + nu_p4.Pt();
+  double wPx = lep_p4.Px() + nu_p4.Px();
+  double wPy = lep_p4.Py() + nu_p4.Py();
+  double wMT = TMath::Sqrt(wPt*wPt-wPx*wPx-wPy*wPy);
   double hT = lep_p4.pt() + nu_p4.Et();
   double hT_lep = lep_p4.pt();
   double hcalIso(-99.), ecalIso(-99.), trkIso(-99.), pt(-99.), relIso(-99.), d0(-99);
