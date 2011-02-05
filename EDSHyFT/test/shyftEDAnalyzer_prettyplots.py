@@ -44,6 +44,11 @@ options.register('ignoreTrigger',
                   VarParsing.varType.int,
                   "Ignore trigger in selection")
 
+options.register('muTrig',
+                 'HLT_Mu9',
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.string,
+                 "Muon trigger to run")
 
 options.parseArguments()
 
@@ -111,6 +116,7 @@ shyftAnalysisParams = inputShyftAnalysis.clone(
                                         electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
                                         metSrc = cms.InputTag('patMETsPFlow'),
                                         jetSrc = cms.InputTag('selectedPatJetsPFlow'),
+                                        muTrig = cms.string(options.muTrig),    
                                         jetPtMin = cms.double(25.0),
                                         minJets = cms.int32(3),
                                         metMin = cms.double(20.0),                                        
