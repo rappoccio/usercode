@@ -102,6 +102,8 @@ class SHyFT : public edm::BasicAnalyzer {
     SHyFTSelector wPlusJets;
     TFileDirectory& theDir;
     TDirectory * dir;
+    TDirectory *dir1;
+    TDirectory *dir2;
 
     // the following parameters need to come from the config
     bool muPlusJets_;

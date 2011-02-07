@@ -113,7 +113,10 @@ class SHyFTSelector : public EventSelector {
       double jetUncertainty_; // "flat" uncertainty after the L2L3 uncertainty
       double jetSmear_;
       double metMin_;
+      double metMax_;
       double unclMetScale_; 
+      double ePtScale_;        
+      double ePtUncertaintyEE_;
 
       index_type   inclusiveIndex_; 
       index_type   triggerIndex_;   
@@ -122,7 +125,8 @@ class SHyFTSelector : public EventSelector {
       index_type   lep2Index_;      
       index_type   lep3Index_;      
       index_type   lep4Index_;      
-      index_type   metIndex_;       
+      index_type   metLowIndex_;  
+      index_type   metHighIndex_;       
       index_type   zvetoIndex_;     
       index_type   conversionIndexA_;
       index_type   conversionIndexB_;
