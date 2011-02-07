@@ -30,7 +30,7 @@ class TopElectronSelector : public Selector<pat::Electron>  {
 
    public: // interface  
   
-      enum Version_t { wp95, wp70, sigihih70, dphi70, deta70, hoe70, NONE };
+      enum Version_t { wp95, wp70, sigihih70, dphi70, deta70, hoe70, sigihih80, dphi80, deta80, hoe80, NONE };
       TopElectronSelector() {}
   
       // initialize it by inserting directly the cut values in a parameter set
@@ -92,7 +92,7 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("hoe_EB",      1.5e-01); 
             set("sihih_EE",    3.0e-02);
             set("dphi_EE",     7.0e-01);
-            set("deta_EE",     1.0e-01);// 
+            set("deta_EE",     1.0e-02);// 
             set("hoe_EE",      7.0e-02);
             set("relIso",      1.0e-00);
             set("d0",          false  );
@@ -114,30 +114,34 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          else if (version == sigihih70){
             set("sihih_EB",    1.0e-02);
             set("sihih_EE",    3.0e-02);
-            //set("relIso",      1.0e-01); 
-            //set("d0",          2.0e-02);
-            //set("Et",          30.0   );
          }
          else if (version == dphi70){
             set("dphi_EB",     3.0e-02);
             set("dphi_EE",     2.0e-02);
-            //set("relIso",      1.0e-01); 
-            //set("d0",          2.0e-02);
-            //set("Et",          30.0   );
          }
          else if (version == deta70){
             set("deta_EB",     4.0e-03);
             set("deta_EE",     5.0e-03);//10000.
-            //set("relIso",      1.0e-01); 
-            //set("d0",          2.0e-02);
-            //set("Et",          30.0   );
          }
          else if (version == hoe70){
             set("hoe_EB",      2.5e-02);
             set("hoe_EE",      2.5e-02);
-            //set("relIso",      1.0e-01); 
-            //set("d0",          2.0e-02);
-            //set("Et",          30.0   );
+         }
+         else if (version == sigihih80){
+            set("sihih_EB",    1.0e-02);
+            set("sihih_EE",    3.0e-02);
+         }
+         else if (version == dphi80){
+            set("dphi_EB",     6.0e-02);
+            set("dphi_EE",     3.0e-02);
+         }
+         else if (version == deta80){
+            set("deta_EB",     4.0e-03);
+            set("deta_EE",     7.0e-03);//10000.
+         }
+         else if (version == hoe80){
+            set("hoe_EB",      4.0e-02);
+            set("hoe_EE",      2.5e-02);
          }
 
          indexSinhih_EB_     = index_type(&bits_, "sihih_EB"     ); 
@@ -234,10 +238,11 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          if(is36xData_){           
             Deta = electron.deltaEtaSuperClusterTrackAtVtx() + deta_sc ;
             Dphi = correct_phi(electron.deltaPhiSuperClusterTrackAtVtx() + dphi_sc);
+            std::cout << "ok I am in the wrong place = " << std::endl;
          }
          else{       
             Deta = electron.deltaEtaSuperClusterTrackAtVtx();
-            Dphi = electron.deltaPhiSuperClusterTrackAtVtx();          
+            Dphi = electron.deltaPhiSuperClusterTrackAtVtx(); 
          }
       
          Double_t eleEt    = electron.p4().Pt();
@@ -247,6 +252,10 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          Double_t d0       = electron.dB();
          Double_t et       = electron.et();
 
+
+         //if(electron.isEE() && fabs(Deta)<0.01 && fabs(Dphi)<0.7 && sihih <0.03 && HoE < 0.07 ){
+         //  std::cout << " I should be like this Deta " << Deta << std::endl;
+         // }
          // now apply the cuts
          if (electron.isEB()) { // BARREL case
             // check the EB cuts
@@ -271,6 +280,7 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             passCut(ret, indexDphi_EB_);	
             passCut(ret, indexDeta_EB_);	
             passCut(ret, indexHoE_EB_);
+            
          }
          
          if ( relIso  < cut(indexRelIso_, double()) || ignoreCut(indexRelIso_)  ) passCut(ret, indexRelIso_ );
