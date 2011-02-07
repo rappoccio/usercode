@@ -154,11 +154,21 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
 
 
 
-
 process.pfShyftAnaMC = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         identifier = cms.string('PF MC'),
         simpleSFCalc = cms.bool(False),
+        reweightBTagEff = cms.bool(False),
+        useCustomPayload = cms.bool(False),  
+        )
+    )
+
+process.pfShyftAnaMCBTag090 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF MC'),
+        bcEffScale = cms.double(0.90),
+        lfEffScale = cms.double(0.90),        
+        simpleSFCalc = cms.bool(True),
         reweightBTagEff = cms.bool(False),
         useCustomPayload = cms.bool(False),  
         )
@@ -386,7 +396,7 @@ process.jptShyftAnaJES105NoMET = process.jptShyftAnaNoMET.clone(
 
 
 process.s = cms.Sequence(
-    process.jptShyftAna*
+#    process.jptShyftAna*
     process.pfShyftAnaJES095*    
     process.pfShyftAnaJES105*
     process.pfShyftAnaMETRES090*
@@ -410,7 +420,8 @@ process.s = cms.Sequence(
     process.pfShyftAnaReweightedLFTag080*
     process.pfShyftAnaReweightedLFTag090*
     process.pfShyftAnaReweightedLFTag110*
-    process.pfShyftAnaMC
+    process.pfShyftAnaMC*
+    process.pfShyftAnaMCBTag090
     )
 
 process.p = cms.Path(
