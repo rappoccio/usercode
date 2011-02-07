@@ -41,7 +41,10 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    jetUncertainty_  (params.getParameter<double>("jetUncertainty")),
    jetSmear_        (params.getParameter<double>("jetSmear")),
    metMin_          (params.getParameter<double>("metMin")),
+   metMax_          (params.getParameter<double>("metMax")),
    unclMetScale_    (params.getParameter<double>("unclMetScale")),
+   ePtScale_        (params.getParameter<double>("ePtScale")),
+   ePtUncertaintyEE_(params.getParameter<double>("ePtUncertaintyEE")),
    elDist_          (params.getParameter<double>("elDist")),
    elDcot_          (params.getParameter<double>("elDcot")),
    eRelIso_         (params.getParameter<double>("eRelIso")),
@@ -60,7 +63,8 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    push_back( "== 1 Tight Lepton"    );
    push_back( "== 1 Tight Lepton, Mu Veto");
    push_back( "== 1 Lepton"    );
-   push_back( "MET Cut"        );
+   push_back( "MET Cut Min"    );
+   push_back( "MET Cut Max"    );
    push_back( "Z Veto"         );
    push_back( "Conversion Veto A");
    push_back( "Conversion Veto B");
@@ -80,7 +84,8 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    set( "== 1 Tight Lepton"    );
    set( "== 1 Tight Lepton, Mu Veto");
    set( "== 1 Lepton"    );
-   set( "MET Cut"        );
+   set( "MET Cut Min"    );
+   set( "MET Cut Max"    ); 
    set( "Z Veto"         );
    set( "Conversion Veto A");
    set( "Conversion Veto B");
@@ -99,8 +104,9 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    lep2Index_ = index_type(&bits_, std::string("== 1 Tight Lepton"    ));
    lep3Index_ = index_type(&bits_, std::string("== 1 Tight Lepton, Mu Veto"));
    lep4Index_ = index_type(&bits_, std::string("== 1 Lepton"    ));
-   metIndex_ = index_type(&bits_, std::string("MET Cut"        ));
-   zvetoIndex_ = index_type(&bits_, std::string("Z Veto"         ));
+   metLowIndex_ = index_type(&bits_, std::string("MET Cut Min"));
+   metHighIndex_ = index_type(&bits_, std::string("MET Cut Max"));
+   zvetoIndex_ = index_type(&bits_, std::string("Z Veto"));
    conversionIndexA_ = index_type(&bits_, std::string("Conversion Veto A"));
    conversionIndexB_ = index_type(&bits_, std::string("Conversion Veto B"));
    cosmicIndex_ = index_type(&bits_, std::string("Cosmic Veto"    ));
@@ -144,41 +150,42 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
    bool passTrig = false;
    if (!ignoreCut(triggerIndex_) ) {
 
-
+      
       edm::Handle<pat::TriggerEvent> triggerEvent;
-      event.getByLabel(trigTag_, triggerEvent);
-    
-      pat::TriggerEvent const * trig = &*triggerEvent;
+      pat::TriggerEvent const * trig ;
+      
+      
+      if( (!useEleMC_ && ePlusJets_) || muPlusJets_){
+         event.getByLabel(trigTag_, triggerEvent);
+         trig = &*triggerEvent;
+      }
       
       if ( muPlusJets_ && trig->wasRun() && trig->wasAccept() ) {   
          pat::TriggerPath const * muPath = trig->path(muTrig_);
-       
+         
          if ( muPath != 0 && muPath->wasAccept() ) {
             passTrig = true;    
          }  
-       
+         
       } 
-    
+      
       if(ePlusJets_){
          if(!useEleMC_ && trig->wasRun() && trig->wasAccept() ){
             pat::TriggerPath const * elePath = trig->path(eleTrig_);
-          
+            
             if (elePath != 0 && elePath->wasAccept() ) {
                passTrig = true;
             }
          }
-         else if(useEleMC_)  {passTrig = true;}
+         else if(useEleMC_)  passTrig = true;
       }
    }
   
 
-
-  
    if ( ignoreCut(triggerIndex_) || 
         passTrig ) {
       passCut(ret, triggerIndex_);
-
-
+  
       bool passPV = false;
 
       passPV = pvSelector_( event );
@@ -201,15 +208,14 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
          edm::Handle< vector< pat::MET > > metHandle;
          event.getByLabel (metTag_, metHandle);
 
-
-	 reco::Candidate::LorentzVector metP4 = metHandle->at(0).p4();
+    	 reco::Candidate::LorentzVector metP4 = metHandle->at(0).p4();
 
          TopElectronSelector patEle70(TopElectronSelector::wp70, use36xData_);
          TopElectronSelector patEle95(TopElectronSelector::wp95, use36xData_);
-         TopElectronSelector EleSihih(TopElectronSelector::sigihih70, use36xData_);
-         TopElectronSelector EleDphi(TopElectronSelector::dphi70, use36xData_);
-         TopElectronSelector EleDeta(TopElectronSelector::deta70, use36xData_); 
-         TopElectronSelector EleHoE(TopElectronSelector::hoe70, use36xData_); 
+         TopElectronSelector EleSihih(TopElectronSelector::sigihih80, use36xData_);
+         TopElectronSelector EleDphi(TopElectronSelector::dphi80, use36xData_);
+         TopElectronSelector EleDeta(TopElectronSelector::deta80, use36xData_); 
+         TopElectronSelector EleHoE(TopElectronSelector::hoe80, use36xData_); 
       
          bool conversionVetoA = true;
          bool conversionVetoB = true;
@@ -244,18 +250,18 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             bool   isConv  = fabs(el_dist) < elDist_ && fabs(el_dcot) < elDcot_ ;            
             double nHits   = ielectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
             double relIso  = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + ielectron->dr03HcalTowerSumEt() ) / ielectron->p4().Pt();
-
+           
 //Electron Selection for e+jets
 //-----------------------------
             if( (scEta > 2.5 || scEta <= 1.566 )  && scEta > 1.4442 ) continue;   
             if( fabs(ielectron->eta()) >= eleEtaMaxLoose_ ) continue;
-            //bool passd0;
-            
             if(useAntiSelection_){
                if( Et       > eEt_                                         &&                   
                    relIso   < eRelIso_                                     &&
-                   vCut     < 1                                            && 
-                   ( fabs(dB) < 0.02  + pass_sihih + pass_dphi + pass_deta + pass_hoe ) <= 2 ){  //fail atleast two of the IDs                 
+                   vCut     < 1                                            &&
+                   fabs(dB) < 0.02                                         && 
+                   ( pass_sihih + pass_dphi + pass_deta + pass_hoe)  <= 2 ){  //fail atleast two of the IDs      
+                  
                   selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                   if(nHits > 0 ) conversionVetoA = false;
                   if(nHits > 0 || isConv) conversionVetoB = false;                  
@@ -272,7 +278,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                   if(nHits > 0 || isConv) conversionVetoB = false;  
                }
                else if( pass95 ){//loose
-                  selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );            
+                     selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                }            
             }//else regular selection
             
@@ -394,7 +400,6 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 	   }
 
 
-
 	   reco::ShallowClonePtrCandidate scaledJet ( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Jet>( jetHandle, ijet - jetBegin ),
 										      ijet->charge(),
 										      scaledJetP4 ) );
@@ -509,6 +514,30 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 	 }
 
 
+     // -------
+	 // Endcap Electron Momentum uncertainity on MET resolution
+	 // -------
+      if ( fabs(ePtScale_) > 0.0 && ePlusJets_) {                
+         for ( std::vector<reco::ShallowClonePtrCandidate>::const_iterator eleBegin = allElectrons_.begin(),
+		   eleEnd = allElectrons_.end(), iele = eleBegin;
+		 iele != eleEnd; ++iele ) {
+            pat::Electron const & e = dynamic_cast<pat::Electron const &>( *(iele->masterClonePtr().get() ));
+            if(e.isEE()){  // Subtract off pt of endcap electrons
+               metP4.SetPx( metP4.px() + e.px() );
+               metP4.SetPy( metP4.py() + e.py() );
+            
+               // Scale up or down by ptScale_ by 0.025 as ePUncertaintyEE_
+               double iptscaleunc = (1 + ePtScale_ * ePtUncertaintyEE_ ); 
+               //cout<< iptscaleunc << endl;
+               // Correct the MET back again for this effect
+               metP4.SetPx( metP4.px() - e.px() * iptscaleunc );
+               metP4.SetPy( metP4.py() - e.px() * iptscaleunc );
+            }
+            else continue;   
+         }
+      }
+     
+
 	 // Set the MET
          met_ = reco::ShallowClonePtrCandidate( edm::Ptr<pat::MET>( metHandle, 0),
                                                 metHandle->at(0).charge(),
@@ -532,12 +561,6 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                  ( nleptons == 1 ) ){
                passCut( ret, lep2Index_);
               
-
-               //const pat::Electron * electron_ = 0;
-               //electron_ = dynamic_cast<const pat::Electron *>(selectedElectrons_[0].masterClonePtr().get());
-               
-              
-               
 
                bool oneMuon = 
                   ( selectedMuons_.size() == 1 && 
@@ -570,14 +593,18 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                      ) {
                      passCut(ret, lep4Index_);	  
   
-                                       
-                     bool metCut = met_.pt() > metMin_;
-                     if ( ignoreCut(metIndex_) ||
-                          metCut ) {
-                        passCut( ret, metIndex_ );
+                     bool metCutMin = met_.pt() > metMin_;
+                     bool metCutMax = met_.pt() < metMax_;
+                     //cout << "metCutMin = " << metCutMin << ",metCutMax = " << metCutMax << endl;
+                     //cout << "minCut = " << metMin_ << ", maxCut = " << metMax_ << endl;
+                     if ( ignoreCut(metLowIndex_) || (metCutMin)) {
+                        passCut( ret, metLowIndex_ );
 	  
-                     
+                     if ( ignoreCut(metHighIndex_) || (metCutMax)) {
+                        passCut( ret, metHighIndex_ );
+	  
 
+                     
                         bool zVeto = true;
   
                         if(ePlusJets_){
@@ -586,7 +613,6 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                                iele1 != selectedElectrons_.end(); ++iele1){
                               for(std::vector<reco::ShallowClonePtrCandidate>::const_iterator iele2  = selectedLooseElectrons_.begin();
                                   iele2 != selectedLooseElectrons_.end(); ++iele2){
-                                 // if (iele1->charge() * iele2->charge() >= 0) continue;
                                  double Zmass = ((iele1->p4() + iele2->p4()).M());
                                  if (Zmass <= 106 && Zmass >= 76) zVeto = false;
                               }
@@ -647,8 +673,10 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 
                         } // end if z veto
 
-                     } // end if met cut
-	
+                     } // end if met cut max
+
+                     }// end if met cut low
+
                   } // end if == 1 lepton
 
                } // end if == 1 tight lepton with a muon veto separately
