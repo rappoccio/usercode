@@ -169,7 +169,7 @@ f_st_tW = TFile('TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_shyftana_'+inFileEnd+'.
 
 
 if options.ttbarIFSR is None :
-    f_ttbar = TFile('TTJets_TuneD6T_7TeV-madgraph-tauola_shyftana_'+inFileEnd+'.root')   ## pileup_shyftana added
+    f_ttbar = TFile('TTJets_TuneD6T_7TeV-madgraph-tauola_shyftana_'+inFileEnd+'.root')   ## pileup_shyftana can be replace if desired
 else :
     f_ttbar = TFile('TTJets_TuneD6T_' + options.ttbarIFSR + '_7TeV-madgraph-tauola_shyftana_'+inFileEnd+'.root')
 
@@ -299,7 +299,7 @@ maxTags = 3
 
 pathNamesW = [
     ['VqqW_path1'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 1
-    ['VqqW_path2'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 2
+    ['WjetsW_path2'    , f_wjets ,n_wjets, xs_wjets ],# path 2
     ['VqqW_path3'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 3
     ['WjetsW_path4'    , f_wjets ,n_wjets, xs_wjets ],# path 4
     ['WjetsW_path5'    , f_wjets ,n_wjets, xs_wjets ],# path 5
@@ -313,7 +313,7 @@ pathNamesW = [
 
 pathNamesZ = [
     ['VqqZ_path1'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 1
-    ['VqqZ_path2'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 2
+    ['ZjetsZ_path2'    , f_zjets ,n_zjets, xs_zjets ],# path 2
     ['VqqZ_path3'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 3
     ['ZjetsZ_path4'    , f_zjets ,n_zjets, xs_zjets ],# path 4
     ['ZjetsZ_path5'    , f_zjets ,n_zjets, xs_zjets ],# path 5
