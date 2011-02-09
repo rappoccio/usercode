@@ -29,6 +29,7 @@ shyftAnalysis = cms.PSet(
     lDiscriminantCut = cms.double(-1.0),
     allDiscriminantCut = cms.double(1.74),
     simpleSFCalc = cms.bool(False),
+    weightSFCalc = cms.bool(False),
     jetAlgo = cms.string("pf"),
     useCustomPayload = cms.bool(False),
     customPayload = cms.string('ttbarEffSF_unity.root')   

@@ -144,6 +144,7 @@ class SHyFT : public edm::BasicAnalyzer {
                         // as a probability to throw away an MC event. Only works for SF < 1.0.
                         // Technically, for systematics, SF < 1-dSF, since then you'd set this 
                         // up and down by dSF. 
+    bool weightSFCalc_; 
     std::string jetAlgo_;
     boost::shared_ptr<TFile> customBtagFile_;
 

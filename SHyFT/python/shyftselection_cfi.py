@@ -92,8 +92,8 @@ wplusjetsAnalysis = cms.PSet(
     pfjetIdLoose = pfJetIDSelector.clone(),
     # kinematic cuts
     minJets        = cms.int32( 1 ),
-    muPlusJets     = cms.bool( False ),
-    ePlusJets      = cms.bool( True ),
+    muPlusJets     = cms.bool( True ),
+    ePlusJets      = cms.bool( False ),
     muPtMin        = cms.double( 20.0 ),
     muEtaMax       = cms.double( 2.1 ),
     eleEtMin       = cms.double( 20.0 ),

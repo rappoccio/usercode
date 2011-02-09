@@ -63,6 +63,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   useCustomPayload_ (iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("useCustomPayload")),
   customTagRootFile_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("customPayload")),
   simpleSFCalc_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("simpleSFCalc")),
+  weightSFCalc_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("weightSFCalc")),
   jetAlgo_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("jetAlgo"))
 {
 
@@ -635,6 +636,19 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   allNumTags_ = 0;
   allNumJets_ = (int) jets.size();
 
+  TH1 * bEff = 0;
+  TH1 * cEff = 0;
+  TH1 * pEff = 0;
+  if ( useCustomPayload_ ) {
+    std::string bstr = jetAlgo_ + "BEff";
+    std::string cstr = jetAlgo_ + "CEff";
+    std::string pstr = jetAlgo_ + "LFEff";
+
+    bEff = (TH1*)customBtagFile_->Get( bstr.c_str() );
+    cEff = (TH1*)customBtagFile_->Get( cstr.c_str() );
+    pEff = (TH1*)customBtagFile_->Get( pstr.c_str() );        
+  }
+
   // std::cout << "Filling global weight in make_templates : " << globalWeight_ << std::endl;
   reco::Candidate::LorentzVector nu_p4 = met.p4();
   reco::Candidate::LorentzVector lep_p4 = ( muPlusJets_  ? muons[0].p4() : electrons[0].p4() );
@@ -822,6 +836,21 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       // 	std::cout << " disc : " << ipair->first << " = " << ipair->second << std::endl;
       // }
 
+
+      // Check to see if the actual jet is tagged
+      double discCut = allDiscrCut_;
+      if ( doMC_ ) {
+	if ( bDiscrCut_ > 0.0 && jetFlavor == 5 ){ 
+	  discCut = bDiscrCut_;
+	}
+	if ( cDiscrCut_ > 0.0 && jetFlavor == 4 ) { 
+	  discCut = cDiscrCut_;
+	}
+	if ( lDiscrCut_ > 0.0 && jetFlavor!=5 && jetFlavor != 4 ) {
+	  discCut = lDiscrCut_;	
+	}
+      }
+
       // If desired to use the simple SF inclusion, throw a random variable between 1 and 0,
       // if it is less than the SF, keep going, else, throw the jet away
       bool keepGoing = true;
@@ -834,15 +863,10 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	  max = lfEffScale_;
 	if ( irand < max ) keepGoing=true;
 	else keepGoing=false;
-      }
+      } 
+      
 
-      // Check to see if the actual jet is tagged
-      double discCut = allDiscrCut_;
-      if ( doMC_ ) {
-	if ( bDiscrCut_ > 0.0 && jetFlavor == 5 ) discCut = bDiscrCut_;
-	if ( cDiscrCut_ > 0.0 && jetFlavor == 4 ) discCut = cDiscrCut_;
-	if ( lDiscrCut_ > 0.0 && jetFlavor!=5 && jetFlavor != 4 ) discCut = lDiscrCut_;	
-      }
+
 
       // copy ( jet->userDataNames().begin(), jet->userDataNames().end(), std::ostream_iterator<std::string>(std::cout, "\n"));
 
@@ -870,7 +894,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
         firstTag = false;
       }// end if first tag
     }// end loop over jets
-
 
 
   //Here we determine what kind of flavor we have in this jet	
@@ -930,8 +953,11 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
   numTags = std::min( allNumTags_, 2 );
   numJets = std::min( allNumJets_, 5 );
+
   
   gethist<TH1F>( dir, "nTags")->Fill(numTags, globalWeight_);
+
+
 
   if ( !reweightBTagEff_ )  {
     if( numTags > 0 ) {
@@ -1046,18 +1072,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     // std::cout << "Reweighting b-tag eff" << std::endl;
     // Here will be the efficiencies for the jets
     std::vector<shyft::helper::EffInfo> effs;
-    std::string bstr = jetAlgo_ + "BEff";
-    std::string cstr = jetAlgo_ + "CEff";
-    std::string pstr = jetAlgo_ + "LFEff";
     // "unity"
     shyft::helper::EffInfo unity( -1, 1.0, 0);
-
-
-    // get the efficiency parameterizations
-    // std::cout << "Getting custom eff parameterizations" << std::endl;
-    TH1 * bEff = (TH1*)customBtagFile_->Get( bstr.c_str() );
-    TH1 * cEff = (TH1*)customBtagFile_->Get( cstr.c_str() );
-    TH1 * pEff = (TH1*)customBtagFile_->Get( pstr.c_str() );    
 
     // Loop over jets, create the efficiency vector to be used in
     // the combinatoric calculations. 
@@ -1072,24 +1088,59 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	int jetFlavor = std::abs( jet->partonFlavour() );
 	double jetPt  = std::abs( jet->pt() );
 	double jetEta = std::abs( jet->eta() );
-	int ibin = bEff->GetXaxis()->FindBin( jetPt );
-	// int jbin = bEff->GetYaxis()->FindBin( jetEta );
-	if ( ibin >= bEff->GetNbinsX() ) ibin = bEff->GetNbinsX() - 1;
-	if ( jetFlavor == 5 ) {
+
+
+	if ( weightSFCalc_ ) {
+	  double isf = 1.0;
+
+	  // Check to see if the actual jet is tagged
+	  double discCut = allDiscrCut_;
+	  if ( bDiscrCut_ > 0.0 && jetFlavor == 5 ){ 
+	    discCut = bDiscrCut_;
+	  }
+	  if ( cDiscrCut_ > 0.0 && jetFlavor == 4 ) { 
+	    discCut = cDiscrCut_;
+	  }
+	  if ( lDiscrCut_ > 0.0 && jetFlavor!=5 && jetFlavor != 4 ) {
+	    discCut = lDiscrCut_;	
+	  }
+	  
+	  
+	  if ( jetFlavor == 5 || jetFlavor == 4 ) {
+	    isf = bcEffScale_;
+	  } else { 
+	    isf = lfEffScale_;
+	  }
+
+	  bool tagged = jet->bDiscriminator(btaggerString_) >= discCut;
+	  if (!tagged )
+	    isf = 0.0;
+
 	  effs.push_back( shyft::helper::EffInfo(jetIter - jetBegin, 
-						 bEff->GetBinContent( ibin ) * bcEffScale_,
+						 isf,
 						 jetFlavor
 						 ) );
-	} else if (jetFlavor == 4 ) {
-	  effs.push_back( shyft::helper::EffInfo(jetIter - jetBegin, 
-						 cEff->GetBinContent( ibin ) * bcEffScale_,
-						 jetFlavor
-						 ) );
-	} else {
-	  effs.push_back( shyft::helper::EffInfo(jetIter - jetBegin, 
-						 pEff->GetBinContent( ibin ) * lfEffScale_,
-						 jetFlavor
-						 ) );
+	}
+	else {
+	  int ibin = bEff->GetXaxis()->FindBin( jetPt );
+	  // int jbin = bEff->GetYaxis()->FindBin( jetEta );
+	  if ( ibin >= bEff->GetNbinsX() ) ibin = bEff->GetNbinsX() - 1;
+	  if ( jetFlavor == 5 ) {
+	    effs.push_back( shyft::helper::EffInfo(jetIter - jetBegin, 
+						   bEff->GetBinContent( ibin ) * bcEffScale_,
+						   jetFlavor
+						   ) );
+	  } else if (jetFlavor == 4 ) {
+	    effs.push_back( shyft::helper::EffInfo(jetIter - jetBegin, 
+						   cEff->GetBinContent( ibin ) * bcEffScale_,
+						   jetFlavor
+						   ) );
+	  } else {
+	    effs.push_back( shyft::helper::EffInfo(jetIter - jetBegin, 
+						   pEff->GetBinContent( ibin ) * lfEffScale_,
+						   jetFlavor
+						   ) );
+	  }
 	}
       }
     
