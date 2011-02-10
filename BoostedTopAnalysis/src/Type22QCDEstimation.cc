@@ -162,7 +162,8 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 	  }	
       jetCount++;
 	}
-	double deltaphi = deltaPhi( j0_phi, j1_phi ) ;
+	double deltaphi = fabs(deltaPhi( j0_phi, j1_phi )) ;
+	//cout<<"deltaphi "<<deltaphi<<endl;
 	math::XYZTLorentzVector dijet	= j0 + j1;
 	double dijet_mass = dijet.mass();
 	histograms1d["caTopDijetMass"] ->Fill (dijet_mass );
@@ -178,46 +179,48 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
     cout<<"  j0_topmass "<<j0_topmass<<endl;
     cout<<"  j1_topmass "<<j1_topmass<<endl;
 	*/
-	if ( j0_mass > caTopJetMassMin_ && j0_mass < caTopJetMassMax_ && j0_minmass > caTopMinMassMin_ && j0_nsubjets>2)
+	if (deltaphi>2.1)
 	{
-		if ( j1_mass > caTopJetMassMin_ && j1_mass < caTopJetMassMax_ && j1_minmass > caTopMinMassMin_ && j1_nsubjets>2)
+		if ( j0_mass > caTopJetMassMin_ && j0_mass < caTopJetMassMax_ && j0_minmass > caTopMinMassMin_ && j0_nsubjets>2)
 		{
-			cout<<"Yipee!, Type1+Type1, Event id, "<<iEvent.id()<<endl;
-			cout<<" summary:"<<endl;
-			cout<<"  dijet_mass "<<dijet_mass<<endl;
-			cout<<"  j0_mass "<<j0_mass<<endl;
-			cout<<"  j1_mass "<<j1_mass<<endl;
-			cout<<"  j0_nsubjets "<<j0_nsubjets<<endl;
-			cout<<"  j1_nsubjets "<<j1_nsubjets<<endl;
-			cout<<"  j0_minmass "<<j0_minmass<<endl;
-			cout<<"  j1_minmass "<<j1_minmass<<endl;
-			cout<<"  j0_topmass "<<j0_topmass<<endl;
-			cout<<"  j1_topmass "<<j1_topmass<<endl;
+			if ( j1_mass > caTopJetMassMin_ && j1_mass < caTopJetMassMax_ && j1_minmass > caTopMinMassMin_ && j1_nsubjets>2)
+			{
+				cout<<"Yipee!, Type1+Type1, Event id, "<<iEvent.id()<<endl;
+				cout<<" summary:"<<endl;
+				cout<<"  dijet_mass "<<dijet_mass<<endl;
+				cout<<"  j0_mass "<<j0_mass<<endl;
+				cout<<"  j1_mass "<<j1_mass<<endl;
+				cout<<"  j0_nsubjets "<<j0_nsubjets<<endl;
+				cout<<"  j1_nsubjets "<<j1_nsubjets<<endl;
+				cout<<"  j0_minmass "<<j0_minmass<<endl;
+				cout<<"  j1_minmass "<<j1_minmass<<endl;
+				cout<<"  j0_topmass "<<j0_topmass<<endl;
+				cout<<"  j1_topmass "<<j1_topmass<<endl;
 
-			type11doubleTagged = true;
-			histograms1d["ttMassType11_measured"] ->Fill (dijet_mass, evtWeight);
+				type11doubleTagged = true;
+				histograms1d["ttMassType11_measured"] ->Fill (dijet_mass, evtWeight);
+			}
 		}
-	}
 
-  
-  	//Data driven background estimation
- 	int bin0 = topMistag_->FindBin( j0_pt );
-	int bin1 = topMistag_->FindBin( j1_pt );
+	  
+		//Data driven background estimation
+		int bin0 = topMistag_->FindBin( j0_pt );
+		int bin1 = topMistag_->FindBin( j1_pt );
 
-	double mistagProb_jet0 = topMistag_->GetBinContent(bin0);
-	double mistagProb_jet1 = topMistag_->GetBinContent(bin1);
-		
-	double mistagError_jet0 = topMistag_->GetBinError(bin0);
-	double mistagError_jet1 = topMistag_->GetBinError(bin1);
-		
-	//cout<<"j0pt "<<j0_pt<<"  bin0 "<<bin0<<"  mistagrate0 "<< mistagProb_jet0<<"  j1pt "<<j1_pt<<"  bin1 "<<bin1<<"  mistagrate1 "<< mistagProb_jet1<<endl;	
-	double weight = mistagProb_jet0 * mistagProb_jet1;
-	double error_squared =  
+		double mistagProb_jet0 = topMistag_->GetBinContent(bin0);
+		double mistagProb_jet1 = topMistag_->GetBinContent(bin1);
+			
+		double mistagError_jet0 = topMistag_->GetBinError(bin0);
+		double mistagError_jet1 = topMistag_->GetBinError(bin1);
+			
+		//cout<<"j0pt "<<j0_pt<<"  bin0 "<<bin0<<"  mistagrate0 "<< mistagProb_jet0<<"  j1pt "<<j1_pt<<"  bin1 "<<bin1<<"  mistagrate1 "<< mistagProb_jet1<<endl;	
+		double weight = mistagProb_jet0 * mistagProb_jet1;
+		double error_squared =  
 		( mistagProb_jet1*mistagError_jet0 ) * ( mistagProb_jet1*mistagError_jet0 ) + ( mistagProb_jet0*mistagError_jet1 )  *( mistagProb_jet0*mistagError_jet1 ) ;
 
-	histograms1d["ttMassType11_predicted"] ->Fill (dijet_mass, weight);
-	histograms1d["ttMassType11_error_squared"] ->Fill (dijet_mass, error_squared);
-		
+		histograms1d["ttMassType11_predicted"] ->Fill (dijet_mass, weight);
+		histograms1d["ttMassType11_error_squared"] ->Fill (dijet_mass, error_squared);
+	}	
 
   }
 
