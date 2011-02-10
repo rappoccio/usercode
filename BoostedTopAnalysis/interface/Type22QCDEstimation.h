@@ -1,6 +1,7 @@
 #ifndef Analysis_BoostedTopAnalysis_interface_Type22QCDEstimation_h
 #define Analysis_BoostedTopAnalysis_interface_Type22QCDEstimation_h
 
+#include "Analysis/BoostedTopAnalysis/interface/Type11Selection_v1.h"
 #include "Analysis/BoostedTopAnalysis/interface/Type22Selection_v1.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -29,6 +30,7 @@ class Type22QCDEstimation {
   private :
     TFileDirectory& theDir;
     Type22Selection_v1   type22Selection_v1_;
+    Type11Selection_v1   type11Selection_v1_;
     double              bTagOP_;
     string              bTagAlgo_;
     BoostedTopWTagFunctor   *        wJetSelector_;
@@ -43,6 +45,12 @@ class Type22QCDEstimation {
     double              prob;
     bool                runOnData_;
     PredictedDistribution * ttMassPred;
+	double 				caTopJetMassMin_;
+	double 				caTopJetMassMax_;
+	double 				caTopMinMassMin_;
+    string             caTopMistagFileName_;
+    TFile *             caTopMistagFile_;
+    TH1F  *             topMistag_;
 
 };
 

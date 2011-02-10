@@ -31,8 +31,9 @@ process.source = cms.Source("PoolSource",
     )
 )
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
+from Analysis.BoostedTopAnalysis.Type11SelectionParams_cfi import *
 from Analysis.BoostedTopAnalysis.Type22SelectionParams_cfi import *
 
 
@@ -43,6 +44,7 @@ process.TFileService = cms.Service("TFileService",
                                    )
 
 process.type22QCDAna15 = cms.EDAnalyzer('EDType22QCDEstimation',
+                                  Type11QCDEstimationParams,
                                   Type22QCDEstimationParams
                                      )
 
