@@ -20,6 +20,7 @@ class Type11Selection_v1 : public EventSelector {
     boost::shared_ptr<PFJetIDSelectionFunctor>   pfJetSel_;
     double caTopJetPtMin_;
     double caTopJetEtaCut_;
+    edm::InputTag                               patJetCollectionInputTag_;
     edm::InputTag                               caTopJetCollectionInputTag_;
     std::vector<edm::Ptr<pat::Jet> >            caTopJets_ ;
 

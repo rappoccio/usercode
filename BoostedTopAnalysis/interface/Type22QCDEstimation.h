@@ -51,7 +51,8 @@ class Type22QCDEstimation {
     string             caTopMistagFileName_;
     TFile *             caTopMistagFile_;
     TH1F  *             topMistag_;
-
+	double caTopJetPtMin_;
+    double caTopJetEtaCut_;
 };
 
 

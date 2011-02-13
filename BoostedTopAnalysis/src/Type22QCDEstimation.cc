@@ -15,6 +15,8 @@ Type22QCDEstimation::Type22QCDEstimation( const edm::ParameterSet & iConfig,  TF
   prob                    ( iConfig.getParameter<double>("Probability") ),
   runOnData_              ( iConfig.getParameter<bool>("runOnData") ),
   type11Selection_v1_     ( iConfig.getParameter<edm::ParameterSet>("Type11Selection") ),
+  caTopJetPtMin_          ( iConfig.getParameter<edm::ParameterSet>("Type11Selection").getParameter<double>("caTopJetPtMin") ),
+  caTopJetEtaCut_         ( iConfig.getParameter<edm::ParameterSet>("Type11Selection").getParameter<double>("caTopJetEtaCut") ),
   caTopJetMassMin_        ( iConfig.getParameter<double>("caTopJetMassMin") ),
   caTopJetMassMax_        ( iConfig.getParameter<double>("caTopJetMassMax") ),
   caTopMinMassMin_        ( iConfig.getParameter<double>("caTopMinMassMin") ),
@@ -26,14 +28,23 @@ Type22QCDEstimation::Type22QCDEstimation( const edm::ParameterSet & iConfig,  TF
   histograms1d["ttMassType22"]    = theDir.make<TH1F>("ttMassType22",   "t#bar{t} Inv Mass Type22",   200,  0,  2000 );
   histograms1d["topMassPred"]     = theDir.make<TH1F>("topMassPred",    "Top Mass",                   100,  0,  500 );
   histograms1d["ttMassType22Pred"]  = theDir.make<TH1F>("ttMassType22Pred",   "t#bar{t} Inv Mass Type22",   200,  0,  2000 );
-  // Type11 histograms
+ 
+ // Type11 histograms
   histograms1d["ttMassType11_measured"]    = theDir.make<TH1F>("ttMassType11_measured",   "measured t#bar{t} Inv Mass Type11",   200,  0,  2000 );
-  histograms1d["ttMassType11_predicted"]   = theDir.make<TH1F>("ttMassType11_predicted",   "predictedt#bar{t} Inv Mass Type11",   200,  0,  2000 );
-  histograms1d["ttMassType11_error_squared"] = theDir.make<TH1F>("ttMassType11_error_squared", "sum of squared errors t#bar{t} Inv Mass Type11",   200,  0,  2000 );
+ 
+ histograms1d["ttMassType11_predicted_dijetSample"]   = theDir.make<TH1F>("ttMassType11_predicted_dijetSample",   "predictedt#bar{t} Inv Mass Type11",   200,  0,  2000 );
+  histograms1d["ttMassType11_predicted_dijetSample_errorSquared"] = theDir.make<TH1F>("ttMassType11_predicted_dijetSample_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type11",   200,  0,  2000 );
+  
+  histograms1d["ttMassType11_predicted_singleSample"]   = theDir.make<TH1F>("ttMassType11_predicted_singleSample",   "predictedt#bar{t} Inv Mass Type11 - single tagged sample",   200,  0,  2000 );
+  histograms1d["ttMassType11_predicted_singleSample_errorSquared"] = theDir.make<TH1F>("ttMassType11_predicted_singleSample_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type11",   200,  0,  2000 );
+
+
+  
   histograms1d["caTopDijetMass"]  = theDir.make<TH1F>("caTopDijetMass",   "dijet mass",   200,  0,  2000 );
   histograms1d["caTopJetMass"]  = theDir.make<TH1F>("caTopJetMass",   "jet mass",   100,  0,  500 );
   histograms1d["caTopMinMass"]  = theDir.make<TH1F>("caTopMinMass",   "jet minmass",   100,  0,  150 );
   histograms1d["caTopNsubjets"]  = theDir.make<TH1F>("caTopNsubjets",   "jet nsubjets",   6,  0,  6 );
+  histograms1d["Nevents"]  = theDir.make<TH1F>("Nevents",   "Nevents",   3,  0,  3 );
   // Input histograms
   mistagFile_   =  TFile::Open( mistagFileName_.c_str() );
   wMistag_      =  (TH1F*)mistagFile_       ->  Get("wMistag");
@@ -67,14 +78,19 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
   ///////////////////////////////////////////////////////////////////////////////////////////////
   // Type 1+1
   bool type11doubleTagged = false;
+  bool verbose_ = false;
+  histograms1d["Nevents"]->Fill("no cuts",1);
   
   pat::strbitset   retType11 = type11Selection_v1_.getBitTemplate();
   bool passType11 = type11Selection_v1_( iEvent, retType11 );
   std::vector<edm::Ptr<pat::Jet> >  const &  caTopJets_ = type11Selection_v1_.caTopJets();
-
+  
+  if( !passType11 && verbose_) cout<<"event fails passType11"<<endl;
+  
   if( passType11 && caTopJets_.size()>=2)  {
-    //cout<<"\n\nAnalyze event "<<iEvent.id().event()<<endl;
-    //cout<<" caTopJets_.size() = "<<caTopJets_.size()<<endl;
+  	histograms1d["Nevents"]->Fill("2goodjets",1);
+    if (verbose_) cout<<"\n\nAnalyze event "<<iEvent.id().event()<<endl;
+    if (verbose_) cout<<" caTopJets_.size() = "<<caTopJets_.size()<<endl;
 	  
 	double j0_pt=-99;
 	double j1_pt=-99;
@@ -88,6 +104,8 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 	double j1_topmass=-99;
 	double j0_phi=-99;
 	double j1_phi=-99;
+	double j0_eta=-99;
+	double j1_eta=-99;
     int jetCount =0;
     math::XYZTLorentzVector j0,j1;
 	
@@ -95,7 +113,7 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
       ijet!=jetEnd; ijet++ ) 
     {
       pat::Jet const & jet = **ijet;
-  	  //cout<<"  jet "<< jetCount <<" pt "<<jet.pt()<<" mass "<<jet.mass()<<endl;
+  	  if (verbose_) cout<<"  jet "<< jetCount <<" pt "<<jet.pt()<<" mass "<<jet.mass()<<" eta "<<jet.eta()<<" phi "<<jet.phi()<<endl;
 	  if (jetCount==0) j0 = jet.p4();
 	  if (jetCount==1) j1 = jet.p4();
 	  if (jetCount==0) j0_pt = jet.pt();
@@ -104,7 +122,9 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 	  if (jetCount==1) j1_mass = jet.mass();
 	  if (jetCount==0) j0_phi = jet.phi();
 	  if (jetCount==1) j1_phi = jet.phi();
-	  //cout<<" CATop  jet 0 corr/uncorr pt = "<<jet.pt()<<" / "<<jet.correctedJet("Uncorrected").pt()<<endl;
+	  if (jetCount==0) j0_eta = jet.eta();
+	  if (jetCount==1) j1_eta = jet.eta();
+	  //if (verbose_) cout<<"   corr/uncorr pt = "<<jet.pt()<<" / "<<jet.correctedJet("Uncorrected").pt()<<endl;
 	  //const reco::CATopJetTagInfo * catopTag = dynamic_cast<reco::CATopJetTagInfo const *>(jet.tagInfo("CATopPFJet"));
       //if ( catopTag != 0 )
 	  //{
@@ -115,12 +135,12 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 	  math::XYZTLorentzVector Subjet0, Subjet1, Subjet2;
 	  math::XYZTLorentzVector SumSubjetVector;
 	  std::vector<const reco::Candidate *>  subjets = jet.getJetConstituentsQuick();
+	  if (verbose_) cout<<"   subjets.size() "<<subjets.size()<<endl;
 	  for (std::vector<const reco::Candidate *>::iterator subjetIt = subjets.begin(); subjetIt != subjets.end(); subjetIt++)
 	  {					
 	 	reco::Candidate const * subjetCand =  (*subjetIt);
 		reco::PFJet const * pfSubjet = dynamic_cast<reco::PFJet const *>(subjetCand);  
-		//cout<<"    subjet pt "<<pfSubjet->pt()<<endl;					
-		//cout<<"    subjet mass "<<pfSubjet->mass()<<endl;					
+		if (verbose_) cout<<"    subjet "<<subjetLoopCount<<" pt "<<pfSubjet->pt()<<" mass "<<pfSubjet->mass()<<endl;					
 		
 		SumSubjetVector += pfSubjet->p4();
 					
@@ -129,10 +149,6 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 		if (subjetLoopCount==2) Subjet2 = pfSubjet->p4();
 	 	subjetLoopCount++;
 	  }
-	  
-	  histograms1d["caTopJetMass"] ->Fill( jet.mass(),evtWeight );
-	  histograms1d["caTopNsubjets"] ->Fill (subjetLoopCount,evtWeight );
-
 
 	  if (jetCount==0) j0_nsubjets = subjetLoopCount;
 	  if (jetCount==1) j1_nsubjets = subjetLoopCount;
@@ -152,74 +168,106 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 
 		double min2 = std::min(firstCombination.mass(), secondCombination.mass() );
 		double minMassPairing = std::min(min2, thirdCombination.mass() );
-		//cout<<"      firstCombination.mass() "<<firstCombination.mass()<<endl;
-		//cout<<"      secondCombination.mass() "<<secondCombination.mass()<<endl;
-		//cout<<"      thirdCombination.mass() "<<thirdCombination.mass()<<endl;
-		//cout<<"      minMassPairing "<<minMassPairing<<endl;
+		if (verbose_) cout<<"      firstCombination.mass() "<<firstCombination.mass()<<endl;
+		if (verbose_) cout<<"      secondCombination.mass() "<<secondCombination.mass()<<endl;
+		if (verbose_) cout<<"      thirdCombination.mass() "<<thirdCombination.mass()<<endl;
+		if (verbose_) cout<<"      minMassPairing "<<minMassPairing<<endl;
 	    if (jetCount==0) j0_minmass = minMassPairing;
 		if (jetCount==1) j1_minmass = minMassPairing;
-	  	histograms1d["caTopMinMass"] ->Fill (minMassPairing,evtWeight);
 	  }	
       jetCount++;
-	}
+	}//end jet loop
+
 	double deltaphi = fabs(deltaPhi( j0_phi, j1_phi )) ;
-	//cout<<"deltaphi "<<deltaphi<<endl;
 	math::XYZTLorentzVector dijet	= j0 + j1;
 	double dijet_mass = dijet.mass();
-	histograms1d["caTopDijetMass"] ->Fill (dijet_mass );
-	/*
-	cout<<" summary:"<<endl;
-    cout<<"  dijet_mass "<<dijet_mass<<endl;
-    cout<<"  j0_mass "<<j0_mass<<endl;
-    cout<<"  j1_mass "<<j1_mass<<endl;
-    cout<<"  j0_nsubjets "<<j0_nsubjets<<endl;
-    cout<<"  j1_nsubjets "<<j1_nsubjets<<endl;
-    cout<<"  j0_minmass "<<j0_minmass<<endl;
-    cout<<"  j1_minmass "<<j1_minmass<<endl;
-    cout<<"  j0_topmass "<<j0_topmass<<endl;
-    cout<<"  j1_topmass "<<j1_topmass<<endl;
-	*/
-	if (deltaphi>2.1)
+	
+	if (verbose_) 
 	{
-		if ( j0_mass > caTopJetMassMin_ && j0_mass < caTopJetMassMax_ && j0_minmass > caTopMinMassMin_ && j0_nsubjets>2)
+		cout<<" summary:"<<endl;
+		cout<<"  dijet_mass "<<dijet_mass<<endl;
+		cout<<"  j0_mass "<<j0_mass<<endl;
+		cout<<"  j1_mass "<<j1_mass<<endl;
+		cout<<"  j0_nsubjets "<<j0_nsubjets<<endl;
+		cout<<"  j1_nsubjets "<<j1_nsubjets<<endl;
+		cout<<"  j0_minmass "<<j0_minmass<<endl;
+		cout<<"  j1_minmass "<<j1_minmass<<endl;
+		cout<<"  j0_topmass "<<j0_topmass<<endl;
+		cout<<"  j1_topmass "<<j1_topmass<<endl;
+	}
+	
+	//make sure everything passes a basic preselection
+	if (deltaphi>2.1 && j0_pt > caTopJetPtMin_ && fabs(j0_eta) < caTopJetEtaCut_ &&  j1_pt > caTopJetPtMin_ && j1_eta < fabs(caTopJetEtaCut_) )
+	{
+  		histograms1d["Nevents"]->Fill("preselect",1);
+		histograms1d["caTopDijetMass"] ->Fill (dijet_mass );
+	  	histograms1d["caTopJetMass"] ->Fill( j0_mass );
+	  	histograms1d["caTopJetMass"] ->Fill( j1_mass );
+	  	histograms1d["caTopNsubjets"] ->Fill (j0_nsubjets );
+	  	histograms1d["caTopNsubjets"] ->Fill (j1_nsubjets );
+	  	histograms1d["caTopMinMass"] ->Fill (j0_minmass);
+	  	histograms1d["caTopMinMass"] ->Fill (j1_minmass);
+		
+		// Check if it passes type 1+1
+    	if (verbose_) cout<<" Top jet cuts: caTopJetMassMin_ "<<caTopJetMassMin_<<" caTopJetMassMax_ "<<caTopJetMassMax_<<" caTopMinMassMin_ "<<caTopMinMassMin_<<endl;
+
+		bool j0_pass=false;
+		bool j1_pass=false;
+
+		if ( j0_mass > caTopJetMassMin_ && j0_mass < caTopJetMassMax_ && j0_minmass > caTopMinMassMin_ && j0_nsubjets>2){j0_pass=true;}
+		if ( j1_mass > caTopJetMassMin_ && j1_mass < caTopJetMassMax_ && j1_minmass > caTopMinMassMin_ && j1_nsubjets>2){j1_pass=true;}
+		
+		////////////////////////////////////////////////
+		// Measured 1+1 dijet mass
+		if ( j0_pass && j1_pass)
 		{
-			if ( j1_mass > caTopJetMassMin_ && j1_mass < caTopJetMassMax_ && j1_minmass > caTopMinMassMin_ && j1_nsubjets>2)
-			{
-				cout<<"Yipee!, Type1+Type1, Event id, "<<iEvent.id()<<endl;
-				cout<<" summary:"<<endl;
-				cout<<"  dijet_mass "<<dijet_mass<<endl;
-				cout<<"  j0_mass "<<j0_mass<<endl;
-				cout<<"  j1_mass "<<j1_mass<<endl;
-				cout<<"  j0_nsubjets "<<j0_nsubjets<<endl;
-				cout<<"  j1_nsubjets "<<j1_nsubjets<<endl;
-				cout<<"  j0_minmass "<<j0_minmass<<endl;
-				cout<<"  j1_minmass "<<j1_minmass<<endl;
-				cout<<"  j0_topmass "<<j0_topmass<<endl;
-				cout<<"  j1_topmass "<<j1_topmass<<endl;
+			cout<<"Yipee!, Type1+Type1, Event id, "<<iEvent.id()<<endl;
+			cout<<" summary:"<<endl;
+			cout<<"  dijet_mass "<<dijet_mass<<endl;
+			cout<<"  j0_pt "<<j0_pt<<endl;
+			cout<<"  j1_pt "<<j1_pt<<endl;
+			cout<<"  j0_mass "<<j0_mass<<endl;
+			cout<<"  j1_mass "<<j1_mass<<endl;
+			cout<<"  j0_nsubjets "<<j0_nsubjets<<endl;
+			cout<<"  j1_nsubjets "<<j1_nsubjets<<endl;
+			cout<<"  j0_minmass "<<j0_minmass<<endl;
+			cout<<"  j1_minmass "<<j1_minmass<<endl;
+			cout<<"  j0_topmass "<<j0_topmass<<endl;
+			cout<<"  j1_topmass "<<j1_topmass<<endl;
 
-				type11doubleTagged = true;
-				histograms1d["ttMassType11_measured"] ->Fill (dijet_mass, evtWeight);
-			}
+			type11doubleTagged = true;
+			histograms1d["ttMassType11_measured"] ->Fill (dijet_mass, evtWeight);
 		}
-
-	  
-		//Data driven background estimation
+		////////////////////////////////////////////////
+		// Data driven 1+1 background estimation
 		int bin0 = topMistag_->FindBin( j0_pt );
 		int bin1 = topMistag_->FindBin( j1_pt );
-
 		double mistagProb_jet0 = topMistag_->GetBinContent(bin0);
 		double mistagProb_jet1 = topMistag_->GetBinContent(bin1);
-			
 		double mistagError_jet0 = topMistag_->GetBinError(bin0);
 		double mistagError_jet1 = topMistag_->GetBinError(bin1);
-			
-		//cout<<"j0pt "<<j0_pt<<"  bin0 "<<bin0<<"  mistagrate0 "<< mistagProb_jet0<<"  j1pt "<<j1_pt<<"  bin1 "<<bin1<<"  mistagrate1 "<< mistagProb_jet1<<endl;	
-		double weight = mistagProb_jet0 * mistagProb_jet1;
-		double error_squared =  
-		( mistagProb_jet1*mistagError_jet0 ) * ( mistagProb_jet1*mistagError_jet0 ) + ( mistagProb_jet0*mistagError_jet1 )  *( mistagProb_jet0*mistagError_jet1 ) ;
+		
+		////////////////////////////////////////////////
+		// Predicted distribution based on single tagged sample
+		if (j0_pass)
+		{
+			double weight_single = mistagProb_jet1;
+			histograms1d["ttMassType11_predicted_singleSample"] ->Fill (dijet_mass, weight_single);
+		}
+		if (j1_pass)
+		{
+			double weight_single = mistagProb_jet0;
+			histograms1d["ttMassType11_predicted_singleSample"] ->Fill (dijet_mass, weight_single);
+		}
 
-		histograms1d["ttMassType11_predicted"] ->Fill (dijet_mass, weight);
-		histograms1d["ttMassType11_error_squared"] ->Fill (dijet_mass, error_squared);
+		////////////////////////////////////////////////
+		// Predicted distribution based on dijet sample
+		double weight_dijet = mistagProb_jet0 * mistagProb_jet1;
+		double error_squared =  ( mistagProb_jet1*mistagError_jet0 ) * ( mistagProb_jet1*mistagError_jet0 ) + ( mistagProb_jet0*mistagError_jet1 )  *( mistagProb_jet0*mistagError_jet1 ) ;
+		if (verbose_) cout<<"j0pt "<<j0_pt<<"  bin0 "<<bin0<<"  mistagrate0 "<< mistagProb_jet0<<"  j1pt "<<j1_pt<<"  bin1 "<<bin1<<"  mistagrate1 "<< mistagProb_jet1<<endl;	
+
+		histograms1d["ttMassType11_predicted_dijetSample"] ->Fill (dijet_mass, weight_dijet);
+		histograms1d["ttMassType11_predicted_dijetSample_errorSquared"] ->Fill (dijet_mass, error_squared);
 	}	
 
   }

@@ -7,6 +7,7 @@ Type11QCDEstimationParams = cms.PSet(
       pfJetIDParams = cms.PSet( pfJetIDSelector.clone() ),
     caTopJetPtMin = cms.double(250),
     caTopJetEtaCut = cms.double(2.4),
+    patJetCollectionInputTag = cms.InputTag( "selectedPatJetsPFlow" ),
     caTopJetCollectionInputTag = cms.InputTag( "selectedPatJetsCATopTagPF" )
   ),
 
