@@ -249,14 +249,14 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 		
 		////////////////////////////////////////////////
 		// Predicted distribution based on single tagged sample
-		if (j0_pass)
+		if (j0_pass && !j1_pass)
 		{
 			double weight_single = mistagProb_jet1;
 			double error_squared_single = mistagError_jet1;
 			histograms1d["ttMassType11_predicted_singleSample"] ->Fill (dijet_mass, weight_single);
 			histograms1d["ttMassType11_predicted_singleSample_errorSquared"] ->Fill (dijet_mass, error_squared_single);
 		}
-		if (j1_pass)
+		if (j1_pass && !j0_pass)
 		{
 			double weight_single = mistagProb_jet0;
 			double error_squared_single = mistagError_jet0;
