@@ -207,9 +207,9 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 	  	histograms1d["caTopNsubjets"] ->Fill (j1_nsubjets );
 	  	histograms1d["caTopMinMass"] ->Fill (j0_minmass);
 	  	histograms1d["caTopMinMass"] ->Fill (j1_minmass);
-		
-		// Check if it passes type 1+1
-    	if (verbose_) cout<<" Top jet cuts: caTopJetMassMin_ "<<caTopJetMassMin_<<" caTopJetMassMax_ "<<caTopJetMassMax_<<" caTopMinMassMin_ "<<caTopMinMassMin_<<endl;
+	  	
+	  	// Check if it passes type 1+1
+	  	if (verbose_) cout<<" Top jet cuts: caTopJetMassMin_ "<<caTopJetMassMin_<<" caTopJetMassMax_ "<<caTopJetMassMax_<<" caTopMinMassMin_ "<<caTopMinMassMin_<<endl;
 
 		bool j0_pass=false;
 		bool j1_pass=false;
@@ -252,12 +252,16 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 		if (j0_pass)
 		{
 			double weight_single = mistagProb_jet1;
+			double error_squared_single = mistagError_jet1;
 			histograms1d["ttMassType11_predicted_singleSample"] ->Fill (dijet_mass, weight_single);
+			histograms1d["ttMassType11_predicted_singleSample_errorSquared"] ->Fill (dijet_mass, error_squared_single);
 		}
 		if (j1_pass)
 		{
 			double weight_single = mistagProb_jet0;
+			double error_squared_single = mistagError_jet0;
 			histograms1d["ttMassType11_predicted_singleSample"] ->Fill (dijet_mass, weight_single);
+			histograms1d["ttMassType11_predicted_singleSample_errorSquared"] ->Fill (dijet_mass, error_squared_single);
 		}
 
 		////////////////////////////////////////////////
