@@ -75,10 +75,12 @@ inputSampleName = options.sampleNameInput
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTJets_TuneD6T_7TeV-madgraph-tauola/shyft_387_v1/806866a699de2045917e2f88bbb597f4/shyft_386_mc_1_1_n47.root'
-#                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/WJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_1_1_5ci.root'
-#                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/InclusiveMu15/shyft_38xOn35x_v1/91f2fc34c53b68691c104fb43fa3e9f4/shyft_382_mc_1_1_rw3.root'
-#                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_1_1_BHn.root'
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Mu/Run2010B-Nov4ReReco_shyft_387_v2/5a2240d5c992747bfe14fad04174e9c6/shyft_386_10_1_ZoM.root',
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Mu/Run2010B-Nov4ReReco_shyft_387_v2/5a2240d5c992747bfe14fad04174e9c6/shyft_386_11_1_h0X.root',
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Mu/Run2010B-Nov4ReReco_shyft_387_v2/5a2240d5c992747bfe14fad04174e9c6/shyft_386_12_1_uXd.root',
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Mu/Run2010B-Nov4ReReco_shyft_387_v2/5a2240d5c992747bfe14fad04174e9c6/shyft_386_13_1_4ls.root',
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Mu/Run2010B-Nov4ReReco_shyft_387_v2/5a2240d5c992747bfe14fad04174e9c6/shyft_386_14_1_vcP.root',
+                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Mu/Run2010B-Nov4ReReco_shyft_387_v2/5a2240d5c992747bfe14fad04174e9c6/shyft_386_15_1_lOK.root'
                                     )
                                 )
 else :
@@ -113,10 +115,11 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         minJets = cms.int32(5),
                                         metMin = cms.double(20.0),
                                         heavyFlavour = cms.bool( useFlavorHistory ),
-                                        doMC = cms.bool( inputDoMC),
+                                        doMC = cms.bool( inputDoMC ),
+                                        useData = cms.bool( not inputDoMC ),
                                         sampleName = cms.string(inputSampleName),
                                         identifier = cms.string('PF')
-                                        )                                    
+                                        )
                                     )
 
 process.pfShyftAnaLoose = cms.EDAnalyzer('EDSHyFT',
@@ -131,6 +134,7 @@ process.pfShyftAnaLoose = cms.EDAnalyzer('EDSHyFT',
                                         metMin = cms.double(20.0),
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
+                                        useData = cms.bool( not inputDoMC ),
                                         sampleName = cms.string(inputSampleName),
                                         muonIdTight = inputShyftAnalysis.muonIdTight.clone(
                                             cutsToIgnore=cms.vstring('RelIso','D0')
@@ -162,6 +166,7 @@ process.pfShyftAnaLooseNoMET = cms.EDAnalyzer('EDSHyFT',
                                         metMin = cms.double(0.0),
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
+                                        useData = cms.bool( not inputDoMC ),
                                         sampleName = cms.string(inputSampleName),
                                         muonIdTight = inputShyftAnalysis.muonIdTight.clone(
                                             cutsToIgnore=cms.vstring('RelIso','D0')
@@ -183,6 +188,7 @@ process.pfShyftAnaLooseNoMETWithD0 = cms.EDAnalyzer('EDSHyFT',
                                         metMin = cms.double(0.0),
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
+                                        useData = cms.bool( not inputDoMC ),
                                         sampleName = cms.string(inputSampleName),
                                         muonIdTight = inputShyftAnalysis.muonIdTight.clone(
                                             cutsToIgnore=cms.vstring('RelIso')
@@ -204,6 +210,7 @@ process.pfShyftAnaLooseWithD0 = cms.EDAnalyzer('EDSHyFT',
                                         metMin = cms.double(20.0),
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
+                                        useData = cms.bool( not inputDoMC ),
                                         sampleName = cms.string(inputSampleName),
                                         muonIdTight = inputShyftAnalysis.muonIdTight.clone(
                                             cutsToIgnore=cms.vstring('RelIso')
@@ -225,6 +232,7 @@ process.pfRecoShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         metMin = cms.double(20.0),
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
+                                        useData = cms.bool( not inputDoMC ),
                                         sampleName = cms.string(inputSampleName),
                                         identifier = cms.string('PF With RECO Leptons')
                                         )                                    
@@ -243,6 +251,7 @@ process.pfRecoShyftAnaNoMET = cms.EDAnalyzer('EDSHyFT',
                                         metMin = cms.double(0.0),
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
+                                        useData = cms.bool( not inputDoMC ),
                                         sampleName = cms.string(inputSampleName),
                                         identifier = cms.string('PF With RECO Leptons No MET')
                                         )                                    
@@ -260,6 +269,7 @@ process.pfRecoShyftAnaNoMETLoose = cms.EDAnalyzer('EDSHyFT',
                                                       metMin = cms.double(0.0),
                                                       heavyFlavour = cms.bool( useFlavorHistory ),
                                                       doMC = cms.bool( inputDoMC),
+                                                      useData = cms.bool( not inputDoMC ),
                                                       sampleName = cms.string(inputSampleName),
                                                       muonIdTight = inputShyftAnalysis.muonIdTight.clone(
                                                           cutsToIgnore=cms.vstring('RelIso', 'D0')
@@ -278,6 +288,7 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                          minJets = cms.int32(5),
                                          heavyFlavour = cms.bool( useFlavorHistory ),
                                          doMC = cms.bool( inputDoMC),
+                                         useData = cms.bool( not inputDoMC ),
                                          sampleName = cms.string(inputSampleName),
                                          identifier = cms.string('JPT')
                                         )
@@ -337,6 +348,7 @@ process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
                                           muTrig = cms.string(options.muTrig),
                                           heavyFlavour = cms.bool( useFlavorHistory ),
                                           doMC = cms.bool( inputDoMC),
+                                          useData = cms.bool( not inputDoMC ),
                                           sampleName = cms.string(inputSampleName),
                                           btaggerString = cms.string(caloBTag),
                                           identifier = cms.string('CALO')
@@ -357,17 +369,10 @@ process.p = cms.Path(
     process.pfShyftAnaLoose*
     process.pfShyftAnaLooseNoMET*
     process.pfShyftAnaLooseNoMETWithD0*
-    process.pfShyftAnaLooseWithD0*            
-    process.pfRecoShyftAna*
-    process.pfRecoShyftAnaNoMET*
-    process.pfRecoShyftAnaNoMETLoose*
-    process.jptShyftAna*
-    process.jptShyftAnaNoMET*
-    process.jptShyftAnaLooseNoMET*
-    process.jptShyftAnaLooseNoMETWithD0*
-    process.jptShyftAnaLooseWithD0*            
-    process.caloShyftAna*
-    process.caloShyftAnaNoMET
+    process.pfShyftAnaLooseWithD0
+#    process.pfRecoShyftAna*
+#    process.pfRecoShyftAnaNoMET*
+#    process.pfRecoShyftAnaNoMETLoose
     )
 
 

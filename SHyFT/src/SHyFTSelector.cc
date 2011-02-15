@@ -53,6 +53,8 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    use36xData_      (params.getParameter<bool>("use36xData")),
    useAntiSelection_(params.getParameter<bool>("useAntiSelection")),
    useEleMC_        (params.getParameter<bool>("useEleMC")),
+   useData_         (params.getParameter<bool>("useData")),
+   useL1Offset_     (params.getParameter<bool>("useL1Offset")),
    jecPayload_      (params.getParameter<std::string>("jecPayload"))
 {
    // make the bitset
@@ -122,12 +124,34 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
 
    retInternal_ = getBitTemplate();
 
+
+   string L1Tag   = "Jec10V1_L1Offset_AK5PF.txt";
+   string L3Tag   = "Jec10V1_L3Absolute_AK5PF.txt";
+   string L2Tag   = "Jec10V1_L2Relative_AK5PF.txt";
+   string L2L3Tag = "Jec10V1_L2L3Residual_AK5PF.txt"; 
+   JetCorrectorParameters L1JetPar(L1Tag);
+   JetCorrectorParameters L3JetPar(L3Tag);
+   JetCorrectorParameters L2JetPar(L2Tag);
+   JetCorrectorParameters L2L3JetPar(L2L3Tag);
+   vector<JetCorrectorParameters> vPar;
+   if ( useL1Offset_ )
+     vPar.push_back(L1JetPar);
+   vPar.push_back(L2JetPar);
+   vPar.push_back(L3JetPar);
+   if ( useData_ ) {
+     vPar.push_back(L2L3JetPar);
+   }
+
+   jec_ = boost::shared_ptr<FactorizedJetCorrector> ( new FactorizedJetCorrector(vPar) );
+
+
    jecUnc_ = boost::shared_ptr<JetCorrectionUncertainty>( new JetCorrectionUncertainty(jecPayload_));
 
 }
 
 bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & ret)
 {
+  // std::cout << "" << std::endl;
 
    ret.set(false);
 
@@ -347,11 +371,26 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                   jetEnd = jetHandle->end(), ijet = jetBegin;
                ijet != jetEnd; ++ijet ) {
 
-	   // Here will be the working variable for all the jet energy effects
-	   reco::Candidate::LorentzVector scaledJetP4 = ijet->p4();
-
 	   // get a copy of the uncorrected p4
 	   reco::Candidate::LorentzVector uncorrJet = ijet->correctedP4(0);
+
+
+
+	   // Then get the correction (L1+L2+L3 [+L2L3 for data])
+	   jec_->setJetEta( uncorrJet.eta() );
+	   jec_->setJetPt ( uncorrJet.pt() );
+	   jec_->setJetE  ( uncorrJet.energy() );
+	   jec_->setNPV   ( primVtxHandle->size() );
+	   double corr = jec_->getCorrection();
+
+
+	   // Here will be the working variable for all the jet energy effects
+	   reco::Candidate::LorentzVector scaledJetP4 = uncorrJet * corr;
+
+
+	   // std::cout << "L2L3 correction = " << ijet->pt() << std::endl;
+	   // std::cout << "PU Correction   = " << scaledJetP4.pt() << std::endl;
+	   // std::cout << "NPV             = " << primVtxHandle->size() << std::endl;
 
 	   // -------
 	   // Jet energy scale variation
@@ -362,9 +401,10 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 	     metP4.SetPx( metP4.Px() + uncorrJet.px() );
 	     metP4.SetPy( metP4.Py() + uncorrJet.py() );
 
+
 	     // Now get the uncertainties
-	     jecUnc_->setJetEta( ijet->eta() );
-	     jecUnc_->setJetPt( ijet->pt() );
+	     jecUnc_->setJetEta( scaledJetP4.eta() );
+	     jecUnc_->setJetPt( scaledJetP4.pt() );
 	     double unc = fabs(jecUnc_->getUncertainty( bool(jetScale_ > 0) ));
 
 	     // Add the "flat" flavor dependent corrections in quadrature
@@ -377,6 +417,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 	     // Correct the MET back again for this effect
 	     metP4.SetPx( metP4.Px() - uncorrJet.px() * ijetscale);
 	     metP4.SetPy( metP4.Py() - uncorrJet.py() * ijetscale);	     
+
 	   }
 
 	   // -------

@@ -17,6 +17,8 @@
 #include "DataFormats/Candidate/interface/ShallowClonePtrCandidate.h"
 #include "Analysis/SHyFT/interface/TopElectronSelector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 
 class SHyFTSelector : public EventSelector {
    public:
@@ -145,11 +147,13 @@ class SHyFTSelector : public EventSelector {
       bool           use36xData_;
       bool           useAntiSelection_;
       bool           useEleMC_;
-
+      bool           useData_;
+      bool           useL1Offset_;
 
       // Jet energy corrections object
       std::string    jecPayload_;
       boost::shared_ptr<JetCorrectionUncertainty> jecUnc_;
+      boost::shared_ptr<FactorizedJetCorrector> jec_;
 };
 
 
