@@ -15,7 +15,7 @@ from optparse import OptionParser
 parser = OptionParser()
 
 parser.add_option('--inputFile', metavar='F', type='string', action='store',
-                  default='Mu_Nov4ReReco_shyft_387_v1_shyftana_v1.root',
+                  default='Mu_Nov4ReReco_shyft_387_v2_shyftana_v9.root',
                   dest='inputFile',
                   help='input file tag to be used')
 
@@ -32,7 +32,7 @@ parser.add_option('--inputDirSig', metavar='D', type='string', action='store',
 
 
 parser.add_option('--outlabel', metavar='L', type='string', action='store',
-                  default='Mu_shyft_387_v1_shyftana_v1',
+                  default='Mu_shyft_387_v2_shyftana_v9',
                   dest='outlabel',
                   help='label to append to plots')
 
@@ -92,21 +92,27 @@ canvs = []
 # First get the normalizations from ISO sidebands (ABCD)
 maxTags = 2
 
+print 'Getting normalization from sidebands for Sig'
 for ijet in range(1,6):    
     h_0tag = f.Get( directorySig + ihist + str(ijet) +'j_0t' )
     h_1tag = f.Get( directorySig + ihist + str(ijet) +'j_1t' )
-    h_2tag = f.Get( directorySig + ihist + str(ijet) +'j_2t' )    
+    if ijet > 1 :
+        h_2tag = f.Get( directorySig + ihist + str(ijet) +'j_2t' )    
     h_1tag.SetName( ihist + str(ijet) + 'j_ge1t')
-    h_1tag.Add( h_2tag, 1.0)
+    if ijet > 1 :
+        h_1tag.Add( h_2tag, 1.0)
     histsSig[0].append( h_0tag )
     histsSig[1].append( h_1tag )
 
+print 'Getting normalization from sidebands for Bkg'
 for ijet in range(1,6):    
     h_0tag = f.Get( directoryBkg + ihist + str(ijet) +'j_0t' )
     h_1tag = f.Get( directoryBkg + ihist + str(ijet) +'j_1t' )
-    h_2tag = f.Get( directoryBkg + ihist + str(ijet) +'j_2t' )    
+    if ijet > 1:
+        h_2tag = f.Get( directoryBkg + ihist + str(ijet) +'j_2t' )    
     h_1tag.SetName( ihist + str(ijet) + 'j_ge1t')
-    h_1tag.Add( h_2tag, 1.0)
+    if ijet > 1 :
+        h_1tag.Add( h_2tag, 1.0)
     histsBkg[0].append( h_0tag )
     histsBkg[1].append( h_1tag )
 
