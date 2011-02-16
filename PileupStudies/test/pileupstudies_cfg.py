@@ -135,42 +135,49 @@ from RecoJets.JetProducers.CATopJetParameters_cfi import *
 ########## PF Setup ###########
 ###############################
 
-# Default PF2PAT, switch to CA8 jets
+# Default PF2PAT, switch to AK5 jets
 from PhysicsTools.PatAlgos.tools.pfTools import *
+from PhysicsTools.PatAlgos.tools.coreTools import *
 postfixAK5 = "PFlowAK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixAK5)
 process.pfPileUpPFlowAK5.Enable = False
 process.pfJetsPFlowAK5.doAreaFastjet = True
-process.pfJetsPFlowAK5.doRhoFastjet = True
-process.pfJetsPFlowAK5.Ghost_EtaMax = 6.0
+process.pfJetsPFlowAK5.doRhoFastjet = False
+process.pfJetsPFlowAK5.Ghost_EtaMax = 6.5
 
 # PF2PAT with only charged hadrons from first PV
 postfixPUSubAK5 = "PFlowPUSubAK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixPUSubAK5)
 process.pfPileUpPFlowPUSubAK5.Enable = True
 process.pfJetsPFlowPUSubAK5.doAreaFastjet = True
-process.pfJetsPFlowPUSubAK5.doRhoFastjet = True
-process.pfJetsPFlowPUSubAK5.Ghost_EtaMax = 6.0
+process.pfJetsPFlowPUSubAK5.doRhoFastjet = False
+process.pfJetsPFlowPUSubAK5.Ghost_EtaMax = 6.5
 
 
 postfixKT6 = "PFlowKT6"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixKT6)
 process.pfPileUpPFlowKT6.Enable = False
-process.pfJetsPFlowKT6.jetAlgorithm = "CambridgeAachen"
-process.pfJetsPFlowKT6.rParam       = 0.8
+process.pfJetsPFlowKT6.jetAlgorithm = "Kt"
+process.pfJetsPFlowKT6.rParam       = 0.86
 process.pfJetsPFlowKT6.doAreaFastjet = True
 process.pfJetsPFlowKT6.doRhoFastjet = True
-process.pfJetsPFlowKT6.Ghost_EtaMax = 6.0
+process.pfJetsPFlowKT6.Ghost_EtaMax = 6.5
 
 # PF2PAT with only charged hadrons from first PV
 postfixPUSubKT6 = "PFlowPUSubKT6"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixPUSubKT6)
 process.pfPileUpPFlowPUSubKT6.Enable = True
-process.pfJetsPFlowPUSubKT6.jetAlgorithm = "CambridgeAachen"
-process.pfJetsPFlowPUSubKT6.rParam       = 0.8
+process.pfJetsPFlowPUSubKT6.jetAlgorithm = "Kt"
+process.pfJetsPFlowPUSubKT6.rParam       = 0.6
 process.pfJetsPFlowPUSubKT6.doAreaFastjet = True
 process.pfJetsPFlowPUSubKT6.doRhoFastjet = True
-process.pfJetsPFlowPUSubKT6.Ghost_EtaMax = 6.0
+process.pfJetsPFlowPUSubKT6.Ghost_EtaMax = 6.5
+
+
+removeSpecificPATObjects(process, ['Taus'], postfix=postfixAK5 )
+removeSpecificPATObjects(process, ['Taus'], postfix=postfixPUSubAK5 )
+removeSpecificPATObjects(process, ['Taus'], postfix=postfixKT6 )
+removeSpecificPATObjects(process, ['Taus'], postfix=postfixPUSubKT6 )
 
 
 # turn to false when running on data
