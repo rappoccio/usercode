@@ -158,7 +158,7 @@ postfixKT6 = "PFlowKT6"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixKT6)
 process.pfPileUpPFlowKT6.Enable = False
 process.pfJetsPFlowKT6.jetAlgorithm = "Kt"
-process.pfJetsPFlowKT6.rParam       = 0.86
+process.pfJetsPFlowKT6.rParam       = 0.6
 process.pfJetsPFlowKT6.doAreaFastjet = True
 process.pfJetsPFlowKT6.doRhoFastjet = True
 process.pfJetsPFlowKT6.Ghost_EtaMax = 6.5
