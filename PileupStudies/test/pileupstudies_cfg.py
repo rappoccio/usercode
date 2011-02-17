@@ -154,35 +154,29 @@ process.pfJetsPFlowPUSubAK5.doRhoFastjet = False
 process.pfJetsPFlowPUSubAK5.Ghost_EtaMax = 6.5
 
 
-postfixKT6 = "PFlowKT6"
-usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixKT6)
-process.pfPileUpPFlowKT6.Enable = False
-process.pfJetsPFlowKT6.jetAlgorithm = "Kt"
-process.pfJetsPFlowKT6.rParam       = 0.6
-process.pfJetsPFlowKT6.doAreaFastjet = True
-process.pfJetsPFlowKT6.doRhoFastjet = True
-process.pfJetsPFlowKT6.Ghost_EtaMax = 6.5
 
-# PF2PAT with only charged hadrons from first PV
-postfixPUSubKT6 = "PFlowPUSubKT6"
-usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixPUSubKT6)
-process.pfPileUpPFlowPUSubKT6.Enable = True
-process.pfJetsPFlowPUSubKT6.jetAlgorithm = "Kt"
-process.pfJetsPFlowPUSubKT6.rParam       = 0.6
-process.pfJetsPFlowPUSubKT6.doAreaFastjet = True
-process.pfJetsPFlowPUSubKT6.doRhoFastjet = True
-process.pfJetsPFlowPUSubKT6.Ghost_EtaMax = 6.5
-
+from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
+process.kt6PFJets = kt4PFJets.clone(
+    src = cms.InputTag("pfNoElectronPFlowAK5"),
+    rParam = cms.double(0.6),
+    doAreaFastjet = cms.bool(True),
+    doRhoFastjet = cms.bool(True),
+    Ghost_EtaMax = cms.double(6.5)
+    )
+process.kt6PFJetsPUSub = kt4PFJets.clone(
+    src = cms.InputTag("pfNoElectronPFlowPUSubAK5"),
+    rParam = cms.double(0.6),
+    doAreaFastjet = cms.bool(True),
+    doRhoFastjet = cms.bool(True),
+    Ghost_EtaMax = cms.double(6.5)
+    )
 
 removeSpecificPATObjects(process, ['Taus'], postfix=postfixAK5 )
 removeSpecificPATObjects(process, ['Taus'], postfix=postfixPUSubAK5 )
-removeSpecificPATObjects(process, ['Taus'], postfix=postfixKT6 )
-removeSpecificPATObjects(process, ['Taus'], postfix=postfixPUSubKT6 )
-
 
 # turn to false when running on data
 if options.useData :
-    for ipostfix in [ postfixAK5, postfixPUSubAK5, postfixKT6, postfixPUSubKT6] :
+    for ipostfix in [ postfixAK5, postfixPUSubAK5] :
         getattr(process, "patPhotons"+ipostfix).embedGenMatch = False
         getattr(process, "patElectrons"+ipostfix).embedGenMatch = False
         getattr(process, "patMuons"+ipostfix).embedGenMatch = False
@@ -191,9 +185,7 @@ if options.useData :
 
 # Do some configuration of the jet modules
 for jetcoll in (process.patJetsPFlowAK5,
-                process.patJetsPFlowPUSubAK5,
-                process.patJetsPFlowKT6,
-                process.patJetsPFlowPUSubKT6
+                process.patJetsPFlowPUSubAK5
                 ) :
     if options.useData == False :
         jetcoll.embedGenJetMatch = True
@@ -216,9 +208,7 @@ jetidstring = cms.string( 'pt > 25 & numberOfDaughters() > 1 & ' +
 
 # Do some configuration of the jet modules
 for jetcoll in (process.selectedPatJetsPFlowAK5,
-                process.selectedPatJetsPFlowPUSubAK5,
-                process.selectedPatJetsPFlowKT6,
-                process.selectedPatJetsPFlowPUSubKT6
+                process.selectedPatJetsPFlowPUSubAK5
                 ) :
     jetcoll.cut = jetidstring
 
@@ -248,8 +238,8 @@ process.patseq = cms.Sequence(
     getattr(process,"patPF2PATSequence"+postfixPUSubAK5)*
     process.jetFilter*
     getattr(process,"patPF2PATSequence"+postfixAK5)*
-    getattr(process,"patPF2PATSequence"+postfixKT6)*
-    getattr(process,"patPF2PATSequence"+postfixPUSubKT6)
+    process.kt6PFJets*
+    process.kt6PFJetsPUSub
     )
 
 
@@ -290,7 +280,8 @@ process.out.outputCommands = [
     'keep patTriggerPaths_patTrigger*_*_*',
     'keep patTriggerEvent_patTriggerEvent*_*_*',
     'drop *_*KT6*_*_*',
-    'keep double_*PFlow*_*_*',    
+    'keep double_*PFlow*_*_*',
+    'keep double_*kt6*_*_*',    
     'keep *_TriggerResults_*_*',
     'keep *_hltTriggerSummaryAOD_*_*',
     'keep *_ak5GenJets_*_*',
