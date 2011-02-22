@@ -29,17 +29,21 @@ Type22QCDEstimation::Type22QCDEstimation( const edm::ParameterSet & iConfig,  TF
   histograms1d["topMassPred"]     = theDir.make<TH1F>("topMassPred",    "Top Mass",                   100,  0,  500 );
   histograms1d["ttMassType22Pred"]  = theDir.make<TH1F>("ttMassType22Pred",   "t#bar{t} Inv Mass Type22",   200,  0,  2000 );
  
+ // Type12 histograms
+ 
+  histograms1d["ttMassType12_measured"]    = theDir.make<TH1F>("ttMassType12_measured",   "measured t#bar{t} Inv Mass Type12",   200,  0,  2000 );
+
  // Type11 histograms
   histograms1d["ttMassType11_measured"]    = theDir.make<TH1F>("ttMassType11_measured",   "measured t#bar{t} Inv Mass Type11",   200,  0,  2000 );
  
- histograms1d["ttMassType11_predicted_dijetSample"]   = theDir.make<TH1F>("ttMassType11_predicted_dijetSample",   "predictedt#bar{t} Inv Mass Type11",   200,  0,  2000 );
-  histograms1d["ttMassType11_predicted_dijetSample_errorSquared"] = theDir.make<TH1F>("ttMassType11_predicted_dijetSample_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type11",   200,  0,  2000 );
+  histograms1d["ttMassType11_predicted_0tagSample"]   = theDir.make<TH1F>("ttMassType11_predicted_0tagSample",   "predictedt#bar{t} Inv Mass Type11",   200,  0,  2000 );
+  histograms1d["ttMassType11_predicted_0tagSample_errorSquared"] = theDir.make<TH1F>("ttMassType11_predicted_0tagSample_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type11",   200,  0,  2000 );
   
-  histograms1d["ttMassType11_predicted_singleSample"]   = theDir.make<TH1F>("ttMassType11_predicted_singleSample",   "predictedt#bar{t} Inv Mass Type11 - single tagged sample",   200,  0,  2000 );
-  histograms1d["ttMassType11_predicted_singleSample_errorSquared"] = theDir.make<TH1F>("ttMassType11_predicted_singleSample_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type11",   200,  0,  2000 );
-
-
-  
+  histograms1d["ttMassType11_predicted_1tagSample"]   = theDir.make<TH1F>("ttMassType11_predicted_1tagSample",   "predictedt#bar{t} Inv Mass Type11 - single tagged sample",   200,  0,  2000 );
+  histograms1d["ttMassType11_predicted_1tagSample_errorSquared"] = theDir.make<TH1F>("ttMassType11_predicted_1tagSample_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type11",   200,  0,  2000 );
+    
+  histograms1d["ttMassType11_test_predict"]   = theDir.make<TH1F>("ttMassType11_test_predict",   "ttMassType11_test_predict",   200,  0,  2000 );
+	
   histograms1d["caTopDijetMass"]  = theDir.make<TH1F>("caTopDijetMass",   "dijet mass",   200,  0,  2000 );
   histograms1d["caTopJetMass"]  = theDir.make<TH1F>("caTopJetMass",   "jet mass",   100,  0,  500 );
   histograms1d["caTopMinMass"]  = theDir.make<TH1F>("caTopMinMass",   "jet minmass",   100,  0,  150 );
@@ -77,8 +81,21 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
   // Type 1+1
-  bool type11doubleTagged = false;
+  bool type11_passevent = false;
+  
+  bool jet0_toptagged = false;
+  bool jet1_toptagged = false;
+  double catop_jet0_eta = 99999999;
+  double catop_jet1_eta = 99999999;
+  double catop_jet0_phi = 99999999;
+  double catop_jet1_phi = 99999999;
+  
   bool verbose_ = false;
+  int run = iEvent.id().run();
+  int event = iEvent.id().event();
+  int lumi = iEvent.id().luminosityBlock(); 
+  if (verbose_)cout<<"Analyze event "<<event<<endl;
+  
   histograms1d["Nevents"]->Fill("no cuts",1);
   
   pat::strbitset   retType11 = type11Selection_v1_.getBitTemplate();
@@ -87,68 +104,75 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
   
   if( !passType11 && verbose_) cout<<"event fails passType11"<<endl;
   
+  double j0_pt=-99;
+  double j1_pt=-99;
+  double j0_mass=-99;
+  double j1_mass=-99;
+  double j0_minmass=-99;
+  double j1_minmass=-99;
+  double j0_nsubjets=-99;
+  double j1_nsubjets=-99;		
+  double j0_topmass=-99;
+  double j1_topmass=-99;
+  double j0_phi=-99;
+  double j1_phi=-99;
+  double j0_eta=-99;
+  double j1_eta=-99; 
+  double dijet_mass=-99;
+
+  reco::Candidate::LorentzVector p4_catop_jet0;
+  reco::Candidate::LorentzVector p4_catop_jet1;
+
+
   if( passType11 && caTopJets_.size()>=2)  {
-  	histograms1d["Nevents"]->Fill("2goodjets",1);
-    if (verbose_) cout<<"\n\nAnalyze event "<<iEvent.id().event()<<endl;
+    histograms1d["Nevents"]->Fill("2goodjets",1);
     if (verbose_) cout<<" caTopJets_.size() = "<<caTopJets_.size()<<endl;
 	  
-	double j0_pt=-99;
-	double j1_pt=-99;
-	double j0_mass=-99;
-	double j1_mass=-99;
-	double j0_minmass=-99;
-	double j1_minmass=-99;
-	double j0_nsubjets=-99;
-	double j1_nsubjets=-99;		
-	double j0_topmass=-99;
-	double j1_topmass=-99;
-	double j0_phi=-99;
-	double j1_phi=-99;
-	double j0_eta=-99;
-	double j1_eta=-99;
     int jetCount =0;
     math::XYZTLorentzVector j0,j1;
 	
-	for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=caTopJets_.begin(), jetEnd=caTopJets_.end(), ijet=jetBegin ;
-      ijet!=jetEnd; ijet++ ) 
+    for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=caTopJets_.begin(), jetEnd=caTopJets_.end(), ijet=jetBegin ;
+     ijet!=jetEnd; ijet++ ) 
     {
       pat::Jet const & jet = **ijet;
-  	  if (verbose_) cout<<"  jet "<< jetCount <<" pt "<<jet.pt()<<" mass "<<jet.mass()<<" eta "<<jet.eta()<<" phi "<<jet.phi()<<endl;
-	  if (jetCount==0) j0 = jet.p4();
-	  if (jetCount==1) j1 = jet.p4();
-	  if (jetCount==0) j0_pt = jet.pt();
-	  if (jetCount==1) j1_pt = jet.pt();
-	  if (jetCount==0) j0_mass = jet.mass();
-	  if (jetCount==1) j1_mass = jet.mass();
-	  if (jetCount==0) j0_phi = jet.phi();
-	  if (jetCount==1) j1_phi = jet.phi();
-	  if (jetCount==0) j0_eta = jet.eta();
-	  if (jetCount==1) j1_eta = jet.eta();
-	  //if (verbose_) cout<<"   corr/uncorr pt = "<<jet.pt()<<" / "<<jet.correctedJet("Uncorrected").pt()<<endl;
-	  //const reco::CATopJetTagInfo * catopTag = dynamic_cast<reco::CATopJetTagInfo const *>(jet.tagInfo("CATopPFJet"));
-      //if ( catopTag != 0 )
-	  //{
-	  //  cout<<"catopTag->properties().minMass  "<<catopTag->properties().minMass  <<endl;
-	  //  cout<<"catopTag->properties().nSubJets "<<catopTag->properties().nSubJets <<endl;
-	  //}
-	  int subjetLoopCount=0;
-	  math::XYZTLorentzVector Subjet0, Subjet1, Subjet2;
-	  math::XYZTLorentzVector SumSubjetVector;
-	  std::vector<const reco::Candidate *>  subjets = jet.getJetConstituentsQuick();
-	  if (verbose_) cout<<"   subjets.size() "<<subjets.size()<<endl;
-	  for (std::vector<const reco::Candidate *>::iterator subjetIt = subjets.begin(); subjetIt != subjets.end(); subjetIt++)
-	  {					
-	 	reco::Candidate const * subjetCand =  (*subjetIt);
-		reco::PFJet const * pfSubjet = dynamic_cast<reco::PFJet const *>(subjetCand);  
-		if (verbose_) cout<<"    subjet "<<subjetLoopCount<<" pt "<<pfSubjet->pt()<<" mass "<<pfSubjet->mass()<<endl;					
-		
-		SumSubjetVector += pfSubjet->p4();
+      if (verbose_) cout<<"  catop jet "<< jetCount <<" pt "<<jet.pt()<<" mass "<<jet.mass()<<" eta "<<jet.eta()<<" phi "<<jet.phi()<<endl;
+      if (jetCount==0) j0 = jet.p4();
+      if (jetCount==1) j1 = jet.p4();
+      if (jetCount==0) j0_pt = jet.pt();
+      if (jetCount==1) j1_pt = jet.pt();
+      if (jetCount==0) j0_mass = jet.mass();
+      if (jetCount==1) j1_mass = jet.mass();
+      if (jetCount==0) j0_phi = jet.phi();
+      if (jetCount==1) j1_phi = jet.phi();
+      if (jetCount==0) j0_eta = jet.eta(); 
+      if (jetCount==1) j1_eta = jet.eta();
+	  
+      if (jetCount==0) p4_catop_jet0 = jet.p4();
+      if (jetCount==1) p4_catop_jet1 = jet.p4();
+	  
+      catop_jet0_eta = j0_eta;
+      catop_jet1_eta = j1_eta;
+      catop_jet0_phi = j0_phi;
+      catop_jet1_phi = j1_phi;
+	  
+      int subjetLoopCount=0;
+      math::XYZTLorentzVector Subjet0, Subjet1, Subjet2;
+      math::XYZTLorentzVector SumSubjetVector;
+      std::vector<const reco::Candidate *>  subjets = jet.getJetConstituentsQuick();
+      if (verbose_) cout<<"   subjets.size() "<<subjets.size()<<endl;
+      for (std::vector<const reco::Candidate *>::iterator subjetIt = subjets.begin(); subjetIt != subjets.end(); subjetIt++)
+      {					
+        reco::Candidate const * subjetCand =  (*subjetIt);
+        reco::PFJet const * pfSubjet = dynamic_cast<reco::PFJet const *>(subjetCand);  
+        if (verbose_) cout<<"    subjet "<<subjetLoopCount<<" pt "<<pfSubjet->pt()<<" mass "<<pfSubjet->mass()<<endl;					
+	
+        SumSubjetVector += pfSubjet->p4();
 					
-		if (subjetLoopCount==0) Subjet0 = pfSubjet->p4();
-		if (subjetLoopCount==1) Subjet1 = pfSubjet->p4();
+        if (subjetLoopCount==0) Subjet0 = pfSubjet->p4();
+        if (subjetLoopCount==1) Subjet1 = pfSubjet->p4();
 		if (subjetLoopCount==2) Subjet2 = pfSubjet->p4();
-	 	subjetLoopCount++;
-	  }
+        subjetLoopCount++;
+      }
 
 	  if (jetCount==0) j0_nsubjets = subjetLoopCount;
 	  if (jetCount==1) j1_nsubjets = subjetLoopCount;
@@ -161,10 +185,6 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 		math::XYZTLorentzVector firstCombination	= Subjet0 + Subjet1;
 		math::XYZTLorentzVector secondCombination	= Subjet0 + Subjet2;
 		math::XYZTLorentzVector thirdCombination	= Subjet1 + Subjet2;
-
-		//cout<<"      Subjet0.mass() "<<Subjet0.mass()<<endl;
-		//cout<<"      Subjet1.mass() "<<Subjet1.mass()<<endl;
-		//cout<<"      Subjet2.mass() "<<Subjet2.mass()<<endl;
 
 		double min2 = std::min(firstCombination.mass(), secondCombination.mass() );
 		double minMassPairing = std::min(min2, thirdCombination.mass() );
@@ -180,7 +200,7 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 
 	double deltaphi = fabs(deltaPhi( j0_phi, j1_phi )) ;
 	math::XYZTLorentzVector dijet	= j0 + j1;
-	double dijet_mass = dijet.mass();
+	dijet_mass = dijet.mass();
 	
 	if (verbose_) 
 	{
@@ -217,6 +237,10 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 		if ( j0_mass > caTopJetMassMin_ && j0_mass < caTopJetMassMax_ && j0_minmass > caTopMinMassMin_ && j0_nsubjets>2){j0_pass=true;}
 		if ( j1_mass > caTopJetMassMin_ && j1_mass < caTopJetMassMax_ && j1_minmass > caTopMinMassMin_ && j1_nsubjets>2){j1_pass=true;}
 		
+		
+		if (j0_pass) jet0_toptagged = true;
+		if (j1_pass) jet1_toptagged = true;
+		
 		////////////////////////////////////////////////
 		// Measured 1+1 dijet mass
 		if ( j0_pass && j1_pass)
@@ -235,7 +259,7 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 			cout<<"  j0_topmass "<<j0_topmass<<endl;
 			cout<<"  j1_topmass "<<j1_topmass<<endl;
 
-			type11doubleTagged = true;
+			type11_passevent = true;
 			histograms1d["ttMassType11_measured"] ->Fill (dijet_mass, evtWeight);
 		}
 		////////////////////////////////////////////////
@@ -248,45 +272,62 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
 		double mistagError_jet1 = topMistag_->GetBinError(bin1);
 		
 		////////////////////////////////////////////////
-		// Predicted distribution based on single tagged sample
+		// Predicted distribution based on 1-tag sample
 		if (j0_pass && !j1_pass)
 		{
 			double weight_single = mistagProb_jet1;
 			double error_squared_single = mistagError_jet1;
-			histograms1d["ttMassType11_predicted_singleSample"] ->Fill (dijet_mass, weight_single);
-			histograms1d["ttMassType11_predicted_singleSample_errorSquared"] ->Fill (dijet_mass, error_squared_single);
+			histograms1d["ttMassType11_predicted_1tagSample"] ->Fill (dijet_mass, weight_single);
+			histograms1d["ttMassType11_predicted_1tagSample_errorSquared"] ->Fill (dijet_mass, error_squared_single);
+			histograms1d["ttMassType11_test_predict"] ->Fill (dijet_mass, weight_single);
+
 		}
 		if (j1_pass && !j0_pass)
 		{
 			double weight_single = mistagProb_jet0;
 			double error_squared_single = mistagError_jet0;
-			histograms1d["ttMassType11_predicted_singleSample"] ->Fill (dijet_mass, weight_single);
-			histograms1d["ttMassType11_predicted_singleSample_errorSquared"] ->Fill (dijet_mass, error_squared_single);
+			histograms1d["ttMassType11_predicted_1tagSample"] ->Fill (dijet_mass, weight_single);
+			histograms1d["ttMassType11_predicted_1tagSample_errorSquared"] ->Fill (dijet_mass, error_squared_single);
+			histograms1d["ttMassType11_test_predict"] ->Fill (dijet_mass, weight_single);
+
 		}
 
 		////////////////////////////////////////////////
-		// Predicted distribution based on dijet sample
+		// Predicted distribution based on 0-tag sample
 		double weight_dijet = mistagProb_jet0 * mistagProb_jet1;
 		double error_squared =  ( mistagProb_jet1*mistagError_jet0 ) * ( mistagProb_jet1*mistagError_jet0 ) + ( mistagProb_jet0*mistagError_jet1 )  *( mistagProb_jet0*mistagError_jet1 ) ;
 		if (verbose_) cout<<"j0pt "<<j0_pt<<"  bin0 "<<bin0<<"  mistagrate0 "<< mistagProb_jet0<<"  j1pt "<<j1_pt<<"  bin1 "<<bin1<<"  mistagrate1 "<< mistagProb_jet1<<endl;	
 
-		histograms1d["ttMassType11_predicted_dijetSample"] ->Fill (dijet_mass, weight_dijet);
-		histograms1d["ttMassType11_predicted_dijetSample_errorSquared"] ->Fill (dijet_mass, error_squared);
+		if (!j0_pass && !j1_pass)
+		{
+			histograms1d["ttMassType11_predicted_0tagSample"] ->Fill (dijet_mass, weight_dijet);
+			histograms1d["ttMassType11_predicted_0tagSample_errorSquared"] ->Fill (dijet_mass, error_squared);
+			histograms1d["ttMassType11_test_predict"] ->Fill (dijet_mass, weight_dijet);
+		}
 	}	
-
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Type 2+2
+  // Type 1+2 && Type 2+2
+
+  double hemisphere0_eta=999999;
+  double hemisphere0_phi=999999;
+    
+  bool hasLooseTop0 = false, hasTightTop0 = false;
+  bool hasLooseTop1 = false, hasTightTop1 = false;
 
   pat::strbitset   retType22 = type22Selection_v1_.getBitTemplate();
   bool passType22 = type22Selection_v1_( iEvent, retType22 );
 
   std::vector<edm::Ptr<pat::Jet> >  const &  pfJets_ = type22Selection_v1_.pfJets();
   wJetSelector_  = &(type22Selection_v1_.wJetSelector() );
-  if( passType22 && !type11doubleTagged)  {
+  
+  if( passType22 && !type11_passevent)  {
   //if( retType22[string("nJets >= 4")] )  {
     pat::Jet const & leadJet = *pfJets_.at(0);
+    hemisphere0_eta = leadJet.eta();
+    hemisphere0_phi = leadJet.phi();
+    
     std::vector<edm::Ptr<pat::Jet> >  hemisphere0, hemisphere1;
     std::vector<edm::Ptr<pat::Jet> >  wTags0,   wTags1;
     std::vector<edm::Ptr<pat::Jet> >  bTags0,   bTags1;
@@ -297,6 +338,8 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
       ijet!=jetEnd; ijet++ ) 
     {
       pat::Jet const & jet = **ijet;
+      if (verbose_) cout<<"  pruned jet  pt "<<jet.pt()<<" mass "<<jet.mass()<<" eta "<<jet.eta()<<" phi "<<jet.phi()<<endl;
+
       bool  wtagged = false;
       bool  btagged = false;
       pat::strbitset iret = wJetSelector_->getBitTemplate();
@@ -362,8 +405,6 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
     //if( hasOneWTag )  
     //  cout<<"wTags0.size() "<<wTags0.size()<<", wTags1.size() "<<wTags1.size() <<endl;
     bool hasBTag = hasBTag0 || hasBTag1;
-    bool hasLooseTop0 = false, hasTightTop0 = false;
-    bool hasLooseTop1 = false, hasTightTop1 = false;
 
     reco::Candidate::LorentzVector p4_top0;
     reco::Candidate::LorentzVector p4_top1;
@@ -385,16 +426,99 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
       if( p4_top1.mass() > topMassMin_ && p4_top1.mass() < topMassMax_ )
         hasLooseTop1 = true;
     }
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Type 1+2	
+    bool type12_passevent = false;
+  
+    if (passType11 && caTopJets_.size()>=2 && passType22 && !type11_passevent )
+    {
+  	  if (verbose_) cout<<"catop_jet0_eta "<<catop_jet0_eta<<endl;
+ 	  if (verbose_) cout<<"catop_jet0_phi "<<catop_jet0_phi<<endl;
+ 	  if (verbose_) cout<<"hemisphere0_eta "<<hemisphere0_eta<<endl;
+  	  if (verbose_) cout<<"hemisphere0_phi "<<hemisphere0_phi<<endl;
+      if (verbose_) cout<<"catop_jet1_eta "<<catop_jet1_eta<<endl;
+ 	  if (verbose_) cout<<"catop_jet1_phi "<<catop_jet1_phi<<endl;
 
-    if( (hasTightTop0 && hasTightTop1) || (hasTightTop0 && hasLooseTop1) || (hasLooseTop0 && hasTightTop1) )  {
-      if(runOnData_)    cout<<"Woohoo, Type2+Type2, Event id, "<<iEvent.id()<<endl;
-      double ttMass = (p4_top0+p4_top1).mass() ;
-      histograms1d["ttMassType22"]      ->  Fill( ttMass, evtWeight );
-      //This is our signal, return
-      return;
+      // check which hemisphere the top tagged jet is in 
+   	  double deltaphi_hemisphere = fabs(deltaPhi( catop_jet0_phi, hemisphere0_phi )) ;
+  	  if (verbose_) cout<<"deltaphi between leading hemisphere and leading catop jet "<<deltaphi_hemisphere<<endl;
+
+  	  if( deltaphi_hemisphere < TMath::Pi()/2 ) 
+	  {
+  		if (verbose_) cout<<" leading catop jet is in leading hemisphere!"<<endl;
+  		
+  		if ( (jet0_toptagged && ( hasTightTop1 || hasLooseTop1)) || (jet1_toptagged && ( hasTightTop0 || hasLooseTop0)) )
+  		{
+  			cout<<"WoopWoop!, Type1+Type2, Event id, "<<iEvent.id()<<endl;
+			cout<<" summary:"<<endl;
+		    cout<<"  catop j0_mass "<<j0_mass<<endl;
+			cout<<"  catop j1_mass "<<j1_mass<<endl;
+			cout<<"  catop j0_nsubjets "<<j0_nsubjets<<endl;
+			cout<<"  catop j1_nsubjets "<<j1_nsubjets<<endl;
+			cout<<"  catop j0_minmass "<<j0_minmass<<endl;
+			cout<<"  catop j1_minmass "<<j1_minmass<<endl;
+
+			cout<<"  p4_catop_jet0.mass() "<<p4_catop_jet0.mass()<<endl;
+			cout<<"  p4_catop_jet1.mass() "<<p4_catop_jet1.mass()<<endl;
+			cout<<"  p4_top0.mass() "<<p4_top0.mass()<<endl;
+			cout<<"  p4_top1.mass() "<<p4_top1.mass()<<endl;
+			
+			double ttMass =0;
+			if (jet0_toptagged) {ttMass = (p4_catop_jet0+p4_top1).mass() ; cout<<" catop_jet0 + hemisphere1"<<endl;}
+			if (jet1_toptagged) {ttMass = (p4_catop_jet1+p4_top0).mass() ; cout<<" catop_jet1 + hemisphere0"<<endl;}
+			cout<<"  ttMass "<<ttMass<<endl;
+			
+			type12_passevent = true;
+			histograms1d["ttMassType12_measured"] ->Fill (ttMass, evtWeight);
+  		}  		
+      }
+  	  else
+  	  {
+  		if (verbose_) cout<<" leading catop jet is in opposite hemisphere! (leading pruned jet is different then leading catop jet)"<<endl;
+  		
+  		if ( (jet0_toptagged && ( hasTightTop0 || hasLooseTop0)) || (jet1_toptagged && ( hasTightTop1 || hasLooseTop1)) )
+  		{
+  			cout<<"WoopWoop!, Type1+Type2, Event id, "<<iEvent.id()<<endl;
+			cout<<" summary:"<<endl;
+			cout<<"  catop j0_mass "<<j0_mass<<endl;
+			cout<<"  catop j1_mass "<<j1_mass<<endl;
+			cout<<"  catop j0_nsubjets "<<j0_nsubjets<<endl;
+			cout<<"  catop j1_nsubjets "<<j1_nsubjets<<endl;
+			cout<<"  catop j0_minmass "<<j0_minmass<<endl;
+			cout<<"  catop j1_minmass "<<j1_minmass<<endl;
+
+			cout<<"  p4_catop_jet0.mass() "<<p4_catop_jet0.mass()<<endl;
+			cout<<"  p4_catop_jet1.mass() "<<p4_catop_jet1.mass()<<endl;
+			cout<<"  p4_top0.mass() "<<p4_top0.mass()<<endl;
+			cout<<"  p4_top1.mass() "<<p4_top1.mass()<<endl;
+			
+			double ttMass =0;
+			if (jet0_toptagged) {ttMass = (p4_catop_jet0+p4_top0).mass() ; cout<<" catop_jet0 + hemisphere0"<<endl;}
+			if (jet1_toptagged) {ttMass = (p4_catop_jet1+p4_top1).mass() ; cout<<" catop_jet1 + hemisphere1"<<endl;}
+			cout<<"  ttMass "<<ttMass<<endl;
+
+			type12_passevent = true;
+			histograms1d["ttMassType12_measured"] ->Fill (ttMass, evtWeight);
+  		}
+  	  }
     }
-
-    //Background estimation starts here
+    // Type 1+2 Background estimation starts here
+    // TODO
+   
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Type 2+2	
+	if (!type11_passevent && !type12_passevent)
+	{
+    	if( (hasTightTop0 && hasTightTop1) || (hasTightTop0 && hasLooseTop1) || (hasLooseTop0 && hasTightTop1) )  {
+     		 if(runOnData_)    cout<<"Woohoo, Type2+Type2, Event id, "<<iEvent.id()<<endl;
+     		 double ttMass = (p4_top0+p4_top1).mass() ;
+      		histograms1d["ttMassType22"]      ->  Fill( ttMass, evtWeight );
+      		//This is our signal, return
+      		return;
+    	}
+	}
+    // Type 2+2 Background estimation starts here
     if( hasOneWTag && hasBTag ) {
       if( hasWTag0 )  { 
         //cout<<"case 1"<<endl;
@@ -532,9 +656,7 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
         }
       } // else 
     } // end Background estimation
-
   } // passType22
-
 }
 
 
