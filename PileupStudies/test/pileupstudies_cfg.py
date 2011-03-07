@@ -95,8 +95,8 @@ process.load('CommonTools/RecoAlgos/HBHENoiseFilter_cfi')
 
 
 # switch on PAT trigger
-from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
-switchOnTrigger( process, hltProcess=options.hltProcess )
+#from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
+#switchOnTrigger( process, hltProcess=options.hltProcess )
 
 
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
@@ -145,6 +145,7 @@ process.pfJetsPFlowAK5.doAreaFastjet = True
 process.pfJetsPFlowAK5.doRhoFastjet = False
 process.pfJetsPFlowAK5.Ghost_EtaMax = 6.5
 
+
 # PF2PAT with only charged hadrons from first PV
 postfixPUSubAK5 = "PFlowPUSubAK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixPUSubAK5)
@@ -152,7 +153,6 @@ process.pfPileUpPFlowPUSubAK5.Enable = True
 process.pfJetsPFlowPUSubAK5.doAreaFastjet = True
 process.pfJetsPFlowPUSubAK5.doRhoFastjet = False
 process.pfJetsPFlowPUSubAK5.Ghost_EtaMax = 6.5
-
 
 
 from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
@@ -197,14 +197,7 @@ for jetcoll in (process.patJetsPFlowAK5,
     jetcoll.embedPFCandidates = False
 
 
-jetidstring = cms.string( 'pt > 25 & numberOfDaughters() > 1 & ' +
-                          ' ((correctedJet(0).neutralHadronEnergy() + correctedJet(0).HFHadronEnergy() ) / correctedJet(0).energy()) < 0.99 & ' +
-                          ' (correctedJet(0).neutralEmEnergyFraction() < 0.99) &' +
-                          ' (correctedJet(0).chargedHadronEnergyFraction() > 0.0 | abs(eta()) > 2.4) & ' +
-                          ' (correctedJet(0).chargedEmEnergyFraction() < 0.99 | abs(eta()) > 2.4) & ' +
-                          ' (correctedJet(0).chargedMultiplicity() > 0 | abs(eta()) > 2.4)'
-                          )
-
+jetidstring = cms.string('pt > 25 & abs(eta) < 2.4')
 
 # Do some configuration of the jet modules
 for jetcoll in (process.selectedPatJetsPFlowAK5,
@@ -212,10 +205,21 @@ for jetcoll in (process.selectedPatJetsPFlowAK5,
                 ) :
     jetcoll.cut = jetidstring
 
+from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
+process.goodPatJetsPFlowPUSubAK5 = cms.EDFilter("PFJetIDSelectionFunctorFilter",
+                                                filterParams = pfJetIDSelector.clone(),
+                                                src = cms.InputTag("selectedPatJetsPFlowPUSubAK5"),
+                                                filter = cms.bool(True)
+                                                )
 
+process.goodPatJetsPFlowAK5 = cms.EDFilter("PFJetIDSelectionFunctorFilter",
+                                           filterParams = pfJetIDSelector.clone(),                                           
+                                           src = cms.InputTag("selectedPatJetsPFlowAK5"),
+                                           filter = cms.bool(True)
+                                           )
 
 process.jetFilter = cms.EDFilter("CandViewCountFilter",
-                                 src = cms.InputTag("selectedPatJetsPFlowPUSubAK5"),
+                                 src = cms.InputTag("goodPatJetsPFlowPUSubAK5"),
                                  minNumber = cms.uint32(2),
                                  maxNumber = cms.uint32(2),
                                  filter=cms.bool(True)
@@ -236,8 +240,10 @@ process.patseq = cms.Sequence(
     process.primaryVertexFilter*
     process.HBHENoiseFilter*
     getattr(process,"patPF2PATSequence"+postfixPUSubAK5)*
+    process.goodPatJetsPFlowPUSubAK5*
     process.jetFilter*
     getattr(process,"patPF2PATSequence"+postfixAK5)*
+    process.goodPatJetsPFlowAK5*
     process.kt6PFJets*
     process.kt6PFJetsPUSub
     )
@@ -257,7 +263,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 
 
 # process all the events
-process.maxEvents.input = 10000
+process.maxEvents.input = 3000
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 
@@ -271,6 +277,7 @@ process.source.inputCommands = cms.untracked.vstring("keep *", "drop *_MEtoEDMCo
 process.out.outputCommands = [
     'drop *_cleanPat*_*_*',
     'keep *_selectedPat*_*_*',
+    'keep *_goodPat*_*_*',    
     'keep *_patMETs*_*_*',
 #    'keep recoPFCandidates_particleFlow_*_*',
     'drop recoPFCandidates_selected*_pfCandidates_PAT',
