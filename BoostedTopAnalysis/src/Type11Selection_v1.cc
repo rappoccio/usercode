@@ -26,6 +26,7 @@ bool Type11Selection_v1::operator() ( edm::EventBase const & t, pat::strbitset &
 	pat::strbitset retPFJet = pfJetSel_->getBitTemplate();
 	for( vector<pat::Jet>::const_iterator jetBegin=patJetHandle->begin(), jetEnd=patJetHandle->end(), ijet=jetBegin ; ijet!=jetEnd; ijet++ )
 	{		
+		//std::cout<<"     Type11Selection ijet->pt() "<<ijet->pt()<<" ijet->eta() "<<ijet->eta()<<" ijet->phi() "<<ijet->phi()<<endl;
 		if ( ijet->pt() > caTopJetPtMin_ && fabs( ijet->eta() ) < caTopJetEtaCut_)
 		{
 			//Jet ID is applied to the patJet. The caTop jet is then matched to the patJet
