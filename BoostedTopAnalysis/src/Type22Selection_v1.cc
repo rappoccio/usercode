@@ -42,6 +42,8 @@ bool Type22Selection_v1::operator() ( edm::EventBase const & t, pat::strbitset &
   for( vector<pat::Jet>::const_iterator jetBegin=jetHandle->begin(), jetEnd=jetHandle->end(), ijet=jetBegin ;
     ijet!=jetEnd; ijet++ )
   {
+	//std::cout<<"     Type22Selection ijet->pt() "<<ijet->pt()<<" ijet->eta() "<<ijet->eta()<<" ijet->phi() "<<ijet->phi()<<endl;
+
     if( ijet->pt() > jetPt1_ && fabs( ijet->eta() ) < jetEta_ )  {
       retPFJet.set(false);
       bool passJetID = (*pfJetSel_)( *ijet, retPFJet );
