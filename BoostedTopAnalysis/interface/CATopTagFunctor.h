@@ -10,7 +10,7 @@
   the CATopTag algorithm
 
   \author Salvatore Rappoccio
-  \version  $Id: CATopTagFunctor.h,v 1.1 2009/10/23 20:34:27 srappocc Exp $
+  \version  $Id: CATopTagFunctor.h,v 1.6 2009/10/12 01:07:00 srappocc Exp $
 */
 
 
@@ -20,7 +20,7 @@
 #include "AnalysisDataFormats/TopObjects/interface/CATopJetTagInfo.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "PhysicsTools/SelectorUtils/interface/Selector.h"
+#include "PhysicsTools/Utilities/interface/Selector.h"
 
 #include <TMath.h>
 class CATopTagFunctor : public Selector<pat::Jet>  {

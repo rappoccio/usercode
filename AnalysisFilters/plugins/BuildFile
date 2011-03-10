@@ -1,12 +1,13 @@
-<export></export>
-<library name=AnalysisAnalysisFilters_plugins file=*.cc>
+<use name=FWCore/Framework>
+<use name=FWCore/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=DataFormats/Common>
+<use name=DataFormats/VertexReco>
+<use name=PhysicsTools/SelectorUtils>
+<flags EDM_PLUGIN=1>
+<export>
+   <lib name=AnalysisAnalysisFilters_plugins>
    <use name=FWCore/Framework>
    <use name=FWCore/PluginManager>
    <use name=FWCore/ParameterSet>
-   <use name=FWCore/Framework>
-   <use name=FWCore/PluginManager>
-   <use name=FWCore/ParameterSet>
-   <use name=DataFormats/Common>
-   <use name=DataFormats/VertexReco>
-   <use name=PhysicsTools/SelectorUtils>
-</library>
+</export>
