@@ -1,7 +1,7 @@
 #ifndef Analysis_BoostedTopAnalysis_interface_HadronicSelection_h_h
 #define Analysis_BoostedTopAnalysis_interface_HadronicSelection_h_h
 
-#include "PhysicsTools/SelectorUtils/interface/Selector.h"
+#include "PhysicsTools/Utilities/interface/Selector.h"
 #include "PhysicsTools/FWLite/interface/EventContainer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"

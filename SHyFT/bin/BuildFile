@@ -1,19 +1,26 @@
 <use name=DataFormats/PatCandidates>
 <use name=DataFormats/FWLite>
-<use name=FWCore/PythonParameterSet>
-<use name=boost_python>
+<use name=FWCore/Framework>
 <use name=FWCore/FWLite>
 <use name=rootcintex>
 <use name=root> 
 <use name=boost>
 <use name=CommonTools/Utils>
-<use name=PhysicsTools/SelectorUtils>
-<use name=PhysicsTools/FWLite>
 <use name=PhysicsTools/Utilities>
-<use name=Analysis/SHyFT>
+<use name=PhysicsTools/PatUtils>
+<use name=PhysicsTools/PatExamples>
+<use name=PhysicsTools/FWLite>
 
 <environment>
 
- <bin file="shyft_bones.C"> </bin>
+
+<bin name=shyft_secvtx.exe file=shyft_secvtx.cc>
+ <use name=root>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+ <use name=PhysicsTools/FWLite>
+</bin>
  <bin file="shyft_analysis.C"> </bin>
 </environment>

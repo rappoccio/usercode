@@ -65,8 +65,6 @@ process.caPrunedPFJets.jetCollInstanceName = cms.string("subjets")
 process.ca8GenJets = ca4GenJets.clone( rParam = cms.double(0.8) )
 
 
-from PhysicsTools.PatAlgos.tools.metTools import *
-addPfMET(process, 'PF')
 
 # switch jet collection to our juets
 from PhysicsTools.PatAlgos.tools.jetTools import *
@@ -82,22 +80,7 @@ if runon=='332rereco':
     run33xOnReRecoMC( process, "ak5GenJets" )
 
 
-
-
-addJetCollection(process, 
-                 cms.InputTag('antikt5PFJets'),   
-                 'PF',
-                 doJTA            = True,            
-                 doBTagging       = True,            
-                 jetCorrLabel     = ('AK5','PF'),  
-                 doType1MET       = False,
-                 doL1Cleaning     = False,
-                 doL1Counters     = False,
-                 genJetCollection = cms.InputTag("antikt5GenJets"),
-                 doJetID          = False,
-                 jetIdLabel       = "ak5"
-                 ) 
-
+## ==== Example with CaloJets
 addJetCollection(process, 
                  cms.InputTag('caPrunedPFJets'),         # Jet collection; must be already in the event when patLayer0 sequence is executed
                  'PrunedPF',
@@ -112,12 +95,21 @@ addJetCollection(process,
                  jetIdLabel = "ak5"
                  )
 
+switchJetCollection(process, 
+                    cms.InputTag('antikt5PFJets'),   
+                    doJTA            = False,            
+                    doBTagging       = False,            
+                    jetCorrLabel     = ('AK5','PF'),  
+                    doType1MET       = False,
+                    genJetCollection = cms.InputTag("antikt5GenJets"),
+                    doJetID          = False,
+                    jetIdLabel       = "ak5"
+                    ) 
 
 #jet ID does not work reliably in PAT for now (PAT as of 2009-10-20), so switch it off -- Jochen:
 #process.allLayer1Jets.addJetID = cms.bool(False)
 # Place appropriate jet cuts (NB: no cut on number of constituents)
 process.selectedLayer1Jets.cut = cms.string('pt > 20. & abs(eta) < 5.0')
-process.selectedLayer1JetsPF.cut = cms.string('pt > 20. & abs(eta) < 5.0')
 process.selectedLayer1JetsPrunedPF.cut = cms.string('pt > 20. & abs(eta) < 2.5')
 process.selectedLayer1Muons.cut = cms.string('pt > 15. & abs(eta) < 2.5')
 process.selectedLayer1Electrons.cut = cms.string('pt > 15. & abs(eta) < 2.5')
@@ -217,7 +209,6 @@ process.out.outputCommands.extend(['drop *_genParticles_*_*',
 				   'drop *_cleanLayer1Muons_*_*',
 				   'keep *_selectedLayer1Electrons_*_*',
 				   'keep *_selectedLayer1Muons_*_*',
-                                   "keep *_layer1METs*_*_*",
                                    'keep GenEventInfoProduct_generator_*_*'
                                    #'keep *_CAJetPartonMatcher_*_*',
                                    #'keep *_CAJetFlavourIdentifier_*_*'

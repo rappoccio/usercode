@@ -133,7 +133,7 @@ int main (int argc, char* argv[])
      
     bool passed = caTopHadronic(eventCont, ret);
     vector<pat::Jet>      const & jets      = caTopHadronic.selectedJets();
-    // vector<pat::Jet>      const & tags      = caTopHadronic.taggedJets();
+    vector<pat::Jet>      const & tags      = caTopHadronic.taggedJets();
 
 
     if ( ret[std::string(">= 1 Tight Jet")] ) {

@@ -11,26 +11,18 @@ process.source.duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
 # add the flavor history
 process.load("PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi")
 
-from PhysicsTools.PatAlgos.tools.jetTools import *
-switchJECSet( process, "Summer09_7TeV_ReReco332")
-
-
 		 # shrink the event content
 # jets
 #_____ SELECTION ________________________________________________ 	 
 #
-process.selectedPatJets.cut = cms.string("pt > 20 & abs(eta) < 3")
-process.patJets.tagInfoSources = cms.VInputTag(
-    cms.InputTag("secondaryVertexTagInfos")
-    )
+process.selectedPatJets.cut = cms.string("pt > 15 & abs(eta) < 3")
+process.patJets.embedGenJetMatch = cms.bool(False)
 # electrons
-#process.selectedPatElectrons.cut = cms.string('pt > 3. & abs(eta) < 2.5')
+process.selectedPatElectrons.cut = cms.string('pt > 3. & abs(eta) < 2.5')
 process.patElectrons.isoDeposits = cms.PSet()
 # muons
-#process.selectedPatMuons.cut = cms.string("pt > 3 & abs(eta) < 2.1")
+process.selectedPatMuons.cut = cms.string("pt > 3 & abs(eta) < 2.1")
 process.patMuons.isoDeposits = cms.PSet()
-# taus
-process.selectedPatTaus.cut = cms.string("pt > 20 & abs(eta) < 3")
 # photons
 process.patPhotons.isoDeposits = cms.PSet()
 #taus
@@ -58,14 +50,6 @@ process.prunedGenParticles = cms.EDProducer("GenParticlePruner",
   )
 )
 
-# re-run the gen jets
-from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
-run33xOnReRecoMC( process,
-                  genJets = "ak5GenJets",
-                  postfix="")
-
-
-
 ######################
 # begin changes for PF
 
@@ -75,8 +59,8 @@ switchOnTrigger( process )
 from PhysicsTools.PatAlgos.patEventContent_cff import patTriggerEventContent
 
 # switch to 8e29 menu. Note this is needed to match SD production
-process.patTriggerEvent.processName = cms.string( 'HLT8E29' )
-process.patTrigger.processName = cms.string( 'HLT8E29' )
+#process.patTriggerEvent.processName = cms.string( 'HLT8E29' )
+#process.patTrigger.processName = cms.string( 'HLT8E29' )
 
 #try to clone what we have up to here.  
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
@@ -89,56 +73,29 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5')
 # remove trigger matching for PF2PAT as that is currently broken
 process.patDefaultSequence.remove(process.patTriggerSequence)
 
-# now change the PF jet cut to 10 GeV
-process.selectedPatJets.cut = cms.string("pt > 15 & abs(eta) < 3")
 
 # end changes for PF
 ####################
 
-####################
-# make some quick-access shallow clones for speeding up read access
-
-process.stdjetClones = cms.EDProducer("CandViewShallowCloneProducer",
-                                   src = cms.InputTag('selectedPatJetsStd'),
-                                   cut = cms.string('pt > 20 & abs(eta) < 3')
-                                   )
-
-process.jetClones = cms.EDProducer("CandViewShallowCloneProducer",
-                                   src = cms.InputTag('selectedPatJets'),
-                                   cut = cms.string('pt > 15 & abs(eta) < 3')
-                                   )
-
-
 # let it run
 process.p = cms.Path(
  process.makeGenEvt *
- process.patDefaultSequenceStd* 
- process.patDefaultSequence*
  process.flavorHistorySeq *
- process.prunedGenParticles * 
- process.stdjetClones * 
- process.jetClones
+ process.prunedGenParticles*
+ process.patDefaultSequenceStd *
+ process.patDefaultSequence
  )
 
 
 process.source.fileNames = [
-#        '/store/mc/Summer09/TTbar/GEN-SIM-RECO/MC_3XY_V25_preproduction-v1/0003/84F29E99-202C-DF11-810C-00237DA14F92.root',
-#        '/store/mc/Summer09/TTbar/GEN-SIM-RECO/MC_3XY_V25_preproduction-v1/0002/F8535A25-E12B-DF11-AE17-0017A4770408.root',
-#        '/store/mc/Summer09/TTbar/GEN-SIM-RECO/MC_3XY_V25_preproduction-v1/0002/D8B78A2E-E12B-DF11-AD04-0017A4770830.root',
-#        '/store/mc/Summer09/TTbar/GEN-SIM-RECO/MC_3XY_V25_preproduction-v1/0002/AC26FFDB-E02B-DF11-9FAE-0017A4770808.root',
-#        '/store/mc/Summer09/TTbar/GEN-SIM-RECO/MC_3XY_V25_preproduction-v1/0002/8A343E2E-E12B-DF11-9AB8-0017A4770420.root',
-#        '/store/mc/Summer09/TTbar/GEN-SIM-RECO/MC_3XY_V25_preproduction-v1/0002/5AC0F529-E12B-DF11-8908-0017A4770438.root',
-#        '/store/mc/Summer09/TTbar/GEN-SIM-RECO/MC_3XY_V25_preproduction-v1/0002/4E1AEE29-E12B-DF11-A64A-0017A4770810.root',
-#        '/store/mc/Summer09/TTbar/GEN-SIM-RECO/MC_3XY_V25_preproduction-v1/0002/4AAE5D25-E12B-DF11-ADC6-0017A4770834.root'
-    'file:/uscms_data/d1/rappocc/SHyFT/files/84F29E99-202C-DF11-810C-00237DA14F92.root'
-#'/store/relval/CMSSW_3_5_4/RelValTTbar/GEN-SIM-RECO/START3X_V24-v1/0003/0060E652-822B-DF11-BA47-002618943972.root'
+'/store/relval/CMSSW_3_5_4/RelValTTbar/GEN-SIM-RECO/START3X_V24-v1/0003/0060E652-822B-DF11-BA47-002618943972.root'
   ]
-process.maxEvents.input = 100        ##  (e.g. -1 to run on all events)
+process.maxEvents.input = 1000         ##  (e.g. -1 to run on all events)
 
-process.out.outputCommands += ['drop *_cleanPat*_*_*',
+process.out.outputCommands += ['drop *_cleanLayer1*_*_*',
 			       'keep *_flavorHistoryFilter_*_*',
                                'keep *_prunedGenParticles_*_*',
-                               'keep *_selectedPat*_*_*',
+                               'keep *_selectedLayer1*_*_*',
 			       'keep *_decaySubset_*_*',
 			       'keep *_initSubset_*_*',
 			       'keep *_offlineBeamSpot_*_*',
@@ -154,8 +111,7 @@ process.out.outputCommands += ['drop *_cleanPat*_*_*',
                                'keep *_cleanPatMuonsTriggerMatchStd_*_*',
                                'keep *_cleanPatTausTriggerMatchStd_*_*',
                                'keep *_cleanPatJetsTriggerMatchStd_*_*',
-                               'keep *_patMETsTriggerMatchStd_*_*',
-                               'keep *_*jetClones_*_*',
+                               'keep *_patMETsTriggerMatchStd_*_*'
 ]
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 process.out.fileName = 'ljmet.root'
