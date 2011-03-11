@@ -5,7 +5,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "AnalysisDataFormats/TopObjects/interface/CATopJetTagInfo.h"
 #include "Analysis/BoostedTopAnalysis/interface/HadronicSelectionBoostedW.h"
-#include "PhysicsTools/SelectorUtils/interface/WPlusJetsEventSelector.h"
+#include "PhysicsTools/PatExamples/interface/WPlusJetsEventSelector.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "PhysicsTools/FWLite/interface/EventContainer.h"
@@ -118,26 +118,14 @@ int main (int argc, char* argv[])
 
   // Tight muon id
   boost::shared_ptr<MuonVPlusJetsIDSelectionFunctor>      muonIdTight     
-    (new MuonVPlusJetsIDSelectionFunctor( MuonVPlusJetsIDSelectionFunctor::SUMMER08,
-					  10.0,
-					  999.0,
-					  999.0,
-					  3.0,
-					  11,
-					  4.0,
-					  6.0,
-					  0.05  ) );
+    (new MuonVPlusJetsIDSelectionFunctor( MuonVPlusJetsIDSelectionFunctor::SUMMER08 ) );
   muonIdTight->set( "D0", 0.02 );
   muonIdTight->set( "RelIso", false);
   muonIdTight->set( "HCalVeto", false );
   muonIdTight->set( "ECalVeto", false );
   // Tight electron id
   boost::shared_ptr<ElectronVPlusJetsIDSelectionFunctor>  electronIdTight     
-    (new ElectronVPlusJetsIDSelectionFunctor( ElectronVPlusJetsIDSelectionFunctor::SUMMER08,
-					      999.0,
-					      999.0,
-					      3.0,
-					      0.1 ) );
+    (new ElectronVPlusJetsIDSelectionFunctor( ElectronVPlusJetsIDSelectionFunctor::SUMMER08 ) );
   electronIdTight->set( "D0", 0.02 );
   electronIdTight->set( "RelIso", false);
 
@@ -148,15 +136,7 @@ int main (int argc, char* argv[])
   
   // Loose muon id
   boost::shared_ptr<MuonVPlusJetsIDSelectionFunctor>      muonIdLoose     
-    (new MuonVPlusJetsIDSelectionFunctor( MuonVPlusJetsIDSelectionFunctor::SUMMER08,
-					  10.0,
-					  999.0,
-					  999.0,
-					  3.0,
-					  11,
-					  4.0,
-					  6.0,
-					  0.05 ) );
+    (new MuonVPlusJetsIDSelectionFunctor( MuonVPlusJetsIDSelectionFunctor::SUMMER08 ) );
   muonIdLoose->set( "Chi2",    false);
   muonIdLoose->set( "D0",      false);
   muonIdLoose->set( "NHits",   false);
@@ -166,11 +146,7 @@ int main (int argc, char* argv[])
 
   // Loose electron id
   boost::shared_ptr<ElectronVPlusJetsIDSelectionFunctor>  electronIdLoose     
-    (new ElectronVPlusJetsIDSelectionFunctor( ElectronVPlusJetsIDSelectionFunctor::SUMMER08,
-					      999.0,
-					      999.0,
-					      3.0,
-					      0.1) );
+    (new ElectronVPlusJetsIDSelectionFunctor( ElectronVPlusJetsIDSelectionFunctor::SUMMER08) );
   electronIdLoose->set( "D0",  false);
   electronIdLoose->set( "RelIso", false);
   // Loose jet id
@@ -260,7 +236,7 @@ int main (int argc, char* argv[])
      }
 
      // Leptonic side
-    pat::strbitset retSemi = wPlusJets->getBitTemplate();
+    std::strbitset retSemi = wPlusJets->getBitTemplate();
 
 
     bool passedSemi = (*wPlusJets)(eventCont, retSemi);
@@ -300,12 +276,12 @@ int main (int argc, char* argv[])
 	eventCont.hist("mu2D")->Fill( dRMin, ptRel );
 
 	// Hadronic side
-	pat::strbitset ret = boostedWHadronic.getBitTemplate();
+	std::strbitset ret = boostedWHadronic.getBitTemplate();
 	
 
-	// bool passed = boostedWHadronic(eventCont, ret);
+	bool passed = boostedWHadronic(eventCont, ret);
 	HadronicSelectionBoostedW::collection_type const & jets = boostedWHadronic.selectedJets();
-	// HadronicSelectionBoostedW::collection_type const & tags = boostedWHadronic.taggedJets();
+	HadronicSelectionBoostedW::collection_type const & tags = boostedWHadronic.taggedJets();
 	
 	if ( ret[std::string(">= 1 Tag")] ) {
 	  for ( HadronicSelectionBoostedW::collection_type::const_iterator jetsBegin = jets.begin(),

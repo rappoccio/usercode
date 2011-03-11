@@ -42,7 +42,7 @@ HadronicSelectionBoostedW::HadronicSelectionBoostedW(
 
 }
 
-bool HadronicSelectionBoostedW::operator() ( fwlite::EventContainer const & eventConst, pat::strbitset & ret)
+bool HadronicSelectionBoostedW::operator() ( fwlite::EventContainer const & eventConst, std::strbitset & ret)
 {
   selectedJets_.clear();
   taggedJets_.clear();
@@ -61,9 +61,9 @@ bool HadronicSelectionBoostedW::operator() ( fwlite::EventContainer const & even
   eventConst.getByLabel(edm::InputTag("patTriggerEvent"), triggerEvent);
   if (!triggerEvent.isValid() ) return (bool)ret;  
 
-  std::vector<reco::ShallowClonePtrCandidate> const & selectedMuons = wPlusJets_->selectedMuons();
+  std::vector<pat::Muon> const & selectedMuons = wPlusJets_->selectedMuons();
   
-  pat::Muon const * leadingMuon = dynamic_cast<pat::Muon const *> (&(selectedMuons.front()));
+  pat::Muon const & leadingMuon = selectedMuons.front();
 
 
   // Get a list of the jets that pass our tight event selection
@@ -71,7 +71,7 @@ bool HadronicSelectionBoostedW::operator() ( fwlite::EventContainer const & even
 	  jetEnd = jetHandle->end(), ijet = jetBegin;
 	ijet != jetEnd; ++ijet ) {
 
-    double dPhi = deltaPhi<double>( ijet->phi(), leadingMuon->phi() );
+    double dPhi = deltaPhi<double>( ijet->phi(), leadingMuon.phi() );
 
     event.hist("deltaPhi")->Fill( dPhi );
 

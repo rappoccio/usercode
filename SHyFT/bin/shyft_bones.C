@@ -2,7 +2,7 @@
 #include "DataFormats/FWLite/interface/Event.h"
 #include "DataFormats/FWLite/interface/ChainEvent.h"
 #include "DataFormats/FWLite/interface/MultiChainEvent.h"
-#include "PhysicsTools/SelectorUtils/interface/WPlusJetsEventSelector.h"
+#include "PhysicsTools/PatExamples/interface/WPlusJetsEventSelector.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
@@ -10,7 +10,6 @@
 
 #include "Math/GenVector/PxPyPzM4D.h"
 
-#include "TStopwatch.h"
 #include <iostream>
 #include <cmath>      //necessary for absolute function fabs()
 #include <boost/shared_ptr.hpp>
@@ -40,7 +39,7 @@ int main ( int argc, char ** argv )
   }
 
   // Get the python configuration
-  PythonProcessDesc builder(argv[1], argc, argv);
+  PythonProcessDesc builder(argv[1]);
   edm::ParameterSet const& shyftParameters = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("shyftAnalysis");
   edm::ParameterSet const& inputs = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("inputs");
   edm::ParameterSet const& outputs = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("outputs");
@@ -55,43 +54,31 @@ int main ( int argc, char ** argv )
 
   //cout << "Making event selector" << endl;
   WPlusJetsEventSelector wPlusJets( shyftParameters );
-  pat::strbitset ret = wPlusJets.getBitTemplate();
+  std::strbitset ret = wPlusJets.getBitTemplate();
   
-
-  unsigned int nEventsAnalyzed(0);
-
-  // some timing
-  TStopwatch timer;
-  timer.Start();
-
-  std::cout << "About to loop" << std::endl;
   //loop through each event
   for( ev.toBegin();
        ! ev.atEnd();
        ++ev) {
     ret.set(false);
     bool passed = wPlusJets(ev, ret);
+    std::vector<reco::ShallowClonePtrCandidate> const & electrons = wPlusJets.selectedElectrons();
+    std::vector<reco::ShallowClonePtrCandidate> const & muons     = wPlusJets.selectedMuons();
+    std::vector<reco::ShallowClonePtrCandidate> const & jets      = wPlusJets.cleanedJets();
+    std::vector<reco::ShallowClonePtrCandidate> const & jetsBeforeClean = wPlusJets.selectedJets();
 
-    ++nEventsAnalyzed;
-
+    string bit_;
+    
+    bit_ = "Trigger" ;
+    bool passTrigger = ret[ bit_ ];
+    bit_ = "== 1 Lepton";
+    bool passOneLepton = ret[ bit_ ];
+   
   } //end event loop
-
-  timer.Stop();
-
-  // print some timing statistics
-  Double_t rtime = timer.RealTime();
-  Double_t ctime = timer.CpuTime();
-  printf("Analyzed events: %d \n",nEventsAnalyzed);
-  printf("RealTime=%f seconds, CpuTime=%f seconds\n",rtime,ctime);
-  printf("%4.2f events / RealTime second .\n", nEventsAnalyzed/rtime);
-  printf("%4.2f events / CpuTime second .\n", nEventsAnalyzed/ctime);
-
-
   
   //cout << "Printing" << endl;
   wPlusJets.print(std::cout);
   //cout << "We're done!" << endl;
-
   
   return 0;
 }

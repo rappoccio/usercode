@@ -75,7 +75,7 @@ int main (int argc, char* argv[])
 
   cout << "Getting parameters" << endl;
   // Get the python configuration
-  PythonProcessDesc builder(argv[1], argc, argv);
+  PythonProcessDesc builder(argv[1]);
   boost::shared_ptr<edm::ProcessDesc> b = builder.processDesc();
   boost::shared_ptr<edm::ParameterSet> parameters = b->getProcessPSet();
   parameters->registerIt(); 
@@ -212,10 +212,10 @@ int main (int argc, char* argv[])
     
     if ( nev % 10000 == 0 ) cout << "Entry " << nev << ", Processing run " << event.id().run() << ", event " << event.id().event() << endl;
 
-    pat::strbitset retCalo = caloSelector.getBitTemplate();
+    std::strbitset retCalo = caloSelector.getBitTemplate();
     bool passedCalo = caloSelector( event, retCalo );
 
-    pat::strbitset retPF = pfSelector.getBitTemplate();
+    std::strbitset retPF = pfSelector.getBitTemplate();
     bool passedPF = pfSelector( event, retPF );
 
     ///------------------
@@ -240,7 +240,7 @@ int main (int argc, char* argv[])
 	hists["hist_jetNTracks"]->Fill( jetTracks.size() );
 	hists["hist_jetNTracksVsPt"]->Fill( pt, jetTracks.size() );
 	hists["hist_jetEMF"]->Fill( jet.emEnergyFraction() );	
-	hists["hist_jetCorr"]->Fill( jet.jecFactor(0) );
+	hists["hist_jetCorr"]->Fill( jet.corrFactor("raw") );
 	hists["hist_n90Hits"]->Fill( static_cast<int>(jet.jetID().n90Hits) );
 	hists["hist_fHPD"]->Fill( jet.jetID().fHPD );
 	hists["hist_nConstituents"]->Fill( jet.nConstituents() );
@@ -282,7 +282,7 @@ int main (int argc, char* argv[])
 	  hists["hist_good_jetNTracks"]->Fill( jet0.associatedTracks().size() );
 	  hists["hist_good_jetNTracksVsPt"]->Fill( jet0.pt(), jet0.associatedTracks().size() );
 	  hists["hist_good_jetEMF"]->Fill( jet0.emEnergyFraction() );	
-	  hists["hist_good_jetCorr"]->Fill( jet0.jecFactor(0) );
+	  hists["hist_good_jetCorr"]->Fill( jet0.corrFactor("raw") );
 	  hists["hist_good_n90Hits"]->Fill( static_cast<int>(jet0.jetID().n90Hits) );
 	  hists["hist_good_fHPD"]->Fill( jet0.jetID().fHPD );
 	  hists["hist_good_nConstituents"]->Fill( jet0.nConstituents() );

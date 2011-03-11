@@ -1,7 +1,7 @@
 #ifndef Analysis_BoostedTopAnalysis_interface_HadronicSelection_h_h
 #define Analysis_BoostedTopAnalysis_interface_HadronicSelection_h_h
 
-#include "PhysicsTools/SelectorUtils/interface/Selector.h"
+#include "PhysicsTools/Utilities/interface/Selector.h"
 #include "PhysicsTools/FWLite/interface/EventContainer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
@@ -9,7 +9,7 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
-#include "PhysicsTools/SelectorUtils/interface/WPlusJetsEventSelector.h"
+#include "PhysicsTools/PatExamples/interface/WPlusJetsEventSelector.h"
 #include "Analysis/BoostedTopAnalysis/interface/CATopTagFunctor.h"
 #include "TLorentzVector.h"
 
@@ -34,7 +34,7 @@ class HadronicSelectionBoostedW : public Selector<fwlite::EventContainer> {
   ~HadronicSelectionBoostedW() {}
 
 
-  virtual bool operator()( fwlite::EventContainer const & eventConst, pat::strbitset & ret);  
+  virtual bool operator()( fwlite::EventContainer const & eventConst, std::strbitset & ret);  
 
   collection_type      const & selectedJets     () const { return selectedJets_;     } 
   collection_type      const & taggedJets       () const { return taggedJets_;       } 
