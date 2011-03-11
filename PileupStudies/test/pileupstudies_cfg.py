@@ -117,6 +117,14 @@ process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                            )
 
 
+from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
+
+process.goodOfflinePrimaryVertices = cms.EDFilter(
+    "PrimaryVertexObjectFilter",
+    filterParams = pvSelector.clone( maxZ = cms.double(24.0) ),
+    src=cms.InputTag('offlinePrimaryVertices')    
+    )
+
 
 
 ###############################
@@ -141,15 +149,16 @@ from PhysicsTools.PatAlgos.tools.coreTools import *
 postfixAK5 = "PFlowAK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixAK5)
 process.pfPileUpPFlowAK5.Enable = False
+process.pfPileUpPFlowAK5.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
 process.pfJetsPFlowAK5.doAreaFastjet = True
 process.pfJetsPFlowAK5.doRhoFastjet = False
 process.pfJetsPFlowAK5.Ghost_EtaMax = 6.5
-
 
 # PF2PAT with only charged hadrons from first PV
 postfixPUSubAK5 = "PFlowPUSubAK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixPUSubAK5)
 process.pfPileUpPFlowPUSubAK5.Enable = True
+process.pfPileUpPFlowPUSubAK5.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
 process.pfJetsPFlowPUSubAK5.doAreaFastjet = True
 process.pfJetsPFlowPUSubAK5.doRhoFastjet = False
 process.pfJetsPFlowPUSubAK5.Ghost_EtaMax = 6.5
@@ -237,8 +246,9 @@ process.jetFilter = cms.EDFilter("CandViewCountFilter",
 process.patseq = cms.Sequence(
     process.hltSelection*
     process.scrapingVeto*
-    process.primaryVertexFilter*
+    process.primaryVertexFilter*    
     process.HBHENoiseFilter*
+    process.goodOfflinePrimaryVertices*
     getattr(process,"patPF2PATSequence"+postfixPUSubAK5)*
     process.goodPatJetsPFlowPUSubAK5*
     process.jetFilter*
@@ -284,6 +294,7 @@ process.out.outputCommands = [
     'drop recoPFCandidates_selected*_pfCandidates_PAT',
     'keep *_offlineBeamSpot_*_*',
     'keep *_offlinePrimaryVertices*_*_*',
+    'keep *_goodOfflinePrimaryVertices*_*_*',    
     'drop patPFParticles_*_*_*',
     'keep patTriggerPaths_patTrigger*_*_*',
     'keep patTriggerEvent_patTriggerEvent*_*_*',
