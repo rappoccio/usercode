@@ -23,6 +23,9 @@ bool Type11Selection_v1::operator() ( edm::EventBase const & t, pat::strbitset &
 	edm::Handle<vector<pat::Jet>  >   patJetHandle;
 	t.getByLabel( patJetCollectionInputTag_, patJetHandle );
 	 
+	//std::cout<<"Type11Selection Event "<<t.id()<<endl;
+
+
 	pat::strbitset retPFJet = pfJetSel_->getBitTemplate();
 	for( vector<pat::Jet>::const_iterator jetBegin=patJetHandle->begin(), jetEnd=patJetHandle->end(), ijet=jetBegin ; ijet!=jetEnd; ijet++ )
 	{		
