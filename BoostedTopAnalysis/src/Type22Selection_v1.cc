@@ -11,6 +11,7 @@ Type22Selection_v1::Type22Selection_v1 ( edm::ParameterSet const & params ) :
   bTagAlgo_              (params.getParameter<string>("bTagAlgo") ),
   jetTag_               (params.getParameter<edm::InputTag>("jetSrc") )
 {
+/*
   push_back("Inclusive");
   push_back("nJets >= 2");
   push_back("nJets >= 4");
@@ -22,7 +23,7 @@ Type22Selection_v1::Type22Selection_v1 ( edm::ParameterSet const & params ) :
   set("nJets >= 4");
   set("hasOneWTag");
   set("hasOneBTag");
-
+*/
 }
 
 bool Type22Selection_v1::operator() ( edm::EventBase const & t, pat::strbitset & ret )
@@ -33,10 +34,12 @@ bool Type22Selection_v1::operator() ( edm::EventBase const & t, pat::strbitset &
   wTags_.clear();
   bTags_.clear();
 
-  passCut( ret, "Inclusive" );
+  //passCut( ret, "Inclusive" );
 
   edm::Handle<vector<pat::Jet>  >   jetHandle;
   t.getByLabel( jetTag_, jetHandle );
+
+  //std::cout<<"Type22Selection Event "<<t.id()<<endl;
 
   pat::strbitset retPFJet = pfJetSel_->getBitTemplate();
   for( vector<pat::Jet>::const_iterator jetBegin=jetHandle->begin(), jetEnd=jetHandle->end(), ijet=jetBegin ;
@@ -45,7 +48,7 @@ bool Type22Selection_v1::operator() ( edm::EventBase const & t, pat::strbitset &
 	//std::cout<<"     Type22Selection ijet->pt() "<<ijet->pt()<<" ijet->eta() "<<ijet->eta()<<" ijet->phi() "<<ijet->phi()<<endl;
 
     if( ijet->pt() > jetPt1_ && fabs( ijet->eta() ) < jetEta_ )  {
-      retPFJet.set(false);
+	  retPFJet.set(false);
       bool passJetID = (*pfJetSel_)( *ijet, retPFJet );
       if( passJetID ) {
         pfJets_.push_back( edm::Ptr<pat::Jet>(jetHandle, ijet-jetBegin )  );
@@ -69,6 +72,11 @@ bool Type22Selection_v1::operator() ( edm::EventBase const & t, pat::strbitset &
     }
   }
 
+  //std::cout<<"   pfJets_.size() "<<pfJets_.size()<<endl;
+  //std::cout<<"   highPtJets_.size() "<<highPtJets_.size()<<endl;
+  //std::cout<<"   wTags_.size() "<<wTags_.size()<<endl;
+  //std::cout<<"   bTags_.size() "<<bTags_.size()<<endl;
+/*
   if( highPtJets_.size() >= 2 )  {
     passCut( ret, "nJets >= 2" );
     if( pfJets_.size() >= 4 ) {
@@ -81,7 +89,7 @@ bool Type22Selection_v1::operator() ( edm::EventBase const & t, pat::strbitset &
       }
     }
   }
-
+*/
   return bool(ret);
 
 }
