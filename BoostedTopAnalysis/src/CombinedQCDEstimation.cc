@@ -359,7 +359,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		bool type12_passevent=false;
 		bool type22_passevent=false;
 		
-		//Type 11
+		// Type 1+1 signal
 		if ( preselected_event && hasTaggedTopJet0 && hasTaggedTopJet1 )
 		{
 			type11_passevent = true;
@@ -385,7 +385,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			return;
 		}
 
-		//Type 12
+		// Type 1+2 signal
 		if ( preselected_event && !type11_passevent )
 		{
 			//some test histograms
@@ -394,35 +394,39 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			
 			//fill pass histograms
 				//if ( (hasTaggedTopJet0 && ( hasTightTop1 || hasLooseTop1)) || (hasTaggedTopJet1 && ( hasTightTop0 || hasLooseTop0)) )
-			if ( (hasTaggedTopJet0 && hasTightTop1) || (hasTaggedTopJet1 && hasTightTop0) )
+			
+			if ( hasOneWTag )
 			{
-				type12_passevent = true;
-				histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(2,evtWeight);
-	
-				double ttMass =0;
-				if (hasTaggedTopJet0) ttMass = (p4_catop_jet0+p4_top1).mass() ; 
-				if (hasTaggedTopJet1) ttMass = (p4_catop_jet1+p4_top0).mass() ; 
-				histograms1d["ttMassType12_measured"] ->Fill (ttMass, evtWeight);
-				
-				if(runOnData_) 
+				if ( (hasTaggedTopJet0 && hasTightTop1) || (hasTaggedTopJet1 && hasTightTop0) )
 				{
-					cout<<"WoopWoop!, Type1+Type2, Event id, "<<iEvent.id()<<endl;
-					cout<<" summary:"<<endl;
-					cout<<"  catop j0_mass "<<p4_catop_jet0.mass()<<endl;
-					cout<<"  catop j1_mass "<<p4_catop_jet1.mass()<<endl;
-					cout<<"  catop j0_nsubjets "<<j0_nsubjets<<endl;
-					cout<<"  catop j1_nsubjets "<<j1_nsubjets<<endl;
-					cout<<"  catop j0_minmass "<<j0_minmass<<endl;
-					cout<<"  catop j1_minmass "<<j1_minmass<<endl;
+					type12_passevent = true;
+					histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(2,evtWeight);
 					
-					cout<<"  p4_catop_jet0.mass() "<<p4_catop_jet0.mass()<<endl;
-					cout<<"  p4_catop_jet1.mass() "<<p4_catop_jet1.mass()<<endl;
-					cout<<"  p4_top0.mass() "<<p4_top0.mass()<<endl;
-					cout<<"  p4_top1.mass() "<<p4_top1.mass()<<endl;
-					cout<<"  ttMass "<<ttMass<<endl;
+					double ttMass =0;
+					if (hasTaggedTopJet0) ttMass = (p4_catop_jet0+p4_top1).mass() ; 
+					if (hasTaggedTopJet1) ttMass = (p4_catop_jet1+p4_top0).mass() ; 
+					histograms1d["ttMassType12_measured"] ->Fill (ttMass, evtWeight);
+					
+					if(runOnData_) 
+					{
+						cout<<"WoopWoop!, Type1+Type2, Event id, "<<iEvent.id()<<endl;
+						cout<<" summary:"<<endl;
+						cout<<"  catop j0_mass "<<p4_catop_jet0.mass()<<endl;
+						cout<<"  catop j1_mass "<<p4_catop_jet1.mass()<<endl;
+						cout<<"  catop j0_nsubjets "<<j0_nsubjets<<endl;
+						cout<<"  catop j1_nsubjets "<<j1_nsubjets<<endl;
+						cout<<"  catop j0_minmass "<<j0_minmass<<endl;
+						cout<<"  catop j1_minmass "<<j1_minmass<<endl;
+						
+						cout<<"  p4_catop_jet0.mass() "<<p4_catop_jet0.mass()<<endl;
+						cout<<"  p4_catop_jet1.mass() "<<p4_catop_jet1.mass()<<endl;
+						cout<<"  p4_top0.mass() "<<p4_top0.mass()<<endl;
+						cout<<"  p4_top1.mass() "<<p4_top1.mass()<<endl;
+						cout<<"  ttMass "<<ttMass<<endl;
+					}
+					//This is our signal, return
+					return;
 				}
-				//This is our signal, return
-				return;
 			}
 		}
 
@@ -466,35 +470,38 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		// Type 1+1 Background estimation starts here
 		if ( preselected_event && !type11_passevent && !type12_passevent && !type22_passevent )
 		{
-			int bin0 = topMistag_->FindBin( p4_catop_jet0.pt() );
-			int bin1 = topMistag_->FindBin( p4_catop_jet1.pt() );
-			double mistagProb_jet0 = topMistag_->GetBinContent(bin0);
-			double mistagProb_jet1 = topMistag_->GetBinContent(bin1);
-			double mistagError_jet0 = topMistag_->GetBinError(bin0);
-			double mistagError_jet1 = topMistag_->GetBinError(bin1);
-			
-			if ( (hasTaggedTopJet0 && !hasTaggedTopJet1 && !hasNonLeadingBjet1) || (hasTaggedTopJet1 && !hasTaggedTopJet0 && !hasNonLeadingBjet0)  ) 
-			{		
-				if (verbose_) cout<<"  Type 11 background estimation event"<<endl;
-				if (verbose_) cout<<"   hasTaggedTopJet0 "<<hasTaggedTopJet0<<endl;
-				if (verbose_) cout<<"   hasTaggedTopJet1 "<<hasTaggedTopJet1<<endl;
-				if (verbose_) cout<<"   hasNonLeadingBjet0 "<<hasNonLeadingBjet0<<endl;
-				if (verbose_) cout<<"   hasNonLeadingBjet1 "<<hasNonLeadingBjet1<<endl;
+			if (!hasBTag0 && !hasBTag1 )
+			{
+				int bin0 = topMistag_->FindBin( p4_catop_jet0.pt() );
+				int bin1 = topMistag_->FindBin( p4_catop_jet1.pt() );
+				double mistagProb_jet0 = topMistag_->GetBinContent(bin0);
+				double mistagProb_jet1 = topMistag_->GetBinContent(bin1);
+				double mistagError_jet0 = topMistag_->GetBinError(bin0);
+				double mistagError_jet1 = topMistag_->GetBinError(bin1);
 				
-				type11_bkgd_prediction_event=true;
-				histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(4,evtWeight);
-
-				double ttMass = (p4_catop_jet0+p4_catop_jet1).mass();
-				double weight = 0;
-				double error_squared = 0;
-				if (hasTaggedTopJet0) weight = mistagProb_jet1;
-				if (hasTaggedTopJet0) error_squared = mistagError_jet1;
-				if (hasTaggedTopJet1) weight = mistagProb_jet0;
-				if (hasTaggedTopJet1) error_squared = mistagError_jet0;
-				
-				histograms1d["ttMassType11_predicted_1tagSample"] ->Fill (ttMass, weight);
-				histograms1d["ttMassType11_predicted_1tagSample_errorSquared"] ->Fill (ttMass, error_squared);
-				histograms1d["ttMassType11_test_predict"] ->Fill (ttMass, weight);
+				if ( (hasTaggedTopJet0 && !hasTaggedTopJet1 && !hasNonLeadingBjet1) || (hasTaggedTopJet1 && !hasTaggedTopJet0 && !hasNonLeadingBjet0)  ) 
+				{		
+					if (verbose_) cout<<"  Type 11 background estimation event"<<endl;
+					if (verbose_) cout<<"   hasTaggedTopJet0 "<<hasTaggedTopJet0<<endl;
+					if (verbose_) cout<<"   hasTaggedTopJet1 "<<hasTaggedTopJet1<<endl;
+					if (verbose_) cout<<"   hasNonLeadingBjet0 "<<hasNonLeadingBjet0<<endl;
+					if (verbose_) cout<<"   hasNonLeadingBjet1 "<<hasNonLeadingBjet1<<endl;
+					
+					type11_bkgd_prediction_event=true;
+					histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(4,evtWeight);
+					
+					double ttMass = (p4_catop_jet0+p4_catop_jet1).mass();
+					double weight = 0;
+					double error_squared = 0;
+					if (hasTaggedTopJet0) weight = mistagProb_jet1;
+					if (hasTaggedTopJet0) error_squared = mistagError_jet1;
+					if (hasTaggedTopJet1) weight = mistagProb_jet0;
+					if (hasTaggedTopJet1) error_squared = mistagError_jet0;
+					
+					histograms1d["ttMassType11_predicted_1tagSample"] ->Fill (ttMass, weight);
+					histograms1d["ttMassType11_predicted_1tagSample_errorSquared"] ->Fill (ttMass, error_squared);
+					histograms1d["ttMassType11_test_predict"] ->Fill (ttMass, weight);
+				}
 			}
 		}//end 11bkg
 		
@@ -503,7 +510,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		//  Jets in the hemisphere opposite the top jet which, when combined with the b-jet, have a pairwise mass in the top mass window, are used as probes to estimate the background
 		if( preselected_event && !type11_passevent && !type12_passevent && !type22_passevent && !type11_bkgd_prediction_event )  
 		{
-			if( hasBTag ) 
+			if( hasBTag && !hasWTag0 && !hasWTag1 ) 
 			{
 				if( hasTaggedTopJet0  && !hasWTag1)  
 				{ 
