@@ -307,7 +307,9 @@ process.out.outputCommands = [
     'drop patTaus_*_*_*',
     'drop recoBaseTagInfosOwned_selected*_tagInfos_PAT',
     'keep recoGenJets_selected*_*_PAT',
-    'drop CaloTowers_selected*_caloTowers_PAT'
+    'drop CaloTowers_selected*_caloTowers_PAT',
+    'keep recoPileUpPFCandidate*_*_*_*',
+    'keep recoTracks_generalTracks_*_*'
     ]
 
 if options.useData :
