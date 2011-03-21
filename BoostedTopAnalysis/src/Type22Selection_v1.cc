@@ -35,20 +35,21 @@ bool Type22Selection_v1::operator() ( edm::EventBase const & t, pat::strbitset &
   bTags_.clear();
 
   //passCut( ret, "Inclusive" );
-
+	bool type22_verbose = false;
   edm::Handle<vector<pat::Jet>  >   jetHandle;
   t.getByLabel( jetTag_, jetHandle );
 
-  //std::cout<<"Type22Selection Event "<<t.id()<<endl;
-
+  if (type22_verbose) std::cout<<"Type22Selection Event "<<t.id()<<endl;
+  if (type22_verbose) std::cout<<"  jet must pass pt > "<< jetPt1_ <<" and eta < "<< jetEta_ <<std::endl;
   pat::strbitset retPFJet = pfJetSel_->getBitTemplate();
   for( vector<pat::Jet>::const_iterator jetBegin=jetHandle->begin(), jetEnd=jetHandle->end(), ijet=jetBegin ;
     ijet!=jetEnd; ijet++ )
   {
-	//std::cout<<"     Type22Selection ijet->pt() "<<ijet->pt()<<" ijet->eta() "<<ijet->eta()<<" ijet->phi() "<<ijet->phi()<<endl;
+	if (type22_verbose) std::cout<<"     Type22Selection ijet->pt() "<<ijet->pt()<<" ijet->eta() "<<ijet->eta()<<" ijet->phi() "<<ijet->phi();
 
     if( ijet->pt() > jetPt1_ && fabs( ijet->eta() ) < jetEta_ )  {
 	  retPFJet.set(false);
+	  if (type22_verbose) std::cout<<" -> passes cuts "<<std::endl;
       bool passJetID = (*pfJetSel_)( *ijet, retPFJet );
       if( passJetID ) {
         pfJets_.push_back( edm::Ptr<pat::Jet>(jetHandle, ijet-jetBegin )  );
@@ -56,6 +57,7 @@ bool Type22Selection_v1::operator() ( edm::EventBase const & t, pat::strbitset &
           highPtJets_.push_back( edm::Ptr<pat::Jet>(jetHandle, ijet-jetBegin )  );
       }
     } // end if jetPt, jetEta
+	else {if (type22_verbose) std::cout<<" -> fails cuts "<<std::endl;}
   }
 
   //Search for W, b jets
@@ -63,19 +65,24 @@ bool Type22Selection_v1::operator() ( edm::EventBase const & t, pat::strbitset &
     ijet!=jetEnd; ijet++ )
   {
     pat::Jet const & jet = **ijet;
+	if (type22_verbose) std::cout<<"     Type22Selection Loop 2 jet.pt() "<<jet.pt()<<" jet.eta() "<<jet.eta()<<" jet.phi() "<<jet.phi()<<" btag "<<jet.bDiscriminator( bTagAlgo_ )<<"  op "<<bTagOP_<<" bTags_.size() "<<bTags_.size();
     pat::strbitset iret = wJetSelector_.getBitTemplate();
     if( wJetSelector_( jet, iret )  ) {
+	  if (type22_verbose) std::cout<<" ->W tagged!"<<std::endl;
       wTags_.push_back( *ijet );
     }  else {
-      if( jet.bDiscriminator( bTagAlgo_ ) > bTagOP_ )
-        bTags_.push_back( *ijet );
+      if( jet.bDiscriminator( bTagAlgo_ ) > bTagOP_ ){
+        	bTags_.push_back( *ijet );
+	  		if (type22_verbose) std::cout<<" ->b tagged!"<<std::endl;
+		}
+		else {if (type22_verbose) std::cout<<" -> not tagged  "<<std::endl;}
     }
   }
 
-  //std::cout<<"   pfJets_.size() "<<pfJets_.size()<<endl;
-  //std::cout<<"   highPtJets_.size() "<<highPtJets_.size()<<endl;
-  //std::cout<<"   wTags_.size() "<<wTags_.size()<<endl;
-  //std::cout<<"   bTags_.size() "<<bTags_.size()<<endl;
+ if (type22_verbose)  std::cout<<"   pfJets_.size() "<<pfJets_.size()<<endl;
+ if (type22_verbose)  std::cout<<"   highPtJets_.size() "<<highPtJets_.size()<<endl;
+ if (type22_verbose)  std::cout<<"   wTags_.size() "<<wTags_.size()<<endl;
+ if (type22_verbose)  std::cout<<"   bTags_.size() "<<bTags_.size()<<endl;
 /*
   if( highPtJets_.size() >= 2 )  {
     passCut( ret, "nJets >= 2" );
