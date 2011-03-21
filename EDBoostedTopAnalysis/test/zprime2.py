@@ -28,7 +28,7 @@ process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("Zprime.root")
                                    )
 
-process.type22QCDAna15 = cms.EDAnalyzer('EDType22QCDEstimation',
+process.type22QCDAna15 = cms.EDAnalyzer('EDCombinedQCDEstimation',
                                   Type11QCDEstimationParams,
                                   Type22QCDEstimationParams
                                      )
