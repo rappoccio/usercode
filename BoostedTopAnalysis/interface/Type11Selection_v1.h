@@ -14,6 +14,7 @@ class Type11Selection_v1 : public EventSelector {
     virtual ~Type11Selection_v1() { }
     virtual bool operator() ( edm::EventBase const & t, pat::strbitset & ret );
 	std::vector<edm::Ptr<pat::Jet> >  const &  caTopJets() const { return caTopJets_ ; }
+	std::vector<edm::Ptr<pat::Jet> >  const &  ca8Jets() const { return ca8Jets_ ; }
 
   private :
     edm::ParameterSet const &                    pfJetIdParams_;
@@ -23,6 +24,7 @@ class Type11Selection_v1 : public EventSelector {
     edm::InputTag                               patJetCollectionInputTag_;
     edm::InputTag                               caTopJetCollectionInputTag_;
     std::vector<edm::Ptr<pat::Jet> >            caTopJets_ ;
+    std::vector<edm::Ptr<pat::Jet> >            ca8Jets_ ;
 
 };
 

@@ -21,10 +21,14 @@ class CombinedQCDEstimation {
     virtual void analyze( const edm::EventBase& iEvent ) ;
     virtual void endJob() {  
       type22Selection_v1_.print(cout); 
-      TDirectory * dir = theDir.cd();
-      ttMassPred    ->    SetCalculatedErrors();
-      dir ->  cd();
-      ttMassPred    ->    GetPredictedHist()->Write();
+//      TDirectory * dir = theDir.cd();
+ //     ttMassPredictedDistribution_type11    ->    SetCalculatedErrors();
+ //     ttMassPredictedDistribution_type12    ->    SetCalculatedErrors();
+ //     ttMassPredictedDistribution_type22    ->    SetCalculatedErrors();
+ //     dir ->  cd();
+ //     ttMassPredictedDistribution_type11    ->    GetPredictedHist()->Write();
+ //     ttMassPredictedDistribution_type12    ->    GetPredictedHist()->Write();
+ //     ttMassPredictedDistribution_type22    ->    GetPredictedHist()->Write();
     }
 
   private :
@@ -44,7 +48,9 @@ class CombinedQCDEstimation {
     CLHEP::RandFlat *flatDistribution_;
     double              prob;
     bool                runOnData_;
-    PredictedDistribution * ttMassPred;
+   // PredictedDistribution * ttMassPredictedDistribution_type11;
+   // PredictedDistribution * ttMassPredictedDistribution_type12;
+   // PredictedDistribution * ttMassPredictedDistribution_type22;
 	double 				caTopJetMassMin_;
 	double 				caTopJetMassMax_;
 	double 				caTopMinMassMin_;
@@ -53,6 +59,9 @@ class CombinedQCDEstimation {
     TH1F  *             topMistag_;
 	double caTopJetPtMin_;
     double caTopJetEtaCut_;
+	double jetPt0_;
+	double jetPt1_;
+	double jetEta_;
 };
 
 
