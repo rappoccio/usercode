@@ -148,8 +148,47 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			wtagged = wJetSelector_->operator()( jet, iret );
 			bool passWMass = (jet.mass() > wMassMin_ ) && (jet.mass() < wMassMax_ );
 			btagged = (jet.bDiscriminator( bTagAlgo_ ) > bTagOP_ );
-			cout<<"  eta "<<jet.eta()<<" phi "<<jet.phi()<<" pt "<<jet.pt()<<" mass "<<jet.mass()<<" wtagged? "<<wtagged<<" btagged? "<<btagged<<endl;			
+			cout<<"  eta "<<jet.eta()<<" phi "<<jet.phi()<<" pt "<<jet.pt()<<" mass "<<jet.mass()<<" wtagged? "<<wtagged<<" btagged? "<<btagged<<" energy "<<jet.energy()<<" px "<<jet.px()<<" py "<<jet.py()<<" jet.pz() "<<jet.pz()<<endl;			
 		}
+		cout<<"Print prunedJet pairwise masses"<<endl;
+
+		int count1=0;
+		
+		for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=pfJets_.begin(), jetEnd=pfJets_.end(), ijet=jetBegin ;
+			ijet!=jetEnd; ijet++ ) 
+		{
+			int count2=0;
+
+			pat::Jet const & jet = **ijet;
+			for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin2=pfJets_.begin(), jetEnd2=pfJets_.end(), ijet2=jetBegin2 ;
+				ijet2!=jetEnd2; ijet2++ ) 
+			{
+				if (count1==count2) continue;
+				pat::Jet const & jet2 = **ijet2;
+				
+				reco::Candidate::LorentzVector p4_top = jet.p4() + jet2.p4() ;
+
+				double px1 = jet.px();
+				double py1 = jet.py();
+				double pz1 = jet.pz();
+				double e1 = jet.energy();
+		
+				double px2 = jet2.px();
+				double py2 = jet2.py();
+				double pz2 = jet2.pz();
+				double e2 = jet2.energy();
+				 
+				double mymass = sqrt( (e1+e2)*(e1+e2) - (px1+px2)*(px1+px2) - (py1+py2)*(py1+py2) - (pz1+pz2)*(pz1+pz2) );
+				
+				cout<<" m("<<count1<<","<<count2<<") = "<< p4_top.mass()<<"  mass calculation2 = "<<mymass<<"  jet.pt() "<<jet.pt()<<"  jet2.pt() "<<jet2.pt()<<endl;
+				
+					
+				count2++;
+			}
+			count1++;	
+		}
+			
+	
 	}
 	
 	// Define two hemispheres in deltaphi. hemisphere0 is centered on the leading unpruned CA8 jet. hemisphere1 is opposite. Group caTop and pruned jets into these hemispheres.
@@ -179,65 +218,43 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			{
 				hemisphere0_ca8.push_back( *ica8 );	
 				if (verbose_) cout<<"   -> hemisphere0_ca8. deltaPhi = "<< deltaPhi_leadJet_ca8Jet <<endl;
-			}
-			else
-			{
-				hemisphere1_ca8.push_back( *ica8 );	
-				if (verbose_) cout<<"   -> hemisphere1_ca8. deltaPhi = "<< deltaPhi_leadJet_ca8Jet<<endl;
-			}
-			
-			// Match caTop to ca8 jets and group into hemispheres
-			for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=caTopJets_.begin(), jetEnd=caTopJets_.end(), icatop=jetBegin ;
-				icatop!=jetEnd; icatop++ ) 
-			{
-				pat::Jet const & caTopJet = **icatop;
-				double deltaR_ca8Jet_caTopJet = deltaR( ca8Jet.eta(), ca8Jet.phi(), caTopJet.eta(), caTopJet.phi() );
 				
-				//match caTop jet to ca8 jet
-				if( deltaR_ca8Jet_caTopJet < 0.1 ) 
+				// Match caTop to ca8 jets and group into hemispheres
+				for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=caTopJets_.begin(), jetEnd=caTopJets_.end(), icatop=jetBegin ;
+					icatop!=jetEnd; icatop++ ) 
 				{
-					if (verbose_) cout<<"   -> found matching caTopJet eta "<<caTopJet.eta()<<" phi "<<caTopJet.phi()<<" pt "<<caTopJet.pt()<<" mass "<<caTopJet.mass()<<" deltaR "<<deltaR_ca8Jet_caTopJet<<endl;
+					pat::Jet const & caTopJet = **icatop;
+					double deltaR_ca8Jet_caTopJet = deltaR( ca8Jet.eta(), ca8Jet.phi(), caTopJet.eta(), caTopJet.phi() );
 					
-					//group the jets into hemispheres
-					double deltaPhi_leadJet_caTopJet = fabs( reco::deltaPhi<double>( leadJet.phi(), caTopJet.phi() ) );
-					if( deltaPhi_leadJet_caTopJet < TMath::Pi()/2 ) 
+					//match caTop jet to ca8 jet
+					if( deltaR_ca8Jet_caTopJet < 0.1 ) 
 					{
+						if (verbose_) cout<<"   -> found matching caTopJet eta "<<caTopJet.eta()<<" phi "<<caTopJet.phi()<<" pt "<<caTopJet.pt()<<" mass "<<caTopJet.mass()<<" deltaR "<<deltaR_ca8Jet_caTopJet<<endl;
 						hemisphere0_catop.push_back( *icatop );	
-						if (verbose_) cout<<"     -> hemisphere0_catop. deltaPhi = "<< deltaPhi_leadJet_caTopJet<<endl;
+						if (verbose_) cout<<"     -> hemisphere0_catop. "<<endl;
 					}
-					else
-					{
-						hemisphere1_catop.push_back( *icatop );	
-						if (verbose_) cout<<"     -> hemisphere1_catop. deltaPhi = "<< deltaPhi_leadJet_caTopJet<<endl;
-					}
-				}
-				
-			}
-			// Match pruned jets to ca8 jets and group into hemispheres
-			for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=pfJets_.begin(), jetEnd=pfJets_.end(), ijet=jetBegin ;
-				ijet!=jetEnd; ijet++ ) 
-			{
-				pat::Jet const & prunedJet = **ijet;				
-				bool  wtagged = false;
-				bool  btagged = false;
-				pat::strbitset iret = wJetSelector_->getBitTemplate();
-				wtagged = wJetSelector_->operator()( prunedJet, iret );
-				bool passWMass = (prunedJet.mass() > wMassMin_ ) && (prunedJet.mass() < wMassMax_ );
-				btagged = (prunedJet.bDiscriminator( bTagAlgo_ ) > bTagOP_ );
-				
-				double deltaR_ca8Jet_prunedJet = deltaR( ca8Jet.eta(), ca8Jet.phi(), prunedJet.eta(), prunedJet.phi() );
-				
-				//match pruned jet to catop jet
-				if( deltaR_ca8Jet_prunedJet < 0.1 ) 
-				{	
-					if (verbose_) cout<<"   -> found matching prunedJet eta "<<prunedJet.eta()<<" phi "<<prunedJet.phi()<<" pt "<<prunedJet.pt()<<" mass "<<prunedJet.mass()<<" deltaR "<<deltaR_ca8Jet_prunedJet<<endl;
 					
-					//group the jets into hemispheres
-					double deltaPhi_leadJet_prunedJet = fabs( reco::deltaPhi<double>( leadJet.phi(), prunedJet.phi() ) );
-					if( deltaPhi_leadJet_prunedJet < TMath::Pi()/2 ) 
-					{
+				}
+				// Match pruned jets to ca8 jets and group into hemispheres
+				for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=pfJets_.begin(), jetEnd=pfJets_.end(), ijet=jetBegin ;
+					ijet!=jetEnd; ijet++ ) 
+				{
+					pat::Jet const & prunedJet = **ijet;				
+					bool  wtagged = false;
+					bool  btagged = false;
+					pat::strbitset iret = wJetSelector_->getBitTemplate();
+					wtagged = wJetSelector_->operator()( prunedJet, iret );
+					bool passWMass = (prunedJet.mass() > wMassMin_ ) && (prunedJet.mass() < wMassMax_ );
+					btagged = (prunedJet.bDiscriminator( bTagAlgo_ ) > bTagOP_ );
+					
+					double deltaR_ca8Jet_prunedJet = deltaR( ca8Jet.eta(), ca8Jet.phi(), prunedJet.eta(), prunedJet.phi() );
+					
+					//match pruned jet to catop jet
+					if( deltaR_ca8Jet_prunedJet < 0.1 ) 
+					{	
+						if (verbose_) cout<<"   -> found matching prunedJet eta "<<prunedJet.eta()<<" phi "<<prunedJet.phi()<<" pt "<<prunedJet.pt()<<" mass "<<prunedJet.mass()<<" deltaR "<<deltaR_ca8Jet_prunedJet<<endl;
+						
 						hemisphere0.push_back( *ijet );
-						if (verbose_) cout<<"     -> hemisphere0. deltaPhi = "<< deltaPhi_leadJet_prunedJet<<endl;
 						
 						if( wtagged && passWMass ) 
 							wTags0.push_back( *ijet );
@@ -246,19 +263,58 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 						else
 							noTags0.push_back( *ijet );												
 					}
-					else 
+				}
+			}
+			else
+			{
+				hemisphere1_ca8.push_back( *ica8 );	
+				if (verbose_) cout<<"   -> hemisphere1_ca8. deltaPhi = "<< deltaPhi_leadJet_ca8Jet<<endl;
+				
+				// Match caTop to ca8 jets and group into hemispheres
+				for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=caTopJets_.begin(), jetEnd=caTopJets_.end(), icatop=jetBegin ;
+					icatop!=jetEnd; icatop++ ) 
+				{
+					pat::Jet const & caTopJet = **icatop;
+					double deltaR_ca8Jet_caTopJet = deltaR( ca8Jet.eta(), ca8Jet.phi(), caTopJet.eta(), caTopJet.phi() );
+					
+					//match caTop jet to ca8 jet
+					if( deltaR_ca8Jet_caTopJet < 0.1 ) 
 					{
-						hemisphere1.push_back( *ijet );
-						if (verbose_) cout<<"     -> hemisphere1. deltaPhi = "<< deltaPhi_leadJet_prunedJet<<endl;
+						if (verbose_) cout<<"   -> found matching caTopJet eta "<<caTopJet.eta()<<" phi "<<caTopJet.phi()<<" pt "<<caTopJet.pt()<<" mass "<<caTopJet.mass()<<" deltaR "<<deltaR_ca8Jet_caTopJet<<endl;
+						hemisphere1_catop.push_back( *icatop );	
+						if (verbose_) cout<<"     -> hemisphere1_catop. "<<endl;
+					}
+					
+				}
+				// Match pruned jets to ca8 jets and group into hemispheres
+				for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=pfJets_.begin(), jetEnd=pfJets_.end(), ijet=jetBegin ;
+					ijet!=jetEnd; ijet++ ) 
+				{
+					pat::Jet const & prunedJet = **ijet;				
+					bool  wtagged = false;
+					bool  btagged = false;
+					pat::strbitset iret = wJetSelector_->getBitTemplate();
+					wtagged = wJetSelector_->operator()( prunedJet, iret );
+					bool passWMass = (prunedJet.mass() > wMassMin_ ) && (prunedJet.mass() < wMassMax_ );
+					btagged = (prunedJet.bDiscriminator( bTagAlgo_ ) > bTagOP_ );
+					
+					double deltaR_ca8Jet_prunedJet = deltaR( ca8Jet.eta(), ca8Jet.phi(), prunedJet.eta(), prunedJet.phi() );
+					
+					//match pruned jet to catop jet
+					if( deltaR_ca8Jet_prunedJet < 0.1 ) 
+					{	
+						if (verbose_) cout<<"   -> found matching prunedJet eta "<<prunedJet.eta()<<" phi "<<prunedJet.phi()<<" pt "<<prunedJet.pt()<<" mass "<<prunedJet.mass()<<" deltaR "<<deltaR_ca8Jet_prunedJet<<endl;
 						
-						if( wtagged && passWMass )
+						hemisphere1.push_back( *ijet );
+						
+						if( wtagged && passWMass ) 
 							wTags1.push_back( *ijet );
 						else if ( btagged )
 							bTags1.push_back( *ijet );
 						else
-							noTags1.push_back( *ijet );
+							noTags1.push_back( *ijet );												
 					}
-				}	
+				}
 			}
 		}	
 		if (verbose_) cout<<"  hemisphere0_ca8.size() "<<hemisphere0_ca8.size()<<endl;
