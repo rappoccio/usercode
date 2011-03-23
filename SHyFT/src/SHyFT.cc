@@ -67,13 +67,13 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   jetAlgo_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<string>("jetAlgo"))
 {
 
-  dir = theDir.cd();
+  dir = theDir.getBareDirectory();
    
   //make subdirectories for EE and EB in case of electrons
   TFileDirectory  subdirEE = theDir.mkdir("eleEE");
-  dir1 = subdirEE.cd();
+  dir1 = subdirEE.getBareDirectory();
   TFileDirectory  subdirEB = theDir.mkdir("eleEB");
-  dir2 = subdirEB.cd();
+  dir2 = subdirEB.getBareDirectory();
   
    if ( simpleSFCalc_) 
       gRandom->SetSeed( 960622508 );

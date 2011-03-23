@@ -13,6 +13,7 @@
 
 #include "Math/GenVector/PxPyPzM4D.h"
 #include "DataFormats/FWLite/interface/Handle.h"
+#include "DataFormats/FWLite/interface/ChainEvent.h"
 
 //Root includes
 #include "TROOT.h"
