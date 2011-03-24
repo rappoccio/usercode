@@ -23,12 +23,6 @@ options.register ('hltProcess',
                   VarParsing.varType.string,
                   "HLT process name to use.")
 
-options.register ('useMuon',
-                  1,
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "Use muons (1) or electrons (0)")
-
 options.register ('slimOutput',
                   0,
                   VarParsing.multiplicity.singleton,
@@ -48,29 +42,17 @@ if options.useData == False :
     # Make sure to NOT apply L2L3Residual to MC
     corrections = ['L2Relative', 'L3Absolute']
     # global tag for 384 MC
-    process.GlobalTag.globaltag = cms.string('START38_V14::All')
+    process.GlobalTag.globaltag = cms.string('START311_V2::All')
 else :
     # Make sure to apply L2L3Residual to data
     corrections = ['L2Relative', 'L3Absolute', 'L2L3Residual']
     # global tag for 386 data
-    process.GlobalTag.globaltag = cms.string('GR_R_38X_V15::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_311_V2::All')
 
-
-
-# Add the L1 JPT offset correction for JPT jets
-jptcorrections = ['L1JPTOffset']
-jptcorrections += corrections 
 
 # require HLT_Mu9 trigger
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 
-if options.useMuon :
-    process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::" + options.hltProcess, HLTPaths = ["HLT_Mu9", "HLT_Mu15*"])
-else :
-    process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::" + options.hltProcess, HLTPaths = ["HLT_EGDunnowhagoeshere*"])
-
-
-process.step1.throw = False
 
 # HB + HE noise filtering
 process.load('CommonTools/RecoAlgos/HBHENoiseFilter_cfi')
@@ -130,53 +112,17 @@ if useData :
 
 # We'll be using a lot of AOD so re-run b-tagging to get the
 # tag infos which are dropped in AOD
-switchJetCollection(process,cms.InputTag('ak5CaloJets'),
+switchJetCollection(process,cms.InputTag('ak5PFJets'),
                  doJTA        = True,
                  doBTagging   = True,
-                 jetCorrLabel = ('AK5Calo', cms.vstring(corrections)),
+                 jetCorrLabel = ('AK5PF', cms.vstring(corrections)),
                  doType1MET   = True,
                  genJetCollection=cms.InputTag("ak5GenJets"),
                  doJetID      = True
                  )
 
-
-# Add the other 6,000 jet collections that someone might hypothetically
-# maybe someday think about possibly including as a cross check. 
-
-
-
-addJetCollection(process,cms.InputTag('JetPlusTrackZSPCorJetAntiKt5'),
-                 'AK5', 'JPT',
-                 doJTA        = True,
-                 doBTagging   = True,
-                 jetCorrLabel = ('AK5JPT', cms.vstring(jptcorrections)),
-                 doType1MET   = False,
-                 doL1Cleaning = False,
-                 doL1Counters = True,                 
-                 genJetCollection = cms.InputTag("ak5GenJets"),
-                 doJetID      = True,
-                 jetIdLabel   = "ak5"
-                 )
-
-
-# PF from RECO and not using PF2PAT
-addJetCollection(process,cms.InputTag('ak5PFJets'),
-                 'AK5', 'PF',
-                 doJTA        = True,
-                 doBTagging   = True,
-                 jetCorrLabel = ('AK5PF',corrections),
-                 doType1MET   = False,
-                 doL1Cleaning = False,
-                 doL1Counters = False,                 
-                 genJetCollection = cms.InputTag("ak5GenJets"),
-                 doJetID      = False,
-                 jetIdLabel   = "ak5"
-                 )
-
-
 # tcMET
 from PhysicsTools.PatAlgos.tools.metTools import *
-addTcMET(process, 'TC')
 addPfMET(process, 'PF')
 
 
@@ -186,9 +132,12 @@ addPfMET(process, 'PF')
 # Selection
 process.selectedPatJetsPFlow.cut = cms.string('pt > 20 & abs(eta) < 2.4')
 process.selectedPatJetsPFlowLoose.cut = cms.string('pt > 20 & abs(eta) < 2.4')
-process.selectedPatJetsAK5JPT.cut = cms.string('pt > 20 & abs(eta) < 2.4')
-process.selectedPatJetsAK5PF.cut = cms.string('pt > 20 & abs(eta) < 2.4')
 process.selectedPatJets.cut = cms.string('pt > 20 & abs(eta) < 2.4')
+
+
+process.patJets.addTagInfos = True
+process.patJetsPFlow.addTagInfos = True
+process.patJetsPFlowLoose.addTagInfos = True
 process.patJets.tagInfoSources = cms.VInputTag(
     cms.InputTag("secondaryVertexTagInfosAOD")
     )
@@ -198,12 +147,7 @@ process.patJetsPFlow.tagInfoSources = cms.VInputTag(
 process.patJetsPFlowLoose.tagInfoSources = cms.VInputTag(
     cms.InputTag("secondaryVertexTagInfosAOD" + postfixLoose)
     )
-process.patJetsAK5JPT.tagInfoSources = cms.VInputTag(
-    cms.InputTag("secondaryVertexTagInfosAK5JPT")
-    )
-process.patJetsAK5PF.tagInfoSources = cms.VInputTag(
-    cms.InputTag("secondaryVertexTagInfosAK5PF")
-    )
+
 
 
 process.patMuonsPFlowLoose.pfMuonSource = 'pfAllMuonsPFlowLoose'
@@ -252,15 +196,6 @@ process.patJetsPFlowLoose.userData.userFunctions = cms.vstring( "? hasTagInfo('s
 process.patJetsPFlowLoose.userData.userFunctionLabels = cms.vstring('secvtxMass')
 
 
-process.patJetsAK5PF.userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
-                                                      "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
-process.patJetsAK5PF.userData.userFunctionLabels = cms.vstring('secvtxMass')
-
-process.patJetsAK5JPT.userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
-                                                      "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
-process.patJetsAK5JPT.userData.userFunctionLabels = cms.vstring('secvtxMass')
-
-
 process.patTaus.isoDeposits = cms.PSet()
 process.patTausPFlow.isoDeposits = cms.PSet()
 process.patTausPFlowLoose.isoDeposits = cms.PSet()
@@ -271,10 +206,8 @@ process.patJetsPFlow.embedCaloTowers = True
 process.patJetsPFlow.embedPFCandidates = True
 process.patJetsPFlowLoose.embedCaloTowers = True
 process.patJetsPFlowLoose.embedPFCandidates = True
-process.patJetsAK5PF.embedCaloTowers = True
-process.patJetsAK5PF.embedPFCandidates = True
-process.patJetsAK5JPT.embedCaloTowers = True
-process.patJetsAK5JPT.embedPFCandidates = True
+
+
 
 
 # prune gen particles
@@ -297,34 +230,34 @@ secFiles = cms.untracked.vstring()
 
 if useData :
     readFiles.extend( [
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A82F71C-57EA-DF11-80A2-E0CB4E55365F.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A78BF54-84EA-DF11-A0CD-485B39800BCA.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A77B760-B9E9-DF11-B2F8-90E6BA442F2B.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A777C9D-02EA-DF11-B982-90E6BA0D09E2.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A69BA60-0FEA-DF11-9879-90E6BA442F3B.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A292691-A8EA-DF11-908E-E0CB4E29C4D5.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0A1C4CCB-0FEA-DF11-9642-001EC9D8D08D.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/08E0BEAD-EEE9-DF11-80B2-90E6BA442EEE.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/083FAA15-28EA-DF11-96C1-90E6BA442EF2.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/06F1A9FA-36EC-DF11-AE50-001EC9D8D08D.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/06CC3F83-08EA-DF11-A05B-E0CB4E29C4CA.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/06A53695-A8EA-DF11-BAE4-485B39800C2B.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/0683478B-0FEA-DF11-9729-00261834B575.root',
-        '/store/data/Run2010B/Mu/AOD/Nov4ReReco_v1/0000/066D7924-0FEA-DF11-8ED7-E0CB4E55367A.root'
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/329/C6BB9308-2F4E-E011-BDB2-0030487A17B8.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/377/FA349E81-0C4F-E011-918A-0030487CD6B4.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/379/508FB370-0C4F-E011-93DC-0030487CD7B4.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/383/DC057254-0D4F-E011-B6D7-0030487CD77E.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/384/02891170-084F-E011-AFA5-0030487C6090.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/386/486860D1-0A4F-E011-B826-0030487CD6DA.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/403/48410433-364F-E011-8F0C-001D09F23D1D.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/404/823DE1A5-374F-E011-A5C0-0030487CD906.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/405/4642D954-D64F-E011-8280-003048F024DE.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/406/50A4D30B-5A4F-E011-AAD8-0030487CD906.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/406/CC18CBF0-5F4F-E011-915F-0030487C6A66.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/406/CEDF54F6-574F-E011-BF5D-0030487CD6E8.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/410/46231D2E-604F-E011-8355-0030487C2B86.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/048A81DD-EA4F-E011-B73D-0030487CD6D2.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/2CCB00F3-924F-E011-85E7-0030487A1884.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/32E839DD-974F-E011-A15D-0030487CD76A.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/58B9EE73-964F-E011-A1A3-0030487A1884.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/740EDDCC-9C4F-E011-AF2B-0030487CD14E.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/A4AC1A65-944F-E011-A96B-003048F024FA.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/BC6DCF3D-924F-E011-BE4A-0030487CD180.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/C23AB560-A24F-E011-A764-0030487CD7EE.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/D0F29DA7-934F-E011-98CB-003048F1183E.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/D6401F96-984F-E011-BCBE-0030487CD7EE.root',
         ] );
 else : 
     readFiles.extend( [
-'file:/uscms/home/rappocc/nobackup/ttbar_pu/96544FC8-97ED-DF11-BD42-0015178C48FC.root'
-#       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/E8B2CA4D-42E7-DF11-988C-90E6BA442F16.root',
-#       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/E847D402-12E7-DF11-97C5-003048D4EF1D.root',
-#       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0009/6EE559BE-11E7-DF11-B575-00145E5513C1.root',
-#       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/DC4963A1-E0E5-DF11-807E-00D0680BF898.root',
-#       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/D8F33E3F-58E5-DF11-9FCC-0026B9548CB5.root',
-#       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/B2D39D4C-63E6-DF11-8CFA-003048CEB070.root',
-#       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/B28EE7AE-48E5-DF11-9F45-001F29651428.root',
-#       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/9C7AD216-ACE5-DF11-BE50-001517255D36.root',
-#       '/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/788BCB6C-ACE5-DF11-A13C-90E6BA442F1F.root',
-
+'/store/relval/CMSSW_4_1_3/RelValTTbar/GEN-SIM-RECO/START311_V2-v1/0037/648B6AA5-C751-E011-8208-001A928116C6.root',
+'/store/relval/CMSSW_4_1_3/RelValTTbar/GEN-SIM-RECO/START311_V2-v1/0038/12763BEE-5A52-E011-8988-003048679048.root'
         ] );
 
     
@@ -340,7 +273,7 @@ process.source.fileNames = readFiles
 #print "primary vertex filter:       DISABLED"
 
 process.patseq = cms.Sequence(
-    process.step1*
+#    process.step1*
     process.scrapingVeto*
     process.primaryVertexFilter*
     process.HBHENoiseFilter*
@@ -369,9 +302,9 @@ process.out.SelectEvents.SelectEvents = cms.vstring('p1')
 
 # rename output file
 if useData :
-    process.out.fileName = cms.untracked.string('shyft_386.root')
+    process.out.fileName = cms.untracked.string('shyft_413patch1.root')
 else :
-    process.out.fileName = cms.untracked.string('shyft_386_mc.root')
+    process.out.fileName = cms.untracked.string('shyft_413patch1_mc.root')
 
 # reduce verbosity
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
