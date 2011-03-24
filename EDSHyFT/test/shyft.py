@@ -40,12 +40,12 @@ useData = options.useData
 
 if options.useData == False :
     # Make sure to NOT apply L2L3Residual to MC
-    corrections = ['L2Relative', 'L3Absolute']
+    corrections = ['L1Offset', 'L2Relative', 'L3Absolute']
     # global tag for 384 MC
     process.GlobalTag.globaltag = cms.string('START311_V2::All')
 else :
     # Make sure to apply L2L3Residual to data
-    corrections = ['L2Relative', 'L3Absolute', 'L2L3Residual']
+    corrections = ['L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual']
     # global tag for 386 data
     process.GlobalTag.globaltag = cms.string('GR_R_311_V2::All')
 
