@@ -461,12 +461,13 @@ process.goodPatJetsCATopTagPF = cms.EDFilter("PFJetIDSelectionFunctorFilter",
 
 # let it run
 
+
 process.patseq = cms.Sequence(
     process.scrapingVeto*
     process.goodOfflinePrimaryVertices*
     process.primaryVertexFilter*
     process.HBHENoiseFilter*
-    process.genJetParticles*
+    process.genParticlesForJetsNoNu*
     process.ca8GenJetsNoNu*
     getattr(process,"patPF2PATSequence"+postfix)*
     process.looseLeptonSequence*
@@ -544,8 +545,7 @@ if options.useData :
                                    'keep LumiSummary_lumiProducer_*_*'
                                    ]
 else :
-    process.out.outputCommands += ['keep *_genParticles_*_*',    
-                                   'keep *_ca8GenJetsNoNu_*_*',
+    process.out.outputCommands += ['keep *_ca8GenJetsNoNu_*_*',
                                    'keep *_ak5GenJetsNoNu_*_*',                                   
                                    'keep GenRunInfoProduct_generator_*_*',
                                    'keep GenEventInfoProduct_generator_*_*'
@@ -553,8 +553,17 @@ else :
                                    ]
 
 if options.writeFat :
-    process.out.outputCommands += ['keep *_pfNoElectron*_*_*',
-                                   'keep recoTracks_generalTracks_*_*'
-                                   ]
+    if options.useData :
+        process.out.outputCommands += [
+            'keep *_pfNoElectron*_*_*',
+            'keep recoTracks_generalTracks_*_*'
+            ]
+    else :
+        process.out.outputCommands += [
+            'keep *_genParticlesNoNu_*_*',                                       
+            'keep *_pfNoElectron*_*_*',
+            'keep recoTracks_generalTracks_*_*'
+            ]        
+            
 
 #open('junk.py','w').write(process.dumpPython())
