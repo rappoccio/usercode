@@ -175,7 +175,7 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
   mistagFile_   = TFile::Open( mistagFileName_.c_str() );
   wMistag_      = (TH1F*)mistagFile_   -> Get("wMistag");
   bMistag_      = (TH1F*)mistagFile_   -> Get("bMistag");
-  TDirectory * dir = theDir.cd();
+  TDirectory * dir = theDir.getBareDirectory();
 
   edm::Service<edm::RandomNumberGenerator> rng;
   if ( ! rng.isAvailable()) {
