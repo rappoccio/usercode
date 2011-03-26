@@ -1,6 +1,7 @@
 #include "Analysis/BoostedTopAnalysis/interface/CombinedQCDEstimation.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "AnalysisDataFormats/TopObjects/interface/CATopJetTagInfo.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 
 CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,  TFileDirectory & iDir ) :
 	theDir( iDir ),
@@ -51,6 +52,9 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
 	histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]  = theDir.make<TH1F>("Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg",   "Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg",   6,  0.5,  6.5 );
 	histograms1d["Nevents_Type22_Case123"]  = theDir.make<TH1F>("Nevents_Type22_Case123",   "Nevents_Type22_Case123",   3,  0.5,  3.5 );
 
+	histograms1d["Nevents_PassCuts"]  = theDir.make<TH1F>("Nevents_PassCuts",   "Nevents_PassCuts",   10,  0.5,  10.5 );
+
+
 	std::cout << "Instantiated histograms" << std::endl;
 
 	// Input histograms
@@ -61,15 +65,9 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
 	std::cout << "Input histograms" << std::endl;
 
 	//use the PredictedDistrubution class to get correct error
-
-	//ttMassPredictedDistribution_type22  =  new PredictedDistribution( (TH1D*)wMistag_ , "//ttMassPredictedDistribution_type22", "type22 t#bar{t} Inv Mass",  200,  0,  2000 );
-	std::cout<<"check1"<<std::endl;
-
-	//ttMassPredictedDistribution_type11  =  new PredictedDistribution( (TH1D*)topMistag_ , "//ttMassPredictedDistribution_type11", "type11 t#bar{t} Inv Mass",  200,  0,  2000 );
-	std::cout<<"check2"<<std::endl;
-
-	//ttMassPredictedDistribution_type12  =  new PredictedDistribution( (TH1D*)wMistag_ , "//ttMassPredictedDistribution_type12", "type12 t#bar{t} Inv Mass",  200,  0,  2000 );
-
+	ttMassPred11  =  new PredictedDistribution( (TH1D*)wMistag_ , "ttMassPred11", "t#bar{t} Inv Mass",  200,  0,  2000 );
+	ttMassPred12  =  new PredictedDistribution( (TH1D*)wMistag_ , "ttMassPred12", "t#bar{t} Inv Mass",  200,  0,  2000 );
+	ttMassPred22  =  new PredictedDistribution( (TH1D*)wMistag_ , "ttMassPred22", "t#bar{t} Inv Mass",  200,  0,  2000 );
 	std::cout << "PredictedDistrubution" << std::endl;
 
 	
@@ -93,11 +91,37 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		//evtWeight = genEvt->weight() ;
 	}
 	
-	bool verbose_ = false;
+	bool verbose_ = true;
 	int run = iEvent.id().run();
 	int event = iEvent.id().event();
 	int lumi = iEvent.id().luminosityBlock(); 
 	if (verbose_)cout<<"\nAnalyze event "<<iEvent.id()<<endl;
+
+	histograms1d["Nevents_PassCuts"] ->Fill(1);
+
+	//------------------------------------------------------------------------------------------------------
+	/*
+	edm::Handle<pat::METCollection> pfMET;
+	iEvent.getByLabel("patMETsPFlow", pfMET);
+	const pat::METCollection *pfMETproduct = pfMET.product();
+	const pat::METCollection::const_iterator pfmet = pfMETproduct->begin();
+	const pat::MET thePfMET = *pfmet;
+	cout<<"pfmet->et() "<<pfmet->et()<<endl;
+	
+	cout<<"pfMET->front().pt() "<<pfMET->front().pt();
+	
+	edm::Handle<pat::METCollection> patMET;
+	iEvent.getByLabel("patMETs", patMET);
+	const pat::METCollection *patMETproduct = patMET.product();
+	const pat::METCollection::const_iterator patmet = patMETproduct->begin();
+	const pat::MET thePatMET = *patmet;
+	cout<<"patmet->et() "<<patmet->et()<<endl;
+	*/	
+	
+
+
+
+	//------------------------------------------------------------------------------------------------------
 
 	pat::strbitset   retType11 = type11Selection_v1_.getBitTemplate();
 	bool passType11 = type11Selection_v1_( iEvent, retType11 );
@@ -195,6 +219,9 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 	if (verbose_) cout<<"Group jets into hemispheres"<<endl;
 	if( passType11 && passType22 && ca8Jets_.size()>=2 )  
 	{			
+		histograms1d["Nevents_PassCuts"] ->Fill(2);
+
+	
 		//Put jets in the proper hemisphere
 		pat::Jet const & leadJet = *ca8Jets_.at(0);
 		std::vector<edm::Ptr<pat::Jet> >  hemisphere0_ca8, hemisphere1_ca8;
@@ -372,6 +399,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		
 		if (preselected_event)
 		{
+			histograms1d["Nevents_PassCuts"] ->Fill(3);
+
 			// Setup Type 1
 			if (verbose_) cout<<"Setup Type 1"<<endl;
 			bool hasTaggedTopJet0=false;
@@ -627,7 +656,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 						if (hasTaggedTopJet0) ttMass = (p4_catop_jet0+p4_top1).mass() ; 
 						if (hasTaggedTopJet1) ttMass = (p4_catop_jet1+p4_top0).mass() ; 
 						histograms1d["ttMassType12_measured"] ->Fill (ttMass, evtWeight);
-						
+							histograms1d["Nevents_PassCuts"] ->Fill(4);
+
 						if(runOnData_||verbose_) 
 						{
 							cout<<" WoopWoop!, Type1+Type2, Event id, "<<iEvent.id()<<endl;
@@ -666,7 +696,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 					
 					double ttMass = (p4_top0+p4_top1).mass() ;
 					histograms1d["ttMassType22_measured"]      ->  Fill( ttMass, evtWeight );
-					
+						histograms1d["Nevents_PassCuts"] ->Fill(5);
+
 					if(runOnData_||verbose_) 
 					{
 						cout<<" Woohoo, Type2+Type2, Event id, "<<iEvent.id()<<endl;
@@ -708,7 +739,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 						if (verbose_) cout<<"   hasTaggedTopJet1 "<<hasTaggedTopJet1<<endl;
 						if (verbose_) cout<<"   hasNonLeadingBjet0 "<<hasNonLeadingBjet0<<endl;
 						if (verbose_) cout<<"   hasNonLeadingBjet1 "<<hasNonLeadingBjet1<<endl;
-						
+							histograms1d["Nevents_PassCuts"] ->Fill(6);
+
 						type11_bkgd_prediction_event=true;
 						histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(4,evtWeight);
 						
@@ -731,7 +763,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 						
 						histograms1d["ttMassType11_predicted"] ->Fill (ttMass, weight);
 						histograms1d["ttMassType11_predicted_errorSquared"] ->Fill (ttMass, error_squared);
-						//ttMassPredictedDistribution_type11 -> Accumulate( ttMass, pt, 1,  evtWeight );
+						ttMassPred11 -> Accumulate( ttMass, pt, 1,  evtWeight );
 					}
 				}
 			}//end 11bkg
@@ -774,7 +806,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 								
 								histograms1d["ttMassType12_predicted"]      ->  Fill( ttMass, weight*evtWeight );
 								histograms1d["ttMassType12_predicted_errorSquared"] ->Fill (ttMass, mistagError*mistagError);
-								//ttMassPredictedDistribution_type12 -> Accumulate( ttMass, pt, 1,  evtWeight );
+								ttMassPred12 -> Accumulate( ttMass, pt, 1,  evtWeight );
 							}
 							
 						}  // end i  
@@ -809,7 +841,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 								double ttMass = (p4_top0+p4_catop_jet1).mass() ;
 								histograms1d["ttMassType12_predicted"]      ->  Fill( ttMass, weight*evtWeight );
 								histograms1d["ttMassType12_predicted_errorSquared"] ->Fill (ttMass, mistagError*mistagError);
-								//ttMassPredictedDistribution_type12 -> Accumulate( ttMass, pt, 1,  evtWeight );
+								ttMassPred12 -> Accumulate( ttMass, pt, 1,  evtWeight );
 							}
 						}  // end i
 					} //has top jet
@@ -856,7 +888,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 										histograms1d["ttMassType22_predicted"]      ->  Fill( ttMass, weight*evtWeight );
 										histograms1d["ttMassType22_predicted_errorSquared"]      ->  Fill( ttMass, mistagError*mistagError );
 										
-										//ttMassPredictedDistribution_type22      ->    Accumulate( ttMass, pt, 1,  evtWeight );
+										ttMassPred22      ->    Accumulate( ttMass, pt, 1,  evtWeight );
 									}
 								}
 								else {  
@@ -907,7 +939,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 											histograms1d["ttMassType22_predicted"]    ->  Fill( ttMass, weight*evtWeight );
 											histograms1d["ttMassType22_predicted_errorSquared"]      ->  Fill( ttMass, mistagError*mistagError );
 
-											//ttMassPredictedDistribution_type22          ->      Accumulate( ttMass, pt, 1,  (1-weight1)*evtWeight );
+											ttMassPred22        ->      Accumulate( ttMass, pt, 1,  (1-weight1)*evtWeight );
 										}
 									}
 								}  // end else
@@ -938,7 +970,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 									histograms1d["ttMassType22_predicted"]      ->  Fill( ttMass, weight*evtWeight );
 									histograms1d["ttMassType22_predicted_errorSquared"]      ->  Fill( ttMass, mistagError*mistagError );
 
-									//ttMassPredictedDistribution_type22          ->      Accumulate( ttMass, pt, 1,  evtWeight );
+									ttMassPred22         ->      Accumulate( ttMass, pt, 1,  evtWeight );
 								}
 							}
 						}        
@@ -972,7 +1004,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 										histograms1d["ttMassType22_predicted"]      ->  Fill( ttMass, weight*evtWeight );
 										histograms1d["ttMassType22_predicted_errorSquared"]      ->  Fill( ttMass, mistagError*mistagError );
 
-										//ttMassPredictedDistribution_type22       ->      Accumulate( ttMass, pt, 1,  evtWeight );
+										ttMassPred22       ->      Accumulate( ttMass, pt, 1,  evtWeight );
 									}
 								}
 								else {
@@ -1009,7 +1041,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 											histograms1d["ttMassType22_predicted"]    ->  Fill( ttMass, weight*evtWeight );
 											histograms1d["ttMassType22_predicted_errorSquared"]      ->  Fill( ttMass, mistagError*mistagError );
 
-											//ttMassPredictedDistribution_type22      ->      Accumulate( ttMass, pt, 1,  (1-weight1)*evtWeight );
+											ttMassPred22      ->      Accumulate( ttMass, pt, 1,  (1-weight1)*evtWeight );
 										}
 									}
 								}  // end else
@@ -1039,7 +1071,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 									histograms1d["ttMassType22_predicted"]      ->  Fill( ttMass, weight*evtWeight );
 									histograms1d["ttMassType22_predicted_errorSquared"]      ->  Fill( ttMass, mistagError*mistagError );
 
-									//ttMassPredictedDistribution_type22      ->      Accumulate( ttMass, pt, 1, evtWeight );
+									ttMassPred22      ->      Accumulate( ttMass, pt, 1, evtWeight );
 								}
 							}
 						}
