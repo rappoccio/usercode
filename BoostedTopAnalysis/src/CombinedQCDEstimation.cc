@@ -65,7 +65,7 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
 	std::cout << "Input histograms" << std::endl;
 
 	//use the PredictedDistrubution class to get correct error
-	ttMassPred11  =  new PredictedDistribution( (TH1D*)wMistag_ , "ttMassPred11", "t#bar{t} Inv Mass",  200,  0,  2000 );
+	ttMassPred11  =  new PredictedDistribution( (TH1D*)topMistag_ , "ttMassPred11", "t#bar{t} Inv Mass",  200,  0,  2000 );
 	ttMassPred12  =  new PredictedDistribution( (TH1D*)wMistag_ , "ttMassPred12", "t#bar{t} Inv Mass",  200,  0,  2000 );
 	ttMassPred22  =  new PredictedDistribution( (TH1D*)wMistag_ , "ttMassPred22", "t#bar{t} Inv Mass",  200,  0,  2000 );
 	std::cout << "PredictedDistrubution" << std::endl;
@@ -91,7 +91,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		//evtWeight = genEvt->weight() ;
 	}
 	
-	bool verbose_ = true;
+	bool verbose_ = false;
 	int run = iEvent.id().run();
 	int event = iEvent.id().event();
 	int lumi = iEvent.id().luminosityBlock(); 
@@ -731,7 +731,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 					double mistagProb_jet1 = topMistag_->GetBinContent(bin1);
 					double mistagError_jet0 = topMistag_->GetBinError(bin0);
 					double mistagError_jet1 = topMistag_->GetBinError(bin1);
-					
+				
 					if ( (hasTaggedTopJet0 && !hasTaggedTopJet1 && !hasNonLeadingBjet1) || (hasTaggedTopJet1 && !hasTaggedTopJet0 && !hasNonLeadingBjet0)  ) 
 					{		
 						if (verbose_) cout<<" Type 11 background estimation event"<<endl;
@@ -760,7 +760,6 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 							error_squared = mistagError_jet0;
 							pt = p4_catop_jet0.pt();
 						}
-						
 						histograms1d["ttMassType11_predicted"] ->Fill (ttMass, weight);
 						histograms1d["ttMassType11_predicted_errorSquared"] ->Fill (ttMass, error_squared);
 						ttMassPred11 -> Accumulate( ttMass, pt, 1,  evtWeight );
