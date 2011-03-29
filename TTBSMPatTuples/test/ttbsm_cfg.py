@@ -479,6 +479,7 @@ process.patseq = cms.Sequence(
     )
 
 if options.useData == True :
+    process.patseq.remove( process.genParticlesForJetsNoNu )
     process.patseq.remove( process.genJetParticles )
     process.patseq.remove( process.ca8GenJetsNoNu )
 
