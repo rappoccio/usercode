@@ -54,6 +54,9 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
 
 	histograms1d["Nevents_PassCuts"]  = theDir.make<TH1F>("Nevents_PassCuts",   "Nevents_PassCuts",   10,  0.5,  10.5 );
 
+	histograms1d["Nevents_analyzed"] = theDir.make<TH1F>("Nevents_analyzed",   "Nevents_analyzed",   1,  0.5,  1.5 );
+
+	histograms1d["Nevents_preselected"] = theDir.make<TH1F>("Nevents_preselected",   "Nevents_preselected",   1,  0.5,  1.5 );
 	
 	histograms1d["Nevents_hasTaggedTopJet0"]  = theDir.make<TH1F>("Nevents_hasTaggedTopJet0",   "Nevents_hasTaggedTopJet0",   1,  0.5,  1.5 );
 	histograms1d["Nevents_hasTaggedTopJet1"]  = theDir.make<TH1F>("Nevents_hasTaggedTopJet1",   "Nevents_hasTaggedTopJet1",   1,  0.5,  1.5 );
@@ -75,9 +78,9 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
 	
 	histograms1d["Nevents_hasTightTop0"]  = theDir.make<TH1F>("Nevents_hasTightTop0",   "Nevents_hasTightTop0",   1,  0.5,  1.5 );
 	histograms1d["Nevents_hasTightTop1"]  = theDir.make<TH1F>("Nevents_hasTightTop1",   "Nevents_hasTightTop1",   1,  0.5,  1.5 );
-	histograms1d["Nevents_hasZeroLooseTops"]  = theDir.make<TH1F>("Nevents_hasZeroLooseTops",   "Nevents_hasZeroLooseTops",   1,  0.5,  1.5 );
-	histograms1d["Nevents_hasOneLooseTop"]  = theDir.make<TH1F>("Nevents_hasOneLooseTop",   "Nevents_hasOneLooseTop",   1,  0.5,  1.5 );
-	histograms1d["Nevents_hasTwoLooseTops"]  = theDir.make<TH1F>("Nevents_hasTwoLooseTops",   "Nevents_hasTwoLooseTops",   1,  0.5,  1.5 );
+	histograms1d["Nevents_hasZeroTightTops"]  = theDir.make<TH1F>("Nevents_hasZeroTightTops",   "Nevents_hasZeroTightTops",   1,  0.5,  1.5 );
+	histograms1d["Nevents_hasOneTightTop"]  = theDir.make<TH1F>("Nevents_hasOneTightTop",   "Nevents_hasOneTightTop",   1,  0.5,  1.5 );
+	histograms1d["Nevents_hasTwoTightTops"]  = theDir.make<TH1F>("Nevents_hasTwoTightTops",   "Nevents_hasTwoTightTops",   1,  0.5,  1.5 );
 	
 	histograms1d["Nevents_hasLooseTop0"]  = theDir.make<TH1F>("Nevents_hasLooseTop0",   "Nevents_hasLooseTop0",   1,  0.5,  1.5 );
 	histograms1d["Nevents_hasLooseTop1"]  = theDir.make<TH1F>("Nevents_hasLooseTop1",   "Nevents_hasLooseTop1",   1,  0.5,  1.5 );
@@ -134,7 +137,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 	if (verbose_)cout<<"\nAnalyze event "<<iEvent.id()<<endl;
 
 	histograms1d["Nevents_PassCuts"] ->Fill(1);
-
+	histograms1d["Nevents_analyzed"]->Fill(1);
 	//------------------------------------------------------------------------------------------------------
 	/*
 	edm::Handle<pat::METCollection> pfMET;
@@ -753,8 +756,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			// Type 1+1 Background estimation starts here
 			if ( preselected_event && !type11_passevent && !type12_passevent && !type22_passevent )
 			{
-				if (!hasBTag0 && !hasBTag1 )//FIXME
-				{
+				//if (!hasBTag0 && !hasBTag1 )
+				//{
 					int bin0 = topMistag_->FindBin( p4_catop_jet0.pt() );
 					int bin1 = topMistag_->FindBin( p4_catop_jet1.pt() );
 					double mistagProb_jet0 = topMistag_->GetBinContent(bin0);
@@ -792,13 +795,13 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 							histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(4,evtWeight);
 							type11_bkgd_prediction_event=true;
 							
-							
 							histograms1d["ttMassType11_predicted"] ->Fill (ttMass, weight);
 							histograms1d["ttMassType11_predicted_errorSquared"] ->Fill (ttMass, error_squared);
 							ttMassPred11 -> Accumulate( ttMass, pt, 1,  evtWeight );
+
 						}
 					}
-				}
+				//}
 			}//end 11bkg
 			
 			// Type 1+2 Background estimation starts here
@@ -1137,19 +1140,19 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			
 			/////////////
 			// Do some counting to measure efficiencies
-		
-			histograms1d["Nevents_preselected"] ->Fill(evtWeight);
-			
+
+			histograms1d["Nevents_preselected"] ->Fill(1,evtWeight);
+
 			bool hasZeroTopTags = !hasTaggedTopJet0 && !hasTaggedTopJet1;
 			bool hasOneTopTag = (hasTaggedTopJet0 && !hasTaggedTopJet1) || (hasTaggedTopJet1 && !hasTaggedTopJet0);
 			bool hasTwoTopTags = hasTaggedTopJet0 && hasTaggedTopJet1;
-			
+
 			bool hasZeroBTags = !hasBTag0 && !hasBTag1;
 			bool hasOneBTag = (hasBTag0 && !hasBTag1) || (hasBTag1 && !hasBTag0);
 			bool hasTwoBTags = hasBTag0 && hasBTag1;
 			
 			bool hasZeroWTags = !hasWTag0 && !hasWTag1;
-			
+
 			bool hasZeroLooseTops = !hasLooseTop0 && !hasLooseTop1;
 			bool hasOneLooseTop = (hasLooseTop0 && !hasLooseTop1) || (hasLooseTop1 && !hasLooseTop0);
 			bool hasTwoLooseTops = hasLooseTop0 && hasTaggedTopJet1;
@@ -1163,50 +1166,50 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			bool hasUntaggedJet0 = (noTags0.size() >=1);
 			bool hasUntaggedJet1 = (noTags0.size() >=1);
 
-			
+
 			// Count top tags
-			if (hasTaggedTopJet0) histograms1d["Nevents_hasTaggedTopJet0"] ->Fill(evtWeight);
-			if (hasTaggedTopJet1) histograms1d["Nevents_hasTaggedTopJet1"] ->Fill(evtWeight);
-			if (hasZeroTopTags) histograms1d["Nevents_hasZeroTopTags"] ->Fill(evtWeight);
-			if (hasOneTopTag) histograms1d["Nevents_hasOneTopTag"] ->Fill(evtWeight);
-			if (hasTwoTopTags) histograms1d["Nevents_hasTwoTopTags"] ->Fill(evtWeight);
+			if (hasTaggedTopJet0) histograms1d["Nevents_hasTaggedTopJet0"] ->Fill(1,evtWeight);
+			if (hasTaggedTopJet1) histograms1d["Nevents_hasTaggedTopJet1"] ->Fill(1,evtWeight);
+			if (hasZeroTopTags) histograms1d["Nevents_hasZeroTopTags"] ->Fill(1,evtWeight);
+			if (hasOneTopTag) histograms1d["Nevents_hasOneTopTag"] ->Fill(1,evtWeight);
+			if (hasTwoTopTags) histograms1d["Nevents_hasTwoTopTags"] ->Fill(1,evtWeight);
 
 			// Count W tags
-			if (hasWTag0) histograms1d["Nevents_hasWTag0"] ->Fill(evtWeight);
-			if (hasWTag1) histograms1d["Nevents_hasWTag1"] ->Fill(evtWeight);
-			if (hasZeroWTags) histograms1d["Nevents_hasZeroWTags"] ->Fill(evtWeight);
-			if (hasOneWTag) histograms1d["Nevents_hasOneWTag"] ->Fill(evtWeight);
-			if (hasTwoWTags) histograms1d["Nevents_hasTwoWTags"] ->Fill(evtWeight);
-			
+			if (hasWTag0) histograms1d["Nevents_hasWTag0"] ->Fill(1,evtWeight);
+			if (hasWTag1) histograms1d["Nevents_hasWTag1"] ->Fill(1,evtWeight);
+			if (hasZeroWTags) histograms1d["Nevents_hasZeroWTags"] ->Fill(1,evtWeight);
+			if (hasOneWTag) histograms1d["Nevents_hasOneWTag"] ->Fill(1,evtWeight);
+			if (hasTwoWTags) histograms1d["Nevents_hasTwoWTags"] ->Fill(1,evtWeight);
+
 			// Count b tags
-			if (hasBTag0) histograms1d["Nevents_hasBTag0"] ->Fill(evtWeight);
-			if (hasBTag1) histograms1d["Nevents_hasBTag1"] ->Fill(evtWeight);
-			if (hasZeroBTags) histograms1d["Nevents_hasZeroTopTags"] ->Fill(evtWeight);
-			if (hasOneBTag) histograms1d["Nevents_hasOneBTag"] ->Fill(evtWeight);
-			if (hasTwoBTags) histograms1d["Nevents_hasTwoBTags"] ->Fill(evtWeight);
-			
+			if (hasBTag0) histograms1d["Nevents_hasBTag0"] ->Fill(1,evtWeight);
+			if (hasBTag1) histograms1d["Nevents_hasBTag1"] ->Fill(1,evtWeight);
+			if (hasZeroBTags) histograms1d["Nevents_hasZeroTopTags"] ->Fill(1,evtWeight);
+			if (hasOneBTag) histograms1d["Nevents_hasOneBTag"] ->Fill(1,evtWeight);
+			if (hasTwoBTags) histograms1d["Nevents_hasTwoBTags"] ->Fill(1,evtWeight);
+
 			// Count Tight Tops
-			if (hasTightTop0) histograms1d["Nevents_hasTightTop0"] ->Fill(evtWeight);
-			if (hasTightTop1) histograms1d["Nevents_hasTightTop1"] ->Fill(evtWeight);
-			if (hasZeroTightTops) histograms1d["Nevents_hasZeroTightTops"] ->Fill(evtWeight);
-			if (hasOneTightTop) histograms1d["Nevents_hasOneTightTop"] ->Fill(evtWeight);
-			if (hasTwoTightTops) histograms1d["Nevents_hasTwoTightTops"] ->Fill(evtWeight);
-			
+			if (hasTightTop0) histograms1d["Nevents_hasTightTop0"] ->Fill(1,evtWeight);
+			if (hasTightTop1) histograms1d["Nevents_hasTightTop1"] ->Fill(1,evtWeight);
+			if (hasZeroTightTops) histograms1d["Nevents_hasZeroTightTops"] ->Fill(1,evtWeight);
+			if (hasOneTightTop) histograms1d["Nevents_hasOneTightTop"] ->Fill(1,evtWeight);
+			if (hasTwoTightTops) histograms1d["Nevents_hasTwoTightTops"] ->Fill(1,evtWeight);
+
 			// Count Loose Tops
-			if (hasLooseTop0) histograms1d["Nevents_hasLooseTop0"] ->Fill(evtWeight);
-			if (hasLooseTop1) histograms1d["Nevents_hasLooseTop1"] ->Fill(evtWeight);
-			if (hasZeroLooseTops) histograms1d["Nevents_hasZeroLooseTops"] ->Fill(evtWeight);
-			if (hasOneLooseTop) histograms1d["Nevents_hasOneLooseTop"] ->Fill(evtWeight);
-			if (hasTwoLooseTops) histograms1d["Nevents_hasTwoLooseTops"] ->Fill(evtWeight);
+			if (hasLooseTop0) histograms1d["Nevents_hasLooseTop0"] ->Fill(1,evtWeight);
+			if (hasLooseTop1) histograms1d["Nevents_hasLooseTop1"] ->Fill(1,evtWeight);
+			if (hasZeroLooseTops) histograms1d["Nevents_hasZeroLooseTops"] ->Fill(1,evtWeight);
+			if (hasOneLooseTop) histograms1d["Nevents_hasOneLooseTop"] ->Fill(1,evtWeight);
+			if (hasTwoLooseTops) histograms1d["Nevents_hasTwoLooseTops"] ->Fill(1,evtWeight);
 
 			// Count Tight Loose Tops
-			if (hasOneLooseOneTightTop) histograms1d["Nevents_hasOneLooseOneTightTop"] ->Fill(evtWeight);
+			if (hasOneLooseOneTightTop) histograms1d["Nevents_hasOneLooseOneTightTop"] ->Fill(1,evtWeight);
 
 			//
-			if ( ( hasWTag0 && hasBTag0 ) || ( hasWTag1 && hasBTag1 ) ) histograms1d["Nevents_hemiWithWandB"] ->Fill(evtWeight);
-			if ( ( hasWTag0 && hasUntaggedJet0 ) || ( hasWTag1 && hasUntaggedJet1 ) ) histograms1d["Nevents_hemiWithWandUntagged"] ->Fill(evtWeight);
+			if ( ( hasWTag0 && hasBTag0 ) || ( hasWTag1 && hasBTag1 ) ) histograms1d["Nevents_hemiWithWandB"] ->Fill(1,evtWeight);
+			if ( ( hasWTag0 && hasUntaggedJet0 ) || ( hasWTag1 && hasUntaggedJet1 ) ) histograms1d["Nevents_hemiWithWandUntagged"] ->Fill(1,evtWeight);
 			
-			
+
 			
 
 		 
