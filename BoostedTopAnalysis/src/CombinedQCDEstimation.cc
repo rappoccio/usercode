@@ -29,20 +29,19 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
 	std::cout << "Instantiated CombinedQCDEstimation" << std::endl;
 	
 	// Type11 histograms
-	histograms1d["ttMassType11_measured"]    = theDir.make<TH1F>("ttMassType11_measured",   "measured t#bar{t} Inv Mass Type11",   200,  0,  2000 );
-	histograms1d["ttMassType11_predicted"]   = theDir.make<TH1F>("ttMassType11_predicted",  "predictedt#bar{t} Inv Mass Type11",   200,  0,  2000 );
-	histograms1d["ttMassType11_predicted_errorSquared"] = theDir.make<TH1F>("ttMassType11_predicted_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type11",   200,  0,  2000 );
+	histograms1d["ttMassType11_measured"]    = theDir.make<TH1F>("ttMassType11_measured",   "measured t#bar{t} Inv Mass Type11",   500,  0,  5000 );
+	histograms1d["ttMassType11_predicted"]   = theDir.make<TH1F>("ttMassType11_predicted",  "predictedt#bar{t} Inv Mass Type11",   500,  0,  5000 );
+	histograms1d["ttMassType11_predicted_errorSquared"] = theDir.make<TH1F>("ttMassType11_predicted_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type11",   500,  0,  5000 );
     
 	// Type12 histograms	
-	histograms1d["ttMassType12_measured"]     = theDir.make<TH1F>("ttMassType12_measured",   "measured t#bar{t} Inv Mass Type12",   200,  0,  2000 );
-	histograms1d["ttMassType12_predicted"]    = theDir.make<TH1F>("ttMassType12_predicted",  "predicted t#bar{t} Inv Mass Type12",  200,  0,  2000 );
-	histograms1d["ttMassType12_predicted_errorSquared"] = theDir.make<TH1F>("ttMassType12_predicted_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type12",   200,  0,  2000 );
+	histograms1d["ttMassType12_measured"]     = theDir.make<TH1F>("ttMassType12_measured",   "measured t#bar{t} Inv Mass Type12",   500,  0,  5000 );
+	histograms1d["ttMassType12_predicted"]    = theDir.make<TH1F>("ttMassType12_predicted",  "predicted t#bar{t} Inv Mass Type12",  500,  0,  5000 );
+	histograms1d["ttMassType12_predicted_errorSquared"] = theDir.make<TH1F>("ttMassType12_predicted_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type12",   500,  0,  5000 );
 
 	// Type22 histograms
-	histograms1d["ttMassType22_measured"]    = theDir.make<TH1F>("ttMassType22_measured",   "t#bar{t} Inv Mass Type22",   200,  0,  2000 );
-	histograms1d["ttMassType22_predicted"]   = theDir.make<TH1F>("ttMassType22_predicted",  "t#bar{t} Inv Mass Type22",   200,  0,  2000 );
-	histograms1d["ttMassType22_predicted_errorSquared"] = theDir.make<TH1F>("ttMassType22_predicted_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type22",   200,  0,  2000 );
-
+	histograms1d["ttMassType22_measured"]    = theDir.make<TH1F>("ttMassType22_measured",   "t#bar{t} Inv Mass Type22",   500,  0,  5000 );
+	histograms1d["ttMassType22_predicted"]   = theDir.make<TH1F>("ttMassType22_predicted",  "t#bar{t} Inv Mass Type22",   500,  0,  5000 );
+	histograms1d["ttMassType22_predicted_errorSquared"] = theDir.make<TH1F>("ttMassType22_predicted_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type22",   500,  0,  5000 );
 	
 	histograms1d["topMassPred"]     = theDir.make<TH1F>("topMassPred",    "Top Mass",									100,  0,  500 );
 	
@@ -51,11 +50,9 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
 	histograms1d["Nevents_12_tight_loose"]  = theDir.make<TH1F>("Nevents_12_tight_loose",   "Nevents_12_tight_loose",   2,  0.5,  2.5 );
 	histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]  = theDir.make<TH1F>("Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg",   "Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg",   6,  0.5,  6.5 );
 	histograms1d["Nevents_Type22_Case123"]  = theDir.make<TH1F>("Nevents_Type22_Case123",   "Nevents_Type22_Case123",   3,  0.5,  3.5 );
-
 	histograms1d["Nevents_PassCuts"]  = theDir.make<TH1F>("Nevents_PassCuts",   "Nevents_PassCuts",   10,  0.5,  10.5 );
 
 	histograms1d["Nevents_analyzed"] = theDir.make<TH1F>("Nevents_analyzed",   "Nevents_analyzed",   1,  0.5,  1.5 );
-
 	histograms1d["Nevents_preselected"] = theDir.make<TH1F>("Nevents_preselected",   "Nevents_preselected",   1,  0.5,  1.5 );
 	
 	histograms1d["Nevents_hasTaggedTopJet0"]  = theDir.make<TH1F>("Nevents_hasTaggedTopJet0",   "Nevents_hasTaggedTopJet0",   1,  0.5,  1.5 );
@@ -92,8 +89,28 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
 	histograms1d["Nevents_hemiWithWandB"]  = theDir.make<TH1F>("Nevents_hemiWithWandB",   "Nevents_hemiWithWandB",   1,  0.5,  1.5 );
 	histograms1d["Nevents_hemiWithWandUntagged"]  = theDir.make<TH1F>("Nevents_hemiWithWandUntagged",   "Nevents_hemiWithWandUntagged",   1,  0.5,  1.5 );
 
-	
+	histograms1d["Nevents_TopTagAndTightTop"]  = theDir.make<TH1F>("Nevents_TopTagAndTightTop",   "Nevents_TopTagAndTightTop",   1,  0.5,  1.5 );
+	histograms1d["Nevents_TopTagAndLooseTop"]  = theDir.make<TH1F>("Nevents_TopTagAndLooseTop",   "Nevents_TopTagAndLooseTop",   1,  0.5,  1.5 );
+	histograms1d["Nevents_TopTagAndWandB"]  = theDir.make<TH1F>("Nevents_TopTagAndWandB",   "Nevents_TopTagAndWandB",   1,  0.5,  1.5 );
+	histograms1d["Nevents_hasTwoWTags_hasOneBTag"]  = theDir.make<TH1F>("Nevents_hasTwoWTags_hasOneBTag",   "Nevents_hasTwoWTags_hasOneBTag",   1,  0.5,  1.5 );
+	histograms1d["Nevents_hasTwoWTags_hasTwoBTags"]  = theDir.make<TH1F>("Nevents_hasTwoWTags_hasTwoBTags",   "Nevents_hasTwoWTags_hasTwoBTags",   1,  0.5,  1.5 );
+	histograms1d["Nevents_TightTopAndLooseTop"]  = theDir.make<TH1F>("Nevents_TightTopAndLooseTop",   "Nevents_TightTopAndLooseTop",   1,  0.5,  1.5 );
+	histograms1d["Nevents_hasOneTopJet_noNonLeadingBjet"]  = theDir.make<TH1F>("Nevents_hasOneTopJet_noNonLeadingBjet",   "Nevents_hasOneTopJet_noNonLeadingBjet",   1,  0.5,  1.5 );
 
+	histograms1d["Nevents_type11sig"]  = theDir.make<TH1F>("Nevents_type11sig",   "Nevents_type11sig",   1,  0.5,  1.5 );
+	histograms1d["Nevents_type12sig"]  = theDir.make<TH1F>("Nevents_type12sig",   "Nevents_type12sig",   1,  0.5,  1.5 );
+	histograms1d["Nevents_type22sig"]  = theDir.make<TH1F>("Nevents_type22sig",   "Nevents_type22sig",   1,  0.5,  1.5 );
+	histograms1d["Nevents_type11bkg"]  = theDir.make<TH1F>("Nevents_type11bkg",   "Nevents_type11bkg",   1,  0.5,  1.5 );
+	histograms1d["Nevents_type12bkg"]  = theDir.make<TH1F>("Nevents_type12bkg",   "Nevents_type12bkg",   1,  0.5,  1.5 );
+	histograms1d["Nevents_type22bkg"]  = theDir.make<TH1F>("Nevents_type22bkg",   "Nevents_type22bkg",   1,  0.5,  1.5 );
+	
+	histograms1d["Nevents_cascade11sig"]  = theDir.make<TH1F>("Nevents_cascade11sig",   "Nevents_cascade11sig",   1,  0.5,  1.5 );
+	histograms1d["Nevents_cascade12sig"]  = theDir.make<TH1F>("Nevents_cascade12sig",   "Nevents_cascade12sig",   1,  0.5,  1.5 );
+	histograms1d["Nevents_cascade22sig"]  = theDir.make<TH1F>("Nevents_cascade22sig",   "Nevents_cascade22sig",   1,  0.5,  1.5 );
+	histograms1d["Nevents_cascade11bkg"]  = theDir.make<TH1F>("Nevents_cascade11bkg",   "Nevents_cascade11bkg",   1,  0.5,  1.5 );
+	histograms1d["Nevents_cascade12bkg"]  = theDir.make<TH1F>("Nevents_cascade12bkg",   "Nevents_cascade12bkg",   1,  0.5,  1.5 );
+	histograms1d["Nevents_cascade22bkg"]  = theDir.make<TH1F>("Nevents_cascade22bkg",   "Nevents_cascade22bkg",   1,  0.5,  1.5 );
+	
 	std::cout << "Instantiated histograms" << std::endl;
 
 	// Input histograms
@@ -104,9 +121,9 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
 	std::cout << "Input histograms" << std::endl;
 
 	//use the PredictedDistrubution class to get correct error
-	ttMassPred11  =  new PredictedDistribution( (TH1D*)topMistag_ , "ttMassPred11", "t#bar{t} Inv Mass",  200,  0,  2000 );
-	ttMassPred12  =  new PredictedDistribution( (TH1D*)wMistag_ , "ttMassPred12", "t#bar{t} Inv Mass",  200,  0,  2000 );
-	ttMassPred22  =  new PredictedDistribution( (TH1D*)wMistag_ , "ttMassPred22", "t#bar{t} Inv Mass",  200,  0,  2000 );
+	ttMassPred11  =  new PredictedDistribution( (TH1D*)topMistag_ , "ttMassPred11", "t#bar{t} Inv Mass",  500,  0,  5000 );
+	ttMassPred12  =  new PredictedDistribution( (TH1D*)wMistag_ , "ttMassPred12", "t#bar{t} Inv Mass",  500,  0,  5000 );
+	ttMassPred22  =  new PredictedDistribution( (TH1D*)wMistag_ , "ttMassPred22", "t#bar{t} Inv Mass",  500,  0,  5000 );
 	std::cout << "PredictedDistrubution" << std::endl;
 
 	
@@ -210,43 +227,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			btagged = (jet.bDiscriminator( bTagAlgo_ ) > bTagOP_ );
 			cout<<"  eta "<<jet.eta()<<" phi "<<jet.phi()<<" pt "<<jet.pt()<<" mass "<<jet.mass()<<" wtagged? "<<wtagged<<" btagged? "<<btagged<<" energy "<<jet.energy()<<" px "<<jet.px()<<" py "<<jet.py()<<" jet.pz() "<<jet.pz()<<endl;			
 		}
-		cout<<"Print prunedJet pairwise masses"<<endl;
-
-		int count1=0;
-		
-		for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=pfJets_.begin(), jetEnd=pfJets_.end(), ijet=jetBegin ;
-			ijet!=jetEnd; ijet++ ) 
-		{
-			int count2=0;
-
-			pat::Jet const & jet = **ijet;
-			for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin2=pfJets_.begin(), jetEnd2=pfJets_.end(), ijet2=jetBegin2 ;
-				ijet2!=jetEnd2; ijet2++ ) 
-			{
-				if (count1==count2) continue;
-				pat::Jet const & jet2 = **ijet2;
-				
-				reco::Candidate::LorentzVector p4_top = jet.p4() + jet2.p4() ;
-
-				double px1 = jet.px();
-				double py1 = jet.py();
-				double pz1 = jet.pz();
-				double e1 = jet.energy();
-		
-				double px2 = jet2.px();
-				double py2 = jet2.py();
-				double pz2 = jet2.pz();
-				double e2 = jet2.energy();
-				 
-				double mymass = sqrt( (e1+e2)*(e1+e2) - (px1+px2)*(px1+px2) - (py1+py2)*(py1+py2) - (pz1+pz2)*(pz1+pz2) );
-				
-				cout<<" m("<<count1<<","<<count2<<") = "<< p4_top.mass()<<"  mass calculation2 = "<<mymass<<"  jet.pt() "<<jet.pt()<<"  jet2.pt() "<<jet2.pt()<<endl;
-				
-					
-				count2++;
-			}
-			count1++;	
-		}				
+		cout<<"Print prunedJet pairwise masses"<<endl;			
 	}
 	
 	// Define two hemispheres in deltaphi. hemisphere0 is centered on the leading unpruned CA8 jet. hemisphere1 is opposite. Group caTop and pruned jets into these hemispheres.
@@ -261,6 +242,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		std::vector<edm::Ptr<pat::Jet> >  hemisphere0_ca8, hemisphere1_ca8;
 		std::vector<edm::Ptr<pat::Jet> >  hemisphere0, hemisphere1;
 		std::vector<edm::Ptr<pat::Jet> >  hemisphere0_catop, hemisphere1_catop;
+		std::vector<edm::Ptr<pat::Jet> >  topTags0, topTags1;
 		std::vector<edm::Ptr<pat::Jet> >  wTags0,   wTags1;
 		std::vector<edm::Ptr<pat::Jet> >  bTags0,   bTags1;
 		std::vector<edm::Ptr<pat::Jet> >  noTags0,  noTags1;
@@ -413,6 +395,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			if (verbose_ && noTags1.size()>0 ) cout<<"  wJet1 eta "<<wTags1.at(0)->eta()<<" wJet1 phi "<<wTags1.at(0)->phi()<<" closest jet eta "<<aJet1->eta()<<" phi "<<aJet1->phi()<<endl;
 		}
 		
+		////////////////////////////
 		// Preselection
 		bool preselected_event=false;
 		if ( hemisphere0_ca8.size()>0 && hemisphere1_ca8.size()>0 )
@@ -432,13 +415,11 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		}
 		
 		if (preselected_event)
-		{
-			histograms1d["Nevents_PassCuts"] ->Fill(3);
-
+		{			
+			//////////////////////////////////
 			// Setup Type 1
 			if (verbose_) cout<<"Setup Type 1"<<endl;
-			bool hasTaggedTopJet0=false;
-			bool hasTaggedTopJet1=false;
+
 			reco::Candidate::LorentzVector p4_catop_jet0;
 			reco::Candidate::LorentzVector p4_catop_jet1;
 			double j0_minmass=-99;
@@ -446,93 +427,82 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			double j0_nsubjets=-99;
 			double j1_nsubjets=-99;
 			
-			if ( hemisphere0_catop.size()>0 && hemisphere1_catop.size()>0 )
+			if ( hemisphere0_catop.size()>0 )
 			{			
-				
 				pat::Jet const & catop0 = *hemisphere0_catop.at(0);
-				pat::Jet const & catop1 = *hemisphere1_catop.at(0);
-				
 				p4_catop_jet0 = catop0.p4();
-				p4_catop_jet1 = catop1.p4();
+				std::vector<const reco::Candidate *>  catop0_subjets = catop0.getJetConstituentsQuick();
 				
-				double delta_phi_catop = fabs( reco::deltaPhi<double>( catop0.phi(), catop1.phi() ) );
-				if (verbose_) cout<<"  catop0  pt "<<catop0.pt()<<" eta "<<catop0.eta()<<" phi "<<catop0.phi()<<endl;
-				if (verbose_) cout<<"  catop1  pt "<<catop1.pt()<<" eta "<<catop1.eta()<<" phi "<<catop1.phi()<<endl;
-				if (verbose_) cout<<"  delta_phi_catop "<<delta_phi_catop<<endl;
-				if (verbose_) cout<<"  delta_phi_catop "<<delta_phi_catop<<endl;
-				if (delta_phi_catop >2.1)
-				{
-					if (verbose_) cout<<"  passes delta_phi_catop"<<endl;
-					if (verbose_) cout<<"  caTopJetPtMin_ "<<caTopJetPtMin_<<"  caTopJetEtaCut_ "<<caTopJetEtaCut_<<endl;
-					if ( catop0.pt() > caTopJetPtMin_ && catop1.pt() > caTopJetPtMin_ && fabs(catop0.eta()) < caTopJetEtaCut_ && fabs(catop1.eta()) < caTopJetEtaCut_ )
-					{
-						if (verbose_) cout<<"  catop0 and catop1 pass eta and pt cuts"<<endl;
-						preselected_event=true;
-						std::vector<const reco::Candidate *>  catop0_subjets = catop0.getJetConstituentsQuick();
+				if (verbose_) cout<<"  catop0  pt "<<catop0.pt()<<" eta "<<catop0.eta()<<" phi "<<catop0.phi()<<"  Nsubjets "<<catop0_subjets.size() <<endl;
+				
+				if ( catop0_subjets.size() >=3)
+				{	
+					int subjetLoopCount=0;
+					math::XYZTLorentzVector pairwiseMass01;
+					math::XYZTLorentzVector pairwiseMass02;
+					math::XYZTLorentzVector pairwiseMass12;
+					
+					for (std::vector<const reco::Candidate *>::iterator subjetIt = catop0_subjets.begin(); subjetIt != catop0_subjets.end(); subjetIt++)
+					{					
+						reco::Candidate const * subjetCand =  (*subjetIt);
+						reco::PFJet const * pfSubjet = dynamic_cast<reco::PFJet const *>(subjetCand);  
 						
-						if ( catop0_subjets.size() >=3)
-						{	
-							int subjetLoopCount=0;
-							math::XYZTLorentzVector pairwiseMass01;
-							math::XYZTLorentzVector pairwiseMass02;
-							math::XYZTLorentzVector pairwiseMass12;
-							
-							for (std::vector<const reco::Candidate *>::iterator subjetIt = catop0_subjets.begin(); subjetIt != catop0_subjets.end(); subjetIt++)
-							{					
-								reco::Candidate const * subjetCand =  (*subjetIt);
-								reco::PFJet const * pfSubjet = dynamic_cast<reco::PFJet const *>(subjetCand);  
-								
-								if (subjetLoopCount==0 || subjetLoopCount==1) pairwiseMass01 += pfSubjet->p4();
-								if (subjetLoopCount==0 || subjetLoopCount==2) pairwiseMass02 += pfSubjet->p4();
-								if (subjetLoopCount==1 || subjetLoopCount==2) pairwiseMass12 += pfSubjet->p4();
-								subjetLoopCount++;
-							}
-							
-							double min2 = std::min(pairwiseMass01.mass(), pairwiseMass02.mass() );
-							j0_minmass = std::min(min2, pairwiseMass12.mass() );
-							j0_nsubjets = subjetLoopCount;
-						}//end if jet0 nsubjets>=3
-						
-						std::vector<const reco::Candidate *>  catop1_subjets = catop1.getJetConstituentsQuick();
-						
-						if ( catop1_subjets.size() >=3)
-						{	
-							int subjetLoopCount=0;
-							math::XYZTLorentzVector pairwiseMass01;
-							math::XYZTLorentzVector pairwiseMass02;
-							math::XYZTLorentzVector pairwiseMass12;
-							
-							for (std::vector<const reco::Candidate *>::iterator subjetIt = catop1_subjets.begin(); subjetIt != catop1_subjets.end(); subjetIt++)
-							{					
-								reco::Candidate const * subjetCand =  (*subjetIt);
-								reco::PFJet const * pfSubjet = dynamic_cast<reco::PFJet const *>(subjetCand);  
-								
-								if (subjetLoopCount==0 || subjetLoopCount==1) pairwiseMass01 += pfSubjet->p4();
-								if (subjetLoopCount==0 || subjetLoopCount==2) pairwiseMass02 += pfSubjet->p4();
-								if (subjetLoopCount==1 || subjetLoopCount==2) pairwiseMass12 += pfSubjet->p4();
-								subjetLoopCount++;
-							}
-							
-							double min2 = std::min(pairwiseMass01.mass(), pairwiseMass02.mass() );
-							j1_minmass = std::min(min2, pairwiseMass12.mass() );
-							j1_nsubjets = subjetLoopCount;
-							
-						}//end if jet1 nsubjets>=3
-						
-						if (verbose_) cout<<"    catop0.mass() "<<catop0.mass()<<"  j0_minmass "<<j0_minmass<<"  j0_nsubjets "<<j0_nsubjets<<endl;
-						if (verbose_) cout<<"    catop1.mass() "<<catop1.mass()<<"  j1_minmass "<<j1_minmass<<"  j1_nsubjets "<<j0_nsubjets<<endl;
-						
-						if ( catop0.mass() > caTopJetMassMin_ && catop0.mass() < caTopJetMassMax_ && j0_minmass > caTopMinMassMin_ && j0_nsubjets>2 && catop0.pt() > caTopJetPtMin_ ){hasTaggedTopJet0=true;}
-						if ( catop1.mass() > caTopJetMassMin_ && catop1.mass() < caTopJetMassMax_ && j1_minmass > caTopMinMassMin_ && j1_nsubjets>2 && catop1.pt() > caTopJetPtMin_ ){hasTaggedTopJet1=true;}					
-						
-						if (verbose_ && hasTaggedTopJet0 ) cout<<" hasTaggedTopJet0"<<endl;
-						if (verbose_ && hasTaggedTopJet1 ) cout<<" hasTaggedTopJet1"<<endl;
-						if (verbose_ && hasTaggedTopJet0 && hasTaggedTopJet1 ) cout<<" jet0 and jet1 are tagged"<<endl;
-						
-					}//end if passes pt and eta cuts
-				}//end if passes deltaphi
-			}//end if both hemispheres have catop jets
+						if (subjetLoopCount==0 || subjetLoopCount==1) pairwiseMass01 += pfSubjet->p4();
+						if (subjetLoopCount==0 || subjetLoopCount==2) pairwiseMass02 += pfSubjet->p4();
+						if (subjetLoopCount==1 || subjetLoopCount==2) pairwiseMass12 += pfSubjet->p4();
+						subjetLoopCount++;
+					}
+					
+					double min2 = std::min(pairwiseMass01.mass(), pairwiseMass02.mass() );
+					j0_minmass = std::min(min2, pairwiseMass12.mass() );
+					j0_nsubjets = subjetLoopCount;
+				}//end if jet0 nsubjets>=3
+			}//end hemi0 notempty
 			
+			if ( hemisphere1_catop.size()>0 )
+			{
+				pat::Jet const & catop1 = *hemisphere1_catop.at(0);
+				p4_catop_jet1 = catop1.p4();
+				std::vector<const reco::Candidate *>  catop1_subjets = catop1.getJetConstituentsQuick();
+				
+				if (verbose_) cout<<"  catop1  pt "<<catop1.pt()<<" eta "<<catop1.eta()<<" phi "<<catop1.phi()<<"  Nsubjets "<<catop1_subjets.size() <<endl;
+
+				if ( catop1_subjets.size() >=3)
+				{	
+					int subjetLoopCount=0;
+					math::XYZTLorentzVector pairwiseMass01;
+					math::XYZTLorentzVector pairwiseMass02;
+					math::XYZTLorentzVector pairwiseMass12;
+					
+					for (std::vector<const reco::Candidate *>::iterator subjetIt = catop1_subjets.begin(); subjetIt != catop1_subjets.end(); subjetIt++)
+					{					
+						reco::Candidate const * subjetCand =  (*subjetIt);
+						reco::PFJet const * pfSubjet = dynamic_cast<reco::PFJet const *>(subjetCand);  
+						
+						if (subjetLoopCount==0 || subjetLoopCount==1) pairwiseMass01 += pfSubjet->p4();
+						if (subjetLoopCount==0 || subjetLoopCount==2) pairwiseMass02 += pfSubjet->p4();
+						if (subjetLoopCount==1 || subjetLoopCount==2) pairwiseMass12 += pfSubjet->p4();
+						subjetLoopCount++;
+					}
+					
+					double min2 = std::min(pairwiseMass01.mass(), pairwiseMass02.mass() );
+					j1_minmass = std::min(min2, pairwiseMass12.mass() );
+					j1_nsubjets = subjetLoopCount;
+					
+				}//end if jet1 nsubjets>=3
+			}//end hemi1 notempty
+			
+			if (verbose_) cout<<"    p4_catop_jet0.mass() "<<p4_catop_jet0.mass()<<"  j0_minmass "<<j0_minmass<<"  j0_nsubjets "<<j0_nsubjets<<endl;
+			if (verbose_) cout<<"    p4_catop_jet1.mass() "<<p4_catop_jet1.mass()<<"  j1_minmass "<<j1_minmass<<"  j1_nsubjets "<<j0_nsubjets<<endl;
+			
+			
+			bool hasTaggedTopJet0=false;
+			bool hasTaggedTopJet1=false;
+			if ( p4_catop_jet0.mass() > caTopJetMassMin_ && p4_catop_jet0.mass() < caTopJetMassMax_ && j0_minmass > caTopMinMassMin_ && j0_nsubjets>2 && p4_catop_jet0.pt() > caTopJetPtMin_ && fabs(p4_catop_jet0.eta()) < caTopJetEtaCut_ ){hasTaggedTopJet0=true;}
+			if ( p4_catop_jet1.mass() > caTopJetMassMin_ && p4_catop_jet1.mass() < caTopJetMassMax_ && j1_minmass > caTopMinMassMin_ && j1_nsubjets>2 && p4_catop_jet1.pt() > caTopJetPtMin_ && fabs(p4_catop_jet1.eta()) < caTopJetEtaCut_ ){hasTaggedTopJet1=true;}					
+			
+			if (verbose_ && hasTaggedTopJet0 ) cout<<" hasTaggedTopJet0"<<endl;
+			if (verbose_ && hasTaggedTopJet1 ) cout<<" hasTaggedTopJet1"<<endl;			
 			
 			if (verbose_) cout<<"Check if each hemisphere has non-leading b-jet"<<endl;
 			bool hasNonLeadingBjet0 = false;
@@ -559,19 +529,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 				}
 			}
 			
-			
-			/*
-			for(size_t i=0; i<hemisphere0.size(); i++ ) {
-				pat::Jet const & prunedjet = *hemisphere0.at(i);
-				if (verbose_) cout<<" hemi0 prunedjet  jet "<<i<<"  eta "<<prunedjet.eta()<<" phi "<<prunedjet.phi()<<" pt "<<prunedjet.pt()<<" bDiscrim "<<prunedjet.bDiscriminator( bTagAlgo_ )<<" op "<< bTagOP_ <<endl;
-				
-			}
-			for(size_t i=0; i<hemisphere1.size(); i++ ) {
-				pat::Jet const & prunedjet = *hemisphere1.at(i);
-				if (verbose_) cout<<" hemi1 prunedjet jet "<<i<<"  eta "<<prunedjet.eta()<<" phi "<<prunedjet.phi()<<" pt "<<prunedjet.pt()<<" bDiscrim "<<prunedjet.bDiscriminator( bTagAlgo_ )<<" op "<< bTagOP_ <<endl;
-				
-			}
-			*/
+			//////////////////////////////////
 			// Setup Type 2		
 			if (verbose_) cout<<"Setup Type 2"<<endl;
 			bool hasLooseTop0 = false, hasTightTop0 = false;
@@ -631,8 +589,86 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			}	
 			
 			
+			///////////////////////////////////////////////////////////////////////////////////////////////
+			// Do some counting to measure efficiencies
+			
+			histograms1d["Nevents_preselected"] ->Fill(1,evtWeight);
+			
+			bool hasZeroTopTags = (!hasTaggedTopJet0 && !hasTaggedTopJet1);
+			bool hasOneTopTag = ((hasTaggedTopJet0 && !hasTaggedTopJet1) || (hasTaggedTopJet1 && !hasTaggedTopJet0));
+			bool hasTwoTopTags = (hasTaggedTopJet0 && hasTaggedTopJet1);
+			
+			bool hasZeroBTags = (!hasBTag0 && !hasBTag1);
+			bool hasOneBTag = ((hasBTag0 && !hasBTag1) || (hasBTag1 && !hasBTag0));
+			bool hasTwoBTags = (hasBTag0 && hasBTag1);
+			//cout<<"hasBTag0 "<<hasBTag0<<" hasBTag1 "<<hasBTag1<<" hasZeroBTags "<<hasZeroBTags<<" hasOneBTag "<<hasOneBTag<<" hasTwoBTags "<<hasTwoBTags<<endl;
+			 
+			bool hasZeroWTags = (!hasWTag0 && !hasWTag1);
+			
+			bool hasZeroLooseTops = (!hasLooseTop0 && !hasLooseTop1);
+			bool hasOneLooseTop = ((hasLooseTop0 && !hasLooseTop1) || (hasLooseTop1 && !hasLooseTop0));
+			bool hasTwoLooseTops = (hasLooseTop0 && hasTaggedTopJet1);
+			
+			bool hasZeroTightTops = (!hasTightTop0 && !hasTightTop1);
+			bool hasOneTightTop = ((hasTightTop0 && !hasTightTop1) || (hasTightTop1 && !hasTightTop0));
+			bool hasTwoTightTops = (hasTightTop0 && hasTaggedTopJet1);
+			
+			bool hasOneLooseOneTightTop = ((hasTightTop0 && hasLooseTop1) || (hasTightTop1 && hasLooseTop0));
+			
+			bool hasUntaggedJet0 = (noTags0.size() >=1);
+			bool hasUntaggedJet1 = (noTags0.size() >=1);
+			
+			// Count top tags
+			if (hasTaggedTopJet0) histograms1d["Nevents_hasTaggedTopJet0"] ->Fill(1,evtWeight);
+			if (hasTaggedTopJet1) histograms1d["Nevents_hasTaggedTopJet1"] ->Fill(1,evtWeight);
+			if (hasZeroTopTags) histograms1d["Nevents_hasZeroTopTags"] ->Fill(1,evtWeight);
+			if (hasOneTopTag) histograms1d["Nevents_hasOneTopTag"] ->Fill(1,evtWeight);
+			if (hasTwoTopTags) histograms1d["Nevents_hasTwoTopTags"] ->Fill(1,evtWeight);
+			
+			// Count W tags
+			if (hasWTag0) histograms1d["Nevents_hasWTag0"] ->Fill(1,evtWeight);
+			if (hasWTag1) histograms1d["Nevents_hasWTag1"] ->Fill(1,evtWeight);
+			if (hasZeroWTags) histograms1d["Nevents_hasZeroWTags"] ->Fill(1,evtWeight);
+			if (hasOneWTag) histograms1d["Nevents_hasOneWTag"] ->Fill(1,evtWeight);
+			if (hasTwoWTags) histograms1d["Nevents_hasTwoWTags"] ->Fill(1,evtWeight);
+			
+			// Count b tags
+			if (hasBTag0) histograms1d["Nevents_hasBTag0"] ->Fill(1,evtWeight);
+			if (hasBTag1) histograms1d["Nevents_hasBTag1"] ->Fill(1,evtWeight);
+			if (hasZeroBTags) histograms1d["Nevents_hasZeroTopTags"] ->Fill(1,evtWeight);
+			if (hasOneBTag) histograms1d["Nevents_hasOneBTag"] ->Fill(1,evtWeight);
+			if (hasTwoBTags) histograms1d["Nevents_hasTwoBTags"] ->Fill(1,evtWeight);
+			
+			// Count Tight Tops
+			if (hasTightTop0) histograms1d["Nevents_hasTightTop0"] ->Fill(1,evtWeight);
+			if (hasTightTop1) histograms1d["Nevents_hasTightTop1"] ->Fill(1,evtWeight);
+			if (hasZeroTightTops) histograms1d["Nevents_hasZeroTightTops"] ->Fill(1,evtWeight);
+			if (hasOneTightTop) histograms1d["Nevents_hasOneTightTop"] ->Fill(1,evtWeight);
+			if (hasTwoTightTops) histograms1d["Nevents_hasTwoTightTops"] ->Fill(1,evtWeight);
+			
+			// Count Loose Tops
+			if (hasLooseTop0) histograms1d["Nevents_hasLooseTop0"] ->Fill(1,evtWeight);
+			if (hasLooseTop1) histograms1d["Nevents_hasLooseTop1"] ->Fill(1,evtWeight);
+			if (hasZeroLooseTops) histograms1d["Nevents_hasZeroLooseTops"] ->Fill(1,evtWeight);
+			if (hasOneLooseTop) histograms1d["Nevents_hasOneLooseTop"] ->Fill(1,evtWeight);
+			if (hasTwoLooseTops) histograms1d["Nevents_hasTwoLooseTops"] ->Fill(1,evtWeight);
+			
+			// Count other stuff
+			if (hasOneLooseOneTightTop) histograms1d["Nevents_hasOneLooseOneTightTop"] ->Fill(1,evtWeight);
+			if ( ( hasWTag0 && hasBTag0 ) || ( hasWTag1 && hasBTag1 ) ) histograms1d["Nevents_hemiWithWandB"] ->Fill(1,evtWeight);
+			if ( ( hasWTag0 && hasUntaggedJet0 ) || ( hasWTag1 && hasUntaggedJet1 ) ) histograms1d["Nevents_hemiWithWandUntagged"] ->Fill(1,evtWeight);
+			if ( (hasTaggedTopJet0 && hasTightTop1) || (hasTaggedTopJet1 && hasTightTop0) ) histograms1d["Nevents_TopTagAndTightTop"] ->Fill(1,evtWeight);
+			if ( (hasTaggedTopJet0 && hasLooseTop1) || (hasTaggedTopJet1 && hasLooseTop0) ) histograms1d["Nevents_TopTagAndLooseTop"] ->Fill(1,evtWeight);
+			if ( (hasTaggedTopJet0 && hasWTag1 && hasBTag1) || (hasTaggedTopJet1 && hasWTag0 && hasBTag0) ) histograms1d["Nevents_TopTagAndWandB"] ->Fill(1,evtWeight);
+			if ( hasTwoWTags && hasOneBTag  ) histograms1d["Nevents_hasTwoWTags_hasOneBTag"] ->Fill(1,evtWeight);
+			if ( hasTwoWTags && hasTwoBTags  ) histograms1d["Nevents_hasTwoWTags_hasTwoBTags"] ->Fill(1,evtWeight);
+			if ( (hasTightTop0 && hasLooseTop1) || (hasLooseTop0 && hasTightTop1))  histograms1d["Nevents_TightTopAndLooseTop"] ->Fill (1.5, 1);
+			if ( (hasTaggedTopJet0 && !hasTaggedTopJet1 && !hasNonLeadingBjet1) || (hasTaggedTopJet1 && !hasTaggedTopJet0 && !hasNonLeadingBjet0)  ) histograms1d["Nevents_hasOneTopJet_noNonLeadingBjet"] ->Fill(1,evtWeight);
+
 			
 			
+		
+
 			///////////////////////////////////////////////////////////////////////////////////////////////
 			// Measure pass events
 			if (verbose_) cout<<"Measure pass events"<<endl;
@@ -644,35 +680,42 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			// Use unpruned, regular CA8 jets for Njets, pT, and eta cuts. 
 			
 			// Type 1+1 signal
-			if ( preselected_event && hasTaggedTopJet0 && hasTaggedTopJet1  )
+			if ( preselected_event && hasTaggedTopJet0 && hasTaggedTopJet1 )
 			{
-				type11_passevent = true;
-				histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(1,evtWeight);
-				
-				double ttMass = (p4_catop_jet0+p4_catop_jet1).mass();
-				histograms1d["ttMassType11_measured"] ->Fill (ttMass, evtWeight);
-				
-				if(runOnData_||verbose_) 
-				{
-					cout<<" Yipee!, Type1+Type1, Event id, "<<iEvent.id()<<endl;
-					cout<<" summary:"<<endl;
-					cout<<"  j0_pt "<<p4_catop_jet0.pt()<<endl;
-					cout<<"  j1_pt "<<p4_catop_jet1.pt()<<endl;
-					cout<<"  j0_mass "<<p4_catop_jet0.mass()<<endl;
-					cout<<"  j1_mass "<<p4_catop_jet1.mass()<<endl;
-					cout<<"  j0_nsubjets "<<j0_nsubjets<<endl;
-					cout<<"  j1_nsubjets "<<j1_nsubjets<<endl;
-					cout<<"  j0_minmass "<<j0_minmass<<endl;
-					cout<<"  j1_minmass "<<j1_minmass<<endl;
+				double delta_phi_catop = fabs( reco::deltaPhi<double>( p4_catop_jet0.phi(), p4_catop_jet1.phi() ) );
+				if (delta_phi_catop >2.1)
+                {
+					
+					type11_passevent = true;
+					histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(1,evtWeight);
+					histograms1d["Nevents_type11sig"] ->Fill(1,evtWeight);
+					
+					double ttMass = (p4_catop_jet0+p4_catop_jet1).mass();
+					histograms1d["ttMassType11_measured"] ->Fill (ttMass, evtWeight);
+					
+					if(runOnData_||verbose_) 
+					{
+						cout<<" Yipee!, Type1+Type1, Event id, "<<iEvent.id()<<endl;
+						cout<<" summary:"<<endl;
+						cout<<"  j0_pt "<<p4_catop_jet0.pt()<<endl;
+						cout<<"  j1_pt "<<p4_catop_jet1.pt()<<endl;
+						cout<<"  j0_mass "<<p4_catop_jet0.mass()<<endl;
+						cout<<"  j1_mass "<<p4_catop_jet1.mass()<<endl;
+						cout<<"  j0_nsubjets "<<j0_nsubjets<<endl;
+						cout<<"  j1_nsubjets "<<j1_nsubjets<<endl;
+						cout<<"  j0_minmass "<<j0_minmass<<endl;
+						cout<<"  j1_minmass "<<j1_minmass<<endl;
+					}
+					//This is our signal, return
+					return;
 				}
-				//This is our signal, return
-				return;
 			}
 			
 			// Type 1+2 signal
 			if ( preselected_event && !type11_passevent )
 			{
 				//some test histograms
+				histograms1d["Nevents_cascade12sig"] ->Fill(1,evtWeight);
 				if ( (hasTaggedTopJet0 && hasTightTop1) || (hasTaggedTopJet1 && hasTightTop0) ) histograms1d["Nevents_12_tight_loose"] ->Fill (1, evtWeight);
 				if ( (hasTaggedTopJet0 && hasLooseTop1) || (hasTaggedTopJet1 && hasLooseTop0) ) histograms1d["Nevents_12_tight_loose"] ->Fill (2, evtWeight);
 				
@@ -685,7 +728,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 					{
 						type12_passevent = true;
 						histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(2,evtWeight);
-					
+						histograms1d["Nevents_type12sig"] ->Fill(1,evtWeight);
+
 						double ttMass =0;
 						if (hasTaggedTopJet0) ttMass = (p4_catop_jet0+p4_top1).mass() ; 
 						if (hasTaggedTopJet1) ttMass = (p4_catop_jet1+p4_top0).mass() ; 
@@ -719,6 +763,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			if ( preselected_event && !type11_passevent && !type12_passevent )
 			{
 				//some test histograms
+				histograms1d["Nevents_cascade22sig"] ->Fill(1,evtWeight);
 				if(hasTightTop0 && hasTightTop1) histograms1d["Nevents_22_tighttight_tightloose"] ->Fill (0.5, 1);
 				if((hasTightTop0 && hasLooseTop1) || (hasLooseTop0 && hasTightTop1))  histograms1d["Nevents_22_tighttight_tightloose"] ->Fill (1.5, 1);
 				
@@ -727,6 +772,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 				{
 					type22_passevent=true;
 					histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(3,evtWeight);
+					histograms1d["Nevents_type22sig"] ->Fill(1,evtWeight);
 					
 					double ttMass = (p4_top0+p4_top1).mass() ;
 					histograms1d["ttMassType22_measured"]      ->  Fill( ttMass, evtWeight );
@@ -756,8 +802,10 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			// Type 1+1 Background estimation starts here
 			if ( preselected_event && !type11_passevent && !type12_passevent && !type22_passevent )
 			{
-				//if (!hasBTag0 && !hasBTag1 )
-				//{
+				histograms1d["Nevents_cascade11bkg"] ->Fill(1,evtWeight);
+				double delta_phi_catop = fabs( reco::deltaPhi<double>( p4_catop_jet0.phi(), p4_catop_jet1.phi() ) );
+				if (delta_phi_catop >2.1)
+                {
 					int bin0 = topMistag_->FindBin( p4_catop_jet0.pt() );
 					int bin1 = topMistag_->FindBin( p4_catop_jet1.pt() );
 					double mistagProb_jet0 = topMistag_->GetBinContent(bin0);
@@ -793,6 +841,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 							if (verbose_) cout<<"   hasNonLeadingBjet0 "<<hasNonLeadingBjet0<<endl;
 							if (verbose_) cout<<"   hasNonLeadingBjet1 "<<hasNonLeadingBjet1<<endl;
 							histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(4,evtWeight);
+							histograms1d["Nevents_type11bkg"] ->Fill(1,evtWeight);
 							type11_bkgd_prediction_event=true;
 							
 							histograms1d["ttMassType11_predicted"] ->Fill (ttMass, weight);
@@ -801,7 +850,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 
 						}
 					}
-				//}
+				}
 			}//end 11bkg
 			
 			// Type 1+2 Background estimation starts here
@@ -809,6 +858,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			//  Jets in the hemisphere opposite the top jet which, when combined with the b-jet, have a pairwise mass in the top mass window, are used as probes to estimate the background
 			if( preselected_event && !type11_passevent && !type12_passevent && !type22_passevent && !type11_bkgd_prediction_event )  
 			{
+				histograms1d["Nevents_cascade12bkg"] ->Fill(1,evtWeight);
 				if( hasBTag && !hasWTag0 && !hasWTag1 ) 
 				{
 					if( hasTaggedTopJet0  && !hasWTag1 && hasBTag1 )  
@@ -837,6 +887,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 								if (pt > jetPt0_)
 								{
 									histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(5,evtWeight);
+									histograms1d["Nevents_type12bkg"] ->Fill(1,evtWeight);
 									type12_bkgd_prediction_event=true;
 									
 									passTopMass1 = true;
@@ -876,6 +927,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 								if (pt > jetPt0_)
 								{
 									histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(5,evtWeight);
+									histograms1d["Nevents_type12bkg"] ->Fill(1,evtWeight);
 									type12_bkgd_prediction_event=true;
 									
 									passTopMass0 = true;
@@ -894,6 +946,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			// Type 2+2 Background estimation starts here
 			if( preselected_event && !type11_passevent && !type12_passevent && !type22_passevent && !type11_bkgd_prediction_event && !type12_bkgd_prediction_event )  
 			{
+				histograms1d["Nevents_cascade22bkg"] ->Fill(1,evtWeight);
 				if( hasOneWTag && hasBTag ) {
 					if( hasWTag0 )  { 
 						//cout<<"case 1"<<endl;
@@ -926,6 +979,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 											
 											passTopMass1 = true;
 											histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(6,evtWeight);
+											histograms1d["Nevents_type22bkg"] ->Fill(1,evtWeight);
 											histograms1d["Nevents_Type22_Case123"]->Fill(1,evtWeight);
 											
 											double ttMass = (p4_top0+p4_top1).mass() ;
@@ -981,7 +1035,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 												passTopMass1 = true;
 												histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(6,evtWeight);
 												histograms1d["Nevents_Type22_Case123"]->Fill(2,evtWeight);
-												
+												histograms1d["Nevents_type22bkg"] ->Fill(1,evtWeight);
+
 												double ttMass = (p4_top0+p4_top1).mass() ;
 												histograms1d["ttMassType22_predicted"]    ->  Fill( ttMass, weight*evtWeight );
 												histograms1d["ttMassType22_predicted_errorSquared"]      ->  Fill( ttMass, mistagError*mistagError );
@@ -1015,7 +1070,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 										passTopMass1 = true;
 										histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(6,evtWeight);
 										histograms1d["Nevents_Type22_Case123"]->Fill(3,evtWeight);
-										
+										histograms1d["Nevents_type22bkg"] ->Fill(1,evtWeight);
+
 										double ttMass = (p4_top0+p4_top1).mass() ;
 										histograms1d["ttMassType22_predicted"]      ->  Fill( ttMass, weight*evtWeight );
 										histograms1d["ttMassType22_predicted_errorSquared"]      ->  Fill( ttMass, mistagError*mistagError );
@@ -1052,7 +1108,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 											passTopMass0 = true;
 											histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(6,evtWeight);
 											histograms1d["Nevents_Type22_Case123"]->Fill(1,evtWeight);
-											
+											histograms1d["Nevents_type22bkg"] ->Fill(1,evtWeight);
+
 											double ttMass = (p4_top0+p4_top1).mass() ;
 											histograms1d["ttMassType22_predicted"]      ->  Fill( ttMass, weight*evtWeight );
 											histograms1d["ttMassType22_predicted_errorSquared"]      ->  Fill( ttMass, mistagError*mistagError );
@@ -1092,7 +1149,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 												passTopMass0 = true;
 												histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(6,evtWeight);
 												histograms1d["Nevents_Type22_Case123"]->Fill(2,evtWeight);
-												
+												histograms1d["Nevents_type22bkg"] ->Fill(1,evtWeight);
+
 												double ttMass = (p4_top0+p4_top1).mass() ;
 												histograms1d["ttMassType22_predicted"]    ->  Fill( ttMass, weight*evtWeight );
 												histograms1d["ttMassType22_predicted_errorSquared"]      ->  Fill( ttMass, mistagError*mistagError );
@@ -1124,7 +1182,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 										passTopMass0 = true;
 										histograms1d["Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg"]->Fill(6,evtWeight);
 										histograms1d["Nevents_Type22_Case123"]->Fill(3,evtWeight);
-										
+										histograms1d["Nevents_type22bkg"] ->Fill(1,evtWeight);
+
 										double ttMass = (p4_top0+p4_top1).mass() ;
 										histograms1d["ttMassType22_predicted"]      ->  Fill( ttMass, weight*evtWeight );
 										histograms1d["ttMassType22_predicted_errorSquared"]      ->  Fill( ttMass, mistagError*mistagError );
@@ -1138,78 +1197,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 				} // end type 2+2 background estimation
 			}//end cascading cuts
 			
-			/////////////
-			// Do some counting to measure efficiencies
-
-			histograms1d["Nevents_preselected"] ->Fill(1,evtWeight);
-
-			bool hasZeroTopTags = !hasTaggedTopJet0 && !hasTaggedTopJet1;
-			bool hasOneTopTag = (hasTaggedTopJet0 && !hasTaggedTopJet1) || (hasTaggedTopJet1 && !hasTaggedTopJet0);
-			bool hasTwoTopTags = hasTaggedTopJet0 && hasTaggedTopJet1;
-
-			bool hasZeroBTags = !hasBTag0 && !hasBTag1;
-			bool hasOneBTag = (hasBTag0 && !hasBTag1) || (hasBTag1 && !hasBTag0);
-			bool hasTwoBTags = hasBTag0 && hasBTag1;
-			
-			bool hasZeroWTags = !hasWTag0 && !hasWTag1;
-
-			bool hasZeroLooseTops = !hasLooseTop0 && !hasLooseTop1;
-			bool hasOneLooseTop = (hasLooseTop0 && !hasLooseTop1) || (hasLooseTop1 && !hasLooseTop0);
-			bool hasTwoLooseTops = hasLooseTop0 && hasTaggedTopJet1;
-			
-			bool hasZeroTightTops = !hasTightTop0 && !hasTightTop1;
-			bool hasOneTightTop = (hasTightTop0 && !hasTightTop1) || (hasTightTop1 && !hasTightTop0);
-			bool hasTwoTightTops = hasTightTop0 && hasTaggedTopJet1;
-
-			bool hasOneLooseOneTightTop = (hasTightTop0 && hasLooseTop1) || (hasTightTop1 && hasLooseTop0);
-
-			bool hasUntaggedJet0 = (noTags0.size() >=1);
-			bool hasUntaggedJet1 = (noTags0.size() >=1);
-
-
-			// Count top tags
-			if (hasTaggedTopJet0) histograms1d["Nevents_hasTaggedTopJet0"] ->Fill(1,evtWeight);
-			if (hasTaggedTopJet1) histograms1d["Nevents_hasTaggedTopJet1"] ->Fill(1,evtWeight);
-			if (hasZeroTopTags) histograms1d["Nevents_hasZeroTopTags"] ->Fill(1,evtWeight);
-			if (hasOneTopTag) histograms1d["Nevents_hasOneTopTag"] ->Fill(1,evtWeight);
-			if (hasTwoTopTags) histograms1d["Nevents_hasTwoTopTags"] ->Fill(1,evtWeight);
-
-			// Count W tags
-			if (hasWTag0) histograms1d["Nevents_hasWTag0"] ->Fill(1,evtWeight);
-			if (hasWTag1) histograms1d["Nevents_hasWTag1"] ->Fill(1,evtWeight);
-			if (hasZeroWTags) histograms1d["Nevents_hasZeroWTags"] ->Fill(1,evtWeight);
-			if (hasOneWTag) histograms1d["Nevents_hasOneWTag"] ->Fill(1,evtWeight);
-			if (hasTwoWTags) histograms1d["Nevents_hasTwoWTags"] ->Fill(1,evtWeight);
-
-			// Count b tags
-			if (hasBTag0) histograms1d["Nevents_hasBTag0"] ->Fill(1,evtWeight);
-			if (hasBTag1) histograms1d["Nevents_hasBTag1"] ->Fill(1,evtWeight);
-			if (hasZeroBTags) histograms1d["Nevents_hasZeroTopTags"] ->Fill(1,evtWeight);
-			if (hasOneBTag) histograms1d["Nevents_hasOneBTag"] ->Fill(1,evtWeight);
-			if (hasTwoBTags) histograms1d["Nevents_hasTwoBTags"] ->Fill(1,evtWeight);
-
-			// Count Tight Tops
-			if (hasTightTop0) histograms1d["Nevents_hasTightTop0"] ->Fill(1,evtWeight);
-			if (hasTightTop1) histograms1d["Nevents_hasTightTop1"] ->Fill(1,evtWeight);
-			if (hasZeroTightTops) histograms1d["Nevents_hasZeroTightTops"] ->Fill(1,evtWeight);
-			if (hasOneTightTop) histograms1d["Nevents_hasOneTightTop"] ->Fill(1,evtWeight);
-			if (hasTwoTightTops) histograms1d["Nevents_hasTwoTightTops"] ->Fill(1,evtWeight);
-
-			// Count Loose Tops
-			if (hasLooseTop0) histograms1d["Nevents_hasLooseTop0"] ->Fill(1,evtWeight);
-			if (hasLooseTop1) histograms1d["Nevents_hasLooseTop1"] ->Fill(1,evtWeight);
-			if (hasZeroLooseTops) histograms1d["Nevents_hasZeroLooseTops"] ->Fill(1,evtWeight);
-			if (hasOneLooseTop) histograms1d["Nevents_hasOneLooseTop"] ->Fill(1,evtWeight);
-			if (hasTwoLooseTops) histograms1d["Nevents_hasTwoLooseTops"] ->Fill(1,evtWeight);
-
-			// Count Tight Loose Tops
-			if (hasOneLooseOneTightTop) histograms1d["Nevents_hasOneLooseOneTightTop"] ->Fill(1,evtWeight);
-
-			//
-			if ( ( hasWTag0 && hasBTag0 ) || ( hasWTag1 && hasBTag1 ) ) histograms1d["Nevents_hemiWithWandB"] ->Fill(1,evtWeight);
-			if ( ( hasWTag0 && hasUntaggedJet0 ) || ( hasWTag1 && hasUntaggedJet1 ) ) histograms1d["Nevents_hemiWithWandUntagged"] ->Fill(1,evtWeight);
-			
-
+	
 			
 
 		 
