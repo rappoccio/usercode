@@ -543,27 +543,27 @@ bool SHyFT::analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>&
    double sihih_    =  electron_ ->sigmaIetaIeta();
    double hoe_      =  electron_ ->hadronicOverEm();
    
-   theDir.getObject<TH1F>( "ePt"      )->Fill( ePt_        , globalWeight_);
-   theDir.getObject<TH1F>( "eEta"     )->Fill( eEta_       , globalWeight_);
-   theDir.getObject<TH1F>( "ePhi"     )->Fill( ePhi_       , globalWeight_);
-   theDir.getObject<TH1F>( "eD0"      )->Fill( eD0_        , globalWeight_);
-   theDir.getObject<TH1F>( "eTrackIso")->Fill( trackIso_   , globalWeight_);
-   theDir.getObject<TH1F>( "eECalIso" )->Fill( eCalIso_    , globalWeight_);
-   theDir.getObject<TH1F>( "eHCalIso" )->Fill( hCalIso_    , globalWeight_);
-   theDir.getObject<TH1F>( "eRelIso"  )->Fill( relIso_     , globalWeight_);
+   theDir.getObject<TH1>( "ePt"      )->Fill( ePt_        , globalWeight_);
+   theDir.getObject<TH1>( "eEta"     )->Fill( eEta_       , globalWeight_);
+   theDir.getObject<TH1>( "ePhi"     )->Fill( ePhi_       , globalWeight_);
+   theDir.getObject<TH1>( "eD0"      )->Fill( eD0_        , globalWeight_);
+   theDir.getObject<TH1>( "eTrackIso")->Fill( trackIso_   , globalWeight_);
+   theDir.getObject<TH1>( "eECalIso" )->Fill( eCalIso_    , globalWeight_);
+   theDir.getObject<TH1>( "eHCalIso" )->Fill( hCalIso_    , globalWeight_);
+   theDir.getObject<TH1>( "eRelIso"  )->Fill( relIso_     , globalWeight_);
   
    if(electron_->isEE()){
-      theDir.getObject<TH1F>( "eDelEta_EE") ->Fill( deta_     , globalWeight_); 
-      theDir.getObject<TH1F>( "eDelPhi_EE") ->Fill( dphi_     , globalWeight_);
-      theDir.getObject<TH1F>( "eSigihih_EE")->Fill( sihih_    , globalWeight_);
-      theDir.getObject<TH1F>( "eHoE_EE")    ->Fill( hoe_      , globalWeight_);
+      theDir.getObject<TH1>( "eDelEta_EE") ->Fill( deta_     , globalWeight_); 
+      theDir.getObject<TH1>( "eDelPhi_EE") ->Fill( dphi_     , globalWeight_);
+      theDir.getObject<TH1>( "eSigihih_EE")->Fill( sihih_    , globalWeight_);
+      theDir.getObject<TH1>( "eHoE_EE")    ->Fill( hoe_      , globalWeight_);
    }
 
    else if(electron_->isEB()){
-      theDir.getObject<TH1F>( "eDelEta_EB") ->Fill( deta_     , globalWeight_); 
-      theDir.getObject<TH1F>( "eDelPhi_EB") ->Fill( dphi_     , globalWeight_);
-      theDir.getObject<TH1F>( "eSigihih_EB")->Fill( sihih_    , globalWeight_);
-      theDir.getObject<TH1F>( "eHoE_EB")    ->Fill( hoe_      , globalWeight_);
+      theDir.getObject<TH1>( "eDelEta_EB") ->Fill( deta_     , globalWeight_); 
+      theDir.getObject<TH1>( "eDelPhi_EB") ->Fill( dphi_     , globalWeight_);
+      theDir.getObject<TH1>( "eSigihih_EB")->Fill( sihih_    , globalWeight_);
+      theDir.getObject<TH1>( "eHoE_EB")    ->Fill( hoe_      , globalWeight_);
    }
 
    return true;
@@ -595,17 +595,17 @@ bool SHyFT::analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muo
    double hCalIso_    = globalMuon->hcalIso();
    double relIso_     = ( trackIso_ + eCalIso_ + hCalIso_ )/muPt_ ;
 
-   theDir.getObject<TH1F>( "muPt"      )->Fill( muPt_        , globalWeight_);
-   theDir.getObject<TH1F>( "muEta"     )->Fill( muEta_       , globalWeight_);
-   theDir.getObject<TH1F>( "muNhits"   )->Fill( nhits_       , globalWeight_);
-   theDir.getObject<TH1F>( "muD0"      )->Fill( muD0_        , globalWeight_);
-   theDir.getObject<TH1F>( "muChi2"    )->Fill( norm_chi2_   , globalWeight_);
-   theDir.getObject<TH1F>( "muHCalVeto")->Fill( muHCalVeto_  , globalWeight_);
-   theDir.getObject<TH1F>( "muECalVeto")->Fill( muECalVeto_  , globalWeight_);
-   theDir.getObject<TH1F>( "muTrackIso")->Fill( trackIso_    , globalWeight_);
-   theDir.getObject<TH1F>( "muECalIso" )->Fill( eCalIso_     , globalWeight_);
-   theDir.getObject<TH1F>( "muHCalIso" )->Fill( hCalIso_     , globalWeight_);
-   theDir.getObject<TH1F>( "muRelIso"  )->Fill( relIso_      , globalWeight_);
+   theDir.getObject<TH1>( "muPt"      )->Fill( muPt_        , globalWeight_);
+   theDir.getObject<TH1>( "muEta"     )->Fill( muEta_       , globalWeight_);
+   theDir.getObject<TH1>( "muNhits"   )->Fill( nhits_       , globalWeight_);
+   theDir.getObject<TH1>( "muD0"      )->Fill( muD0_        , globalWeight_);
+   theDir.getObject<TH1>( "muChi2"    )->Fill( norm_chi2_   , globalWeight_);
+   theDir.getObject<TH1>( "muHCalVeto")->Fill( muHCalVeto_  , globalWeight_);
+   theDir.getObject<TH1>( "muECalVeto")->Fill( muECalVeto_  , globalWeight_);
+   theDir.getObject<TH1>( "muTrackIso")->Fill( trackIso_    , globalWeight_);
+   theDir.getObject<TH1>( "muECalIso" )->Fill( eCalIso_     , globalWeight_);
+   theDir.getObject<TH1>( "muHCalIso" )->Fill( hCalIso_     , globalWeight_);
+   theDir.getObject<TH1>( "muRelIso"  )->Fill( relIso_      , globalWeight_);
   
    return true;
 }
@@ -670,21 +670,21 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   if ( (int)maxJets >= nJetsCut_ ) {
     if ( maxJets > 4 ) maxJets = 4;
     for ( unsigned int i=0; i<maxJets; ++i) {
-      theDir.getObject<TH1F>( "jet" + boost::lexical_cast<std::string>(i+1) + "Pt") ->Fill( jets[i].pt()  , globalWeight_);
-      theDir.getObject<TH1F>( "jet" + boost::lexical_cast<std::string>(i+1) + "Eta")->Fill( jets[i].eta() , globalWeight_);
-      theDir.getObject<TH1F>( "jet" + boost::lexical_cast<std::string>(i+1) + "Phi")->Fill( jets[i].phi() , globalWeight_);
-      theDir.getObject<TH1F>( "jet" + boost::lexical_cast<std::string>(i+1) + "Mass")->Fill( jets[i].mass() , globalWeight_);
+      theDir.getObject<TH1>( "jet" + boost::lexical_cast<std::string>(i+1) + "Pt") ->Fill( jets[i].pt()  , globalWeight_);
+      theDir.getObject<TH1>( "jet" + boost::lexical_cast<std::string>(i+1) + "Eta")->Fill( jets[i].eta() , globalWeight_);
+      theDir.getObject<TH1>( "jet" + boost::lexical_cast<std::string>(i+1) + "Phi")->Fill( jets[i].phi() , globalWeight_);
+      theDir.getObject<TH1>( "jet" + boost::lexical_cast<std::string>(i+1) + "Mass")->Fill( jets[i].mass() , globalWeight_);
       pat::Jet const * patJet = dynamic_cast<pat::Jet const *>( &* jets[i].masterClonePtr()  );
       if ( doMC_ && patJet != 0 && patJet->genJet() != 0 ) {
-	theDir.getObject<TH2F>( "jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes") ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt() , globalWeight_ );
+	static_cast<TH2*>(theDir.getObject<TH1>( "jet" + boost::lexical_cast<std::string>(i+1) + "PtTrueRes")) ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt() , globalWeight_ );
 	if ( abs(patJet->partonFlavour()) == 5 ) {
 	  ++ibjet;
-	  theDir.getObject<TH2F>( "jet" + boost::lexical_cast<std::string>(ibjet) + "PtTrueResBJets") ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt(), globalWeight_  );
+	  static_cast<TH2*>(theDir.getObject<TH1>( "jet" + boost::lexical_cast<std::string>(ibjet) + "PtTrueResBJets")) ->Fill( jets[i].eta(), jets[i].pt() / patJet->genJet()->pt(), globalWeight_  );
 	}
       }
     }
   } 
-
+  
   //SecVtxMass and b-tagging related quantities
   int numBottom=0,numCharm=0,numLight=0;
   int numTags=0, numJets=0;
@@ -728,7 +728,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	}
       }
     }
-    theDir.getObject<TH1F>( "m3")->Fill( M3, globalWeight_ );
+    theDir.getObject<TH1>( "m3")->Fill( M3, globalWeight_ );
     //std::cout << "m3 here inside >=3 jets " <<M3 << std::endl;
   }
  
@@ -759,7 +759,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       double jetPt  = std::abs( jet->pt() );
       hT += jet->et();
       
-      theDir.getObject<TH2F>( "massVsPt")->Fill( jetPt, jet->mass(), globalWeight_ );
+      static_cast<TH2*>(theDir.getObject<TH1>( "massVsPt") )->Fill( jetPt, jet->mass(), globalWeight_ );
 
            //dR b/w jet and lepton
       if(ePlusJets_){
@@ -768,10 +768,10 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
             throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
          double dR = reco::deltaR( iElectron->eta(), iElectron->phi(), jetIter->eta(), jetIter->phi() );
          if(iElectron->isEE()){
-            theDir.getObject<TH1F>( "ejetdR_EE")->Fill( dR, globalWeight_ );
+            theDir.getObject<TH1>( "ejetdR_EE")->Fill( dR, globalWeight_ );
          }
          else if(iElectron->isEB()){
-            theDir.getObject<TH1F>( "ejetdR_EB")->Fill( dR, globalWeight_ );
+            theDir.getObject<TH1>( "ejetdR_EB")->Fill( dR, globalWeight_ );
          }
       }
       //Here we determine what kind of flavor we have in this jet	
@@ -798,7 +798,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       if ( svTagInfos == 0 ) { 
 	continue;
       }
-      theDir.getObject<TH1F>( "nVertices")-> Fill( svTagInfos->nVertices(), globalWeight_ );
+      theDir.getObject<TH1>( "nVertices")-> Fill( svTagInfos->nVertices(), globalWeight_ );
       
       // Check to make sure we have a vertex
       
@@ -808,7 +808,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       
       // This discriminator is only filled when we have a secondary vertex
       // tag info and a vertex in it
-      theDir.getObject<TH1F>( "discriminator")-> Fill ( jet->bDiscriminator(btaggerString_), globalWeight_ );
+      theDir.getObject<TH1>( "discriminator")-> Fill ( jet->bDiscriminator(btaggerString_), globalWeight_ );
 
       // std::cout << "Jet " << jetIter - jetBegin << ", pt = " << jet->pt() << std::endl;
       // typedef std::pair<std::string,float> sfpair;
@@ -898,15 +898,15 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       {
       case 5:
 	// bottom
-	theDir.getObject<TH1F>( "bmass")->Fill(vertexMass, globalWeight_);
+	theDir.getObject<TH1>( "bmass")->Fill(vertexMass, globalWeight_);
 	break;
       case 4:
 	// charm
-	theDir.getObject<TH1F>( "cmass")->Fill(vertexMass, globalWeight_);
+	theDir.getObject<TH1>( "cmass")->Fill(vertexMass, globalWeight_);
 	break;
       default:
 	// light flavour
-	theDir.getObject<TH1F>( "lfmass")->Fill(vertexMass, globalWeight_);
+	theDir.getObject<TH1>( "lfmass")->Fill(vertexMass, globalWeight_);
       }
 
     if      (numBottom)              whichtag = "_b";
@@ -939,7 +939,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   numJets = std::min( allNumJets_, 5 );
 
   
-  theDir.getObject<TH1F>( "nTags")->Fill(numTags, globalWeight_);
+  theDir.getObject<TH1>( "nTags")->Fill(numTags, globalWeight_);
 
 
 
@@ -947,11 +947,11 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     if( numTags > 0 ) {
       string massName  = sampleHistName_ + Form("_secvtxMass_%dj_%dt", numJets, numTags);      
       if ( muPlusJets_ ) {
-            theDir.getObject<TH1F>(massName             )-> Fill (vertexMass, globalWeight_);
-            theDir.getObject<TH2F>( massName +"_vs_iso"            )-> Fill (vertexMass, relIso, globalWeight_);
+            theDir.getObject<TH1>(massName             )-> Fill (vertexMass, globalWeight_);
+            static_cast<TH2*>(theDir.getObject<TH1>( massName +"_vs_iso"            ))-> Fill (vertexMass, relIso, globalWeight_);
             if( doMC_ ) {
-               theDir.getObject<TH1F>(massName + whichtag  )-> Fill (vertexMass, globalWeight_);
-               theDir.getObject<TH2F>( massName + whichtag + "_vs_iso"  )-> Fill (vertexMass, relIso, globalWeight_);
+               theDir.getObject<TH1>(massName + whichtag  )-> Fill (vertexMass, globalWeight_);
+               static_cast<TH2*>(theDir.getObject<TH1>( massName + whichtag + "_vs_iso"  ))-> Fill (vertexMass, relIso, globalWeight_);
             } // end if doMC
          }//muPlusJets
 
@@ -960,12 +960,12 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
             if ( patElectron == 0 )
                throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
             if(patElectron->isEE()){
-               subdirEE.getObject<TH1F>(massName)-> Fill (vertexMass, globalWeight_);
-               if( doMC_ ) subdirEE.getObject<TH1F>(massName + whichtag  )-> Fill (vertexMass, globalWeight_);//end if doMC
+               subdirEE.getObject<TH1>(massName)-> Fill (vertexMass, globalWeight_);
+               if( doMC_ ) subdirEE.getObject<TH1>(massName + whichtag  )-> Fill (vertexMass, globalWeight_);//end if doMC
             }
             else if(patElectron->isEB()){
-               subdirEB.getObject<TH1F>(massName)-> Fill (vertexMass, globalWeight_);
-               if( doMC_ ) subdirEB.getObject<TH1F>(massName + whichtag  )-> Fill (vertexMass, globalWeight_);//end if doMC
+               subdirEB.getObject<TH1>(massName)-> Fill (vertexMass, globalWeight_);
+               if( doMC_ ) subdirEB.getObject<TH1>(massName + whichtag  )-> Fill (vertexMass, globalWeight_);//end if doMC
             }
          }//ePlusJets
 
@@ -973,22 +973,22 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 
     if(numJets > 3){
        string m3Name = Form("m3_%dt", numTags);
-       theDir.getObject<TH1F>( m3Name )->Fill(M3, globalWeight_);
+       theDir.getObject<TH1>( m3Name )->Fill(M3, globalWeight_);
     }
     string muEtaName  = sampleHistName_ + Form("_muEta_%dj_%dt", numJets, numTags);
     if ( muPlusJets_ ) {
-       theDir.getObject<TH1F>( muEtaName )-> Fill (fabs(muons[0].eta()), globalWeight_);	
+       theDir.getObject<TH1>( muEtaName )-> Fill (fabs(muons[0].eta()), globalWeight_);	
        if ( doMC_ ) 
-          theDir.getObject<TH1F>( muEtaName + whichtag  )-> Fill (fabs(muons[0].eta()), globalWeight_);	
+          theDir.getObject<TH1>( muEtaName + whichtag  )-> Fill (fabs(muons[0].eta()), globalWeight_);	
        
-       theDir.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",     numJets, numTags))->Fill( hT,                   globalWeight_ );
-       theDir.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",    numJets, numTags))->Fill( wMT,                  globalWeight_ );
-       theDir.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",    numJets, numTags))->Fill( met.pt(),             globalWeight_ );       
-       theDir.getObject<TH2F>(sampleNameInput + Form("_muisoVsMuEta_%dj_%dt", numJets, numTags))->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
-       theDir.getObject<TH2F>(sampleNameInput + Form("_muisoVsHt_%dj_%dt", numJets, numTags))->Fill( hT, relIso, globalWeight_ );
-       theDir.getObject<TH2F>(sampleNameInput + Form("_muisoVswMT_%dj_%dt", numJets, numTags))->Fill( wMT, relIso, globalWeight_ );
-       theDir.getObject<TH2F>(sampleNameInput + Form("_muisoVsMET_%dj_%dt", numJets, numTags))->Fill( met.pt(), relIso, globalWeight_ );
-       theDir.getObject<TH2F>(sampleNameInput + Form("_muisoVsD0_%dj_%dt", numJets, numTags))->Fill( d0, relIso, globalWeight_ );
+       theDir.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",     numJets, numTags))->Fill( hT,                   globalWeight_ );
+       theDir.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",    numJets, numTags))->Fill( wMT,                  globalWeight_ );
+       theDir.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",    numJets, numTags))->Fill( met.pt(),             globalWeight_ );       
+       static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVsMuEta_%dj_%dt", numJets, numTags)))->Fill( fabs(muons[0].eta()), relIso, globalWeight_ );
+       static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVsHt_%dj_%dt", numJets, numTags)))->Fill( hT, relIso, globalWeight_ );
+       static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVswMT_%dj_%dt", numJets, numTags)))->Fill( wMT, relIso, globalWeight_ );
+       static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVsMET_%dj_%dt", numJets, numTags)))->Fill( met.pt(), relIso, globalWeight_ );
+       static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVsD0_%dj_%dt", numJets, numTags)))->Fill( d0, relIso, globalWeight_ );
     }
     else if(ePlusJets_){
          pat::Electron const * patElectron = dynamic_cast<pat::Electron const *>(&* electrons[0].masterClonePtr());
@@ -997,54 +997,54 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
          //Fill the EE electrons
          //---------------------
          if(patElectron->isEE()){
-            subdirEE.getObject<TH1F>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, numTags))->Fill( fabs(electrons[0].eta()), globalWeight_); //remove the fabs eta
-            //subdirEE.getObject<TH1F>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
-            //subdirEE.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-            //subdirEE.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-            subdirEE.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
+            subdirEE.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, numTags))->Fill( fabs(electrons[0].eta()), globalWeight_); //remove the fabs eta
+            //subdirEE.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
+            //subdirEE.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
+            //subdirEE.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
+            subdirEE.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
             if ( doMC_ ){
-               subdirEE.getObject<TH1F>( sampleHistName_ + Form("_elEta_%dj_%dt", numJets, numTags) + whichtag  )->Fill( fabs(electrons[0].eta()), globalWeight_); //remove the fabs eta
-               //subdirEE.getObject<TH1F>( sampleHistName_ + Form("_elPt_%dj_%dt",  numJets, numTags) + whichtag  )->Fill( electrons[0].pt(),    globalWeight_ );
-               //subdirEE.getObject<TH1F>( sampleHistName_ + Form("_hT_%dj_%dt",    numJets, numTags) + whichtag  )->Fill( hT,                   globalWeight_ );
-               //subdirEE.getObject<TH1F>( sampleHistName_ + Form("_wMT_%dj_%dt",   numJets, numTags) + whichtag  )->Fill( wMT,                  globalWeight_ );
-               subdirEE.getObject<TH1F>( sampleHistName_ + Form("_MET_%dj_%dt",   numJets, numTags) + whichtag  )->Fill( met.pt(),             globalWeight_ ); 
+               subdirEE.getObject<TH1>( sampleHistName_ + Form("_elEta_%dj_%dt", numJets, numTags) + whichtag  )->Fill( fabs(electrons[0].eta()), globalWeight_); //remove the fabs eta
+               //subdirEE.getObject<TH1>( sampleHistName_ + Form("_elPt_%dj_%dt",  numJets, numTags) + whichtag  )->Fill( electrons[0].pt(),    globalWeight_ );
+               //subdirEE.getObject<TH1>( sampleHistName_ + Form("_hT_%dj_%dt",    numJets, numTags) + whichtag  )->Fill( hT,                   globalWeight_ );
+               //subdirEE.getObject<TH1>( sampleHistName_ + Form("_wMT_%dj_%dt",   numJets, numTags) + whichtag  )->Fill( wMT,                  globalWeight_ );
+               subdirEE.getObject<TH1>( sampleHistName_ + Form("_MET_%dj_%dt",   numJets, numTags) + whichtag  )->Fill( met.pt(),             globalWeight_ ); 
             }
 
             // if(useHFcat_){
-               // subdirEE.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-               //subdirEE.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-               //subdirEE.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
+               // subdirEE.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
+               //subdirEE.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
+               //subdirEE.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
             // }
-            subdirEE.getObject<TH1F>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-            subdirEE.getObject<TH1F>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-            //subdirEE.getObject<TH1F>(sampleNameInput + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
-            subdirEE.getObject<TH1F>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
+            subdirEE.getObject<TH1>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
+            subdirEE.getObject<TH1>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
+            //subdirEE.getObject<TH1>(sampleNameInput + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
+            subdirEE.getObject<TH1>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
          }//is EE
          //Fill the EB electrons
          //---------------------
          else if(patElectron->isEB()){
-            subdirEB.getObject<TH1F>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, numTags))->Fill(fabs(electrons[0].eta()), globalWeight_); //remove the fabs eta
-            //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
-            //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-            //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-            subdirEB.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
+            subdirEB.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, numTags))->Fill(fabs(electrons[0].eta()), globalWeight_); //remove the fabs eta
+            //subdirEB.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
+            //subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
+            //subdirEB.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
+            subdirEB.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
             if ( doMC_ ){
-               subdirEB.getObject<TH1F>(sampleHistName_ + Form("_elEta_%dj_%dt", numJets, numTags) + whichtag )->Fill (fabs(electrons[0].eta()), globalWeight_);//remove the fabs eta
-               //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_elPt_%dj_%dt",  numJets, numTags) + whichtag )->Fill( electrons[0].pt(),    globalWeight_ );
-               //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",    numJets, numTags) + whichtag )->Fill( hT,                   globalWeight_ );
-               //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",   numJets, numTags) + whichtag )->Fill( wMT,                  globalWeight_ );
-               subdirEB.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",   numJets, numTags) + whichtag )->Fill( met.pt(),             globalWeight_ );
+               subdirEB.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt", numJets, numTags) + whichtag )->Fill (fabs(electrons[0].eta()), globalWeight_);//remove the fabs eta
+               //subdirEB.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",  numJets, numTags) + whichtag )->Fill( electrons[0].pt(),    globalWeight_ );
+               //subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",    numJets, numTags) + whichtag )->Fill( hT,                   globalWeight_ );
+               //subdirEB.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",   numJets, numTags) + whichtag )->Fill( wMT,                  globalWeight_ );
+               subdirEB.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",   numJets, numTags) + whichtag )->Fill( met.pt(),             globalWeight_ );
             }
 
             // if(useHFcat_){
-            // subdirEB.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-            // subdirEB.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-               //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
+            // subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
+            // subdirEB.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
+               //subdirEB.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
             //}
-            subdirEB.getObject<TH1F>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-            subdirEB.getObject<TH1F>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-            //subdirEB.getObject<TH1F>(sampleNameInput + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
-            subdirEB.getObject<TH1F>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
+            subdirEB.getObject<TH1>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
+            subdirEB.getObject<TH1>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
+            //subdirEB.getObject<TH1>(sampleNameInput + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
+            subdirEB.getObject<TH1>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
          }//is EB
 
       }//ePlusJets
@@ -1151,12 +1151,12 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
        string massName  = sampleHistName_ + Form("_secvtxMass_%dj_%dt", numJets, kknumTags);      
        if(muPlusJets_){
           // std::cout << "Getting " << massName << std::endl;
-          theDir.getObject<TH1F>( massName                       )-> Fill (vertexMass, globalWeight_ * iprob);
-          theDir.getObject<TH2F>( massName +"_vs_iso"            )-> Fill (vertexMass, relIso, globalWeight_ * iprob);
+          theDir.getObject<TH1>( massName                       )-> Fill (vertexMass, globalWeight_ * iprob);
+          static_cast<TH2*>(theDir.getObject<TH1>( massName +"_vs_iso"            ))-> Fill (vertexMass, relIso, globalWeight_ * iprob);
           if( doMC_ ) {	
              // std::cout << "Getting " << massName + whichtag << std::endl;
-             theDir.getObject<TH1F>(massName + whichtag              )-> Fill (vertexMass, globalWeight_ * iprob);	
-             theDir.getObject<TH2F>( massName + whichtag + "_vs_iso"  )-> Fill (vertexMass, relIso, globalWeight_ * iprob);
+             theDir.getObject<TH1>(massName + whichtag              )-> Fill (vertexMass, globalWeight_ * iprob);	
+             static_cast<TH2*>(theDir.getObject<TH1>( massName + whichtag + "_vs_iso"  ))-> Fill (vertexMass, relIso, globalWeight_ * iprob);
           } // end if doMC
        }
        else if(ePlusJets_){
@@ -1165,12 +1165,12 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
              throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
           
           if(patElectron->isEE()){
-             subdirEE.getObject<TH1F>(massName)-> Fill (vertexMass, globalWeight_* iprob);
-             if( doMC_ )  subdirEE.getObject<TH1F>(massName + whichtag)-> Fill (vertexMass, globalWeight_ * iprob);
+             subdirEE.getObject<TH1>(massName)-> Fill (vertexMass, globalWeight_* iprob);
+             if( doMC_ )  subdirEE.getObject<TH1>(massName + whichtag)-> Fill (vertexMass, globalWeight_ * iprob);
           }
           else if(patElectron->isEB()){
-             subdirEB.getObject<TH1F>(massName)-> Fill (vertexMass, globalWeight_* iprob);
-             if( doMC_ )  subdirEB.getObject<TH1F>(massName + whichtag)-> Fill (vertexMass, globalWeight_ * iprob);
+             subdirEB.getObject<TH1>(massName)-> Fill (vertexMass, globalWeight_* iprob);
+             if( doMC_ )  subdirEB.getObject<TH1>(massName + whichtag)-> Fill (vertexMass, globalWeight_ * iprob);
           }
           
        }//ePlusJets
@@ -1179,21 +1179,21 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     
     if(numJets > 3){
        string m3Name = Form("m3_%dt", kknumTags);
-       theDir.getObject<TH1F>( m3Name )->Fill(M3, globalWeight_);
+       theDir.getObject<TH1>( m3Name )->Fill(M3, globalWeight_);
     }
 	string muEtaName  = sampleHistName_ + Form("_muEta_%dj_%dt", numJets, kknumTags);
 	if ( muPlusJets_ ) {
-       theDir.getObject<TH1F>( muEtaName )-> Fill (fabs(muons[0].eta()), globalWeight_ * iprob);	
+       theDir.getObject<TH1>( muEtaName )-> Fill (fabs(muons[0].eta()), globalWeight_ * iprob);	
        if ( doMC_ ) 
-          theDir.getObject<TH1F>( muEtaName + whichtag  )-> Fill (fabs(muons[0].eta()), globalWeight_ * iprob);	       
-       theDir.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",     numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob );
-       theDir.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",    numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob );
-       theDir.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",    numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob );  
-       theDir.getObject<TH2F>(sampleNameInput + Form("_muisoVsMuEta_%dj_%dt", numJets, kknumTags))->Fill( fabs(muons[0].eta()), relIso, globalWeight_ * iprob );
-       theDir.getObject<TH2F>(sampleNameInput + Form("_muisoVsHt_%dj_%dt", numJets, kknumTags))->Fill( hT, relIso, globalWeight_ * iprob );
-       theDir.getObject<TH2F>(sampleNameInput + Form("_muisoVswMT_%dj_%dt", numJets, kknumTags))->Fill( wMT, relIso, globalWeight_ * iprob );
-       theDir.getObject<TH2F>(sampleNameInput + Form("_muisoVsMET_%dj_%dt", numJets, kknumTags))->Fill( met.pt(), relIso, globalWeight_ * iprob );
-       theDir.getObject<TH2F>(sampleNameInput + Form("_muisoVsD0_%dj_%dt", numJets, kknumTags))->Fill( d0, relIso, globalWeight_ * iprob );
+          theDir.getObject<TH1>( muEtaName + whichtag  )-> Fill (fabs(muons[0].eta()), globalWeight_ * iprob);	       
+       theDir.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",     numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob );
+       theDir.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",    numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob );
+       theDir.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",    numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob );  
+       static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVsMuEta_%dj_%dt", numJets, kknumTags)))->Fill( fabs(muons[0].eta()), relIso, globalWeight_ * iprob );
+       static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVsHt_%dj_%dt", numJets, kknumTags)))->Fill( hT, relIso, globalWeight_ * iprob );
+       static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVswMT_%dj_%dt", numJets, kknumTags)))->Fill( wMT, relIso, globalWeight_ * iprob );
+       static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVsMET_%dj_%dt", numJets, kknumTags)))->Fill( met.pt(), relIso, globalWeight_ * iprob );
+       static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVsD0_%dj_%dt", numJets, kknumTags)))->Fill( d0, relIso, globalWeight_ * iprob );
 	}
      
      else if(ePlusJets_){
@@ -1203,55 +1203,55 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
                //Fill the EE electrons
                //---------------------
                if(patElectron->isEE()){
-                  subdirEE.getObject<TH1F>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, kknumTags))-> Fill (fabs(electrons[0].eta()), globalWeight_ * iprob); //remove the fabs eta
-                  //subdirEE.getObject<TH1F>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, kknumTags))->Fill( electrons[0].pt(),    globalWeight_ * iprob);
-                  //subdirEE.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
-                  //subdirEE.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob);
-                  subdirEE.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
+                  subdirEE.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, kknumTags))-> Fill (fabs(electrons[0].eta()), globalWeight_ * iprob); //remove the fabs eta
+                  //subdirEE.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, kknumTags))->Fill( electrons[0].pt(),    globalWeight_ * iprob);
+                  //subdirEE.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
+                  //subdirEE.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob);
+                  subdirEE.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
                   if ( doMC_ ){
-                     subdirEE.getObject<TH1F>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, kknumTags) + whichtag  )->Fill (fabs(electrons[0].eta()), globalWeight_ * iprob); //remove the fabs eta
-                     //subdirEE.getObject<TH1F>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, kknumTags) + whichtag  )->Fill( electrons[0].pt(),    globalWeight_ * iprob);
-                     //subdirEE.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, kknumTags) + whichtag  )->Fill( hT,                   globalWeight_ * iprob);
-                     //subdirEE.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, kknumTags) + whichtag  )->Fill( wMT,                  globalWeight_ * iprob);
-                     subdirEE.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, kknumTags) + whichtag  )->Fill( met.pt(),             globalWeight_ * iprob);      
+                     subdirEE.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, kknumTags) + whichtag  )->Fill (fabs(electrons[0].eta()), globalWeight_ * iprob); //remove the fabs eta
+                     //subdirEE.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, kknumTags) + whichtag  )->Fill( electrons[0].pt(),    globalWeight_ * iprob);
+                     //subdirEE.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, kknumTags) + whichtag  )->Fill( hT,                   globalWeight_ * iprob);
+                     //subdirEE.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, kknumTags) + whichtag  )->Fill( wMT,                  globalWeight_ * iprob);
+                     subdirEE.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, kknumTags) + whichtag  )->Fill( met.pt(),             globalWeight_ * iprob);      
                   }
 
                   // if(useHFcat_){
-                  //   subdirEE.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ * iprob);
-                  //   subdirEE.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ * iprob);
-                     //subdirEE.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
+                  //   subdirEE.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ * iprob);
+                  //   subdirEE.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ * iprob);
+                     //subdirEE.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
                   //}
-                  subdirEE.getObject<TH1F>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
-                  subdirEE.getObject<TH1F>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob);
-                  //subdirEE.getObject<TH1F>(sampleNameInput + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
-                  subdirEE.getObject<TH1F>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, kknumTags))->Fill( electrons[0].pt(),    globalWeight_ * iprob);
+                  subdirEE.getObject<TH1>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
+                  subdirEE.getObject<TH1>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob);
+                  //subdirEE.getObject<TH1>(sampleNameInput + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
+                  subdirEE.getObject<TH1>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, kknumTags))->Fill( electrons[0].pt(),    globalWeight_ * iprob);
                   
                }//EE
                //Fill the EB electrons
                //---------------------
                else if(patElectron->isEB()){
-                  subdirEB.getObject<TH1F>(sampleHistName_ + Form("_elEta_%dj_%dt",   numJets, kknumTags))->Fill (fabs(electrons[0].eta()), globalWeight_ * iprob);//remove the fabs eta
-                  //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_elPt_%dj_%dt",    numJets, kknumTags))->Fill ( electrons[0].pt(),    globalWeight_ * iprob);
-                  //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",      numJets, kknumTags))->Fill ( hT,                   globalWeight_ * iprob);
-                  //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",     numJets, kknumTags))->Fill ( wMT,                  globalWeight_ * iprob);                  
-                  subdirEB.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",     numJets, kknumTags))->Fill ( met.pt(),             globalWeight_ * iprob);
+                  subdirEB.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",   numJets, kknumTags))->Fill (fabs(electrons[0].eta()), globalWeight_ * iprob);//remove the fabs eta
+                  //subdirEB.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",    numJets, kknumTags))->Fill ( electrons[0].pt(),    globalWeight_ * iprob);
+                  //subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",      numJets, kknumTags))->Fill ( hT,                   globalWeight_ * iprob);
+                  //subdirEB.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",     numJets, kknumTags))->Fill ( wMT,                  globalWeight_ * iprob);                  
+                  subdirEB.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",     numJets, kknumTags))->Fill ( met.pt(),             globalWeight_ * iprob);
                   if ( doMC_ ){
-                     subdirEB.getObject<TH1F>(sampleHistName_ + Form("_elEta_%dj_%dt",  numJets, kknumTags) + whichtag  )->Fill (fabs(electrons[0].eta()), globalWeight_ * iprob); //remove the fabs eta
-                     //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_elPt_%dj_%dt",   numJets, kknumTags) + whichtag  )->Fill( electrons[0].pt(),    globalWeight_ * iprob);
-                     //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",     numJets, kknumTags) + whichtag  )->Fill( hT,                   globalWeight_ * iprob);
-                     //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",    numJets, kknumTags) + whichtag  )->Fill( wMT,                  globalWeight_ * iprob);
-                     subdirEB.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",    numJets, kknumTags) + whichtag  )->Fill( met.pt(),             globalWeight_ * iprob);
+                     subdirEB.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",  numJets, kknumTags) + whichtag  )->Fill (fabs(electrons[0].eta()), globalWeight_ * iprob); //remove the fabs eta
+                     //subdirEB.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",   numJets, kknumTags) + whichtag  )->Fill( electrons[0].pt(),    globalWeight_ * iprob);
+                     //subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",     numJets, kknumTags) + whichtag  )->Fill( hT,                   globalWeight_ * iprob);
+                     //subdirEB.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",    numJets, kknumTags) + whichtag  )->Fill( wMT,                  globalWeight_ * iprob);
+                     subdirEB.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",    numJets, kknumTags) + whichtag  )->Fill( met.pt(),             globalWeight_ * iprob);
                   }
 
                   //if(useHFcat_){
-                  // subdirEB.getObject<TH1F>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
-                  //  subdirEB.getObject<TH1F>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob);
-                     //subdirEB.getObject<TH1F>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
+                  // subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
+                  //  subdirEB.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob);
+                     //subdirEB.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
                   //}
-                  subdirEB.getObject<TH1F>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
-                  subdirEB.getObject<TH1F>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob);
-                  //subdirEB.getObject<TH1F>(sampleNameInput + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
-                  subdirEB.getObject<TH1F>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, kknumTags))->Fill( electrons[0].pt(),    globalWeight_ * iprob);
+                  subdirEB.getObject<TH1>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
+                  subdirEB.getObject<TH1>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob);
+                  //subdirEB.getObject<TH1>(sampleNameInput + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
+                  subdirEB.getObject<TH1>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, kknumTags))->Fill( electrons[0].pt(),    globalWeight_ * iprob);
                }//is EB
 
             }//ePlusJets
@@ -1267,7 +1267,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 
 bool SHyFT::analyze_met(const reco::ShallowClonePtrCandidate & met)
 {
-  theDir.getObject<TH1F>( "metPt")->Fill( met.pt(), globalWeight_ );
+  theDir.getObject<TH1>( "metPt")->Fill( met.pt(), globalWeight_ );
   return true;
 }
 
@@ -1319,7 +1319,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     edm::Handle< unsigned int > heavyFlavorCategory;
     iEvent.getByLabel ( edm::InputTag("flavorHistoryFilter"),heavyFlavorCategory);
     assert ( heavyFlavorCategory.isValid() );
-    if ( useHFcat_ ) theDir.getObject<TH1F>( "flavorHistory")-> Fill ( *heavyFlavorCategory, globalWeight_ );
+    if ( useHFcat_ ) theDir.getObject<TH1>( "flavorHistory")-> Fill ( *heavyFlavorCategory, globalWeight_ );
   }
 
   sampleHistName_ = sampleNameInput + calcSampleName(iEvent);
@@ -1328,7 +1328,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
  
   if (passPre) 
     {
-      theDir.getObject<TH1F>( "nJets")->Fill( jets.size(), globalWeight_ );
+      theDir.getObject<TH1>( "nJets")->Fill( jets.size(), globalWeight_ );
       if(useHFcat_ && sampleHistName_ == sampleNameInput) return;
       make_templates(jets, met, muons, electrons);
       analyze_met( met );
@@ -1485,7 +1485,7 @@ void SHyFT::weightPDF(  edm::EventBase const & iEvent)
     
   globalWeight_ *= iWeightSum ;
   // std::cout << "Global weight = " << globalWeight_ << std::endl;
-  theDir.getObject<TH1F>( "pdfWeight")->Fill( globalWeight_ );
+  theDir.getObject<TH1>( "pdfWeight")->Fill( globalWeight_ );
 
 }
 
