@@ -11,7 +11,7 @@ def doCutAndCount( lum, Top, SingTop, QCD, Wbx, Wcx, Wqx, Zbx, Zcx, Zqx, Data, n
     bkg = SingTop + QCD + Wbx + Wcx + Wqx + Zbx + Zcx + Zqx
     dbkg = sqrt( 0.30*0.30*SingTop*SingTop
                  + 1.0*1.0*QCD*QCD
-                 + 1.0*1.0*(Wbx+Wcx+Wqx+Zbx+Zcx+Zqx)*(Wbx+Wcx+Wqx+Zbx+Zcx+Zqx) )
+                 + 2.0*2.0*(Wbx*Wbx) + 1.0*1.0*(Wcx+Wqx+Zbx+Zcx+Zqx)*(Wcx+Wqx+Zbx+Zcx+Zqx) )
     print 'Nbkg = {0:6.3f} +- {1:6.3f}'.format(
         bkg, dbkg
         )
@@ -33,8 +33,8 @@ def doCutAndCount( lum, Top, SingTop, QCD, Wbx, Wcx, Wqx, Zbx, Zcx, Zqx, Data, n
     fsf_lep = dsf_lep / sf_lep
 
     # the JEC is derived directly from this script, using the "up and down" JEC templates
-    deff_jec_up = 0.12
-    deff_jec_dn = 0.03    
+    deff_jec_up = 0.08
+    deff_jec_dn = 0.07    
 
     deff_jec_av = (deff_jec_up + deff_jec_dn) / 2.0
 

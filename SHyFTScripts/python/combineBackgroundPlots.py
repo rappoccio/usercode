@@ -65,7 +65,7 @@ parser.add_option('--useData', metavar='B', action='store_true',
                   help='Use data in estimates')
 
 parser.add_option('--dataFile', metavar='F', type='string', action='store',
-                  default='Mu_Nov4ReReco_shyft_387_v1_shyftana_v1.root',
+                  default='Mu_Nov4ReReco_shyft_387_v2_shyftana_v4.root',
                   dest='dataFile',
                   help='If useData is True, this is the file from which to get the data histograms')
 
@@ -76,7 +76,7 @@ parser.add_option('--useDataQCD', metavar='B', action='store_true',
 
 
 parser.add_option('--dataQCDFile', metavar='F', type='string', action='store',
-                  default='pf_metvsiso_normalized_qcd_templates.root',
+                  default='pf_Mu_shyft_387_v2_shyftana_v4_normalized_qcd_templates.root',
                   dest='dataQCDFile',
                   help='If useDataQCD is True, this is the file from which to get the data QCD histograms')
 
@@ -93,7 +93,7 @@ parser.add_option('--wjetsQ2Var', metavar='V', type='string', action='store',
 
 
 parser.add_option('--lum', metavar='L', action='store',
-                  default=35.9,
+                  default=36.1,
                   dest='lum',
                   help='Luminosity of the data')
 
@@ -129,7 +129,8 @@ gROOT.Macro("rootlogon.C")
 # ---------------------------------------------
 f_ttbar = TFile('TTJets_TuneD6T_7TeV-madgraph-tauola_'+inFileEnd+'.root')
 f_zjets = TFile('DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_'+inFileEnd+'.root')
-f_qcd   = TFile('QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6_'+inFileEnd+'.root')
+if not useDataQCD: 
+    f_qcd   = TFile('QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6_'+inFileEnd+'.root')
 f_st_s  = TFile('TToBLNu_TuneZ2_s-channel_7TeV-madgraph_'+inFileEnd+'.root')
 f_st_t  = TFile('TToBLNu_TuneZ2_t-channel_7TeV-madgraph_'+inFileEnd+'.root')
 f_st_tW = TFile('TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_'+inFileEnd+'.root')
@@ -243,10 +244,38 @@ maxTags = 3
 # ---------------------------------------------
 # ---------------------------------------------
 
+## pathNamesW = [
+##     ['VqqW_path1'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 1
+##     ['WjetsW_path2'    , f_wjets ,n_wjets, xs_wjets ],# path 2
+##     ['VqqW_path3'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 3
+##     ['WjetsW_path4'    , f_wjets ,n_wjets, xs_wjets ],# path 4
+##     ['WjetsW_path5'    , f_wjets ,n_wjets, xs_wjets ],# path 5
+##     ['WjetsW_path6'    , f_wjets ,n_wjets, xs_wjets ],# path 6
+##     ['WjetsW_path7'    , f_wjets ,n_wjets, xs_wjets ],# path 7
+##     ['WjetsW_path8'    , f_wjets ,n_wjets, xs_wjets ],# path 8
+##     ['WjetsW_path9'    , f_wjets ,n_wjets, xs_wjets ],# path 9
+##     ['WjetsW_path10'   , f_wjets ,n_wjets, xs_wjets ],# path 10        
+##     ['WjetsW_path11'   , f_wjets ,n_wjets, xs_wjets ],# path 11
+##     ]
+
+## pathNamesZ = [
+##     ['VqqZ_path1'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 1
+##     ['ZjetsZ_path2'    , f_zjets ,n_zjets, xs_zjets ],# path 2
+##     ['VqqZ_path3'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 3
+##     ['ZjetsZ_path4'    , f_zjets ,n_zjets, xs_zjets ],# path 4
+##     ['ZjetsZ_path5'    , f_zjets ,n_zjets, xs_zjets ],# path 5
+##     ['ZjetsZ_path6'    , f_zjets ,n_zjets, xs_zjets ],# path 6
+##     ['ZjetsZ_path7'    , f_zjets ,n_zjets, xs_zjets ],# path 7
+##     ['ZjetsZ_path8'    , f_zjets ,n_zjets, xs_zjets ],# path 8
+##     ['ZjetsZ_path9'    , f_zjets ,n_zjets, xs_zjets ],# path 9
+##     ['ZjetsZ_path10'   , f_zjets ,n_zjets, xs_zjets ],# path 10        
+##     ['ZjetsZ_path11'   , f_zjets ,n_zjets, xs_zjets ] # path 11    
+##     ]
+
 pathNamesW = [
-    ['VqqW_path1'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 1
-    ['VqqW_path2'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 2
-    ['VqqW_path3'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 3
+    ['WjetsW_path1'    , f_wjets ,n_wjets, xs_wjets ],# path 1
+    ['WjetsW_path2'    , f_wjets ,n_wjets, xs_wjets ],# path 2
+    ['WjetsW_path3'    , f_wjets ,n_wjets, xs_wjets ],# path 3
     ['WjetsW_path4'    , f_wjets ,n_wjets, xs_wjets ],# path 4
     ['WjetsW_path5'    , f_wjets ,n_wjets, xs_wjets ],# path 5
     ['WjetsW_path6'    , f_wjets ,n_wjets, xs_wjets ],# path 6
@@ -258,9 +287,9 @@ pathNamesW = [
     ]
 
 pathNamesZ = [
-    ['VqqZ_path1'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 1
-    ['VqqZ_path2'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 2
-    ['VqqZ_path3'      , f_vqq   ,n_vqq,   xs_vqq   ],# path 3
+    ['ZjetsZ_path1'    , f_zjets ,n_zjets, xs_zjets ],# path 1
+    ['ZjetsZ_path2'    , f_zjets ,n_zjets, xs_zjets ],# path 2
+    ['ZjetsZ_path3'    , f_zjets ,n_zjets, xs_zjets ],# path 3
     ['ZjetsZ_path4'    , f_zjets ,n_zjets, xs_zjets ],# path 4
     ['ZjetsZ_path5'    , f_zjets ,n_zjets, xs_zjets ],# path 5
     ['ZjetsZ_path6'    , f_zjets ,n_zjets, xs_zjets ],# path 6
@@ -270,6 +299,8 @@ pathNamesZ = [
     ['ZjetsZ_path10'   , f_zjets ,n_zjets, xs_zjets ],# path 10        
     ['ZjetsZ_path11'   , f_zjets ,n_zjets, xs_zjets ] # path 11    
     ]
+
+
 
 suffixes = [
     ['_b', '_c', '_q'],

@@ -165,10 +165,10 @@ else :
     # D = isolated, high met     <---- SIGNAL REGION
     for ijet in range(1,6) :
         for itag in [0,1] :
-            n_a = histsBkg[itag][ijet-1].Integral(1, 2, 5, 20)
-            n_b = histsBkg[itag][ijet-1].Integral(3,20, 5, 20)
+            n_a = histsBkg[itag][ijet-1].Integral(1, 2, 5, 21)
+            n_b = histsBkg[itag][ijet-1].Integral(3,21, 5, 21)
             n_c = histsSig[itag][ijet-1].Integral(1, 2, 1, 1)
-            n_d = histsSig[itag][ijet-1].Integral(3,20, 1, 1)
+            n_d = histsSig[itag][ijet-1].Integral(3,21, 1, 1)
             if n_a > 0 and n_b > 0 and n_c > 0 :
                 n_pred = float( n_b ) * float( n_c ) / float( n_a )            
                 dn_pred = n_pred * sqrt( 1/n_a + 1/n_b + 1/n_c)
