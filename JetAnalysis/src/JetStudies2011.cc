@@ -23,10 +23,17 @@ JetStudies2011::JetStudies2011(const edm::ParameterSet& iConfig, TFileDirectory&
   genJetsSrc_    ( iConfig.getParameter<edm::InputTag>("genJetsSrc")),
   useCA8GenJets_ ( iConfig.getParameter<bool>         ("useCA8GenJets")),
   weightPV_      ( iConfig.getParameter<bool>         ("weightPV")),
-  lumiWeighting_ ( iConfig.getParameter<edm::ParameterSet>("lumiWeighting").getParameter<std::string>("generatedFile"),
-		   iConfig.getParameter<edm::ParameterSet>("lumiWeighting").getParameter<std::string>("dataFile") ),
-  trigs_         (iConfig.getParameter<std::vector<std::string> >("trigs") )
+  trigs_         (iConfig.getParameter<std::vector<std::string> >("trigs") ),
+  useBTags_      ( iConfig.getParameter<bool>         ("useBTags") ),
+  orderByMass_   ( iConfig.getParameter<bool>         ("orderByMass") )
 {
+
+
+  if ( weightPV_ ) {
+    lumiWeighting_ = 
+      boost::shared_ptr<edm::LumiWeighting>( new edm::LumiWeighting( iConfig.getParameter<edm::ParameterSet>("lumiWeighting").getParameter<std::string>("generatedFile"),
+								     iConfig.getParameter<edm::ParameterSet>("lumiWeighting").getParameter<std::string>("dataFile") ) );
+  }
 
   theDir.make<TH1F>( "nPV",   ";N_{Primary Vertex}", 25, 0, 25 );
   theDir.make<TH1F>( "nPVRewightedNPV", ";N_{Primary Vertex}", 25, 0, 25 );  
@@ -97,7 +104,7 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
   else {
     passed = true;
     if ( weightPV_ ) {
-      weightMC *= lumiWeighting_.weight( h_pv->size() );
+      weightMC *= lumiWeighting_->weight( h_pv->size() );
       theDir.getObject<TH1>( "nPVRewightedNPV" )->Fill( h_pv->size(), weightMC );
     }
     edm::Handle<GenEventInfoProduct>    genEvt;
@@ -119,33 +126,56 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
 
   double rho = *h_rho;
 
-  pat::Jet const & jet0 = h_jets->at(0);
-  pat::Jet const & jet1 = h_jets->at(1);
+  int index0 = 0, index1 = 1;
+
+  if ( orderByMass_ ) {
+    if ( h_jets->at(0).mass() < h_jets->at(1).mass() ) {
+      index0 = 1;
+      index1 = 0;
+    }
+  }
+  
+
+  pat::Jet const & jet0 = h_jets->at(index0);
+  pat::Jet const & jet1 = h_jets->at(index1);
+
 
   if ( reco::deltaR<pat::Jet, pat::Jet> (jet0, jet1 ) < TMath::Pi() / 2.0 ) {
     return;
   }
 
-  double pt = jet0.pt();
-  double area = jet0.jetArea();
-  double mass = jet0.mass();
-  double eta  = jet0.eta();
-  double phi  = jet0.phi();
+  if ( useBTags_ && 
+       (jet0.bDiscriminator("simpleSecondaryVertexHighEffBJetTags") < 2.74 || jet1.bDiscriminator("simpleSecondaryVertexHighEffBJetTags") < 2.74 ) )
+    return;
+  
+  
+  double pt0 = jet0.pt();
+  double area0 = jet0.jetArea();
+  double mass0 = jet0.mass();
+  double eta0  = jet0.eta();
+  double phi0  = jet0.phi();
+
+
+  // double pt1 = jet1.pt();
+  // double area1 = jet1.jetArea();
+  // double mass1 = jet1.mass();
+  // double eta1  = jet1.eta();
+  // double phi1  = jet1.phi();
 
   if ( iEvent.isRealData() ) {    
     for ( std::vector<std::pair<unsigned int, unsigned int> >::const_iterator ifired = fired.begin(),
 	    ifiredBegin = fired.begin(),
 	    ifiredEnd = fired.end();
 	  ifired != ifiredEnd; ++ifired ) {    
-      dirs_.at( ifired->first ).getObject<TH1>( "jetArea"      )->Fill( area, weightMC * ifired->second );
-      dirs_.at( ifired->first ).getObject<TH1>( "jetPt_L2L3"   )->Fill( pt, weightMC * ifired->second );
-      dirs_.at( ifired->first ).getObject<TH1>( "jetPt_L1L2L3" )->Fill( pt - rho * area, weightMC * ifired->second );
-      dirs_.at( ifired->first ).getObject<TH1>( "jetEta"       )->Fill( eta, weightMC * ifired->second );
-      dirs_.at( ifired->first ).getObject<TH1>( "jetPhi"       )->Fill( phi, weightMC * ifired->second );
-      dirs_.at( ifired->first ).getObject<TH1>( "jetMass"      )->Fill( mass, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetArea"      )->Fill( area0, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetPt_L2L3"   )->Fill( pt0, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetPt_L1L2L3" )->Fill( pt0 - rho * area0, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetEta"       )->Fill( eta0, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetPhi"       )->Fill( phi0, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetMass"      )->Fill( mass0, weightMC * ifired->second );
     }
   } else {
-    double ptGen = 0.0;
+    double ptGen0 = 0.0;
     if ( useCA8GenJets_ ) {
       edm::Handle<std::vector<reco::GenJet> > h_genJets;
       iEvent.getByLabel( genJetsSrc_, h_genJets );
@@ -154,24 +184,24 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
 	      igenEnd = h_genJets->end(), igen = igenBegin;
 	    igen != igenEnd; ++igen ) {
 	if ( reco::deltaR<pat::Jet,reco::GenJet>( jet0, *igen ) < 0.8 ) {
-	  ptGen = igen->pt();
+	  ptGen0 = igen->pt();
 	  break;
 	}
       }
     } else {
       reco::GenJet const * igen = jet0.genJet();
       if ( igen > 0 )
-	ptGen = jet0.genJet()->pt();
+	ptGen0 = jet0.genJet()->pt();
     }
-    if ( ptGen > 0.0 ) {
-      dirs_.back().getObject<TH1>( "jetArea"      )->Fill( area, weightMC );
-      dirs_.back().getObject<TH1>( "jetPt_L2L3"   )->Fill( pt, weightMC );
-      dirs_.back().getObject<TH1>( "jetPt_L1L2L3" )->Fill( pt - rho * area, weightMC );
-      dirs_.back().getObject<TH1>( "jetEta"       )->Fill( eta, weightMC );
-      dirs_.back().getObject<TH1>( "jetPhi"       )->Fill( phi, weightMC );
-      dirs_.back().getObject<TH1>( "jetMass"      )->Fill( mass, weightMC );
-      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes_L2L3"  ))->Fill( ptGen, pt/ptGen, weightMC );
-      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes_L1L2L3"))->Fill( ptGen, (pt - rho*area)/ptGen, weightMC );
+    if ( ptGen0 > 0.0 ) {
+      dirs_.back().getObject<TH1>( "jetArea"      )->Fill( area0, weightMC );
+      dirs_.back().getObject<TH1>( "jetPt_L2L3"   )->Fill( pt0, weightMC );
+      dirs_.back().getObject<TH1>( "jetPt_L1L2L3" )->Fill( pt0 - rho * area0, weightMC );
+      dirs_.back().getObject<TH1>( "jetEta"       )->Fill( eta0, weightMC );
+      dirs_.back().getObject<TH1>( "jetPhi"       )->Fill( phi0, weightMC );
+      dirs_.back().getObject<TH1>( "jetMass"      )->Fill( mass0, weightMC );
+      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes_L2L3"  ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes_L1L2L3"))->Fill( ptGen0, (pt0 - rho*area0)/ptGen0, weightMC );
     }
   }
 

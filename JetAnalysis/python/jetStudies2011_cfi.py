@@ -20,6 +20,10 @@ jetStudies2011 = cms.PSet(
         generatedFile = cms.string("pileup_generated.root"),
         dataFile = cms.string("pileup_160405-161312.root")
         ),
+    # use b-tagging on the jets
+    useBTags = cms.bool(False),
+    # Order by jet mass instead of pt
+    orderByMass = cms.bool(False),
     # Triggers to use (in order):
     trigs = cms.vstring([
         'HLT_Jet370_v1',

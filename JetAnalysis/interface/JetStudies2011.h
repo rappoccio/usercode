@@ -56,8 +56,11 @@ class JetStudies2011 : public edm::BasicAnalyzer {
     edm::InputTag   genJetsSrc_;
     bool            useCA8GenJets_;
     bool            weightPV_;
-    edm::LumiWeighting lumiWeighting_;
     std::vector<std::string> trigs_;
+    bool            useBTags_;
+    bool            orderByMass_;
+
+    boost::shared_ptr<edm::LumiWeighting> lumiWeighting_;
 };
 
 
