@@ -1,4 +1,4 @@
- #include "Analysis/SHyFT/interface/SHyFT.h"
+#include "Analysis/SHyFT/interface/SHyFT.h"
 #include "TVector3.h"
 #include "TLorentzVector.h"
 #include <sstream>
@@ -1179,7 +1179,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     
     if(numJets > 3){
        string m3Name = Form("m3_%dt", kknumTags);
-       theDir.getObject<TH1>( m3Name )->Fill(M3, globalWeight_);
+       theDir.getObject<TH1>( m3Name )->Fill(M3, globalWeight_ * iprob);
     }
 	string muEtaName  = sampleHistName_ + Form("_muEta_%dj_%dt", numJets, kknumTags);
 	if ( muPlusJets_ ) {

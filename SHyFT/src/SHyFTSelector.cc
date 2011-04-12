@@ -173,36 +173,26 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 
    bool passTrig = false;
    if (!ignoreCut(triggerIndex_) ) {
-
       
       edm::Handle<pat::TriggerEvent> triggerEvent;
-      pat::TriggerEvent const * trig ;
+      event.getByLabel(trigTag_, triggerEvent);
+      pat::TriggerEvent const * trig =  &*triggerEvent;
       
-      
-      if( (!useEleMC_ && ePlusJets_) || muPlusJets_){
-         event.getByLabel(trigTag_, triggerEvent);
-         trig = &*triggerEvent;
-      }
-      
-      if ( muPlusJets_ && trig->wasRun() && trig->wasAccept() ) {   
-         pat::TriggerPath const * muPath = trig->path(muTrig_);
+      if ( trig->wasRun() && trig->wasAccept() ) { 
          
-         if ( muPath != 0 && muPath->wasAccept() ) {
+         const pat::TriggerPathCollection *paths = trig->paths();
+         
+         pat::TriggerPath const * lepPath;
+         if(muPlusJets_)
+            lepPath = trig->path(muTrig_);
+         else if (ePlusJets_)
+            lepPath = trig->path(eleTrig_);
+         if ( lepPath != 0 && lepPath->wasAccept() ) {
             passTrig = true;    
          }  
          
-      } 
-      
-      if(ePlusJets_){
-         if(!useEleMC_ && trig->wasRun() && trig->wasAccept() ){
-            pat::TriggerPath const * elePath = trig->path(eleTrig_);
-            
-            if (elePath != 0 && elePath->wasAccept() ) {
-               passTrig = true;
-            }
-         }
-         else if(useEleMC_)  passTrig = true;
       }
+     
    }
   
 
