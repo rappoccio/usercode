@@ -1,20 +1,33 @@
 #!/bin/python
 
 import subprocess
+import os
 
-dirs = [
-'TTbarJets-madgraph_shyftana_38xOn35x_v1',
-'WJets-madgraph_shyftana_38xOn35x_v1',
-'ZJets-madgraph_shyftana_38xOn35x_v1',
-'SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v1',
-'SingleTop_tChannel-madgraph_shyftana_38xOn35x_v1',
-'SingleTop_sChannel-madgraph_shyftana_38xOn35x_v1',
-'InclusiveMu15_shyftana_38xOn35x_v1',
+from sys import argv
+if len(argv)<2:
+    print "usage: python my_crab_status_ele.py COMMAND"
+    print "where COMMAND can be status, getoutput, etc"
+    exit()
+
+argument=""
+for i in argv[1:]:
+    argument += i+" "
+
+crabPath='/uscms_data/d2/skhalil/ShyftCrab2011'
 
 
+crabFiles = [
+#'SingleElectron_Run2011A-PromptReco',
+#'SingleMu_Run2011A-PromptReco',
+#'TTJets_TuneD6T_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1_shyft_414_v1',
+#'TToBLNu_TuneZ2_s-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1_shyft_414_v1',
+#'TToBLNu_TuneZ2_t-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1_shyft_414_v1',
+#'TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1_shyft_414_v1',
+'WJetsToLNu_TuneD6T_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1_shyft_414_v1',
 ]
 
-for idir in dirs :
-    s = "crab -status -c " + idir
+for crabFile in crabFiles :
+    s = 'crab -' + argument +' -c ' + crabPath + "/" + crabFile
     print s
-    subprocess.call( [s, ""], shell=True )
+    subprocess.call( [s], shell=True )
+
