@@ -34,7 +34,6 @@ class SHyFTPFSelector : public EventSelector {
       using EventSelector::operator();
 
       std::vector<reco::ShallowClonePtrCandidate> const & selectedJets      () const { return selectedJets_;     }
-      std::vector<reco::ShallowClonePtrCandidate> const & cleanedJets       () const { return cleanedJets_;      }
       std::vector<reco::ShallowClonePtrCandidate> const & selectedMuons     () const { return selectedMuons_;    }
       reco::ShallowClonePtrCandidate const &              selectedMET       () const { return met_; }
       std::vector<reco::ShallowClonePtrCandidate> const & selectedElectrons () const { return selectedElectrons_; }
@@ -58,7 +57,6 @@ class SHyFTPFSelector : public EventSelector {
       std::string                 trig_;
 
       std::vector<reco::ShallowClonePtrCandidate> selectedJets_;
-      std::vector<reco::ShallowClonePtrCandidate> cleanedJets_;
       std::vector<reco::ShallowClonePtrCandidate> allMuons_;
       std::vector<reco::ShallowClonePtrCandidate> selectedMuons_;
       std::vector<reco::ShallowClonePtrCandidate> allElectrons_;

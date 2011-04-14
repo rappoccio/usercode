@@ -121,7 +121,6 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 
 
   selectedJets_.clear();
-  cleanedJets_.clear();
 
   allMuons_.clear();
   selectedMuons_.clear();
@@ -217,6 +216,17 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       // get a copy of the uncorrected p4
       reco::Candidate::LorentzVector uncorrJet = ijet->correctedP4(0);
 
+      // Remove the 4-vectors from any leptons within the jet
+      for ( SHyFTPFSelector::const_iterator imu = selectedMuons_.begin(),
+	      imuEnd = selectedMuons_.end(); imu != imuEnd; ++imu ) {
+	if ( reco::deltaR<reco::Candidate,reco::Candidate>( *ijet, *imu ) < 0.5 ) 
+	  uncorrJet -= imu->p4();
+      }
+      for ( SHyFTPFSelector::const_iterator iele = selectedElectrons_.begin(),
+	      ieleEnd = selectedElectrons_.end(); iele != ieleEnd; ++iele ) {
+	if ( reco::deltaR<reco::Candidate,reco::Candidate>( *ijet, *iele ) < 0.5 ) 
+	  uncorrJet -= iele->p4();
+      }
       
       // Then get the correction (L1+L2+L3 [+L2L3 for data])
       jec_->setJetEta( uncorrJet.eta() );
@@ -285,10 +295,6 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       if ( scaledJet.pt() > jetPtMin_ && fabs(scaledJet.eta()) < jetEtaMax_ ) {
               
 	selectedJets_.push_back( scaledJet );
-	cleanedJets_.push_back( scaledJet ); /// FIXME!!! This needs a proper overlap removal.
-	                                     /// Unfortunately I forgot to save the PFCandidates
-	                                     /// in my PAT-tuples so I can't do O.R. at the "ref" level.
-	                                     /// Ignore this for now. 
       }
     }// end loop over jets
 
@@ -401,27 +407,27 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 	      passCut( ret, metHighIndex_ );
 
 	      if ( ignoreCut(jet1Index_) ||
-		   static_cast<int>(cleanedJets_.size()) >=  1 ){
+		   static_cast<int>(selectedJets_.size()) >=  1 ){
 		passCut(ret,jet1Index_);  
 	      } // end if >=1 tight jets
 
 	      if ( ignoreCut(jet2Index_) ||
-		   static_cast<int>(cleanedJets_.size()) >=  2 ){
+		   static_cast<int>(selectedJets_.size()) >=  2 ){
 		passCut(ret,jet2Index_);  
 	      } // end if >=2 tight jets
 
 	      if ( ignoreCut(jet3Index_) ||
-		   static_cast<int>(cleanedJets_.size()) >=  3 ){
+		   static_cast<int>(selectedJets_.size()) >=  3 ){
 		passCut(ret,jet3Index_);  
 	      } // end if >=3 tight jets
 
 	      if ( ignoreCut(jet4Index_) ||
-		   static_cast<int>(cleanedJets_.size()) >=  4 ){
+		   static_cast<int>(selectedJets_.size()) >=  4 ){
 		passCut(ret,jet4Index_);  
 	      } // end if >=4 tight jets
 
 	      if ( ignoreCut(jet5Index_) ||
-		   static_cast<int>(cleanedJets_.size()) >=  5 ){
+		   static_cast<int>(selectedJets_.size()) >=  5 ){
 		passCut(ret,jet5Index_);  
 	      }
 
