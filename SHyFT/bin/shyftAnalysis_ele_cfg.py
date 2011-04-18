@@ -34,13 +34,13 @@ process.shyftAnalysis = inputShyftAnalysis.clone(
     ePlusJets = cms.bool(True),
     muPlusJets = cms.bool(False),
     metMin = cms.double(0.),
-    cutsToIgnore=cms.vstring('Trigger')
+    cutsToIgnore=cms.vstring('Trigger'),
 
     #metMax = cms.double(25.),
 
    #***********Uncomment if want to test on WJets, ZJets, Vqq, WcJets******************
     #sampleName="Wjets",
-    doMC = True,
+    #doMC = True,
     #heavyFlavour = True,
    #***********************************************************************************
     
