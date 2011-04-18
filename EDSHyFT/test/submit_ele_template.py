@@ -76,7 +76,7 @@ for crabFileStr in crabFileStrs :
     crabName = 'crab_' + outname + '.cfg'
     fout = open( crabName, 'w')
     # write the text to the output file
-    fout.write( a7 )
+    fout.write( a8 )
     fout.close()
     print '------ CRAB starting up! ------'
     # now create the job:
