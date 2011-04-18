@@ -67,9 +67,7 @@ if options.ignoreTrigger == 1 :
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    #'dcap:///pnfs/cms/WAX/11/store/user/deisher/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/shyft_387_v1/737d7c15907ff9528cafe5c4f5f659dc/shyft_386_mc_9_1_srJ.root'
-                                    #'dcap:///pnfs/cms/WAX/11/store/user/skhalil/TTJets_TuneZ2_7TeV-madgraph-tauola/shyft_387_v1/1bcebbd0f1a486aa7aaef10a50ee94bd/shyft_386_mc_9_1_54K.root'
-                                     'dcap:///pnfs/cms/WAX/11/store/user/skhalil/VQQJetsToLL_TuneD6T_scaledown_7TeV-madgraph-tauola/shyft_387_v1/58c449dbeb9a6e986b9b7014f36267b3/shyft_386_mc_78_2_X1i.root'
+                                    '/store/user/makouski/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/shyft_414_v1/4102b2143a05266d07e3ed7d177f56c8/shyft_414patch1_mc_9_1_Z8F.root'
                                     )
                                 )
 else :
@@ -93,13 +91,13 @@ process.TFileService = cms.Service("TFileService",
                                    )
 
 #_____________________________________PF__________________________________________________
-process.pfRecoShyftAna = cms.EDAnalyzer('EDSHyFT',
+process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                     shyftAnalysis = inputShyftAnalysis.clone(
-                                        muonSrc = cms.InputTag('selectedPatMuons'),
-                                        electronSrc = cms.InputTag('selectedPatElectrons'),
-                                        metSrc = cms.InputTag('patMETsPF'),
-                                        jetSrc = cms.InputTag('selectedPatJetsAK5PF'),                                       
-                                        jetPtMin = cms.double(25.0),
+                                        muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
+                                        electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
+                                        metSrc = cms.InputTag('patMETsPFlow'),
+                                        jetSrc = cms.InputTag('selectedPatJetsPFlow'),                                       
+                                        jetPtMin = cms.double(30.0),##
                                         minJets = cms.int32(5),
                                         metMin = cms.double(20.0),                                        
                                         heavyFlavour = cms.bool( useFlavorHistory ),
@@ -107,93 +105,50 @@ process.pfRecoShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         sampleName = cms.string(inputSampleName),
                                         identifier = cms.string('PF'),
                                         jetAlgo = cms.string("pf"),
+                                        simpleSFCalc = cms.bool(False),                                        
                                         reweightBTagEff = cms.bool(True),
-                                        useCustomPayload = cms.bool(True),
+                                        weightSFCalc = cms.bool(True),                                        
+                                        useCustomPayload = cms.bool(False),
                                         bcEffScale = cms.double(1.00),
-                                        lfEffScale = cms.double(0.9),
+                                        lfEffScale = cms.double(1.00),
                                         jetSmear = cms.double(0.1),
                                         cutsToIgnore=cms.vstring(inputCutsToIgnore)
                                         )                                    
                                     )
 
-#___________Special case of MET > 30 and MET < 20 GeV_________________
-process.pfRecoShyftAnaMETMax20 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+#___________Special case of MET < 20 GeV_________________
+process.pfShyftAnaMETMax20 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         identifier = cms.string('PF MET <20'),
         metMin = cms.double(0.0),
         metMax = cms.double(20.0),
         )
     )
 
-process.pfRecoShyftAnaMETMin30 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-        identifier = cms.string('PF MET >30'),
-        metMin = cms.double(30.0)
+#___________no MET cut________________
+process.pfShyftAnaNoMET = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+        metMin = cms.double(0.0),
+        identifier = cms.string('PF no MET')
         )
     )
 
-
-#_____________________________________PFlow__________________________________________________
-process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
-                                    shyftAnalysis = inputShyftAnalysis.clone(
-                                        muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
-                                        electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
-                                        metSrc = cms.InputTag('patMETsPFlow'),
-                                        jetSrc = cms.InputTag('selectedPatJetsPFlow'),
-                                        jetPtMin = cms.double(25.0),
-                                        minJets = cms.int32(5),
-                                        metMin = cms.double(20.0),                                        
-                                        heavyFlavour = cms.bool( useFlavorHistory ),
-                                        doMC = cms.bool( inputDoMC),
-                                        sampleName = cms.string(inputSampleName),
-                                        identifier = cms.string('PFlow'),
-                                        jetAlgo = cms.string("pf"),
-                                        reweightBTagEff = cms.bool(True),
-                                        useCustomPayload = cms.bool(True),
-                                        bcEffScale = cms.double(1.00),
-                                        lfEffScale = cms.double(0.9),
-                                        jetSmear = cms.double(0.1),
-                                        cutsToIgnore=cms.vstring(inputCutsToIgnore)
-                                        )                                    
-                                    )
-
-#_____________________________________JPT__________________________________________________
-process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
-                                     shyftAnalysis = inputShyftAnalysis.clone(
-                                         metSrc = cms.InputTag('patMETsTC'),
-                                         jetSrc = cms.InputTag('selectedPatJetsAK5JPT'),                                         
-                                         jetPtMin = cms.double(30.0),
-                                         metMin = cms.double(20.0),
-                                         minJets = cms.int32(5),
-                                         heavyFlavour = cms.bool( useFlavorHistory ),
-                                         doMC = cms.bool( inputDoMC),
-                                         sampleName = cms.string(inputSampleName),
-                                         identifier = cms.string('JPT'),
-                                         jetAlgo = cms.string("jpt"),
-                                         reweightBTagEff = cms.bool(True),
-                                         useCustomPayload = cms.bool(True),
-                                         bcEffScale = cms.double(1.00),
-                                         lfEffScale = cms.double(0.9),
-                                         cutsToIgnore=cms.vstring(inputCutsToIgnore)
-                                        )
-                                     
-                                     )
-
-
 #______________To extract secvtx shapes and >=3 tag jets count _____________________
 
-process.pfRecoShyftAnaMC = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaMC = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
     identifier = cms.string('PF MC'),
+    weightSFCalc = cms.bool(False),
     simpleSFCalc = cms.bool(False),
 	reweightBTagEff = cms.bool(False),
     useCustomPayload = cms.bool(False),
     )
     )
 
-process.pfRecoShyftAnaMCNoMET = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaMCNoMET = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
     identifier = cms.string('PF MC no MET'),
+    weightSFCalc = cms.bool(False),
     simpleSFCalc = cms.bool(False),
     reweightBTagEff = cms.bool(False),
     useCustomPayload = cms.bool(False),
@@ -201,9 +156,10 @@ process.pfRecoShyftAnaMCNoMET = process.pfRecoShyftAna.clone(
     )
     )
 
-process.pfRecoShyftAnaMCMax20MET = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaMCMETMax20 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
     identifier = cms.string('PF MC MET < 20'),
+    weightSFCalc = cms.bool(False),
     simpleSFCalc = cms.bool(False),
     reweightBTagEff = cms.bool(False),
     useCustomPayload = cms.bool(False),
@@ -212,412 +168,166 @@ process.pfRecoShyftAnaMCMax20MET = process.pfRecoShyftAna.clone(
     )
     )
 
-process.pfRecoShyftAnaMCMin30MET = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-    identifier = cms.string('PF MC MET > 30'),
-    simpleSFCalc = cms.bool(False),
-    reweightBTagEff = cms.bool(False),
-    useCustomPayload = cms.bool(False),
-    metMin = cms.double(30.0),
-    )
-    )
-
-#_________PF2PAT____________________
-process.pfShyftAnaMC = process.pfShyftAna.clone(
-    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-        identifier = cms.string('PF MC'),
-        simpleSFCalc = cms.bool(False),
-        reweightBTagEff = cms.bool(False),
-        useCustomPayload = cms.bool(False),  
-        )
-    )
-
-process.pfShyftAnaMCNoMET = process.pfShyftAna.clone(
-    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-    identifier = cms.string('PFlow MC no MET'),
-    simpleSFCalc = cms.bool(False),
-    reweightBTagEff = cms.bool(False),
-    useCustomPayload = cms.bool(False),
-    metMin = cms.double(0.0),
-    )
-    )
-
-#_________JPT____________________
-process.jptShyftAnaMC = process.jptShyftAna.clone(
-    shyftAnalysis = process.jptShyftAna.shyftAnalysis.clone(
-    identifier = cms.string('JPT MC'),
-    simpleSFCalc = cms.bool(False),
-    reweightBTagEff = cms.bool(False),
-    useCustomPayload = cms.bool(False),
-    )
-    )
-
-process.jptShyftAnaMCNoMET = process.jptShyftAna.clone(
-    shyftAnalysis = process.jptShyftAna.shyftAnalysis.clone(
-    identifier = cms.string('JPT MC no MET'),
-    simpleSFCalc = cms.bool(False),
-    reweightBTagEff = cms.bool(False),
-    useCustomPayload = cms.bool(False),
-    metMin = cms.double(0.0),
-    )
-    )
-
-
 ################################################
 #_______________Systematics__________________
 #################################################
 
 #________________________btagging Systematics ____________________________
 
+##HF
 
-#____________________PF___________________
-
-
-process.pfRecoShyftAnaReweightedUnity = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-        identifier = cms.string('PF Reweighted, unity'),
-        reweightBTagEff = cms.bool(True),
-        useCustomPayload = cms.bool(True),                                                      
-        bcEffScale = cms.double(1.00),
-        lfEffScale = cms.double(1.00),        
-        )
-    )
-
-process.pfRecoShyftAnaReweightedBTag080 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaReweightedBTag080 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         identifier = cms.string('PF Reweighted BTag 080'),
-        reweightBTagEff = cms.bool(True),
-        useCustomPayload = cms.bool(True),                                                   
-        bcEffScale = cms.double(0.80),
-        lfEffScale = cms.double(0.9),        
+        bcEffScale = cms.double(0.80),        
         )
     )
 
-process.pfRecoShyftAnaReweightedBTag090 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaReweightedBTag090 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         identifier = cms.string('PF Reweighted BTag 090'),
-        reweightBTagEff = cms.bool(True),
-        useCustomPayload = cms.bool(True),
         bcEffScale = cms.double(0.90),
-        lfEffScale = cms.double(0.9),        
         )
     )
 
 
-process.pfRecoShyftAnaReweightedBTag110 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaReweightedBTag110 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         identifier = cms.string('PF Reweighted BTag 110'),
-        reweightBTagEff = cms.bool(True),
-        useCustomPayload = cms.bool(True),                                                    
         bcEffScale = cms.double(1.10),
-        lfEffScale = cms.double(0.9),        
         )
     )
 
-process.pfRecoShyftAnaReweightedBTag120 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaReweightedBTag120 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         identifier = cms.string('PF Reweighted BTag 120'),
-        reweightBTagEff = cms.bool(True),
-        useCustomPayload = cms.bool(True),                                                    
         bcEffScale = cms.double(1.20),
-        lfEffScale = cms.double(0.9),        
         )
     )
 
 
 ##LF
 
-process.pfRecoShyftAnaReweightedLFTag070 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-        identifier = cms.string('PF Reweighted LFTag 070'),
-        reweightBTagEff = cms.bool(True),
-        useCustomPayload = cms.bool(True),                                                    
-        lfEffScale = cms.double(0.70),
-        bcEffScale = cms.double(1.00),        
-        )
-    )
-
-process.pfRecoShyftAnaReweightedLFTag080 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaReweightedLFTag080 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         identifier = cms.string('PF Reweighted LFTag 080'),
-        reweightBTagEff = cms.bool(True),
-        useCustomPayload = cms.bool(True),                                                    
         lfEffScale = cms.double(0.80),
-        bcEffScale = cms.double(1.00),        
         )
     )
 
-
-process.pfRecoShyftAnaReweightedLFTag090 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-        identifier = cms.string('PF Reweighted LFTag 090'),
-        reweightBTagEff = cms.bool(True),
-        useCustomPayload = cms.bool(True),                                                    
+process.pfShyftAnaReweightedLFTag090 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF Reweighted LFTag 090'),        
         lfEffScale = cms.double(0.90),
-        bcEffScale = cms.double(1.00),        
         )
     )
 
-process.pfRecoShyftAnaReweightedLFTag100 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-        identifier = cms.string('PF Reweighted LFTag 100'),
-        reweightBTagEff = cms.bool(True),
-        useCustomPayload = cms.bool(True),                                                       
-        lfEffScale = cms.double(1.00),
-        bcEffScale = cms.double(1.00),        
-        )
-    )
-
-
-process.pfRecoShyftAnaReweightedLFTag110 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-        identifier = cms.string('PF Reweighted LFTag 110'),
-        reweightBTagEff = cms.bool(True),
-        useCustomPayload = cms.bool(True),                                                       
+process.pfShyftAnaReweightedLFTag110 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF Reweighted LFTag 110'),     
         lfEffScale = cms.double(1.10),
-        bcEffScale = cms.double(1.10),        
         )
     )
 
-#____________________JES up and down with MET Cut > 20_______________________
+process.pfShyftAnaReweightedLFTag120 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF Reweighted LFTag 120'),
+        lfEffScale = cms.double(1.20)
+        )
+    )
 
-process.pfRecoShyftAnaJES095 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+#____________________JES up and down _______________________
+
+process.pfShyftAnaJES095 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         jetScale = cms.double(-1.0),
-        jetUncertainty = cms.double(0.053),
+        jetUncertainty = cms.double(0.036),
         identifier = cms.string('PFJES095')
         )
     )
 
-process.pfRecoShyftAnaJES105 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaJES105 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         jetScale = cms.double(1.0),
-        jetUncertainty = cms.double(0.053),
+        jetUncertainty = cms.double(0.036),
         identifier = cms.string('PFJES105')
         )
     )
 
-process.pfRecoShyftAnaJER000 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+#____________________JER _______________________
+process.pfShyftAnaJER000 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         jetSmear = cms.double(0.00),
         identifier = cms.string('PFJER000')
         )
     )
 
-process.pfRecoShyftAnaJER020 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaJER020 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         jetSmear = cms.double(0.20),
         identifier = cms.string('PFJER020')
         )
     )
 
-process.pfRecoShyftAnaMETRES090 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+#____________________MET Resolution _______________________
+process.pfShyftAnaMETRES090 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         unclMetScale = cms.double( 0.90 ),
         identifier = cms.string('PFMETRES090')
         )
     )
 
-process.pfRecoShyftAnaMETRES110 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaMETRES110 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         unclMetScale = cms.double( 1.10 ),
         identifier = cms.string('PFMETRES110')
         )
     )
 
-process.pfRecoShyftAnaEleEEPt125 =  process.pfRecoShyftAna.clone(
-     shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaEleEEPt125 =  process.pfShyftAna.clone(
+     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         ePtScale = cms.double(1.0),
         ePtUncertaintyEE = cms.double( 0.025),
         identifier = cms.string('PFEleEEPt125')
         )
     )
 
-process.pfRecoShyftAnaEleEEPt075 =  process.pfRecoShyftAna.clone(
-     shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
+process.pfShyftAnaEleEEPt075 =  process.pfShyftAna.clone(
+     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         ePtScale = cms.double(-1.0),
         ePtUncertaintyEE = cms.double( 0.025),
         identifier = cms.string('PFEleEEPt075')
         )
     )
-#____________________JES up and down with MET Cut > 30_______________________
-process.pfRecoShyftAnaJES095METMin30 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-        metMin = cms.double(30.0),
-        jetScale = cms.double(-1.0),
-        jetUncertainty = cms.double(0.053),
-        identifier = cms.string('PFJES095 MET >30')
-        )
-    )
-
-process.pfRecoShyftAnaJES105METMin30 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-        metMin = cms.double(30.0),
-        jetScale = cms.double(1.0),
-        jetUncertainty = cms.double(0.053),
-        identifier = cms.string('PFJES105 MET >30')
-        )
-    )
-
-process.pfRecoShyftAnaJER000METMin30 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-        metMin = cms.double(30.0),
-        jetSmear = cms.double(0.00),
-        identifier = cms.string('PFJER000 MET > 30')
-        )
-    )
-
-process.pfRecoShyftAnaJER020METMin30 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-        metMin = cms.double(30.0),
-        jetSmear = cms.double(0.20),
-        identifier = cms.string('PFJER020 MET >30')
-        )
-    )
-
-
-process.pfRecoShyftAnaMETRES090METMin30 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-        metMin = cms.double(30.0),
-        unclMetScale = cms.double( 0.90 ),
-        identifier = cms.string('PFMETRES090 MET > 30')
-        )
-    )
-
-process.pfRecoShyftAnaMETRES110METMin30 = process.pfRecoShyftAna.clone(
-    shyftAnalysis = process.pfRecoShyftAna.shyftAnalysis.clone(
-        metMin = cms.double(30.0),
-        unclMetScale = cms.double( 1.10 ),
-        identifier = cms.string('PFMETRES110 MET > 30')
-        )
-    )
-
-
-#____________________JPT_______________________
-process.jptShyftAnaJES095 = process.jptShyftAna.clone(
-    shyftAnalysis = process.jptShyftAna.shyftAnalysis.clone(
-        jetScale = cms.double(0.95),
-        identifier = cms.string('JPTJES095')
-        )
-    )
-
-process.jptShyftAnaJES105 = process.jptShyftAna.clone(
-    shyftAnalysis = process.jptShyftAna.shyftAnalysis.clone(
-        jetScale = cms.double(1.05),
-        identifier = cms.string('JPTJES105')
-        )
-    )
-
-#______________ Nominal, JES up and down without MET Cut____________
-
-#___________________PF___________________
-
-process.pfRecoShyftAnaNoMET = process.pfRecoShyftAna.clone(
-    shyftAnalysis=process.pfRecoShyftAna.shyftAnalysis.clone(
-        metMin = cms.double(0.0),
-        identifier = cms.string('PF no MET')
-        )
-    )
-
-process.pfRecoShyftAnaJES095NoMET = process.pfRecoShyftAnaNoMET.clone(
-    shyftAnalysis = process.pfRecoShyftAnaNoMET.shyftAnalysis.clone(
-        jetScale = cms.double(0.95),
-        identifier = cms.string('PFJES095')
-        )
-    )
-
-process.pfRecoShyftAnaJES105NoMET = process.pfRecoShyftAnaNoMET.clone(
-    shyftAnalysis = process.pfRecoShyftAnaNoMET.shyftAnalysis.clone(
-        jetScale = cms.double(1.05),
-        identifier = cms.string('PFJES105')
-        )
-    )
-
-#__________________PF2PAT_____________
-
-process.pfShyftAnaNoMET = process.pfShyftAna.clone(
-    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-        identifier = cms.string('PF No MET'),
-        metMin = cms.double(0.0)
-        )
-    )
-process.pfShyftAnaJES095 = process.pfShyftAna.clone(
-    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-    jetScale = cms.double(0.95),
-    identifier = cms.string('PFlowJES095')
-    )
-    )
-
-process.pfShyftAnaJES105 = process.pfShyftAna.clone(
-    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-    jetScale = cms.double(1.05),
-    identifier = cms.string('PFlowJES105')
-    )
-    )
-
-#_________________JPT________________
-
-process.jptShyftAnaNoMET = process.jptShyftAna.clone(
-    shyftAnalysis = process.jptShyftAna.shyftAnalysis.clone(
-        identifier = cms.string('JPT No MET'),
-        metMin = cms.double(0.0)
-        )
-    )
-
-
-process.jptShyftAnaJES095NoMET = process.jptShyftAnaNoMET.clone(
-    shyftAnalysis = process.jptShyftAnaNoMET.shyftAnalysis.clone(
-        jetScale = cms.double(0.95),
-        identifier = cms.string('JPTJES095')
-        )
-    )
-
-process.jptShyftAnaJES105NoMET = process.jptShyftAnaNoMET.clone(
-    shyftAnalysis = process.jptShyftAnaNoMET.shyftAnalysis.clone(
-        jetScale = cms.double(1.05),
-        identifier = cms.string('JPTJES105')
-        )
-    )
 
 process.s = cms.Sequence(
-   process.pfRecoShyftAna*                 #Gsf+PF
-   process.pfRecoShyftAnaMETMax20*
-   process.pfRecoShyftAnaMETMin30*
-   process.pfRecoShyftAnaJES095*    
-   process.pfRecoShyftAnaJES105*
-   process.pfRecoShyftAnaMETRES090*
-   process.pfRecoShyftAnaMETRES110*
-   process.pfRecoShyftAnaJER000*
-   process.pfRecoShyftAnaJER020*
-   process.pfRecoShyftAnaEleEEPt125*
-   process.pfRecoShyftAnaEleEEPt075*
-   #process.pfRecoShyftAnaJES095METMin30*       #MET > 30
-   #process.pfRecoShyftAnaJES105METMin30*
-   #process.pfRecoShyftAnaMETRES090METMin30*
-   #process.pfRecoShyftAnaMETRES110METMin30*
-   #process.pfRecoShyftAnaJER000METMin30*
-   #process.pfRecoShyftAnaJER020METMin30*
-  # process.pfRecoShyftAnaJES095NoMET*    
-  # process.pfRecoShyftAnaJES105NoMET*  
-    process.pfRecoShyftAnaReweightedUnity*
-    process.pfRecoShyftAnaReweightedBTag080*
-    process.pfRecoShyftAnaReweightedBTag090*
-    process.pfRecoShyftAnaReweightedBTag110*
-    process.pfRecoShyftAnaReweightedBTag120*
-    process.pfRecoShyftAnaReweightedLFTag070*    
-    process.pfRecoShyftAnaReweightedLFTag080*
-    process.pfRecoShyftAnaReweightedLFTag090*
-    process.pfRecoShyftAnaReweightedLFTag110*
-    process.pfRecoShyftAnaNoMET*
-    process.pfRecoShyftAnaMC*
-    process.pfRecoShyftAnaMCNoMET*
-    process.pfRecoShyftAnaMCMax20MET
-    #process.pfRecoShyftAnaMCMin30MET
+   process.pfShyftAna*                 
+   process.pfShyftAnaNoMET*
+   process.pfShyftAnaJES095*    
+   process.pfShyftAnaJES105*
+   process.pfShyftAnaMETRES090*
+   process.pfShyftAnaMETRES110*
+   process.pfShyftAnaJER000*
+   process.pfShyftAnaJER020*
+   process.pfShyftAnaEleEEPt125*
+   process.pfShyftAnaEleEEPt075* 
+   process.pfShyftAnaReweightedBTag080*
+   process.pfShyftAnaReweightedBTag090*
+   process.pfShyftAnaReweightedBTag110*
+   process.pfShyftAnaReweightedBTag120*
+   process.pfShyftAnaReweightedLFTag080*
+   process.pfShyftAnaReweightedLFTag090*
+   process.pfShyftAnaReweightedLFTag110*
+   process.pfShyftAnaReweightedLFTag120*
+   process.pfShyftAnaMC*
+   process.pfShyftAnaMCNoMET*
+   process.pfShyftAnaMETMax20*
+   process.pfShyftAnaMCMETMax20
     )
 
 process.p = cms.Path(
-    process.pfRecoShyftAna*
-    process.pfRecoShyftAnaMC
+    process.pfShyftAna*
+    process.pfShyftAnaMC
     )
 
 if options.allSys == 1 :
