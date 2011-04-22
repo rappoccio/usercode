@@ -30,8 +30,15 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   edm::BasicAnalyzer(iConfig,iDir),
   wPlusJets(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis")),
   theDir(iDir),
+  
   subdirEB( theDir.mkdir("eleEB") ),
   subdirEE( theDir.mkdir("eleEE") ),
+   
+  subdirEB_plus ( theDir.mkdir("eleEB_plus") ),
+  subdirEE_plus ( theDir.mkdir("eleEE_plus") ),
+  subdirEB_minus ( theDir.mkdir("eleEB_minus") ),
+  subdirEE_minus ( theDir.mkdir("eleEE_minus") ),
+   
   muPlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("muPlusJets")),
   ePlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("ePlusJets")),
   useHFcat_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("heavyFlavour")),
@@ -93,8 +100,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
       theDir.make<TH1F>("eECalIso",  "Electron ECal Iso",        30,    0,  30);
       theDir.make<TH1F>("eHCalIso",  "Electron HCal Iso",        30,    0,  30);
       theDir.make<TH1F>("eRelIso",   "Electron Rel Iso",         30,    0,  30);
-      theDir.make<TH1F>("ejetdR_EE", "dR b/w closest jet and electron in EE", 50, 0, 1.0);
-      theDir.make<TH1F>("ejetdR_EB", "dR b/w closest jet and electron in EB", 50, 0, 1.0);
+      theDir.make<TH1F>("ejetdR_EE", "dR b/w closest jet and electron in EE", 60, 0, 3.0);
+      theDir.make<TH1F>("ejetdR_EB", "dR b/w closest jet and electron in EB", 60, 0, 3.0);
       theDir.make<TH1F>("eDelEta_EE",  "#Delta #eta in EE", 36, -0.04, 0.04);
       theDir.make<TH1F>("eDelEta_EB",  "#Delta #eta in EB", 36, -0.04, 0.04);
       theDir.make<TH1F>("eDelPhi_EE",  "#Delta #phi in EE", 50, -0.25, 0.25);
@@ -331,7 +338,9 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
    }
    for (unsigned int j=0;j<sampleName.size();++j) {
      if(useHFcat_){
-
+      
+        //Splitting each variable into flavor path according to flavor path history
+        //-------------------------------------------------------------------------
        for ( int itag = 0; itag <= 2; ++itag ) {
           if(muPlusJets_){
              
@@ -363,6 +372,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
              //   }
          }
           
+          //NO NEED TO DO THAT IF GOING TO FURTHER DIVID THEM INTO JET FLAVOURS, SO I HAVE COMMENTED OUT THE FOLLOWING LINES
+   
           // else if(ePlusJets_){
              // hT
             //  for ( unsigned int k=0; k < hTName.size(); ++k ) {
@@ -498,8 +509,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
                else if( (!doMC_) && k==0 && l==0) break; // Data says "You had me at "Hello" ".
                else if( (!doMC_) && k==1 && l==1) break; // 
             }//l
-         }//k       
-*/
+         }//k  
+*/     
       }//ePlusJets
 
    }//end j sample Name
@@ -642,7 +653,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   double wMT = TMath::Sqrt(wPt*wPt-wPx*wPx-wPy*wPy);
   double hT = lep_p4.pt() + nu_p4.Et();
   double hT_lep = lep_p4.pt();
-  double hcalIso(-99.), ecalIso(-99.), trkIso(-99.), pt(-99.), relIso(-99.), d0(-99);
+  double hcalIso(-99.), ecalIso(-99.), trkIso(-99.), pt(-99.), relIso(-99.), d0(-99), lepEta(-99.), lepPhi(-99.);
+  bool   isEE(0), isEB(0);
   if(muPlusJets_){
     pat::Muon const * patMuon = dynamic_cast<pat::Muon const *>(&* muons[0].masterClonePtr());
     if ( patMuon == 0 )
@@ -652,18 +664,25 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     trkIso  = patMuon->trackIso();
     pt      = patMuon->pt() ;
     d0      = fabs(patMuon->dB());  
-    relIso = (ecalIso + hcalIso + trkIso) / pt;
+    relIso  = (ecalIso + hcalIso + trkIso) / pt;
+    lepEta  = patMuon->eta();
+    lepPhi  = patMuon->phi();
   }
   else if(ePlusJets_){
     pat::Electron const * patElectron = dynamic_cast<pat::Electron const *>(&* electrons[0].masterClonePtr());
     if ( patElectron == 0 )
       throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
+    isEE = patElectron->isEE();
+    isEB = patElectron->isEB();
+
     hcalIso = patElectron->dr03HcalTowerSumEt();
     ecalIso = patElectron->dr03EcalRecHitSumEt();
     trkIso  = patElectron->dr03TkSumPt();
     pt      = patElectron->pt() ;
     d0      = fabs(patElectron->dB());
     relIso = (ecalIso + hcalIso + trkIso) / pt;
+    lepEta  = patElectron->eta();
+    lepPhi  = patElectron->phi();
   }
   unsigned int maxJets = jets.size();
   unsigned int ibjet = 0;
@@ -763,17 +782,11 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 
            //dR b/w jet and lepton
       if(ePlusJets_){
-         pat::Electron const * iElectron = dynamic_cast<pat::Electron const *>(&* electrons[0].masterClonePtr());
-         if ( iElectron == 0 )
-            throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
-         double dR = reco::deltaR( iElectron->eta(), iElectron->phi(), jetIter->eta(), jetIter->phi() );
-         if(iElectron->isEE()){
-            theDir.getObject<TH1>( "ejetdR_EE")->Fill( dR, globalWeight_ );
-         }
-         else if(iElectron->isEB()){
-            theDir.getObject<TH1>( "ejetdR_EB")->Fill( dR, globalWeight_ );
-         }
+          double dR = reco::deltaR( lepEta, lepPhi, jetIter->eta(), jetIter->phi() );
+          if (isEE)  theDir.getObject<TH1>( "ejetdR_EE")->Fill( dR, globalWeight_ );
+          else if (isEB) theDir.getObject<TH1>( "ejetdR_EB")->Fill( dR, globalWeight_ );
       }
+
       //Here we determine what kind of flavor we have in this jet	
       if( doMC_ ) {
 	switch (jetFlavor)
@@ -956,14 +969,11 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
          }//muPlusJets
 
          else if(ePlusJets_){
-            pat::Electron const * patElectron = dynamic_cast<pat::Electron const *>(&* electrons[0].masterClonePtr());
-            if ( patElectron == 0 )
-               throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
-            if(patElectron->isEE()){
+            if (isEE){
                subdirEE.getObject<TH1>(massName)-> Fill (vertexMass, globalWeight_);
                if( doMC_ ) subdirEE.getObject<TH1>(massName + whichtag  )-> Fill (vertexMass, globalWeight_);//end if doMC
             }
-            else if(patElectron->isEB()){
+            else if(isEB){
                subdirEB.getObject<TH1>(massName)-> Fill (vertexMass, globalWeight_);
                if( doMC_ ) subdirEB.getObject<TH1>(massName + whichtag  )-> Fill (vertexMass, globalWeight_);//end if doMC
             }
@@ -991,19 +1001,17 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
        static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVsD0_%dj_%dt", numJets, numTags)))->Fill( d0, relIso, globalWeight_ );
     }
     else if(ePlusJets_){
-         pat::Electron const * patElectron = dynamic_cast<pat::Electron const *>(&* electrons[0].masterClonePtr());
-         if ( patElectron == 0 )
-            throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
+        
          //Fill the EE electrons
          //---------------------
-         if(patElectron->isEE()){
-            subdirEE.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, numTags))->Fill( fabs(electrons[0].eta()), globalWeight_); //remove the fabs eta
+         if(isEE){
+            subdirEE.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, numTags))->Fill( fabs(electrons[0].eta()), globalWeight_); 
             //subdirEE.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
             //subdirEE.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
             //subdirEE.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
             subdirEE.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
             if ( doMC_ ){
-               subdirEE.getObject<TH1>( sampleHistName_ + Form("_elEta_%dj_%dt", numJets, numTags) + whichtag  )->Fill( fabs(electrons[0].eta()), globalWeight_); //remove the fabs eta
+               subdirEE.getObject<TH1>( sampleHistName_ + Form("_elEta_%dj_%dt", numJets, numTags) + whichtag  )->Fill( fabs(electrons[0].eta()), globalWeight_); 
                //subdirEE.getObject<TH1>( sampleHistName_ + Form("_elPt_%dj_%dt",  numJets, numTags) + whichtag  )->Fill( electrons[0].pt(),    globalWeight_ );
                //subdirEE.getObject<TH1>( sampleHistName_ + Form("_hT_%dj_%dt",    numJets, numTags) + whichtag  )->Fill( hT,                   globalWeight_ );
                //subdirEE.getObject<TH1>( sampleHistName_ + Form("_wMT_%dj_%dt",   numJets, numTags) + whichtag  )->Fill( wMT,                  globalWeight_ );
@@ -1022,7 +1030,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
          }//is EE
          //Fill the EB electrons
          //---------------------
-         else if(patElectron->isEB()){
+         else if(isEB){
             subdirEB.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, numTags))->Fill(fabs(electrons[0].eta()), globalWeight_); //remove the fabs eta
             //subdirEB.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
             //subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
@@ -1160,15 +1168,12 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
           } // end if doMC
        }
        else if(ePlusJets_){
-          pat::Electron const * patElectron = dynamic_cast<pat::Electron const *>(&* electrons[0].masterClonePtr());
-          if ( patElectron == 0 )
-             throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
           
-          if(patElectron->isEE()){
+          if(isEE){
              subdirEE.getObject<TH1>(massName)-> Fill (vertexMass, globalWeight_* iprob);
              if( doMC_ )  subdirEE.getObject<TH1>(massName + whichtag)-> Fill (vertexMass, globalWeight_ * iprob);
           }
-          else if(patElectron->isEB()){
+          else if(isEB){
              subdirEB.getObject<TH1>(massName)-> Fill (vertexMass, globalWeight_* iprob);
              if( doMC_ )  subdirEB.getObject<TH1>(massName + whichtag)-> Fill (vertexMass, globalWeight_ * iprob);
           }
@@ -1197,12 +1202,10 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	}
      
      else if(ePlusJets_){
-               pat::Electron const * patElectron = dynamic_cast<pat::Electron const *>(&* electrons[0].masterClonePtr());
-               if ( patElectron == 0 )
-                  throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
+              
                //Fill the EE electrons
                //---------------------
-               if(patElectron->isEE()){
+               if(isEE){
                   subdirEE.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, kknumTags))-> Fill (fabs(electrons[0].eta()), globalWeight_ * iprob); //remove the fabs eta
                   //subdirEE.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, kknumTags))->Fill( electrons[0].pt(),    globalWeight_ * iprob);
                   //subdirEE.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
@@ -1229,7 +1232,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
                }//EE
                //Fill the EB electrons
                //---------------------
-               else if(patElectron->isEB()){
+               else if(isEB){
                   subdirEB.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",   numJets, kknumTags))->Fill (fabs(electrons[0].eta()), globalWeight_ * iprob);//remove the fabs eta
                   //subdirEB.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",    numJets, kknumTags))->Fill ( electrons[0].pt(),    globalWeight_ * iprob);
                   //subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",      numJets, kknumTags))->Fill ( hT,                   globalWeight_ * iprob);

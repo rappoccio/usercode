@@ -104,6 +104,12 @@ class SHyFT : public edm::BasicAnalyzer {
     TFileDirectory  subdirEB;
     TFileDirectory  subdirEE;
 
+    TFileDirectory  subdirEB_plus;
+    TFileDirectory  subdirEE_plus;
+    
+    TFileDirectory  subdirEB_minus;
+    TFileDirectory  subdirEE_minus;
+
     // the following parameters need to come from the config
     bool muPlusJets_;
     bool ePlusJets_;
