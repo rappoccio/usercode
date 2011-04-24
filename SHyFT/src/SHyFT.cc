@@ -30,15 +30,15 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   edm::BasicAnalyzer(iConfig,iDir),
   wPlusJets(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis")),
   theDir(iDir),
-  
+ 
   subdirEB( theDir.mkdir("eleEB") ),
   subdirEE( theDir.mkdir("eleEE") ),
-   
   subdirEB_plus ( theDir.mkdir("eleEB_plus") ),
   subdirEE_plus ( theDir.mkdir("eleEE_plus") ),
   subdirEB_minus ( theDir.mkdir("eleEB_minus") ),
   subdirEE_minus ( theDir.mkdir("eleEE_minus") ),
-   
+ 
+
   muPlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("muPlusJets")),
   ePlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("ePlusJets")),
   useHFcat_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("heavyFlavour")),
@@ -130,7 +130,6 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
    std::vector<std::string> METName(6,"_MET_");
    METName[0]+="0j";METName[1]+="1j"; METName[2]+="2j"; METName[3]+="3j"; METName[4]+="4j"; METName[5]+="5j";
 
-
    std::vector<std::string> wMTName(6,"_wMT_");
    wMTName[0]+="0j";wMTName[1]+="1j"; wMTName[2]+="2j"; wMTName[3]+="3j"; wMTName[4]+="4j"; wMTName[5]+="5j";
 
@@ -142,9 +141,9 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
 
   
   std::vector<std::string> secvtxEnd;
-  std::vector<std::string> muEtaEnd;
-  std::vector<std::string> metEnd;
+  std::vector<std::string> allTagsEnd;
 
+  //will use to split by flavor paths and jet flavor per tagged jet
   if(doMC_) {
     secvtxEnd.push_back("1t_b");  
     secvtxEnd.push_back("1t_c");  
@@ -157,43 +156,25 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     secvtxEnd.push_back("2t_x");
     secvtxEnd.push_back("2t");
 
-    muEtaEnd.push_back("0t_b");  
-    muEtaEnd.push_back("0t_c");  
-    muEtaEnd.push_back("0t_q");
-    muEtaEnd.push_back("0t_x");  
-    muEtaEnd.push_back("0t");
-    muEtaEnd.push_back("1t_b");  
-    muEtaEnd.push_back("1t_c");  
-    muEtaEnd.push_back("1t_q");
-    muEtaEnd.push_back("1t_x");  
-    muEtaEnd.push_back("1t");
-    muEtaEnd.push_back("2t_b");  
-    muEtaEnd.push_back("2t_c"); 
-    muEtaEnd.push_back("2t_q");
-    muEtaEnd.push_back("2t_x");
-    muEtaEnd.push_back("2t");
-    
-    metEnd.push_back("0t_b");  
-    metEnd.push_back("0t_c");  
-    metEnd.push_back("0t_q");
-    metEnd.push_back("0t_x");  
-    metEnd.push_back("0t");
-    metEnd.push_back("1t_b");  
-    metEnd.push_back("1t_c");  
-    metEnd.push_back("1t_q");
-    metEnd.push_back("1t_x");  
-    metEnd.push_back("1t");
-    metEnd.push_back("2t_b");  
-    metEnd.push_back("2t_c"); 
-    metEnd.push_back("2t_q");
-    metEnd.push_back("2t_x");
-    metEnd.push_back("2t");
-
+    allTagsEnd.push_back("0t_b");  
+    allTagsEnd.push_back("0t_c");  
+    allTagsEnd.push_back("0t_q");
+    allTagsEnd.push_back("0t_x");  
+    allTagsEnd.push_back("0t");
+    allTagsEnd.push_back("1t_b");  
+    allTagsEnd.push_back("1t_c");  
+    allTagsEnd.push_back("1t_q");
+    allTagsEnd.push_back("1t_x");  
+    allTagsEnd.push_back("1t");
+    allTagsEnd.push_back("2t_b");  
+    allTagsEnd.push_back("2t_c"); 
+    allTagsEnd.push_back("2t_q");
+    allTagsEnd.push_back("2t_x");
+    allTagsEnd.push_back("2t");
   }
   else {
     secvtxEnd.push_back("1t"); secvtxEnd.push_back("2t");
-    muEtaEnd.push_back("0t"); muEtaEnd.push_back("1t"); muEtaEnd.push_back("2t");
-    metEnd.push_back("0t"); metEnd.push_back("1t"); metEnd.push_back("2t");
+    allTagsEnd.push_back("0t"); allTagsEnd.push_back("1t"); allTagsEnd.push_back("2t");
   }
 
   
@@ -242,15 +223,14 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   
    theDir.make<TH1F>("m3", "M3 pretag", 60, 0, 600);
    
+   //Histogram booking without splitting into flavor paths but into tags
+   //-------------------------------------------------------------------
    for ( int itag = 0; itag <= 2; ++itag ) {
       std::string m3_temp = "m3_" + boost::lexical_cast<std::string>(itag) + "t";
       theDir.make<TH1F>(m3_temp.c_str(), "M3", 60, 0, 600);
    }
   
-   TString histTitle;//lep;
-   //if(muPlusJets_)     { lep = "mu";}
-   //else if(ePlusJets_) { lep = "el";}
-   
+   TString histTitle;  
    for(unsigned int i=0; i<6; ++i) {
       string jtNum = Form("_%dj",i);
       string jt; 
@@ -263,8 +243,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
          if(i==0 && itag>0) continue;
          if(i==1 && itag==2) continue;
 
-         //Declare the muon Tag histos
-         //---------------------------
+         //Muons
          if(muPlusJets_){
             histTitle = "HT (sum Jet Et + mu Pt + MET), "+jt;
             theDir.make<TH1F>( (sampleNameInput+"_hT"+jtNum + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120, 0, 1200);
@@ -308,105 +287,68 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
                                20, 0., 1.0
                );
          }
-         //Declare electron Tag histos for EE and EB separately
-         //----------------------------------------------------
+         //electrons into EE and EB separately 
           else if (ePlusJets_) {
              histTitle = "HT (sum Jet Et + el Pt + MET), "+jt;
              subdirEE.make<TH1F>( (sampleNameInput+"_hT"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120, 0, 1200);
              subdirEB.make<TH1F>( (sampleNameInput+"_hT"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120, 0, 1200);
+             
+             //histTitle = "electron #slash{E}_{T}, "+jt;
+             //subdirEE.make<TH1F>( (sampleNameInput+"_MET"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120,0,300);
+             //subdirEB.make<TH1F>( (sampleNameInput+"_MET"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120,0,300);
+             
+             histTitle = "W Trans Mass, "+jt;
+             subdirEE.make<TH1F>( (sampleNameInput+"_wMT"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 50,0,500);
+             subdirEB.make<TH1F>( (sampleNameInput+"_wMT"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 50,0,500);
+             
+             subdirEE.make<TH1F>( (sampleNameInput+"_elPt"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "electron p_{T}", 100, 0, 200);
+             subdirEB.make<TH1F>( (sampleNameInput+"_elPt"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "electron p_{T}", 100, 0, 200);
 
-             //histTitle = "HTlep (sum Jet Et + el Pt), "+jt;
-             //subdirEE.make<TH1F>( (sampleNameInput+"_hT_Lep"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120, 0, 1200);
-             //subdirEB.make<TH1F>( (sampleNameInput+"_hT_Lep"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120, 0, 1200);
-
-            //histTitle = "Missing E_{T}, "+jt;
-            //subdirEE.make<TH1F>( (sampleNameInput+"_MET"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120,0,300);
-            //subdirEB.make<TH1F>( (sampleNameInput+"_MET"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 120,0,300);
-
-            histTitle = "W Trans Mass, "+jt;
-            subdirEE.make<TH1F>( (sampleNameInput+"_wMT"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 50,0,500);
-            subdirEB.make<TH1F>( (sampleNameInput+"_wMT"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), histTitle, 50,0,500);
-
-            subdirEE.make<TH1F>( (sampleNameInput+"_elPt"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "electron p_{T}", 100, 0, 200);
-            subdirEB.make<TH1F>( (sampleNameInput+"_elPt"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "electron p_{T}", 100, 0, 200);
-            //subdirEE.make<TH1F>( (sampleNameInput+"_elEta"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "electron #eta", 250, -2.5, 2.5);
-            //subdirEB.make<TH1F>( (sampleNameInput+"_elEta"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "electron #eta", 250, -2.5, 2.5);
+             //subdirEE.make<TH1F>( (sampleNameInput+"_elEta"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "electron #eta", 15, 0.0, 3.0);
+             //subdirEB.make<TH1F>( (sampleNameInput+"_elEta"+jtNum+ "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "electron #eta", 15, 0.0, 3.0);
          }
 
       } // End loop over itags (0,1,2)
 
    }
-   for (unsigned int j=0;j<sampleName.size();++j) {
-     if(useHFcat_){
-      
-        //Splitting each variable into flavor path according to flavor path history
-        //-------------------------------------------------------------------------
+   for (unsigned int j=0;j<sampleName.size();++j) {//if W/Z+jets, this is 11 else 1.
+      //Histogram booking: For W/Z+jets split 0,1,2 tags into flavor paths else no booking
+      //----------------------------------------------------------------------------------
+      if(useHFcat_){
+         
        for ( int itag = 0; itag <= 2; ++itag ) {
           if(muPlusJets_){
              
              // hT
-             for ( unsigned int k=0; k < hTName.size(); ++k ) {
-                // Next do the untagged histograms by flavor path
+             for ( unsigned int k=0; k < hTName.size(); ++k ) {//loop over jets
+                if(k==0 && itag>0) continue;
+                if(k==1 && itag==2) continue;
                 std::string untemp = sampleName[j]+hTName[k]+ "_" + boost::lexical_cast<std::string>(itag) + "t";
                 theDir.make<TH1F>(untemp.c_str(), "hT", 120, 0, 1200);
              }         
              // wMT
              for ( unsigned int k=0; k < wMTName.size(); ++k ) {
-                // Next do the untagged histograms by flavor path
+                if(k==0 && itag>0) continue;
+                if(k==1 && itag==2) continue;
                 std::string untemp = sampleName[j]+wMTName[k]+ "_" + boost::lexical_cast<std::string>(itag) + "t";
                 theDir.make<TH1F>(untemp.c_str(), "wMT", 120, 0,  300);
              }
              
              // MET
              for ( unsigned int k=0; k < METName.size(); ++k ) {
-                // Next do the untagged histograms by flavor path
+                if(k==0 && itag>0) continue;
+                if(k==1 && itag==2) continue;
                 std::string untemp = sampleName[j]+METName[k]+ "_" + boost::lexical_cast<std::string>(itag) + "t";
                 theDir.make<TH1F>(untemp.c_str(), "MET", 120, 0,  300);
-             }
+             } 
              
-             //   // muEta
-             //   for ( unsigned int k=0; k < muEtaName.size(); ++k ) {
-             //     // Next do the untagged histograms by flavor path
-             //     std::string untemp = sampleName[j]+muEtaName[k]+ "_" + boost::lexical_cast<std::string>(itag) + "t";
-             //     theDir.make<TH1F>(untemp.c_str(), "muEta",  120, 0, 2.4);
-             //   }
-         }
-          
-          //NO NEED TO DO THAT IF GOING TO FURTHER DIVID THEM INTO JET FLAVOURS, SO I HAVE COMMENTED OUT THE FOLLOWING LINES
-   
-          // else if(ePlusJets_){
-             // hT
-            //  for ( unsigned int k=0; k < hTName.size(); ++k ) {
-//                 if(k==0 && itag>0) continue;
-//                 if(k==1 && itag==2) continue;
-//                 // Next do the untagged histograms by flavor path
-//                 std::string untemp = sampleName[j]+hTName[k]+ "_" + boost::lexical_cast<std::string>(itag) + "t";
-//                 subdirEE.make<TH1F>(untemp.c_str(), "hT", 120, 0, 1200);
-//                 subdirEB.make<TH1F>(untemp.c_str(), "hT", 120, 0, 1200);
-//              }         
-//              // wMT
-//              for ( unsigned int k=0; k < wMTName.size(); ++k ) {
-//                 if(k==0 && itag>0) continue;
-//                 if(k==1 && itag==2) continue;
-//                 // Next do the untagged histograms by flavor path
-//                 std::string untemp = sampleName[j]+wMTName[k]+ "_" + boost::lexical_cast<std::string>(itag) + "t";
-//                 subdirEE.make<TH1F>(untemp.c_str(), "wMT", 120, 0,  300);
-//                 subdirEB.make<TH1F>(untemp.c_str(), "wMT", 120, 0,  300);
-//              }
-             // MET
-             //for ( unsigned int k=0; k < METName.size(); ++k ) {
-             // if(k==0 && itag>0) continue;
-             // if(k==1 && itag==2) continue;
-             // // Next do the untagged histograms by flavor path
-             // std::string untemp = sampleName[j]+METName[k]+ "_" + boost::lexical_cast<std::string>(itag) + "t";
-             // subdirEE.make<TH1F>(untemp.c_str(), "MET", 120, 0,  300);
-             // subdirEB.make<TH1F>(untemp.c_str(), "MET", 120, 0,  300);
-             //}
-             
-             // }//ePlusJets
+         } //if muPlusJets
+                        
        }// end loop over itag (0,1,2)
      }//if HF
      
+     //Histogram booking: For W/Z+jets split into flavor paths and jet flavor else no splitting
+     //----------------------------------------------------------------------------------------
      if(muPlusJets_){
          // secvtx mass
          for(unsigned int k=0;k<secvtxName.size();++k) {
@@ -422,8 +364,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
          }//k         
          // mu eta
          for(unsigned int k=0;k<muEtaName.size();++k) {
-            for(unsigned int l=0;l<muEtaEnd.size();++l) {
-               std::string temp3 = sampleName[j]+ muEtaName[k] +"_"+muEtaEnd[l];
+            for(unsigned int l=0;l<allTagsEnd.size();++l) {
+               std::string temp3 = sampleName[j]+ muEtaName[k] +"_"+allTagsEnd[l];
                theDir.make<TH1F>(temp3.c_str(), "Muon eta", 12, 0, 2.4);
                if ( k==0 && l == 4 ) break;   // cut off 0-jet bin after 0-tags
                else if(k==1 && l == 9) break; // cut off 1-jet bin after 1-tags
@@ -435,88 +377,48 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
        
        else if(ePlusJets_){
           //secvtxMass
-         for(unsigned int k=0;k<secvtxName.size();++k) {
-            for(unsigned int l=0;l<secvtxEnd.size();++l) {
-               std::string temp = sampleName[j]+secvtxName[k]+secvtxEnd[l];
-               subdirEE.make<TH1F>(temp.c_str(), "secvtxmass", 40,    0,   10);
-               subdirEB.make<TH1F>(temp.c_str(), "secvtxmass", 40,    0,   10);
-               if(k==0 && l==4) break;
+          for(unsigned int k=0;k<secvtxName.size();++k) {
+             for(unsigned int l=0;l<secvtxEnd.size();++l) {
+                std::string temp = sampleName[j]+secvtxName[k]+secvtxEnd[l];
+                subdirEE.make<TH1F>(temp.c_str(), "secvtxmass", 40,    0,   10);
+                subdirEB.make<TH1F>(temp.c_str(), "secvtxmass", 40,    0,   10);
+                if(k==0 && l==4) break;
                else if( (!doMC_) && k==0 && l==0) break;
-            }//l
-         }//k
-         // el eta
-         for(unsigned int k=0;k<elEtaName.size();++k) {
-            for(unsigned int l=0;l<muEtaEnd.size();++l) {
-               std::string temp3 = sampleName[j]+ elEtaName[k] +"_"+muEtaEnd[l];
-               //cout << "Eta Name = " << sampleName[j]+ elEtaName[k] +"_"+muEtaEnd[l] << endl;
-               subdirEE.make<TH1F>(temp3.c_str(), "Electron eta", 15, 0.0, 3.0);//---------------------->
-               subdirEB.make<TH1F>(temp3.c_str(), "Electron eta", 15, 0.0, 3.0);
-               if ( k==0 && l == 4 ) break;   // cut off 0-jet bin after 0-tags
-               else if(k==1 && l == 9) break; // cut off 1-jet bin after 1-tags
-               else if( (!doMC_) && k==0 && l==0) break; // Data says "You had me at "Hello" ".
-               else if( (!doMC_) && k==1 && l==1) break; // 
-            }//l
-         }//k
-         //MET
-         for(unsigned int k=0;k<METName.size();++k) {
-            for(unsigned int l=0;l<metEnd.size();++l) {
-               std::string temp4 = sampleName[j]+ METName[k] +"_"+metEnd[l];
-               //cout << "MET Name = " << sampleName[j]+ METName[k] +"_"+metEnd[l] << endl;
-               subdirEE.make<TH1F>(temp4.c_str(), "Electron met", 120, 0, 300);//---------------------->
-               subdirEB.make<TH1F>(temp4.c_str(), "Electron met", 120, 0, 300);
-               if ( k==0 && l == 4 ) break;   // cut off 0-jet bin after 0-tags
-               else if(k==1 && l == 9) break; // cut off 1-jet bin after 1-tags
-               else if( (!doMC_) && k==0 && l==0) break; // Data says "You had me at "Hello" ".
-               else if( (!doMC_) && k==1 && l==1) break; // 
-            }//l
-         }//k 
-/*
-         //pT
-        for(unsigned int k=0;k<pTName.size();++k) {
-            for(unsigned int l=0;l<metEnd.size();++l) {
-               std::string temp5 = sampleName[j]+ pTName[k] +"_"+metEnd[l];
-               //cout << "Pt Name = " << sampleName[j]+ pTName[k] +"_"+metEnd[l] << endl;
-               subdirEE.make<TH1F>(temp5.c_str(), "Electron Pt", 100, 0, 200);//---------------------->
-               subdirEB.make<TH1F>(temp5.c_str(), "Electron Pt", 100, 0, 200);
-               if ( k==0 && l == 4 ) break;   // cut off 0-jet bin after 0-tags
-               else if(k==1 && l == 9) break; // cut off 1-jet bin after 1-tags
-               else if( (!doMC_) && k==0 && l==0) break; // Data says "You had me at "Hello" ".
-               else if( (!doMC_) && k==1 && l==1) break; // 
-            }//l
-         }//k 
-        //wMT
-        for(unsigned int k=0;k<wMTName.size();++k) {
-            for(unsigned int l=0;l<metEnd.size();++l) {
-               std::string temp6 = sampleName[j]+ wMTName[k] +"_"+metEnd[l];
-               //cout << "wMT Name = " << sampleName[j]+ wMTName[k] +"_"+metEnd[l] << endl;
-               subdirEE.make<TH1F>(temp6.c_str(), "Electron wMT", 50, 0, 500);//---------------------->
-               subdirEB.make<TH1F>(temp6.c_str(), "Electron wMT", 50, 0, 500);
-               if ( k==0 && l == 4 ) break;   // cut off 0-jet bin after 0-tags
-               else if(k==1 && l == 9) break; // cut off 1-jet bin after 1-tags
-               else if( (!doMC_) && k==0 && l==0) break; // Data says "You had me at "Hello" ".
-               else if( (!doMC_) && k==1 && l==1) break; // 
-            }//l
-         }//k 
-        //hT
-         for(unsigned int k=0;k<hTName.size();++k) {
-            for(unsigned int l=0;l<metEnd.size();++l) {
-               std::string temp7 = sampleName[j]+ hTName[k] +"_"+metEnd[l];
-               //cout << "hT Name = " << sampleName[j]+ hTName[k] +"_"+metEnd[l] << endl;
-               subdirEE.make<TH1F>(temp7.c_str(), "Electron hT", 120, 0, 1200);//---------------------->
-               subdirEB.make<TH1F>(temp7.c_str(), "Electron hT", 120, 0, 1200);
-               if ( k==0 && l == 4 ) break;   // cut off 0-jet bin after 0-tags
-               else if(k==1 && l == 9) break; // cut off 1-jet bin after 1-tags
-               else if( (!doMC_) && k==0 && l==0) break; // Data says "You had me at "Hello" ".
-               else if( (!doMC_) && k==1 && l==1) break; // 
-            }//l
-         }//k  
-*/     
-      }//ePlusJets
-
+             }//l
+          }//k
+          // el eta
+          for(unsigned int k=0;k<elEtaName.size();++k) {
+             for(unsigned int l=0;l<allTagsEnd.size();++l) {
+                std::string temp3 = sampleName[j]+ elEtaName[k] +"_"+allTagsEnd[l];
+                //cout << "Eta Name = " << sampleName[j]+ elEtaName[k] +"_"+allTagsEnd[l] << endl;
+                subdirEE.make<TH1F>(temp3.c_str(), "Electron #eta", 15, 0.0, 3.0);
+                subdirEB.make<TH1F>(temp3.c_str(), "Electron #eta", 15, 0.0, 3.0);
+                if ( k==0 && l == 4 ) break;  
+                else if(k==1 && l == 9) break; 
+                else if( (!doMC_) && k==0 && l==0) break; 
+                else if( (!doMC_) && k==1 && l==1) break; 
+             }//l
+          }//k
+          //MET
+          for(unsigned int k=0;k<METName.size();++k) {
+             for(unsigned int l=0;l<allTagsEnd.size();++l) {
+                std::string temp4 = sampleName[j]+ METName[k] +"_"+allTagsEnd[l];
+                //cout << "MET Name = " << sampleName[j]+ METName[k] +"_"+allTagsEnd[l] << endl;
+                subdirEE.make<TH1F>(temp4.c_str(), "Electron  #slash{E}_{T}", 120, 0, 300);
+                subdirEB.make<TH1F>(temp4.c_str(), "Electron  #slash{E}_{T}", 120, 0, 300);
+                if ( k==0 && l == 4 ) break;   
+                else if(k==1 && l == 9) break;
+                else if( (!doMC_) && k==0 && l==0) break; 
+                else if( (!doMC_) && k==1 && l==1) break; 
+             }//l
+          }//k 
+          
+       }//ePlusJets
+     
    }//end j sample Name
    allNumTags_ = 0;
    allNumJets_ = 0;
-
+   
    if ( reweightPDF_ ) {
       std::cout << "Initializing pdfs, identifier = " << identifier_ << std::endl;
       // For the first one, MAKE ABSOLUTELY SURE it is the one used to generate
@@ -537,9 +439,17 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
 // fill the plots for the electrons
 bool SHyFT::analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons)
 {
+   bool   isEE(0), isEB(0);
+   string Ex;
    if ( electrons.size() == 0 )  return false;
    const pat::Electron * electron_ = dynamic_cast<const pat::Electron*>(electrons[0].masterClonePtr().get());
-   if ( electron_ == NULL ) return false;
+   if ( electron_ == 0 )
+      throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
+   isEE = electron_->isEE();
+   isEB = electron_->isEB();
+   if(isEE)      Ex = "EE";   
+   else if(isEB) Ex = "EB"; 
+   
    double ePt_      = electron_ ->pt();
    double eEta_     = electron_ ->eta();
    double ePhi_     = electron_ ->phi();
@@ -562,21 +472,12 @@ bool SHyFT::analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>&
    theDir.getObject<TH1>( "eECalIso" )->Fill( eCalIso_    , globalWeight_);
    theDir.getObject<TH1>( "eHCalIso" )->Fill( hCalIso_    , globalWeight_);
    theDir.getObject<TH1>( "eRelIso"  )->Fill( relIso_     , globalWeight_);
-  
-   if(electron_->isEE()){
-      theDir.getObject<TH1>( "eDelEta_EE") ->Fill( deta_     , globalWeight_); 
-      theDir.getObject<TH1>( "eDelPhi_EE") ->Fill( dphi_     , globalWeight_);
-      theDir.getObject<TH1>( "eSigihih_EE")->Fill( sihih_    , globalWeight_);
-      theDir.getObject<TH1>( "eHoE_EE")    ->Fill( hoe_      , globalWeight_);
-   }
-
-   else if(electron_->isEB()){
-      theDir.getObject<TH1>( "eDelEta_EB") ->Fill( deta_     , globalWeight_); 
-      theDir.getObject<TH1>( "eDelPhi_EB") ->Fill( dphi_     , globalWeight_);
-      theDir.getObject<TH1>( "eSigihih_EB")->Fill( sihih_    , globalWeight_);
-      theDir.getObject<TH1>( "eHoE_EB")    ->Fill( hoe_      , globalWeight_);
-   }
-
+     
+   theDir.getObject<TH1>( "eDelEta_" + Ex) ->Fill( deta_     , globalWeight_); 
+   theDir.getObject<TH1>( "eDelPhi_" + Ex) ->Fill( dphi_     , globalWeight_);
+   theDir.getObject<TH1>( "eSigihih_"+ Ex) ->Fill( sihih_    , globalWeight_);
+   theDir.getObject<TH1>( "eHoE_"    + Ex) ->Fill( hoe_      , globalWeight_);
+ 
    return true;
 }
 
@@ -628,6 +529,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
                            const std::vector<reco::ShallowClonePtrCandidate>& muons,
                            const std::vector<reco::ShallowClonePtrCandidate>& electrons)
 {
+  TFileDirectory *subdirEx = 0;//Dummy sub directory to be replaced either by EE or EB
   allNumTags_ = 0;
   allNumJets_ = (int) jets.size();
 
@@ -652,7 +554,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   double wPy = lep_p4.Py() + nu_p4.Py();
   double wMT = TMath::Sqrt(wPt*wPt-wPx*wPx-wPy*wPy);
   double hT = lep_p4.pt() + nu_p4.Et();
-  double hT_lep = lep_p4.pt();
+  //double hT_lep = lep_p4.pt();
   double hcalIso(-99.), ecalIso(-99.), trkIso(-99.), pt(-99.), relIso(-99.), d0(-99), lepEta(-99.), lepPhi(-99.);
   bool   isEE(0), isEB(0);
   if(muPlusJets_){
@@ -674,7 +576,12 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       throw cms::Exception("InvalidElectronPointer") << "Electron pointer is invalid you schmuck." << std::endl;
     isEE = patElectron->isEE();
     isEB = patElectron->isEB();
-
+    //split into EE and EB directories
+    if(isEE)      subdirEx = &subdirEE;
+    else if(isEB) subdirEx = &subdirEB;   
+    if(subdirEx == 0 )
+    throw cms::Exception("InvalidPointertoSubDirectories") << "directory pointer is invalid." << std::endl;
+    
     hcalIso = patElectron->dr03HcalTowerSumEt();
     ecalIso = patElectron->dr03EcalRecHitSumEt();
     trkIso  = patElectron->dr03TkSumPt();
@@ -862,9 +769,6 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	else keepGoing=false;
       } 
       
-
-
-
       // copy ( jet->userDataNames().begin(), jet->userDataNames().end(), std::ostream_iterator<std::string>(std::cout, "\n"));
 
       // if ( jet->hasUserData("secvtxMass") )
@@ -950,13 +854,18 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   // For now, we only care if we have 2 tags...any more are treated the same - maybe we should look at 3 tags?
   numTags = std::min( allNumTags_, 2 );
   numJets = std::min( allNumJets_, 5 );
-
   
+  if(numJets > 3){
+       string m3Name = Form("m3_%dt", numTags);
+       theDir.getObject<TH1>( m3Name )->Fill(M3, globalWeight_);
+  }
+    
   theDir.getObject<TH1>( "nTags")->Fill(numTags, globalWeight_);
 
 
-
   if ( !reweightBTagEff_ )  {
+     //Fill variables with only 1,2 tags
+     //---------------------------------
     if( numTags > 0 ) {
       string massName  = sampleHistName_ + Form("_secvtxMass_%dj_%dt", numJets, numTags);      
       if ( muPlusJets_ ) {
@@ -966,25 +875,18 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
                theDir.getObject<TH1>(massName + whichtag  )-> Fill (vertexMass, globalWeight_);
                static_cast<TH2*>(theDir.getObject<TH1>( massName + whichtag + "_vs_iso"  ))-> Fill (vertexMass, relIso, globalWeight_);
             } // end if doMC
-         }//muPlusJets
+      }//muPlusJets
 
-         else if(ePlusJets_){
-            if (isEE){
-               subdirEE.getObject<TH1>(massName)-> Fill (vertexMass, globalWeight_);
-               if( doMC_ ) subdirEE.getObject<TH1>(massName + whichtag  )-> Fill (vertexMass, globalWeight_);//end if doMC
-            }
-            else if(isEB){
-               subdirEB.getObject<TH1>(massName)-> Fill (vertexMass, globalWeight_);
-               if( doMC_ ) subdirEB.getObject<TH1>(massName + whichtag  )-> Fill (vertexMass, globalWeight_);//end if doMC
-            }
-         }//ePlusJets
+      else if(ePlusJets_){  
+         subdirEx->getObject<TH1>(massName)-> Fill (vertexMass, globalWeight_);
+         if( doMC_ ) subdirEx->getObject<TH1>(massName + whichtag  )-> Fill (vertexMass, globalWeight_);//end if doMC   
+      }//ePlusJets
 
     } // end if numTags > 0    
 
-    if(numJets > 3){
-       string m3Name = Form("m3_%dt", numTags);
-       theDir.getObject<TH1>( m3Name )->Fill(M3, globalWeight_);
-    }
+   
+    //Fill variables with all tags (0,1,2)
+    //------------------------------------
     string muEtaName  = sampleHistName_ + Form("_muEta_%dj_%dt", numJets, numTags);
     if ( muPlusJets_ ) {
        theDir.getObject<TH1>( muEtaName )-> Fill (fabs(muons[0].eta()), globalWeight_);	
@@ -1000,68 +902,26 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
        static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVsMET_%dj_%dt", numJets, numTags)))->Fill( met.pt(), relIso, globalWeight_ );
        static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVsD0_%dj_%dt", numJets, numTags)))->Fill( d0, relIso, globalWeight_ );
     }
-    else if(ePlusJets_){
-        
-         //Fill the EE electrons
-         //---------------------
-         if(isEE){
-            subdirEE.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, numTags))->Fill( fabs(electrons[0].eta()), globalWeight_); 
-            //subdirEE.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
-            //subdirEE.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-            //subdirEE.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-            subdirEE.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
-            if ( doMC_ ){
-               subdirEE.getObject<TH1>( sampleHistName_ + Form("_elEta_%dj_%dt", numJets, numTags) + whichtag  )->Fill( fabs(electrons[0].eta()), globalWeight_); 
-               //subdirEE.getObject<TH1>( sampleHistName_ + Form("_elPt_%dj_%dt",  numJets, numTags) + whichtag  )->Fill( electrons[0].pt(),    globalWeight_ );
-               //subdirEE.getObject<TH1>( sampleHistName_ + Form("_hT_%dj_%dt",    numJets, numTags) + whichtag  )->Fill( hT,                   globalWeight_ );
-               //subdirEE.getObject<TH1>( sampleHistName_ + Form("_wMT_%dj_%dt",   numJets, numTags) + whichtag  )->Fill( wMT,                  globalWeight_ );
-               subdirEE.getObject<TH1>( sampleHistName_ + Form("_MET_%dj_%dt",   numJets, numTags) + whichtag  )->Fill( met.pt(),             globalWeight_ ); 
-            }
-
-            // if(useHFcat_){
-               // subdirEE.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-               //subdirEE.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-               //subdirEE.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
-            // }
-            subdirEE.getObject<TH1>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-            subdirEE.getObject<TH1>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-            //subdirEE.getObject<TH1>(sampleNameInput + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
-            subdirEE.getObject<TH1>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
-         }//is EE
-         //Fill the EB electrons
-         //---------------------
-         else if(isEB){
-            subdirEB.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, numTags))->Fill(fabs(electrons[0].eta()), globalWeight_); //remove the fabs eta
-            //subdirEB.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
-            //subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-            //subdirEB.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-            subdirEB.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
-            if ( doMC_ ){
-               subdirEB.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt", numJets, numTags) + whichtag )->Fill (fabs(electrons[0].eta()), globalWeight_);//remove the fabs eta
-               //subdirEB.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",  numJets, numTags) + whichtag )->Fill( electrons[0].pt(),    globalWeight_ );
-               //subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",    numJets, numTags) + whichtag )->Fill( hT,                   globalWeight_ );
-               //subdirEB.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",   numJets, numTags) + whichtag )->Fill( wMT,                  globalWeight_ );
-               subdirEB.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",   numJets, numTags) + whichtag )->Fill( met.pt(),             globalWeight_ );
-            }
-
-            // if(useHFcat_){
-            // subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-            // subdirEB.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-               //subdirEB.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
-            //}
-            subdirEB.getObject<TH1>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
-            subdirEB.getObject<TH1>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
-            //subdirEB.getObject<TH1>(sampleNameInput + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
-            subdirEB.getObject<TH1>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
-         }//is EB
-
-      }//ePlusJets
-   
+    else if(ePlusJets_){     
+       subdirEx->getObject<TH1>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ );
+       subdirEx->getObject<TH1>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ );
+       subdirEx->getObject<TH1>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ );
+       subdirEx->getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, numTags))->Fill( fabs(electrons[0].eta()), globalWeight_); 
+       subdirEx->getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ );
+       
+       if(doMC_){
+          //For W/Z+jets fill by paths and each path by jet flavor   
+          subdirEx->getObject<TH1>( sampleHistName_ + Form("_elEta_%dj_%dt", numJets, numTags) + whichtag  )->Fill( fabs(electrons[0].eta()), globalWeight_); 
+          subdirEx->getObject<TH1>( sampleHistName_ + Form("_MET_%dj_%dt",   numJets, numTags) + whichtag  )->Fill( met.pt(),             globalWeight_ );           
+       } 
+       
+    }//ePlusJets
+    
   }// end if not reweighting b-tag eff
-
+  
   else {  // reweighting b-tag eff:
-
-    // std::cout << "Reweighting b-tag eff" << std::endl;
+     
+    std::cout << "Reweighting b-tag eff" << std::endl;
     // Here will be the efficiencies for the jets
     std::vector<shyft::helper::EffInfo> effs;
     // "unity"
@@ -1079,7 +939,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	// We first get the flavor of the jet so we can fill look at btag efficiency.
 	int jetFlavor = std::abs( jet->partonFlavour() );
 	double jetPt  = std::abs( jet->pt() );
-	double jetEta = std::abs( jet->eta() );
+	//double jetEta = std::abs( jet->eta() );
 
 
 	if ( weightSFCalc_ ) {
@@ -1201,63 +1061,20 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
        static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_muisoVsD0_%dj_%dt", numJets, kknumTags)))->Fill( d0, relIso, globalWeight_ * iprob );
 	}
      
-     else if(ePlusJets_){
-              
-               //Fill the EE electrons
-               //---------------------
-               if(isEE){
-                  subdirEE.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, kknumTags))-> Fill (fabs(electrons[0].eta()), globalWeight_ * iprob); //remove the fabs eta
-                  //subdirEE.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, kknumTags))->Fill( electrons[0].pt(),    globalWeight_ * iprob);
-                  //subdirEE.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
-                  //subdirEE.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob);
-                  subdirEE.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
-                  if ( doMC_ ){
-                     subdirEE.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, kknumTags) + whichtag  )->Fill (fabs(electrons[0].eta()), globalWeight_ * iprob); //remove the fabs eta
-                     //subdirEE.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",     numJets, kknumTags) + whichtag  )->Fill( electrons[0].pt(),    globalWeight_ * iprob);
-                     //subdirEE.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, kknumTags) + whichtag  )->Fill( hT,                   globalWeight_ * iprob);
-                     //subdirEE.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, kknumTags) + whichtag  )->Fill( wMT,                  globalWeight_ * iprob);
-                     subdirEE.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, kknumTags) + whichtag  )->Fill( met.pt(),             globalWeight_ * iprob);      
-                  }
-
-                  // if(useHFcat_){
-                  //   subdirEE.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ * iprob);
-                  //   subdirEE.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ * iprob);
-                     //subdirEE.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
-                  //}
-                  subdirEE.getObject<TH1>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
-                  subdirEE.getObject<TH1>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob);
-                  //subdirEE.getObject<TH1>(sampleNameInput + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
-                  subdirEE.getObject<TH1>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, kknumTags))->Fill( electrons[0].pt(),    globalWeight_ * iprob);
-                  
-               }//EE
-               //Fill the EB electrons
-               //---------------------
-               else if(isEB){
-                  subdirEB.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",   numJets, kknumTags))->Fill (fabs(electrons[0].eta()), globalWeight_ * iprob);//remove the fabs eta
-                  //subdirEB.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",    numJets, kknumTags))->Fill ( electrons[0].pt(),    globalWeight_ * iprob);
-                  //subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",      numJets, kknumTags))->Fill ( hT,                   globalWeight_ * iprob);
-                  //subdirEB.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",     numJets, kknumTags))->Fill ( wMT,                  globalWeight_ * iprob);                  
-                  subdirEB.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",     numJets, kknumTags))->Fill ( met.pt(),             globalWeight_ * iprob);
-                  if ( doMC_ ){
-                     subdirEB.getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",  numJets, kknumTags) + whichtag  )->Fill (fabs(electrons[0].eta()), globalWeight_ * iprob); //remove the fabs eta
-                     //subdirEB.getObject<TH1>(sampleHistName_ + Form("_elPt_%dj_%dt",   numJets, kknumTags) + whichtag  )->Fill( electrons[0].pt(),    globalWeight_ * iprob);
-                     //subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",     numJets, kknumTags) + whichtag  )->Fill( hT,                   globalWeight_ * iprob);
-                     //subdirEB.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",    numJets, kknumTags) + whichtag  )->Fill( wMT,                  globalWeight_ * iprob);
-                     subdirEB.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",    numJets, kknumTags) + whichtag  )->Fill( met.pt(),             globalWeight_ * iprob);
-                  }
-
-                  //if(useHFcat_){
-                  // subdirEB.getObject<TH1>(sampleHistName_ + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
-                  //  subdirEB.getObject<TH1>(sampleHistName_ + Form("_wMT_%dj_%dt",      numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob);
-                     //subdirEB.getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
-                  //}
-                  subdirEB.getObject<TH1>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, kknumTags))->Fill( hT,                   globalWeight_ * iprob);
-                  subdirEB.getObject<TH1>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, kknumTags))->Fill( wMT,                  globalWeight_ * iprob);
-                  //subdirEB.getObject<TH1>(sampleNameInput + Form("_MET_%dj_%dt",      numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
-                  subdirEB.getObject<TH1>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, kknumTags))->Fill( electrons[0].pt(),    globalWeight_ * iprob);
-               }//is EB
-
-            }//ePlusJets
+    else if(ePlusJets_){
+       subdirEx->getObject<TH1>(sampleNameInput + Form("_hT_%dj_%dt",       numJets, numTags))->Fill( hT,                   globalWeight_ * iprob);
+       subdirEx->getObject<TH1>(sampleNameInput + Form("_wMT_%dj_%dt",      numJets, numTags))->Fill( wMT,                  globalWeight_ * iprob);
+       subdirEx->getObject<TH1>(sampleNameInput + Form("_elPt_%dj_%dt",     numJets, numTags))->Fill( electrons[0].pt(),    globalWeight_ * iprob);
+       subdirEx->getObject<TH1>(sampleHistName_ + Form("_elEta_%dj_%dt",    numJets, numTags))->Fill( fabs(electrons[0].eta()), globalWeight_ * iprob); 
+       subdirEx->getObject<TH1>(sampleHistName_ + Form("_MET_%dj_%dt",      numJets, numTags))->Fill( met.pt(),             globalWeight_ * iprob);
+       
+       if(doMC_){
+          //For W/Z+jets fill by paths and each path by jet flavor   
+          subdirEx->getObject<TH1>( sampleHistName_ + Form("_elEta_%dj_%dt", numJets, numTags) + whichtag  )->Fill( fabs(electrons[0].eta()), globalWeight_ * iprob); 
+          subdirEx->getObject<TH1>( sampleHistName_ + Form("_MET_%dj_%dt",   numJets, numTags) + whichtag  )->Fill( met.pt(),             globalWeight_ * iprob);           
+       }        
+       
+    }//ePlusJets
 
       } while (shyft::helper::next_combination(effs.begin(),effs.begin() + inumTags, effs.end())); 
       // std::cout << "Combination probability = " << sum << std::endl;
