@@ -26,7 +26,7 @@ options.register ('useFlavorHistory',
                   "Flavor History Mode")
 
 options.register('sampleNameInput',
-                 'top',
+                 'Wjets',
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.string,
                  "Sample name to give histograms")
@@ -67,7 +67,8 @@ if options.ignoreTrigger == 1 :
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    '/store/user/makouski/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/shyft_414_v1/4102b2143a05266d07e3ed7d177f56c8/shyft_414patch1_mc_9_1_Z8F.root'
+                                    '/store/user/makouski/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/shyft_414_v1/4102b2143a05266d07e3ed7d177f56c8/shyft_414patch1_mc_9_1_Z8F.root',
+                                    '/store/user/makouski/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/shyft_414_v1/4102b2143a05266d07e3ed7d177f56c8/shyft_414patch1_mc_99_1_yiR.root',
                                     )
                                 )
 else :
@@ -96,7 +97,9 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
                                         electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
                                         metSrc = cms.InputTag('patMETsPFlow'),
-                                        jetSrc = cms.InputTag('selectedPatJetsPFlow'),                                       
+                                        jetSrc = cms.InputTag('selectedPatJetsPFlow'),
+                                        ePlusJets = cms.bool(True),
+                                        muPlusJets = cms.bool(False),
                                         jetPtMin = cms.double(30.0),##
                                         minJets = cms.int32(5),
                                         metMin = cms.double(20.0),                                        
