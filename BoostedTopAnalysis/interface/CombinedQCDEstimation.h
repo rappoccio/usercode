@@ -20,12 +20,11 @@ class CombinedQCDEstimation {
     virtual void beginJob() {}
     virtual void analyze( const edm::EventBase& iEvent ) ;
     virtual void endJob() {  
-      type22Selection_v1_.print(cout); 
-      TDirectory * dir = theDir.cd();
+      type22Selection_v1_.print(std::cout);
+      theDir.cd(); 
       ttMassPred11    ->    SetCalculatedErrors();
       ttMassPred12    ->    SetCalculatedErrors();
       ttMassPred22    ->    SetCalculatedErrors();
-      dir ->  cd();
       ttMassPred11    ->    GetPredictedHist()->Write();
       ttMassPred12    ->    GetPredictedHist()->Write();
       ttMassPred22    ->    GetPredictedHist()->Write();
@@ -36,12 +35,11 @@ class CombinedQCDEstimation {
     Type22Selection_v1   type22Selection_v1_;
     Type11Selection_v1   type11Selection_v1_;
     double              bTagOP_;
-    string              bTagAlgo_;
+    std::string         bTagAlgo_;
     BoostedTopWTagFunctor   *        wJetSelector_;
-    std::map<std::string, TH1F*>     histograms1d;
     double              wMassMin_, wMassMax_;
     double              topMassMin_, topMassMax_;
-    string              mistagFileName_;
+    std::string         mistagFileName_;
     TFile *             mistagFile_;
     TH1F  *             wMistag_;
     TH1F  *             bMistag_;
@@ -51,17 +49,17 @@ class CombinedQCDEstimation {
     PredictedDistribution * ttMassPred11;
     PredictedDistribution * ttMassPred12;
     PredictedDistribution * ttMassPred22;
-	double 				caTopJetMassMin_;
-	double 				caTopJetMassMax_;
-	double 				caTopMinMassMin_;
-    string             caTopMistagFileName_;
+    double 				caTopJetMassMin_;
+    double 				caTopJetMassMax_;
+    double 				caTopMinMassMin_;
+    std::string             caTopMistagFileName_;
     TFile *             caTopMistagFile_;
     TH1F  *             topMistag_;
-	double caTopJetPtMin_;
+    double caTopJetPtMin_;
     double caTopJetEtaCut_;
-	double jetPt0_;
-	double jetPt1_;
-	double jetEta_;
+    double jetPt0_;
+    double jetPt1_;
+    double jetEta_;
 };
 
 

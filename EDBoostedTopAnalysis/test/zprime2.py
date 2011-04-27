@@ -11,8 +11,12 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-'dcap:////pnfs/cms/WAX/11/store/user/guofan/Zprime_M2000GeV_W20GeV-madgraph/ttbsm_387_v2/8527abb9a688648f7e111642276a1842/ttbsm_387_10_1_yc9.root',
-'dcap:////pnfs/cms/WAX/11/store/user/guofan/Zprime_M2000GeV_W20GeV-madgraph/ttbsm_387_v2/8527abb9a688648f7e111642276a1842/ttbsm_387_11_1_6ZN.root'
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_10_1_RKm.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_11_1_it1.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_12_1_HJA.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_13_1_EWJ.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_14_1_xLk.root',
+
     )
 )
 ## Maximal Number of Events
@@ -25,7 +29,7 @@ from Analysis.BoostedTopAnalysis.Type22SelectionParams_cfi import *
 
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("Zprime.root")
+                                   fileName = cms.string("jetPD.root")
                                    )
 
 process.type22QCDAna15 = cms.EDAnalyzer('EDCombinedQCDEstimation',

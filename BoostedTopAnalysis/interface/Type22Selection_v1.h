@@ -7,8 +7,6 @@
 #include "Analysis/BoostedTopAnalysis/interface/BoostedTopWTagFunctor.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
-using namespace std;
-
 class Type22Selection_v1 : public EventSelector {
   public :
     Type22Selection_v1( edm::ParameterSet const & params );
@@ -24,7 +22,7 @@ class Type22Selection_v1 : public EventSelector {
     double      jetPt0_, jetPt1_;
     double      jetEta_;
     double      bTagOP_;
-    string      bTagAlgo_;
+    std::string bTagAlgo_;
     edm::InputTag                               jetTag_;
     std::vector<edm::Ptr<pat::Jet> >            pfJets_ ;
     std::vector<edm::Ptr<pat::Jet> >            highPtJets_;
