@@ -281,7 +281,10 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                   if(nHits > 0 ) conversionVetoA = false;
                   if(nHits > 0 || isConv) conversionVetoB = false;                  
                }
-               else if(pass95 && Et >  20. ){
+               else if(pass95                  && 
+                       Et     >  20.           &&
+                       relIso <  1.0
+                       ){
                   selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                }   
             }//anti
@@ -297,8 +300,12 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                   if(nHits > 0 ) conversionVetoA = false;
                   if(nHits > 0 || isConv) conversionVetoB = false;  
                }
-               else if( pass95  && Et > 20.){//loose
-                     selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
+               else if(pass95                  && 
+                       Et     >  20.           &&
+                       relIso <  1.0
+                  ){//loose
+              
+                  selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                }            
             }//else regular selection
             
