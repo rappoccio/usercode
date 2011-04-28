@@ -1,3 +1,15 @@
+/*
+How to use:      Make class instances to your required version, for example as
+
+                 TopElectronSelector patEle70(TopElectronSelector::wp70);
+                 for ( std::vector<pat::Electron>::const_iterator electronBegin = electronHandle->begin(),
+                     electronEnd = electronHandle->end(), ielectron = electronBegin;
+                  ielectron != electronEnd; ++ielectron ) {
+                 bool pass70 = patEle70(*ielectron);
+                 }
+
+Contact:         Sadia Khalil (skhalil@fnal.gov)
+*/
 #ifndef PhysicsTools_PatUtils_interface_TopElectronSelector_h
 #define PhysicsTools_PatUtils_interface_TopElectronSelector_h
 
@@ -7,22 +19,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
-/*
-Who should use : This is a simplified version of SimpleCutBaseElectronSelectionFunctor, what Nikos 
-                 has implemented for egamma. It is meant to call TOP recommended electron selections.. 
-                
-How to use:      Make class instances to your required version, for example as
-
-                 TopElectronSelector patEle70(TopElectronSelector::cIso70, use36xData_);
-                 for ( std::vector<pat::Electron>::const_iterator electronBegin = electronHandle->begin(),
-                     electronEnd = electronHandle->end(), ielectron = electronBegin;
-                  ielectron != electronEnd; ++ielectron ) {
-                 bool pass70 = patEle70(*ielectron);
-                 }
-
-Contact:         Sadia Khalil (skhalil@fnal.gov)
-*/
-
 //Math
 #include "CLHEP/Units/GlobalPhysicalConstants.h"
 
@@ -30,11 +26,11 @@ class TopElectronSelector : public Selector<pat::Electron>  {
 
    public: // interface  
   
-      enum Version_t { wp95, wp70, sigihih70, dphi70, deta70, hoe70, sigihih80, dphi80, deta80, hoe80, NONE };
+      enum Version_t { wp95, wp70, sigihih80, dphi80, deta80, hoe80, NONE };
       TopElectronSelector() {}
   
       // initialize it by inserting directly the cut values in a parameter set
-      TopElectronSelector( edm::ParameterSet const & parameters, Bool_t is36xData)
+       TopElectronSelector( edm::ParameterSet const & parameters)
       {
          // get the cuts from the PS
          initialize( parameters.getParameter<Double_t>("sihih_EB"), 
@@ -44,28 +40,22 @@ class TopElectronSelector : public Selector<pat::Electron>  {
                      parameters.getParameter<Double_t>("sihih_EE"), 
                      parameters.getParameter<Double_t>("dphi_EE"), 
                      parameters.getParameter<Double_t>("deta_EE"), 
-                     parameters.getParameter<Double_t>("hoe_EE"), 
-                     parameters.getParameter<Double_t>("relIso"),
-                     parameters.getParameter<Double_t>("d0"),
-                     parameters.getParameter<Double_t>("Et"));
+                     parameters.getParameter<Double_t>("hoe_EE"));
          if ( parameters.exists("cutsToIgnore") )
             setIgnoredCuts( parameters.getParameter<std::vector<std::string> >("cutsToIgnore") );            
          retInternal_ = getBitTemplate();
-         is36xData_ = is36xData;
       }
       // initialize it by using only the version name
-      TopElectronSelector( Version_t  version, Bool_t is36xData)                                             
-                                               
+      TopElectronSelector( Version_t  version)                                          
       {
          if (version == NONE) {
             std::cout << "TopElectronSelector: If you want to use version NONE "
-                      << "then you have also to provide the selection cuts by yourself " << std::endl;
-            std::cout << "TopElectronSelector: ID Version is changed to 70cIso " << std::endl;
+                      << "then you also have to provide the selection cuts by yourself " << std::endl;
+            std::cout << "TopElectronSelector: ID Version is changed to wp70 " << std::endl;
             version = wp70;
          }
          initialize(version);
          retInternal_ = getBitTemplate();
-         is36xData_  = is36xData;
       }
 
       void initialize( Version_t version) 
@@ -81,9 +71,6 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          push_back("dphi_EE"    );
          push_back("deta_EE"    );
          push_back("hoe_EE"     );
-         push_back("relIso"     );
-         push_back("d0"         );
-         push_back("Et"         );
                     
          if (version_ == wp95) {
             set("sihih_EB",    1.0e-02);
@@ -94,9 +81,6 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("dphi_EE",     7.0e-01);
             set("deta_EE",     1.0e-02);// 
             set("hoe_EE",      7.0e-02);
-            set("relIso",      1.0e-00);
-            set("d0",          false  );
-            set("Et",          20.0   );
          }
          else if (version_ == wp70) {
             set("sihih_EB",    1.0e-02);
@@ -106,25 +90,6 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("sihih_EE",    3.0e-02);
             set("dphi_EE",     2.0e-02);
             set("deta_EE",     5.0e-03); //
-            set("hoe_EE",      2.5e-02);
-            set("relIso",      1.0e-01); 
-            set("d0",          2.0e-02);
-            set("Et",          30.0   );
-         }
-         else if (version == sigihih70){
-            set("sihih_EB",    1.0e-02);
-            set("sihih_EE",    3.0e-02);
-         }
-         else if (version == dphi70){
-            set("dphi_EB",     3.0e-02);
-            set("dphi_EE",     2.0e-02);
-         }
-         else if (version == deta70){
-            set("deta_EB",     4.0e-03);
-            set("deta_EE",     5.0e-03);//10000.
-         }
-         else if (version == hoe70){
-            set("hoe_EB",      2.5e-02);
             set("hoe_EE",      2.5e-02);
          }
          else if (version == sigihih80){
@@ -137,7 +102,7 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          }
          else if (version == deta80){
             set("deta_EB",     4.0e-03);
-            set("deta_EE",     7.0e-03);//10000.
+            set("deta_EE",     7.0e-03);//
          }
          else if (version == hoe80){
             set("hoe_EB",      4.0e-02);
@@ -152,14 +117,10 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          indexDphi_EE_       = index_type(&bits_, "dphi_EE"      );
          indexDeta_EE_       = index_type(&bits_, "deta_EE"      ); 
          indexHoE_EE_        = index_type(&bits_, "hoe_EE"       ); 
-         indexRelIso_        = index_type(&bits_, "relIso"       );
-         indexD0_            = index_type(&bits_, "d0"           );
-         indexEt_            = index_type(&bits_, "Et"           );
       }
 
       void initialize(Double_t sihih_EB, Double_t  dphi_EB, Double_t deta_EB, Double_t hoe_EB,
-                      Double_t sihih_EE, Double_t  dphi_EE, Double_t deta_EE, Double_t hoe_EE,
-                      Double_t relIso, Double_t d0, Double_t et)
+                      Double_t sihih_EE, Double_t  dphi_EE, Double_t deta_EE, Double_t hoe_EE)
       {
          version_ = NONE;
          push_back("sihih_EB"   );
@@ -170,10 +131,7 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          push_back("dphi_EE"    );
          push_back("deta_EE"    );
          push_back("hoe_EE"     );
-         push_back("relIso"     );
-         push_back("d0"         );
-         push_back("Et"         );
-     
+              
          set("sihih_EB",    sihih_EB);
          set("dphi_EB",     dphi_EB);
          set("deta_EB",     deta_EB);
@@ -181,81 +139,25 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          set("sihih_EE",    sihih_EE);
          set("dphi_EE",     dphi_EE);
          set("deta_EE",     deta_EE);
-         set("hoe_EE",      hoe_EE);
-         set("relIso",      relIso);
-         set("d0",          d0);
-         set("Et",          et);
+         set("hoe_EE",      hoe_EE);        
       }
 
       bool operator()( const pat::Electron & electron, pat::strbitset & ret ) 
       {
-         // for the time being only Spring10 variable definition
-         return spring10Cuts(electron, ret);
+         // for the time being only Spring11 variable definition
+         return spring11Cuts(electron, ret);
       }
       using Selector<pat::Electron>::operator();
-      // function with the Spring10 variable definitions
-      bool spring10Cuts( const pat::Electron & electron, pat::strbitset & ret) 
+      // function with the Spring11 variable definitions
+      bool spring11Cuts( const pat::Electron & electron, pat::strbitset & ret) 
       {
          ret.set(false);
-         
-         //Quick soloution to fix the Ecal endcap allignment if running on 36x
-         //===================================================================
-         math::XYZVector SCCorrPos(0, 0, 0);
-         std::vector<double> cEEP(3);
-         std::vector<double> cEEM(3);
-         cEEP[0] =  0.52;
-         cEEP[1] = -0.81;
-         cEEP[2] =  0.81;
-         cEEM[0] = -0.02;
-         cEEM[1] = -0.81;
-         cEEM[2] = -0.94;
- 
-         reco::SuperClusterRef SC = electron.superCluster();
-         Double_t e_sc_x          = SC->x();
-         Double_t e_sc_y          = SC->y();
-         Double_t e_sc_z          = SC->z();
-   
-         Double_t eEta  = SC->eta();
-         Double_t ePhi  = SC->phi();
-         
-         if(electron.isEE() && electron.eta() > 0){
-            SCCorrPos =  math::XYZVector(e_sc_x + cEEP[0], e_sc_y + cEEP[1], e_sc_z + cEEP[2]);   
-         }
-         else if(electron.isEE() && electron.eta() < 0){
-            SCCorrPos =  math::XYZVector(e_sc_x + cEEM[0], e_sc_y + cEEM[1], e_sc_z + cEEM[2]);  
-         }
-         else if(electron.isEB()){
-            SCCorrPos =  math::XYZVector(e_sc_x, e_sc_y, e_sc_z);
-         }
-            
-         Double_t deta_sc = SCCorrPos.eta() - eEta; 
-         Double_t dphi_sc = correct_phi(SCCorrPos.phi() - ePhi); 
         
-         //--------End Ecal Allignment--------------
-         Double_t Deta = -1000.;
-         Double_t Dphi = -1000.;
-        
-         if(is36xData_){           
-            Deta = electron.deltaEtaSuperClusterTrackAtVtx() + deta_sc ;
-            Dphi = correct_phi(electron.deltaPhiSuperClusterTrackAtVtx() + dphi_sc);
-            std::cout << "ok I am in the wrong place = " << std::endl;
-         }
-         else{       
-            Deta = electron.deltaEtaSuperClusterTrackAtVtx();
-            Dphi = electron.deltaPhiSuperClusterTrackAtVtx(); 
-         }
-      
-         Double_t eleEt    = electron.p4().Pt();
-         Double_t sihih    = electron.sigmaIetaIeta();
-         Double_t HoE      = electron.hadronicOverEm();       
-         Double_t relIso   = (electron.dr03TkSumPt()+electron.dr03EcalRecHitSumEt()+electron.dr03HcalTowerSumEt()) / eleEt;
-         Double_t d0       = electron.dB();
-         Double_t et       = electron.et();
-
-
-         //if(electron.isEE() && fabs(Deta)<0.01 && fabs(Dphi)<0.7 && sihih <0.03 && HoE < 0.07 ){
-         //  std::cout << " I should be like this Deta " << Deta << std::endl;
-         // }
+         Double_t Deta  = electron.deltaEtaSuperClusterTrackAtVtx();
+         Double_t Dphi  = electron.deltaPhiSuperClusterTrackAtVtx(); 
+         Double_t sihih = electron.sigmaIetaIeta();
+         Double_t HoE   = electron.hadronicOverEm();       
+         
          // now apply the cuts
          if (electron.isEB()) { // BARREL case
             // check the EB cuts
@@ -282,29 +184,14 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             passCut(ret, indexHoE_EB_);
             
          }
-         
-         if ( relIso  < cut(indexRelIso_, double()) || ignoreCut(indexRelIso_)  ) passCut(ret, indexRelIso_ );
-         if ( fabs(d0)< cut(indexD0_,     double()) || ignoreCut(indexD0_)      ) passCut(ret, indexD0_); 
-         if ( et      > cut(indexEt_,     double()) || ignoreCut(indexEt_)      ) passCut(ret, indexEt_);
-
+        
          setIgnored(ret);   
          return (bool)ret;
       }
-      
-      float correct_phi(float dphi){   
-         if (fabs(dphi) > CLHEP::pi) {
-            if (dphi < 0)
-               dphi = CLHEP::twopi+dphi;
-            else
-               dphi = dphi-CLHEP::twopi; 
-         }
-         return dphi;
-      }
-      
+    
    private: // member variables
       // version of the cuts  
       Version_t version_;
-      Bool_t is36xData_;      
       index_type indexSinhih_EB_;
       index_type indexDphi_EB_;
       index_type indexDeta_EB_;
@@ -313,10 +200,6 @@ class TopElectronSelector : public Selector<pat::Electron>  {
       index_type indexDphi_EE_;
       index_type indexDeta_EE_;
       index_type indexHoE_EE_;
-      index_type indexRelIso_;
-      index_type indexD0_; 
-      index_type indexEt_;
 };
-
 
 #endif
