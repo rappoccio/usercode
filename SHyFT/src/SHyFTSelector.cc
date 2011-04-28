@@ -50,7 +50,6 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    eRelIso_         (params.getParameter<double>("eRelIso")),
    eEt_             (params.getParameter<double>("eEtCut")),
    pvTag_           (params.getParameter<edm::InputTag>("pvSrc") ),
-   use36xData_      (params.getParameter<bool>("use36xData")),
    useAntiSelection_(params.getParameter<bool>("useAntiSelection")),
    useEleMC_        (params.getParameter<bool>("useEleMC")),
    useData_         (params.getParameter<bool>("useData")),
@@ -224,12 +223,12 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 
     	 reco::Candidate::LorentzVector metP4 = metHandle->at(0).p4();
 
-         TopElectronSelector patEle70(TopElectronSelector::wp70, use36xData_);
-         TopElectronSelector patEle95(TopElectronSelector::wp95, use36xData_);
-         TopElectronSelector EleSihih(TopElectronSelector::sigihih80, use36xData_);
-         TopElectronSelector EleDphi(TopElectronSelector::dphi80, use36xData_);
-         TopElectronSelector EleDeta(TopElectronSelector::deta80, use36xData_); 
-         TopElectronSelector EleHoE(TopElectronSelector::hoe80, use36xData_); 
+         TopElectronSelector patEle70(TopElectronSelector::wp70);
+         TopElectronSelector patEle95(TopElectronSelector::wp95);
+         TopElectronSelector EleSihih(TopElectronSelector::sigihih80);
+         TopElectronSelector EleDphi(TopElectronSelector::dphi80);
+         TopElectronSelector EleDeta(TopElectronSelector::deta80); 
+         TopElectronSelector EleHoE(TopElectronSelector::hoe80); 
       
          bool conversionVetoA = true;
          bool conversionVetoB = true;
@@ -259,8 +258,10 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             double Et      = ielectron->et();
             double dB      = ielectron->dB();
             double vCut    = fabs(PVz - ielectron->vertex().z());
-            float  el_dist = ielectron->userFloat("el_dist");
-            float  el_dcot = ielectron->userFloat("el_dcot");
+            //float  el_dist = ielectron->userFloat("el_dist");
+            //float  el_dcot = ielectron->userFloat("el_dcot");
+            double el_dist = ielectron->convDist();
+            double el_dcot = ielectron->convDcot();
             bool   isConv  = fabs(el_dist) < elDist_ && fabs(el_dcot) < elDcot_ ;            
             double nHits   = ielectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
             double relIso  = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + ielectron->dr03HcalTowerSumEt() ) / ielectron->p4().Pt();
@@ -280,18 +281,23 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                   if(nHits > 0 ) conversionVetoA = false;
                   if(nHits > 0 || isConv) conversionVetoB = false;                  
                }
-               else if(pass95 ){
+               else if(pass95 && Et >  20. ){
                   selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                }   
             }//anti
             
             else{
-               if( pass70 && vCut < 1 ) { //tight            
+               if( pass70              && 
+                   vCut     < 1        &&
+                   Et       > eEt_     &&
+                   relIso   < eRelIso_ &&
+                   fabs(dB) < 0.02     
+                  ) { //tight cuts           
                   selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                   if(nHits > 0 ) conversionVetoA = false;
                   if(nHits > 0 || isConv) conversionVetoB = false;  
                }
-               else if( pass95 ){//loose
+               else if( pass95  && Et > 20.){//loose
                      selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                }            
             }//else regular selection
