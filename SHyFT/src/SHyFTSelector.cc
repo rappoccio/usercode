@@ -50,7 +50,12 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    eRelIso_         (params.getParameter<double>("eRelIso")),
    eEt_             (params.getParameter<double>("eEtCut")),
    pvTag_           (params.getParameter<edm::InputTag>("pvSrc") ),
-   useAntiSelection_(params.getParameter<bool>("useAntiSelection")),
+   useAntiSelection_(params.getParameter<bool>("useAntiSelection")),   
+   useWP95Selection_(params.getParameter<bool>("useWP95Selection")),
+   useWP90Selection_(params.getParameter<bool>("useWP90Selection")),
+   useWP85Selection_(params.getParameter<bool>("useWP85Selection")),
+   useWP80Selection_(params.getParameter<bool>("useWP80Selection")),
+   useWP70Selection_(params.getParameter<bool>("useWP70Selection")),
    useEleMC_        (params.getParameter<bool>("useEleMC")),
    useData_         (params.getParameter<bool>("useData")),
    useL1Offset_     (params.getParameter<bool>("useL1Offset")),
@@ -223,8 +228,11 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 
     	 reco::Candidate::LorentzVector metP4 = metHandle->at(0).p4();
 
-         TopElectronSelector patEle70(TopElectronSelector::wp70);
          TopElectronSelector patEle95(TopElectronSelector::wp95);
+         TopElectronSelector patEle90(TopElectronSelector::wp90);
+         TopElectronSelector patEle85(TopElectronSelector::wp85);
+         TopElectronSelector patEle80(TopElectronSelector::wp80);
+         TopElectronSelector patEle70(TopElectronSelector::wp70);
          TopElectronSelector EleSihih(TopElectronSelector::sigihih80);
          TopElectronSelector EleDphi(TopElectronSelector::dphi80);
          TopElectronSelector EleDeta(TopElectronSelector::deta80); 
@@ -247,8 +255,11 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 	   allElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
             ++nElectrons;
 
-            bool pass70       = patEle70(*ielectron);
             bool pass95       = patEle95(*ielectron);
+            bool pass90       = patEle90(*ielectron);
+            bool pass85       = patEle85(*ielectron);
+            bool pass80       = patEle80(*ielectron);
+            bool pass70       = patEle70(*ielectron);
             bool pass_sihih   = EleSihih(*ielectron);
             bool pass_dphi    = EleDphi(*ielectron);
             bool pass_deta    = EleDeta(*ielectron);
@@ -270,6 +281,32 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 //-----------------------------
             if( (scEta > 2.5 || scEta <= 1.566 )  && scEta > 1.4442 ) continue;   
             if( fabs(ielectron->eta()) >= eleEtaMaxLoose_ ) continue;
+              
+            bool firstPass(0);
+            if( useAntiSelection_&& (pass_sihih + pass_dphi + pass_deta + pass_hoe) <= 2) firstPass=1;
+            else if( useWP95Selection_ && pass95 )firstPass=1;
+            else if( useWP90Selection_ && pass90 )firstPass=1; 
+            else if( useWP85Selection_ && pass85 )firstPass=1;
+            else if( useWP80Selection_ && pass80 )firstPass=1;
+            else if( useWP70Selection_ && pass70 )firstPass=1;  
+          
+            if(firstPass==1           &&
+               Et       > eEt_        &&                   
+               relIso   < eRelIso_    &&
+               vCut     < 1           &&
+               fabs(dB) < 0.02         
+               ){
+               selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
+               if(nHits > 0 ) conversionVetoA = false;
+               if(nHits > 0 || isConv) conversionVetoB = false; 
+            }
+            else if( pass95           &&
+                     Et     >  20.    &&
+                     relIso <  1.0
+               ){
+               selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
+            }   
+            /*
             if(useAntiSelection_){
                if( Et       > eEt_                                         &&                   
                    relIso   < eRelIso_                                     &&
@@ -308,7 +345,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                   selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                }            
             }//else regular selection
-            
+            */
             
 
 //Electron Selection for mu+jets

@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector as pvSel
+#from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector as pvSel
+from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
 from PhysicsTools.SelectorUtils.jetIDSelector_cfi import jetIDSelector
 from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
 
@@ -8,9 +9,10 @@ from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
 
 wplusjetsAnalysis = cms.PSet(
     # Primary vertex
-    pvSelector = cms.PSet( pvSel.clone(
-        maxZ=cms.double(24.0)
-        ) ),
+    #pvSelector = cms.PSet( pvSel.clone(
+    #    maxZ=cms.double(24.0)
+    #    ) ),
+    pvSelector = pvSelector.clone(), 
     # input parameter sets
     muonSrc = cms.InputTag('selectedPatMuons'),
     electronSrc = cms.InputTag('selectedPatElectrons'),
@@ -21,8 +23,12 @@ wplusjetsAnalysis = cms.PSet(
     muTrig = cms.string('HLT_Mu9'),
     eleTrig = cms.string('HLT_Ele10_LW_L1R'),
     pvSrc   = cms.InputTag('offlinePrimaryVertices'),
-    use36xData = cms.bool(False),
     useAntiSelection = cms.bool(False),
+    useWP95Selection = cms.bool(False),
+    useWP90Selection = cms.bool(False),
+    useWP85Selection = cms.bool(False),
+    useWP80Selection = cms.bool(False),
+    useWP70Selection = cms.bool(True),
     useEleMC = cms.bool(False), 
     # tight muons
     muonIdTight = cms.PSet(

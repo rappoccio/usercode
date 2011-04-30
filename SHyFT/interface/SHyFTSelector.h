@@ -144,8 +144,12 @@ class SHyFTSelector : public EventSelector {
       double         eRelIso_;
       double         eEt_;
       edm::InputTag  pvTag_;
-      bool           use36xData_;
       bool           useAntiSelection_;
+      bool           useWP95Selection_;
+      bool           useWP90Selection_;
+      bool           useWP85Selection_;
+      bool           useWP80Selection_;
+      bool           useWP70Selection_;
       bool           useEleMC_;
       bool           useData_;
       bool           useL1Offset_;

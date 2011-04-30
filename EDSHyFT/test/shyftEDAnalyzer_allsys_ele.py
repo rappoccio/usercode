@@ -136,6 +136,75 @@ process.pfShyftAnaNoMET = process.pfShyftAna.clone(
         )
     )
 
+#__________QCD MC_____________________
+
+process.pfShyftAnaQCDWP95 = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+    useWP95Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    identifier = cms.string('PF no MET')
+    )
+    )
+
+process.pfShyftAnaQCDWP95NoMET = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+    metMin = cms.double(0.0),
+    useWP95Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    identifier = cms.string('PF no MET')
+    )
+    )
+
+process.pfShyftAnaQCDWP90 = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+    useWP90Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    identifier = cms.string('PF QCD WP90')
+    )
+    )
+
+process.pfShyftAnaQCDWP90NoMET = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+    metMin = cms.double(0.0),
+    useWP90Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    identifier = cms.string('PF QCD WP90 no MET')
+    )
+    )
+
+process.pfShyftAnaQCDWP85 = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+    useWP85Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    identifier = cms.string('PF QCD WP85')
+    )
+    )
+
+process.pfShyftAnaQCDWP85NoMET = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+    metMin = cms.double(0.0),
+    useWP85Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    identifier = cms.string('PF QCD WP85 no MET')
+    )
+    )
+
+process.pfShyftAnaQCDWP80 = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+    useWP80Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    identifier = cms.string('PF QCD WP80')
+    )
+    )
+
+process.pfShyftAnaQCDWP80NoMET = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+    metMin = cms.double(0.0),
+    useWP80Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    identifier = cms.string('PF QCD WP80 no MET')
+    )
+    )
 #______________To extract secvtx shapes and >=3 tag jets count _____________________
 
 process.pfShyftAnaMC = process.pfShyftAna.clone(
@@ -306,27 +375,35 @@ process.pfShyftAnaEleEEPt075 =  process.pfShyftAna.clone(
 process.s = cms.Sequence(
    process.pfShyftAna*                 
    process.pfShyftAnaNoMET*
-   process.pfShyftAnaJES095*    
-   process.pfShyftAnaJES105*
-   process.pfShyftAnaMETRES090*
-   process.pfShyftAnaMETRES110*
-   process.pfShyftAnaJER000*
-   process.pfShyftAnaJER020*
-   process.pfShyftAnaEleEEPt125*
-   process.pfShyftAnaEleEEPt075* 
-   process.pfShyftAnaReweightedBTag080*
-   process.pfShyftAnaReweightedBTag090*
-   process.pfShyftAnaReweightedBTag110*
-   process.pfShyftAnaReweightedBTag120*
-   process.pfShyftAnaReweightedLFTag080*
-   process.pfShyftAnaReweightedLFTag090*
-   process.pfShyftAnaReweightedLFTag110*
-   process.pfShyftAnaReweightedLFTag120*
-   process.pfShyftAnaMC*
-   process.pfShyftAnaMCNoMET*
+   #process.pfShyftAnaJES095*    
+   #process.pfShyftAnaJES105*
+   #process.pfShyftAnaMETRES090*
+   #process.pfShyftAnaMETRES110*
+   #process.pfShyftAnaJER000*
+   #process.pfShyftAnaJER020*
+   #process.pfShyftAnaEleEEPt125*
+   #process.pfShyftAnaEleEEPt075* 
+   #process.pfShyftAnaReweightedBTag080*
+   #process.pfShyftAnaReweightedBTag090*
+   #process.pfShyftAnaReweightedBTag110*
+   #process.pfShyftAnaReweightedBTag120*
+   #process.pfShyftAnaReweightedLFTag080*
+   #process.pfShyftAnaReweightedLFTag090*
+   #process.pfShyftAnaReweightedLFTag110*
+   #process.pfShyftAnaReweightedLFTag120*
+   #process.pfShyftAnaMC*
+   #process.pfShyftAnaMCNoMET*
    process.pfShyftAnaMETMax20*
-   process.pfShyftAnaMCMETMax20
-    )
+   #process.pfShyftAnaMCMETMax20*
+   process.pfShyftAnaQCDWP95*
+   process.pfShyftAnaQCDWP95NoMET*
+   process.pfShyftAnaQCDWP90*
+   process.pfShyftAnaQCDWP90NoMET*
+   process.pfShyftAnaQCDWP85*
+   process.pfShyftAnaQCDWP85NoMET*
+   process.pfShyftAnaQCDWP80*
+   process.pfShyftAnaQCDWP80NoMET
+   )
 
 process.p = cms.Path(
     process.pfShyftAna*
