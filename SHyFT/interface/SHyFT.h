@@ -101,8 +101,6 @@ class SHyFT : public edm::BasicAnalyzer {
 
     SHyFTSelector wPlusJets;
     TFileDirectory& theDir;
-    TFileDirectory  subdirEB;
-    TFileDirectory  subdirEE;
 
     TFileDirectory  subdirEB_plus;
     TFileDirectory  subdirEE_plus;
