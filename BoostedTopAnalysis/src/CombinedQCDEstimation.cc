@@ -6,34 +6,34 @@
 using namespace std;
 
 CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,  TFileDirectory & iDir ) :
-  theDir( iDir ),
-  type22Selection_v1_     ( iConfig.getParameter<edm::ParameterSet>("Type22Selection") ),
-  bTagOP_                 ( iConfig.getParameter<edm::ParameterSet>("Type22Selection").getParameter<double>("bTagOP") ),
-  bTagAlgo_               ( iConfig.getParameter<edm::ParameterSet>("Type22Selection").getParameter<string>("bTagAlgo") ),
-  jetPt0_					( iConfig.getParameter<edm::ParameterSet>("Type22Selection").getParameter<double>("jetPt0") ),
-  jetPt1_					( iConfig.getParameter<edm::ParameterSet>("Type22Selection").getParameter<double>("jetPt1") ),
-  jetEta_					( iConfig.getParameter<edm::ParameterSet>("Type22Selection").getParameter<double>("jetEta") ),
-  wMassMin_               ( iConfig.getParameter<double>("wMassMin") ),
-  wMassMax_               ( iConfig.getParameter<double>("wMassMax") ),
-  topMassMin_             ( iConfig.getParameter<double>("topMassMin") ),
-  topMassMax_             ( iConfig.getParameter<double>("topMassMax") ),
-  mistagFileName_         ( iConfig.getParameter<string>("mistagFile") ),
-  prob                    ( iConfig.getParameter<double>("Probability") ),
-  runOnData_              ( iConfig.getParameter<bool>("runOnData") ),
-  type11Selection_v1_     ( iConfig.getParameter<edm::ParameterSet>("Type11Selection") ),
-  caTopJetPtMin_          ( iConfig.getParameter<edm::ParameterSet>("Type11Selection").getParameter<double>("caTopJetPtMin") ),
-  caTopJetEtaCut_         ( iConfig.getParameter<edm::ParameterSet>("Type11Selection").getParameter<double>("caTopJetEtaCut") ),
-  caTopJetMassMin_        ( iConfig.getParameter<double>("caTopJetMassMin") ),
-  caTopJetMassMax_        ( iConfig.getParameter<double>("caTopJetMassMax") ),
-  caTopMinMassMin_        ( iConfig.getParameter<double>("caTopMinMassMin") ),
-  caTopMistagFileName_    ( iConfig.getParameter<string>("caTopMistagFileName") )
+	theDir( iDir ),
+	type22Selection_v1_     ( iConfig.getParameter<edm::ParameterSet>("Type22Selection") ),
+	bTagOP_                 ( iConfig.getParameter<edm::ParameterSet>("Type22Selection").getParameter<double>("bTagOP") ),
+	bTagAlgo_               ( iConfig.getParameter<edm::ParameterSet>("Type22Selection").getParameter<string>("bTagAlgo") ),
+	jetPt0_					( iConfig.getParameter<edm::ParameterSet>("Type22Selection").getParameter<double>("jetPt0") ),
+	jetPt1_					( iConfig.getParameter<edm::ParameterSet>("Type22Selection").getParameter<double>("jetPt1") ),
+	jetEta_					( iConfig.getParameter<edm::ParameterSet>("Type22Selection").getParameter<double>("jetEta") ),
+	wMassMin_               ( iConfig.getParameter<double>("wMassMin") ),
+	wMassMax_               ( iConfig.getParameter<double>("wMassMax") ),
+	topMassMin_             ( iConfig.getParameter<double>("topMassMin") ),
+	topMassMax_             ( iConfig.getParameter<double>("topMassMax") ),
+	mistagFileName_         ( iConfig.getParameter<string>("mistagFile") ),
+	prob                    ( iConfig.getParameter<double>("Probability") ),
+	runOnData_              ( iConfig.getParameter<bool>("runOnData") ),
+	type11Selection_v1_     ( iConfig.getParameter<edm::ParameterSet>("Type11Selection") ),
+	caTopJetPtMin_          ( iConfig.getParameter<edm::ParameterSet>("Type11Selection").getParameter<double>("caTopJetPtMin") ),
+	caTopJetEtaCut_         ( iConfig.getParameter<edm::ParameterSet>("Type11Selection").getParameter<double>("caTopJetEtaCut") ),
+	caTopJetMassMin_        ( iConfig.getParameter<double>("caTopJetMassMin") ),
+	caTopJetMassMax_        ( iConfig.getParameter<double>("caTopJetMassMax") ),
+	caTopMinMassMin_        ( iConfig.getParameter<double>("caTopMinMassMin") ),
+	caTopMistagFileName_    ( iConfig.getParameter<string>("caTopMistagFileName") )
 {
-  std::cout << "Instantiated CombinedQCDEstimation" << std::endl;
+	std::cout << "Instantiated CombinedQCDEstimation" << std::endl;
 	
-  // Type11 histograms
-  theDir.make<TH1F>("ttMassType11_measured",   "measured t#bar{t} Inv Mass Type11",   500,  0,  5000 );
-  theDir.make<TH1F>("ttMassType11_predicted",  "predictedt#bar{t} Inv Mass Type11",   500,  0,  5000 );
-  theDir.make<TH1F>("ttMassType11_predicted_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type11",   500,  0,  5000 );
+	// Type11 histograms
+	theDir.make<TH1F>("ttMassType11_measured",   "measured t#bar{t} Inv Mass Type11",   500,  0,  5000 );
+	theDir.make<TH1F>("ttMassType11_predicted",  "predictedt#bar{t} Inv Mass Type11",   500,  0,  5000 );
+	theDir.make<TH1F>("ttMassType11_predicted_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type11",   500,  0,  5000 );
     
   // Type12 histograms	
   theDir.make<TH1F>("ttMassType12_measured",   "measured t#bar{t} Inv Mass Type12",   500,  0,  5000 );
@@ -46,9 +46,6 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
   theDir.make<TH1F>("ttMassType22_predicted_errorSquared", "sum of squared errors t#bar{t} Inv Mass Type22",   500,  0,  5000 );
 	
   theDir.make<TH1F>("topMassPred",    "Top Mass",									100,  0,  500 );
-
-
-
 
   // counting histograms
   theDir.make<TH1F>("Nevents_22_tighttight_tightloose",   "Nevents_22_tighttight_tightloose",   2,  0.5,  2.5 );
@@ -120,8 +117,36 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
   theDir.make<TH1F>("Nevents_hemiTop_hemiBnoW",   "Nevents_hemiTop_hemiBnoW",   1,  0.5,  1.5 );
   theDir.make<TH1F>("Nevents_hasBTag",   "Nevents_hasBTag",   1,  0.5,  1.5 );
   theDir.make<TH1F>("Nevents_hasBTag_noWTag",   "Nevents_hasBTag_noWTag",   1,  0.5,  1.5 );
+  
+  theDir.make<TH1F>("Nevents_type11sig_cutflow",   "Nevents_type11sig_cutflow",   20,  0.5,  20.5 );
+  theDir.make<TH1F>("Nevents_type12sig_cutflow",   "Nevents_type12sig_cutflow",   20,  0.5,  20.5 );
+  theDir.make<TH1F>("Nevents_type22sig_cutflow",   "Nevents_type22sig_cutflow",   20,  0.5,  20.5 );
+	
+  theDir.make<TH1F>("Nevents_type11bkg_cutflow",   "Nevents_type11bkg_cutflow",   20,  0.5,  20.5 );
+  theDir.make<TH1F>("Nevents_type12bkg_cutflow",   "Nevents_type12bkg_cutflow",   20,  0.5,  20.5 );
+  theDir.make<TH1F>("Nevents_type22bkg_cutflow",   "Nevents_type22bkg_cutflow",   20,  0.5,  20.5 );
+	
+	// pretagged histograms
+  theDir.make<TH1F>("CATop_mass",				"CATop_mass",				100,	0,  400 );
+  theDir.make<TH1F>("CATop_minmass",			"CATop_minmass",			100,	0,  200 );
+  theDir.make<TH1F>("CATop_nsubjets",			"CATop_nsubjets",			5,		0,  5 );
+  theDir.make<TH1F>("CATop_pt",					"CATop_pt",					100,	0,  4000 );
+  theDir.make<TH1F>("CATop_eta",				"CATop_eta",				100,	-3,  3 );
+  theDir.make<TH1F>("CATop_mass_masscut",		"CATop_mass_masscut",		100,	0,  200 );
+  theDir.make<TH1F>("CATop_minmass_masscut",	"CATop_minmass_masscut",	100,	0,  200 );
+  theDir.make<TH1F>("CATop_nsubjets_masscut",   "CATop_nsubjets_masscut",   5,		0,  5 );
+  theDir.make<TH1F>("CATop_pt_masscut",			"CATop_pt_masscut",			100,	0,  4000 );
+  theDir.make<TH1F>("CATop_eta_masscut",		"CATop_eta_masscut",		100,	-3,  3 );
+	
+  theDir.make<TH1F>("PrunedJet_mass",				"PrunedJet_mass",		100,	0,  400 );
+  theDir.make<TH1F>("PrunedJet_mu",					"PrunedJet_mu",			100,	0,  1 );
+  theDir.make<TH1F>("PrunedJet_nsubjets",			"PrunedJet_nsubjets",	5,		0,  5 );
+  theDir.make<TH1F>("PrunedJet_pt",					"PrunedJet_pt",			100,	0,  4000 );
+  theDir.make<TH1F>("PrunedJet_eta",				"PrunedJet_eta",		100,	-3,  3 );
 
 	
+  theDir.make<TH1F>("PrunedJet_mu_taggedType1",	"PrunedJet_mu_taggedType1",		100,	0,  1 );
+  theDir.make<TH1F>("CATop_minmass_taggedType2","CATop_minmass_taggedType2",	100,	0,  200 );
 	
   std::cout << "Instantiated histograms" << std::endl;
 
@@ -152,7 +177,7 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
 void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 {
   double evtWeight = 1.0;
-	
+  
   edm::Handle<GenEventInfoProduct>    genEvt;
   iEvent.getByLabel( edm::InputTag("generator"),  genEvt );
   if( genEvt.isValid() )  {
@@ -221,7 +246,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 	  pat::Jet const & caTopJet = **icatop;
 			
 	  cout<<"  eta "<<caTopJet.eta()<<" phi "<<caTopJet.phi()<<" pt "<<caTopJet.pt()<<" mass "<<caTopJet.mass()<<endl;
-	}
+	  }
     }
   if (verbose_&&passType22)
     {
@@ -292,7 +317,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		      hemisphere0_catop.push_back( *icatop );	
 		      if (verbose_) cout<<"     -> hemisphere0_catop. "<<endl;
 		    }
-					
+			
 		}
 	      // Match pruned jets to ca8 jets and group into hemispheres
 	      for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=pfJets_.begin(), jetEnd=pfJets_.end(), ijet=jetBegin ;
@@ -482,7 +507,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		      if (subjetLoopCount==0 || subjetLoopCount==1) pairwiseMass01 += pfSubjet->p4();
 		      if (subjetLoopCount==0 || subjetLoopCount==2) pairwiseMass02 += pfSubjet->p4();
 		      if (subjetLoopCount==1 || subjetLoopCount==2) pairwiseMass12 += pfSubjet->p4();
-		      subjetLoopCount++;
+				subjetLoopCount++;
 		    }
 					
 		  double min2 = std::min(pairwiseMass01.mass(), pairwiseMass02.mass() );
@@ -530,8 +555,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 	    cout<<"    p4_catop_jet0.mass() "<<p4_catop_jet0.mass()<<"  j0_minmass "<<j0_minmass<<"  j0_nsubjets "<<j0_nsubjets<<endl;
 	  if (verbose_) 
 	    cout<<"    p4_catop_jet1.mass() "<<p4_catop_jet1.mass()<<"  j1_minmass "<<j1_minmass<<"  j1_nsubjets "<<j0_nsubjets<<endl;
-			
-			
+		
 	  bool hasTaggedTopJet0=false;
 	  bool hasTaggedTopJet1=false;
 	  if ( p4_catop_jet0.mass() > caTopJetMassMin_ && 
@@ -552,8 +576,124 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 	  }
 
 	  if (verbose_ && hasTaggedTopJet0 ) cout<<" hasTaggedTopJet0"<<endl;
-	  if (verbose_ && hasTaggedTopJet1 ) cout<<" hasTaggedTopJet1"<<endl;			
+	  if (verbose_ && hasTaggedTopJet1 ) cout<<" hasTaggedTopJet1"<<endl;	
+
+	  //-----------------
+	  // Type 1 commissioning plots
+
+	  theDir.getObject<TH1>("CATop_mass")		->Fill( p4_catop_jet0.mass(), evtWeight);
+	  theDir.getObject<TH1>("CATop_mass")		->Fill( p4_catop_jet1.mass(), evtWeight);
+	  theDir.getObject<TH1>("CATop_minmass")	->Fill( j0_minmass, evtWeight);
+	  theDir.getObject<TH1>("CATop_minmass")	->Fill( j1_minmass, evtWeight);
+	  theDir.getObject<TH1>("CATop_nsubjets")	->Fill( j0_nsubjets, evtWeight);
+	  theDir.getObject<TH1>("CATop_nsubjets")	->Fill( j1_nsubjets, evtWeight);
+	  theDir.getObject<TH1>("CATop_pt")			->Fill( p4_catop_jet0.pt(), evtWeight);
+	  theDir.getObject<TH1>("CATop_pt")			->Fill( p4_catop_jet1.pt(), evtWeight);
+	  theDir.getObject<TH1>("CATop_eta")		->Fill( p4_catop_jet0.eta(), evtWeight);
+	  theDir.getObject<TH1>("CATop_eta")		->Fill( p4_catop_jet1.eta(), evtWeight);
 			
+	  if ( p4_catop_jet0.mass() > caTopJetMassMin_ && p4_catop_jet0.mass() < caTopJetMassMax_ ) 
+	  {		
+			theDir.getObject<TH1>("CATop_mass_masscut")		->Fill( p4_catop_jet0.mass(), evtWeight);
+			theDir.getObject<TH1>("CATop_minmass_masscut")	->Fill( j0_minmass, evtWeight);
+			theDir.getObject<TH1>("CATop_nsubjets_masscut")	->Fill( j0_nsubjets, evtWeight);
+			theDir.getObject<TH1>("CATop_pt_masscut")		->Fill( p4_catop_jet0.pt(), evtWeight);
+			theDir.getObject<TH1>("CATop_eta_masscut")		->Fill( p4_catop_jet0.eta(), evtWeight);
+	  }
+	  if ( p4_catop_jet1.mass() > caTopJetMassMin_ && p4_catop_jet1.mass() < caTopJetMassMax_ ) 
+	  {		
+			theDir.getObject<TH1>("CATop_mass_masscut")		->Fill( p4_catop_jet1.mass(), evtWeight);
+			theDir.getObject<TH1>("CATop_minmass_masscut")	->Fill( j1_minmass, evtWeight);
+			theDir.getObject<TH1>("CATop_nsubjets_masscut")	->Fill( j1_nsubjets, evtWeight);
+			theDir.getObject<TH1>("CATop_pt_masscut")		->Fill( p4_catop_jet1.pt(), evtWeight);
+			theDir.getObject<TH1>("CATop_eta_masscut")		->Fill( p4_catop_jet1.eta(), evtWeight);
+	  }
+		
+
+	  //if ( hasTaggedTopJet0 ) theDir.getObject<TH1>("CATop_pt")	->Fill( p4_catop_jet0.pt(), evtWeight);
+	  
+	  //-----------------
+	  // Type 2 commissioning plots
+		if ( hemisphere0.size()>0 )
+			{	
+				double y = -1;
+				double mu = -1;
+				double dR = -1; 
+				pat::Jet const & jet0 = *hemisphere0.at(0);
+				int numOfDaughters    = jet0.numberOfDaughters();
+				if (verbose_) std::cout << "numOfDaughters " << numOfDaughters << std::endl;
+				theDir.getObject<TH1>("PrunedJet_nsubjets") ->Fill(numOfDaughters,evtWeight);
+				double mfat       = jet0.mass();
+				theDir.getObject<TH1>("PrunedJet_mass") ->Fill(mfat,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_pt") ->Fill(jet0.pt(),evtWeight);
+				theDir.getObject<TH1>("PrunedJet_eta") ->Fill(jet0.eta(),evtWeight);
+				if ( numOfDaughters >= 2 ) {
+					double mfat       = jet0.mass();
+					double m0     = jet0.daughter(0) -> mass();
+					double m1     = jet0.daughter(1) -> mass();
+					double pt0        = jet0.daughter(0) -> pt();
+					double pt1        = jet0.daughter(1) -> pt();
+					if ( m1 > m0 ) {
+						double temp = m1;
+						m1 = m0;
+						m0 = temp;
+						temp = pt1;
+						pt1 = pt0;
+						pt0 = temp;
+					}
+					
+					dR = reco::deltaR<double>( jet0.daughter(0) ->eta(),
+											  jet0.daughter(0) ->phi(),
+											  jet0.daughter(1) ->eta(),
+											  jet0.daughter(1) ->phi()  );
+					y = std::min( pt0*pt0, pt1*pt1) * dR*dR / (mfat*mfat);
+					mu = m0 / mfat ;
+					if (verbose_) cout<<"y = "<<y <<" mu = "<<mu<< " dR "<<dR <<endl;
+					theDir.getObject<TH1>("PrunedJet_mu") ->Fill(mu,evtWeight);
+					
+				}
+			}
+			if ( hemisphere1.size()>0 )
+			{	
+				double y = -1;
+				double mu = -1;
+				double dR = -1; 
+				pat::Jet const & jet1 = *hemisphere1.at(0);
+				int numOfDaughters    = jet1.numberOfDaughters();
+				if (verbose_) std::cout << "numOfDaughters " << numOfDaughters << std::endl;
+				theDir.getObject<TH1>("PrunedJet_nsubjets") ->Fill(numOfDaughters,evtWeight);
+				double mfat       = jet1.mass();
+				theDir.getObject<TH1>("PrunedJet_mass") ->Fill(mfat,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_pt") ->Fill(jet1.pt(),evtWeight);
+				theDir.getObject<TH1>("PrunedJet_eta") ->Fill(jet1.eta(),evtWeight);
+				if ( numOfDaughters >= 2 ) {
+					double m0     = jet1.daughter(0) -> mass();
+					double m1     = jet1.daughter(1) -> mass();
+					double pt0        = jet1.daughter(0) -> pt();
+					double pt1        = jet1.daughter(1) -> pt();
+					if ( m1 > m0 ) {
+						double temp = m1;
+						m1 = m0;
+						m0 = temp;
+						temp = pt1;
+						pt1 = pt0;
+						pt0 = temp;
+					}
+					
+					dR = reco::deltaR<double>( jet1.daughter(0) ->eta(),
+											  jet1.daughter(0) ->phi(),
+											  jet1.daughter(1) ->eta(),
+											  jet1.daughter(1) ->phi()  );
+					y = std::min( pt0*pt0, pt1*pt1) * dR*dR / (mfat*mfat);
+					mu = m0 / mfat ;
+					if (verbose_) cout<<"y = "<<y <<" mu = "<<mu<< " dR "<<dR <<endl;
+					theDir.getObject<TH1>("PrunedJet_mu") ->Fill(mu,evtWeight);
+				}
+			}
+
+
+  	  //-----------------
+	  // Find non -leading btags		
 	  if (verbose_) cout<<"Check if each hemisphere has non-leading b-jet"<<endl;
 	  bool hasNonLeadingBjet0 = false;
 	  bool hasNonLeadingBjet1 = false;
@@ -1064,8 +1204,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			}
 		      }
 		      else {  
-			cout<<"   -> no hemi1 btag"<<endl;
-			cout<<"      Loop over other jets and find the closest jet"<<endl;
+			if (verbose_) cout<<"   -> no hemi1 btag"<<endl;
+			if (verbose_) cout<<"      Loop over other jets and find the closest jet"<<endl;
 
 			double minDr = 9999.0;
 			pat::Jet const * nearestJet=NULL;
@@ -1077,12 +1217,12 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			    minDr = dR ;
 			    nearestJet = &(*noTags1.at(j));
 			  }
-			  cout<<"        Jet "<<j<<" dR "<<dR<<" minDr "<<minDr<<endl;
+			 if (verbose_)  cout<<"        Jet "<<j<<" dR "<<dR<<" minDr "<<minDr<<endl;
 
 			} //end j
 			if( nearestJet )  {
 			  //cout<<"case 11"<<endl;
-			  cout<<"          Found a nearestJet pt = "<<nearestJet->pt()<<" weight "<<weight<<endl;
+			 if (verbose_)  cout<<"          Found a nearestJet pt = "<<nearestJet->pt()<<" weight "<<weight<<endl;
 
 			  p4_top1 = noTags1.at(i)->p4() + nearestJet->p4();
 			  int  bin1  = wMistag_      ->  FindBin( nearestJet->pt() );
@@ -1091,14 +1231,14 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 
 			  weight *= (1-weight1);
 										
-			  cout<<"            weight1 = "<<weight1<<" weight "<<weight<<endl;
+			  if (verbose_) cout<<"            weight1 = "<<weight1<<" weight "<<weight<<endl;
 
-			  cout<<"            1-weight1 = "<<1-weight1<<" weight "<<weight<<endl;
+			  if (verbose_) cout<<"            1-weight1 = "<<1-weight1<<" weight "<<weight<<endl;
 
 										
 			  theDir.getObject<TH1>("topMassPred")   ->  Fill( p4_top1.mass(), weight*evtWeight );
 			  if( p4_top1.mass() > topMassMin_ && p4_top1.mass() < topMassMax_ )  {
-			    cout<<"               passes top mass cut "<<p4_top1.mass()<<endl;
+			    if (verbose_) cout<<"               passes top mass cut "<<p4_top1.mass()<<endl;
 											
 			    if (pt > jetPt0_) {
 												
