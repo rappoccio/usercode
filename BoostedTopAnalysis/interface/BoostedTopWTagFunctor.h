@@ -77,6 +77,7 @@ class BoostedTopWTagFunctor : public Selector<pat::Jet> {
        return (bool) ret;
 
      }
+     using Selector<pat::Jet>::operator();
 
 };
 
