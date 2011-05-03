@@ -1,7 +1,6 @@
 #ifndef Analysis_SHyFT_interface_SHyFT_h
 #define Analysis_SHyFT_interface_SHyFT_h
 
-#include "PhysicsTools/UtilAlgos/interface/BasicAnalyzer.h"
 #include "Analysis/SHyFT/interface/SHyFTSelector.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
@@ -34,7 +33,7 @@
 
 typedef std::vector<reco::ShallowClonePtrCandidate> ShallowCloneCollection;
 
-class SHyFT : public edm::BasicAnalyzer {
+class SHyFT {
 
   public:
 
@@ -101,8 +100,10 @@ class SHyFT : public edm::BasicAnalyzer {
 
     SHyFTSelector wPlusJets;
     TFileDirectory& theDir;
-    TDirectory * dir;
-
+    // 'registry' for the histograms                                                                                                                                                                    
+    std::map<std::string, TH1F*> histograms;
+    std::map<std::string, TH2F*> histograms2d;
+    std::map<std::string, TH3F*> histograms3d;
     // the following parameters need to come from the config
     bool muPlusJets_;
     bool ePlusJets_;
