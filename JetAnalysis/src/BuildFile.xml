@@ -9,6 +9,7 @@
 <use   name="CommonTools/Utils"/>
 <use   name="PhysicsTools/SelectorUtils"/>
 <use   name="PhysicsTools/FWLite"/>
+<use   name="CondFormats/JetMETObjects"/>
 <export>
   <lib   name="1"/>
 </export>

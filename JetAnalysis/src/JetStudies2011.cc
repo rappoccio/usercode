@@ -29,11 +29,11 @@ JetStudies2011::JetStudies2011(const edm::ParameterSet& iConfig, TFileDirectory&
 {
 
 
-  if ( weightPV_ ) {
-    lumiWeighting_ = 
-      boost::shared_ptr<edm::LumiWeighting>( new edm::LumiWeighting( iConfig.getParameter<edm::ParameterSet>("lumiWeighting").getParameter<std::string>("generatedFile"),
-								     iConfig.getParameter<edm::ParameterSet>("lumiWeighting").getParameter<std::string>("dataFile") ) );
-  }
+  // if ( weightPV_ ) {
+  //   lumiWeighting_ = 
+  //     boost::shared_ptr<edm::LumiWeighting>( new edm::LumiWeighting( iConfig.getParameter<edm::ParameterSet>("lumiWeighting").getParameter<std::string>("generatedFile"),
+  // 								     iConfig.getParameter<edm::ParameterSet>("lumiWeighting").getParameter<std::string>("dataFile") ) );
+  // }
 
   theDir.make<TH1F>( "nPV",   ";N_{Primary Vertex}", 25, 0, 25 );
   theDir.make<TH1F>( "nPVRewightedNPV", ";N_{Primary Vertex}", 25, 0, 25 );  
@@ -49,7 +49,7 @@ JetStudies2011::JetStudies2011(const edm::ParameterSet& iConfig, TFileDirectory&
     dirs_.back().make<TH1F>( "jetEta",      "Jet #eta;#eta (radians)",               100, -5.0, 5.0 );    
     dirs_.back().make<TH1F>( "jetPhi",      "Jet #phi;#phi (radians)",               100, -TMath::Pi(), TMath::Pi() );
     dirs_.back().make<TH1F>( "jetMass",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
-    
+    dirs_.back().make<TH2F>( "jetMassVsPt", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
   }
   dirs_.push_back( theDir.mkdir( "MC") );
   dirs_.back().make<TH1F>( "jetPt_L2L3",  "L2+L3 Correction;Jet p_{T} (GeV/c)",    100, 0, 1000);
@@ -58,6 +58,7 @@ JetStudies2011::JetStudies2011(const edm::ParameterSet& iConfig, TFileDirectory&
   dirs_.back().make<TH1F>( "jetEta",      "Jet #eta;#eta (radians)",               100, -5.0, 5.0 );    
   dirs_.back().make<TH1F>( "jetPhi",      "Jet #phi;#phi (radians)",               100, -TMath::Pi(), TMath::Pi() );
   dirs_.back().make<TH1F>( "jetMass",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
+  dirs_.back().make<TH2F>( "jetMassVsPt", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
   dirs_.back().make<TH2F>( "jetRes_L2L3", "Jet Response, L2+L3;Response",          25,  0, 1000., 25., 0., 2.5 );
   dirs_.back().make<TH2F>( "jetRes_L1L2L3","Jet Response, L1+L2+L3;Response",      25,  0, 1000., 25., 0., 2.5 );
             
@@ -103,10 +104,10 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
   }
   else {
     passed = true;
-    if ( weightPV_ ) {
-      weightMC *= lumiWeighting_->weight( h_pv->size() );
-      theDir.getObject<TH1>( "nPVRewightedNPV" )->Fill( h_pv->size(), weightMC );
-    }
+    // if ( weightPV_ ) {
+    //   weightMC *= lumiWeighting_->weight( h_pv->size() );
+    //   theDir.getObject<TH1>( "nPVRewightedNPV" )->Fill( h_pv->size(), weightMC );
+    // }
     edm::Handle<GenEventInfoProduct>    genEvt;
     iEvent.getByLabel( edm::InputTag("generator"),  genEvt );
     if( genEvt.isValid() )  {
@@ -145,7 +146,8 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
   }
 
   if ( useBTags_ && 
-       (jet0.bDiscriminator("simpleSecondaryVertexHighEffBJetTags") < 2.74 || jet1.bDiscriminator("simpleSecondaryVertexHighEffBJetTags") < 2.74 ) )
+       (jet0.bDiscriminator("simpleSecondaryVertexHighEffBJetTags") < 2.74 || 
+	jet1.bDiscriminator("simpleSecondaryVertexHighEffBJetTags") < 2.74 ) )
     return;
   
   
@@ -173,6 +175,7 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
       dirs_.at( ifired->first ).getObject<TH1>( "jetEta"       )->Fill( eta0, weightMC * ifired->second );
       dirs_.at( ifired->first ).getObject<TH1>( "jetPhi"       )->Fill( phi0, weightMC * ifired->second );
       dirs_.at( ifired->first ).getObject<TH1>( "jetMass"      )->Fill( mass0, weightMC * ifired->second );
+      static_cast<TH2*>(dirs_.at( ifired->first ).getObject<TH1>( "jetMassVsPt" ))->Fill( pt0, mass0, weightMC * ifired->second );
     }
   } else {
     double ptGen0 = 0.0;
@@ -200,6 +203,7 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
       dirs_.back().getObject<TH1>( "jetEta"       )->Fill( eta0, weightMC );
       dirs_.back().getObject<TH1>( "jetPhi"       )->Fill( phi0, weightMC );
       dirs_.back().getObject<TH1>( "jetMass"      )->Fill( mass0, weightMC );
+      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetMassVsPt" ))->Fill( pt0, mass0, weightMC );
       static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes_L2L3"  ))->Fill( ptGen0, pt0/ptGen0, weightMC );
       static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes_L1L2L3"))->Fill( ptGen0, (pt0 - rho*area0)/ptGen0, weightMC );
     }

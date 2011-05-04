@@ -13,6 +13,18 @@ options.register ('useData',
                   VarParsing.varType.int,
                   "Run this on real data")
 
+options.register ('doBinPtTrig',
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Bin the data in HLT paths by pt")
+
+options.register ('semimuTriggers',
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Use the semimuonic triggers")
+
 options.parseArguments()
 
 ## MessageLogger
@@ -22,40 +34,41 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 # get JSON file correctly parced
-JSONfile = 'Cert_161079-161352_7TeV_PromptReco_Collisions11_JSON_noESpbl_v2.txt'
+JSONfile = 'Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON.txt'
 myList = LumiList.LumiList (filename = JSONfile).getCMSSWString().split(',')
 
 
 if options.useData :
     histFileName = 'jetStudiesJet2011A.root'
-    
+    jecLevels = [ 'Jec10V1_L2Relative_AK5PF.txt',
+                  'Jec10V1_L3Absolute_AK5PF.txt',
+                  'Jec10V1_Uncertainty_AK5PF.txt']
     ## Source
     process.source = cms.Source("PoolSource",
-        fileNames = cms.untracked.vstring(  
- 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/SingleMu/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_17_1_ACA.root'                 
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_10_1_EJL.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_11_1_MFK.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_12_1_mEi.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_13_1_M5k.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_14_1_mrk.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_15_1_6iz.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_16_1_Okw.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_17_1_oMY.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_18_1_uRZ.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_1_1_Z5O.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_2_1_Fnp.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_3_1_wTC.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_4_1_Ii3.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_5_1_j9a.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_6_1_KU9.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_7_1_6Rd.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_8_1_c48.root',
-    ## 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v1_Run2011A-PromptReco-v1/3dc70b6acc7a164ec5660c65e5f36a85/ttbsm_413_9_1_34q.root',
+                                fileNames = cms.untracked.vstring(
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_10_1_03g.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_10_1_RKm.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_11_1_AbM.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_11_1_it1.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_12_1_HJA.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_12_1_bZB.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_13_1_2NJ.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_13_1_EWJ.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_14_1_9Sm.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_14_1_xLk.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_15_1_0WI.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_15_1_o5A.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_16_1_5iA.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_16_1_enr.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_17_1_5bK.root'
         ),
         lumisToProcess = cms.untracked.VLuminosityBlockRange( myList )
     )
 else :
     histFileName = 'jetStudiesQCDFlat.root'
+    jecLevels = [ 'Jec10V1_L2Relative_AK5PF.txt',        
+                  'Jec10V1_L3Absolute_AK5PF.txt',
+                  'Jec10V1_Uncertainty_AK5PF.txt']    
     ## Source
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
@@ -157,6 +170,10 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 from Analysis.JetAnalysis.jetStudies2011_cfi import jetStudies2011 as jetStudies2011
 
+if options.semimuTriggers :
+    itrigs = cms.vstring( ['HLT_Mu24_v1' ] )
+else :
+    itrigs = jetStudies2011.trigs
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string(histFileName)
@@ -164,18 +181,28 @@ process.TFileService = cms.Service("TFileService",
 
 
 process.ak5Analyzer = cms.EDAnalyzer('EDJetStudies2011',
-                                     jetStudies2011.clone()
+                                     jetStudies2011.clone(
+                                         binPtTrig = cms.bool( options.doBinPtTrig == 1 ),
+                                         trigs = itrigs,
+                                         jecPayloads = cms.vstring( jecLevels )
+                                         )
                                      )
 
 process.ca8Analyzer = cms.EDAnalyzer('EDJetStudies2011',
                                      jetStudies2011.clone( jetSrc = cms.InputTag('goodPatJetsCA8PF'),
-                                                           useCA8GenJets = cms.bool(True)
+                                                           useCA8GenJets = cms.bool(True),
+                                                           binPtTrig = cms.bool( options.doBinPtTrig == 1 ),
+                                                           trigs = itrigs,
+                                                           jecPayloads = cms.vstring( jecLevels )
                                                            )
                                      )
 
 process.ca8PrunedAnalyzer = cms.EDAnalyzer('EDJetStudies2011',
                                            jetStudies2011.clone( jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF'),
-                                                                 useCA8GenJets = cms.bool(True)
+                                                                 useCA8GenJets = cms.bool(True),
+                                                                 binPtTrig = cms.bool( options.doBinPtTrig == 1 ),
+                                                                 trigs = itrigs,
+                                                                 jecPayloads = cms.vstring( jecLevels )
                                                                  )
                                            )
 
@@ -184,6 +211,8 @@ process.ca8PrunedAnalyzerBTagSearch = cms.EDAnalyzer('EDJetStudies2011',
                                                                            useCA8GenJets = cms.bool(True),
                                                                            useBTags = cms.bool(True),
                                                                            orderByMass =cms.bool(True),
+                                                                           trigs = itrigs,
+                                                                           jecPayloads = cms.vstring( jecLevels )
                                                                            )
                                                      )
 
@@ -194,14 +223,18 @@ process.ca8PrunedAnalyzerBTagMuSearch = cms.EDAnalyzer('EDJetStudies2011',
                                                                            orderByMass = cms.bool(True),
                                                                            trigs = cms.vstring([
                                                                                'HLT_Mu24_v1'
-                                                                               ])
+                                                                               ]),
+                                                                           jecPayloads = cms.vstring( jecLevels )
                                                                            )
                                                      )
 
 
 process.ca8TopTagAnalyzer = cms.EDAnalyzer('EDJetStudies2011',
                                            jetStudies2011.clone( jetSrc = cms.InputTag('goodPatJetsCATopTagPF'),
-                                                                 useCA8GenJets = cms.bool(True)
+                                                                 useCA8GenJets = cms.bool(True),
+                                                                 binPtTrig = cms.bool( options.doBinPtTrig == 1 ),
+                                                                 trigs = itrigs,
+                                                                 jecPayloads = cms.vstring( jecLevels )
                                                                  )
                                            )
 

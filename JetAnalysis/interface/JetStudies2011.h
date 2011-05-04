@@ -8,7 +8,7 @@
 #include "Math/GenVector/PxPyPzM4D.h"
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/FWLite/interface/Record.h"
-#include "PhysicsTools/Utilities/interface/LumiWeighting.h"
+/* #include "PhysicsTools/Utilities/interface/LumiWeighting.h" */
 /* #include "DataFormats/FWLite/interface/EventSetup.h" */
 /* #include "DataFormats/FWLite/interface/ESHandle.h" */
 /* #include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h" */
@@ -60,7 +60,7 @@ class JetStudies2011 : public edm::BasicAnalyzer {
     bool            useBTags_;
     bool            orderByMass_;
 
-    boost::shared_ptr<edm::LumiWeighting> lumiWeighting_;
+    /* boost::shared_ptr<edm::LumiWeighting> lumiWeighting_; */
 };
 
 
