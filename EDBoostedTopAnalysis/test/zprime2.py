@@ -89,8 +89,12 @@ process.TFileService = cms.Service("TFileService",
                                    )
 
 process.cascadingQCDAna15 = cms.EDAnalyzer('EDCombinedQCDEstimation',
-                                           Type11QCDEstimationParams,
-                                           Type22QCDEstimationParams
+                                           Type11QCDEstimationParams.clone(
+                                               caTopJetPtMin = cms.double(400)
+                                               ),
+                                           Type22QCDEstimationParams.clone(
+                                               jetPt0 = cms.double(400)
+                                               )
                                            )
 
 #process.type22QCDAna10 = process.type22QCDAna15.clone( Probability = cms.double(0.10) )
