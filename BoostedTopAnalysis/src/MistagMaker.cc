@@ -15,9 +15,13 @@ MistagMaker::MistagMaker( edm::ParameterSet const & params, TFileDirectory & iDi
   histograms1d["wTagPt"]      =   theDir.make<TH1F>("wTagPt",   "W Jet Pt",   200,    0,    1000 );
   histograms1d["probePt"]     =   theDir.make<TH1F>("probePt",  "W Jet Pt",   200,    0,    1000 );
   histograms1d["nJets"]       =   theDir.make<TH1F>("nJets",    "N Jets",     20,     0,    20  );
+  histograms1d["topProbePt"]  =   theDir.make<TH1F>("topProbePt", "Top Probe Pt", 200,  0,  1000 );
+  histograms1d["topTagPt"]    =   theDir.make<TH1F>("topTagPt", "Top Tag Pt", 200,    0,    1000 );
 
   histograms1d["wTagPt"]        ->  Sumw2();
   histograms1d["probePt"]       ->  Sumw2();
+  histograms1d["topProbePt"]    ->  Sumw2();
+  histograms1d["topTagPt"]      ->  Sumw2();
 
   edm::Service<edm::RandomNumberGenerator> rng;
   if ( ! rng.isAvailable()) {
@@ -59,6 +63,67 @@ void MistagMaker::analyze( const edm::EventBase & iEvent )
       histograms1d["probePt"]     ->  Fill( probe.pt() , weight );
       if( pass && passMass )
         histograms1d["wTagPt"]    ->  Fill( probe.pt(), weight );
+    }
+  }
+
+  //CATopTag mistag
+  edm::Handle<std::vector<pat::Jet> >     caTopJetsHandle ;
+  iEvent.getByLabel( edm::InputTag("goodPatJetsCATopTagPF"),  caTopJetsHandle );
+  std::vector<const pat::Jet * >      caTopJets;
+
+  for( std::vector<pat::Jet>::const_iterator ijet=caTopJetsHandle->begin(), jetEnd=caTopJetsHandle->end();
+  ijet != jetEnd; ijet++ )
+  {
+    if( ijet->pt() > 250 && fabs( ijet->eta() ) < 2.4 ) {
+      caTopJets.push_back( &(*ijet) ) ;
+    }
+  }
+
+  if( caTopJets.size() == 2 ) {
+    pat::Jet const & jet0 = *(caTopJets.at(0)) ;
+    pat::Jet const & jet1 = *(caTopJets.at(1)) ;
+    double minMass0 = 0.0,  minMass1 = 0.0 ;
+    std::vector<const reco::Candidate *>  subjets0 = jet0.getJetConstituentsQuick();
+    std::vector<const reco::Candidate *>  subjets1 = jet1.getJetConstituentsQuick();
+
+    if( subjets0.size() >= 3 )  {
+      math::XYZTLorentzVector pairwiseMass01;
+      math::XYZTLorentzVector pairwiseMass02;
+      math::XYZTLorentzVector pairwiseMass12;
+
+      pairwiseMass01 = subjets0.at(0)->p4() + subjets0.at(1)->p4();
+      pairwiseMass02 = subjets0.at(0)->p4() + subjets0.at(2)->p4();
+      pairwiseMass12 = subjets0.at(1)->p4() + subjets0.at(2)->p4();
+      minMass0 = std::min( pairwiseMass01.mass(), pairwiseMass02.mass() );
+      minMass0 = std::min( minMass0, pairwiseMass12.mass() );
+    }
+
+    if( subjets1.size() >= 3 )  {
+      math::XYZTLorentzVector pairwiseMass01;
+      math::XYZTLorentzVector pairwiseMass02;
+      math::XYZTLorentzVector pairwiseMass12;
+
+      pairwiseMass01 = subjets1.at(0)->p4() + subjets1.at(1)->p4();
+      pairwiseMass02 = subjets1.at(0)->p4() + subjets1.at(2)->p4();
+      pairwiseMass12 = subjets1.at(1)->p4() + subjets1.at(2)->p4();
+      minMass1 = std::min( pairwiseMass01.mass(), pairwiseMass02.mass() );
+      minMass1 = std::min( minMass1, pairwiseMass12.mass() );
+    }
+
+    bool tagged0 = minMass0 > 50 && jet0.mass() > 140 && jet0.mass() < 250 ;
+    bool tagged1 = minMass1 > 50 && jet1.mass() > 140 && jet1.mass() < 250 ;
+
+    double x = flatDistribution_->fire();
+    if( x < 0.5 ) {
+      if( !tagged0 )  {
+        histograms1d["topProbePt"]      ->    Fill( jet1.pt() );
+        if( tagged1 )   histograms1d["topTagPt"]    ->    Fill( jet1.pt() );
+      }
+    } else {
+      if( !tagged1 )  {
+        histograms1d["topProbePt"]    ->      Fill( jet0.pt() );
+        if( tagged0 )   histograms1d["topTagPt"]    ->    Fill( jet0.pt() );
+      }
     }
   }
 

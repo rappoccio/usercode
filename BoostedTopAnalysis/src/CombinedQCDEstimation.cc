@@ -514,6 +514,14 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		  j0_minmass = std::min(min2, pairwiseMass12.mass() );
 		  j0_nsubjets = subjetLoopCount;
 		}//end if jet0 nsubjets>=3
+              //Check subjets sorting
+              //if( catop0_subjets.size() == 4 )  {
+                //cout<<catop0_subjets.at(0)->pt()<<"\t"<<catop0_subjets.at(1)->pt()<<"\t"<<catop0_subjets.at(2)->pt()<<"\t"
+                //<<catop0_subjets.at(3)->pt()<<endl;
+              //}
+              //if( catop0_subjets.size() == 3 ) {
+                //cout<<catop0_subjets.at(0)->pt()<<"\t"<<catop0_subjets.at(1)->pt()<<"\t"<<catop0_subjets.at(2)->pt()<<endl;
+              //}
 	    }//end hemi0 notempty
 			
 	  if ( hemisphere1_catop.size()>0 )
