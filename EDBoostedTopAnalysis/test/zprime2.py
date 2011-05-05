@@ -35,7 +35,6 @@ options.register ('htPD',
                   "use triggers from the HT PD (1), ignore them (0), or veto them (-1), if useTrigger == 1")
 
 
-
 options.parseArguments()
 
 print options
@@ -63,7 +62,6 @@ else :
     process.trigs = cms.Sequence( process.alltrig )
 
 
-
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
@@ -76,7 +74,7 @@ process.source = cms.Source("PoolSource",
     )
 )
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 from Analysis.BoostedTopAnalysis.Type11SelectionParams_cfi import *
 from Analysis.BoostedTopAnalysis.Type22SelectionParams_cfi import *
