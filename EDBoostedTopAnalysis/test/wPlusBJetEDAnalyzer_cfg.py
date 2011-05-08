@@ -11,11 +11,11 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    'dcap:///pnfs/cms/WAX/11/store/user/guofan/QCD6Jets_Pt280to500-alpgen/ttbsm_38onRedigi36/cb1594198a28dea2154e88b47479a871/ttbsm_381_2_1_C9K.root'
+    'file:/uscms_data/d2/guofan/patTuples/boostedTop/CMSSW_3_8_7/src/pickEvents/pickEvents_ReReco.root'
     )
 )
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(3000) )
 
 from Analysis.BoostedTopAnalysis.wPlusBJetAnalysis_cfi import *
 
@@ -27,15 +27,16 @@ process.TFileService = cms.Service("TFileService",
                                    )
 
 process.wPlusBJetAna = cms.EDAnalyzer('EDWPlusBJetAnalysis',
-                                   wPlusBJetAnalysis.clone()
+                                   wPlusBJetAnalysis.clone(runOnData=True)
                                      )
 
-process.wPlusBJetAna.WPlusBJetEventSelection.leadJetPtCut = cms.double(100)
-process.wPlusBJetAna.WPlusBJetEventSelection.secondJetPtCut = cms.double(30)
-process.wPlusBJetAna.WPlusBJetEventSelection.thirdJetPtCut = cms.double(30)
-process.wPlusBJetAna.WPlusBJetEventSelection.fourthJetPtCut = cms.double(30)
-process.wPlusBJetAna.WPlusBJetEventSelection.mistagFileName = "mistag_6jets_alljets_medium.root"
-process.wPlusBJetAna.WPlusBJetEventSelection.bTagOP =  3.3 #1.7  loose point
+process.wPlusBJetAna.WPlusBJetEventSelection.trig = cms.string("HLT_Jet70U")
+process.wPlusBJetAna.WPlusBJetEventSelection.cutsToIgnore = cms.vstring("Trigger")
+process.wPlusBJetAna.WPlusBJetEventSelection.leadJetPtCut = cms.double(160)
+process.wPlusBJetAna.WPlusBJetEventSelection.secondJetPtCut = cms.double(100)
+process.wPlusBJetAna.WPlusBJetEventSelection.BoostedTopWJetParameters.jetPtMin = 200
+process.wPlusBJetAna.WPlusBJetEventSelection.bTagOP = 3.3
+
 #process.wPlusBJetAna2 = process.wPlusBJetAna.clone( )
 #process.wPlusBJetAna2.WPlusBJetEventSelection.leadJetPtCut = cms.double(80)
 #process.wPlusBJetAna3 = process.wPlusBJetAna.clone( )

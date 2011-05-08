@@ -19,26 +19,34 @@ WPlusBJetType23Selection::WPlusBJetType23Selection ( edm::ParameterSet const & p
   //push_back("Trigger");
   //push_back("Leading Jet Pt");
   push_back("nJets >= 5");
-  push_back(">= 1 WJet");
-  push_back(">= 1 bJet");
-  push_back(">= 2 bJet");
-  push_back("hasMinPair");
+  push_back("has WJet");
   push_back("wMassCut");
+  push_back("has bJetT2");
+  push_back("has Top2");
+  push_back("Top2MassCut");
+  push_back("has bJetT3");
+  push_back("hasMinPair");
   push_back("minPairMassCut");
-  push_back("topMassCut");
+  push_back("has Top3");
+  push_back("Top3MassCut");
+  push_back("passType23");
 
   //turn on bit
   set("Inclusive");
   //set("Trigger");
   //set("Leading Jet Pt");
   set("nJets >= 5");
-  set(">= 1 WJet");
-  set(">= 1 bJet");
-  set(">= 2 bJet");
-  set("hasMinPair");
+  set("has WJet");
   set("wMassCut");
+  set("has bJetT2");
+  set("has Top2");
+  set("Top2MassCut");
+  set("has bJetT3");
+  set("hasMinPair");
   set("minPairMassCut");
-  set("topMassCut");
+  set("has Top3");
+  set("Top3MassCut");
+  set("passType23");
 
   if ( params.exists("cutsToIgnore") )
     setIgnoredCuts( params.getParameter<vector<string> >("cutsToIgnore") );
@@ -52,6 +60,8 @@ bool WPlusBJetType23Selection::operator()( edm::EventBase const & t, pat::strbit
   ret.set(false);
   tightTop0_ = false;
   tightTop1_ = false;
+  type3Top0_ = false;
+  type3Top1_ = false;
   pfJets_.clear();
 
   p4_top0_ = reco::Candidate::LorentzVector(0,0,0,0);
@@ -121,73 +131,86 @@ bool WPlusBJetType23Selection::operator()( edm::EventBase const & t, pat::strbit
       std::vector<edm::Ptr<pat::Jet> >  const & tMinDrPair = twPlusBJetSelection_.minDrPair();
       std::vector<edm::Ptr<pat::Jet> >  const & oMinDrPair = owPlusBJetSelection_.minDrPair();
 
-      int numWJets = 0;
-      int numBJets = 0;
-      if( tWJets.size() >= 1 )  numWJets++;
-      if( oWJets.size() >= 1 )  numWJets++;
-      if( tbJets.size() >= 1 )  numBJets++;
-      if( obJets.size() >= 1 )  numBJets++;
+      bool hasW0 = false, hasW1 = false;
+      bool hasB0 = false, hasB1 = false;
+      bool topMassCut0 = false, topMassCut1 = false;
+      double wMass0 = 0., wMass1 = 0. ;
+      if( tWJets.size() >= 1 )  { wMass0 = tWJets.at(0)->mass(); }
+      if( oWJets.size() >= 1 )  { wMass1 = oWJets.at(0)->mass(); }
+      if( tbJets.size() >= 1 )  hasB0 = true;
+      if( obJets.size() >= 1 )  hasB1 = true;
 
-      if( ignoreCut(">= 1 WJet") || numWJets >= 1 ) {
-        passCut( ret, ">= 1 WJet" );
-        if( ignoreCut(">= 1 bJet") || numBJets >= 1 ) {
-          passCut( ret, ">= 1 bJet" );
-          if( ignoreCut(">= 2 bJet") || numBJets >= 2 ) {
-            passCut(ret, ">= 2 bJet");
-            bool hasMinPair = ( tWJets.size() >= 1 && oMinDrPair.size() ==2 ) || (oWJets.size() >= 1 && tMinDrPair.size() == 2 );
-            if( ignoreCut("hasMinPair") || hasMinPair ) {
-              passCut( ret, "hasMinPair" );
+      if( wMass0 > wMassMin_ && wMass0 < wMassMax_ )    hasW0 = true;
+      if( wMass1 > wMassMin_ && wMass1 < wMassMax_ )    hasW1 = true;
+      tightTop0_ = hasW0 && hasB0;
+      tightTop1_ = hasW1 && hasB1;
 
-              double wMass = 0, minPairMass = 0;
-              if( tWJets.size() >= 1 ) {
-                p4_top0_ = tWJets.at(0)->p4() + tbJets.at(0)->p4();
-                tightTop0_ = true;
-                wMass = tWJets.at(0)->mass();
-              }
-              else if( tMinDrPair.size() == 2 ) {
-                p4_top0_  = tbJets.at(0)->p4() + tMinDrPair.at(0)->p4() + tMinDrPair.at(1)->p4();
-                tightTop0_ = false;
-                minPairMass = (tMinDrPair.at(0)->p4() + tMinDrPair.at(1)->p4()).mass();
-              }
-              if( oWJets.size() >= 1 ) {
-                p4_top1_ = oWJets.at(0)->p4() + obJets.at(0)->p4();
-                tightTop1_ = true;
-                wMass = oWJets.at(0)->mass();
-              }
-              else if ( oMinDrPair.size() == 2 ) {
-                p4_top1_ = obJets.at(0)->p4() + oMinDrPair.at(0)->p4() + oMinDrPair.at(1)->p4();
-                tightTop1_ = false;
-                minPairMass = (oMinDrPair.at(0)->p4() + oMinDrPair.at(1)->p4()).mass();
-              }
+      if( ignoreCut("has WJet") || hasW0 || hasW1 ) {
+        passCut( ret, "has WJet");
+        passCut( ret, "wMassCut");
+        if( ignoreCut("has bJetT2") || tightTop0_ || tightTop1_ )  {
+          passCut( ret, "has bJetT2");
+          passCut( ret, "has Top2" );
+          if( tightTop0_ )  {
+            p4_top0_ = tWJets.at(0)->p4() + tbJets.at(0)->p4();
+            double topMass0 = p4_top0_.mass();
+            topMassCut0 = ( topMass0 > topMassMin_ && topMass0 < topMassMax_ );
+            if( ignoreCut("Top2MassCut") || topMassCut0 )
+              passCut( ret, "Top2MassCut" );
+          } // if tightTop0_
+          if( tightTop1_ )  {
+            p4_top1_ = oWJets.at(0)->p4() + obJets.at(0)->p4();
+            double topMass1 = p4_top1_.mass();
+            topMassCut1 = ( topMass1 > topMassMin_ && topMass1 < topMassMax_ );
+            if( ignoreCut("Top2MassCut") || topMassCut1 )
+              passCut( ret, "Top2MassCut" );
+          } // if tightTop1_
+        }  // has bJetT2
+      } // has WJet
 
-              if( ( tightTop0_ && tightTop1_ ) || (!tightTop0_ && !tightTop1_ ) ) {
-                cout<<"Something wrong with the logic!"<<endl;
-                cout<<"tightTop 0 "<<tightTop0_ << " tightTop 1 " << tightTop1_ <<endl;
-                cout<<"numWJet "<< numWJets << "tWJets " << tWJets.size() <<"oWJets "<< oWJets.size() <<endl;
-              }
+      bool hasBT3 = ( !hasW0 && hasB0 ) || ( !hasW1 && hasB1 );
+      if( ignoreCut("has bJetT3") || hasBT3 ) {
+        passCut( ret, "has bJetT3");
+        if( !hasW0 )  {
+          bool hasMinPair = (tMinDrPair.size() == 2);
+          if( ignoreCut("hasMinPair") || hasMinPair ) {
+            passCut( ret, "hasMinPair" );
+            type3Top0_ = true;
+            double minPairMass = (tMinDrPair.at(0)->p4() + tMinDrPair.at(1)->p4()).mass();
+            p4_top0_  = tbJets.at(0)->p4() + tMinDrPair.at(0)->p4() + tMinDrPair.at(1)->p4();
+            double topMass0 = p4_top0_.mass();
+            bool minMassCut = ( minPairMass > wMassMin_ && minPairMass < wMassMax_ );
+            if( ignoreCut("minPairMassCut") || minMassCut ) {
+              passCut( ret, "minPairMassCut" );
+              passCut( ret, "has Top3" );
+              topMassCut0 = ( topMass0 > topMassMin_ && topMass0 < topMassMax_ );
+              if( ignoreCut("Top3MassCut") || topMassCut0 )
+                passCut( ret, "Top3MassCut" );
+            } // minPairMassCut
+          }  // hasMinPair
+        }  // end !hasW0
+        if( !hasW1 )  {
+          bool hasMinPair = (oMinDrPair.size() == 2);
+          if( ignoreCut("hasMinPair") || hasMinPair ) {
+            passCut( ret, "hasMinPair" );
+            type3Top1_  = true;
+            double minPairMass = (oMinDrPair.at(0)->p4() + oMinDrPair.at(1)->p4()).mass();
+            p4_top1_  = obJets.at(0)->p4() + oMinDrPair.at(0)->p4() + oMinDrPair.at(1)->p4();
+            double topMass1 = p4_top1_.mass();
+            bool minMassCut = ( minPairMass > wMassMin_ && minPairMass < wMassMax_ );
+            if( ignoreCut("minPairMassCut") || minMassCut ) {
+              passCut( ret, "minPairMassCut" );
+              passCut( ret, "has Top3" );
+              topMassCut1 = ( topMass1 > topMassMin_ && topMass1 < topMassMax_ );
+              if( ignoreCut("Top3MassCut") || topMassCut1 )
+                passCut( ret, "Top3MassCut" );
+            } // minPairMassCut
+          }  // hasMinPair
+        }  // end !hasW1
+      }  // end has bJetT3
 
-              bool passWMass = ( wMass > wMassMin_ && wMass < wMassMax_ );
-              bool passMinPairMass = ( minPairMass > wMassMin_ && minPairMass < wMassMax_ );
-              if( ignoreCut("wMassCut") || passWMass ) {
-                passCut( ret, "wMassCut" );
-                if( ignoreCut("minPairMassCut") || passMinPairMass ) {
-                  passCut( ret, "minPairMassCut" );
-
-                  double topMass0 = p4_top0_.mass();
-                  double topMass1 = p4_top1_.mass();
-                  double passTopMass = ( topMass0 > topMassMin_ && topMass0 < topMassMax_ && topMass1 > topMassMin_ && topMass1 < topMassMax_ );
-                  if( ignoreCut("topMassCut") || passTopMass ) {
-                    passCut( ret, "topMassCut" );
-                    //cout<<"tt Inv Mass " << (p4_top0_ + p4_top1_).mass() <<endl;
-                    //cout<<"Top Mass 0 "<<topMass0<<endl;
-                    //cout<<"Top Mass 1 "<<topMass1<<endl;
-                  } // topMassCut
-                } // minPairMassCut
-              } // wMassCut
-            } // hasMinPair
-          } // >= 2 bJet
-        }  // >= 1 bJet
-      }  // >= 1 WJet
+      if( topMassCut0 && topMassCut1 )
+        passCut( ret, "passType23" );
   } // nJets >= 5
 //    } // Leading Jet Pt
 //  }  // pass trigger

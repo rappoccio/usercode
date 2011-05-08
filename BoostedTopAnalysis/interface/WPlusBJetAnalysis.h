@@ -46,6 +46,7 @@ class WPlusBJetAnalysis{
 
     bool hasHeavyFlavor( const edm::EventBase& iEvent );
     double TTMass( const edm::EventBase& iEvent );
+    bool sameJet( const pat::Jet * jet1, const pat::Jet * jet2 );
 
   private:
     TFileDirectory& theDir;
@@ -64,6 +65,11 @@ class WPlusBJetAnalysis{
     double        bTagOPL_;
     long          eventCount;
     CLHEP::RandFlat *flatDistribution_;
+    bool          debug_;
+    std::string   mistagFileName_;
+    TFile *       mistagFile_;
+    TH1F  *       wMistag_;
+    TH1F  *       bMistag_;
 
 };
 

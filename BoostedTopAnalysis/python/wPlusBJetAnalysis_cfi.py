@@ -28,5 +28,6 @@ wPlusBJetAnalysis = cms.PSet(
     ),
 
     runOnData = cms.bool( False ),
-    runOnTTbar = cms.bool( False )
+    runOnTTbar = cms.bool( False ),
+    debugOn = cms.bool( False )
 )

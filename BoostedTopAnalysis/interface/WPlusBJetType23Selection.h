@@ -29,6 +29,8 @@ class WPlusBJetType23Selection : public EventSelector {
     std::vector<edm::Ptr<pat::Jet> >  const &  pfJets() const { return pfJets_ ; }
     bool    hasTightTop0()  const {   return tightTop0_ ; }
     bool    hasTightTop1()  const {   return tightTop1_ ; }
+    bool    hasType3Top0()  const {   return type3Top0_ ; }
+    bool    hasType3Top1()  const {   return type3Top1_ ; }
     reco::Candidate::LorentzVector  const & p4_top0() const { return p4_top0_; }
     reco::Candidate::LorentzVector  const & p4_top1() const { return p4_top1_; }
 
@@ -38,6 +40,8 @@ class WPlusBJetType23Selection : public EventSelector {
     std::string                 trig_;
     bool      tightTop0_;
     bool      tightTop1_;
+    bool      type3Top0_;
+    bool      type3Top1_;
     double    leadJetPtCut_;
     double    wMassMin_;
     double    wMassMax_;
