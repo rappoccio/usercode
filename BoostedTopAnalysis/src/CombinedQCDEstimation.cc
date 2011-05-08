@@ -132,17 +132,47 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
   theDir.make<TH1F>("CATop_nsubjets",			"CATop_nsubjets",			5,		0,  5 );
   theDir.make<TH1F>("CATop_pt",					"CATop_pt",					100,	0,  4000 );
   theDir.make<TH1F>("CATop_eta",				"CATop_eta",				100,	-3,  3 );
+  //theDir.make<TH2F>("CATop_mass_minmass",		"CATop_mass_minmass",		400,	0,  400,  400,	0,  200 );
+
   theDir.make<TH1F>("CATop_mass_masscut",		"CATop_mass_masscut",		100,	0,  200 );
   theDir.make<TH1F>("CATop_minmass_masscut",	"CATop_minmass_masscut",	100,	0,  200 );
   theDir.make<TH1F>("CATop_nsubjets_masscut",   "CATop_nsubjets_masscut",   5,		0,  5 );
   theDir.make<TH1F>("CATop_pt_masscut",			"CATop_pt_masscut",			100,	0,  4000 );
   theDir.make<TH1F>("CATop_eta_masscut",		"CATop_eta_masscut",		100,	-3,  3 );
+  
+  theDir.make<TH1F>("CATop_mass_minmasscut",		"CATop_mass_minmasscut",		100,	0,  200 );
+  theDir.make<TH1F>("CATop_minmass_minmasscut",		"CATop_minmass_minmasscut",		100,	0,  200 );
+  theDir.make<TH1F>("CATop_nsubjets_minmasscut",   	"CATop_nsubjets_minmasscut",   	5,		0,  5 );
+  theDir.make<TH1F>("CATop_pt_minmasscut",			"CATop_pt_minmasscut",			100,	0,  4000 );
+  theDir.make<TH1F>("CATop_eta_minmasscut",			"CATop_eta_minmasscut",			100,	-3,  3 );
+	
 	
   theDir.make<TH1F>("PrunedJet_mass",				"PrunedJet_mass",		100,	0,  400 );
   theDir.make<TH1F>("PrunedJet_mu",					"PrunedJet_mu",			100,	0,  1 );
+  theDir.make<TH1F>("PrunedJet_dR",					"PrunedJet_dR",			100,	0,  1 );
+  theDir.make<TH1F>("PrunedJet_y",					"PrunedJet_y",			100,	0,  1 );
   theDir.make<TH1F>("PrunedJet_nsubjets",			"PrunedJet_nsubjets",	5,		0,  5 );
   theDir.make<TH1F>("PrunedJet_pt",					"PrunedJet_pt",			100,	0,  4000 );
   theDir.make<TH1F>("PrunedJet_eta",				"PrunedJet_eta",		100,	-3,  3 );
+  //theDir.make<TH2F>("PrunedJet_mass_mu",			"PrunedJet_mass_mu",	400,	0,  400,  400,	0,  1 );
+  //theDir.make<TH2F>("PrunedJet_pt_mu",				"PrunedJet_pt_mu",		400,	0,  4000,  400,	0,  1 );
+
+  theDir.make<TH1F>("PrunedJet_mass_masscut",				"PrunedJet_mass_masscut",		100,	0,  400 );
+  theDir.make<TH1F>("PrunedJet_mu_masscut",					"PrunedJet_mu_masscut",			100,	0,  1 );
+  theDir.make<TH1F>("PrunedJet_nsubjets_masscut",			"PrunedJet_nsubjets_masscut",	5,		0,  5 );
+  theDir.make<TH1F>("PrunedJet_pt_masscut",					"PrunedJet_pt_masscut",			100,	0,  4000 );
+  theDir.make<TH1F>("PrunedJet_eta_masscut",				"PrunedJet_eta_masscut",		100,	-3,  3 );
+  theDir.make<TH1F>("PrunedJet_dR_masscut",					"PrunedJet_dR_masscut",			100,	0,  1 );
+  theDir.make<TH1F>("PrunedJet_y_masscut",					"PrunedJet_y_masscut",			100,	0,  1 );
+	
+  theDir.make<TH1F>("PrunedJet_mass_mucut",				"PrunedJet_mass_mucut",		100,	0,  400 );
+  theDir.make<TH1F>("PrunedJet_mu_mucut",				"PrunedJet_mu_mucut",			100,	0,  1 );
+  theDir.make<TH1F>("PrunedJet_nsubjets_mucut",		"PrunedJet_nsubjets_mucut",	5,		0,  5 );
+  theDir.make<TH1F>("PrunedJet_pt_mucut",				"PrunedJet_pt_mucut",			100,	0,  4000 );
+  theDir.make<TH1F>("PrunedJet_eta_mucut",				"PrunedJet_eta_mucut",		100,	-3,  3 );
+  theDir.make<TH1F>("PrunedJet_dR_mucut",					"PrunedJet_dR_mucut",			100,	0,  1 );
+  theDir.make<TH1F>("PrunedJet_y_mucut",					"PrunedJet_y_mucut",			100,	0,  1 );
+
 
 	
   theDir.make<TH1F>("PrunedJet_mu_taggedType1",	"PrunedJet_mu_taggedType1",		100,	0,  1 );
@@ -599,7 +629,11 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 	  theDir.getObject<TH1>("CATop_pt")			->Fill( p4_catop_jet1.pt(), evtWeight);
 	  theDir.getObject<TH1>("CATop_eta")		->Fill( p4_catop_jet0.eta(), evtWeight);
 	  theDir.getObject<TH1>("CATop_eta")		->Fill( p4_catop_jet1.eta(), evtWeight);
-			
+	  //theDir.getObject<TH2>("CATop_mass_minmass") ->Fill( p4_catop_jet0.mass(), j0_minmass, evtWeight);
+	  //theDir.getObject<TH2>("CATop_mass_minmass") ->Fill( p4_catop_jet1.mass(), j1_minmass, evtWeight);
+		
+		
+		
 	  if ( p4_catop_jet0.mass() > caTopJetMassMin_ && p4_catop_jet0.mass() < caTopJetMassMax_ ) 
 	  {		
 			theDir.getObject<TH1>("CATop_mass_masscut")		->Fill( p4_catop_jet0.mass(), evtWeight);
@@ -616,91 +650,171 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			theDir.getObject<TH1>("CATop_pt_masscut")		->Fill( p4_catop_jet1.pt(), evtWeight);
 			theDir.getObject<TH1>("CATop_eta_masscut")		->Fill( p4_catop_jet1.eta(), evtWeight);
 	  }
+	  if ( j0_minmass > caTopMinMassMin_  ) 
+	  {		
+			theDir.getObject<TH1>("CATop_mass_minmasscut")		->Fill( p4_catop_jet0.mass(), evtWeight);
+			theDir.getObject<TH1>("CATop_minmass_minmasscut")	->Fill( j0_minmass, evtWeight);
+			theDir.getObject<TH1>("CATop_nsubjets_minmasscut")	->Fill( j0_nsubjets, evtWeight);
+			theDir.getObject<TH1>("CATop_pt_minmasscut")		->Fill( p4_catop_jet0.pt(), evtWeight);
+			theDir.getObject<TH1>("CATop_eta_minmasscut")		->Fill( p4_catop_jet0.eta(), evtWeight);
+	  }
+	  if (  j1_minmass > caTopMinMassMin_  ) 
+	  {		
+			theDir.getObject<TH1>("CATop_mass_minmasscut")		->Fill( p4_catop_jet1.mass(), evtWeight);
+			theDir.getObject<TH1>("CATop_minmass_minmasscut")	->Fill( j1_minmass, evtWeight);
+			theDir.getObject<TH1>("CATop_nsubjets_minmasscut")	->Fill( j1_nsubjets, evtWeight);
+			theDir.getObject<TH1>("CATop_pt_minmasscut")		->Fill( p4_catop_jet1.pt(), evtWeight);
+			theDir.getObject<TH1>("CATop_eta_minmasscut")		->Fill( p4_catop_jet1.eta(), evtWeight);
+	  }
+		
+
+	  
 		
 
 	  //if ( hasTaggedTopJet0 ) theDir.getObject<TH1>("CATop_pt")	->Fill( p4_catop_jet0.pt(), evtWeight);
 	  
-	  //-----------------
-	  // Type 2 commissioning plots
+		//-----------------
+		// Type 2 commissioning plots
 		if ( hemisphere0.size()>0 )
-			{	
-				double y = -1;
-				double mu = -1;
-				double dR = -1; 
-				pat::Jet const & jet0 = *hemisphere0.at(0);
-				int numOfDaughters    = jet0.numberOfDaughters();
-				if (verbose_) std::cout << "numOfDaughters " << numOfDaughters << std::endl;
-				theDir.getObject<TH1>("PrunedJet_nsubjets") ->Fill(numOfDaughters,evtWeight);
+		{	
+			double y = -1;
+			double mu = -1;
+			double dR = -1; 
+			pat::Jet const & jet0 = *hemisphere0.at(0);
+			int numOfDaughters    = jet0.numberOfDaughters();
+			if (verbose_) std::cout << "numOfDaughters " << numOfDaughters << std::endl;
+			double mfat       = jet0.mass();
+			double pt = jet0.pt();
+			double eta = jet0.eta();
+			if ( numOfDaughters >= 2 ) {
 				double mfat       = jet0.mass();
-				theDir.getObject<TH1>("PrunedJet_mass") ->Fill(mfat,evtWeight);
-				theDir.getObject<TH1>("PrunedJet_pt") ->Fill(jet0.pt(),evtWeight);
-				theDir.getObject<TH1>("PrunedJet_eta") ->Fill(jet0.eta(),evtWeight);
-				if ( numOfDaughters >= 2 ) {
-					double mfat       = jet0.mass();
-					double m0     = jet0.daughter(0) -> mass();
-					double m1     = jet0.daughter(1) -> mass();
-					double pt0        = jet0.daughter(0) -> pt();
-					double pt1        = jet0.daughter(1) -> pt();
-					if ( m1 > m0 ) {
-						double temp = m1;
-						m1 = m0;
-						m0 = temp;
-						temp = pt1;
-						pt1 = pt0;
-						pt0 = temp;
-					}
-					
-					dR = reco::deltaR<double>( jet0.daughter(0) ->eta(),
-											  jet0.daughter(0) ->phi(),
-											  jet0.daughter(1) ->eta(),
-											  jet0.daughter(1) ->phi()  );
-					y = std::min( pt0*pt0, pt1*pt1) * dR*dR / (mfat*mfat);
-					mu = m0 / mfat ;
-					if (verbose_) cout<<"y = "<<y <<" mu = "<<mu<< " dR "<<dR <<endl;
-					theDir.getObject<TH1>("PrunedJet_mu") ->Fill(mu,evtWeight);
-					
+				double m0     = jet0.daughter(0) -> mass();
+				double m1     = jet0.daughter(1) -> mass();
+				double pt0        = jet0.daughter(0) -> pt();
+				double pt1        = jet0.daughter(1) -> pt();
+				if ( m1 > m0 ) {
+					double temp = m1;
+					m1 = m0;
+					m0 = temp;
+					temp = pt1;
+					pt1 = pt0;
+					pt0 = temp;
 				}
+				
+				dR = reco::deltaR<double>( jet0.daughter(0) ->eta(),
+										  jet0.daughter(0) ->phi(),
+										  jet0.daughter(1) ->eta(),
+										  jet0.daughter(1) ->phi()  );
+				y = std::min( pt0*pt0, pt1*pt1) * dR*dR / (mfat*mfat);
+				mu = m0 / mfat ;
+				if (verbose_) cout<<"y = "<<y <<" mu = "<<mu<< " dR "<<dR <<endl;
+				
 			}
-			if ( hemisphere1.size()>0 )
-			{	
-				double y = -1;
-				double mu = -1;
-				double dR = -1; 
-				pat::Jet const & jet1 = *hemisphere1.at(0);
-				int numOfDaughters    = jet1.numberOfDaughters();
-				if (verbose_) std::cout << "numOfDaughters " << numOfDaughters << std::endl;
-				theDir.getObject<TH1>("PrunedJet_nsubjets") ->Fill(numOfDaughters,evtWeight);
+			
+			theDir.getObject<TH1>("PrunedJet_mass") ->Fill(mfat,evtWeight);
+			theDir.getObject<TH1>("PrunedJet_pt") ->Fill(pt,evtWeight);
+			theDir.getObject<TH1>("PrunedJet_eta") ->Fill(eta,evtWeight);
+			theDir.getObject<TH1>("PrunedJet_nsubjets") ->Fill(numOfDaughters,evtWeight);		
+			theDir.getObject<TH1>("PrunedJet_mu") ->Fill(mu,evtWeight);
+			//theDir.getObject<TH2>("PrunedJet_mass_mu") ->Fill(mfat,mu,evtWeight);
+			//theDir.getObject<TH2>("PrunedJet_pt_mu") ->Fill(jet0.pt(),mu,evtWeight);
+
+			
+			if ( mfat >60 && mfat<100 ) 
+			{
+				theDir.getObject<TH1>("PrunedJet_mass_masscut") ->Fill(mfat,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_pt_masscut") ->Fill(pt,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_eta_masscut") ->Fill(eta,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_nsubjets_masscut") ->Fill(numOfDaughters,evtWeight);		
+				theDir.getObject<TH1>("PrunedJet_mu_masscut") ->Fill(mu,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_dR_masscut") ->Fill(dR,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_y_masscut") ->Fill(y,evtWeight);
+			}
+			if ( mu <0.4)
+			{
+				theDir.getObject<TH1>("PrunedJet_mass_mucut") ->Fill(mfat,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_pt_mucut") ->Fill(pt,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_eta_mucut") ->Fill(eta,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_nsubjets_mucut") ->Fill(numOfDaughters,evtWeight);		
+				theDir.getObject<TH1>("PrunedJet_mu_mucut") ->Fill(mu,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_dR_mucut") ->Fill(dR,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_y_mucut") ->Fill(y,evtWeight);
+			}
+			
+			
+		}
+		if ( hemisphere1.size()>0 )
+		{	
+			double y = -1;
+			double mu = -1;
+			double dR = -1; 
+			pat::Jet const & jet1 = *hemisphere1.at(0);
+			double pt = jet1.pt();
+			double eta = jet1.eta();
+			int numOfDaughters    = jet1.numberOfDaughters();
+			if (verbose_) std::cout << "numOfDaughters " << numOfDaughters << std::endl;
+			double mfat       = jet1.mass();
+			
+			if ( numOfDaughters >= 2 ) {
 				double mfat       = jet1.mass();
-				theDir.getObject<TH1>("PrunedJet_mass") ->Fill(mfat,evtWeight);
-				theDir.getObject<TH1>("PrunedJet_pt") ->Fill(jet1.pt(),evtWeight);
-				theDir.getObject<TH1>("PrunedJet_eta") ->Fill(jet1.eta(),evtWeight);
-				if ( numOfDaughters >= 2 ) {
-					double m0     = jet1.daughter(0) -> mass();
-					double m1     = jet1.daughter(1) -> mass();
-					double pt0        = jet1.daughter(0) -> pt();
-					double pt1        = jet1.daughter(1) -> pt();
-					if ( m1 > m0 ) {
-						double temp = m1;
-						m1 = m0;
-						m0 = temp;
-						temp = pt1;
-						pt1 = pt0;
-						pt0 = temp;
-					}
-					
-					dR = reco::deltaR<double>( jet1.daughter(0) ->eta(),
-											  jet1.daughter(0) ->phi(),
-											  jet1.daughter(1) ->eta(),
-											  jet1.daughter(1) ->phi()  );
-					y = std::min( pt0*pt0, pt1*pt1) * dR*dR / (mfat*mfat);
-					mu = m0 / mfat ;
-					if (verbose_) cout<<"y = "<<y <<" mu = "<<mu<< " dR "<<dR <<endl;
-					theDir.getObject<TH1>("PrunedJet_mu") ->Fill(mu,evtWeight);
+				double m0     = jet1.daughter(0) -> mass();
+				double m1     = jet1.daughter(1) -> mass();
+				double pt0        = jet1.daughter(0) -> pt();
+				double pt1        = jet1.daughter(1) -> pt();
+				if ( m1 > m0 ) {
+					double temp = m1;
+					m1 = m0;
+					m0 = temp;
+					temp = pt1;
+					pt1 = pt0;
+					pt0 = temp;
 				}
+				
+				dR = reco::deltaR<double>( jet1.daughter(0) ->eta(),
+										  jet1.daughter(0) ->phi(),
+										  jet1.daughter(1) ->eta(),
+										  jet1.daughter(1) ->phi()  );
+				y = std::min( pt0*pt0, pt1*pt1) * dR*dR / (mfat*mfat);
+				mu = m0 / mfat ;
+				if (verbose_) cout<<"y = "<<y <<" mu = "<<mu<< " dR "<<dR <<endl;
+				
 			}
-
-
-  	  //-----------------
+			
+			theDir.getObject<TH1>("PrunedJet_mass") ->Fill(mfat,evtWeight);
+			theDir.getObject<TH1>("PrunedJet_pt") ->Fill(pt,evtWeight);
+			theDir.getObject<TH1>("PrunedJet_eta") ->Fill(eta,evtWeight);
+			theDir.getObject<TH1>("PrunedJet_nsubjets") ->Fill(numOfDaughters,evtWeight);		
+			theDir.getObject<TH1>("PrunedJet_mu") ->Fill(mu,evtWeight);
+			theDir.getObject<TH1>("PrunedJet_dR") ->Fill(dR,evtWeight);
+			theDir.getObject<TH1>("PrunedJet_y") ->Fill(y,evtWeight);
+			//theDir.getObject<TH2>("PrunedJet_mass_mu") ->Fill(mfat,mu,evtWeight);
+			//theDir.getObject<TH2>("PrunedJet_pt_mu") ->Fill(jet1.pt(),mu,evtWeight);
+			
+			if ( mfat >60 && mfat<100 ) 
+			{
+				theDir.getObject<TH1>("PrunedJet_mass_masscut") ->Fill(mfat,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_pt_masscut") ->Fill(pt,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_eta_masscut") ->Fill(eta,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_nsubjets_masscut") ->Fill(numOfDaughters,evtWeight);		
+				theDir.getObject<TH1>("PrunedJet_mu_masscut") ->Fill(mu,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_dR_masscut") ->Fill(dR,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_y_masscut") ->Fill(y,evtWeight);
+			}
+			if ( mu <0.4)
+			{
+				theDir.getObject<TH1>("PrunedJet_mass_mucut") ->Fill(mfat,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_pt_mucut") ->Fill(pt,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_eta_mucut") ->Fill(eta,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_nsubjets_mucut") ->Fill(numOfDaughters,evtWeight);		
+				theDir.getObject<TH1>("PrunedJet_mu_mucut") ->Fill(mu,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_dR_mucut") ->Fill(dR,evtWeight);
+				theDir.getObject<TH1>("PrunedJet_y_mucut") ->Fill(y,evtWeight);
+			}
+			
+		}
+		
+		
+	  //-----------------
 	  // Find non -leading btags		
 	  if (verbose_) cout<<"Check if each hemisphere has non-leading b-jet"<<endl;
 	  bool hasNonLeadingBjet0 = false;
