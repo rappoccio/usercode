@@ -22,5 +22,13 @@ simpleSubstructureSelector = cms.PSet(
     # Jet energy resolution "up" or "down" for MC?
     jetSmear = cms.double( 0.0 ),
     # Additional uncertainty to add to the jet for MC
-    jetUncertainty = cms.double( 0.0 )
+    jetUncertainty = cms.double( 0.0 ),
+    # JEC and uncertainty payloads
+    jecPayloads = cms.vstring( [
+        'Jec10V3_L1FastJet_AK5PFchs.txt',
+        'Jec10V3_L2Relative_AK5PFchs.txt',
+        'Jec10V3_L3Absolute_AK5PFchs.txt',
+        'Jec10V3_L2L3Residual_AK5PFchs.txt'] ),
+    jecUncPayload = cms.string('Jec10V3_Uncertainty_AK5PFchs.txt')
+    
 )

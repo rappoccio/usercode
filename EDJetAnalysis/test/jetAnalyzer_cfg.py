@@ -40,35 +40,39 @@ myList = LumiList.LumiList (filename = JSONfile).getCMSSWString().split(',')
 
 if options.useData :
     histFileName = 'jetStudiesJet2011A.root'
-    jecLevels = [ 'Jec10V1_L2Relative_AK5PF.txt',
-                  'Jec10V1_L3Absolute_AK5PF.txt',
-                  'Jec10V1_Uncertainty_AK5PF.txt']
+    jecLevels = [ 'Jec10V3_L1FastJet_AK5PFchs.txt',
+                  'Jec10V3_L2Relative_AK5PFchs.txt',
+                  'Jec10V3_L3Absolute_AK5PFchs.txt',
+                  'Jec10V3_L2L3Residual_AK5PFchs.txt',
+                  'Jec10V3_Uncertainty_AK5PFchs.txt']
+
+    print 'Processing these JEC: '
+    print jecLevels
     ## Source
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_10_1_03g.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_10_1_RKm.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_11_1_AbM.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_11_1_it1.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_12_1_HJA.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_12_1_bZB.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_13_1_2NJ.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_13_1_EWJ.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_14_1_9Sm.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_14_1_xLk.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_15_1_0WI.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_15_1_o5A.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_16_1_5iA.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_16_1_enr.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_17_1_5bK.root'
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_33_1_uuh.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_34_1_qJd.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_34_1_s8b.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_35_1_fY4.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_36_1_pgq.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_3_1_MEt.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_3_1_mVb.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_3_1_sTv.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_4_1_7qp.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_4_1_dtf.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_4_1_t8p.root'
+
         ),
         lumisToProcess = cms.untracked.VLuminosityBlockRange( myList )
     )
 else :
     histFileName = 'jetStudiesQCDFlat.root'
-    jecLevels = [ 'Jec10V1_L2Relative_AK5PF.txt',        
-                  'Jec10V1_L3Absolute_AK5PF.txt',
-                  'Jec10V1_Uncertainty_AK5PF.txt']    
+    jecLevels = [ 'Jec10V3_L1FastJet_AK5PFchs.txt',
+                  'Jec10V3_L2Relative_AK5PFchs.txt',
+                  'Jec10V3_L3Absolute_AK5PFchs.txt',
+                  'Jec10V3_Uncertainty_AK5PFchs.txt']
+   
     ## Source
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
@@ -170,15 +174,19 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 from Analysis.JetAnalysis.jetStudies2011_cfi import jetStudies2011 as jetStudies2011
 
+from PhysicsTools.SelectorUtils.pfMuonSelector_cfi import pfMuonSelector
+
 if options.semimuTriggers :
     itrigs = cms.vstring( ['HLT_Mu24_v1' ] )
 else :
     itrigs = jetStudies2011.trigs
 
+print 'Talking to tfileservice'
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string(histFileName)
                                    )
 
+print 'Making analyzers'
 
 process.ak5Analyzer = cms.EDAnalyzer('EDJetStudies2011',
                                      jetStudies2011.clone(
@@ -212,7 +220,12 @@ process.ca8PrunedAnalyzerBTagSearch = cms.EDAnalyzer('EDJetStudies2011',
                                                                            useBTags = cms.bool(True),
                                                                            orderByMass =cms.bool(True),
                                                                            trigs = itrigs,
-                                                                           jecPayloads = cms.vstring( jecLevels )
+                                                                           jecPayloads = cms.vstring( jecLevels ),
+                                                                           muonSrc = cms.InputTag('selectedPatMuonsLoosePFlow'),
+                                                                           rCut = cms.double(0.8),
+                                                                           muonInJetSelector = pfMuonSelector.clone(
+                                                                               cutsToIgnore = cms.vstring(['PFIso', 'D0'])
+                                                                               )
                                                                            )
                                                      )
 
@@ -224,7 +237,12 @@ process.ca8PrunedAnalyzerBTagMuSearch = cms.EDAnalyzer('EDJetStudies2011',
                                                                            trigs = cms.vstring([
                                                                                'HLT_Mu24_v1'
                                                                                ]),
-                                                                           jecPayloads = cms.vstring( jecLevels )
+                                                                           jecPayloads = cms.vstring( jecLevels ),
+                                                                           muonSrc = cms.InputTag('selectedPatMuonsLoosePFlow'),
+                                                                           rCut = cms.double(0.8),
+                                                                           muonInJetSelector = pfMuonSelector.clone(
+                                                                               cutsToIgnore = cms.vstring(['PFIso', 'D0'])
+                                                                               )
                                                                            )
                                                      )
 
@@ -237,7 +255,7 @@ process.ca8TopTagAnalyzer = cms.EDAnalyzer('EDJetStudies2011',
                                                                  jecPayloads = cms.vstring( jecLevels )
                                                                  )
                                            )
-
+print 'Making the path'
 process.p = cms.Path(
     process.ak5Analyzer*
     process.ca8Analyzer*

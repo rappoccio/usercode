@@ -82,7 +82,8 @@ class SimpleSubstructureSelector : public EventSelector {
     double jetUncertainty_;/// value of any "flat" jet uncertainty
     
     /// Jet energy corrections object
-    std::string    jecPayload_;
+    std::vector<std::string> jecPayloads_;
+    std::string jecUncPayload_;
     boost::shared_ptr<JetCorrectionUncertainty> jecUnc_;
     boost::shared_ptr<FactorizedJetCorrector> jec_;
 

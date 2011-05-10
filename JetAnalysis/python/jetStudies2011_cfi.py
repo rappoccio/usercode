@@ -8,7 +8,7 @@ jetStudies2011 = cms.PSet(
     # Rho from the CA8 jets
     rhoSrc = cms.InputTag('ca8PFJetsPFlow', 'rho'),
     # Offline Primary Vertices (all of them) to reweight MC
-    pvSrc = cms.InputTag('offlinePrimaryVertices'),
+    pvSrc = cms.InputTag('goodOfflinePrimaryVertices'),
     # pat::TriggerEvent
     trigSrc = cms.InputTag("patTriggerEvent"),
     # Gen Jets for the extra CA8 collections
@@ -26,22 +26,24 @@ jetStudies2011 = cms.PSet(
     orderByMass = cms.bool(False),
     # Triggers to use (in order):
     trigs = cms.vstring([
-        'HLT_Jet370_v1',
-        'HLT_Jet240_v1',
-        'HLT_Jet190_v1',
-        'HLT_Jet150_v1',        
-        'HLT_Jet110_v1',
-        'HLT_Jet80_v1',
-        'HLT_Jet60_v1',
         'HLT_Jet30_v1',
+        'HLT_Jet60_v1',
+        'HLT_Jet80_v1',
+        'HLT_Jet110_v1',
+        'HLT_Jet150_v1',
+        'HLT_Jet190_v1',        
+        'HLT_Jet240_v1',
+        'HLT_Jet370_v1'
+        ]),
+    binPtTrig = cms.bool(False),
+    ptTrigBins = cms.vdouble(
+        [45, 75, 95, 125, 165, 205, 255, 385, 7000]
+        ),
+    jecPayloads = cms.vstring( [
+        'Jec10V3_L1FastJet_AK5PFchs.txt',
+        'Jec10V3_L2Relative_AK5PFchs.txt',
+        'Jec10V3_L3Absolute_AK5PFchs.txt',
+        'Jec10V3_L2L3Residual_AK5PFchs.txt',
+        'Jec10V3_Uncertainty_AK5PFchs.txt'] )
 
-        ## 'HLT_DiJetAve300U_v4',
-        ## 'HLT_DiJetAve180U_v4',
-        ## 'HLT_DiJetAve140U_v4',
-        ## 'HLT_DiJetAve100U_v4',
-        ## 'HLT_DiJetAve50U_v4',
-        ## 'HLT_DiJetAve70U_v4',
-        ## 'HLT_DiJetAve30U_v4',
-        ## 'HLT_DiJetAve15U_v4',
-        ])
 )

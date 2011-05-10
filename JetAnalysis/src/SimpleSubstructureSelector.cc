@@ -13,7 +13,9 @@ SimpleSubstructureSelector::SimpleSubstructureSelector( edm::ParameterSet const 
   rapidityCut_    ( parameters.getParameter<double>("rapidityCut") ),
   jetScale_       ( parameters.getParameter<double>("jetScale") ),
   jetSmear_       ( parameters.getParameter<double>("jetSmear") ),
-  jetUncertainty_ ( parameters.getParameter<double>("jetUncertainty") )
+  jetUncertainty_ ( parameters.getParameter<double>("jetUncertainty") ),
+  jecPayloads_    ( parameters.getParameter<std::vector<std::string> >("jecPayloads") ),
+  jecUncPayload_  ( parameters.getParameter<std::string>("jecUncPayload"))
 {
   
   push_back("Inclusive");
@@ -42,24 +44,23 @@ SimpleSubstructureSelector::SimpleSubstructureSelector( edm::ParameterSet const 
     setIgnoredCuts( parameters.getParameter<std::vector<std::string> >("cutsToIgnore") );
 	
   retInternal_ = getBitTemplate();
-      
-  std::string L1Tag   = "Jec10V1_L1Offset_AK5PF.txt";
-  std::string L3Tag   = "Jec10V1_L3Absolute_AK5PF.txt";
-  std::string L2Tag   = "Jec10V1_L2Relative_AK5PF.txt";
-  std::string uncTag  = "Jec10V1_Uncertainty_AK5PF.txt";
-  JetCorrectorParameters L3JetPar(L3Tag);
-  JetCorrectorParameters L2JetPar(L2Tag);
 
+
+  // Get the factorized jet corrector. 
+  // The payloads contain N elements, 
+  // the Nth is the uncertainty, and the first N-1 elements are the
+  // actual correction levels. 
   std::vector<JetCorrectorParameters> vPar;
-  vPar.push_back(L2JetPar);
-  vPar.push_back(L3JetPar);
-  // if ( useData_ ) {
-  //   vPar.push_back(L2L3JetPar);
-  // }
+  for ( std::vector<std::string>::const_iterator ipayload = jecPayloads_.begin(),
+	  ipayloadEnd = jecPayloads_.end(); ipayload != ipayloadEnd; ++ipayload ) {
+    std::cout << "Adding payload " << *ipayload << std::endl;
+    JetCorrectorParameters pars(*ipayload);
+    vPar.push_back(pars);
+  }
 
   jec_ = boost::shared_ptr<FactorizedJetCorrector> ( new FactorizedJetCorrector(vPar) );
 
-  jecUnc_ = boost::shared_ptr<JetCorrectionUncertainty>( new JetCorrectionUncertainty(uncTag));
+  jecUnc_ = boost::shared_ptr<JetCorrectionUncertainty>( new JetCorrectionUncertainty(jecUncPayload_));
 
 
 
