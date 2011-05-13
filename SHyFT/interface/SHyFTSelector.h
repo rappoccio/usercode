@@ -153,7 +153,7 @@ class SHyFTSelector : public EventSelector {
       bool           useEleMC_;
       bool           useData_;
       bool           useL1Offset_;
-
+      bool           usePFIso_;
       // Jet energy corrections object
       std::string    jecPayload_;
       boost::shared_ptr<JetCorrectionUncertainty> jecUnc_;

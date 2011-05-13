@@ -29,7 +29,8 @@ wplusjetsAnalysis = cms.PSet(
     useWP85Selection = cms.bool(False),
     useWP80Selection = cms.bool(False),
     useWP70Selection = cms.bool(True),
-    useEleMC = cms.bool(False), 
+    useEleMC = cms.bool(False),
+    usePFIso = cms.bool(False),
     # tight muons
     muonIdTight = cms.PSet(
         version = cms.string('FALL10'),

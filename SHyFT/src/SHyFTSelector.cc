@@ -59,6 +59,7 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    useEleMC_        (params.getParameter<bool>("useEleMC")),
    useData_         (params.getParameter<bool>("useData")),
    useL1Offset_     (params.getParameter<bool>("useL1Offset")),
+   usePFIso_        (params.getParameter<bool>("usePFIso")),
    jecPayload_      (params.getParameter<std::string>("jecPayload"))
 {
    // make the bitset
@@ -254,7 +255,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                ielectron != electronEnd; ++ielectron ) {
 	   allElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
             ++nElectrons;
-
+   
             bool pass95       = patEle95(*ielectron);
             bool pass90       = patEle90(*ielectron);
             bool pass85       = patEle85(*ielectron);
@@ -275,8 +276,15 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             double el_dcot = ielectron->convDcot();
             bool   isConv  = fabs(el_dist) < elDist_ && fabs(el_dcot) < elDcot_ ;            
             double nHits   = ielectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
-            double relIso  = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + ielectron->dr03HcalTowerSumEt() ) / ielectron->p4().Pt();
-           
+          
+            double chIso = ielectron->userIsolation(pat::PfChargedHadronIso);
+            double nhIso = ielectron->userIsolation(pat::PfNeutralHadronIso);
+            double gIso  = ielectron->userIsolation(pat::PfGammaIso);
+            double relIso = -1000;
+
+            if(usePFIso_) relIso = (chIso + nhIso + gIso)/ ielectron->p4().Pt();
+            else relIso  = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + ielectron->dr03HcalTowerSumEt() ) / ielectron->p4().Pt();
+                
 //Electron Selection for e+jets
 //-----------------------------
             if( (scEta > 2.5 || scEta <= 1.566 )  && scEta > 1.4442 ) continue;   
@@ -306,46 +314,6 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                ){
                selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
             }   
-            /*
-            if(useAntiSelection_){
-               if( Et       > eEt_                                         &&                   
-                   relIso   < eRelIso_                                     &&
-                   vCut     < 1                                            &&
-                   fabs(dB) < 0.02                                         && 
-                   ( pass_sihih + pass_dphi + pass_deta + pass_hoe)  <= 2 ){  //fail atleast two of the IDs      
-                  
-                  selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
-                  if(nHits > 0 ) conversionVetoA = false;
-                  if(nHits > 0 || isConv) conversionVetoB = false;                  
-               }
-               else if(pass95                  && 
-                       Et     >  20.           &&
-                       relIso <  1.0
-                       ){
-                  selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
-               }   
-            }//anti
-            
-            else{
-               if( pass70              && 
-                   vCut     < 1        &&
-                   Et       > eEt_     &&
-                   relIso   < eRelIso_ &&
-                   fabs(dB) < 0.02     
-                  ) { //tight cuts           
-                  selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
-                  if(nHits > 0 ) conversionVetoA = false;
-                  if(nHits > 0 || isConv) conversionVetoB = false;  
-               }
-               else if(pass95                  && 
-                       Et     >  20.           &&
-                       relIso <  1.0
-                  ){//loose
-              
-                  selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
-               }            
-            }//else regular selection
-            */
             
 
 //Electron Selection for mu+jets
@@ -372,9 +340,22 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
            
          for ( std::vector<pat::Muon>::const_iterator muonBegin = muonHandle->begin(),
                   muonEnd = muonHandle->end(), imuon = muonBegin;
-               imuon != muonEnd; ++imuon ) {   
+               imuon != muonEnd; ++imuon ) { 
+            
+            double relIso  = -1000;
+            double hcalIso = imuon->hcalIso();
+            double ecalIso = imuon->ecalIso();
+            double trkIso  = imuon->trackIso();
+            double chIso   = imuon->userIsolation(pat::PfChargedHadronIso);
+            double nhIso   = imuon->userIsolation(pat::PfNeutralHadronIso);
+            double gIso    = imuon->userIsolation(pat::PfGammaIso);
+            double pt      = imuon->pt() ;
+            
+            if(usePFIso_) relIso = (chIso + nhIso + gIso)/ pt;  
+            else relIso  = (ecalIso + hcalIso + trkIso) / pt;
             if ( !imuon->isGlobalMuon() ) continue;
-            if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ &&  muonIdLoose_(*imuon,event) ) {
+            //if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ &&  muonIdLoose_(*imuon,event) ) {
+            if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ &&  relIso < 0.2 ) {
                selectedLooseMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
             }
          }
