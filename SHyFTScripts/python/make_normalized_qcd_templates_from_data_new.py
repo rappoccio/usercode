@@ -207,7 +207,7 @@ for ijet in range(1,6):
             h_1tag.Add( h_2tag )
         # first fill up the tagged histograms
         taghists2d.append( h_1tag )
-        h_1tag_proj = h_1tag.ProjectionX( 'proj_' + taghist + str(ijet) + '_1t', 2, h_1tag.GetNbinsX() )
+        h_1tag_proj = h_1tag.ProjectionX( 'proj_' + taghist + str(ijet) + '_1t', 2, h_1tag.GetNbinsY()+1 )
         h_1tag_proj.SetMarkerStyle(20)
         taghists.append( h_1tag_proj )            
     else :
@@ -217,13 +217,13 @@ for ijet in range(1,6):
             h_1tag.Add( h_2tag )        
         # first fill up the tagged histograms
         taghists2d.append( h_1tag )
-        h_1tag_proj = h_1tag.ProjectionX( 'proj_Data_muEta_' + str(ijet) + '_1t', 2, h_1tag.GetNbinsX() )
+        h_1tag_proj = h_1tag.ProjectionX( 'proj_Data_muEta_' + str(ijet) + '_1t', 2, h_1tag.GetNbinsY()+1 )
         h_1tag_proj.SetMarkerStyle(20)
         taghists.append( h_1tag_proj )            
 
 
     untaghists2d.append( h_0tag )
-    h_0tag_proj = h_0tag.ProjectionX( 'proj_Data_muEta_' + str(ijet) + '_0t', 2, h_0tag.GetNbinsX() )
+    h_0tag_proj = h_0tag.ProjectionX( 'proj_Data_muEta_' + str(ijet) + '_0t', 2, h_0tag.GetNbinsY()+1 )
     h_0tag_proj.SetMarkerStyle(20)
     untaghists.append( h_0tag_proj )
 
