@@ -906,6 +906,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   
 //--------------------------------
   double M2Min = -99.; 
+  //At least 2 tags
   if(numJets>3 && numTags == 2){
 
      //for(std::vector<int>::iterator ti=taggedIndex.begin(); ti!=taggedIndex.end(); ti++)
@@ -947,7 +948,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
      }
   }//if >=4jets and >=2 tags
   //std::cout << "M2 = " <<M2Min <<std::endl;
-  
+
   if(numJets > 3){
        string m3Name = Form("m3_%dt", numTags);
        theDir.getObject<TH1>( m3Name )->Fill(M3, globalWeight_);
@@ -1234,7 +1235,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
           subdirEx->getObject<TH1>( sampleNameInput + Form("_elEta_%dj_%dt", numJets, kknumTags))->Fill( fabs(electrons[0].eta()), globalWeight_ * iprob); 
           subdirEx->getObject<TH1>( sampleNameInput + Form("_MET_%dj_%dt",   numJets, kknumTags))->Fill( met.pt(),             globalWeight_ * iprob);
           if(numJets!=0){
-             subdirEx->getObject<TH1>(sampleNameInput + Form("_jetEt_%dj_%dt", numJets, kknumTags) + whichtag )-> Fill (jetEt, globalWeight_ * iprob); 
+             subdirEx->getObject<TH1>(sampleNameInput + Form("_jetEt_%dj_%dt", numJets, kknumTags))-> Fill (jetEt, globalWeight_ * iprob); 
           }
        }
        
