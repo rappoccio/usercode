@@ -8,34 +8,36 @@ using namespace std;
 
 SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   EventSelector(),
-  muonTag_         (params.getParameter<edm::InputTag>("muonSrc") ),
-  electronTag_     (params.getParameter<edm::InputTag>("electronSrc") ),
-  jetTag_          (params.getParameter<edm::InputTag>("jetSrc") ),
-  metTag_          (params.getParameter<edm::InputTag>("metSrc") ),  
-  pvTag_           (params.getParameter<edm::InputTag>("pvSrc") ),
-  trigTag_         (params.getParameter<edm::InputTag>("trigSrc") ),
-  muonIdPF_        (params.getParameter<edm::ParameterSet>("muonIdPF")),
-  electronIdPF_    (params.getParameter<edm::ParameterSet>("electronIdPF")),
-  minJets_         (params.getParameter<int> ("minJets") ),
-  muPtMin_         (params.getParameter<double>("muPtMin")), 
-  muEtaMax_        (params.getParameter<double>("muEtaMax")), 
-  eleEtMin_        (params.getParameter<double>("eleEtMin")), 
-  eleEtaMax_       (params.getParameter<double>("eleEtaMax")), 
-  muPtMinLoose_    (params.getParameter<double>("muPtMinLoose")), 
-  muEtaMaxLoose_   (params.getParameter<double>("muEtaMaxLoose")), 
-  eleEtMinLoose_   (params.getParameter<double>("eleEtMinLoose")), 
-  eleEtaMaxLoose_  (params.getParameter<double>("eleEtaMaxLoose")), 
-  jetPtMin_        (params.getParameter<double>("jetPtMin")), 
-  jetEtaMax_       (params.getParameter<double>("jetEtaMax")), 
-  jetScale_        (params.getParameter<double>("jetScale")),
-  jetUncertainty_  (params.getParameter<double>("jetUncertainty")),
-  jetSmear_        (params.getParameter<double>("jetSmear")),
-  metMin_          (params.getParameter<double>("metMin")),
-  metMax_          (params.getParameter<double>("metMax")),
-  unclMetScale_    (params.getParameter<double>("unclMetScale")),
-  useData_         (params.getParameter<bool>("useData")),
-  useL1Corr_       (params.getParameter<bool>("useL1Corr")),
-  jecPayload_      (params.getParameter<std::string>("jecPayload"))
+  muonTag_           (params.getParameter<edm::InputTag>("muonSrc") ),
+  electronTag_       (params.getParameter<edm::InputTag>("electronSrc") ),
+  jetTag_            (params.getParameter<edm::InputTag>("jetSrc") ),
+  metTag_            (params.getParameter<edm::InputTag>("metSrc") ),  
+  pvTag_             (params.getParameter<edm::InputTag>("pvSrc") ),
+  trigTag_           (params.getParameter<edm::InputTag>("trigSrc") ),
+  muonIdPFTight_     (params.getParameter<edm::ParameterSet>("muonIdPFTight")),
+  muonIdPFLoose_     (params.getParameter<edm::ParameterSet>("muonIdPFLoose")),
+  electronIdPFTight_ (params.getParameter<edm::ParameterSet>("electronIdPFTight")),
+  electronIdPFLoose_ (params.getParameter<edm::ParameterSet>("electronIdPFLoose")), 
+  minJets_           (params.getParameter<int> ("minJets") ),
+  muPtMin_           (params.getParameter<double>("muPtMin")), 
+  muEtaMax_          (params.getParameter<double>("muEtaMax")), 
+  eleEtMin_          (params.getParameter<double>("eleEtMin")), 
+  eleEtaMax_         (params.getParameter<double>("eleEtaMax")), 
+  muPtMinLoose_      (params.getParameter<double>("muPtMinLoose")), 
+  muEtaMaxLoose_     (params.getParameter<double>("muEtaMaxLoose")), 
+  eleEtMinLoose_     (params.getParameter<double>("eleEtMinLoose")), 
+  eleEtaMaxLoose_    (params.getParameter<double>("eleEtaMaxLoose")), 
+  jetPtMin_          (params.getParameter<double>("jetPtMin")), 
+  jetEtaMax_         (params.getParameter<double>("jetEtaMax")), 
+  jetScale_          (params.getParameter<double>("jetScale")),
+  jetUncertainty_    (params.getParameter<double>("jetUncertainty")),
+  jetSmear_          (params.getParameter<double>("jetSmear")),
+  metMin_            (params.getParameter<double>("metMin")),
+  metMax_            (params.getParameter<double>("metMax")),
+  unclMetScale_      (params.getParameter<double>("unclMetScale")),
+  useData_           (params.getParameter<bool>("useData")),
+  useL1Corr_         (params.getParameter<bool>("useL1Corr")),
+  jecPayload_        (params.getParameter<std::string>("jecPayload"))
 {
 
   // make the bitset
@@ -43,7 +45,7 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   push_back( "Trigger"        );
   push_back( ">= 1 Lepton"    );
   push_back( "== 1 Tight Lepton"    );
-  push_back( "== 1 Lepton"    );
+  push_back( "0 other lepton"    );
   push_back( "MET Cut Min"    );
   push_back( "MET Cut Max"    );
   push_back( ">=1 Jets"       );
@@ -58,7 +60,7 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   set( "Trigger"        );
   set( ">= 1 Lepton"    );
   set( "== 1 Tight Lepton"    );
-  set( "== 1 Lepton"    );
+  set( "0 other lepton"    );
   set( "MET Cut Min"    );
   set( "MET Cut Max"    ); 
   set( ">=1 Jets", minJets_ >= 1);
@@ -72,7 +74,7 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   triggerIndex_   = index_type(&bits_, std::string("Trigger"        ));
   lep1Index_      = index_type(&bits_, std::string(">= 1 Lepton"    ));
   lep2Index_      = index_type(&bits_, std::string("== 1 Tight Lepton"    ));
-  lep3Index_      = index_type(&bits_, std::string("== 1 Lepton"    ));
+  lep3Index_      = index_type(&bits_, std::string("0 other lepton"    ));
   metLowIndex_    = index_type(&bits_, std::string("MET Cut Min"));
   metHighIndex_   = index_type(&bits_, std::string("MET Cut Max"));
 
@@ -88,7 +90,6 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
 	
 
   retInternal_ = getBitTemplate();
-
 
   string L1Tag   = "Jec10V1_L1Offset_AK5PF.txt";
   string L3Tag   = "Jec10V1_L3Absolute_AK5PF.txt";
@@ -119,14 +120,15 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 
   ret.set(false);
 
-
   selectedJets_.clear();
 
   allMuons_.clear();
-  selectedMuons_.clear();
+  selectedTightMuons_.clear();
+  selectedLooseMuons_.clear();
 
   allElectrons_.clear();
-  selectedElectrons_.clear();
+  selectedTightElectrons_.clear();
+  selectedLooseMuons_.clear();
 
   selectedMETs_.clear();
 
@@ -176,18 +178,21 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
     // Muon Selection
     //--------------------------     
   
-    for ( std::vector<pat::Muon>::const_iterator muonBegin = muonHandle->begin(),
-	    muonEnd = muonHandle->end(), imuon = muonBegin;
+    for ( std::vector<pat::Muon>::const_iterator muonBegin = muonHandle->begin(), muonEnd = muonHandle->end(), imuon = muonBegin;
 	  imuon != muonEnd; ++imuon ) {
       allMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
       if ( !imuon->isGlobalMuon() ) continue;
 	
       // Tight cuts
-      bool passTight = muonIdPF_(*imuon) && imuon->isTrackerMuon() ;
-      if (  imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && 
-	    passTight ) {
+      bool passTight = imuon->isTrackerMuon() && imuon->isGlobalMuon() && muonIdPFTight_(*imuon);
+      if (  imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && passTight ) {
+	selectedTightMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
+      }
 
-	selectedMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
+      // Loose cuts
+      bool passLoose = imuon->isGlobalMuon() && muonIdPFLoose_(*imuon) ;
+      if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ && passLoose ) {
+	selectedLooseMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
       }
     }
 	 
@@ -195,20 +200,28 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
     // Electron Selection
     //--------------------------     
   
-    for ( std::vector<pat::Electron>::const_iterator electronBegin = electronHandle->begin(),
-	    electronEnd = electronHandle->end(), ielectron = electronBegin;
+    for ( std::vector<pat::Electron>::const_iterator electronBegin = electronHandle->begin(), electronEnd = electronHandle->end(), ielectron = electronBegin;
 	  ielectron != electronEnd; ++ielectron ) {
       allElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
 	
       // Tight cuts
-      bool passTight = electronIdPF_(*ielectron);
-      if (  ielectron->pt() > eleEtMin_ && fabs(ielectron->eta()) < eleEtaMax_ && 
-	    passTight ) {
-	selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
+      bool passTight = electronIdPFTight_(*ielectron);
+      if (  ielectron->pt() > eleEtMin_ && fabs(ielectron->eta()) < eleEtaMax_ && passTight ) {
+	selectedTightElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
+      }
+
+      // Loose cuts
+
+      bool passLoose = electronIdPFLoose_(*ielectron);
+      if ( ielectron->pt() > eleEtMinLoose_ && fabs(ielectron->eta()) < eleEtaMaxLoose_ && passLoose ){
+	selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
       }
     }
 
+    //Loop over jets and remove tight leptons within
+
     event.getByLabel (jetTag_, jetHandle);
+
     for ( std::vector<pat::Jet>::const_iterator jetBegin = jetHandle->begin(),
 	    jetEnd = jetHandle->end(), ijet = jetBegin;
 	  ijet != jetEnd; ++ijet ) {
@@ -216,14 +229,15 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       // get a copy of the uncorrected p4
       reco::Candidate::LorentzVector uncorrJet = ijet->correctedP4(0);
 
-      // Remove the 4-vectors from any leptons within the jet
-      for ( SHyFTPFSelector::const_iterator imu = selectedMuons_.begin(),
-	      imuEnd = selectedMuons_.end(); imu != imuEnd; ++imu ) {
+      // Remove the 4-vectors from any tight leptons within the jet
+      for ( SHyFTPFSelector::const_iterator imu = selectedTightMuons_.begin(),
+	      imuEnd = selectedTightMuons_.end(); imu != imuEnd; ++imu ) {
 	if ( reco::deltaR<reco::Candidate,reco::Candidate>( *ijet, *imu ) < 0.5 ) 
 	  uncorrJet -= imu->p4();
       }
-      for ( SHyFTPFSelector::const_iterator iele = selectedElectrons_.begin(),
-	      ieleEnd = selectedElectrons_.end(); iele != ieleEnd; ++iele ) {
+
+      for ( SHyFTPFSelector::const_iterator iele = selectedTightElectrons_.begin(),
+	      ieleEnd = selectedTightElectrons_.end(); iele != ieleEnd; ++iele ) {
 	if ( reco::deltaR<reco::Candidate,reco::Candidate>( *ijet, *iele ) < 0.5 ) 
 	  uncorrJet -= iele->p4();
       }
@@ -234,7 +248,6 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       jec_->setJetE  ( uncorrJet.energy() );
       jec_->setNPV   ( pvHandle->size() );
       double corr = jec_->getCorrection();
-
 
       // Here will be the working variable for all the jet energy effects
       reco::Candidate::LorentzVector scaledJetP4 = uncorrJet * corr;
@@ -292,14 +305,10 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       reco::ShallowClonePtrCandidate scaledJet ( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Jet>( jetHandle, ijet - jetBegin ),
 										 ijet->charge(),
 										 scaledJetP4 ) );
-      if ( scaledJet.pt() > jetPtMin_ && fabs(scaledJet.eta()) < jetEtaMax_ ) {
-              
+      if ( scaledJet.pt() > jetPtMin_ && fabs(scaledJet.eta()) < jetEtaMax_ ) {             
 	selectedJets_.push_back( scaledJet );
       }
     }// end loop over jets
-
-
-
 	   
     // -------
     // Unclustered MET resolution
@@ -374,7 +383,7 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 
 
 
-    int nleptons = selectedMuons_.size() + selectedElectrons_.size();
+    int nleptons = selectedTightElectrons_.size();
     // Check >= 1 Tight lepton
     if ( ignoreCut(lep1Index_) || 
 	 ( nleptons > 0 ) ){
@@ -385,21 +394,20 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 	   ( nleptons == 1 ) ){
 	passCut( ret, lep2Index_);
               
-	// Check == 1 Lepton (i.e. dilepton veto)
-	bool oneLepton = 
-	  ( allMuons_.size() + allElectrons_.size() <= 1
-	    );
+	// Check 0 other lepton (i.e. dilepton veto)
+	bool oneLepton =  ( allMuons_.size() + selectedTightElectrons_.size() <= 1 );
       
 	if ( ignoreCut(lep3Index_) || 
 	     oneLepton
 	     ) {
 	  passCut(ret, lep3Index_);
 
-  
 	  bool metCutMin = met_.pt() > metMin_;
 	  bool metCutMax = met_.pt() < metMax_;
-	  //cout << "metCutMin = " << metCutMin << ",metCutMax = " << metCutMax << endl;
-	  //cout << "minCut = " << metMin_ << ", maxCut = " << metMax_ << endl;
+
+	  //  cout << "metCutMin = " << metCutMin << ",metCutMax = " << metCutMax << endl;
+	  //  cout << "minCut = " << metMin_ << ", maxCut = " << metMax_ << endl;
+
 	  if ( ignoreCut(metLowIndex_) || (metCutMin)) {
 	    passCut( ret, metLowIndex_ );
 	  
