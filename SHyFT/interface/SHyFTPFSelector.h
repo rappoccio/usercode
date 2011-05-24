@@ -34,16 +34,21 @@ class SHyFTPFSelector : public EventSelector {
       using EventSelector::operator();
 
       std::vector<reco::ShallowClonePtrCandidate> const & selectedJets      () const { return selectedJets_;     }
-      std::vector<reco::ShallowClonePtrCandidate> const & selectedMuons     () const { return selectedMuons_;    }
+      std::vector<reco::ShallowClonePtrCandidate> const & selectedTightMuons     () const { return selectedTightMuons_;    }
+      std::vector<reco::ShallowClonePtrCandidate> const & selectedLooseMuons() const { return selectedLooseMuons_;}
       reco::ShallowClonePtrCandidate const &              selectedMET       () const { return met_; }
-      std::vector<reco::ShallowClonePtrCandidate> const & selectedElectrons () const { return selectedElectrons_; }
-
+      std::vector<reco::ShallowClonePtrCandidate> const & selectedTightElectrons () const { return selectedTightElectrons_;}
+      std::vector<reco::ShallowClonePtrCandidate> const & selectedLooseElectrons () const { return selectedLooseElectrons_; }
       
       void printSelectors(std::ostream & out) const {
          out << "Muon ID Tight Selector: " << std::endl;
-         muonIdPF_.print(out);
+         muonIdPFTight_.print(out);
+	 out << "Muon ID Loose Selector: " << std::endl;
+	 muonIdPFLoose_.print(out);
          out << "Electron ID Tight Selector: " << std::endl;
-         electronIdPF_.print(out);
+         electronIdPFTight_.print(out);
+         out << "Electron ID Loose Selector: " << std::endl;
+         electronIdPFLoose_.print(out);
       }
  
    protected: 
@@ -58,14 +63,18 @@ class SHyFTPFSelector : public EventSelector {
 
       std::vector<reco::ShallowClonePtrCandidate> selectedJets_;
       std::vector<reco::ShallowClonePtrCandidate> allMuons_;
-      std::vector<reco::ShallowClonePtrCandidate> selectedMuons_;
+      std::vector<reco::ShallowClonePtrCandidate> selectedTightMuons_;
+      std::vector<reco::ShallowClonePtrCandidate> selectedLooseMuons_;
       std::vector<reco::ShallowClonePtrCandidate> allElectrons_;
-      std::vector<reco::ShallowClonePtrCandidate> selectedElectrons_;
+      std::vector<reco::ShallowClonePtrCandidate> selectedTightElectrons_;
+      std::vector<reco::ShallowClonePtrCandidate> selectedLooseElectrons_;
       std::vector<reco::ShallowClonePtrCandidate> selectedMETs_;
       reco::ShallowClonePtrCandidate              met_;
 
-      PFMuonSelector      muonIdPF_;
-      PFElectronSelector  electronIdPF_;
+      PFMuonSelector      muonIdPFTight_;
+      PFMuonSelector      muonIdPFLoose_;
+      PFElectronSelector  electronIdPFTight_;
+      PFElectronSelector  electronIdPFLoose_;
 
       int minJets_;
 
