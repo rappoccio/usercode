@@ -1,38 +1,44 @@
 {
+	#include <iomanip> 
+
 	gROOT->Reset();
-	gROOT->ProcessLine(".L ./PlotFunctions.C");
+	gROOT->ProcessLine(".L /Users/jdolen/Documents/Code/BoostedTop414/PlotFunctions.C");
 
 	TFile *Out;
-	Out = new TFile("ttMass_2010_03_29.root","RECREATE");
+	Out = new TFile("Output_Jet_2011A_v3_cmssw416_PTCut450_newMistag_May13cert.root","RECREATE");
 
 	//-----------------------------------------------------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------------------------------------------
 	
-	TFile *FILE = new TFile("combine_Results_data_2011_03_31.root");
+	TFile *FILE = new TFile("combine_Results_Jet_2011A_v3_PTCut450_May13cert.root");
 	
-	PrintCounts( FILE );
+	//PrintCounts( FILE );
 	
 	double rebin=1;
 	
-	TH1D * ttMassType11_predicted	=  FILE -> Get("type22QCDAna15/ttMassPred11_pred");
-	TH1D * ttMassType12_predicted	=  FILE -> Get("type22QCDAna15/ttMassPred12_pred");
-	TH1D * ttMassType22_predicted	=  FILE -> Get("type22QCDAna15/ttMassPred22_pred");
-	cout<<"ttMassType11_predicted "<<ttMassType11_predicted->Integral()<<endl;
+	TH1D * ttMassType11_predicted	=  FILE -> Get("cascadingQCDAna15/ttMassPred11_pred");
+	TH1D * ttMassType12_predicted	=  FILE -> Get("cascadingQCDAna15/ttMassPred12_pred");
+	TH1D * ttMassType22_predicted	=  FILE -> Get("cascadingQCDAna15/ttMassPred22_pred");
+	cout<<"ttMassType11_predicted Integral "<<ttMassType11_predicted->Integral()<<endl;
+	cout<<"ttMassType12_predicted Integral "<<ttMassType12_predicted->Integral()<<endl;
+	cout<<"ttMassType22_predicted Integral "<<ttMassType22_predicted->Integral()<<endl;
+	cout<<"ttMassType11_predicted GetEntries "<<ttMassType11_predicted->GetEntries()<<endl;
+	cout<<"ttMassType12_predicted GetEntries "<<ttMassType12_predicted->GetEntries()<<endl;
+	cout<<"ttMassType22_predicted GetEntries "<<ttMassType22_predicted->GetEntries()<<endl;
+	cout<<endl;
 
 	ttMassType11_predicted->Rebin(rebin);
 	ttMassType12_predicted->Rebin(rebin);
 	ttMassType22_predicted->Rebin(rebin);
-	cout<<"ttMassType11_predicted "<<ttMassType11_predicted->Integral()<<endl;
 
 	ttMassType11_predicted->SetName("ttMassType11_predicted");
 	ttMassType12_predicted->SetName("ttMassType12_predicted");
 	ttMassType22_predicted->SetName("ttMassType22_predicted");
-	cout<<"ttMassType11_predicted "<<ttMassType11_predicted->Integral()<<endl;
 
-	TH1D * ttMassType11_measured	=  FILE -> Get("type22QCDAna15/ttMassType11_measured");	
-	TH1D * ttMassType12_measured	=  FILE -> Get("type22QCDAna15/ttMassType12_measured");
-	TH1D * ttMassType22_measured	=  FILE -> Get("type22QCDAna15/ttMassType22_measured");
+	TH1D * ttMassType11_measured	=  FILE -> Get("cascadingQCDAna15/ttMassType11_measured");	
+	TH1D * ttMassType12_measured	=  FILE -> Get("cascadingQCDAna15/ttMassType12_measured");
+	TH1D * ttMassType22_measured	=  FILE -> Get("cascadingQCDAna15/ttMassType22_measured");
 	
 	ttMassType11_measured->Rebin(rebin);
 	ttMassType12_measured->Rebin(rebin);
@@ -41,24 +47,25 @@
 	//-----------------------------------------------------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------------------------------------------
-	
-	TFile *ROOT_TT_mcatnlo 						= new TFile("root_2011_03_31_majorChanges/combine_Results_TT_7TeV-mcatnlo.root");			
-	TFile *ROOT_TT_TuneZ2 						= new TFile("root_2011_03_31_majorChanges/combine_Results_TT_TuneZ2_7TeV-pythia6-tauola.root");			
-	TFile *ROOT_TTJets_TuneD6T 					= new TFile("root_2011_03_31_majorChanges/combine_Results_TTJets_TuneD6T_7TeV-madgraph-tauola.root");			
-	TFile *ROOT_TTJets_TuneD6T_matchingup 		= new TFile("root_2011_03_31_majorChanges/combine_Results_TTJets_TuneD6T_matchingup.root");			
-	TFile *ROOT_TTJets_TuneD6T_matchingdown		= new TFile("root_2011_03_31_majorChanges/combine_Results_TTJets_TuneD6T_matchingdown.root");			
-	TFile *ROOT_TTJets_TuneD6T_scaleup 			= new TFile("root_2011_03_31_majorChanges/combine_Results_TTJets_TuneD6T_scaleup.root");			
-	TFile *ROOT_TTJets_TuneD6T_scaledown		= new TFile("root_2011_03_31_majorChanges/combine_Results_TTJets_TuneD6T_scaledown.root");			
-	TFile *ROOT_TTJets_TuneD6T_smallerISRFSR 	= new TFile("root_2011_03_31_majorChanges/combine_Results_TTJets_TuneD6T_smallerISRFSR.root");			
-	TFile *ROOT_TTJets_TuneD6T_largerISRFSR		= new TFile("root_2011_03_31_majorChanges/combine_Results_TTJets_TuneD6T_largerISRFSR.root");			
-	TFile *ROOT_Zprime_M750GeV_W7500MeV 		= new TFile("root_2011_03_31_majorChanges/combine_Results_Zprime_M750GeV_W7500MeV.root");			
-	TFile *ROOT_Zprime_M1000GeV_W10GeV 			= new TFile("root_2011_03_31_majorChanges/combine_Results_Zprime_M1000GeV_W10GeV.root");			
-	TFile *ROOT_Zprime_M1250GeV_W1250MeV 		= new TFile("root_2011_03_31_majorChanges/combine_Results_Zprime_M1250GeV_W1250MeV.root");			
-	TFile *ROOT_Zprime_M1500GeV_W15GeV 			= new TFile("root_2011_03_31_majorChanges/combine_Results_Zprime_M1500GeV_W15GeV.root");			
-	TFile *ROOT_Zprime_M2000GeV_W20GeV 			= new TFile("root_2011_03_31_majorChanges/combine_Results_Zprime_M2000GeV_W20GeV.root");			
-	TFile *ROOT_Zprime_M3000GeV_W30GeV 			= new TFile("root_2011_03_31_majorChanges/combine_Results_Zprime_M3000GeV_W30GeV.root");		
-	
-	double luminosity = 35.97;//21.910331228;
+	TFile *ROOT_TT_mcatnlo 						= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_TT_7TeV-mcatnlo.root");			
+	TFile *ROOT_TT_TuneZ2 						= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_TT_TuneZ2_7TeV-pythia6-tauola.root");			
+	TFile *ROOT_TTJets_TuneD6T 					= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_TTJets_TuneD6T_7TeV-madgraph-tauola.root");			
+	TFile *ROOT_TTJets_TuneD6T_matchingup 		= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_TTJets_TuneD6T_matchingup.root");			
+	TFile *ROOT_TTJets_TuneD6T_matchingdown		= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_TTJets_TuneD6T_matchingdown.root");			
+	TFile *ROOT_TTJets_TuneD6T_scaleup 			= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_TTJets_TuneD6T_scaleup.root");			
+	TFile *ROOT_TTJets_TuneD6T_scaledown		= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_TTJets_TuneD6T_scaledown.root");			
+	TFile *ROOT_TTJets_TuneD6T_smallerISRFSR 	= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_TTJets_TuneD6T_smallerISRFSR.root");			
+	TFile *ROOT_TTJets_TuneD6T_largerISRFSR		= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_TTJets_TuneD6T_largerISRFSR.root");			
+	TFile *ROOT_Zprime_M750GeV_W7500MeV 		= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_Zprime_M750GeV_W7500MeV.root");			
+	TFile *ROOT_Zprime_M1000GeV_W10GeV 			= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_Zprime_M1000GeV_W10GeV.root");			
+	TFile *ROOT_Zprime_M1250GeV_W1250MeV 		= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_Zprime_M1250GeV_W1250MeV.root");			
+	TFile *ROOT_Zprime_M1500GeV_W15GeV 			= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_Zprime_M1500GeV_W15GeV.root");			
+	TFile *ROOT_Zprime_M2000GeV_W20GeV 			= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_Zprime_M2000GeV_W20GeV.root");			
+	TFile *ROOT_Zprime_M3000GeV_W30GeV 			= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_Zprime_M3000GeV_W30GeV.root");		
+	TFile *ROOT_QCD_herwigpp 					= new TFile("/Users/jdolen/Documents/Code/BoostedTop387CombineTop4/root_2011_03_31_fixTypos/combine_Results_QCD_Pt-15To3000_Tune23_Flat_7TeV-herwigpp.root");		
+		
+
+	double luminosity = 187.8;//35.97;//21.910331228;
 
 	double DataSetNevents_TT_mcatnlo   = 1000000;
 	double sigma_TT_mcatnlo   =          149.6;
@@ -96,6 +103,12 @@
 	double sigma_TTJets_TuneD6T_largerISRFSR   =          100.5;
 	double scale_TTJets_TuneD6T_largerISRFSR = sigma_TTJets_TuneD6T_largerISRFSR * luminosity / DataSetNevents_TTJets_TuneD6T_largerISRFSR;
 	
+	double DataSetNevents_QCD_herwigpp   = 10000000;
+	double sigma_QCD_herwigpp   =          3378;
+	double scale_QCD_herwigpp = sigma_QCD_herwigpp * luminosity / DataSetNevents_QCD_herwigpp;
+	
+	
+	
 	//-----------------------------------------------------------------------------------------------------------------------
 
 	TH1D * ttMassType11_TT_mcatnlo					=  ROOT_TT_mcatnlo -> Get("type22QCDAna15/ttMassType11_measured");
@@ -113,6 +126,7 @@
 	TH1D * ttMassType11_Zprime_M1500GeV_W15GeV		=  ROOT_Zprime_M1500GeV_W15GeV -> Get("type22QCDAna15/ttMassType11_measured");
 	TH1D * ttMassType11_Zprime_M2000GeV_W20GeV		=  ROOT_Zprime_M2000GeV_W20GeV -> Get("type22QCDAna15/ttMassType11_measured");
 	TH1D * ttMassType11_Zprime_M3000GeV_W30GeV		=  ROOT_Zprime_M3000GeV_W30GeV -> Get("type22QCDAna15/ttMassType11_measured");
+	TH1D * ttMassType11_QCD_herwigpp				=  ROOT_QCD_herwigpp -> Get("type22QCDAna15/ttMassType11_measured");
 
 	cout<<"ttMassType11_Zprime_M750GeV_W7500MeV  "<<ttMassType11_Zprime_M750GeV_W7500MeV->GetEntries()<<endl;
 	cout<<"ttMassType11_Zprime_M1000GeV_W10GeV   "<<ttMassType11_Zprime_M1000GeV_W10GeV->GetEntries()<<endl;
@@ -136,6 +150,7 @@
 	ttMassType11_Zprime_M1500GeV_W15GeV			->Rebin(rebin);
 	ttMassType11_Zprime_M2000GeV_W20GeV			->Rebin(rebin);
 	ttMassType11_Zprime_M3000GeV_W30GeV			->Rebin(rebin);
+	ttMassType11_QCD_herwigpp					->Rebin(rebin);
 	
 	ttMassType11_TT_mcatnlo						->SetTitle("; Type 11 mass; Normalized Number of Events");
 	ttMassType11_TT_TuneZ2						->SetTitle("; Type 11 mass; Normalized Number of Events");
@@ -152,6 +167,7 @@
 	ttMassType11_Zprime_M1500GeV_W15GeV			->SetTitle("; Type 11 mass; Normalized Number of Events");
 	ttMassType11_Zprime_M2000GeV_W20GeV			->SetTitle("; Type 11 mass; Normalized Number of Events");
 	ttMassType11_Zprime_M3000GeV_W30GeV			->SetTitle("; Type 11 mass; Normalized Number of Events");
+	ttMassType11_QCD_herwigpp					->SetTitle("; Type 11 mass; Normalized Number of Events");
 
 	ttMassType11_TT_mcatnlo						->Sumw2();
 	ttMassType11_TT_TuneZ2						->Sumw2();
@@ -168,6 +184,7 @@
 	ttMassType11_Zprime_M1500GeV_W15GeV			->Sumw2();
 	ttMassType11_Zprime_M2000GeV_W20GeV			->Sumw2();
 	ttMassType11_Zprime_M3000GeV_W30GeV			->Sumw2();
+	ttMassType11_QCD_herwigpp					->Sumw2();
 	
 	ttMassType11_TT_mcatnlo						->Scale(scale_TT_mcatnlo);
 	ttMassType11_TT_TuneZ2						->Scale(scale_TT_TuneZ2);
@@ -178,6 +195,7 @@
 	ttMassType11_TTJets_TuneD6T_scaledown		->Scale(scale_TTJets_TuneD6T_scaledown);
 	ttMassType11_TTJets_TuneD6T_smallerISRFSR	->Scale(scale_TTJets_TuneD6T_smallerISRFSR);
 	ttMassType11_TTJets_TuneD6T_largerISRFSR	->Scale(scale_TTJets_TuneD6T_largerISRFSR);
+	ttMassType11_QCD_herwigpp					->Scale(scale_QCD_herwigpp);
 
 
 	ttMassType11_TT_mcatnlo						->SetName("ttMassType11_TT_mcatnlo");
@@ -195,6 +213,7 @@
 	ttMassType11_Zprime_M1500GeV_W15GeV			->SetName("ttMassType11_Zprime_M1500GeV_W15GeV");
 	ttMassType11_Zprime_M2000GeV_W20GeV			->SetName("ttMassType11_Zprime_M2000GeV_W20GeV");
 	ttMassType11_Zprime_M3000GeV_W30GeV			->SetName("ttMassType11_Zprime_M3000GeV_W30GeV");
+	ttMassType11_QCD_herwigpp					->SetName("ttMassType11_QCD_herwigpp");
 
 	//-----------------------------------------------------------------------------------------------------------------------
 
@@ -213,6 +232,7 @@
 	TH1D * ttMassType12_Zprime_M1500GeV_W15GeV		=  ROOT_Zprime_M1500GeV_W15GeV -> Get("type22QCDAna15/ttMassType12_measured");
 	TH1D * ttMassType12_Zprime_M2000GeV_W20GeV		=  ROOT_Zprime_M2000GeV_W20GeV -> Get("type22QCDAna15/ttMassType12_measured");
 	TH1D * ttMassType12_Zprime_M3000GeV_W30GeV		=  ROOT_Zprime_M3000GeV_W30GeV -> Get("type22QCDAna15/ttMassType12_measured");
+	TH1D * ttMassType12_QCD_herwigpp				=  ROOT_QCD_herwigpp -> Get("type22QCDAna15/ttMassType12_measured");
 
 	cout<<"ttMassType12_Zprime_M750GeV_W7500MeV  "<<ttMassType12_Zprime_M750GeV_W7500MeV->GetEntries()<<endl;
 	cout<<"ttMassType12_Zprime_M1000GeV_W10GeV   "<<ttMassType12_Zprime_M1000GeV_W10GeV->GetEntries()<<endl;
@@ -236,6 +256,7 @@
 	ttMassType12_Zprime_M1500GeV_W15GeV			->Rebin(rebin);
 	ttMassType12_Zprime_M2000GeV_W20GeV			->Rebin(rebin);
 	ttMassType12_Zprime_M3000GeV_W30GeV			->Rebin(rebin);
+	ttMassType12_QCD_herwigpp					->Rebin(rebin);
 	
 	ttMassType12_TT_mcatnlo						->SetTitle("; Type 12 mass; Normalized Number of Events");
 	ttMassType12_TT_TuneZ2						->SetTitle("; Type 12 mass; Normalized Number of Events");
@@ -252,8 +273,8 @@
 	ttMassType12_Zprime_M1500GeV_W15GeV			->SetTitle("; Type 12 mass; Normalized Number of Events");
 	ttMassType12_Zprime_M2000GeV_W20GeV			->SetTitle("; Type 12 mass; Normalized Number of Events");
 	ttMassType12_Zprime_M3000GeV_W30GeV			->SetTitle("; Type 12 mass; Normalized Number of Events");
-	
-	
+	ttMassType12_QCD_herwigpp					->SetTitle("; Type 12 mass; Normalized Number of Events");
+
 	ttMassType12_TT_mcatnlo						->Sumw2();
 	ttMassType12_TT_TuneZ2						->Sumw2();
 	ttMassType12_TTJets_TuneD6T					->Sumw2();
@@ -269,6 +290,7 @@
 	ttMassType12_Zprime_M1500GeV_W15GeV			->Sumw2();
 	ttMassType12_Zprime_M2000GeV_W20GeV			->Sumw2();
 	ttMassType12_Zprime_M3000GeV_W30GeV			->Sumw2();
+	ttMassType12_QCD_herwigpp					->Sumw2();
 	
 	ttMassType12_TT_mcatnlo						->Scale(scale_TT_mcatnlo);
 	ttMassType12_TT_TuneZ2						->Scale(scale_TT_TuneZ2);
@@ -279,8 +301,8 @@
 	ttMassType12_TTJets_TuneD6T_scaledown		->Scale(scale_TTJets_TuneD6T_scaledown);
 	ttMassType12_TTJets_TuneD6T_smallerISRFSR	->Scale(scale_TTJets_TuneD6T_smallerISRFSR);
 	ttMassType12_TTJets_TuneD6T_largerISRFSR	->Scale(scale_TTJets_TuneD6T_largerISRFSR);
+	ttMassType12_QCD_herwigpp					->Scale(scale_QCD_herwigpp);
 
-	
 
 	ttMassType12_TT_mcatnlo						->SetName("ttMassType12_TT_mcatnlo");
 	ttMassType12_TT_TuneZ2						->SetName("ttMassType12_TT_TuneZ2");
@@ -297,9 +319,9 @@
 	ttMassType12_Zprime_M1500GeV_W15GeV			->SetName("ttMassType12_Zprime_M1500GeV_W15GeV");
 	ttMassType12_Zprime_M2000GeV_W20GeV			->SetName("ttMassType12_Zprime_M2000GeV_W20GeV");
 	ttMassType12_Zprime_M3000GeV_W30GeV			->SetName("ttMassType12_Zprime_M3000GeV_W30GeV");
+	ttMassType12_QCD_herwigpp					->SetName("ttMassType12_QCD_herwigpp");
 
 	//-----------------------------------------------------------------------------------------------------------------------
-
 	TH1D * ttMassType22_TT_mcatnlo					=  ROOT_TT_mcatnlo -> Get("type22QCDAna15/ttMassType22_measured");
 	TH1D * ttMassType22_TT_TuneZ2					=  ROOT_TT_TuneZ2 -> Get("type22QCDAna15/ttMassType22_measured");
 	TH1D * ttMassType22_TTJets_TuneD6T				=  ROOT_TTJets_TuneD6T -> Get("type22QCDAna15/ttMassType22_measured");
@@ -315,6 +337,7 @@
 	TH1D * ttMassType22_Zprime_M1500GeV_W15GeV		=  ROOT_Zprime_M1500GeV_W15GeV -> Get("type22QCDAna15/ttMassType22_measured");
 	TH1D * ttMassType22_Zprime_M2000GeV_W20GeV		=  ROOT_Zprime_M2000GeV_W20GeV -> Get("type22QCDAna15/ttMassType22_measured");
 	TH1D * ttMassType22_Zprime_M3000GeV_W30GeV		=  ROOT_Zprime_M3000GeV_W30GeV -> Get("type22QCDAna15/ttMassType22_measured");
+	TH1D * ttMassType22_QCD_herwigpp				=  ROOT_QCD_herwigpp -> Get("type22QCDAna15/ttMassType22_measured");
 
 	cout<<"ttMassType22_Zprime_M750GeV_W7500MeV  "<<ttMassType22_Zprime_M750GeV_W7500MeV->GetEntries()<<endl;
 	cout<<"ttMassType22_Zprime_M1000GeV_W10GeV   "<<ttMassType22_Zprime_M1000GeV_W10GeV->GetEntries()<<endl;
@@ -338,6 +361,7 @@
 	ttMassType22_Zprime_M1500GeV_W15GeV			->Rebin(rebin);
 	ttMassType22_Zprime_M2000GeV_W20GeV			->Rebin(rebin);
 	ttMassType22_Zprime_M3000GeV_W30GeV			->Rebin(rebin);
+	ttMassType22_QCD_herwigpp					->Rebin(rebin);
 	
 	ttMassType22_TT_mcatnlo						->SetTitle("; Type 22 mass; Normalized Number of Events");
 	ttMassType22_TT_TuneZ2						->SetTitle("; Type 22 mass; Normalized Number of Events");
@@ -354,6 +378,7 @@
 	ttMassType22_Zprime_M1500GeV_W15GeV			->SetTitle("; Type 22 mass; Normalized Number of Events");
 	ttMassType22_Zprime_M2000GeV_W20GeV			->SetTitle("; Type 22 mass; Normalized Number of Events");
 	ttMassType22_Zprime_M3000GeV_W30GeV			->SetTitle("; Type 22 mass; Normalized Number of Events");
+	ttMassType22_QCD_herwigpp					->SetTitle("; Type 22 mass; Normalized Number of Events");
 
 	ttMassType22_TT_mcatnlo						->Sumw2();
 	ttMassType22_TT_TuneZ2						->Sumw2();
@@ -370,6 +395,7 @@
 	ttMassType22_Zprime_M1500GeV_W15GeV			->Sumw2();
 	ttMassType22_Zprime_M2000GeV_W20GeV			->Sumw2();
 	ttMassType22_Zprime_M3000GeV_W30GeV			->Sumw2();
+	ttMassType22_QCD_herwigpp					->Sumw2();
 	
 	ttMassType22_TT_mcatnlo						->Scale(scale_TT_mcatnlo);
 	ttMassType22_TT_TuneZ2						->Scale(scale_TT_TuneZ2);
@@ -380,6 +406,7 @@
 	ttMassType22_TTJets_TuneD6T_scaledown		->Scale(scale_TTJets_TuneD6T_scaledown);
 	ttMassType22_TTJets_TuneD6T_smallerISRFSR	->Scale(scale_TTJets_TuneD6T_smallerISRFSR);
 	ttMassType22_TTJets_TuneD6T_largerISRFSR	->Scale(scale_TTJets_TuneD6T_largerISRFSR);
+	ttMassType22_QCD_herwigpp					->Scale(scale_QCD_herwigpp);
 
 
 	ttMassType22_TT_mcatnlo						->SetName("ttMassType22_TT_mcatnlo");
@@ -397,6 +424,7 @@
 	ttMassType22_Zprime_M1500GeV_W15GeV			->SetName("ttMassType22_Zprime_M1500GeV_W15GeV");
 	ttMassType22_Zprime_M2000GeV_W20GeV			->SetName("ttMassType22_Zprime_M2000GeV_W20GeV");
 	ttMassType22_Zprime_M3000GeV_W30GeV			->SetName("ttMassType22_Zprime_M3000GeV_W30GeV");
+	ttMassType22_QCD_herwigpp					->SetName("ttMassType22_QCD_herwigpp");
 
 	//-----------------------------------------------------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------------------------------------------
@@ -430,6 +458,8 @@
 	ttMassType11_Zprime_M1500GeV_W15GeV			->Write();
 	ttMassType11_Zprime_M2000GeV_W20GeV			->Write();
 	ttMassType11_Zprime_M3000GeV_W30GeV			->Write();
+	ttMassType11_Zprime_M3000GeV_W30GeV			->Write();
+	ttMassType11_QCD_herwigpp					->Write();
 	
 	ttMassType12_TT_mcatnlo						->Write();
 	ttMassType12_TT_TuneZ2						->Write();
@@ -446,7 +476,8 @@
 	ttMassType12_Zprime_M1500GeV_W15GeV			->Write();
 	ttMassType12_Zprime_M2000GeV_W20GeV			->Write();
 	ttMassType12_Zprime_M3000GeV_W30GeV			->Write();
-	
+	ttMassType12_QCD_herwigpp					->Write();
+
 	ttMassType22_TT_mcatnlo						->Write();
 	ttMassType22_TT_TuneZ2						->Write();
 	ttMassType22_TTJets_TuneD6T					->Write();
@@ -462,6 +493,8 @@
 	ttMassType22_Zprime_M1500GeV_W15GeV			->Write();
 	ttMassType22_Zprime_M2000GeV_W20GeV			->Write();
 	ttMassType22_Zprime_M3000GeV_W30GeV			->Write();
+	ttMassType22_QCD_herwigpp					->Write();
+
 	
 	Out->ls();      
 	Out->Write();
