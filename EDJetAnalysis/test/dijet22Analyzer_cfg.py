@@ -39,24 +39,7 @@ histFileName = 'dijet22AnalyzerJet2011A.root'
 ## Source
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring([
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_100_1_Fkn.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_102_1_CCu.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_10_1_Ztf.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_10_1_fis.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_11_1_73y.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_11_1_AyF.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_12_1_HQd.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_12_1_b0q.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_13_1_7Eb.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_13_1_GiP.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_14_1_8zV.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_14_1_w3t.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_15_1_F2F.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_15_1_v2E.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_16_1_TC6.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_16_1_t9h.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v3_Run2011-PromptReco/dc97efd01703e3edbb5420e49bf35fb4/ttbsm_41x_data_17_1_8AI.root',
-
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v6_Run2011-May10ReReco/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_26_0_4mM.root'
                                 ]
                                                               )#,
                             #        lumisToProcess = cms.untracked.VLuminosityBlockRange( myList )

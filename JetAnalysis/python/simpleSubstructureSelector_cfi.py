@@ -25,10 +25,9 @@ simpleSubstructureSelector = cms.PSet(
     jetUncertainty = cms.double( 0.0 ),
     # JEC and uncertainty payloads
     jecPayloads = cms.vstring( [
-        'Jec10V3_L1FastJet_AK5PFchs.txt',
-        'Jec10V3_L2Relative_AK5PFchs.txt',
-        'Jec10V3_L3Absolute_AK5PFchs.txt',
-        'Jec10V3_L2L3Residual_AK5PFchs.txt'] ),
-    jecUncPayload = cms.string('Jec10V3_Uncertainty_AK5PFchs.txt')
+        'Jec11_V1_AK5PFchs_L1FastJet.txt',
+        'Jec11_V1_AK5PFchs_L2Relative.txt',
+        'Jec11_V1_AK5PFchs_L3Absolute.txt'] ),
+    jecUncPayload = cms.string('Jec10V1_Uncertainty_AK5PF.txt')
     
 )

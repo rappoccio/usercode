@@ -58,8 +58,10 @@ SimpleSubstructureSelector::SimpleSubstructureSelector( edm::ParameterSet const 
     vPar.push_back(pars);
   }
 
+  std::cout << "Making jec object" << std::endl;
   jec_ = boost::shared_ptr<FactorizedJetCorrector> ( new FactorizedJetCorrector(vPar) );
 
+  std::cout << "Making uncertainty object" << std::endl;
   jecUnc_ = boost::shared_ptr<JetCorrectionUncertainty>( new JetCorrectionUncertainty(jecUncPayload_));
 
 

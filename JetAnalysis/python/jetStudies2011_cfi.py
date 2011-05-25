@@ -37,13 +37,20 @@ jetStudies2011 = cms.PSet(
         ]),
     binPtTrig = cms.bool(False),
     ptTrigBins = cms.vdouble(
-        [45, 75, 95, 125, 165, 205, 255, 385, 7000]
-        ),
+     [50,   # Jet30
+      80,   # Jet60
+      120,  # Jet80
+      150,  # Jet110
+      190,  # Jet150
+      230,  # Jet190
+      280,  # Jet240
+      410,  # Jet370
+      7000]
+     ),
     jecPayloads = cms.vstring( [
-        'Jec10V3_L1FastJet_AK5PFchs.txt',
-        'Jec10V3_L2Relative_AK5PFchs.txt',
-        'Jec10V3_L3Absolute_AK5PFchs.txt',
-        'Jec10V3_L2L3Residual_AK5PFchs.txt',
+        'Jec11_V1_AK5PFchs_L1FastJet.txt',
+        'Jec11_V1_AK5PFchs_L2Relative.txt',
+        'Jec11_V1_AK5PFchs_L3Absolute.txt',
         'Jec10V3_Uncertainty_AK5PFchs.txt'] )
 
-)
+ )

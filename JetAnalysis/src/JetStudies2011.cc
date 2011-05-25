@@ -74,22 +74,52 @@ JetStudies2011::JetStudies2011(const edm::ParameterSet& iConfig, TFileDirectory&
 	  itrigEnd = trigs_.end();
 	itrig != itrigEnd; ++itrig ) {
     dirs_.push_back( theDir.mkdir( *itrig ) );
-    dirs_.back().make<TH1F>( "jetPt",       "Jet p_{T};p_{T} (GeV/c)",    100, 0, 1000);
-    dirs_.back().make<TH1F>( "jetArea",     "Jet Area;Area (radians)",               100, 0, TMath::Pi() );
-    dirs_.back().make<TH1F>( "jetEta",      "Jet #eta;#eta (radians)",               100, -5.0, 5.0 );    
-    dirs_.back().make<TH1F>( "jetPhi",      "Jet #phi;#phi (radians)",               100, -TMath::Pi(), TMath::Pi() );
-    dirs_.back().make<TH1F>( "jetMass",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
-    dirs_.back().make<TH2F>( "jetMassVsPt", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
+    dirs_.back().make<TH1F>( "jetPt0",       "Jet p_{T};p_{T} (GeV/c)",    100, 0, 1000);
+    dirs_.back().make<TH1F>( "jetArea0",     "Jet Area;Area (radians)",               100, 0, TMath::Pi() );
+    dirs_.back().make<TH1F>( "jetEta0",      "Jet #eta;#eta (radians)",               100, -5.0, 5.0 );    
+    dirs_.back().make<TH1F>( "jetPhi0",      "Jet #phi;#phi (radians)",               100, -TMath::Pi(), TMath::Pi() );
+    dirs_.back().make<TH1F>( "jetMass0",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
+    dirs_.back().make<TH2F>( "jetMassVsPt0", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
+
+    dirs_.back().make<TH1F>( "jetPt1",       "Jet p_{T};p_{T} (GeV/c)",    100, 0, 1000);
+    dirs_.back().make<TH1F>( "jetArea1",     "Jet Area;Area (radians)",               100, 0, TMath::Pi() );
+    dirs_.back().make<TH1F>( "jetEta1",      "Jet #eta;#eta (radians)",               100, -5.0, 5.0 );    
+    dirs_.back().make<TH1F>( "jetPhi1",      "Jet #phi;#phi (radians)",               100, -TMath::Pi(), TMath::Pi() );
+    dirs_.back().make<TH1F>( "jetMass1",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
+    dirs_.back().make<TH2F>( "jetMassVsPt1", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
+
+    dirs_.back().make<TH1F>( "jetPtAvg",       "Jet p_{T};p_{T} (GeV/c)",    100, 0, 1000);
+    dirs_.back().make<TH1F>( "jetAreaAvg",     "Jet Area;Area (radians)",               100, 0, TMath::Pi() );
+    dirs_.back().make<TH1F>( "jetEtaAvg",      "Jet #eta;#eta (radians)",               100, -5.0, 5.0 );    
+    dirs_.back().make<TH1F>( "jetPhiAvg",      "Jet #phi;#phi (radians)",               100, -TMath::Pi(), TMath::Pi() );
+    dirs_.back().make<TH1F>( "jetMassAvg",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
+    dirs_.back().make<TH2F>( "jetMassVsPtAvg", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
   }
   dirs_.push_back( theDir.mkdir( "MC") );
-  dirs_.back().make<TH1F>( "jetPt",       "Jet p_{T};p_{T} (GeV/c)",    100, 0, 1000);
-  dirs_.back().make<TH1F>( "jetArea",     "Jet Area;Area (radians)",               100, 0, TMath::Pi() );
-  dirs_.back().make<TH1F>( "jetEta",      "Jet #eta;#eta (radians)",               100, -5.0, 5.0 );    
-  dirs_.back().make<TH1F>( "jetPhi",      "Jet #phi;#phi (radians)",               100, -TMath::Pi(), TMath::Pi() );
-  dirs_.back().make<TH1F>( "jetMass",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
-  dirs_.back().make<TH2F>( "jetMassVsPt", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
-  dirs_.back().make<TH2F>( "jetRes",      "Jet Response;Response",          25,  0, 1000., 25., 0., 2.5 );
-            
+  dirs_.back().make<TH1F>( "jetPt0",       "Jet p_{T};p_{T} (GeV/c)",    100, 0, 1000);
+  dirs_.back().make<TH1F>( "jetArea0",     "Jet Area;Area (radians)",               100, 0, TMath::Pi() );
+  dirs_.back().make<TH1F>( "jetEta0",      "Jet #eta;#eta (radians)",               100, -5.0, 5.0 );    
+  dirs_.back().make<TH1F>( "jetPhi0",      "Jet #phi;#phi (radians)",               100, -TMath::Pi(), TMath::Pi() );
+  dirs_.back().make<TH1F>( "jetMass0",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
+  dirs_.back().make<TH2F>( "jetMassVsPt0", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
+  dirs_.back().make<TH2F>( "jetRes0",      "Jet Response;Response",          25,  0, 1000., 25., 0., 2.5 );
+
+  dirs_.back().make<TH1F>( "jetPt1",       "Jet p_{T};p_{T} (GeV/c)",    100, 0, 1000);
+  dirs_.back().make<TH1F>( "jetArea1",     "Jet Area;Area (radians)",               100, 0, TMath::Pi() );
+  dirs_.back().make<TH1F>( "jetEta1",      "Jet #eta;#eta (radians)",               100, -5.0, 5.0 );    
+  dirs_.back().make<TH1F>( "jetPhi1",      "Jet #phi;#phi (radians)",               100, -TMath::Pi(), TMath::Pi() );
+  dirs_.back().make<TH1F>( "jetMass1",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
+  dirs_.back().make<TH2F>( "jetMassVsPt1", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
+  dirs_.back().make<TH2F>( "jetRes1",      "Jet Response;Response",          25,  0, 1000., 25., 0., 2.5 );
+
+  dirs_.back().make<TH1F>( "jetPtAvg",       "Jet p_{T};p_{T} (GeV/c)",    100, 0, 1000);
+  dirs_.back().make<TH1F>( "jetAreaAvg",     "Jet Area;Area (radians)",               100, 0, TMath::Pi() );
+  dirs_.back().make<TH1F>( "jetEtaAvg",      "Jet #eta;#eta (radians)",               100, -5.0, 5.0 );    
+  dirs_.back().make<TH1F>( "jetPhiAvg",      "Jet #phi;#phi (radians)",               100, -TMath::Pi(), TMath::Pi() );
+  dirs_.back().make<TH1F>( "jetMassAvg",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
+  dirs_.back().make<TH2F>( "jetMassVsPtAvg", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
+  dirs_.back().make<TH2F>( "jetResAvg",      "Jet Response;Response",          25,  0, 1000., 25., 0., 2.5 );
+
 }
 
 
@@ -242,6 +272,17 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
   double eta0  = scaledJet0P4.eta();
   double phi0  = scaledJet0P4.phi();
 
+  double pt1 = scaledJet1P4.pt();
+  double area1 = jet1.jetArea();
+  double mass1 = scaledJet1P4.mass();
+  double eta1  = scaledJet1P4.eta();
+  double phi1  = scaledJet1P4.phi();
+
+  double ptAvg = (pt0 + pt1) * 0.5;
+  double areaAvg = (area0 + area1) * 0.5;
+  double massAvg = (mass0 + mass1) * 0.5;
+  double etaAvg  = (eta0 + eta1) * 0.5;
+  double phiAvg  = (phi0 + phi1) * 0.5;
 
   // check to see if we're binning in pt
   int trigToPlot = -1;
@@ -269,15 +310,32 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
 	continue;
 
    
-      dirs_.at( ifired->first ).getObject<TH1>( "jetArea"      )->Fill( area0, weightMC * ifired->second );
-      dirs_.at( ifired->first ).getObject<TH1>( "jetPt"        )->Fill( pt0, weightMC * ifired->second );
-      dirs_.at( ifired->first ).getObject<TH1>( "jetEta"       )->Fill( eta0, weightMC * ifired->second );
-      dirs_.at( ifired->first ).getObject<TH1>( "jetPhi"       )->Fill( phi0, weightMC * ifired->second );
-      dirs_.at( ifired->first ).getObject<TH1>( "jetMass"      )->Fill( mass0, weightMC * ifired->second );
-      static_cast<TH2*>(dirs_.at( ifired->first ).getObject<TH1>( "jetMassVsPt" ))->Fill( pt0, mass0, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetArea0"      )->Fill( area0, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetPt0"        )->Fill( pt0, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetEta0"       )->Fill( eta0, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetPhi0"       )->Fill( phi0, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetMass0"      )->Fill( mass0, weightMC * ifired->second );
+      static_cast<TH2*>(dirs_.at( ifired->first ).getObject<TH1>( "jetMassVsPt0" ))->Fill( pt0, mass0, weightMC * ifired->second );
+
+      dirs_.at( ifired->first ).getObject<TH1>( "jetArea1"      )->Fill( area1, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetPt1"        )->Fill( pt1, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetEta1"       )->Fill( eta1, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetPhi1"       )->Fill( phi1, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetMass1"      )->Fill( mass1, weightMC * ifired->second );
+      static_cast<TH2*>(dirs_.at( ifired->first ).getObject<TH1>( "jetMassVsPt1" ))->Fill( pt1, mass1, weightMC * ifired->second );
+
+      dirs_.at( ifired->first ).getObject<TH1>( "jetAreaAvg"      )->Fill( areaAvg, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetPtAvg"        )->Fill( ptAvg, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetEtaAvg"       )->Fill( etaAvg, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetPhiAvg"       )->Fill( phiAvg, weightMC * ifired->second );
+      dirs_.at( ifired->first ).getObject<TH1>( "jetMassAvg"      )->Fill( massAvg, weightMC * ifired->second );
+      static_cast<TH2*>(dirs_.at( ifired->first ).getObject<TH1>( "jetMassVsPtAvg" ))->Fill( ptAvg, massAvg, weightMC * ifired->second );
+
     }
   } else {
     double ptGen0 = 0.0;
+    double ptGen1 = 0.0;
+    double ptGenAvg = 0.0;
     if ( useCA8GenJets_ ) {
       edm::Handle<std::vector<reco::GenJet> > h_genJets;
       iEvent.getByLabel( genJetsSrc_, h_genJets );
@@ -285,24 +343,46 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
       for ( std::vector<reco::GenJet>::const_iterator igenBegin = h_genJets->begin(),
 	      igenEnd = h_genJets->end(), igen = igenBegin;
 	    igen != igenEnd; ++igen ) {
-	if ( reco::deltaR<pat::Jet,reco::GenJet>( jet0, *igen ) < 0.8 ) {
+	if ( reco::deltaR<pat::Jet,reco::GenJet>( jet0, *igen ) < 0.8 && ptGen0 < 0.00001 ) {
 	  ptGen0 = igen->pt();
-	  break;
+	}
+	if ( reco::deltaR<pat::Jet,reco::GenJet>( jet1, *igen ) < 0.8 && ptGen1 < 0.00001 ) {
+	  ptGen1 = igen->pt();
 	}
       }
     } else {
-      reco::GenJet const * igen = jet0.genJet();
-      if ( igen > 0 )
+      reco::GenJet const * igen0 = jet0.genJet();
+      reco::GenJet const * igen1 = jet1.genJet();
+      if ( igen0 > 0 && igen1 > 0 ) {
 	ptGen0 = jet0.genJet()->pt();
+	ptGen1 = jet1.genJet()->pt();
+      }
     }
-    if ( ptGen0 > 0.0 ) {
-      dirs_.back().getObject<TH1>( "jetArea"      )->Fill( area0, weightMC );
-      dirs_.back().getObject<TH1>( "jetPt"        )->Fill( pt0, weightMC );
-      dirs_.back().getObject<TH1>( "jetEta"       )->Fill( eta0, weightMC );
-      dirs_.back().getObject<TH1>( "jetPhi"       )->Fill( phi0, weightMC );
-      dirs_.back().getObject<TH1>( "jetMass"      )->Fill( mass0, weightMC );
-      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetMassVsPt" ))->Fill( pt0, mass0, weightMC );
-      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+    if ( ptGen0 > 0.0 && ptGen1 > 0.0 ) {
+      ptGenAvg = (ptGen0 + ptGen1) * 0.5;
+      dirs_.back().getObject<TH1>( "jetArea0"      )->Fill( area0, weightMC );
+      dirs_.back().getObject<TH1>( "jetPt0"        )->Fill( pt0, weightMC );
+      dirs_.back().getObject<TH1>( "jetEta0"       )->Fill( eta0, weightMC );
+      dirs_.back().getObject<TH1>( "jetPhi0"       )->Fill( phi0, weightMC );
+      dirs_.back().getObject<TH1>( "jetMass0"      )->Fill( mass0, weightMC );
+      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetMassVsPt0" ))->Fill( pt0, mass0, weightMC );
+      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes0"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+
+      dirs_.back().getObject<TH1>( "jetArea1"      )->Fill( area1, weightMC );
+      dirs_.back().getObject<TH1>( "jetPt1"        )->Fill( pt1, weightMC );
+      dirs_.back().getObject<TH1>( "jetEta1"       )->Fill( eta1, weightMC );
+      dirs_.back().getObject<TH1>( "jetPhi1"       )->Fill( phi1, weightMC );
+      dirs_.back().getObject<TH1>( "jetMass1"      )->Fill( mass1, weightMC );
+      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetMassVsPt1" ))->Fill( pt1, mass1, weightMC );
+      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes1"      ))->Fill( ptGen1, pt1/ptGen1, weightMC );
+
+      dirs_.back().getObject<TH1>( "jetAreaAvg"      )->Fill( areaAvg, weightMC );
+      dirs_.back().getObject<TH1>( "jetPtAvg"        )->Fill( ptAvg, weightMC );
+      dirs_.back().getObject<TH1>( "jetEtaAvg"       )->Fill( etaAvg, weightMC );
+      dirs_.back().getObject<TH1>( "jetPhiAvg"       )->Fill( phiAvg, weightMC );
+      dirs_.back().getObject<TH1>( "jetMassAvg"      )->Fill( massAvg, weightMC );
+      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetMassVsPtAvg" ))->Fill( ptAvg, massAvg, weightMC );
+      static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetResAvg"      ))->Fill( ptGenAvg, ptAvg/ptGenAvg, weightMC );
     }
   }
 
