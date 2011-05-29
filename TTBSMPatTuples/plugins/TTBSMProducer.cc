@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: TTBSMProducer.cc,v 1.1 2011/01/19 15:52:05 srappocc Exp $
+// $Id: TTBSMProducer.cc,v 1.2 2011/05/27 12:25:00 srappocc Exp $
 //
 //
 
@@ -86,6 +86,26 @@ TTBSMProducer::TTBSMProducer(const edm::ParameterSet& iConfig) :
   produces<std::vector<double> > ("topTagTopMass");
   produces<std::vector<double> > ("topTagNSubjets");
   produces<std::vector<int> >    ("topTagPass");
+
+  produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4Hemis0");
+  produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4Hemis1");
+  produces<std::vector<reco::Candidate::PolarLorentzVector> > ("topTagP4Hemis0");
+  produces<std::vector<reco::Candidate::PolarLorentzVector> > ("topTagP4Hemis1");
+  produces<std::vector<double> > ("wTagBDiscHemis0");
+  produces<std::vector<double> > ("wTagMuHemis0");
+  produces<std::vector<double> > ("topTagMinMassHemis0");
+  produces<std::vector<double> > ("topTagTopMassHemis0");
+  produces<std::vector<double> > ("topTagNSubjetsHemis0");
+  produces<std::vector<int> >    ("topTagPassHemis0");
+  produces<std::vector<double> > ("wTagBDiscHemis1");
+  produces<std::vector<double> > ("wTagMuHemis1");
+  produces<std::vector<double> > ("topTagMinMassHemis1");
+  produces<std::vector<double> > ("topTagTopMassHemis1");
+  produces<std::vector<double> > ("topTagNSubjetsHemis1");
+  produces<std::vector<int> >    ("topTagPassHemis1");
+  produces<int>                  ("jet3Hemis0");
+  produces<int>                  ("jet3Hemis1");
+
 }
 
 
@@ -104,6 +124,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
   typedef std::vector<reco::Candidate::PolarLorentzVector> p4_vector;
+  typedef reco::Candidate::PolarLorentzVector LorentzV;
 
   std::auto_ptr<p4_vector> wTagP4( new p4_vector() );
   std::auto_ptr<p4_vector> topTagP4( new p4_vector() );
@@ -114,6 +135,31 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<double> > topTagTopMass ( new std::vector<double>() );
   std::auto_ptr<std::vector<double> > topTagNSubjets ( new std::vector<double>() );
   std::auto_ptr<std::vector<int> >    topTagPass ( new std::vector<int>() );
+  
+  //The duplicate quantities by hemisphere
+  std::auto_ptr<p4_vector> topTagP4Hemis0 ( new p4_vector() );
+  std::auto_ptr<p4_vector> topTagP4Hemis1 ( new p4_vector() );
+  std::auto_ptr<p4_vector> wTagP4Hemis0 ( new p4_vector() );
+  std::auto_ptr<p4_vector> wTagP4Hemis1 ( new p4_vector() );
+  std::auto_ptr<int> jet3Hemis0   ( new int(-1) );
+  std::auto_ptr<int> jet3Hemis1   ( new int(-1) );
+  std::auto_ptr<std::vector<double> > wTagBDiscHemis0( new std::vector<double>() );
+  std::auto_ptr<std::vector<double> > wTagBDiscHemis1( new std::vector<double>() );
+  std::auto_ptr<std::vector<double> > wTagMuHemis0( new std::vector<double>() );
+  std::auto_ptr<std::vector<double> > wTagMuHemis1( new std::vector<double>() );
+  std::auto_ptr<std::vector<double> > topTagMinMassHemis0 ( new std::vector<double>() );
+  std::auto_ptr<std::vector<double> > topTagMinMassHemis1 ( new std::vector<double>() );
+  std::auto_ptr<std::vector<double> > topTagTopMassHemis0 ( new std::vector<double>() );
+  std::auto_ptr<std::vector<double> > topTagTopMassHemis1 ( new std::vector<double>() );
+  std::auto_ptr<std::vector<double> > topTagNSubjetsHemis0( new std::vector<double>() );
+  std::auto_ptr<std::vector<double> > topTagNSubjetsHemis1( new std::vector<double>() );
+  std::auto_ptr<std::vector<int> > topTagPassHemis0  ( new std::vector<int>() );
+  std::auto_ptr<std::vector<int> > topTagPassHemis1  ( new std::vector<int>() );
+
+
+
+
+
 
   edm::Handle<std::vector<pat::Jet> > h_wTag;
   edm::Handle<std::vector<pat::Jet> > h_topTag;
@@ -147,6 +193,67 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   }
 
+  //Make hemisphere
+  if( topTagP4->size() > 0 ) {
+    LorentzV  leadJet = topTagP4->at(0);
+    for( size_t i=0; i<topTagP4->size(); i++ ) {
+      double dPhi = fabs( reco::deltaPhi<double>( leadJet.phi(), topTagP4->at(i).phi() ) );
+      if( dPhi < TMath::Pi()/2 )  {
+        topTagP4Hemis0->push_back( topTagP4->at(i) );
+        topTagMinMassHemis0->push_back( topTagMinMass->at(i) );
+        topTagTopMassHemis0->push_back( topTagTopMass->at(i) );
+        topTagNSubjetsHemis0->push_back( topTagNSubjets->at(i) );
+        topTagPassHemis0->push_back( topTagPass->at(i) );
+      }
+      else  {
+        topTagP4Hemis1->push_back( topTagP4->at(i) );
+        topTagMinMassHemis1->push_back( topTagMinMass->at(i) );
+        topTagTopMassHemis1->push_back( topTagTopMass->at(i) );
+        topTagNSubjetsHemis1->push_back( topTagNSubjets->at(i) );
+        topTagPassHemis1->push_back( topTagPass->at(i) );
+      }
+    }
+    for( size_t i=0; i<wTagP4->size(); i++ )  {
+      double dPhi = fabs( reco::deltaPhi<double>( leadJet.phi(), wTagP4->at(i).phi() )  );
+      if( dPhi < TMath::Pi()/2 )  {
+        wTagP4Hemis0->push_back( wTagP4->at(i) );
+        wTagBDiscHemis0->push_back( wTagBDisc->at(i) );
+        wTagMuHemis0->push_back( wTagMu->at(i) );
+      }
+      else  {
+        wTagP4Hemis1->push_back( wTagP4->at(i) );
+        wTagBDiscHemis1->push_back( wTagBDisc->at(i) );
+        wTagMuHemis1->push_back( wTagMu->at(i) );
+      }
+    }
+  }
+
+  if( wTagP4Hemis0->size() > 0 )  {
+    LorentzV   leadJetHemis0 = wTagP4Hemis0->at(0) ;
+    double minDr = 99999. ;
+    for( size_t i=1 ; i<wTagP4Hemis0->size() ; i++ )  {
+      double deltaR = reco::deltaR<double>( leadJetHemis0.eta(), leadJetHemis0.phi(),
+                                            wTagP4Hemis0->at(i).eta(), wTagP4Hemis0->at(i).phi() );
+      if( deltaR < minDr )  {
+        *jet3Hemis0 = i;
+        minDr = deltaR;
+      }
+    }
+  }
+  if( wTagP4Hemis1->size() > 0 )  {
+    LorentzV   leadJetHemis1 = wTagP4Hemis1->at(0) ;
+    double minDr = 99999. ;
+    for( size_t i=1 ; i<wTagP4Hemis1->size() ; i++ )  {
+      double deltaR = reco::deltaR<double>( leadJetHemis1.eta(), leadJetHemis1.phi(),
+                                            wTagP4Hemis1->at(i).eta(), wTagP4Hemis1->at(i).phi() );
+      if( deltaR < minDr )  {
+        *jet3Hemis1 = i;
+        minDr = deltaR;
+      }
+    }
+  }
+
+
   iEvent.put(wTagP4        ,"wTagP4");
   iEvent.put(topTagP4      ,"topTagP4");  
   iEvent.put(wTagBDisc     ,"wTagBDisc");
@@ -156,6 +263,27 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(topTagTopMass ,"topTagTopMass");
   iEvent.put(topTagNSubjets,"topTagNSubjets");
   iEvent.put(topTagPass    ,"topTagPass");    
+
+  iEvent.put(wTagP4Hemis0        ,"wTagP4Hemis0");
+  iEvent.put(topTagP4Hemis0      ,"topTagP4Hemis0");
+  iEvent.put(wTagBDiscHemis0     ,"wTagBDiscHemis0");
+  iEvent.put(wTagMuHemis0        ,"wTagMuHemis0");
+  iEvent.put(topTagMinMassHemis0 ,"topTagMinMassHemis0");
+  iEvent.put(topTagTopMassHemis0 ,"topTagTopMassHemis0");
+  iEvent.put(topTagNSubjetsHemis0,"topTagNSubjetsHemis0");
+  iEvent.put(topTagPassHemis0    ,"topTagPassHemis0");
+  iEvent.put(jet3Hemis0,          "jet3Hemis0" );
+
+  iEvent.put(wTagP4Hemis1        ,"wTagP4Hemis1");
+  iEvent.put(topTagP4Hemis1      ,"topTagP4Hemis1");
+  iEvent.put(wTagBDiscHemis1     ,"wTagBDiscHemis1");
+  iEvent.put(wTagMuHemis1        ,"wTagMuHemis1");
+  iEvent.put(topTagMinMassHemis1 ,"topTagMinMassHemis1");
+  iEvent.put(topTagTopMassHemis1 ,"topTagTopMassHemis1");
+  iEvent.put(topTagNSubjetsHemis1,"topTagNSubjetsHemis1");
+  iEvent.put(topTagPassHemis1    ,"topTagPassHemis1");
+  iEvent.put(jet3Hemis1,          "jet3Hemis1"  );
+
 
 
   return true;
