@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: TTBSMProducer.cc,v 1.2 2011/05/27 12:25:00 srappocc Exp $
+// $Id: TTBSMProducer.cc,v 1.3 2011/05/29 05:15:58 guofan Exp $
 //
 //
 
@@ -30,6 +30,8 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/TriggerEvent.h"
+#include "DataFormats/PatCandidates/interface/TriggerPath.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 #include "Analysis/BoostedTopAnalysis/interface/SubjetHelper.h"
 #include "AnalysisDataFormats/TopObjects/interface/CATopJetTagInfo.h"
@@ -52,6 +54,8 @@ class TTBSMProducer : public edm::EDFilter {
       // ----------member data ---------------------------
   edm::InputTag             wTagSrc_; 
   edm::InputTag             topTagSrc_;
+  edm::InputTag             trigSrc_;
+  std::vector<std::string>  trigs_;
   std::string               topTagName_;
   CATopTagFunctor           topTagFunctor_;
   BoostedTopWTagFunctor     wTagFunctor_;
@@ -72,6 +76,8 @@ class TTBSMProducer : public edm::EDFilter {
 TTBSMProducer::TTBSMProducer(const edm::ParameterSet& iConfig) :
   wTagSrc_      (iConfig.getParameter<edm::InputTag>("wTagSrc") ),
   topTagSrc_    (iConfig.getParameter<edm::InputTag>("topTagSrc") ),
+  trigSrc_      (iConfig.getParameter<edm::InputTag>("trigSrc") ),
+  trigs_        (iConfig.getParameter<std::vector<std::string> > ("trigs") ),
   topTagName_   (iConfig.getParameter<edm::ParameterSet>("topTagParams").getParameter<std::string>("tagName") ),
   topTagFunctor_(iConfig.getParameter<edm::ParameterSet>("topTagParams")),
   wTagFunctor_  (iConfig.getParameter<edm::ParameterSet>("wTagParams"))
@@ -86,7 +92,9 @@ TTBSMProducer::TTBSMProducer(const edm::ParameterSet& iConfig) :
   produces<std::vector<double> > ("topTagTopMass");
   produces<std::vector<double> > ("topTagNSubjets");
   produces<std::vector<int> >    ("topTagPass");
-
+  produces<std::vector<int> >    ("prescales");
+  produces<std::vector<int> >    ("trigs");
+  produces<std::vector<std::string> > ("trigNames");
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4Hemis0");
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4Hemis1");
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("topTagP4Hemis0");
@@ -135,7 +143,9 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<double> > topTagTopMass ( new std::vector<double>() );
   std::auto_ptr<std::vector<double> > topTagNSubjets ( new std::vector<double>() );
   std::auto_ptr<std::vector<int> >    topTagPass ( new std::vector<int>() );
-  
+  std::auto_ptr<std::vector<int> >    prescales ( new std::vector<int>() );
+  std::auto_ptr<std::vector<int> >    trigs ( new std::vector<int>() );
+  std::auto_ptr<std::vector<std::string> >    trigNames ( new std::vector<std::string>() );
   //The duplicate quantities by hemisphere
   std::auto_ptr<p4_vector> topTagP4Hemis0 ( new p4_vector() );
   std::auto_ptr<p4_vector> topTagP4Hemis1 ( new p4_vector() );
@@ -159,10 +169,9 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
 
-
-
   edm::Handle<std::vector<pat::Jet> > h_wTag;
   edm::Handle<std::vector<pat::Jet> > h_topTag;
+  edm::Handle<pat::TriggerEvent>      h_trig;
 
   iEvent.getByLabel( wTagSrc_, h_wTag );
   iEvent.getByLabel( topTagSrc_, h_topTag );
@@ -191,6 +200,26 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     topTagTopMass->push_back( catopTag->properties().topMass );
     topTagNSubjets->push_back( ijet->numberOfDaughters() );
 
+  }
+
+  // For real data, get trigger path
+  if ( iEvent.isRealData() ) {
+    iEvent.getByLabel( trigSrc_,h_trig );
+    for ( std::vector<std::string>::const_iterator itrigBegin = trigs_.begin(),
+	    itrigEnd = trigs_.end(), itrig = itrigBegin;
+	  itrig != itrigEnd; ++itrig ) {
+      if ( h_trig->wasRun() && h_trig->wasAccept() && h_trig->paths() > 0 ) {
+	int indexPath = h_trig->indexPath( *itrig );
+	if ( indexPath > 0 ) {
+	  pat::TriggerPath const * path = h_trig->path( *itrig );
+	  if ( path != 0 && path->wasRun() && path->wasAccept() ) {
+	    trigs->push_back( path->index() );
+	    prescales->push_back( path->prescale() );
+	    trigNames->push_back( path->name() );
+	  }
+	}
+      }
+    }
   }
 
   //Make hemisphere
@@ -263,7 +292,9 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(topTagTopMass ,"topTagTopMass");
   iEvent.put(topTagNSubjets,"topTagNSubjets");
   iEvent.put(topTagPass    ,"topTagPass");    
-
+  iEvent.put(prescales     ,"prescales");
+  iEvent.put(trigs         ,"trigs");
+  iEvent.put(trigNames     ,"trigNames");
   iEvent.put(wTagP4Hemis0        ,"wTagP4Hemis0");
   iEvent.put(topTagP4Hemis0      ,"topTagP4Hemis0");
   iEvent.put(wTagBDiscHemis0     ,"wTagBDiscHemis0");
@@ -273,7 +304,6 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(topTagNSubjetsHemis0,"topTagNSubjetsHemis0");
   iEvent.put(topTagPassHemis0    ,"topTagPassHemis0");
   iEvent.put(jet3Hemis0,          "jet3Hemis0" );
-
   iEvent.put(wTagP4Hemis1        ,"wTagP4Hemis1");
   iEvent.put(topTagP4Hemis1      ,"topTagP4Hemis1");
   iEvent.put(wTagBDiscHemis1     ,"wTagBDiscHemis1");
@@ -283,7 +313,6 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(topTagNSubjetsHemis1,"topTagNSubjetsHemis1");
   iEvent.put(topTagPassHemis1    ,"topTagPassHemis1");
   iEvent.put(jet3Hemis1,          "jet3Hemis1"  );
-
 
 
   return true;

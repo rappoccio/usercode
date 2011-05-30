@@ -3,14 +3,17 @@ import os
 import glob
 
 import ROOT
+ROOT.gROOT.Macro("rootlogon.C")
+
 
 import sys
 from DataFormats.FWLite import Events, Handle
 
-fileDir = sys.argv[1]
+#fileDir = sys.argv[1]
 #fileDir = "Jet_Run2011A-May10ReReco_ttbsm_v6_ttbsmTuples_v3"
-#files = ["./Jet_Run2011A-May10ReReco_ttbsm_v6_ttbsmTuples_v3/res/ttbsm_ultraslim_1_1_XE7.root"]
-files = glob.glob( fileDir + "/res/*.root" )
+#files = ["TopTagMistagRate_ttbsm_v6_ttbsmtuples_v1.root"]
+files = ["JetPD_range1_ttbsm_v6_ttbsmTuples_v4.root"]
+#files = glob.glob( fileDir + "/res/*.root" )
 print files
 
 
@@ -45,8 +48,8 @@ hemis1Jet3Label     = ( "ttbsmAna", "jet3Hemis1" )
 
 
 
-#f = ROOT.TFile("TTHadronicAnalyzer.root", "recreate")
-f = ROOT.TFile( fileDir + ".root", "recreate" )
+f = ROOT.TFile("TTHadronicAnalyzer.root", "recreate")
+#f = ROOT.TFile( fil".root", "recreate" )
 f.cd()
 
 print "Creating histograms"
@@ -90,10 +93,49 @@ mttBkgShapeWithSideBand1Mass = ROOT.TH1F("mttBkgShapeWithSideBand1Mass",  "mTT B
 mttBkgShapeWithSideBand2Mass = ROOT.TH1F("mttBkgShapeWithSideBand2Mass",  "mTT Bkg Shape",            1000, 0,  5000 )
 mttBkgShapeWithSideBand3Mass = ROOT.TH1F("mttBkgShapeWithSideBand3Mass",  "mTT Bkg Shape",            1000, 0,  5000 )
 
+nJetsSignalRegion      = ROOT.TH1F("nJetsSignalRegion",   "Number of extra jets", 10, 0, 10)
+jet1PtSignalRegion     = ROOT.TH1F("jet1PtSignalRegion",       "Jet 1 p_{T}", 400, 0, 2000)
+jet2PtSignalRegion     = ROOT.TH1F("jet2PtSignalRegion",       "Jet 2 p_{T}", 400, 0, 2000)
+jet3PtSignalRegion     = ROOT.TH1F("jet3PtSignalRegion",       "Jet 3 p_{T}", 400, 0, 2000)
+jet1EtaSignalRegion     = ROOT.TH1F("jet1EtaSignalRegion",     "Jet 1 #eta", 400, -2.5, 2.5)
+jet2EtaSignalRegion     = ROOT.TH1F("jet2EtaSignalRegion",     "Jet 2 #eta", 400, -2.5, 2.5)
+jet3EtaSignalRegion     = ROOT.TH1F("jet3EtaSignalRegion",     "Jet 3 #eta", 400, -2.5, 2.5)
+topCand2PtSignalRegion  = ROOT.TH1F("topCand2PtSignalRegion",  "Type 2 Top Candidate p_{T}", 400, 0, 2000)
+
+nJetsSideBand1      = ROOT.TH1F("nJetsSideBand1",   "Number of extra jets", 10, 0, 10)
+jet1PtSideBand1     = ROOT.TH1F("jet1PtSideBand1",       "Jet 1 p_{T}", 400, 0, 2000)
+jet2PtSideBand1     = ROOT.TH1F("jet2PtSideBand1",       "Jet 2 p_{T}", 400, 0, 2000)
+jet3PtSideBand1     = ROOT.TH1F("jet3PtSideBand1",       "Jet 3 p_{T}", 400, 0, 2000)
+jet1EtaSideBand1     = ROOT.TH1F("jet1EtaSideBand1",     "Jet 1 #eta", 400, -2.5, 2.5)
+jet2EtaSideBand1     = ROOT.TH1F("jet2EtaSideBand1",     "Jet 2 #eta", 400, -2.5, 2.5)
+jet3EtaSideBand1     = ROOT.TH1F("jet3EtaSideBand1",     "Jet 3 #eta", 400, -2.5, 2.5)
+topCand2PtSideBand1  = ROOT.TH1F("topCand2PtSideBand1",  "Type 2 Top Candidate p_{T}", 400, 0, 2000)
+
+
+nJetsSideBand3      = ROOT.TH1F("nJetsSideBand3",   "Number of extra jets", 10, 0, 10)
+jet1PtSideBand3     = ROOT.TH1F("jet1PtSideBand3",       "Jet 1 p_{T}", 400, 0, 2000)
+jet2PtSideBand3     = ROOT.TH1F("jet2PtSideBand3",       "Jet 2 p_{T}", 400, 0, 2000)
+jet3PtSideBand3     = ROOT.TH1F("jet3PtSideBand3",       "Jet 3 p_{T}", 400, 0, 2000)
+jet1EtaSideBand3     = ROOT.TH1F("jet1EtaSideBand3",     "Jet 1 #eta", 400, -2.5, 2.5)
+jet2EtaSideBand3     = ROOT.TH1F("jet2EtaSideBand3",     "Jet 2 #eta", 400, -2.5, 2.5)
+jet3EtaSideBand3     = ROOT.TH1F("jet3EtaSideBand3",     "Jet 3 #eta", 400, -2.5, 2.5)
+topCand2PtSideBand3  = ROOT.TH1F("topCand2PtSideBand3",  "Type 2 Top Candidate p_{T}", 400, 0, 2000)
+
 signalTopTagEta             = ROOT.TH1F("signalTopTagEta",              "Top Tag Eta",              100,  -3, 3 )
 signalJet3TagEta            = ROOT.TH1F("signalJet3TagEta",             "Jet 3 Eta",                100,  -3, 3 )
 
 checkWTag = 0
+
+# Compute normalization for the SBS
+
+# Remember
+#     N_SR^QCD = (N_SR^pretoptag / N_SB^pretoptag) * N_SB^toptag
+# so compute these pieces
+
+N_SR_pretoptag = 0.0
+N_SB_pretoptag = 0.0
+N_SR_toptag_qcd = 0.0
+N_SB_toptag = 0.0
 
 # loop over events
 count = 0
@@ -106,22 +148,7 @@ for event in events:
 
     event.getByLabel (hemis0Label, hemis0Handle)
     topJets = hemis0Handle.product()
-    event.getByLabel (hemis1Label, hemis1Handle)
-    wJets = hemis1Handle.product()
-    event.getByLabel (hemis0MinMassLabel, hemis0MinMassHandle)
-    topJetMinMass = hemis0MinMassHandle.product()
-    event.getByLabel (hemis0NSubjetsLabel, hemis0NSubjetsHandle)
-    topJetNSubjets = hemis0NSubjetsHandle.product()
-    event.getByLabel (hemis0TopMassLabel, hemis0TopMassHandle)
-    topJetMass = hemis0TopMassHandle.product()
-    event.getByLabel (hemis1BdiscLabel, hemis1BdiscHandle)
-    wJetBDisc = hemis1BdiscHandle.product()
-    event.getByLabel (hemis0PassLabel, hemis0PassHandle )
-    topJetPass = hemis0PassHandle.product()
-    event.getByLabel (hemis1MuLabel, hemis1MuHandle)
-    wJetMu = hemis1MuHandle.product()
-    event.getByLabel (hemis1Jet3Label, hemis1Jet3Handle )
-    jet3 = (hemis1Jet3Handle.product())[0]
+
 
 ######### calculate pair mass and set cuts here
     nTopCand = 0
@@ -131,8 +158,26 @@ for event in events:
 
     pairMass = 0.0
     ttMass = 0.0
-    if nTopCand < 1 or len(wJets) < 2 :
+
+    if nTopCand < 1 :
+        continue
+
+    event.getByLabel (hemis1Label, hemis1Handle)
+    wJets = hemis1Handle.product()
+    if len(wJets) < 2 :
       continue
+
+    event.getByLabel (hemis1BdiscLabel, hemis1BdiscHandle)
+    wJetBDisc = hemis1BdiscHandle.product()
+    event.getByLabel (hemis0PassLabel, hemis0PassHandle )
+    topJetPass = hemis0PassHandle.product()
+
+    event.getByLabel (hemis1MuLabel, hemis1MuHandle)
+    wJetMu = hemis1MuHandle.product()
+    event.getByLabel (hemis1Jet3Label, hemis1Jet3Handle )
+    jet3 = (hemis1Jet3Handle.product())[0]
+
+
     if jet3 < 1 :
       print "This is not expected, debug!"
       #print "The third jet is ", jet3, " pt is ", wJets[jet3].pt(), " eta is ", wJets[jet3].eta()
@@ -144,11 +189,10 @@ for event in events:
     passKinCuts = (nTopCand == 1) and (wJets[0].pt() > 200)  and (wJetMu[0] < 0.4) and (wJets[jet3].pt() > 30 )
     hasBTag1    = wJetBDisc[jet3] > 3.3
     hasType2Top = wJets[0].mass() > 60 and wJets[0].mass() < 130 and pairMass > 140 and pairMass < 250
-    hasTopTag   = topJetMass[0] > 140 and topJetMass[0] < 250 and topJetMinMass[0] > 50 and topJetNSubjets[0] > 2
+
     SBAndSR     = wJets[0].mass() > 40 and wJets[0].mass() < 150 and pairMass > 100 and pairMass < 300
     SBAndSR2    = wJets[0].mass() > 20 and wJets[0].mass() < 170 and pairMass > 60  and pairMass < 350
-    passWiderTopMassCut   =   topJetMass[0] > 100 and topJetMass[0] < 300
-    topMassSideBand       =   (topJetMass[0] > 100 and topJetMass[0] < 140) or (topJetMass[0] > 250 and topJetMass[0] < 300)
+
     for i in range(1,len(wJets) ) :
       if( wJets[i].pt() > 200 and wJets[i].mass() > 60 and wJets[i].mass() < 130 and wJetMu[i] < 0.4 )  :
         checkWTag += 1
@@ -168,6 +212,18 @@ for event in events:
 
       mttBkgShape.Fill( ttMass )
       wCandVsTopCandMassType12.Fill( wJets[0].mass() ,  pairMass )
+
+
+      event.getByLabel (hemis0MinMassLabel, hemis0MinMassHandle)
+      topJetMinMass = hemis0MinMassHandle.product()
+      event.getByLabel (hemis0NSubjetsLabel, hemis0NSubjetsHandle)
+      topJetNSubjets = hemis0NSubjetsHandle.product()
+      event.getByLabel (hemis0TopMassLabel, hemis0TopMassHandle)
+      topJetMass = hemis0TopMassHandle.product()
+
+      hasTopTag   = topJetMass[0] > 140 and topJetMass[0] < 250 and topJetMinMass[0] > 50 and topJetNSubjets[0] > 2
+      passWiderTopMassCut   =   topJetMass[0] > 100 and topJetMass[0] < 300
+      topMassSideBand       =   (topJetMass[0] > 100 and topJetMass[0] < 140) or (topJetMass[0] > 250 and topJetMass[0] < 300)
 
       if hasTopTag  :
         topTagMass.Fill( topJets[0].mass() )
@@ -198,13 +254,46 @@ for event in events:
         mttBkgShapeWithSideBandMass.Fill( ttMass )
       if SBAndSR and (not hasType2Top) and passWiderTopMassCut :
         mttBkgShapeWithSideBand1Mass.Fill( ttMass )
+        nJetsSideBand1.Fill( len(topJets)+len(wJets) )
+        jet1PtSideBand1.Fill( topJets[0].pt() )
+        jet2PtSideBand1.Fill( wJets[0].pt() )
+        jet3PtSideBand1.Fill( wJets[jet3].pt() )
+        jet1EtaSideBand1.Fill( topJets[0].Rapidity() )
+        jet2EtaSideBand1.Fill( wJets[0].Rapidity() )
+        jet3EtaSideBand1.Fill( wJets[jet3].Rapidity() )
+        topCand2PtSideBand1.Fill( (wJets[0]+wJets[jet3]).pt() )        
       if SBAndSR and (not hasType2Top) :
         mttBkgShapeWithSideBand2Mass.Fill( ttMass )
       if SBAndSR2 and (not SBAndSR ) and passWiderTopMassCut :
         mttBkgShapeWithSideBand3Mass.Fill( ttMass )
+        nJetsSideBand3.Fill( len(topJets)+len(wJets) )
+        jet1PtSideBand3.Fill( topJets[0].pt() )
+        jet2PtSideBand3.Fill( wJets[0].pt() )
+        jet3PtSideBand3.Fill( wJets[jet3].pt() )
+        jet1EtaSideBand3.Fill( topJets[0].Rapidity() )
+        jet2EtaSideBand3.Fill( wJets[0].Rapidity() )
+        jet3EtaSideBand3.Fill( wJets[jet3].Rapidity() )
+        topCand2PtSideBand3.Fill( (wJets[0]+wJets[jet3]).pt() )                
+
+
+      if SBAndSR and not hasType2Top :
+          N_SB_pretoptag += 1.0
+          if hasTopTag :
+              N_SB_toptag += 1.0
+      elif hasType2Top :
+          N_SR_pretoptag += 1.0
 
       if hasType2Top and hasTopTag :
         mttMass.Fill( ttMass )
+        nJetsSignalRegion.Fill( len(topJets)+len(wJets) )
+        jet1PtSignalRegion.Fill( topJets[0].pt() )
+        jet2PtSignalRegion.Fill( wJets[0].pt() )
+        jet3PtSignalRegion.Fill( wJets[jet3].pt() )
+        jet1EtaSignalRegion.Fill( topJets[0].Rapidity() )
+        jet2EtaSignalRegion.Fill( wJets[0].Rapidity() )
+        jet3EtaSignalRegion.Fill( wJets[jet3].Rapidity() )
+        topCand2PtSignalRegion.Fill( (wJets[0]+wJets[jet3]).pt() )
+        
         if hasBTag1 :
           mttMassWithBTag.Fill( ttMass )
           jet3BTagPt.Fill( wJets[jet3].pt() )
@@ -214,6 +303,12 @@ for event in events:
 f.cd()
 f.Write()
 f.Close()
+
+if N_SB_pretoptag > 0.0 :
+    N_SR_toptag_qcd = N_SR_pretoptag / N_SB_pretoptag * N_SB_toptag
+    print 'Normalization: N(exp,SR) = N(pretoptag,SR)/N(pretoptag,SB) * N(toptag,SB) = {0:6.2f} / {1:6.2f} * {2:6.2f} = {3:6.2f}'.format(
+        N_SR_pretoptag, N_SB_pretoptag, N_SB_toptag, N_SR_toptag_qcd
+        )
 
 print checkWTag
 
