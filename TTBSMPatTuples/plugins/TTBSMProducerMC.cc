@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: TTBSMProducer.cc,v 1.3 2011/05/29 05:15:58 guofan Exp $
+// $Id: TTBSMProducerMC.cc,v 1.1 2011/06/01 19:02:23 guofan Exp $
 //
 //
 
@@ -184,7 +184,15 @@ TTBSMProducerMC::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   pat::strbitset topTagRet = topTagFunctor_.getBitTemplate();
   for ( std::vector<pat::Jet>::const_iterator jetBegin = h_wTag->begin(),
 	  jetEnd = h_wTag->end(), ijet = jetBegin; ijet != jetEnd; ++ijet ) {
-    wTagP4->push_back( ijet->polarP4()*scale_ );
+    double ptSmear_ = 1.0;
+    if( fabs(smear_) > 0.0 && ijet->genJet() != 0 && ijet->genJet()->pt() > 15.0 )  {
+      double recopt = ijet->pt();
+      double genpt = ijet->pt();
+      double deltapt = (recopt-genpt)*smear_;
+      ptSmear = std::max((double)0.0, (recopt+deltapt)/recopt);
+    }
+    wTagP4->push_back( ijet->polarP4()*scale_*ptSmear_ );
+
     bool passedWTag = wTagFunctor_(*ijet, wTagRet);
     double y = -1.0, mu = -1.0, dR = -1.0;
     pat::subjetHelper( *ijet, y, mu, dR );
@@ -198,10 +206,18 @@ TTBSMProducerMC::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     const reco::CATopJetTagInfo * catopTag = 
       dynamic_cast<reco::CATopJetTagInfo const *>(ijet->tagInfo(topTagName_));
     bool passedTopTag = topTagFunctor_( *ijet, topTagRet );
-    topTagP4->push_back( ijet->polarP4()*scale_ );
+    double ptSmear_ = 1.0;
+    if( fabs(smear_) > 0.0 && ijet->genJet() != 0 && ijet->genJet()->pt() > 15.0 )  {
+      double recopt = ijet->pt();
+      double genpt = ijet->pt();
+      double deltapt = (recopt-genpt)*smear_;
+      ptSmear = std::max((double)0.0, (recopt+deltapt)/recopt);
+    }
+
+    topTagP4->push_back( ijet->polarP4()*scale_*ptSmear_ );
     topTagPass->push_back( passedTopTag );
-    topTagMinMass->push_back( catopTag->properties().minMass*scale_ );
-    topTagTopMass->push_back( catopTag->properties().topMass*scale_ );
+    topTagMinMass->push_back( catopTag->properties().minMass*scale_*ptSmear_ );
+    topTagTopMass->push_back( catopTag->properties().topMass*scale_*ptSmear_ );
     topTagNSubjets->push_back( ijet->numberOfDaughters() );
 
   }
@@ -212,16 +228,16 @@ TTBSMProducerMC::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     for( size_t i=0; i<topTagP4->size(); i++ ) {
       double dPhi = fabs( reco::deltaPhi<double>( leadJet.phi(), topTagP4->at(i).phi() ) );
       if( dPhi < TMath::Pi()/2 )  {
-        topTagP4Hemis0->push_back( topTagP4->at(i)*scale_ );
-        topTagMinMassHemis0->push_back( topTagMinMass->at(i)*scale_ );
-        topTagTopMassHemis0->push_back( topTagTopMass->at(i)*scale_ );
+        topTagP4Hemis0->push_back( topTagP4->at(i) );
+        topTagMinMassHemis0->push_back( topTagMinMass->at(i) );
+        topTagTopMassHemis0->push_back( topTagTopMass->at(i) );
         topTagNSubjetsHemis0->push_back( topTagNSubjets->at(i) );
         topTagPassHemis0->push_back( topTagPass->at(i) );
       }
       else  {
-        topTagP4Hemis1->push_back( topTagP4->at(i)*scale_ );
-        topTagMinMassHemis1->push_back( topTagMinMass->at(i)*scale_ );
-        topTagTopMassHemis1->push_back( topTagTopMass->at(i)*scale_ );
+        topTagP4Hemis1->push_back( topTagP4->at(i) );
+        topTagMinMassHemis1->push_back( topTagMinMass->at(i) );
+        topTagTopMassHemis1->push_back( topTagTopMass->at(i) );
         topTagNSubjetsHemis1->push_back( topTagNSubjets->at(i) );
         topTagPassHemis1->push_back( topTagPass->at(i) );
       }
@@ -229,12 +245,12 @@ TTBSMProducerMC::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     for( size_t i=0; i<wTagP4->size(); i++ )  {
       double dPhi = fabs( reco::deltaPhi<double>( leadJet.phi(), wTagP4->at(i).phi() )  );
       if( dPhi < TMath::Pi()/2 )  {
-        wTagP4Hemis0->push_back( wTagP4->at(i)*scale_ );
+        wTagP4Hemis0->push_back( wTagP4->at(i) );
         wTagBDiscHemis0->push_back( wTagBDisc->at(i) );
         wTagMuHemis0->push_back( wTagMu->at(i) );
       }
       else  {
-        wTagP4Hemis1->push_back( wTagP4->at(i)*scale_ );
+        wTagP4Hemis1->push_back( wTagP4->at(i) );
         wTagBDiscHemis1->push_back( wTagBDisc->at(i) );
         wTagMuHemis1->push_back( wTagMu->at(i) );
       }
