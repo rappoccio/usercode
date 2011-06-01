@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: TTBSMProducerMC.cc,v 1.1 2011/06/01 19:02:23 guofan Exp $
+// $Id: TTBSMProducerMC.cc,v 1.2 2011/06/01 19:31:04 guofan Exp $
 //
 //
 
@@ -60,6 +60,9 @@ class TTBSMProducerMC : public edm::EDFilter {
   std::string               topTagName_;
   CATopTagFunctor           topTagFunctor_;
   BoostedTopWTagFunctor     wTagFunctor_;
+  double                    scale_;
+  double                    smear_;
+  double                    etaSmear_;
 };
 
 //
@@ -83,7 +86,8 @@ TTBSMProducerMC::TTBSMProducerMC(const edm::ParameterSet& iConfig) :
   topTagFunctor_(iConfig.getParameter<edm::ParameterSet>("topTagParams")),
   wTagFunctor_  (iConfig.getParameter<edm::ParameterSet>("wTagParams")),
   scale_        (iConfig.getParameter<double>( "jetScale" ) ),
-  smear_        (iConfig.getParameter<double>( "jetSmear") )
+  smear_        (iConfig.getParameter<double>( "jetPtSmear") ),
+  etaSmear_     (iConfig.getParameter<double>( "jetEtaSmear") )
 {
   //register your products
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4");
@@ -184,14 +188,24 @@ TTBSMProducerMC::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   pat::strbitset topTagRet = topTagFunctor_.getBitTemplate();
   for ( std::vector<pat::Jet>::const_iterator jetBegin = h_wTag->begin(),
 	  jetEnd = h_wTag->end(), ijet = jetBegin; ijet != jetEnd; ++ijet ) {
+    double etaScale_ = 1.0;
+    if( fabs(etaSmear_) > 0.0 && ijet->genJet() != 0 && ijet->genJet()->pt() > 15.0 ) {
+      double recoeta = ijet->eta();
+      double geneta = ijet->genJet()->eta();
+      double deltaeta = (recoeta-geneta)*etaSmear_ ;
+      etaScale_ = std::max((double)0.0,(recoeta+deltaeta)/recoeta);
+    }
     double ptSmear_ = 1.0;
     if( fabs(smear_) > 0.0 && ijet->genJet() != 0 && ijet->genJet()->pt() > 15.0 )  {
       double recopt = ijet->pt();
       double genpt = ijet->pt();
       double deltapt = (recopt-genpt)*smear_;
-      ptSmear = std::max((double)0.0, (recopt+deltapt)/recopt);
+      ptSmear_ = std::max((double)0.0, (recopt+deltapt)/recopt);
     }
     wTagP4->push_back( ijet->polarP4()*scale_*ptSmear_ );
+    //std::cout<<"mass "<<wTagP4->back().mass()<<" eta "<<wTagP4->back().eta() <<std::endl;
+    wTagP4->back().SetEta( wTagP4->back().eta()*etaScale_ ) ;
+    //std::cout<<"mass "<<wTagP4->back().mass()<<" eta "<<wTagP4->back().eta() <<std::endl;
 
     bool passedWTag = wTagFunctor_(*ijet, wTagRet);
     double y = -1.0, mu = -1.0, dR = -1.0;
@@ -206,15 +220,23 @@ TTBSMProducerMC::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     const reco::CATopJetTagInfo * catopTag = 
       dynamic_cast<reco::CATopJetTagInfo const *>(ijet->tagInfo(topTagName_));
     bool passedTopTag = topTagFunctor_( *ijet, topTagRet );
+    double etaScale_ = 1.0;
+    if( fabs(etaSmear_) > 0.0 && ijet->genJet() != 0 && ijet->genJet()->pt() > 15.0 ) {
+      double recoeta = ijet->eta();
+      double geneta = ijet->genJet()->eta();
+      double deltaeta = (recoeta-geneta)*etaSmear_ ;
+      etaScale_ = std::max((double)0.0,(recoeta+deltaeta)/recoeta);
+    }
     double ptSmear_ = 1.0;
     if( fabs(smear_) > 0.0 && ijet->genJet() != 0 && ijet->genJet()->pt() > 15.0 )  {
       double recopt = ijet->pt();
       double genpt = ijet->pt();
       double deltapt = (recopt-genpt)*smear_;
-      ptSmear = std::max((double)0.0, (recopt+deltapt)/recopt);
+      ptSmear_ = std::max((double)0.0, (recopt+deltapt)/recopt);
     }
 
     topTagP4->push_back( ijet->polarP4()*scale_*ptSmear_ );
+    topTagP4->back().SetEta( topTagP4->back().eta()*etaScale_ ) ;
     topTagPass->push_back( passedTopTag );
     topTagMinMass->push_back( catopTag->properties().minMass*scale_*ptSmear_ );
     topTagTopMass->push_back( catopTag->properties().topMass*scale_*ptSmear_ );
