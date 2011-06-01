@@ -90,7 +90,7 @@ class SHyFT : public edm::BasicAnalyzer {
     bool analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons);
     bool analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons);    
     bool analyze_met( const reco::ShallowClonePtrCandidate & met );
-    std::string calcSampleName (const edm::EventBase& iEvent);
+    //std::string calcSampleName (const edm::EventBase& iEvent);
     void weightPDF( edm::EventBase const & iEvent );
 
     bool make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
@@ -101,6 +101,9 @@ class SHyFT : public edm::BasicAnalyzer {
 
     SHyFTSelector wPlusJets;
     TFileDirectory& theDir;
+
+    TFileDirectory  subdirMU_plus;
+    TFileDirectory  subdirMU_minus;
 
     TFileDirectory  subdirEB_plus;
     TFileDirectory  subdirEE_plus;
