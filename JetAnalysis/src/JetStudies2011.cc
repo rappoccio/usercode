@@ -23,6 +23,7 @@ JetStudies2011::JetStudies2011(const edm::ParameterSet& iConfig, TFileDirectory&
   trigSrc_       ( iConfig.getParameter<edm::InputTag>("trigSrc")),
   genJetsSrc_    ( iConfig.getParameter<edm::InputTag>("genJetsSrc")),
   useCA8GenJets_ ( iConfig.getParameter<bool>         ("useCA8GenJets")),
+  useCA8BasicJets_( iConfig.getParameter<bool>        ("useCA8BasicJets")),
   weightPV_      ( iConfig.getParameter<bool>         ("weightPV")),
   jecPayloads_   ( iConfig.getParameter<std::vector<std::string> >  ("jecPayloads")),
   trigs_         ( iConfig.getParameter<std::vector<std::string> >("trigs") ),
@@ -58,6 +59,10 @@ JetStudies2011::JetStudies2011(const edm::ParameterSet& iConfig, TFileDirectory&
       boost::shared_ptr<PFMuonSelector>( new PFMuonSelector(iConfig.getParameter<edm::ParameterSet>( "muonInJetSelector" )) );
   } else {
     rCut_ = 0.0;
+  }
+
+  if ( useCA8BasicJets_ && useCA8GenJets_ ) {
+    throw cms::Exception("InvalidInput") << "You must specify only one of useCA8GenJets and useCA8BasicJets)" << std::endl;
   }
 
   // if ( weightPV_ ) {
@@ -103,6 +108,10 @@ JetStudies2011::JetStudies2011(const edm::ParameterSet& iConfig, TFileDirectory&
   dirs_.back().make<TH1F>( "jetMass0",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
   dirs_.back().make<TH2F>( "jetMassVsPt0", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
   dirs_.back().make<TH2F>( "jetRes0",      "Jet Response;Response",          25,  0, 1000., 25., 0., 2.5 );
+  dirs_.back().make<TH2F>( "jetRes0_NPV05","Jet Response;Response",          25,  0, 1000., 25., 0., 2.5 );
+  dirs_.back().make<TH2F>( "jetRes0_NPV510","Jet Response;Response",         25,  0, 1000., 25., 0., 2.5 );
+  dirs_.back().make<TH2F>( "jetRes0_NPV1015","Jet Response;Response",        25,  0, 1000., 25., 0., 2.5 );
+  dirs_.back().make<TH2F>( "jetRes0_NPV15inf","Jet Response;Response",       25,  0, 1000., 25., 0., 2.5 );
 
   dirs_.back().make<TH1F>( "jetPt1",       "Jet p_{T};p_{T} (GeV/c)",    100, 0, 1000);
   dirs_.back().make<TH1F>( "jetArea1",     "Jet Area;Area (radians)",               100, 0, TMath::Pi() );
@@ -111,6 +120,10 @@ JetStudies2011::JetStudies2011(const edm::ParameterSet& iConfig, TFileDirectory&
   dirs_.back().make<TH1F>( "jetMass1",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
   dirs_.back().make<TH2F>( "jetMassVsPt1", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
   dirs_.back().make<TH2F>( "jetRes1",      "Jet Response;Response",          25,  0, 1000., 25., 0., 2.5 );
+  dirs_.back().make<TH2F>( "jetRes1_NPV05","Jet Response;Response",          25,  0, 1000., 25., 0., 2.5 );
+  dirs_.back().make<TH2F>( "jetRes1_NPV510","Jet Response;Response",         25,  0, 1000., 25., 0., 2.5 );
+  dirs_.back().make<TH2F>( "jetRes1_NPV1015","Jet Response;Response",        25,  0, 1000., 25., 0., 2.5 );
+  dirs_.back().make<TH2F>( "jetRes1_NPV15inf","Jet Response;Response",       25,  0, 1000., 25., 0., 2.5 );
 
   dirs_.back().make<TH1F>( "jetPtAvg",       "Jet p_{T};p_{T} (GeV/c)",    100, 0, 1000);
   dirs_.back().make<TH1F>( "jetAreaAvg",     "Jet Area;Area (radians)",               100, 0, TMath::Pi() );
@@ -119,7 +132,10 @@ JetStudies2011::JetStudies2011(const edm::ParameterSet& iConfig, TFileDirectory&
   dirs_.back().make<TH1F>( "jetMassAvg",     "Jet Mass;Mass (GeV/c^{2})",             100, 0, 200. );
   dirs_.back().make<TH2F>( "jetMassVsPtAvg", "Jet Mass versus p_{T};p_{T} (GeV/c);Mass (GeV/c^{2})",   20, 0, 1000, 20, 0, 200. );
   dirs_.back().make<TH2F>( "jetResAvg",      "Jet Response;Response",          25,  0, 1000., 25., 0., 2.5 );
-
+  dirs_.back().make<TH2F>( "jetResAvg_NPV05","Jet Response;Response",          25,  0, 1000., 25., 0., 2.5 );
+  dirs_.back().make<TH2F>( "jetResAvg_NPV510","Jet Response;Response",         25,  0, 1000., 25., 0., 2.5 );
+  dirs_.back().make<TH2F>( "jetResAvg_NPV1015","Jet Response;Response",        25,  0, 1000., 25., 0., 2.5 );
+  dirs_.back().make<TH2F>( "jetResAvg_NPV15inf","Jet Response;Response",       25,  0, 1000., 25., 0., 2.5 );
 }
 
 
@@ -343,14 +359,30 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
       for ( std::vector<reco::GenJet>::const_iterator igenBegin = h_genJets->begin(),
 	      igenEnd = h_genJets->end(), igen = igenBegin;
 	    igen != igenEnd; ++igen ) {
-	if ( reco::deltaR<pat::Jet,reco::GenJet>( jet0, *igen ) < 0.8 && ptGen0 < 0.00001 ) {
+	if ( reco::deltaR<pat::Jet,reco::Candidate>( jet0, *igen ) < 0.8 && ptGen0 < 0.00001 ) {
 	  ptGen0 = igen->pt();
 	}
-	if ( reco::deltaR<pat::Jet,reco::GenJet>( jet1, *igen ) < 0.8 && ptGen1 < 0.00001 ) {
+	if ( reco::deltaR<pat::Jet,reco::Candidate>( jet1, *igen ) < 0.8 && ptGen1 < 0.00001 ) {
 	  ptGen1 = igen->pt();
 	}
       }
-    } else {
+    } 
+    else if ( useCA8BasicJets_ ) {
+      edm::Handle<std::vector<reco::BasicJet> > h_genJets;
+      iEvent.getByLabel( genJetsSrc_, h_genJets );
+      
+      for ( std::vector<reco::BasicJet>::const_iterator igenBegin = h_genJets->begin(),
+	      igenEnd = h_genJets->end(), igen = igenBegin;
+	    igen != igenEnd; ++igen ) {
+	if ( reco::deltaR<pat::Jet,reco::Candidate>( jet0, *igen ) < 0.8 && ptGen0 < 0.00001 ) {
+	  ptGen0 = igen->pt();
+	}
+	if ( reco::deltaR<pat::Jet,reco::Candidate>( jet1, *igen ) < 0.8 && ptGen1 < 0.00001 ) {
+	  ptGen1 = igen->pt();
+	}
+      }
+    }
+    else {
       reco::GenJet const * igen0 = jet0.genJet();
       reco::GenJet const * igen1 = jet1.genJet();
       if ( igen0 > 0 && igen1 > 0 ) {
@@ -367,6 +399,15 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
       dirs_.back().getObject<TH1>( "jetMass0"      )->Fill( mass0, weightMC );
       static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetMassVsPt0" ))->Fill( pt0, mass0, weightMC );
       static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes0"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      if ( h_pv->size() > 0 && h_pv->size() <= 5 ) {
+	static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes0_NPV05"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      } else if ( h_pv->size() > 5 && h_pv->size() <= 10 ) {
+	static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes0_NPV510"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      } else if ( h_pv->size() > 10 && h_pv->size() <= 15 ) {
+	static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes0_NPV1015"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      } else if ( h_pv->size() > 15 ) {
+	static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes0_NPV15inf"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      }
 
       dirs_.back().getObject<TH1>( "jetArea1"      )->Fill( area1, weightMC );
       dirs_.back().getObject<TH1>( "jetPt1"        )->Fill( pt1, weightMC );
@@ -375,6 +416,16 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
       dirs_.back().getObject<TH1>( "jetMass1"      )->Fill( mass1, weightMC );
       static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetMassVsPt1" ))->Fill( pt1, mass1, weightMC );
       static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes1"      ))->Fill( ptGen1, pt1/ptGen1, weightMC );
+      if ( h_pv->size() > 0 && h_pv->size() <= 5 ) {
+	static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes1_NPV05"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      } else if ( h_pv->size() > 5 && h_pv->size() <= 10 ) {
+	static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes1_NPV510"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      } else if ( h_pv->size() > 10 && h_pv->size() <= 15 ) {
+	static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes1_NPV1015"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      } else if ( h_pv->size() > 15 ) {
+	static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetRes1_NPV15inf"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      }
+
 
       dirs_.back().getObject<TH1>( "jetAreaAvg"      )->Fill( areaAvg, weightMC );
       dirs_.back().getObject<TH1>( "jetPtAvg"        )->Fill( ptAvg, weightMC );
@@ -383,6 +434,16 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
       dirs_.back().getObject<TH1>( "jetMassAvg"      )->Fill( massAvg, weightMC );
       static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetMassVsPtAvg" ))->Fill( ptAvg, massAvg, weightMC );
       static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetResAvg"      ))->Fill( ptGenAvg, ptAvg/ptGenAvg, weightMC );
+      if ( h_pv->size() > 0 && h_pv->size() <= 5 ) {
+	static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetResAvg_NPV05"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      } else if ( h_pv->size() > 5 && h_pv->size() <= 10 ) {
+	static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetResAvg_NPV510"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      } else if ( h_pv->size() > 10 && h_pv->size() <= 15 ) {
+	static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetResAvg_NPV1015"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      } else if ( h_pv->size() > 15 ) {
+	static_cast<TH2*>(dirs_.back().getObject<TH1>( "jetResAvg_NPV15inf"      ))->Fill( ptGen0, pt0/ptGen0, weightMC );
+      }
+
     }
   }
 

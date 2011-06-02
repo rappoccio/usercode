@@ -126,7 +126,8 @@ process.ca8Analyzer = cms.EDAnalyzer('EDJetStudies2011',
 
 process.ca8PrunedAnalyzer = cms.EDAnalyzer('EDJetStudies2011',
                                            jetStudies2011.clone( jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF'),
-                                                                 useCA8GenJets = cms.bool(True),
+                                                                 useCA8BasicJets = cms.bool(True),
+                                                                 genJetsSrc = cms.InputTag('caPrunedGen', ''),
                                                                  binPtTrig = cms.bool( options.doBinPtTrig == 1 ),
                                                                  trigs = itrigs,
                                                                  jecPayloads = cms.vstring( jecLevels )

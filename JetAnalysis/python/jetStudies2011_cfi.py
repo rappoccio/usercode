@@ -12,8 +12,9 @@ jetStudies2011 = cms.PSet(
     # pat::TriggerEvent
     trigSrc = cms.InputTag("patTriggerEvent"),
     # Gen Jets for the extra CA8 collections
-    genJetsSrc = cms.InputTag("ca8GenJetsNoNu"),
-    useCA8GenJets = cms.bool(False),    
+    genJetsSrc = cms.InputTag("ca8GenJetsNoNu", ""),
+    useCA8GenJets = cms.bool(False),
+    useCA8BasicJets = cms.bool(False),    
     # luminosity weighting for MC
     weightPV = cms.bool(False),
     lumiWeighting = cms.PSet(

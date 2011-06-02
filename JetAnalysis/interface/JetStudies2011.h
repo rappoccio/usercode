@@ -58,6 +58,7 @@ class JetStudies2011 : public edm::BasicAnalyzer {
     edm::InputTag   trigSrc_;         /// trigger
     edm::InputTag   genJetsSrc_;      /// gen jets to input
     bool            useCA8GenJets_;   /// use CA8 instead of AK5 gen jets
+    bool            useCA8BasicJets_; /// use CA8 pruned (basic) jets instead of AK gen jets
     bool            weightPV_;        /// weight events by the PV
     std::vector<std::string>    jecPayloads_; /// files for JEC payloads
     std::vector<std::string> trigs_;  /// triggers to consider
