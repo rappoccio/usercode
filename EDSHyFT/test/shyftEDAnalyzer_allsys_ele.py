@@ -100,7 +100,7 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         jetSrc = cms.InputTag('selectedPatJetsPFlow'),
                                         ePlusJets = cms.bool(True),
                                         muPlusJets = cms.bool(False),
-                                        jetPtMin = cms.double(30.0),##
+                                        jetPtMin = cms.double(25.0),##
                                         minJets = cms.int32(5),
                                         metMin = cms.double(20.0),                                        
                                         heavyFlavour = cms.bool( useFlavorHistory ),
@@ -118,11 +118,29 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         cutsToIgnore=cms.vstring(inputCutsToIgnore)
                                         )                                    
                                     )
+#_____________QCD WP95_______________________
+process.pfShyftAnaQCDWP95 = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+    useWP95Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    identifier = cms.string('PF MET, WP95')
+    )
+    )
 
 #___________Special case of MET < 20 GeV_________________
 process.pfShyftAnaMETMax20 = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         identifier = cms.string('PF MET <20'),
+        metMin = cms.double(0.0),
+        metMax = cms.double(20.0),
+        )
+    )
+
+process.pfShyftAnaMETMax20QCDWP95 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        identifier = cms.string('PF MET <20, WP95'),
+        useWP95Selection = cms.bool(True),
+        useWP70Selection = cms.bool(False),
         metMin = cms.double(0.0),
         metMax = cms.double(20.0),
         )
@@ -136,24 +154,17 @@ process.pfShyftAnaNoMET = process.pfShyftAna.clone(
         )
     )
 
-#__________QCD MC_____________________
-
-process.pfShyftAnaQCDWP95 = process.pfShyftAna.clone(
-    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
-    useWP95Selection = cms.bool(True),
-    useWP70Selection = cms.bool(False),
-    identifier = cms.string('PF no MET')
-    )
-    )
-
 process.pfShyftAnaQCDWP95NoMET = process.pfShyftAna.clone(
     shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
     metMin = cms.double(0.0),
     useWP95Selection = cms.bool(True),
     useWP70Selection = cms.bool(False),
-    identifier = cms.string('PF no MET')
+    identifier = cms.string('PF no MET, WP95')
     )
     )
+
+#__________All other QCD MC for test_____________________
+
 
 process.pfShyftAnaQCDWP90 = process.pfShyftAna.clone(
     shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
@@ -228,6 +239,32 @@ process.pfShyftAnaMCNoMET = process.pfShyftAna.clone(
     )
     )
 
+
+process.pfShyftAnaMCQCDWP95 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+    identifier = cms.string('PF MC WP95'),
+    useWP95Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    weightSFCalc = cms.bool(False),
+    simpleSFCalc = cms.bool(False),
+	reweightBTagEff = cms.bool(False),
+    useCustomPayload = cms.bool(False),
+    )
+    )
+
+process.pfShyftAnaMCQCDWP95NoMET = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+    identifier = cms.string('PF MC WP95, NoMET'),
+    useWP95Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    weightSFCalc = cms.bool(False),
+    simpleSFCalc = cms.bool(False),
+	reweightBTagEff = cms.bool(False),
+    useCustomPayload = cms.bool(False),
+    metMin = cms.double(0.0),
+    )
+    )
+
 process.pfShyftAnaMCMETMax20 = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
     identifier = cms.string('PF MC MET < 20'),
@@ -239,6 +276,24 @@ process.pfShyftAnaMCMETMax20 = process.pfShyftAna.clone(
     metMax = cms.double(20.0),
     )
     )
+process.pfShyftAnaMCMETMax20QCDWP95 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+    identifier = cms.string('PF MC MET < 20, WP95'),
+    useWP95Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    weightSFCalc = cms.bool(False),
+    simpleSFCalc = cms.bool(False),
+    reweightBTagEff = cms.bool(False),
+    useCustomPayload = cms.bool(False),
+    metMin = cms.double(0.0),
+    metMax = cms.double(20.0),
+    )
+    )
+
+
+
+
+
 
 ################################################
 #_______________Systematics__________________
@@ -375,34 +430,43 @@ process.pfShyftAnaEleEEPt075 =  process.pfShyftAna.clone(
 process.s = cms.Sequence(
    process.pfShyftAna*                 
    process.pfShyftAnaNoMET*
-   #process.pfShyftAnaJES095*    
-   #process.pfShyftAnaJES105*
-   #process.pfShyftAnaMETRES090*
-   #process.pfShyftAnaMETRES110*
-   #process.pfShyftAnaJER000*
-   #process.pfShyftAnaJER020*
-   #process.pfShyftAnaEleEEPt125*
-   #process.pfShyftAnaEleEEPt075* 
-   #process.pfShyftAnaReweightedBTag080*
-   #process.pfShyftAnaReweightedBTag090*
-   #process.pfShyftAnaReweightedBTag110*
-   #process.pfShyftAnaReweightedBTag120*
-   #process.pfShyftAnaReweightedLFTag080*
-   #process.pfShyftAnaReweightedLFTag090*
-   #process.pfShyftAnaReweightedLFTag110*
-   #process.pfShyftAnaReweightedLFTag120*
-   #process.pfShyftAnaMC*
-   #process.pfShyftAnaMCNoMET*
+   
+   ## process.pfShyftAnaJES095*    
+##    process.pfShyftAnaJES105*
+##    process.pfShyftAnaMETRES090*
+##    process.pfShyftAnaMETRES110*
+##    process.pfShyftAnaJER000*
+##    process.pfShyftAnaJER020*
+##    process.pfShyftAnaEleEEPt125*
+##    process.pfShyftAnaEleEEPt075*
+   process.pfShyftAnaMC*
+   process.pfShyftAnaMCNoMET*   
    process.pfShyftAnaMETMax20*
-   #process.pfShyftAnaMCMETMax20*
+   process.pfShyftAnaMCMETMax20*
+##    process.pfShyftAnaReweightedBTag080*
+##    process.pfShyftAnaReweightedBTag090*
+##    process.pfShyftAnaReweightedBTag110*
+##    process.pfShyftAnaReweightedBTag120*
+##    process.pfShyftAnaReweightedLFTag080*
+##    process.pfShyftAnaReweightedLFTag090*
+##    process.pfShyftAnaReweightedLFTag110*
+##    process.pfShyftAnaReweightedLFTag120*
+   
+  
+   
+   ## process.pfShyftAnaQCDWP90*
+##    process.pfShyftAnaQCDWP90NoMET*
+##    process.pfShyftAnaQCDWP85*
+##    process.pfShyftAnaQCDWP85NoMET*
+##    process.pfShyftAnaQCDWP80*
+##    process.pfShyftAnaQCDWP80NoMET
+   
    process.pfShyftAnaQCDWP95*
    process.pfShyftAnaQCDWP95NoMET*
-   process.pfShyftAnaQCDWP90*
-   process.pfShyftAnaQCDWP90NoMET*
-   process.pfShyftAnaQCDWP85*
-   process.pfShyftAnaQCDWP85NoMET*
-   process.pfShyftAnaQCDWP80*
-   process.pfShyftAnaQCDWP80NoMET
+   process.pfShyftAnaMCQCDWP95*
+   process.pfShyftAnaMCQCDWP95NoMET*
+   process.pfShyftAnaMETMax20QCDWP95*
+   process.pfShyftAnaMCMETMax20QCDWP95
    )
 
 process.p = cms.Path(

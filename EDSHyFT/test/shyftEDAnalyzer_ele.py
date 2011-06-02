@@ -71,7 +71,7 @@ if options.doMC > 0 :
 else :
     inputDoMC = False
     # get JSON file correctly parced
-    JSONfile = 'Cert_160404-161312_7TeV_PromptReco_Collisions11_JSON.txt'
+    JSONfile = 'Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON.txt'
     myList = LumiList.LumiList (filename = JSONfile).getCMSSWString().split(',')
 
 
@@ -144,7 +144,7 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         eleTrig = cms.string(options.triggerName),	
                                         useEleMC = cms.bool(False),
                                         useAntiSelection = cms.bool(False),
-                                        jetPtMin = cms.double(30.0),##
+                                        jetPtMin = cms.double(25.0),##
                                         minJets = cms.int32(5),
                                         metMin = cms.double(20.0),
                                         useData = cms.bool( not inputDoMC ),
@@ -201,10 +201,10 @@ process.pfShyftAnaMETMax20DataQCDLoose = process.pfShyftAna.clone(
 process.p = cms.Path(
     process.pfShyftAna*
     process.pfShyftAnaNoMET*              
-    process.pfShyftAnaMETMax20 *           
-    process.pfShyftAnaDataQCDLoose*       
-    process.pfShyftAnaNoMETDataQCDLoose*  
-    process.pfShyftAnaMETMax20DataQCDLoose 
+    process.pfShyftAnaMETMax20           
+    #process.pfShyftAnaDataQCDLoose*       
+    #process.pfShyftAnaNoMETDataQCDLoose*  
+    #process.pfShyftAnaMETMax20DataQCDLoose 
     )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
