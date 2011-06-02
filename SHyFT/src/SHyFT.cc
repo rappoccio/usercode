@@ -31,13 +31,13 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   wPlusJets(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis")),
   theDir(iDir),
  
+  subdirMU_plus ( theDir.mkdir("mu_plus") ),
+  subdirMU_minus ( theDir.mkdir("mu_minus") ),
+
   subdirEB_plus ( theDir.mkdir("eleEB_plus") ),
   subdirEE_plus ( theDir.mkdir("eleEE_plus") ),
   subdirEB_minus ( theDir.mkdir("eleEB_minus") ),
   subdirEE_minus ( theDir.mkdir("eleEE_minus") ),
-
-  subdirMU_plus ( theDir.mkdir("mu_plus") ),
-  subdirMU_minus ( theDir.mkdir("mu_minus") ),
  
   muPlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("muPlusJets")),
   ePlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("ePlusJets")),
@@ -268,7 +268,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
          if (i==0) break; //we need at least 1 jet        
 	 forBookingDir[idir]->make<TH1F>((sampleNameInput+"_jetEt"+jtNum+"_"+allTagsEnd[l]).c_str(), "#sum jet pt", 100, 0, 1000);
 	 if (i==1 && l==9) break;                  // cut off 1-jet bin after 1-tags
-	 else if( (!doMC_) && i==1 && l==0) break;
+	 //else if( (!doMC_) && i==1 && l==0) break; // we use 1j 1t histogram later, so better to keep it
 	 else if( (!doMC_) && i==1 && l==1) break;
        }//l
        //untag diJet mass
