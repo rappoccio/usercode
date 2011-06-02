@@ -116,6 +116,7 @@ class SHyFTSelector : public EventSelector {
       double jetSmear_;
       double metMin_;
       double metMax_;
+      double wMTMax_;
       double unclMetScale_; 
       double ePtScale_;        
       double ePtUncertaintyEE_;
@@ -132,6 +133,7 @@ class SHyFTSelector : public EventSelector {
       index_type   zvetoIndex_;     
       index_type   conversionIndexA_;
       index_type   conversionIndexB_;
+      index_type   wmtIndex_;
       index_type   cosmicIndex_;    
       index_type   jet1Index_;      
       index_type   jet2Index_;      
@@ -143,6 +145,8 @@ class SHyFTSelector : public EventSelector {
       double         elDcot_;
       double         eRelIso_;
       double         eEt_;
+      double         vCut_;
+      double         dxy_;
       edm::InputTag  pvTag_;
       bool           useAntiSelection_;
       bool           useWP95Selection_;
@@ -154,6 +158,8 @@ class SHyFTSelector : public EventSelector {
       bool           useData_;
       bool           useL1Offset_;
       bool           usePFIso_;
+      bool           useCone3_;
+      bool           useNoID_;
       // Jet energy corrections object
       std::string    jecPayload_;
       boost::shared_ptr<JetCorrectionUncertainty> jecUnc_;

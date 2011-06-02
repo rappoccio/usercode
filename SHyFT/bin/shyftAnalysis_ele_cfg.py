@@ -27,19 +27,23 @@ process.shyftAnalysis = inputShyftAnalysis.clone(
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
     electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
     metSrc = cms.InputTag('patMETsPFlow'),
+    #jetSrc = cms.InputTag('goodPatJetsPFlow'),
     jetSrc = cms.InputTag('selectedPatJetsPFlow'),
     jetPtMin = cms.double(25.0),
     minJets = cms.int32(5),
     eRelIso = cms.double(0.1),
     ePlusJets = cms.bool(True),
     muPlusJets = cms.bool(False),
+    #usePFIso = cms.bool(True), ###
     metMin = cms.double(0.),
+    wMTMax = cms.double(10000.),
     cutsToIgnore=cms.vstring('Trigger'),
 
     #metMax = cms.double(25.),
 
    #***********Uncomment if want to test on WJets, ZJets, Vqq, WcJets******************
     #sampleName="Wjets",
+    #sampleName = "Top",
     #doMC = True,
     #heavyFlavour = True,
    #***********************************************************************************
@@ -57,6 +61,7 @@ process.inputs = cms.PSet (
     fileNames = infilenames,
     maxEvents = cms.int32(1000)
 )
+
 
 process.outputs = cms.PSet (
     outputName = cms.string(outfile)
