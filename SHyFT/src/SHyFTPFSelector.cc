@@ -188,11 +188,12 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       if (  imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && passTight ) {
 	selectedTightMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
       }
-
-      // Loose cuts
-      bool passLoose = imuon->isGlobalMuon() && muonIdPFLoose_(*imuon) ;
-      if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ && passLoose ) {
-	selectedLooseMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
+      else {
+	// Loose cuts
+	bool passLoose = imuon->isGlobalMuon() && muonIdPFLoose_(*imuon) ;
+	if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ && passLoose ) {
+	  selectedLooseMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
+	}
       }
     }
 	 
@@ -208,13 +209,13 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       bool passTight = electronIdPFTight_(*ielectron);
       if (  ielectron->pt() > eleEtMin_ && fabs(ielectron->eta()) < eleEtaMax_ && passTight ) {
 	selectedTightElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
-      }
+      } else {
 
-      // Loose cuts
-
-      bool passLoose = electronIdPFLoose_(*ielectron);
-      if ( ielectron->pt() > eleEtMinLoose_ && fabs(ielectron->eta()) < eleEtaMaxLoose_ && passLoose ){
-	selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
+	// Loose cuts
+	bool passLoose = electronIdPFLoose_(*ielectron);
+	if ( ielectron->pt() > eleEtMinLoose_ && fabs(ielectron->eta()) < eleEtaMaxLoose_ && passLoose ){
+	  selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
+	}
       }
     }
 
@@ -383,7 +384,7 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 
 
 
-    int nleptons = selectedTightElectrons_.size();
+    int nleptons = selectedTightMuons_.size() + selectedTightElectrons_.size();
     // Check >= 1 Tight lepton
     if ( ignoreCut(lep1Index_) || 
 	 ( nleptons > 0 ) ){
@@ -394,20 +395,22 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 	   ( nleptons == 1 ) ){
 	passCut( ret, lep2Index_);
               
-	// Check 0 other lepton (i.e. dilepton veto)
-	bool oneLepton =  ( allMuons_.size() + selectedTightElectrons_.size() <= 1 );
+	// Check == 1 Lepton (i.e. dilepton veto)
+	bool oneLepton = 
+	  ( selectedTightMuons_.size() + selectedTightElectrons_.size() +
+	    selectedLooseMuons_.size() + selectedLooseElectrons_.size() <= 1
+	    );
       
 	if ( ignoreCut(lep3Index_) || 
 	     oneLepton
 	     ) {
 	  passCut(ret, lep3Index_);
 
+  
 	  bool metCutMin = met_.pt() > metMin_;
 	  bool metCutMax = met_.pt() < metMax_;
-
-	  //  cout << "metCutMin = " << metCutMin << ",metCutMax = " << metCutMax << endl;
-	  //  cout << "minCut = " << metMin_ << ", maxCut = " << metMax_ << endl;
-
+	  //cout << "metCutMin = " << metCutMin << ",metCutMax = " << metCutMax << endl;
+	  //cout << "minCut = " << metMin_ << ", maxCut = " << metMax_ << endl;
 	  if ( ignoreCut(metLowIndex_) || (metCutMin)) {
 	    passCut( ret, metLowIndex_ );
 	  

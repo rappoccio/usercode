@@ -4,12 +4,22 @@ from PhysicsTools.SelectorUtils.pfElectronSelector_cfi import pfElectronSelector
 from PhysicsTools.SelectorUtils.pfMuonSelector_cfi import pfMuonSelector
 
 shyftPFSelection = cms.PSet(
-    electronIdPF = pfElectronSelector.clone(),
-    muonIdPF = pfMuonSelector.clone(),
+    electronIdPFTight = pfElectronSelector.clone(
+        cutsToIngnore=cms.vstring()
+        ),
+    muonIdPFTight = pfMuonSelector.clone(
+        cutsToIngnore=cms.vstring()
+        ),
+    electronIdPFLoose = pfElectronSelector.clone(
+        cutsToIgnore = cms.vstring()#'PFIso', 'MaxMissingHits','ConversionRejection')
+        ),
+    muonIdPFLoose = pfMuonSelector.clone(
+        cutsToIngnore=cms.vstring()#'PFIso','Chi2','D0','NHits','NValMuHits','nPixelHits','nMatchedStations')
+        ),
     # input parameter sets
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
     electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
-    jetSrc = cms.InputTag('selectedPatJetsPFlow'),
+    jetSrc = cms.InputTag('goodPatJetsPFlow'),
     metSrc = cms.InputTag('patMETsPFlow'),
     trigSrc = cms.InputTag('patTriggerEvent'),
     trig = cms.string(''),
