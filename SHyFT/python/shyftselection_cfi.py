@@ -23,6 +23,7 @@ wplusjetsAnalysis = cms.PSet(
     muTrig = cms.string('HLT_Mu9'),
     eleTrig = cms.string('HLT_Ele10_LW_L1R'),
     pvSrc   = cms.InputTag('offlinePrimaryVertices'),
+    rhoSrc  = cms.InputTag('kt6PFJetsPFlow', 'rho'),
     useAntiSelection = cms.bool(False),
     useWP95Selection = cms.bool(False),
     useWP90Selection = cms.bool(False),
@@ -33,6 +34,8 @@ wplusjetsAnalysis = cms.PSet(
     usePFIso = cms.bool(False),
     useCone3 = cms.bool(False),
     useNoID  = cms.bool(False),
+    useTTBSMPat = cms.bool(True),
+    use42X   = cms.bool(False),
     # tight muons
     muonIdTight = cms.PSet(
         version = cms.string('FALL10'),
