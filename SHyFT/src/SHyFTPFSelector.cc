@@ -35,6 +35,10 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   metMin_            (params.getParameter<double>("metMin")),
   metMax_            (params.getParameter<double>("metMax")),
   unclMetScale_      (params.getParameter<double>("unclMetScale")),
+  removeLooseLep_    (params.getParameter<bool>("removeLooseLep")),
+  looseLepRemovalDR_ (params.getParameter<double>("looseLepRemovalDR")),
+  tightMuMinIso_     (params.getParameter<double>("tightMuMinIso")),
+  tightEleMinIso_    (params.getParameter<double>("tightEleMinIso")),
   useData_           (params.getParameter<bool>("useData")),
   useL1Corr_         (params.getParameter<bool>("useL1Corr")),
   jecPayload_        (params.getParameter<std::string>("jecPayload"))
@@ -230,18 +234,34 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       // get a copy of the uncorrected p4
       reco::Candidate::LorentzVector uncorrJet = ijet->correctedP4(0);
 
-      // Remove the 4-vectors from any tight leptons within the jet
-      for ( SHyFTPFSelector::const_iterator imu = selectedTightMuons_.begin(),
-	      imuEnd = selectedTightMuons_.end(); imu != imuEnd; ++imu ) {
-	if ( reco::deltaR<reco::Candidate,reco::Candidate>( *ijet, *imu ) < 0.5 ) 
-	  uncorrJet -= imu->p4();
-      }
+      if ( removeLooseLep_ ) {
+	// Remove the 4-vectors from any tight leptons within the jet
+	for ( SHyFTPFSelector::const_iterator imu = selectedTightMuons_.begin(),
+		imuEnd = selectedTightMuons_.end(); imu != imuEnd; ++imu ) {
+	  pat::Muon const * imuPtr = dynamic_cast<pat::Muon const *>( imu->masterClonePtr().get() );
+	  double chIso = imuPtr->userIsolation(pat::PfChargedHadronIso);
+	  double nhIso = imuPtr->userIsolation(pat::PfNeutralHadronIso);
+	  double gIso  = imuPtr->userIsolation(pat::PfGammaIso);
+	  double pt    = imuPtr->pt() ;
+	  double pfIso = (chIso + nhIso + gIso) / pt;
+	  if ( pfIso >= tightMuMinIso_ && reco::deltaR<reco::Candidate,reco::Candidate>( *ijet, *imu ) < looseLepRemovalDR_ ) {
+	    uncorrJet -= imu->p4();
+	  }
+	}
+	for ( SHyFTPFSelector::const_iterator iele = selectedTightElectrons_.begin(),
+		ieleEnd = selectedTightElectrons_.end(); iele != ieleEnd; ++iele ) {
+	  pat::Electron const * ielePtr = dynamic_cast<pat::Electron const *>( iele->masterClonePtr().get() );
+	  double chIso = ielePtr->userIsolation(pat::PfChargedHadronIso);
+	  double nhIso = ielePtr->userIsolation(pat::PfNeutralHadronIso);
+	  double gIso  = ielePtr->userIsolation(pat::PfGammaIso);
+	  double pt    = ielePtr->pt() ;
+	  double pfIso = (chIso + nhIso + gIso) / pt;
+	  if ( pfIso >= tightEleMinIso_ && reco::deltaR<reco::Candidate,reco::Candidate>( *ijet, *iele ) < looseLepRemovalDR_  ) {
+	    uncorrJet -= iele->p4();
+	  }
+	}
 
-      for ( SHyFTPFSelector::const_iterator iele = selectedTightElectrons_.begin(),
-	      ieleEnd = selectedTightElectrons_.end(); iele != ieleEnd; ++iele ) {
-	if ( reco::deltaR<reco::Candidate,reco::Candidate>( *ijet, *iele ) < 0.5 ) 
-	  uncorrJet -= iele->p4();
-      }
+      } // end of removeLooseLepByGtIso=true
       
       // Then get the correction (L1+L2+L3 [+L2L3 for data])
       jec_->setJetEta( uncorrJet.eta() );

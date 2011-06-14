@@ -32,14 +32,14 @@ import sys
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v6_Run2011-May10ReReco-submit3/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_100_0_3mi.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v6_Run2011-May10ReReco-submit3/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_101_0_K0t.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v6_Run2011-May10ReReco-submit3/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_102_0_u1E.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v6_Run2011-May10ReReco-submit3/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_103_0_TBf.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v6_Run2011-May10ReReco-submit3/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_104_0_4Xn.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v6_Run2011-May10ReReco-submit3/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_105_0_aup.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v6_Run2011-May10ReReco-submit3/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_106_0_2fG.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v6_Run2011-May10ReReco-submit3/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_107_0_uDm.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_116_1_AOE.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_117_1_X0u.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_118_1_oH9.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_119_1_WkG.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_11_1_Lgw.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_120_1_dbd.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_121_1_kcS.root',
+
 
 )
 )
@@ -55,7 +55,15 @@ from Analysis.SHyFT.shyftPFSelection_cfi import shyftPFSelection as shyftPFSelec
 
 process.pfShyftProducer = cms.EDFilter('EDSHyFTPFSelector',
                                     shyftPFSelection = shyftPFSelectionInput.clone(
-                                           
+                                           muonSrc = cms.InputTag('selectedPatMuonsLoosePFlow'),
+                                           electronSrc = cms.InputTag('selectedPatElectronsLoosePFlow'),
+                                           muonIdPFTight = shyftPFSelectionInput.muonIdPFTight.clone(
+                                               cutsToIgnore = cms.vstring('PFIso')
+                                               ),
+                                           electronIdPFTight = shyftPFSelectionInput.electronIdPFTight.clone(
+                                               cutsToIgnore = cms.vstring('PFIso')
+                                               ),
+                                           removeLooseLep = cms.bool(True)
                                              # replace things here if you want
                                         )
                                     )
@@ -72,20 +80,11 @@ process.load("TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Muons_cfi")
 
 
 
-## configure output module
-process.out = cms.OutputModule("PoolOutputModule",
-    SelectEvents   = cms.untracked.PSet(SelectEvents = cms.vstring('p') ),                               
-    fileName = cms.untracked.string('ttSemiLepKinFitProducer.root'),
-    outputCommands = cms.untracked.vstring('drop *')
-)
-process.out.outputCommands += ['keep *_kinFitTtSemiLepEvent_*_*']
-
-
-
 process.pfShyftTupleJets = cms.EDProducer(
     "CandViewNtpProducer", 
     src = cms.InputTag("pfShyftProducer", "jets"),
     lazyParser = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
     variables = cms.VPSet(
         cms.PSet(
             tag = cms.untracked.string("mass"),
@@ -115,6 +114,7 @@ process.pfShyftTupleMuons = cms.EDProducer(
     "CandViewNtpProducer", 
     src = cms.InputTag("pfShyftProducer", "muons"),
     lazyParser = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
     variables = cms.VPSet(
         cms.PSet(
             tag = cms.untracked.string("pt"),
@@ -140,6 +140,7 @@ process.pfShyftTupleElectrons = cms.EDProducer(
     "CandViewNtpProducer", 
     src = cms.InputTag("pfShyftProducer", "electrons"),
     lazyParser = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
     variables = cms.VPSet(
         cms.PSet(
             tag = cms.untracked.string("pt"),
@@ -173,13 +174,15 @@ process.p = cms.Path(
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
+
+
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string("shyft_ultraslim.root"),
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
                                outputCommands = cms.untracked.vstring('drop *',
-                                                                      'keep *_pfShyftProducer_*_*',
+                                                                      #'keep *_pfShyftProducer_*_*',
                                                                       'keep *_pfShyftTuple*_*_*',
-                                                                      'keep *_kinFitTtSemiLepEvent_*_*'
+                                                                      #'keep *_kinFitTtSemiLepEvent_*_*'
                                                                       ) 
                                )
 process.outpath = cms.EndPath(process.out)

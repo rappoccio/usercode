@@ -111,7 +111,19 @@ class SHyFTPFSelector : public EventSelector {
       index_type   jet2Index_;      
       index_type   jet3Index_;      
       index_type   jet4Index_;      
-      index_type   jet5Index_;      
+      index_type   jet5Index_;
+
+      /// Overlap removal for loose leptons:
+      /// Since we already removed "tight" (wrt isolation) leptons
+      /// in the PF2PAT sequence, here we only have to remove
+      /// leptons with a PFIsolation greater than the cut we already
+      /// applied upstream, that fall within the jet cone. 
+      /// Yes, you have to keep the "tightMuMinIso" and "tightEleMinIso"
+      /// in sync with what you set in the PF2PAT sequence.
+      bool removeLooseLep_;
+      double looseLepRemovalDR_;
+      double tightMuMinIso_;
+      double tightEleMinIso_;
 
       /// Use data :
       ///   - L2L3Residual correction
