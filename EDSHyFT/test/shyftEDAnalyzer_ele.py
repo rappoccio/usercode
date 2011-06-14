@@ -44,13 +44,13 @@ options.register ('outputRootFile',
                   "Output root file name")
 
 options.register('ignoreTrigger',
-                 1,
+                 0,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
                   "Ignore trigger in selection")
 
 options.register('triggerName',
-                 'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2',
+                 'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1',
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.string,
                  "Electron trigger to run")
@@ -62,7 +62,7 @@ options.register('ttbsmPAT',
                  "If running on ttbsm PAT tuples"
                  )
 options.register('use42X',
-                 0,
+                 1,
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.int,
                  "PAT tuplese done in 4_2_2"
@@ -84,7 +84,7 @@ if options.doMC > 0 :
 else :
     inputDoMC = False
     # get JSON file correctly parced
-    JSONfile = 'Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON.txt'
+    JSONfile = 'Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt'
     myList = LumiList.LumiList (filename = JSONfile).getCMSSWString().split(',')
 
 
@@ -150,12 +150,23 @@ if inputDoMC == False :
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
+
+## Geometry and Detector Conditions (needed for a few patTuple production steps)
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.GlobalTag.globaltag = 'GR_R_42_V12::All'
+process.load("Configuration.StandardSequences.MagneticField_cff")
+
+# run the trigger on the fly
+process.load('PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff')
+
+
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string(options.outputRootFile)
                                    )
-if options.ttbsmPAT > 0:
+if options.ttbsmPAT > 0 and options.use42X > 0:
     process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         shyftAnalysis = inputShyftAnalysis.clone(
         muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
@@ -228,7 +239,7 @@ if options.ttbsmPAT > 0:
         )
                                         )
     
-elif options.ttbsmPAT == 0 :
+elif options.ttbsmPAT == 0 and options.use42X == 0:
     process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                     shyftAnalysis = inputShyftAnalysis.clone(
         muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
@@ -296,12 +307,20 @@ process.pfShyftAnaMETMax20DataQCDLoose = process.pfShyftAna.clone(
     )
 
 process.p = cms.Path(
+    process.patTriggerDefaultSequence*
     process.pfShyftAna*
     process.pfShyftAnaNoMET*              
-    process.pfShyftAnaMETMax20           
+    process.pfShyftAnaMETMax20
+
+    ##__________my lost beloved QCD extraction method :(_____________
     #process.pfShyftAnaDataQCDLoose*       
     #process.pfShyftAnaNoMETDataQCDLoose*  
     #process.pfShyftAnaMETMax20DataQCDLoose 
     )
 
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+#suppress the L1 trigger error messages
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.suppressWarning.append('patTrigger')
+process.MessageLogger.cerr.FwkJob.limit=1
+process.MessageLogger.cerr.ERROR = cms.untracked.PSet( limit =
+cms.untracked.int32(0) )

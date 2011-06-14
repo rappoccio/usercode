@@ -13,17 +13,13 @@ argument=""
 for i in argv[1:]:
     argument += i+" "
 
-crabPath='/uscms_data/d2/skhalil/ShyftCrab2011'
+crabPath='/uscms_data/d2/skhalil/ShyftTemplates11'
 
 
 crabFiles = [
-#'SingleElectron_Run2011A-PromptReco',
-#'SingleMu_Run2011A-PromptReco',
-#'TTJets_TuneD6T_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1_shyft_414_v1',
-#'TToBLNu_TuneZ2_s-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1_shyft_414_v1',
-#'TToBLNu_TuneZ2_t-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1_shyft_414_v1',
-#'TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1_shyft_414_v1',
-'WJetsToLNu_TuneD6T_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1_shyft_414_v1',
+    'SingleElectron_ttbsm_423_v7_p1',
+    'SingleElectron_ttbsm_423_v7_p2',
+    'SingleElectron_ttbsm_423_v7_p3',
 ]
 
 for crabFile in crabFiles :
