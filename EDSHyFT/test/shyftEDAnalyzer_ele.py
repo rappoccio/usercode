@@ -182,7 +182,8 @@ if options.ttbsmPAT > 0 and options.use42X > 0:
         jetPtMin = cms.double(30.0),##
         minJets = cms.int32(5),
         metMin = cms.double(20.0),
-        useData = cms.bool( not inputDoMC ),
+        use42X  = cms.bool(True),
+        useData = cms.bool( not inputDoMC ),       
         heavyFlavour = cms.bool( useFlavorHistory ),
         doMC = cms.bool( inputDoMC),
         sampleName = cms.string(inputSampleName),

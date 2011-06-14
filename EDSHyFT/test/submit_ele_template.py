@@ -13,11 +13,6 @@ parser.add_option('--inputCfg', metavar='C', type='string', action='store',
                   dest='inputCfg',
                   help='input config tag to be used')
 
-parser.add_option('--inputCMSSW', metavar='C', type='string', action='store',
-                  default = 'shyftEDAnalyzer_ele.py', #for data:
-                  dest='inputCMSSW',
-                  help='input CMSSW py to be used for data')
-
 parser.add_option('--outLabel', metavar='L', type='string', action='store',
                   default='_ttbsm_423_v7',
                   dest='outLabel',
@@ -31,15 +26,15 @@ parser.add_option('--data', metavar='D', type='int', action='store',
 (options, args) = parser.parse_args()
 
 if options.data == 1:
-   inputCMCCW = 'shyftEDAnalyzer_ele.py'
+   inputCMSSW = 'shyftEDAnalyzer_ele.py'
    outputLable = '_ttbsm_423_v6'
    crabFileStrs = [
-      ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '160404-161176', 'p1'],
-      ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2', '161216-163261', 'p2'],
-      ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3', '163286-163869', 'p3'],
+      ## ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '160404-161176', 'p1'],
+##       ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2', '161216-163261', 'p2'],
+##       ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3', '163286-163869', 'p3'],
       ]
 else:
-   inputCMCCW = 'shyftEDAnalyzer_allsys_ele.py'
+   inputCMSSW = 'shyftEDAnalyzer_allsys_ele.py'
    outputLable = '_ttbsm_415_v7' 
    crabFileStrs = [
       ['/TTJets_TuneD6T_7TeV-madgraph-tauola/vasquez-ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',          30, 0, 'Top',         1, 1],
@@ -70,16 +65,16 @@ for crabFileStr in crabFileStrs :
     
     if options.data == 1:
        outname = baseList[1] + options.outLabel+'_'+str(crabFileStr[8])
-       outlocation = '/uscms_data/d2/skhalil/ShyftTemplates11/'+baseList[1] + options.outLabel+'_'+str(crabFileStr[8])
+       outlocation = '/uscms_data/d2/skhalil/ShyftTemplates11/'+baseList[1] + outputLable+'_'+str(crabFileStr[8])
     else:
        outname = baseList[1] + options.outLabel
-       outlocation = '/uscms_data/d2/skhalil/ShyftTemplates11/'+baseList[1] + options.outLabel
+       outlocation = '/uscms_data/d2/skhalil/ShyftTemplates11/'+baseList[1] + outputLable
     
     # now do all of the substitutions
     a0 = instring.replace( 'DUMMY_DATASET', crabFileStr[0] )
     a1 = a0.replace( 'DUMMY_UI_DIR', outlocation)
     a2 = a1.replace( 'DUMMY_NJOBS', str(crabFileStr[1]) )
-    a3 = a2.replace( 'DUMMY_CMSSW', options.inputCMSSW )
+    a3 = a2.replace( 'DUMMY_CMSSW', inputCMSSW )
     a4 = a3.replace( 'DUMMY_USEFLAVORHISTORY', str(crabFileStr[2]) )
     a5 = a4.replace( 'DUMMY_SAMPLENAMEINPUT', crabFileStr[3] )
     a6 = a5.replace( 'DUMMY_IGNORETRIGGER', str(crabFileStr[4]) )
