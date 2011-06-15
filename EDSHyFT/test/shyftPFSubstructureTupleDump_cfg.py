@@ -67,10 +67,11 @@ process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults
                                                                                                      ])
 process.hltSelectionEle.throw = False
 
-if muOrEle :
-    process.hltSelection = cms.Sequence( process.hltSelectionMu )
-else :
+if options.muOrEle :
     process.hltSelection = cms.Sequence( ~process.hltSelectionMu * process.hltSelectionEle )
+else :
+    process.hltSelection = cms.Sequence( process.hltSelectionMu )
+
 
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
@@ -180,6 +181,23 @@ process.pfShyftTupleMuons = cms.EDProducer(
         )  
     )
 
+process.pfShyftTupleMET = cms.EDProducer(
+    "CandViewNtpProducer", 
+    src = cms.InputTag("pfShyftProducer", "MET"),
+    lazyParser = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
+    variables = cms.VPSet(
+        cms.PSet(
+            tag = cms.untracked.string("pt"),
+            quantity = cms.untracked.string("pt")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("phi"),
+            quantity = cms.untracked.string("phi")
+            )
+        )  
+    )
+
 
 process.pfShyftTupleElectrons = cms.EDProducer(
     "CandViewNtpProducer", 
@@ -213,7 +231,8 @@ process.p = cms.Path(
     process.kinFitTtSemiLepEvent *
     process.pfShyftTupleJets*
     process.pfShyftTupleMuons*
-    process.pfShyftTupleElectrons
+    process.pfShyftTupleElectrons*
+    process.pfShyftTupleMET
     )
 
 
