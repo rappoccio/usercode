@@ -19,7 +19,8 @@ private:
   virtual void beginJob(const edm::EventSetup&) ;
   virtual void produce(edm::Event& event, const edm::EventSetup& setup);
   virtual void endJob() ;
-  
+  std::string kinFitterLabel_;
+  std::string selectorLabel_;
 };
 
 #endif
@@ -33,7 +34,10 @@ void TprimeNtupleDumper::beginJob(const edm::EventSetup&){
 void TprimeNtupleDumper::endJob(){
 }
 
-TprimeNtupleDumper::TprimeNtupleDumper(const edm::ParameterSet& cfg){
+TprimeNtupleDumper::TprimeNtupleDumper(const edm::ParameterSet& cfg):
+  kinFitterLabel_(cfg.getParameter<std::string>("kinFitterLabel")),
+  selectorLabel_(cfg.getParameter<std::string>("selectorLabel"))
+{
   produces<double>("fitMass");
   produces<double>("TTMass");
   produces<double>("fitChi2");
@@ -47,36 +51,35 @@ void TprimeNtupleDumper::produce(edm::Event& event, const edm::EventSetup& setup
   std::auto_ptr<double> pfitChi2 ( new double(-1.0) );
   std::auto_ptr<int>    pnJets   ( new int(-1) );
   
-  std::string label="pfShyftSkim";
-  label+=":jets";
+  //std::string label="pfShyftSkim";
+  //label+=":jets";
   // get the jet collection
   edm::Handle<std::vector<pat::Jet> > jets;
-  event.getByLabel(edm::InputTag(label), jets);
+  event.getByLabel(edm::InputTag(selectorLabel_+":jets"), jets);
   // save number of jets is a naive way
   *pnJets = jets->size();
 
   // extract and save fit mass and chi^2
-  label="kinFitTtSemiLepEvent";
   edm::Handle<std::vector<pat::Particle> > fitLeptons;
-  event.getByLabel(edm::InputTag(label+":Leptons"), fitLeptons);
+  event.getByLabel(edm::InputTag(kinFitterLabel_+":Leptons"), fitLeptons);
 
   edm::Handle<std::vector<pat::Particle> > fitNeutrinos;
-  event.getByLabel(edm::InputTag(label+":Neutrinos"), fitNeutrinos);
+  event.getByLabel(edm::InputTag(kinFitterLabel_+":Neutrinos"), fitNeutrinos);
 
   edm::Handle<std::vector<pat::Particle> > fitPartonsHadB;
-  event.getByLabel(edm::InputTag(label+":PartonsHadB"), fitPartonsHadB);
+  event.getByLabel(edm::InputTag(kinFitterLabel_+":PartonsHadB"), fitPartonsHadB);
 
   edm::Handle<std::vector<pat::Particle> > fitPartonsHadP;
-  event.getByLabel(edm::InputTag(label+":PartonsHadP"), fitPartonsHadP);
+  event.getByLabel(edm::InputTag(kinFitterLabel_+":PartonsHadP"), fitPartonsHadP);
   
   edm::Handle<std::vector<pat::Particle> > fitPartonsHadQ;
-  event.getByLabel(edm::InputTag(label+":PartonsHadQ"), fitPartonsHadQ);
+  event.getByLabel(edm::InputTag(kinFitterLabel_+":PartonsHadQ"), fitPartonsHadQ);
 
   edm::Handle<std::vector<pat::Particle> > fitPartonsLepB;
-  event.getByLabel(edm::InputTag(label+":PartonsLepB"), fitPartonsLepB);
+  event.getByLabel(edm::InputTag(kinFitterLabel_+":PartonsLepB"), fitPartonsLepB);
   
   edm::Handle<std::vector<double> > fitChi2;
-  event.getByLabel(edm::InputTag(label+":Chi2"), fitChi2);
+  event.getByLabel(edm::InputTag(kinFitterLabel_+":Chi2"), fitChi2);
 
   // make a very simple solution - take the best Chi2 combination only
   for(size_t i=0; i<(fitChi2->size()); i++){
