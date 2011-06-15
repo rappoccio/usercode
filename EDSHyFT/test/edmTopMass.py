@@ -137,7 +137,7 @@ process.pfShyftSkim = cms.EDFilter('EDWPlusJetsSelector',
     ePlusJets = cms.bool(True),
     muPlusJets = cms.bool(False),
     eEtCut = cms.double(30.0),
-    jetPtMin = cms.double(10.0),##
+    jetPtMin = cms.double(30.0),##
     minJets = cms.int32(4),
     metMin = cms.double(0.0),                                        
     doMC = cms.bool( False ),
@@ -223,8 +223,10 @@ process.kinFitTtSemiLepEvent = cms.EDProducer("TtSemiLepKinFitProducerElectron",
     # 
 )
 
-process.tprimeNtupleDumper = cms.EDProducer("TprimeNtupleDumper")
-
+process.tprimeNtupleDumper = cms.EDProducer("TprimeNtupleDumper",
+    kinFitterLabel = cms.string("kinFitTtSemiLepEvent"),
+    selectorLabel  = cms.string("pfShyftSkim"),
+)
 
 
 process.p = cms.Path(
@@ -232,7 +234,7 @@ process.p = cms.Path(
     process.pfShyftSkim *
     process.kinFitTtSemiLepEvent *
     process.tprimeNtupleDumper
-    )
+)
 
 ## configure output module
 process.out = cms.OutputModule("PoolOutputModule",
