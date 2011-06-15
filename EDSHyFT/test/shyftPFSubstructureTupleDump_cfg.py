@@ -121,6 +121,14 @@ process.pfShyftTupleJets = cms.EDProducer(
             quantity = cms.untracked.string("phi")
             ),
         cms.PSet(
+            tag = cms.untracked.string("ssvhe"),
+            quantity = cms.untracked.string("bDiscriminator('simpleSecondaryVertexHighEffBJetTags')")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("jetArea"),
+            quantity = cms.untracked.string("jetArea")
+            ),
+        cms.PSet(
             tag = cms.untracked.string("da0Pt"),
             quantity = cms.untracked.string("daughter(0).pt()")
             ),
@@ -246,6 +254,7 @@ process.out = cms.OutputModule("PoolOutputModule",
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       #'keep *_pfShyftProducer_*_*',
+                                                                      'keep double_*_rho_*',
                                                                       'keep *_pfShyftTuple*_*_*',
                                                                       #'keep *_kinFitTtSemiLepEvent_*_*'
                                                                       ) 

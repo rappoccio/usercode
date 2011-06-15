@@ -14,6 +14,7 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   metTag_            (params.getParameter<edm::InputTag>("metSrc") ),  
   pvTag_             (params.getParameter<edm::InputTag>("pvSrc") ),
   trigTag_           (params.getParameter<edm::InputTag>("trigSrc") ),
+  rhoTag_            (params.getParameter<edm::InputTag>("rhoSrc") ),
   muonIdPFTight_     (params.getParameter<edm::ParameterSet>("muonIdPFTight")),
   muonIdPFLoose_     (params.getParameter<edm::ParameterSet>("muonIdPFLoose")),
   electronIdPFTight_ (params.getParameter<edm::ParameterSet>("electronIdPFTight")),
@@ -41,7 +42,7 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   tightEleMinIso_    (params.getParameter<double>("tightEleMinIso")),
   useData_           (params.getParameter<bool>("useData")),
   useL1Corr_         (params.getParameter<bool>("useL1Corr")),
-  jecPayload_        (params.getParameter<std::string>("jecPayload"))
+  jecPayloads_        (params.getParameter<std::vector<std::string> >("jecPayloads"))
 {
 
   // make the bitset
@@ -95,26 +96,22 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
 
   retInternal_ = getBitTemplate();
 
-  string L1Tag   = "Jec10V1_L1Offset_AK5PF.txt";
-  string L3Tag   = "Jec10V1_L3Absolute_AK5PF.txt";
-  string L2Tag   = "Jec10V1_L2Relative_AK5PF.txt";
-  string L2L3Tag = "Jec10V1_L2L3Residual_AK5PF.txt"; 
-  JetCorrectorParameters L1JetPar(L1Tag);
-  JetCorrectorParameters L3JetPar(L3Tag);
-  JetCorrectorParameters L2JetPar(L2Tag);
-  JetCorrectorParameters L2L3JetPar(L2L3Tag);
+
+  // Get the factorized jet corrector. 
+  // The payloads contain N elements, 
+  // the Nth is the uncertainty, and the first N-1 elements are the
+  // actual correction levels. 
   vector<JetCorrectorParameters> vPar;
-  if ( useL1Corr_ )
-    vPar.push_back(L1JetPar);
-  vPar.push_back(L2JetPar);
-  vPar.push_back(L3JetPar);
-  if ( useData_ ) {
-    vPar.push_back(L2L3JetPar);
+  for ( std::vector<std::string>::const_iterator ipayload = jecPayloads_.begin(),
+	  ipayloadEnd = jecPayloads_.end(); ipayload != ipayloadEnd - 1; ++ipayload ) {
+    std::cout << "Adding payload " << *ipayload << std::endl;
+    JetCorrectorParameters pars(*ipayload);
+    vPar.push_back(pars);
   }
 
   jec_ = boost::shared_ptr<FactorizedJetCorrector> ( new FactorizedJetCorrector(vPar) );
 
-  jecUnc_ = boost::shared_ptr<JetCorrectionUncertainty>( new JetCorrectionUncertainty(jecPayload_));
+  jecUnc_ = boost::shared_ptr<JetCorrectionUncertainty>( new JetCorrectionUncertainty(jecPayloads_.back()));
 
 }
 
@@ -174,6 +171,10 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 
     edm::Handle< vector< pat::MET > > metHandle;
     event.getByLabel (metTag_, metHandle);
+
+    edm::Handle<double> h_rho;
+    event.getByLabel( rhoTag_, h_rho );
+    double rho = *h_rho;
 
     reco::Candidate::LorentzVector metP4 = metHandle->at(0).p4();
 
@@ -268,6 +269,8 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       jec_->setJetPt ( uncorrJet.pt() );
       jec_->setJetE  ( uncorrJet.energy() );
       jec_->setNPV   ( pvHandle->size() );
+      jec_->setJetA  ( ijet->jetArea() );
+      jec_->setRho   ( rho );
       double corr = jec_->getCorrection();
 
       // Here will be the working variable for all the jet energy effects

@@ -22,6 +22,7 @@ shyftPFSelection = cms.PSet(
     jetSrc = cms.InputTag('goodPatJetsPFlow'),
     metSrc = cms.InputTag('patMETsPFlow'),
     trigSrc = cms.InputTag('patTriggerEvent'),
+    rhoSrc = cms.InputTag('kt6PFJetsPFlow', 'rho'),
     trig = cms.string(''),
     pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),    
     # kinematic cuts
@@ -47,7 +48,11 @@ shyftPFSelection = cms.PSet(
     looseLepRemovalDR=cms.double(0.5),
     tightMuMinIso  = cms.double(0.15),
     tightEleMinIso = cms.double(0.20),
-    useL1Corr      = cms.bool(False),
-    jecPayload     = cms.string('Jec10V1_Uncertainty_AK5PF.txt'),
+    useL1Corr      = cms.bool(True),
+    jecPayloads    = cms.vstring([
+        'Jec11_V1_AK5PFchs_L1FastJet.txt',
+        'Jec11_V1_AK5PFchs_L2Relative.txt',
+        'Jec11_V1_AK5PFchs_L3Absolute.txt',
+        'Jec10V1_Uncertainty_AK5PF.txt']),
     cutsToIgnore   = cms.vstring( ['Trigger'] )
 )

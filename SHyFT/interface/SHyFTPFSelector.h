@@ -59,6 +59,7 @@ class SHyFTPFSelector : public EventSelector {
       edm::InputTag               metTag_;
       edm::InputTag               pvTag_;
       edm::InputTag               trigTag_;
+      edm::InputTag               rhoTag_;
       std::string                 trig_;
 
       std::vector<reco::ShallowClonePtrCandidate> selectedJets_;
@@ -135,7 +136,7 @@ class SHyFTPFSelector : public EventSelector {
       bool           useL1Corr_;
 
       // Jet energy corrections object
-      std::string    jecPayload_;
+      std::vector<std::string> jecPayloads_;
       boost::shared_ptr<JetCorrectionUncertainty> jecUnc_;
       boost::shared_ptr<FactorizedJetCorrector> jec_;
 };
