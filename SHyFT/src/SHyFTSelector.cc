@@ -215,6 +215,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
    looseMuons_.clear();
    looseElectrons_.clear();
    selectedMETs_.clear();
+   met_=reco::ShallowClonePtrCandidate();
    allElectrons_.clear();
    selectedElectrons_.clear();//to select ==1 tight electron or anti-electron depends on the switch
    selectedLooseElectrons_.clear();//to apply ZVeto  
