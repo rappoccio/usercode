@@ -83,13 +83,13 @@ void TprimeNtupleDumper::produce(edm::Event& event, const edm::EventSetup& setup
 
   // make a very simple solution - take the best Chi2 combination only
   for(size_t i=0; i<(fitChi2->size()); i++){
-    std::cout << "i = " << i << "   Chi2 = " << (fitChi2->at(i)) << "   Neutrino pz = " << fitNeutrinos->at(i).pz() << std::endl;
+    //std::cout << "i = " << i << "   Chi2 = " << (fitChi2->at(i)) << "   Neutrino pz = " << fitNeutrinos->at(i).pz() << std::endl;
     if(fitChi2->at(i)>=0){
       *pfitChi2 = fitChi2->at(i);
 
       reco::Candidate::LorentzVector vect4 = fitPartonsHadP->at(i).p4();
       vect4 += fitPartonsHadQ->at(i).p4();
-      vect4 += fitPartonsLepB->at(i).p4();
+      vect4 += fitPartonsHadB->at(i).p4();
       
       *pfitMass = vect4.M();
 
@@ -99,7 +99,7 @@ void TprimeNtupleDumper::produce(edm::Event& event, const edm::EventSetup& setup
 
       *pTTMass = vect4.M();
       
-      std::cout << "   fitMass = " << *pfitMass << "   TTmass = " << *pTTMass << std::endl;
+      //std::cout << "   fitMass = " << *pfitMass << "   TTmass = " << *pTTMass << std::endl;
       break;    
     }
   }
