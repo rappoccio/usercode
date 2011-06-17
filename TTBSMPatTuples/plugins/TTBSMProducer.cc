@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: TTBSMProducer.cc,v 1.3 2011/05/29 05:15:58 guofan Exp $
+// $Id: TTBSMProducer.cc,v 1.4 2011/05/30 19:53:51 srappocc Exp $
 //
 //
 
@@ -37,6 +37,7 @@
 #include "AnalysisDataFormats/TopObjects/interface/CATopJetTagInfo.h"
 #include "Analysis/BoostedTopAnalysis/interface/CATopTagFunctor.h"
 #include "Analysis/BoostedTopAnalysis/interface/BoostedTopWTagFunctor.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 //
 // class declaration
 //
@@ -85,6 +86,7 @@ TTBSMProducer::TTBSMProducer(const edm::ParameterSet& iConfig) :
   //register your products
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4");
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("topTagP4");  
+  produces<std::vector<double> > ("topTagBDisc");
   produces<std::vector<double> > ("wTagBDisc");
   produces<std::vector<double> > ("wTagMu");
   produces<std::vector<int> >    ("wTagPass");
@@ -95,6 +97,9 @@ TTBSMProducer::TTBSMProducer(const edm::ParameterSet& iConfig) :
   produces<std::vector<int> >    ("prescales");
   produces<std::vector<int> >    ("trigs");
   produces<std::vector<std::string> > ("trigNames");
+  produces<double> ("rho");
+  produces<double> ("weight");
+
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4Hemis0");
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4Hemis1");
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("topTagP4Hemis0");
@@ -137,6 +142,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<p4_vector> wTagP4( new p4_vector() );
   std::auto_ptr<p4_vector> topTagP4( new p4_vector() );
   std::auto_ptr<std::vector<double> > wTagBDisc ( new std::vector<double>() );
+  std::auto_ptr<std::vector<double> > topTagBDisc ( new std::vector<double>() );
   std::auto_ptr<std::vector<double> > wTagMu ( new std::vector<double>() );
   std::auto_ptr<std::vector<int> >    wTagPass ( new std::vector<int>() );
   std::auto_ptr<std::vector<double> > topTagMinMass ( new std::vector<double>() );
@@ -146,6 +152,9 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<int> >    prescales ( new std::vector<int>() );
   std::auto_ptr<std::vector<int> >    trigs ( new std::vector<int>() );
   std::auto_ptr<std::vector<std::string> >    trigNames ( new std::vector<std::string>() );
+  std::auto_ptr<double>               rho( new double(-1.0) );
+  std::auto_ptr<double>               weight( new double(1.0) );
+
   //The duplicate quantities by hemisphere
   std::auto_ptr<p4_vector> topTagP4Hemis0 ( new p4_vector() );
   std::auto_ptr<p4_vector> topTagP4Hemis1 ( new p4_vector() );
@@ -199,6 +208,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     topTagMinMass->push_back( catopTag->properties().minMass );
     topTagTopMass->push_back( catopTag->properties().topMass );
     topTagNSubjets->push_back( ijet->numberOfDaughters() );
+    topTagBDisc->push_back( ijet->bDiscriminator("trackCountingHighEffBJetTags") );
 
   }
 
@@ -282,10 +292,20 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }
 
+  edm::Handle<double>        caTopJetRho;
+  iEvent.getByLabel( edm::InputTag("kt6PFJetsPFlow", "rho"),    caTopJetRho );
+  *rho = *caTopJetRho ;
+  edm::Handle<GenEventInfoProduct>    genEvt;
+  iEvent.getByLabel( edm::InputTag("generator"),  genEvt );
+  if( genEvt.isValid() )  {
+    *weight = genEvt->weight() ;
+  }
+
 
   iEvent.put(wTagP4        ,"wTagP4");
   iEvent.put(topTagP4      ,"topTagP4");  
   iEvent.put(wTagBDisc     ,"wTagBDisc");
+  iEvent.put(topTagBDisc   ,"topTagBDisc");
   iEvent.put(wTagMu        ,"wTagMu");
   iEvent.put(wTagPass      ,"wTagPass");
   iEvent.put(topTagMinMass ,"topTagMinMass");
@@ -313,7 +333,8 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(topTagNSubjetsHemis1,"topTagNSubjetsHemis1");
   iEvent.put(topTagPassHemis1    ,"topTagPassHemis1");
   iEvent.put(jet3Hemis1,          "jet3Hemis1"  );
-
+  iEvent.put( rho,                "rho" );
+  iEvent.put( weight,             "weight");
 
   return true;
 }
