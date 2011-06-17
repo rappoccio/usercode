@@ -151,21 +151,21 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    //use only for 4_1_X MC
    string L1Tag, L1DataTag;
    if(useTTBSMPat_){
-      L1Tag     = "Jec10_V3_AK5PF_L1FastJet.txt";
-      L1DataTag = "Jec11_V1_AK5PF_L1FastJet.txt";
+      L1Tag     = "Jec10_V3_AK5PFchs_L1FastJet.txt";
+      L1DataTag = "Jec11_V1_AK5PFchs_L1FastJet.txt";
    }
       
    else{
-      L1Tag     = "Jec10_V3_AK5PF_L1Offset.txt";
-      L1DataTag = "Jec11_V1_AK5PF_L1Offset.txt";
+      L1Tag     = "Jec10_V3_AK5PFchs_L1Offset.txt";
+      L1DataTag = "Jec11_V1_AK5PFchs_L1Offset.txt";
    }
-   string L2Tag   = "Jec10_V3_AK5PF_L2Relative.txt";
-   string L3Tag   = "Jec10_V3_AK5PF_L3Absolute.txt";
+   string L2Tag   = "Jec10_V3_AK5PFchs_L2Relative.txt";
+   string L3Tag   = "Jec10_V3_AK5PFchs_L3Absolute.txt";
    string L2L3Tag = "Jec10_V3_AK5PF_L2L3Residual.txt"; 
 
    //use only for 4_2_2 Data
-   string L2DataTag = "Jec11_V1_AK5PF_L2Relative.txt";
-   string L3DataTag = "Jec11_V1_AK5PF_L3Absolute.txt"; 
+   string L2DataTag = "Jec11_V1_AK5PFchs_L2Relative.txt";
+   string L3DataTag = "Jec11_V1_AK5PFchs_L3Absolute.txt"; 
    
    JetCorrectorParameters L1DataJetPar(L1DataTag);
    JetCorrectorParameters L3DataJetPar(L3DataTag);
