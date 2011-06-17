@@ -29,22 +29,57 @@ options.register('muOrEle',
                  VarParsing.varType.int,
                  "Use muons (0) or electrons (1)")
 
+
+options.register('useData',
+                 1,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
+                 "Use data (1) or MC (0)")
+
+
+
 options.parseArguments()
 
 print options
 
 import sys
 
+## process.source = cms.Source("PoolSource",
+##                             fileNames = cms.untracked.vstring(
+## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_116_1_AOE.root',
+## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_117_1_X0u.root',
+## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_118_1_oH9.root',
+## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_119_1_WkG.root',
+## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_11_1_Lgw.root',
+## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_120_1_dbd.root',
+## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_121_1_kcS.root',
+## )
+## )
+
+payloadsData = ['Jec11_V1_AK5PFchs_L1FastJet.txt',
+                'Jec11_V1_AK5PFchs_L2Relative.txt',
+                'Jec11_V1_AK5PFchs_L3Absolute.txt',
+                'Jec10_V3_AK5PFchs_Uncertainty.txt'
+                ]
+
+payloadsMC = ['Jec10_V3_AK5PFchs_L1FastJet.txt',
+              'Jec10_V3_AK5PFchs_L2Relative.txt',
+              'Jec10_V3_AK5PFchs_L3Absolute.txt',
+              'Jec10_V3_AK5PFchs_L2L3Residual.txt',
+              'Jec10_V3_AK5PFchs_Uncertainty.txt'
+]
+
+if options.useData :
+    payloads = payloadsData
+else :
+    payloads = payloadsMC
+
+
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_116_1_AOE.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_117_1_X0u.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_118_1_oH9.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_119_1_WkG.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_11_1_Lgw.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_120_1_dbd.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_121_1_kcS.root',
-
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/TTJets_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_10_1_5eL.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/TTJets_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_11_1_y36.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/TTJets_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_12_1_RFD.root'
 
 )
 )
@@ -52,25 +87,27 @@ process.source = cms.Source("PoolSource",
 
 
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = ['HLT_Mu30_v1',
-                                                                                                   'HLT_Mu30_v2',
-                                                                                                   'HLT_Mu30_v3',
-                                                                                                   'HLT_Mu40_v1'])
-process.hltSelectionMu.throw = False
-process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths =  ['HLT_Ele45_CaloIdVT_TrkIdT_v1',
-                                                                                                     'HLT_Ele45_CaloIdVT_TrkIdT_v2',
-                                                                                                     'HLT_Ele45_CaloIdVT_TrkIdT_v3',
-                                                                                                     'HLT_Ele52_CaloIdVT_TrkIdT_v1',
-                                                                                                     'HLT_Ele52_CaloIdVT_TrkIdT_v2',
-                                                                                                     'HLT_Ele65_CaloIdVT_TrkIdT_v1',
-                                                                                                     'HLT_Ele25_WP80_PFMT40_v2'
-                                                                                                     ])
-process.hltSelectionEle.throw = False
-
-if options.muOrEle :
-    process.hltSelection = cms.Sequence( ~process.hltSelectionMu * process.hltSelectionEle )
+if options.ignoreTrigger :
+    process.hltSelection = cms.Sequence()
 else :
-    process.hltSelection = cms.Sequence( process.hltSelectionMu )
+    process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = ['HLT_Mu30_v1',
+                                                                                                       'HLT_Mu30_v2',
+                                                                                                       'HLT_Mu30_v3',
+                                                                                                       'HLT_Mu40_v1'])
+    process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths =  ['HLT_Ele45_CaloIdVT_TrkIdT_v1',
+                                                                                                         'HLT_Ele45_CaloIdVT_TrkIdT_v2',
+                                                                                                         'HLT_Ele45_CaloIdVT_TrkIdT_v3',
+                                                                                                         'HLT_Ele52_CaloIdVT_TrkIdT_v1',
+                                                                                                         'HLT_Ele52_CaloIdVT_TrkIdT_v2',
+                                                                                                         'HLT_Ele65_CaloIdVT_TrkIdT_v1',
+                                                                                                         'HLT_Ele25_WP80_PFMT40_v2'
+                                                                                                         ])
+    process.hltSelectionEle.throw = False
+
+    if options.muOrEle :
+        process.hltSelection = cms.Sequence( ~process.hltSelectionMu * process.hltSelectionEle )
+    else :
+        process.hltSelection = cms.Sequence( process.hltSelectionMu )
 
 
 ## Maximal Number of Events
@@ -82,7 +119,8 @@ from Analysis.SHyFT.shyftPFSelection_cfi import shyftPFSelection as shyftPFSelec
 
 process.pfShyftProducer = cms.EDFilter('EDSHyFTPFSelector',
                                     shyftPFSelection = shyftPFSelectionInput.clone(
-                                           jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
+                                           jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF'),
+                                           jecPayloads = cms.vstring( payloads )
                                         )
                                     )
 
