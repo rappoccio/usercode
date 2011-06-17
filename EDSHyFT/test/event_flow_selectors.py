@@ -9,6 +9,8 @@ def event_flow_selectors(files, tokens, labels ) :
 
     niterations = len(labels)
 
+    sum_all={}
+    
     for s in tokens:
         sum_events = []
         for iiter in range(0,niterations) :
@@ -40,10 +42,12 @@ def event_flow_selectors(files, tokens, labels ) :
         print '-------------'
         print '%s' %s
         print '-------------'
+        if s not in sum_all: sum_all[s]={}
         for iteration in range(0,niterations) :
             print '%25s' % labels[iteration],' : %10d' % sum_events[iteration]
+            sum_all[s][labels[iteration]]=sum_events[iteration]
 
-            
+    return sum_all
             
                     #print ' The rest = ' + str( line.find( i2, len(line) -1, 0 ) )
                     

@@ -29,20 +29,32 @@ if options.data == 1:
    inputCMSSW = 'shyftEDAnalyzer_ele.py'
    outputLable = '_ttbsm_423_v6'
    crabFileStrs = [
-      ## ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '160404-161176', 'p1'],
-##       ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2', '161216-163261', 'p2'],
-##       ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3', '163286-163869', 'p3'],
+      ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '160404-161176', 'p1'],
+      ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2', '161216-163261', 'p2'],
+      ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3', '163286-163869', 'p3'],
+      ['/SingleElectron/srappocc-ttbsm_v8_Run2011-PromptReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',   60, 0, 'Data', 0, 0,'HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3', '165088-165633', 'p4'],
+      ['/SingleElectron/srappocc-ttbsm_v8_Run2011-PromptReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',   60, 0, 'Data', 0, 0,'HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '165970-166701', 'p5'],
       ]
 else:
    inputCMSSW = 'shyftEDAnalyzer_allsys_ele.py'
    outputLable = '_ttbsm_415_v7' 
    crabFileStrs = [
+
+      ###################################################################################################################################
+      #__________For tprime use: python submit_ele_template.py --data=0 --inputCfg=crab_dummy_anashyft_ele_ph01.cfg______________
+      ###################################################################################################################################
+      
+      ## ['/bprime350_tWtW_Fall10MG7TeV_AlexisLHE_atFermilab/cjenkins-tprime350_tWtW_Fall10MG7TeV-6a29f0fac22a95bcd534f59b8047bd70/USER',         60, 0, 'TPrime_350',  1, 1],
+##       ['/tprime400_bWbW_Fall10MG7TeV_AlexisLHE_v1/cjenkins-tprime400_bWbW_Fall10MG7TeV-6a29f0fac22a95bcd534f59b8047bd70/USER',                 60, 0, 'TPrime_400',  1, 1],
+##       ['/tprime450_bWbW_Fall10MG7TeV_AlexisLHE_v1/cjenkins-tprime450_bWbW_Fall10MG7TeV-42f4ff88835227db14d5f742f29d61de/USER',                 60, 0, 'TPrime_400',  1, 1],
+
+      #################################################################################################################################################################
       ['/TTJets_TuneD6T_7TeV-madgraph-tauola/vasquez-ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',          30, 0, 'Top',         1, 1],
       ['/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/skhalil-ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',      50, 1, 'Wjets',       1, 1],
       ['/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola/vasquez-ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER', 40, 1, 'Zjets',       1, 1],
       ['/TToBLNu_TuneZ2_t-channel_7TeV-madgraph/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',       30, 0, 'SingleTopT',  1, 1],
       ['/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',      30, 0, 'SingleToptW', 1, 1],
-      ['/TToBLNu_TuneZ2_t-channel_7TeV-madgraph/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',       30, 0, 'SingleTopS',  1, 1],
+      ['/TToBLNu_TuneZ2_s-channel_7TeV-madgraph/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',       30, 0, 'SingleTopS',  1, 1],
       ['/GJets_TuneD6T_HT-40To100_7TeV-madgraph/vasquez-ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',       25, 0, 'PhoJet40100', 1, 1],
       ['/GJets_TuneD6T_HT-100To200_7TeV-madgraph/vasquez-ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',      25, 0, 'PhoJet100200',1, 1],
       ['/GJets_TuneD6T_HT-200_7TeV-madgraph/vasquez-ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',           25, 0, 'PhoJet200Inf',1, 1],
@@ -51,8 +63,12 @@ else:
       ['/QCD_Pt-80to170_BCtoE_TuneZ2_7TeV-pythia6/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER' ,    40, 0, 'BCtoE80170',  1, 1],
       ['/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/samvel-ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',  60, 0, 'EMEn2030',    1, 1],
       ['/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',60, 0, 'EMEn3080',    1, 1],
-      #__________SHyFT PAT tuples_________________
-      ## ['/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6/makouski-shyft_414_v2-4102b2143a05266d07e3ed7d177f56c8/USER',   60, 0, 'EMEn80170',   1, 1],
+      
+      ###################################################################################################################################
+      #__________For SHyFT PAT tuple use : run "shyftEDAnalyzer_allsys_ele.py" with option ttbsmPAT = 0"______________
+      ###################################################################################################################################
+      
+      ##['/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6/makouski-shyft_414_v2-4102b2143a05266d07e3ed7d177f56c8/USER',   60, 0, 'EMEn80170',   1, 1],
       ]
 
 for crabFileStr in crabFileStrs :
@@ -108,4 +124,5 @@ for crabFileStr in crabFileStrs :
     s = 'crab -submit -c ' + outlocation
     print s
     subprocess.call( [s], shell=True )
+
 
