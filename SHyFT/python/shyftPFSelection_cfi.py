@@ -11,10 +11,10 @@ shyftPFSelection = cms.PSet(
         cutsToIngnore=cms.vstring()
         ),
     electronIdPFLoose = pfElectronSelector.clone(
-        cutsToIgnore = cms.vstring()#'PFIso', 'MaxMissingHits','ConversionRejection')
+        cutsToIgnore = cms.vstring('D0', 'MaxMissingHits','electronID','ConversionRejection', "MVA")
         ),
     muonIdPFLoose = pfMuonSelector.clone(
-        cutsToIngnore=cms.vstring()#'PFIso','Chi2','D0','NHits','NValMuHits','nPixelHits','nMatchedStations')
+        cutsToIngnore=cms.vstring('Chi2','D0','NHits','NValMuHits','nPixelHits','nMatchedStations')
         ),
     # input parameter sets
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),

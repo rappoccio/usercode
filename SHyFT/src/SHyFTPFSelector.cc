@@ -129,7 +129,7 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 
   allElectrons_.clear();
   selectedTightElectrons_.clear();
-  selectedLooseMuons_.clear();
+  selectedLooseElectrons_.clear();
 
   selectedMETs_.clear();
 
@@ -212,7 +212,8 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 	
       // Tight cuts
       bool passTight = electronIdPFTight_(*ielectron);
-      if (  ielectron->pt() > eleEtMin_ && fabs(ielectron->eta()) < eleEtaMax_ && passTight ) {
+      bool inTransition = fabs(ielectron->superCluster()->eta()) > 1.4442 && fabs(ielectron->superCluster()->eta()) < 1.5660;
+      if (  ielectron->pt() > eleEtMin_ && fabs(ielectron->eta()) < eleEtaMax_ && passTight && !inTransition ) {
 	selectedTightElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
       } else {
 
