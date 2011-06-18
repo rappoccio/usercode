@@ -29,11 +29,13 @@ if options.data == 1:
    inputCMSSW = 'shyftEDAnalyzer_ele.py'
    outputLable = '_ttbsm_423_v6'
    crabFileStrs = [
-      ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '160404-161176', 'p1'],
-      ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2', '161216-163261', 'p2'],
-      ['/SingleElectron/srappocc-ttbsm_v6_Run2011-May10ReReco-7e150b77ce1bf887c7a9afa63377fb1c/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3', '163286-163869', 'p3'],
-      ['/SingleElectron/srappocc-ttbsm_v8_Run2011-PromptReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',   60, 0, 'Data', 0, 0,'HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3', '165088-165633', 'p4'],
-      ['/SingleElectron/srappocc-ttbsm_v8_Run2011-PromptReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',   60, 0, 'Data', 0, 0,'HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '165970-166701', 'p5'],
+      ['/SingleElectron/srappocc-ttbsm_v8_Run2011-May10ReReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '160404-161176', 'p1'],
+      ['/SingleElectron/srappocc-ttbsm_v8_Run2011-May10ReReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2', '161216-163261', 'p2'],
+      ['/SingleElectron/srappocc-ttbsm_v8_Run2011-May10ReReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3', '163286-163869', 'p3'],
+
+      ####______________Raise the pt threshold to pt > 45 in your cfg________________________________
+      #['/SingleElectron/srappocc-ttbsm_v8_Run2011-PromptReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',   60, 0, 'Data', 0, 0,'HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3', '165088-165633', 'p4'],
+      #['/SingleElectron/srappocc-ttbsm_v8_Run2011-PromptReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',   60, 0, 'Data', 0, 0,'HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '165970-166701', 'p5'],
       ]
 else:
    inputCMSSW = 'shyftEDAnalyzer_allsys_ele.py'
@@ -62,13 +64,12 @@ else:
       ['/QCD_Pt-30to80_BCtoE_TuneZ2_7TeV-pythia6/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',      40, 0, 'BCtoE2030',   1, 1],
       ['/QCD_Pt-80to170_BCtoE_TuneZ2_7TeV-pythia6/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER' ,    40, 0, 'BCtoE80170',  1, 1],
       ['/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/samvel-ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',  60, 0, 'EMEn2030',    1, 1],
-      ['/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',60, 0, 'EMEn3080',    1, 1],
+      ['/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',60, 0, 'EMEn80170',   1, 1],
       
       ###################################################################################################################################
       #__________For SHyFT PAT tuple use : run "shyftEDAnalyzer_allsys_ele.py" with option ttbsmPAT = 0"______________
       ###################################################################################################################################
-      
-      ##['/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6/makouski-shyft_414_v2-4102b2143a05266d07e3ed7d177f56c8/USER',   60, 0, 'EMEn80170',   1, 1],
+      #['/QCD_Pt-30to80_EMEnriched_TuneZ2_7TeV-pythia6/makouski-shyft_414_v2-4102b2143a05266d07e3ed7d177f56c8/USER',   60, 0, 'EMEn3080',   1, 1],
       ]
 
 for crabFileStr in crabFileStrs :

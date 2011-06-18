@@ -326,7 +326,6 @@ process.pfShyftAnaMCMETMax20 = process.pfShyftAna.clone(
     simpleSFCalc = cms.bool(False),
     reweightBTagEff = cms.bool(False),
     useCustomPayload = cms.bool(False),
-    eRelIso = cms.double(0.15),
     metMin = cms.double(0.0),
     metMax = cms.double(20.0),
     )
