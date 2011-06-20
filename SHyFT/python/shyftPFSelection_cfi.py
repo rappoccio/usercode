@@ -5,16 +5,16 @@ from PhysicsTools.SelectorUtils.pfMuonSelector_cfi import pfMuonSelector
 
 shyftPFSelection = cms.PSet(
     electronIdPFTight = pfElectronSelector.clone(
-        cutsToIngnore=cms.vstring()
+        cutsToIgnore=cms.vstring()
         ),
     muonIdPFTight = pfMuonSelector.clone(
-        cutsToIngnore=cms.vstring()
+        cutsToIgnore=cms.vstring()
         ),
     electronIdPFLoose = pfElectronSelector.clone(
         cutsToIgnore = cms.vstring('D0', 'MaxMissingHits','electronID','ConversionRejection', "MVA")
         ),
     muonIdPFLoose = pfMuonSelector.clone(
-        cutsToIngnore=cms.vstring('Chi2','D0','NHits','NValMuHits','nPixelHits','nMatchedStations')
+        cutsToIgnore=cms.vstring('Chi2','D0','NHits','NValMuHits','nPixelHits','nMatchedStations')
         ),
     # input parameter sets
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),

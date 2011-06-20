@@ -44,17 +44,17 @@ print options
 
 import sys
 
-## process.source = cms.Source("PoolSource",
-##                             fileNames = cms.untracked.vstring(
-## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_116_1_AOE.root',
-## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_117_1_X0u.root',
-## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_118_1_oH9.root',
-## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_119_1_WkG.root',
-## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_11_1_Lgw.root',
-## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_120_1_dbd.root',
-## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_121_1_kcS.root',
-## )
-## )
+process.source = cms.Source("PoolSource",
+                            fileNames = cms.untracked.vstring(
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_116_1_AOE.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_117_1_X0u.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_118_1_oH9.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_119_1_WkG.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_11_1_Lgw.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_120_1_dbd.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_121_1_kcS.root',
+)
+)
 
 payloadsData = ['Jec11_V1_AK5PFchs_L1FastJet.txt',
                 'Jec11_V1_AK5PFchs_L2Relative.txt',
@@ -75,14 +75,14 @@ else :
     payloads = payloadsMC
 
 
-process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring(
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/TTJets_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_10_1_5eL.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/TTJets_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_11_1_y36.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/TTJets_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_12_1_RFD.root'
+## process.source = cms.Source("PoolSource",
+##                             fileNames = cms.untracked.vstring(
+## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/TTJets_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_10_1_5eL.root',
+## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/TTJets_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_11_1_y36.root',
+## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/TTJets_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_12_1_RFD.root'
 
-)
-)
+## )
+## )
 
 
 
@@ -102,6 +102,7 @@ else :
                                                                                                          'HLT_Ele65_CaloIdVT_TrkIdT_v1',
                                                                                                          'HLT_Ele25_WP80_PFMT40_v2'
                                                                                                          ])
+    process.hltSelectionMu.throw = False
     process.hltSelectionEle.throw = False
 
     if options.muOrEle :
@@ -124,6 +125,20 @@ process.pfShyftProducer = cms.EDFilter('EDSHyFTPFSelector',
                                         )
                                     )
 
+process.pfShyftProducerLoose = cms.EDFilter('EDSHyFTPFSelector',
+                                            shyftPFSelection = shyftPFSelectionInput.clone(
+                                                jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF'),
+                                                muonSrc = cms.InputTag('selectedPatMuonsLoosePFlow'),
+                                                electronSrc = cms.InputTag('selectedPatElectronsLoosePFlow'),
+                                                jecPayloads = cms.vstring( payloads ),
+                                                removeLooseLep = cms.bool(True)
+                                                )
+                                            )
+process.pfShyftProducerLoose.shyftPFSelection.cutsToIgnore.append('== 1 Tight Lepton')
+process.pfShyftProducerLoose.shyftPFSelection.cutsToIgnore.append('0 other lepton')
+process.pfShyftProducerLoose.shyftPFSelection.cutsToIgnore.append('>=1 Jets')
+process.pfShyftProducerLoose.shyftPFSelection.muonIdPFTight.cutsToIgnore.append('PFIso')
+process.pfShyftProducerLoose.shyftPFSelection.electronIdPFTight.cutsToIgnore.append('PFIso')
 
 ## std sequence to produce the kinematic fit for semi-leptonic events
 process.load('TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Muons_cfi')
@@ -201,6 +216,10 @@ process.pfShyftTupleJets = cms.EDProducer(
         )  
     )
 
+process.pfShyftTupleJetsLoose = process.pfShyftTupleJets.clone(
+    src = cms.InputTag("pfShyftProducerLoose", "jets"),
+    )
+
 
 process.pfShyftTupleMuons = cms.EDProducer(
     "CandViewNtpProducer", 
@@ -222,7 +241,38 @@ process.pfShyftTupleMuons = cms.EDProducer(
             ),
         cms.PSet(
             tag = cms.untracked.string("pfiso"),
-            quantity = cms.untracked.string("userIsolation('PfAllParticleIso')")
+            quantity = cms.untracked.string("userIsolation('pat::PfChargedHadronIso') + " +
+                                            "userIsolation('pat::PfNeutralHadronIso') + " +
+                                            "userIsolation('pat::PfGammaIso')"
+                                            )
+            ),
+        )  
+    )
+
+process.pfShyftTupleMuonsLoose = cms.EDProducer(
+    "CandViewNtpProducer", 
+    src = cms.InputTag("pfShyftProducerLoose", "muons"),
+    lazyParser = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
+    variables = cms.VPSet(
+        cms.PSet(
+            tag = cms.untracked.string("pt"),
+            quantity = cms.untracked.string("pt")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("eta"),
+            quantity = cms.untracked.string("eta")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("phi"),
+            quantity = cms.untracked.string("phi")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pfiso"),
+            quantity = cms.untracked.string("userIsolation('pat::PfChargedHadronIso') + " +
+                                            "userIsolation('pat::PfNeutralHadronIso') + " +
+                                            "userIsolation('pat::PfGammaIso')"
+                                            )
             ),
         )  
     )
@@ -270,11 +320,42 @@ process.pfShyftTupleElectrons = cms.EDProducer(
         )  
     )
 
+process.pfShyftTupleElectronsLoose = cms.EDProducer(
+    "CandViewNtpProducer", 
+    src = cms.InputTag("pfShyftProducerLoose", "electrons"),
+    lazyParser = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
+    variables = cms.VPSet(
+        cms.PSet(
+            tag = cms.untracked.string("pt"),
+            quantity = cms.untracked.string("pt")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("eta"),
+            quantity = cms.untracked.string("eta")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("phi"),
+            quantity = cms.untracked.string("phi")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pfiso"),
+            quantity = cms.untracked.string("userIsolation('PfAllParticleIso')")
+            ),
+        )  
+    )
 
-process.p = cms.Path(
+process.p1 = cms.Path(
     process.hltSelection*
-    process.pfShyftProducer *
-    process.kinFitTtSemiLepEvent *
+    process.pfShyftProducerLoose *
+    process.pfShyftTupleJetsLoose*    
+    process.pfShyftTupleMuonsLoose*
+    process.pfShyftTupleElectronsLoose
+    )
+
+process.p2 = cms.Path(
+    process.hltSelection*
+    process.pfShyftProducer*
     process.pfShyftTupleJets*
     process.pfShyftTupleMuons*
     process.pfShyftTupleElectrons*
@@ -289,11 +370,11 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string("shyft_ultraslim.root"),
-                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
+                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p1', 'p2') ),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       #'keep *_pfShyftProducer_*_*',
                                                                       'keep double_*_rho_*',
-                                                                      'keep *_pfShyftTuple*_*_*',
+                                                                      'keep *_pfShyftTuple*_*_*'
                                                                       #'keep *_kinFitTtSemiLepEvent_*_*'
                                                                       ) 
                                )
