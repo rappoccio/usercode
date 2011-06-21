@@ -18,4 +18,6 @@
   </bin>
   <bin   file="flavorhistory_ana.C">
   </bin>
+  <bin   file="pileUpInfo_ana.C">
+  </bin>
 </environment>

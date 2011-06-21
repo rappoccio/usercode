@@ -40,7 +40,7 @@ int main ( int argc, char ** argv )
   }
 
   // Get the python configuration
-  PythonProcessDesc builder(argv[1]);
+  PythonProcessDesc builder(argv[1], argc, argv);
   boost::shared_ptr<edm::ProcessDesc> b = builder.processDesc();
   boost::shared_ptr<edm::ParameterSet> parameters = b->getProcessPSet();
   parameters->registerIt(); 
@@ -95,7 +95,7 @@ int main ( int argc, char ** argv )
     bool isW = false;
     
     if ( flavorHistory_h.isValid() && gen_h.isValid() ) {
-      // std::cout << "Flavor history = " << *flavorHistory_h << std::endl;
+       //std::cout << "Flavor history = " << *flavorHistory_h << std::endl;
       for ( std::vector<reco::GenParticle>::const_iterator igen = gen_h->begin(),
 	      iend = gen_h->end(); igen != iend && !isW; ++igen ) {
 	if ( fabs(igen->pdgId()) == 24 ) isW = true;
