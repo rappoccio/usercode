@@ -294,6 +294,23 @@ process.pfShyftTupleMET = cms.EDProducer(
         )  
     )
 
+process.pfShyftTupleMETLoose = cms.EDProducer(
+    "CandViewNtpProducer", 
+    src = cms.InputTag("pfShyftProducerLoose", "MET"),
+    lazyParser = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
+    variables = cms.VPSet(
+        cms.PSet(
+            tag = cms.untracked.string("pt"),
+            quantity = cms.untracked.string("pt")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("phi"),
+            quantity = cms.untracked.string("phi")
+            )
+        )  
+    )
+
 
 process.pfShyftTupleElectrons = cms.EDProducer(
     "CandViewNtpProducer", 
@@ -350,7 +367,8 @@ process.p1 = cms.Path(
     process.pfShyftProducerLoose *
     process.pfShyftTupleJetsLoose*    
     process.pfShyftTupleMuonsLoose*
-    process.pfShyftTupleElectronsLoose
+    process.pfShyftTupleElectronsLoose*
+    process.pfShyftTupleMETLoose
     )
 
 process.p2 = cms.Path(
