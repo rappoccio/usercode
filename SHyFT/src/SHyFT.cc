@@ -1035,8 +1035,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	theDir.getObject<TH1>(sampleNameInput + Form("_lepPt_%dj_%dt",  numJets, kknumTags))->Fill( fabs(lepPt),   globalWeight_ * iprob );
 	
 	if(numJets!=0) {
-	  subDir->getObject<TH1>( sampleNameInput + Form("_jetEt_%dj_%dt", numJets, kknumTags))-> Fill (jetEt, globalWeight_ );
-	  theDir.getObject<TH1>( sampleNameInput + Form("_jetEt_%dj_%dt", numJets, kknumTags))-> Fill (jetEt, globalWeight_ );
+	  subDir->getObject<TH1>( sampleNameInput + Form("_jetEt_%dj_%dt", numJets, kknumTags))-> Fill (jetEt, globalWeight_ * iprob);
+	  theDir.getObject<TH1>( sampleNameInput + Form("_jetEt_%dj_%dt", numJets, kknumTags))-> Fill (jetEt, globalWeight_ * iprob);
 	}
 	
 	static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsEta_%dj_%dt", numJets, kknumTags)))->Fill( fabs(lepEta), relIso, globalWeight_ * iprob );
