@@ -1,1 +1,0 @@
-file:gooddata_2sep2010.root
