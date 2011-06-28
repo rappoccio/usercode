@@ -71,7 +71,8 @@ elif options.sample == 'HT' :
     process.source = cms.Source("PoolSource",
                                 # replace 'myfile.root' with the source file you want to use
                                 fileNames = cms.untracked.vstring(
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/guofan/HT/ttbsm_v5_Run2011A-May10ReReco-v1/66893cf1a11d0e3066e5097c4fdc37a6/ttbsm_42x_data_74_1_PRV.root',
+                                    'file:ttbsm_42x_mc.root'
+#'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/guofan/HT/ttbsm_v5_Run2011A-May10ReReco-v1/66893cf1a11d0e3066e5097c4fdc37a6/ttbsm_42x_data_74_1_PRV.root',
                                     )
                                 )
     
@@ -101,8 +102,12 @@ process.ttbsmAna = cms.EDFilter('TTBSMProducer',
                                     ),
                                 wTagParams = boostedTopWTagParams.clone(
                                     yCut = cms.double(0.0)
-                                    )
+                                    ),
+                                readTrig = cms.bool(False)
 )
+
+
+
 
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100

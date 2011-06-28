@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: TTBSMProducer.cc,v 1.4 2011/05/30 19:53:51 srappocc Exp $
+// $Id: TTBSMProducer.cc,v 1.5 2011/06/17 19:20:28 guofan Exp $
 //
 //
 
@@ -60,6 +60,7 @@ class TTBSMProducer : public edm::EDFilter {
   std::string               topTagName_;
   CATopTagFunctor           topTagFunctor_;
   BoostedTopWTagFunctor     wTagFunctor_;
+  bool                      readTrig_;
 };
 
 //
@@ -81,7 +82,8 @@ TTBSMProducer::TTBSMProducer(const edm::ParameterSet& iConfig) :
   trigs_        (iConfig.getParameter<std::vector<std::string> > ("trigs") ),
   topTagName_   (iConfig.getParameter<edm::ParameterSet>("topTagParams").getParameter<std::string>("tagName") ),
   topTagFunctor_(iConfig.getParameter<edm::ParameterSet>("topTagParams")),
-  wTagFunctor_  (iConfig.getParameter<edm::ParameterSet>("wTagParams"))
+  wTagFunctor_  (iConfig.getParameter<edm::ParameterSet>("wTagParams")),
+  readTrig_     (iConfig.getParameter<bool>("readTrig"))
 {
   //register your products
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4");
@@ -118,6 +120,7 @@ TTBSMProducer::TTBSMProducer(const edm::ParameterSet& iConfig) :
   produces<std::vector<int> >    ("topTagPassHemis1");
   produces<int>                  ("jet3Hemis0");
   produces<int>                  ("jet3Hemis1");
+
 
 }
 
@@ -213,7 +216,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
 
   // For real data, get trigger path
-  if ( iEvent.isRealData() ) {
+  if ( readTrig_ ) {
     iEvent.getByLabel( trigSrc_,h_trig );
     for ( std::vector<std::string>::const_iterator itrigBegin = trigs_.begin(),
 	    itrigEnd = trigs_.end(), itrig = itrigBegin;
