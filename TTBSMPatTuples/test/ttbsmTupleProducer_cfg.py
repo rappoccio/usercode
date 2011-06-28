@@ -45,7 +45,17 @@ if options.sample == 'Jet' :
     process.source = cms.Source("PoolSource",
                                 # replace 'myfile.root' with the source file you want to use
                                 fileNames = cms.untracked.vstring(
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v6_Run2011-May10ReReco/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_200_0_pIF.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_100_1_w3O.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_101_1_5y4.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_102_1_en8.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_103_1_JMP.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_104_1_MbI.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_105_1_P6i.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_106_1_RqH.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_107_1_kRA.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_108_1_IJb.root',
+'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/Jet/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_109_1_b9J.root'
+
                                     )
                                 )
 
@@ -56,7 +66,7 @@ if options.sample == 'Jet' :
         'HLT_Jet190_v3',
         'HLT_Jet240_v1',
         'HLT_Jet240_v2',
-        'HLT_Jet240_v3',        
+        'HLT_Jet240_v3',
         'HLT_Jet300_v1',
         'HLT_Jet300_v2',
         'HLT_Jet370_v1',
@@ -76,7 +86,17 @@ elif options.sample == 'HT' :
                                     )
                                 )
     
-    mytrigs1 = ['HLT_Jet370*']
+    mytrigs1 = ['HLT_Jet190_v1',
+                'HLT_Jet190_v2',
+                'HLT_Jet190_v3',
+                'HLT_Jet240_v1',
+                'HLT_Jet240_v2',
+                'HLT_Jet240_v3',
+                'HLT_Jet300_v1',
+                'HLT_Jet300_v2',
+                'HLT_Jet370_v1',
+                'HLT_Jet370_v2',
+                'HLT_Jet370_v3']
     mytrigs2 = ['HLT_HT500*']
     from HLTrigger.HLTfilters.hltHighLevel_cfi import *
     process.hltSelection1 = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = mytrigs1)
@@ -115,8 +135,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 print 'Making the path'
 
 process.p = cms.Path(
-    process.patTriggerDefaultSequence*
     process.hltSelection*
+    process.patTriggerDefaultSequence*
     process.ttbsmAna
     )
 
@@ -138,5 +158,5 @@ process.out.dropMetaData = cms.untracked.string("DROPPED")
 process.MessageLogger.suppressWarning.append('patTrigger')
 process.MessageLogger.suppressWarning.append('patTrigger')
 process.MessageLogger.cerr.FwkJob.limit=1
-process.MessageLogger.cerr.ERROR = cms.untracked.PSet( limit = cms.untracked.int32(1) )
+process.MessageLogger.cerr.ERROR = cms.untracked.PSet( limit = cms.untracked.int32(0) )
 #process.MessageLogger.destinations.remove( 'errors' )
