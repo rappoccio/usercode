@@ -123,7 +123,7 @@ process.ttbsmAna = cms.EDFilter('TTBSMProducer',
                                 wTagParams = boostedTopWTagParams.clone(
                                     yCut = cms.double(0.0)
                                     ),
-                                readTrig = cms.bool(False)
+                                readTrig = cms.bool(True)
 )
 
 
