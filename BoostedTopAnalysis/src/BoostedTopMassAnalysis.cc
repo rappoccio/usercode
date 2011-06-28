@@ -57,8 +57,8 @@ void BoostedTopMassAnalysis::analyze(const edm::EventBase& iEvent)
   if ( semilepRet_[passAllSemilep_] ) {
 
     SHyFTPFSelector::collection_type const & jets      = shyftSelector_.selectedJets      ();
-    SHyFTPFSelector::collection_type const & muons     = shyftSelector_.selectedMuons     ();
-    SHyFTPFSelector::collection_type const & electrons = shyftSelector_.selectedElectrons ();
+    SHyFTPFSelector::collection_type const & muons     = shyftSelector_.selectedTightMuons     ();
+    SHyFTPFSelector::collection_type const & electrons = shyftSelector_.selectedTightElectrons ();
     SHyFTPFSelector::value_type      const & met       = shyftSelector_.selectedMET       ();
 
     typedef std::vector<SHyFTPFSelector::const_iterator> candidate_const_iterator_collection;
