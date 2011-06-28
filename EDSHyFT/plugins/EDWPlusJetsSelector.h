@@ -42,6 +42,7 @@ class EDWPlusJetsSelector : public edm::FilterWrapper<SHyFTSelector> {
       pat::Jet const * ijet = dynamic_cast<pat::Jet const *>( i->masterClonePtr().get() );
       if ( ijet != 0 )
 	jets->push_back( *ijet );
+	jets->back().setP4( i->p4() );//set back the P4 to the clonned jet
     }
 
 
