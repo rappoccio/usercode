@@ -12,11 +12,14 @@ MistagMaker::MistagMaker( edm::ParameterSet const & params, TFileDirectory & iDi
   wMassMax_               (params.getParameter<double>("wMassMax") ),
   ptMin_               (params.getParameter<double>("jetPtMin") )
 {
-  histograms1d["wTagPt"]      =   theDir.make<TH1F>("wTagPt",   "W Jet Pt",   200,    0,    1000 );
-  histograms1d["probePt"]     =   theDir.make<TH1F>("probePt",  "W Jet Pt",   200,    0,    1000 );
+  histograms1d["wTagPt"]      =   theDir.make<TH1F>("wTagPt",   "W Jet Pt",   400,    0,    2000 );
+  histograms1d["probePt"]     =   theDir.make<TH1F>("probePt",  "W Jet Pt",   400,    0,    2000 );
   histograms1d["nJets"]       =   theDir.make<TH1F>("nJets",    "N Jets",     20,     0,    20  );
-  histograms1d["topProbePt"]  =   theDir.make<TH1F>("topProbePt", "Top Probe Pt", 200,  0,  1000 );
-  histograms1d["topTagPt"]    =   theDir.make<TH1F>("topTagPt", "Top Tag Pt", 200,    0,    1000 );
+  histograms1d["topProbePt"]  =   theDir.make<TH1F>("topProbePt", "Top Probe Pt", 400,  0,  2000 );
+  histograms1d["topTagPt"]    =   theDir.make<TH1F>("topTagPt", "Top Tag Pt", 400,    0,    2000 );
+
+  histograms1d["PassNminusOne_ProbePt"]  =   theDir.make<TH1F>("PassNminusOne_ProbePt", "PassNminusOne_ProbePt", 400,  0,  2000 );
+  histograms1d["PassNminusOne_TagPt"]    =   theDir.make<TH1F>("PassNminusOne_TagPt", "PassNminusOne_TagPt", 400,  0,  2000 );
 
   histograms1d["wTagPt"]        ->  Sumw2();
   histograms1d["probePt"]       ->  Sumw2();
@@ -74,15 +77,16 @@ void MistagMaker::analyze( const edm::EventBase & iEvent )
   for( std::vector<pat::Jet>::const_iterator ijet=caTopJetsHandle->begin(), jetEnd=caTopJetsHandle->end();
   ijet != jetEnd; ijet++ )
   {
-    if( ijet->pt() > 250 && fabs( ijet->eta() ) < 2.4 ) {
+    if( ijet->pt() > 350 && fabs( ijet->eta() ) < 2.4 ) {
       caTopJets.push_back( &(*ijet) ) ;
     }
   }
-
+	
   if( caTopJets.size() == 2 ) {
     pat::Jet const & jet0 = *(caTopJets.at(0)) ;
     pat::Jet const & jet1 = *(caTopJets.at(1)) ;
-    double minMass0 = 0.0,  minMass1 = 0.0 ;
+	
+	double minMass0 = 0.0,  minMass1 = 0.0 ;
     std::vector<const reco::Candidate *>  subjets0 = jet0.getJetConstituentsQuick();
     std::vector<const reco::Candidate *>  subjets1 = jet1.getJetConstituentsQuick();
 
@@ -112,6 +116,9 @@ void MistagMaker::analyze( const edm::EventBase & iEvent )
 
     bool tagged0 = minMass0 > 50 && jet0.mass() > 140 && jet0.mass() < 250 ;
     bool tagged1 = minMass1 > 50 && jet1.mass() > 140 && jet1.mass() < 250 ;
+    
+	bool m0 = minMass0 < 50 && jet0.mass() > 140 && jet0.mass() < 250 ;
+	bool m1 = minMass0 < 50 && jet0.mass() > 140 && jet0.mass() < 250 ;
 
     double x = flatDistribution_->fire();
     if( x < 0.5 ) {
@@ -119,10 +126,18 @@ void MistagMaker::analyze( const edm::EventBase & iEvent )
         histograms1d["topProbePt"]      ->    Fill( jet1.pt() );
         if( tagged1 )   histograms1d["topTagPt"]    ->    Fill( jet1.pt() );
       }
+	  if ( m0 ) {
+		histograms1d["PassNminusOne_ProbePt"]      ->    Fill( jet1.pt() );
+		if( tagged1 )   histograms1d["PassNminusOne_TagPt"]    ->    Fill( jet1.pt() );
+	  }
     } else {
       if( !tagged1 )  {
         histograms1d["topProbePt"]    ->      Fill( jet0.pt() );
         if( tagged0 )   histograms1d["topTagPt"]    ->    Fill( jet0.pt() );
+      }
+	  if ( m1 ) {
+        histograms1d["PassNminusOne_ProbePt"]      ->    Fill( jet0.pt() );
+        if( tagged1 )   histograms1d["PassNminusOne_TagPt"]    ->    Fill( jet0.pt() );
       }
     }
   }

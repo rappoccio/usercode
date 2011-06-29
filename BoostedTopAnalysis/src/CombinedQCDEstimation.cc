@@ -151,7 +151,39 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
   theDir.make<TH1F>("CATop_pt_minmasscut",			"CATop_pt_minmasscut",			100,	0,  4000 );
   theDir.make<TH1F>("CATop_eta_minmasscut",			"CATop_eta_minmasscut",			100,	-3,  3 );
 	
-	
+  theDir.make<TH1F>("CATop_mass_masscut_nsubjetscut",		"CATop_mass_masscut_nsubjetscut",		100,	0,  200 );
+  theDir.make<TH1F>("CATop_minmass_masscut_nsubjetscut",	"CATop_minmass_masscut_nsubjetscut",	100,	0,  200 );
+  theDir.make<TH1F>("CATop_nsubjets_masscut_nsubjetscut",   "CATop_nsubjets_masscut_nsubjetscut",   5,		0,  5 );
+  theDir.make<TH1F>("CATop_pt_masscut_nsubjetscut",			"CATop_pt_masscut_nsubjetscut",			100,	0,  4000 );
+  theDir.make<TH1F>("CATop_eta_masscut_nsubjetscut",		"CATop_eta_masscut_nsubjetscut",		100,	-3,  3 );
+
+
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_mass",		"CATopUntagged_atLeast1Tag_mass",		100,	0,  200 );
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_minmass",	"CATopUntagged_atLeast1Tag_minmass",	100,	0,  200 );
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_nsubjets",   "CATopUntagged_atLeast1Tag_nsubjets",   5,		0,  5 );
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_pt",			"CATopUntagged_atLeast1Tag_pt",			100,	0,  4000 );
+  theDir.make<TH1F>("ttMassType11_atLeast1Tag",		"ttMassType11_atLeast1Tag", 500,  0,  5000);
+
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_masscut_mass",		"CATopUntagged_atLeast1Tag_masscut_mass",		100,	0,  200 );
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_masscut_minmass",	"CATopUntagged_atLeast1Tag_masscut_minmass",	100,	0,  200 );
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_masscut_nsubjets",   "CATopUntagged_atLeast1Tag_masscut_nsubjets",   5,		0,  5 );
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_masscut_pt",			"CATopUntagged_atLeast1Tag_masscut_pt",			100,	0,  4000 );
+  theDir.make<TH1F>("ttMassType11_atLeast1Tag_masscut",		"ttMassType11_atLeast1Tag_masscut", 500,  0,  5000);
+
+ theDir.make<TH1F>("CATopUntagged_atLeast1Tag_masscut_nsubjetscut_mass",       "CATopUntagged_atLeast1Tag_masscut_nsubjetscut_mass",       100,    0,  200 );
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_masscut_nsubjetscut_minmass",    "CATopUntagged_atLeast1Tag_masscut_nsubjetscut_minmass",    100,    0,  200 );
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_masscut_nsubjetscut_nsubjets",   "CATopUntagged_atLeast1Tag_masscut_nsubjetscut_nsubjets",   5,      0,  5 );
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_masscut_nsubjetscut_pt",         "CATopUntagged_atLeast1Tag_masscut_nsubjetscut_pt",         100,    0,  4000 );
+  theDir.make<TH1F>("ttMassType11_atLeast1Tag_masscut_nsubjetscut",     "ttMassType11_atLeast1Tag_masscut_nsubjetscut", 500,  0,  5000);
+
+
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_minmasscut_mass",		"CATopUntagged_atLeast1Tag_minmasscut_mass",		100,	0,  200 );
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_minmasscut_minmass",	"CATopUntagged_atLeast1Tag_minmasscut_minmass",	100,	0,  200 );
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_minmasscut_nsubjets",   "CATopUntagged_atLeast1Tag_minmasscut_nsubjets",   5,		0,  5 );
+  theDir.make<TH1F>("CATopUntagged_atLeast1Tag_minmasscut_pt",			"CATopUntagged_atLeast1Tag_minmasscut_pt",			100,	0,  4000 );
+  theDir.make<TH1F>("ttMassType11_atLeast1Tag_minmasscut",		"ttMassType11_atLeast1Tag_minmasscut", 500,  0,  5000);
+
+
   theDir.make<TH1F>("PrunedJet_mass",				"PrunedJet_mass",		100,	0,  400 );
   theDir.make<TH1F>("PrunedJet_mu",					"PrunedJet_mu",			100,	0,  1 );
   theDir.make<TH1F>("PrunedJet_dR",					"PrunedJet_dR",			100,	0,  1 );
@@ -250,14 +282,64 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
   if (verbose_&&passType11) cout<<"  caTopJets_.size() = "<<caTopJets_.size()<<endl;
   if (verbose_&&passType22) cout<<"  pfJets_.size() = "<<pfJets_.size()<<endl;
 	
+  //if (passType11 && ca8Jets_.size() >1 ) verbose_=true;
+
+//check
+if (passType11)
+{
+	int countMassiveJets=0;
+	for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=ca8Jets_.begin(), jetEnd=ca8Jets_.end(), ica8=jetBegin ;
+       ica8!=jetEnd; ica8++ )
+    {
+      pat::Jet const & ca8Jet = **ica8;
+	  if (ca8Jet.mass()>200) countMassiveJets++; 
+    }
+	if (countMassiveJets > 4 )
+	{
+		cout<<"WTF ! THIS EVENT HAS MORE THAN 4 MASSIVE JETS : "<<iEvent.id()<<endl; 
+		verbose_ = true;
+	}
+
+}
+
+
   if (verbose_&&passType11)
   {
-    cout<<"Print ca8Jets info"<<endl;
+cout<<"Print ca8Jets info - JEC"<<endl;
+	int count=0;
     for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=ca8Jets_.begin(), jetEnd=ca8Jets_.end(), ica8=jetBegin ;
+       ica8!=jetEnd; ica8++ )
+    {
+      pat::Jet const & ca8Jet = **ica8;
+      //cout<<"  eta "<<ca8Jet.eta()<<" phi "<<ca8Jet.phi()<<
+	  
+		cout<<"Jet "<<count<<endl;
+		cout<<" corrected pt "<<ca8Jet.pt()<<endl;
+		cout<<" uncorrected pt "<<ca8Jet.correctedJet("Uncorrected").pt()<<endl;
+		cout<<" L2Relative corrected pt "<<ca8Jet.correctedJet("L2Relative").pt()<<endl;
+		cout<<" L3Absolute corrected pt "<<ca8Jet.correctedJet("L3Absolute").pt()<<endl;
+
+      //cout<<" CHEF "<<ca8Jet.chargedHadronEnergyFraction()<<" CHE "<<ca8Jet.chargedHadronEnergy();
+      //cout<<" NHEF "<<ca8Jet.neutralHadronEnergyFraction()<<" NHE "<<ca8Jet.neutralHadronEnergy();
+      //cout<<" CEMEF "<<ca8Jet.chargedEmEnergyFraction()<<" NEMEF"<<ca8Jet.neutralEmEnergyFraction();
+      //cout<<" photonEF "<<ca8Jet.photonEnergyFraction()<<" muonEF"<<ca8Jet.muonEnergyFraction();
+      //cout<<" nConst "<<ca8Jet.nConstituents()<<endl;
+    count++;
+	}
+
+
+    cout<<"Print ca8Jets info"<<endl;
+	for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=ca8Jets_.begin(), jetEnd=ca8Jets_.end(), ica8=jetBegin ;
 	   ica8!=jetEnd; ica8++ ) 
     {
       pat::Jet const & ca8Jet = **ica8;
-      cout<<"  eta "<<ca8Jet.eta()<<" phi "<<ca8Jet.phi()<<" pt "<<ca8Jet.pt()<<" mass "<<ca8Jet.mass()<<endl;
+      cout<<"  eta "<<ca8Jet.eta()<<" phi "<<ca8Jet.phi()<<" pt "<<ca8Jet.pt()<<" mass "<<ca8Jet.mass()<<" energy "<<ca8Jet.energy();
+	  cout<<" uncorr pt "<<ca8Jet.correctedJet("Uncorrected").pt()<<" uncorr mass "<<ca8Jet.correctedJet("Uncorrected").mass();
+	  cout<<" CHEF "<<ca8Jet.chargedHadronEnergyFraction()<<" CHE "<<ca8Jet.chargedHadronEnergy();
+	  cout<<" NHEF "<<ca8Jet.neutralHadronEnergyFraction()<<" NHE "<<ca8Jet.neutralHadronEnergy();
+	  cout<<" CEMEF "<<ca8Jet.chargedEmEnergyFraction()<<" NEMEF"<<ca8Jet.neutralEmEnergyFraction();
+	  //cout<<" photonEF "<<ca8Jet.photonEnergyFraction()<<" muonEF"<<ca8Jet.muonEnergyFraction();
+	  cout<<" nConst "<<ca8Jet.nConstituents()<<endl;
     }
 	cout<<"Print caTopJet info"<<endl;
 	for( vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin=caTopJets_.begin(), jetEnd=caTopJets_.end(), icatop=jetBegin ;
@@ -265,7 +347,7 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 	{
 	  pat::Jet const & caTopJet = **icatop;
 			
-	  cout<<"  eta "<<caTopJet.eta()<<" phi "<<caTopJet.phi()<<" pt "<<caTopJet.pt()<<" mass "<<caTopJet.mass()<<endl;
+	  cout<<"  eta "<<caTopJet.eta()<<" phi "<<caTopJet.phi()<<" pt "<<caTopJet.pt()<<" mass "<<caTopJet.mass()<<"  energy "<<caTopJet.energy()<<endl;
 	}
   }
   if (verbose_&&passType22)
@@ -290,8 +372,12 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 	
   // Define two hemispheres in deltaphi. hemisphere0 is centered on the leading unpruned CA8 jet. hemisphere1 is opposite. Group caTop and pruned jets into these hemispheres.
   if (verbose_) cout<<"Group jets into hemispheres"<<endl;
+  if (verbose_) cout<<"passType11  "<<passType11<<endl;
+  if (verbose_) cout<<"passType22  "<<passType22<<endl;
+  if (verbose_) cout<<"ca8Jets_.size() "<<ca8Jets_.size()<<endl;
   if( passType11 && passType22 && ca8Jets_.size()>=2 )  
-  {			
+  {	
+  	if (verbose_) cout<<"pass passType11 && passType22 && ca8Jets_.size()>=2  "<<endl;
     theDir.getObject<TH1>("Nevents_PassCuts")->Fill(2);
 	
     //Put jets in the proper hemisphere
@@ -462,7 +548,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 	    cout<<"  wJet1 eta "<<wTags1.at(0)->eta()<<" wJet1 phi "<<wTags1.at(0)->phi()
 	      <<" closest jet eta "<<aJet1->eta()<<" phi "<<aJet1->phi()<<endl;
 	}//if wTags1 not empty
-		
+	
+	if (verbose_) cout<<"about to start preselection "<<endl;
     ////////////////////////////
 	// Preselection
 	bool preselected_event=false;
@@ -514,18 +601,22 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		  math::XYZTLorentzVector pairwiseMass01;
 		  math::XYZTLorentzVector pairwiseMass02;
 		  math::XYZTLorentzVector pairwiseMass12;
+		  math::XYZTLorentzVector pairwiseMassAll;
 					
 		  for (std::vector<const reco::Candidate *>::iterator subjetIt = catop0_subjets.begin(); subjetIt != catop0_subjets.end(); subjetIt++)
 		  {					
 			reco::Candidate const * subjetCand =  (*subjetIt);
 			reco::PFJet const * pfSubjet = dynamic_cast<reco::PFJet const *>(subjetCand);  
 						
+			if (verbose_) cout<<"jet 1 subjet "<<subjetLoopCount<<" mass = "<<pfSubjet->mass();			
 			if (subjetLoopCount==0 || subjetLoopCount==1) pairwiseMass01 += pfSubjet->p4();
 			if (subjetLoopCount==0 || subjetLoopCount==2) pairwiseMass02 += pfSubjet->p4();
 			if (subjetLoopCount==1 || subjetLoopCount==2) pairwiseMass12 += pfSubjet->p4();
 			subjetLoopCount++;
+			  pairwiseMassAll+= pfSubjet->p4();
 		  }
 					
+		  if (verbose_) cout<<"mass of all subjets jet0 = "<<pairwiseMassAll.mass()<<endl;
 		  double min2 = std::min(pairwiseMass01.mass(), pairwiseMass02.mass() );
 		  j0_minmass = std::min(min2, pairwiseMass12.mass() );
 		  j0_nsubjets = subjetLoopCount;
@@ -559,18 +650,20 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		  math::XYZTLorentzVector pairwiseMass01;
 		  math::XYZTLorentzVector pairwiseMass02;
 		  math::XYZTLorentzVector pairwiseMass12;
+		  math::XYZTLorentzVector pairwiseMassAll;
 					
 		  for (std::vector<const reco::Candidate *>::iterator subjetIt = catop1_subjets.begin(); subjetIt != catop1_subjets.end(); subjetIt++)
 		    {					
 		      reco::Candidate const * subjetCand =  (*subjetIt);
 		      reco::PFJet const * pfSubjet = dynamic_cast<reco::PFJet const *>(subjetCand);  
-						
+			if (verbose_) cout<<"jet 1 subjet "<<subjetLoopCount<<" mass = "<<pfSubjet->mass();			
 		      if (subjetLoopCount==0 || subjetLoopCount==1) pairwiseMass01 += pfSubjet->p4();
 		      if (subjetLoopCount==0 || subjetLoopCount==2) pairwiseMass02 += pfSubjet->p4();
 		      if (subjetLoopCount==1 || subjetLoopCount==2) pairwiseMass12 += pfSubjet->p4();
 		      subjetLoopCount++;
+			  pairwiseMassAll+= pfSubjet->p4();
 		    }
-					
+		   if (verbose_) cout<<"mass of all subjets jet 1"<<pairwiseMassAll.mass()<<endl;
 		  double min2 = std::min(pairwiseMass01.mass(), pairwiseMass02.mass() );
 		  j1_minmass = std::min(min2, pairwiseMass12.mass() );
 		  j1_nsubjets = subjetLoopCount;
@@ -578,6 +671,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 		}//end if jet1 nsubjets>=3
 	    }//end hemi1 notempty
 			
+	  
+
 	  if (verbose_) 
 	    cout<<"    p4_catop_jet0.mass() "<<p4_catop_jet0.mass()<<"  j0_minmass "<<j0_minmass<<"  j0_nsubjets "<<j0_nsubjets<<endl;
 	  if (verbose_) 
@@ -655,7 +750,23 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 			theDir.getObject<TH1>("CATop_pt_minmasscut")		->Fill( p4_catop_jet1.pt(), evtWeight);
 			theDir.getObject<TH1>("CATop_eta_minmasscut")		->Fill( p4_catop_jet1.eta(), evtWeight);
 	  }
-		
+	  if ( p4_catop_jet0.mass() > caTopJetMassMin_ && p4_catop_jet0.mass() < caTopJetMassMax_ && j0_nsubjets>=3)
+      {
+            theDir.getObject<TH1>("CATop_mass_masscut_nsubjetscut")     ->Fill( p4_catop_jet0.mass(), evtWeight);
+            theDir.getObject<TH1>("CATop_minmass_masscut_nsubjetscut")  ->Fill( j0_minmass, evtWeight);
+            theDir.getObject<TH1>("CATop_nsubjets_masscut_nsubjetscut") ->Fill( j0_nsubjets, evtWeight);
+            theDir.getObject<TH1>("CATop_pt_masscut_nsubjetscut")       ->Fill( p4_catop_jet0.pt(), evtWeight);
+            theDir.getObject<TH1>("CATop_eta_masscut_nsubjetscut")      ->Fill( p4_catop_jet0.eta(), evtWeight);
+      }
+      if ( p4_catop_jet1.mass() > caTopJetMassMin_ && p4_catop_jet1.mass() < caTopJetMassMax_ && j1_nsubjets>=3)
+      {
+            theDir.getObject<TH1>("CATop_mass_masscut_nsubjetscut")     ->Fill( p4_catop_jet1.mass(), evtWeight);
+            theDir.getObject<TH1>("CATop_minmass_masscut_nsubjetscut")  ->Fill( j1_minmass, evtWeight);
+            theDir.getObject<TH1>("CATop_nsubjets_masscut_nsubjetscut") ->Fill( j1_nsubjets, evtWeight);
+            theDir.getObject<TH1>("CATop_pt_masscut_nsubjetscut")       ->Fill( p4_catop_jet1.pt(), evtWeight);
+            theDir.getObject<TH1>("CATop_eta_masscut_nsubjetscut")      ->Fill( p4_catop_jet1.eta(), evtWeight);
+      }
+
 
 	  
 		
@@ -988,7 +1099,90 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 	  bool type22_passevent=false;
 			
 	  // Use unpruned, regular CA8 jets for Njets, pT, and eta cuts. 
-			
+	
+	 //"N-1" plots
+	  if ( preselected_event && (hasTaggedTopJet0 || hasTaggedTopJet1) )
+      {
+        double delta_phi_catop = fabs( reco::deltaPhi<double>( p4_catop_jet0.phi(), p4_catop_jet1.phi() ) );
+        if (delta_phi_catop >2.1)
+        {
+          double ttMass = (p4_catop_jet0+p4_catop_jet1).mass();
+
+          theDir.getObject<TH1>("ttMassType11_atLeast1Tag")->Fill (ttMass, evtWeight); 
+
+
+          if (hasTaggedTopJet0)
+		  {
+		    theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_pt")->Fill (p4_catop_jet1.pt() , evtWeight); 
+		    theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_mass")->Fill ( p4_catop_jet1.mass() , evtWeight); 
+		    theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_minmass")->Fill (j1_minmass , evtWeight); 
+		    theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_nsubjets")->Fill (j1_nsubjets , evtWeight); 
+		  
+		  	if ( p4_catop_jet1.mass() >140 && p4_catop_jet1.mass() <250 )
+			{
+		  	    theDir.getObject<TH1>("ttMassType11_atLeast1Tag_masscut")->Fill (ttMass, evtWeight);
+				theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_pt")->Fill (p4_catop_jet1.pt() , evtWeight);
+            	theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_mass")->Fill ( p4_catop_jet1.mass() , evtWeight);
+            	theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_minmass")->Fill (j1_minmass , evtWeight);        
+            	theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_nsubjets")->Fill (j1_nsubjets , evtWeight);
+			}
+			if ( p4_catop_jet1.mass() >140 && p4_catop_jet1.mass() <250 && j1_nsubjets>=3 )
+			{
+		  	    theDir.getObject<TH1>("ttMassType11_atLeast1Tag_masscut_nsubjetscut")->Fill (ttMass, evtWeight);
+				theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_nsubjetscut_pt")->Fill (p4_catop_jet1.pt() , evtWeight);
+            	theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_nsubjetscut_mass")->Fill ( p4_catop_jet1.mass() , evtWeight);
+            	theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_nsubjetscut_minmass")->Fill (j1_minmass , evtWeight);        
+            	theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_nsubjetscut_nsubjets")->Fill (j1_nsubjets , evtWeight);
+			}
+		 
+		  	if (  j1_minmass >50 )
+			{
+		    	theDir.getObject<TH1>("ttMassType11_atLeast1Tag_minmasscut")->Fill (ttMass, evtWeight);
+				theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_minmasscut_pt")->Fill (p4_catop_jet1.pt() , evtWeight);
+            	theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_minmasscut_mass")->Fill ( p4_catop_jet1.mass() , evtWeight);
+            	theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_minmasscut_minmass")->Fill (j1_minmass , evtWeight);        
+            	theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_minmasscut_nsubjets")->Fill (j1_nsubjets , evtWeight);
+			}
+		  }
+		if (hasTaggedTopJet1)
+          {   
+            theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_pt")->Fill (p4_catop_jet0.pt() , evtWeight);
+            theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_mass")->Fill ( p4_catop_jet0.mass() , evtWeight);
+            theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_minmass")->Fill (j0_minmass , evtWeight);        
+            theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_nsubjets")->Fill (j0_nsubjets , evtWeight);
+          
+            if ( p4_catop_jet0.mass() >140 && p4_catop_jet0.mass() <250 )
+            {
+		    	theDir.getObject<TH1>("ttMassType11_atLeast1Tag_masscut")->Fill (ttMass, evtWeight);
+                theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_pt")->Fill (p4_catop_jet0.pt() , evtWeight);
+                theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_mass")->Fill ( p4_catop_jet0.mass() , evtWeight);    
+            theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_minmass")->Fill (j0_minmass , evtWeight);
+                theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_nsubjets")->Fill (j0_nsubjets , evtWeight);
+            }
+ 			if ( p4_catop_jet0.mass() >140 && p4_catop_jet0.mass() <250 && j0_nsubjets>=3 )
+            {
+                theDir.getObject<TH1>("ttMassType11_atLeast1Tag_masscut_nsubjetscut")->Fill (ttMass, evtWeight);
+                theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_nsubjetscut_pt")->Fill (p4_catop_jet0.pt() , evtWeight);
+                theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_nsubjetscut_mass")->Fill ( p4_catop_jet0.mass() , evtWeight);
+                theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_nsubjetscut_minmass")->Fill (j0_minmass , evtWeight);
+                theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_masscut_nsubjetscut_nsubjets")->Fill (j0_nsubjets , evtWeight);
+            }
+
+
+            if (  j0_minmass >50 )
+            {
+		    	theDir.getObject<TH1>("ttMassType11_atLeast1Tag_minmasscut")->Fill (ttMass, evtWeight);
+                theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_minmasscut_pt")->Fill (p4_catop_jet0.pt() , evtWeight);
+                theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_minmasscut_mass")->Fill ( p4_catop_jet0.mass() , evtWeight);
+                theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_minmasscut_minmass")->Fill (j0_minmass , evtWeight);
+                theDir.getObject<TH1>("CATopUntagged_atLeast1Tag_minmasscut_nsubjets")->Fill (j0_nsubjets , evtWeight);
+            }
+          } 
+
+
+        }
+      }
+
 	  // Type 1+1 signal
 	  if ( preselected_event && hasTaggedTopJet0 && hasTaggedTopJet1 )
 	  {
@@ -1005,7 +1199,8 @@ void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 					
 		  if(runOnData_||verbose_) 
 		    {
-		      cout<<" Yipee!, Type1+Type1, Event id, "<<iEvent.id()<<endl;
+			if (ttMass>2700) cout<<"WOW"<<endl;
+		      cout<<" Yipee!, Type1+Type1, Event id, "<<iEvent.id()<<"  ttmass "<<ttMass<<endl;
 		      cout<<" summary:"<<endl;
 		      cout<<"  j0_pt "<<p4_catop_jet0.pt()<<endl;
 		      cout<<"  j1_pt "<<p4_catop_jet1.pt()<<endl;
