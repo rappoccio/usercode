@@ -61,17 +61,11 @@ if options.sample == 'Jet' :
 
     
     mytrigs = [
-        'HLT_Jet190_v1',
-        'HLT_Jet190_v2',
-        'HLT_Jet190_v3',
-        'HLT_Jet240_v1',
-        'HLT_Jet240_v2',
-        'HLT_Jet240_v3',
-        'HLT_Jet300_v1',
-        'HLT_Jet300_v2',
-        'HLT_Jet370_v1',
-        'HLT_Jet370_v2',
-        'HLT_Jet370_v3']
+        'HLT_Jet190_v*',
+        'HLT_Jet240_v*',
+        'HLT_Jet300_v*',
+        'HLT_Jet370_v*'
+        ]
     from HLTrigger.HLTfilters.hltHighLevel_cfi import *
     process.hltSelection1 = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = mytrigs)
     process.hltSelection1.throw = False
@@ -86,17 +80,9 @@ elif options.sample == 'HT' :
                                     )
                                 )
     
-    mytrigs1 = ['HLT_Jet190_v1',
-                'HLT_Jet190_v2',
-                'HLT_Jet190_v3',
-                'HLT_Jet240_v1',
-                'HLT_Jet240_v2',
-                'HLT_Jet240_v3',
-                'HLT_Jet300_v1',
-                'HLT_Jet300_v2',
-                'HLT_Jet370_v1',
-                'HLT_Jet370_v2',
-                'HLT_Jet370_v3']
+    mytrigs1 = ['HLT_Jet240_v1',
+                'HLT_Jet300_v*',
+                'HLT_Jet370_v*']
     mytrigs2 = ['HLT_HT500*']
     from HLTrigger.HLTfilters.hltHighLevel_cfi import *
     process.hltSelection1 = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = mytrigs1)
@@ -110,12 +96,29 @@ elif options.sample == 'HT' :
 process.load('PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff')
 
 
+myAnaTrigs = [
+    'HLT_Jet240_v1',
+    'HLT_Jet300_v1',
+    'HLT_Jet300_v2',
+    'HLT_Jet300_v3',
+    'HLT_Jet300_v4',
+    'HLT_Jet300_v5',
+    'HLT_Jet300_v6',
+    'HLT_Jet300_v7',
+    'HLT_Jet370_v1',
+    'HLT_Jet370_v2',
+    'HLT_Jet370_v3',
+    'HLT_Jet370_v4',
+    'HLT_Jet370_v5',
+    'HLT_Jet370_v6',
+    'HLT_Jet370_v7'
+    ]
 process.ttbsmAna = cms.EDFilter('TTBSMProducer',
                                 wTagSrc = cms.InputTag('goodPatJetsCA8PrunedPF'),
                                 topTagSrc = cms.InputTag('goodPatJetsCATopTagPF'),
                                 trigSrc = cms.InputTag('patTriggerEvent'),
                                 trigs = cms.vstring(
-                                    mytrigs
+                                    myAnaTrigs
                                     ),
                                 topTagParams = caTopTagParams.clone(
                                     tagName = cms.string('CATop')

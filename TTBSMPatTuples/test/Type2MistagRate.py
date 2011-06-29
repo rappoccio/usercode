@@ -28,7 +28,7 @@ parser.add_option('-i', '--dirs', metavar='F', type='string', action='store',
 
 
 parser.add_option('-p', '--outfile', metavar='N', type='string', action='store',
-                  default='TTHadronicAnalyzer_Jet_PD_May10ReReco_PromptReco_range1_range2',
+                  default='Jet_PD_May10ReReco_PromptReco_range1_range2',
                   dest='outfile',
                   help='output file')
 
@@ -41,8 +41,6 @@ parser.add_option('-p', '--outfile', metavar='N', type='string', action='store',
 #Zprime dir "/uscms_data/d2/guofan/analysis/CMSSW_3_8_7_patch2/src/Analysis/TTBSMPatTuples/test/"
 files = glob.glob( options.dirs + "*.root" )
 print files
-
-
 
 
 events = Events (files)
@@ -232,14 +230,6 @@ NSubjetsVsMinMassSR         = ROOT.TH2F("NSubjetsVsMinMassSR",          "NSubjet
 nJetsSignal                 = ROOT.TH1F("nJetsSignal",                  "N Jets",                   20,   -0.5,   19.5 )
 
 checkWTag = 0
-#mistagFile = ROOT.TFile("top_mistag_rate_2011_Lum250_PTCut350_May27cert_HLT270_300_370.root")
-mistagFile = ROOT.TFile("MISTAG.root")
-#mistag = mistagFile.Get("TYPE12_SR_MISTAG")
-mistag = mistagFile.Get("TYPE12_KIN_MISTAG")
-
-#Has to fixe mistag with TH1D()
-#mistag1 = ROOT.TH1D()
-#mttPredDistModMass          = ROOT.PredictedDistribution( mistag1,  "mttPredDistModMass",   "Mistag Bkg mtt",   1000, 0,  5000 )
 
 
 # loop over events
@@ -297,6 +287,17 @@ for event in events:
 
     event.getByLabel (hemis0Label, hemis0Handle)
     topJets = hemis0Handle.product()
+
+
+    nTopCand = 0
+    for i in range(0,len(topJets) ) :
+      if( topJets[i].pt() > 350 ) :
+        nTopCand = nTopCand + 1
+
+    if nTopCand < 1 :
+        continue
+
+    
     event.getByLabel (hemis1Label, hemis1Handle)
     wJets = hemis1Handle.product()
     event.getByLabel (hemis0MinMassLabel, hemis0MinMassHandle)
@@ -321,10 +322,7 @@ for event in events:
     event.getByLabel( allTopTagNSubsLabel, allTopTagNSubsHandle )
     allTopJetNSubs  = allTopTagNSubsHandle.product()
 
-    nTopCand = 0
-    for i in range(0,len(topJets) ) :
-      if( topJets[i].pt() > 350 ) :
-        nTopCand = nTopCand + 1
+
 
     nHighPtJets = 0
     for j in range(0,len(allTopJets) ) :
@@ -375,26 +373,6 @@ for event in events:
     ttMassJet1MassUp = (wJets[jet3]+wJets[0]+jet1P4_massUp).mass()
     #print jet1P4_massUp.px(), jet1P4_massUp.py(), jet1P4_massUp.pz(), jet1P4_massUp.mass()
 
-    type2TopMassPdf = mistagFile.Get( "TYPE2_TOP_TAG_MASS" )
-    modJet1Mass = 0.0
-    rx = ROOT.gRandom.Uniform()
-    massBin = 0
-    lowMassBin = type2TopMassPdf.FindBin(140)
-    highMassBin = type2TopMassPdf.FindBin(250)
-    for i in range( lowMassBin, highMassBin ) :
-      x = type2TopMassPdf.Integral(lowMassBin,i)/type2TopMassPdf.Integral(lowMassBin,highMassBin)
-      if x > rx :
-        massBin = i
-        break
-    
-    modJet1Mass = type2TopMassPdf.GetXaxis().GetBinCenter( massBin )
-    jet1MassMod.Fill( modJet1Mass )
-    jet1P4_mod = copy.copy( topJets[0] )
-    jet1P4_mod.SetM( modJet1Mass )
-    ttMassMod = (wJets[jet3]+wJets[0]+jet1P4_mod).mass()
-    ttMassMod2 = ttMass
-    if  topJets[0].mass() < 140  :
-      ttMassMod2 = ttMassMod
 
     passKinCuts = (nTopCand == 1) and (wJets[0].pt() > 200)  and (wJetMu[0] < 0.4) and (wJets[jet3].pt() > 30 )
     hasBTag1    = wJetBDisc[jet3] > 3.3
@@ -473,26 +451,6 @@ for event in events:
         if passTopMass :
           NSubjetsVsMinMassSR.Fill( topJetNSubjets[0], topJetMinMass[0] )
 
-        #Apply top mistag rate to estimate bkg
-        jet1Pt = topJets[0].pt()
-        ptBin = mistag.FindBin( jet1Pt )
-        mttBkgWithMistag.Fill( ttMass, mistag.GetBinContent(ptBin) )
-        mttBkgWithMistagModMass.Fill( ttMassMod, mistag.GetBinContent(ptBin) )
-        #mttPredDistModMass.Accumulate( ttMassMod, jet1Pt, hasTopTag, 1.0 )
-
-        mttBkgWithMistagMod2Mass.Fill( ttMassMod2, mistag.GetBinContent(ptBin) )
-        mttBkgWithMistagUp.Fill( ttMass, (mistag.GetBinContent(ptBin)+mistag.GetBinError(ptBin)) )
-        mttBkgWithMistagDown.Fill( ttMass, (mistag.GetBinContent(ptBin)-mistag.GetBinError(ptBin)) )
-        type2TopTagExp.Fill( topJets[0].pt(), mistag.GetBinContent(ptBin) )
-        jet1MassExp.Fill( topJets[0].mass(), mistag.GetBinContent(ptBin) )
-        jet1EtaExp.Fill( topJets[0].eta(), mistag.GetBinContent(ptBin) )
-        jet2PtExp.Fill( wJets[0].pt(), mistag.GetBinContent(ptBin) )
-        jet2MassExp.Fill( wJets[0].mass(), mistag.GetBinContent(ptBin) )
-        jet2EtaExp.Fill( wJets[0].eta(), mistag.GetBinContent(ptBin) )
-        jet3PtExp.Fill( wJets[1].pt(), mistag.GetBinContent(ptBin) )
-        jet3MassExp.Fill( wJets[1].mass(), mistag.GetBinContent(ptBin) )
-        jet3EtaExp.Fill( wJets[1].eta(), mistag.GetBinContent(ptBin) )
-
         #Make Top mistag measurement
         type2TopProbe.Fill( topJets[0].pt() )
         if hasTopTag :  
@@ -507,13 +465,6 @@ for event in events:
           jet3MassTag.Fill( wJets[1].mass() )
           jet3EtaTag.Fill( wJets[1].eta() )
 
-        if ttMass > 800 and ttMass < 900 :
-          type2TopTagExp800GeV.Fill( topJets[0].pt(), mistag.GetBinContent(ptBin) )
-          type2TopProbe800GeV.Fill( topJets[0].pt() )
-          if hasTopTag :    type2TopTag800GeV.Fill( topJets[0].pt() )
-        if ttMass < 1000 :
-          type2TopTagExpWith1TeV.Fill( topJets[0].pt(), mistag.GetBinContent(ptBin) )
-          if hasTopTag :  type2TopTagWith1TeV.Fill( topJets[0].pt() )
 
       if SBAndSR and (not hasType2Top) :
         topJetCandPtSideBand.Fill( topJets[0].pt() )
