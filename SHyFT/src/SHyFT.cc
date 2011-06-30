@@ -90,10 +90,10 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
    theDir.make<TH1F>("lepEta",      "Lepton eta",               60, -3.0, 3.0);
    theDir.make<TH1F>("lepPhi",      "Lepton Phi",               50, -3.2, 3.2);
    theDir.make<TH1F>("lepD0",       "Lepton D0",                60, -0.2, 0.2);
-   theDir.make<TH1F>("lepTrackIso", "Lepton Track Iso",         30,    0,  30);
-   theDir.make<TH1F>("lepECalIso",  "Lepton ECal Iso",          30,    0,  30);
-   theDir.make<TH1F>("lepHCalIso",  "Lepton HCal Iso",          30,    0,  30);
-   theDir.make<TH1F>("lepRelIso",   "Lepton Rel Iso",           30,    0,  30);
+   theDir.make<TH1F>("lepTrackIso", "Lepton Track Iso",         50,    0,  5);
+   theDir.make<TH1F>("lepECalIso",  "Lepton ECal Iso",          50,    0,  5);
+   theDir.make<TH1F>("lepHCalIso",  "Lepton HCal Iso",          50,    0,  5);
+   theDir.make<TH1F>("lepRelIso",   "Lepton Rel Iso",           100,   0,  0.5);
    theDir.make<TH1F>("lepJetdR",    "dR b/w closest jet and lepton", 60, 0, 3.0);
      
    // book histograms that are specific to muons
@@ -292,6 +292,13 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
 	   else if(i==1 && l == 9) break; // cut off 1-jet bin after 1-tags
 	   else if( (!doMC_) && i==0 && l==0) break; // Data says "You had me at "Hello" ".
 	   else if( (!doMC_) && i==1 && l==1) break; // 
+       }//l
+       //Centrality
+       for(unsigned int l=0;l<allTagsEnd.size();++l) {
+          if (i==0) break; //we need at least 1 jet 
+          forBookingDir[idir]->make<TH1F>((sampleNameInput+"_Central"+jtNum+"_"+allTagsEnd[l]).c_str(),"Centrality", 120, 0, 1.2);
+          if(i==1 && l == 9) break; // cut off 1-jet bin after 1-tags
+          else if( (!doMC_) && i==1 && l==1) break;
        }//l
 
      } //End loop over njets
@@ -570,7 +577,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
   // ------------------------------------------------------------------------------------
   std::vector<int> taggedIndex;
   bool firstTag = true;
-  double jetEt = 0;
+  double jetEt = 0, jetE = 0;
   for ( ShallowCloneCollection::const_iterator jetBegin = jets.begin(),
 	  jetEnd = jets.end(), jetIter = jetBegin;
 	jetIter != jetEnd; ++jetIter)
@@ -581,7 +588,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       double jetPt  = std::abs( jet->pt() );
       jetEt += jet->et();
       hT += jet->et();
-      
+      jetE += jet->energy();
+      //cout << "jetEt = " << jetEt << ", jet E = " << jetE  << ", centrality = " << jetEt/jetE << endl;
       static_cast<TH2*>(theDir.getObject<TH1>( "massVsPt") )->Fill( jetPt, jet->mass(), globalWeight_ );
 
       //dR b/w jet and lepton
@@ -847,6 +855,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       if(numJets!=0){
 	subDir->getObject<TH1>( sampleNameInput + Form("_jetEt_%dj_%dt", numJets, numTags) + whichtag )-> Fill (jetEt, globalWeight_);
 	theDir.getObject<TH1>( sampleNameInput + Form("_jetEt_%dj_%dt", numJets, numTags) + whichtag )-> Fill (jetEt, globalWeight_);
+    subDir->getObject<TH1>( sampleNameInput + Form("_Central_%dj_%dt",   numJets, numTags) + whichtag  )->Fill( jetEt/jetE, globalWeight_ );
+    theDir.getObject<TH1>( sampleNameInput + Form("_Central_%dj_%dt",   numJets, numTags) + whichtag  )->Fill( jetEt/jetE, globalWeight_ );
       }
     }
 
@@ -865,6 +875,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     if(numJets!=0) {
       subDir->getObject<TH1>( sampleNameInput + Form("_jetEt_%dj_%dt", numJets, numTags))-> Fill (jetEt, globalWeight_ );
       theDir.getObject<TH1>( sampleNameInput + Form("_jetEt_%dj_%dt", numJets, numTags))-> Fill (jetEt, globalWeight_ );
+      subDir->getObject<TH1>( sampleNameInput + Form("_Central_%dj_%dt",   numJets, numTags))->Fill( jetEt/jetE, globalWeight_ );
+      theDir.getObject<TH1>( sampleNameInput + Form("_Central_%dj_%dt",   numJets, numTags))->Fill( jetEt/jetE, globalWeight_ );
     }
 
     static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsEta_%dj_%dt", numJets, numTags)))->Fill( fabs(lepEta), relIso, globalWeight_ );
@@ -1019,6 +1031,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	  if(numJets!=0){
 	    subDir->getObject<TH1>( sampleNameInput + Form("_jetEt_%dj_%dt", numJets, kknumTags) + whichtag )-> Fill (jetEt, globalWeight_ * iprob);
 	    theDir.getObject<TH1>( sampleNameInput + Form("_jetEt_%dj_%dt", numJets, kknumTags) + whichtag )-> Fill (jetEt, globalWeight_ * iprob);
+        subDir->getObject<TH1>( sampleNameInput + Form("_Central_%dj_%dt",   numJets, kknumTags) + whichtag )->Fill( jetEt/jetE, globalWeight_ * iprob);
+        theDir.getObject<TH1>( sampleNameInput + Form("_Central_%dj_%dt",   numJets, kknumTags) + whichtag )->Fill( jetEt/jetE, globalWeight_ * iprob);
 	  }
 	}
 	
@@ -1037,6 +1051,8 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	if(numJets!=0) {
 	  subDir->getObject<TH1>( sampleNameInput + Form("_jetEt_%dj_%dt", numJets, kknumTags))-> Fill (jetEt, globalWeight_ * iprob);
 	  theDir.getObject<TH1>( sampleNameInput + Form("_jetEt_%dj_%dt", numJets, kknumTags))-> Fill (jetEt, globalWeight_ * iprob);
+      subDir->getObject<TH1>( sampleNameInput + Form("_Central_%dj_%dt",   numJets, kknumTags))->Fill( jetEt/jetE, globalWeight_ * iprob);
+      theDir.getObject<TH1>( sampleNameInput + Form("_Central_%dj_%dt",   numJets, kknumTags))->Fill( jetEt/jetE, globalWeight_ * iprob);
 	}
 	
 	static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsEta_%dj_%dt", numJets, kknumTags)))->Fill( fabs(lepEta), relIso, globalWeight_ * iprob );
