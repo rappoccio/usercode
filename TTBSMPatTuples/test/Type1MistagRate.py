@@ -78,6 +78,19 @@ hemis1MuLabel      = ( "ttbsmAna",  "wTagMuHemis1" )
 hemis1Jet3Handle    = Handle("int")
 hemis1Jet3Label     = ( "ttbsmAna", "jet3Hemis1" )
 
+rhoHandle           = Handle("double")
+rhoLabel            = ( "ttbsmAna", "rho" )
+
+
+myTrigIndexHandle   = Handle( "std::vector<int>")
+myTrigIndexLabel    = ( "ttbsmAna",  "myTrigIndex" )
+
+prescalesHandle   = Handle( "std::vector<int>")
+prescalesLabel    = ( "ttbsmAna",  "prescales" )
+
+trigNamesHandle   = Handle( "std::vector<string>")
+trigNamesLabel    = ( "ttbsmAna",  "trigNames" )
+
 f = ROOT.TFile( "./histFiles/"+options.inputDir + ".root", "recreate" )
 f.cd()
 
@@ -89,6 +102,7 @@ testProbePt                    = ROOT.TH1F("testProbePt", "Top Probe Pt", 400,  
 mistag                    = ROOT.TH1F("mistag", "mistag", 400,    0,    2000 )
 
 
+
 print "Loop over events - calculate mistag rate"
 
 eventCount = 0
@@ -96,7 +110,55 @@ for event in events_mistag:
     eventCount =  eventCount +1
     x = random.random() 
     #print 'event '+ str(eventCount) + ' x = ' + str(x) 
-	
+
+    #trigger stuff
+
+    event.getByLabel (myTrigIndexLabel, myTrigIndexHandle)
+    if not myTrigIndexHandle.isValid():
+        print 'myTrigIndex is invalid'
+        continue
+    myTrigIndices = myTrigIndexHandle.product()
+
+    event.getByLabel (prescalesLabel, prescalesHandle)
+    if not prescalesHandle.isValid():
+        print 'prescales is invalid'
+        continue
+    prescales = prescalesHandle.product()
+
+    event.getByLabel (trigNamesLabel, trigNamesHandle)
+    if not trigNamesHandle.isValid():
+        print 'trigNames is invalid'
+        continue
+    trigNames = trigNamesHandle.product()
+
+    #for i in range(0,len(trigNames) ) :
+	#        print '  ' + trigNames[i]
+    #for i in range(0,len(myTrigIndices) ) :
+	#        print '  ' + str(myTrigIndices[i])
+
+    event.getByLabel (rhoLabel, rhoHandle)
+    if not rhoHandle.isValid():
+        continue
+    rho = rhoHandle.product()[0]
+    if abs(rho) > 100 or rho < 0.0 :
+        print 'AAAACCCKK!!! rho = ' + str(rho)
+        continue
+   
+    
+
+    found = False
+    firedTrig = -1
+    for mytrig in [10, 9, 8, 7, 6, 3]:
+        if mytrig in myTrigIndices :
+            found = True
+            firedTrig = mytrig
+            break
+
+
+    if not found :
+        continue
+
+    #print '    --> PASSED TRIGGER'	
     event.getByLabel (hemis0Label, hemis0Handle)
     topJets0 = hemis0Handle.product()
 	
