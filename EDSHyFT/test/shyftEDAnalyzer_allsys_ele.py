@@ -423,7 +423,7 @@ process.pfShyftAnaReweightedLFTag120 = process.pfShyftAna.clone(
 process.pfShyftAnaJES095 = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         jetScale = cms.double(-1.0),
-        jetUncertainty = cms.double(0.036),
+        jetUncertainty = cms.double(0.05),
         identifier = cms.string('PFJES095')
         )
     )
@@ -431,7 +431,7 @@ process.pfShyftAnaJES095 = process.pfShyftAna.clone(
 process.pfShyftAnaJES105 = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
         jetScale = cms.double(1.0),
-        jetUncertainty = cms.double(0.036),
+        jetUncertainty = cms.double(0.05),
         identifier = cms.string('PFJES105')
         )
     )
