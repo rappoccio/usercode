@@ -5,6 +5,7 @@ ROOT.gSystem.Load("libFWCoreFWLite.so")
 ROOT.AutoLibraryLoader.enable()
 
 from DataFormats.FWLite import Events, Handle
+from Analysis.TTBSMTuplesAnalysis import *
 
 class Type12Analyzer :
     """Run 1 + 2 Analysis"""
@@ -52,14 +53,52 @@ class Type12Analyzer :
 
     def __del__ (self):
         """(Internal) Destructor"""
+        print 'Goodbye from Type12Analyzer. Before I go, I will delete some stuff'
         self.f.cd()
+        self.mttPredDist.GetPredictedHist().Write()
+        self.mttPredDist.GetObservedHist().Write()
+        self.mttPredDist.GetTaggableHist().Write()
+        print '1'
+
+        self.mttPredDistModMass.GetPredictedHist().Write()
+        self.mttPredDistModMass.GetObservedHist().Write()
+        self.mttPredDistModMass.GetTaggableHist().Write()
+        print '2'
+
+        self.mttPredDistMod2Mass.GetPredictedHist().Write()
+        self.mttPredDistMod2Mass.GetObservedHist().Write()
+        self.mttPredDistMod2Mass.GetTaggableHist().Write()
+        print '3'
+
         self.f.Write()
         self.f.Close()
+        print '4'
+        self.mistagFile.Close()
+        print '5'
+
+        print 'So long!'
 
     def __book__( self ) :
         """(Internal) Books histograms"""
+
+        self.mistagFile = ROOT.TFile(self.mistagFileStr + ".root")
+        self.mistagFile.cd()
+        self.mistag = self.mistagFile.Get("TYPE12_KIN_MISTAG").Clone()
+        self.mistag.SetName('mistag')
+        ROOT.SetOwnership( self.mistag, False )
+        
         self.f = ROOT.TFile( self.outfile + ".root", "recreate" )
         self.f.cd()
+
+        self.mttPredDist                 = ROOT.PredictedDistribution( self.mistag, "mttPredDist", "mTT Mass",       1000, 0,  5000 )
+        self.mttPredDistModMass          = ROOT.PredictedDistribution( self.mistag, "mttPredDistModMass","mTT Mass", 1000, 0,  5000 )
+        self.mttPredDistMod2Mass         = ROOT.PredictedDistribution( self.mistag, "mttPredDistMod2Mass","mTT Mass",1000, 0,  5000 )
+
+
+        ROOT.SetOwnership( self.mttPredDist, False )
+        ROOT.SetOwnership( self.mttPredDistModMass, False )
+        ROOT.SetOwnership( self.mttPredDistMod2Mass, False )
+        
         self.nJets                       = ROOT.TH1F("nJets",         "Number of Jets",               20, -0.5, 19.5 )
         self.topJetCandEta               = ROOT.TH1F("topJetCandEta",     "Top Cand eta",                 50,   -3.0, 3.0 )
         self.wCandVsTopCandMass          = ROOT.TH2F("wCandVsTopCandMass",  "W Cand Vs Top Cand Mass",  50, 0,  250,  100,  0,  500 )
@@ -107,6 +146,7 @@ class Type12Analyzer :
         self.mttBkgWithMistagUp.Sumw2()
         self.mttBkgWithMistagDown        = ROOT.TH1F("mttBkgWithMistagDown",        "mTT Mass",                 1000, 0,  5000 )
         self.mttBkgWithMistagDown.Sumw2()
+
         self.mttMassWithBTag             = ROOT.TH1F("mttMassWithBTag",             "mTT Mass With BTag",       1000, 0,  5000 )
         self.jet3BTagPt                  = ROOT.TH1F("jet3BTagPt",                  "Jet 3 BTag",               200,   0,  1000 )
         self.mttBkgShape                 = ROOT.TH1F("mttBkgShape",                 "mTT Bkg Shape",            1000, 0,  5000 )
@@ -191,9 +231,7 @@ class Type12Analyzer :
 
         self.nJetsSignal                 = ROOT.TH1F("nJetsSignal",                  "N Jets",                   20,   -0.5,   19.5 )
 
-        self.mistagFile = ROOT.TFile(self.mistagFileStr + ".root")
-        self.mistagFile.cd()
-        self.mistag = self.mistagFile.Get("TYPE12_KIN_MISTAG")
+
         
 
     def analyze(self, event) :
@@ -350,6 +388,9 @@ class Type12Analyzer :
             self.type2SideBandProbe.Fill( topJets[0].pt() )
             if hasTopTag  :   self.type2SideBandTag.Fill( topJets[0].pt() )
 
+
+
+          jet1Pt = topJets[0].pt()
           if hasType2Top  :
             self.topJetCandPtSignal.Fill( topJets[0].pt() )
             self.topJetCandMassSignal.Fill( topJets[0].mass() )
@@ -359,10 +400,10 @@ class Type12Analyzer :
               self.NSubjetsVsMinMassSR.Fill( topJetNSubjets[0], topJetMinMass[0] )
 
             #Apply top mistag rate to estimate bkg
-            jet1Pt = topJets[0].pt()
             ptBin = self.mistag.FindBin( jet1Pt )
 
             if not self.useMC :
+                
                 self.mttBkgWithMistag.Fill( ttMass, self.mistag.GetBinContent(ptBin) )
                 self.mttBkgWithMistagModMass.Fill( ttMassMod, self.mistag.GetBinContent(ptBin) )
                 #mttPredDistModMass.Accumulate( ttMassMod, jet1Pt, hasTopTag, 1.0 )
@@ -430,7 +471,14 @@ class Type12Analyzer :
               if ((not passNSubjetsCut) or (not passMinMassCut)) and hasType2Top and passWiderTopMassCut :
                 self.mttBkgShapeWithSideBand7Mass.Fill( ttMass )
 
-          if hasType2Top and hasTopTag :
+
+          isJetTagged = hasType2Top and hasTopTag
+          if self.useMC is False and hasType2Top :
+              self.mttPredDist.        Accumulate( ttMass,      jet1Pt, isJetTagged )
+              self.mttPredDistModMass. Accumulate( ttMassMod,   jet1Pt, isJetTagged )
+              self.mttPredDistMod2Mass.Accumulate( ttMassMod2,  jet1Pt, isJetTagged )
+
+          if isJetTagged :
             self.mttMass.Fill( ttMass )
             if not self.useMC :
                 self.mttMassJet1MassDown.Fill( ttMassJet1MassDown )

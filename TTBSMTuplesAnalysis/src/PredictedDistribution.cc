@@ -12,9 +12,10 @@ using namespace std;
 /*----------------------------------------------*/
 
 //=============sets 1D histograms with fixed bins
-PredictedDistribution::PredictedDistribution(TH1D * mtx, const char* name, const char* title, Int_t nbinsx, Axis_t xlow, Axis_t xup) : 
+PredictedDistribution::PredictedDistribution(TH1D const * mtx, const char* name, const char* title, Int_t nbinsx, Axis_t xlow, Axis_t xup) : 
   _fNDataHisto(nbinsx + 2),
   h1_r(mtx), 
+  h1_p(0), h1_o(0), h1_tgb(0),
   _errsSet(false)
 {
   h1_o = new TH1D(name, title, nbinsx, xlow, xup);
@@ -31,9 +32,10 @@ PredictedDistribution::PredictedDistribution(TH1D * mtx, const char* name, const
 }
    
 //=============sets histograms with bin array
-PredictedDistribution::PredictedDistribution(TH1D * mtx, const char* name, const char* title, Int_t nbinsx, const Double_t* xbins) : 
+PredictedDistribution::PredictedDistribution(TH1D const * mtx, const char* name, const char* title, Int_t nbinsx, const Double_t* xbins) : 
   _fNDataHisto(nbinsx + 2),
-  h1_r(mtx)
+  h1_r(mtx),
+  h1_p(0), h1_o(0), h1_tgb(0)
 {
   h1_o = new TH1D(name, title, nbinsx, xbins);
   h1_o->Sumw2();
@@ -51,10 +53,10 @@ PredictedDistribution::PredictedDistribution(TH1D * mtx, const char* name, const
 /*  DESTRUCTORS                                 */
 /*----------------------------------------------*/
 PredictedDistribution::~PredictedDistribution() {
-  delete h1_p;	 h1_p=0;
-  delete h1_o;	 h1_o=0;
-  delete h1_tgb; h1_tgb=0;
-  delete h_weights; h_weights = 0;
+  if ( h1_p != 0 ) {delete h1_p; h1_p=0;}
+  if ( h1_o != 0 ) {delete h1_o; h1_o=0;}
+  if ( h1_tgb !=0) {delete h1_tgb; h1_tgb=0;}
+  if ( h_weights !=0) { delete h_weights; h_weights = 0;}
 }
 
 
@@ -66,11 +68,11 @@ void PredictedDistribution::Accumulate(Float_t X, Float_t et, Bool_t tagged, Flo
   // Remember to include the weight factor, in case we are looping over
   // the jets multiple times
   
-  Int_t bin = h1_r->FindBin( et );
+  Int_t bin = h1_r->GetXaxis()->FindBin( et );
   Float_t rate   = h1_r->GetBinContent(bin);
-  Float_t err    = h1_r->GetBinError(bin);
+  //  Float_t err    = h1_r->GetBinError(bin);
 
-  Int_t binx= h1_o->FindBin(X);
+  //  Int_t binx= h1_o->FindBin(X);
 
 //   cout << "---------" << endl;
 //   cout << "filling: " << endl;

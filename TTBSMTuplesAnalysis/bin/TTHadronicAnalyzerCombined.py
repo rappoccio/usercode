@@ -14,6 +14,7 @@ from DataFormats.FWLite import Events, Handle
 
 from Analysis.TTBSMTuplesAnalysis.TriggerAndEventSelectionObject import TriggerAndEventSelectionObject
 from Analysis.TTBSMTuplesAnalysis.Type12Analyzer import Type12Analyzer
+from Analysis.TTBSMTuplesAnalysis.MistagMaker import MistagMaker
 
 from optparse import OptionParser
 
@@ -24,6 +25,13 @@ parser.add_option('-i', '--dirs', metavar='F', type='string', action='store',
                   default='Jet_Run2011A-PromptReco-v4_range1_ttbsm_v6_ttbsmTuples_v3',
                   dest='dirs',
                   help='Input Directories (glob format)')
+
+
+parser.add_option('-a', '--analyzer', metavar='F', type='string', action='store',
+                  default='Type12Analyzer',
+                  dest='analyzer',
+                  help='Analyzer to run. Options are Type12Analyzer, MistagMaker')
+
 
 parser.add_option('-o', '--outfile', metavar='N', type='string', action='store',
                   default='TTHadronicAnalyzerCombined_Jet_PD_May10ReReco_PromptReco_range1_range2',
@@ -71,7 +79,13 @@ myAnaTrigs = [
 
 triggerSelection = TriggerAndEventSelectionObject( myAnaTrigs )
 
-type12Analyzer = Type12Analyzer(options.useMC, options.outfile, options.mistagFile)
+if options.analyzer == "Type12Analyzer" :
+    analyzer = Type12Analyzer(options.useMC, options.outfile + '_type12', options.mistagFile)
+elif options.analyzer == "MistagMaker" :
+    analyzer = MistagMaker( options.outfile + '_mistag')
+else :
+    print 'Invalid analyzer ' + analyzer
+    exit(0)
 
 # loop over events
 count = 0
@@ -93,6 +107,8 @@ for event in events:
             continue
 
     
-    type12Analyzer.analyze(event)
+    analyzer.analyze(event)
 
 
+
+print 'Adieu!'

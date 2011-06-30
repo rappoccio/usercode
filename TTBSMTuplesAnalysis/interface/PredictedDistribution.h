@@ -27,19 +27,19 @@ class PredictedDistribution {
  public:      
   /*** CONSTRUCTORS                                 ******/
   //default, everything empty, must allocate new dists, not implemented yet
-  PredictedDistribution() : h1_p(0), h1_o(0),  _fNDataHisto(0), h_weights(0), h1_r(0), h1_tgb(0)
+  PredictedDistribution() : _fNDataHisto(0),h_weights(0), h1_r(0), h1_p(0), h1_o(0), h1_tgb(0)
   { std::cout << "Do not use me." << std::endl; };
   
   //sets d with fixed bins or vary bins
   // 1D version
-  PredictedDistribution(TH1D* mtx, const char* name, const char* title, Int_t nbinsx, Axis_t xlow, Axis_t xup);
-  PredictedDistribution(TH1D* mtx, const char* name, const char* title, Int_t nbinsx, const Double_t* xbins);
+  PredictedDistribution(TH1D const * mtx, const char* name, const char* title, Int_t nbinsx, Axis_t xlow, Axis_t xup);
+  PredictedDistribution(TH1D const * mtx, const char* name, const char* title, Int_t nbinsx, const Double_t* xbins);
   
   /*** DSTRUCTOR                                    ******/
   virtual ~PredictedDistribution();
   
   /*** INLINES                                      ******/
-  TH1D * GetRateMatrix() const {return h1_r;}
+  TH1D const * GetRateMatrix() const {return h1_r;}
   TH1D * GetPredictedHist() const {return h1_p;}
   TH1D * GetObservedHist() const {return h1_o;}
   TH1D * GetTaggableHist() const {return h1_tgb;}
@@ -64,7 +64,7 @@ class PredictedDistribution {
   
   TH2D * h_weights;
 
-  TH1D   *h1_r;                                   //the tag rate matrix, divided, with errors inside  		
+  TH1D const  *h1_r;                                   //the tag rate matrix, divided, with errors inside  		
   TH1D   *h1_p, * h1_o, * h1_tgb ;                //the desired 1-d distributions: predict and observe	
 
   bool _errsSet;
