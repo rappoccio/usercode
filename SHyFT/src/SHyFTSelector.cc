@@ -161,7 +161,7 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    }
    string L2Tag   = "Jec10_V3_AK5PFchs_L2Relative.txt";
    string L3Tag   = "Jec10_V3_AK5PFchs_L3Absolute.txt";
-   string L2L3Tag = "Jec10_V3_AK5PF_L2L3Residual.txt"; 
+   string L2L3Tag = "Jec10_V3_AK5PFchs_L2L3Residual.txt"; 
 
    //use only for 4_2_2 Data
    string L2DataTag = "Jec11_V1_AK5PFchs_L2Relative.txt";
