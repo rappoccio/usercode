@@ -14,7 +14,7 @@ parser.add_option('--inputCfg', metavar='C', type='string', action='store',
                   help='input config tag to be used')
 
 parser.add_option('--outLabel', metavar='L', type='string', action='store',
-                  default='_ttbsm_423_v7',
+                  default='_ttbsm_423_v8',
                   dest='outLabel',
                   help='output tag to be used')
 
@@ -27,7 +27,7 @@ parser.add_option('--data', metavar='D', type='int', action='store',
 
 if options.data == 1:
    inputCMSSW = 'shyftEDAnalyzer_ele.py'
-   outputLable = '_ttbsm_423_v6'
+   outputLable = '_ttbsm_423_v8'
    crabFileStrs = [
       ['/SingleElectron/srappocc-ttbsm_v8_Run2011-May10ReReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '160404-161176', 'p1'],
       ['/SingleElectron/srappocc-ttbsm_v8_Run2011-May10ReReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',  60, 0, 'Data', 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2', '161216-163261', 'p2'],
@@ -61,7 +61,7 @@ else:
       ['/GJets_TuneD6T_HT-100To200_7TeV-madgraph/vasquez-ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',      25, 0, 'PhoJet100200',1, 1],
       ['/GJets_TuneD6T_HT-200_7TeV-madgraph/vasquez-ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',           25, 0, 'PhoJet200Inf',1, 1],
       ['/QCD_Pt-20to30_BCtoE_TuneZ2_7TeV-pythia6/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',      40, 0, 'BCtoE2030',   1, 1],
-      ['/QCD_Pt-30to80_BCtoE_TuneZ2_7TeV-pythia6/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',      40, 0, 'BCtoE2030',   1, 1],
+      ['/QCD_Pt-30to80_BCtoE_TuneZ2_7TeV-pythia6/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',      40, 0, 'BCtoE3080',   1, 1],
       ['/QCD_Pt-80to170_BCtoE_TuneZ2_7TeV-pythia6/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER' ,    40, 0, 'BCtoE80170',  1, 1],
       ['/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/samvel-ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',  60, 0, 'EMEn2030',    1, 1],
       ['/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6/skhalil-ttbsm_v7_Summer11-PU_S1_-START311_V1G1-v1-6a29f0fac22a95bcd534f59b8047bd70/USER',60, 0, 'EMEn80170',   1, 1],
