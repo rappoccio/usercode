@@ -97,7 +97,20 @@ process.load('PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff')
 
 
 myAnaTrigs = [
+    'HLT_Jet190_v1',
+    'HLT_Jet190_v2',
+    'HLT_Jet190_v3',
+    'HLT_Jet190_v4',
+    'HLT_Jet190_v5',
+    'HLT_Jet190_v6',
+    'HLT_Jet190_v7',
     'HLT_Jet240_v1',
+    'HLT_Jet240_v2',
+    'HLT_Jet240_v3',
+    'HLT_Jet240_v4',
+    'HLT_Jet240_v5',
+    'HLT_Jet240_v6',
+    'HLT_Jet240_v7',
     'HLT_Jet300_v1',
     'HLT_Jet300_v2',
     'HLT_Jet300_v3',
@@ -117,6 +130,8 @@ process.ttbsmAna = cms.EDFilter('TTBSMProducer',
                                 wTagSrc = cms.InputTag('goodPatJetsCA8PrunedPF'),
                                 topTagSrc = cms.InputTag('goodPatJetsCATopTagPF'),
                                 trigSrc = cms.InputTag('patTriggerEvent'),
+                                rhoSrc = cms.InputTag('kt6PFJetsPFlow', 'rho'),
+                                pvSrc = cms.InputTag('goodOfflinePrimaryVertices'),
                                 trigs = cms.vstring(
                                     myAnaTrigs
                                     ),
@@ -126,7 +141,18 @@ process.ttbsmAna = cms.EDFilter('TTBSMProducer',
                                 wTagParams = boostedTopWTagParams.clone(
                                     yCut = cms.double(0.0)
                                     ),
-                                readTrig = cms.bool(True)
+                                readTrig = cms.bool(True),
+                                jetScale = cms.double(0.0),   #
+                                jetPtSmear = cms.double(0.0), # note these three are fractional
+                                jetEtaSmear = cms.double(0.0),#
+                                jecPayloads = cms.vstring([
+                                    'Jec11_V3_L1FastJet_AK5PFchs.txt',
+                                    'Jec11_V3_L2Relative_AK5PFchs.txt',
+                                    'Jec11_V3_L3Absolute_AK5PFchs.txt',
+                                    'Jec11_V3_L2L3Residual_AK5PFchs.txt',
+                                    'Jec11_V3_Uncertainty_AK5PFchs.txt'
+                                    ]),
+                                pdfSet = cms.string("")
 )
 
 
