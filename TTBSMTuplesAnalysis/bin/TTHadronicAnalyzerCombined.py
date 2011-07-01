@@ -15,6 +15,7 @@ from DataFormats.FWLite import Events, Handle
 from Analysis.TTBSMTuplesAnalysis.TriggerAndEventSelectionObject import TriggerAndEventSelectionObject
 from Analysis.TTBSMTuplesAnalysis.Type12Analyzer import Type12Analyzer
 from Analysis.TTBSMTuplesAnalysis.MistagMaker import MistagMaker
+from Analysis.TTBSMTuplesAnalysis.TTKinPlotsAnalyzer import TTKinPlotsAnalyzer
 
 from optparse import OptionParser
 
@@ -79,13 +80,17 @@ myAnaTrigs = [
 
 triggerSelection = TriggerAndEventSelectionObject( myAnaTrigs )
 
+
 if options.analyzer == "Type12Analyzer" :
     analyzer = Type12Analyzer(options.useMC, options.outfile + '_type12', options.mistagFile)
 elif options.analyzer == "MistagMaker" :
     analyzer = MistagMaker( options.outfile + '_mistag')
+elif options.analyzer == "TTKinPlotsAnalyzer" :
+    analyzer = TTKinPlotsAnalyzer( options.outfile + '_kinplots')
 else :
     print 'Invalid analyzer ' + analyzer
     exit(0)
+
 
 # loop over events
 count = 0
