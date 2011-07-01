@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: TTBSMProducer.cc,v 1.6 2011/06/28 17:44:46 srappocc Exp $
+// $Id: TTBSMProducer.cc,v 1.5 2011/06/17 19:20:28 guofan Exp $
 //
 //
 
@@ -97,8 +97,7 @@ TTBSMProducer::TTBSMProducer(const edm::ParameterSet& iConfig) :
   produces<std::vector<double> > ("topTagNSubjets");
   produces<std::vector<int> >    ("topTagPass");
   produces<std::vector<int> >    ("prescales");
-  produces<std::vector<int> >    ("trigIndex");
-  produces<std::vector<int> >    ("myTrigIndex");
+  produces<std::vector<int> >    ("trigs");
   produces<std::vector<std::string> > ("trigNames");
   produces<double> ("rho");
   produces<double> ("weight");
@@ -154,8 +153,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<double> > topTagNSubjets ( new std::vector<double>() );
   std::auto_ptr<std::vector<int> >    topTagPass ( new std::vector<int>() );
   std::auto_ptr<std::vector<int> >    prescales ( new std::vector<int>() );
-  std::auto_ptr<std::vector<int> >    trigIndex ( new std::vector<int>() );
-  std::auto_ptr<std::vector<int> >    myTrigIndex ( new std::vector<int>() );
+  std::auto_ptr<std::vector<int> >    trigs ( new std::vector<int>() );
   std::auto_ptr<std::vector<std::string> >    trigNames ( new std::vector<std::string>() );
   std::auto_ptr<double>               rho( new double(-1.0) );
   std::auto_ptr<double>               weight( new double(1.0) );
@@ -228,8 +226,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if ( indexPath > 0 ) {
 	  pat::TriggerPath const * path = h_trig->path( *itrig );
 	  if ( path != 0 && path->wasRun() && path->wasAccept() ) {
-	    trigIndex->push_back( path->index() );
-	    myTrigIndex->push_back( static_cast<int>(itrig - itrigBegin) );
+	    trigs->push_back( path->index() );
 	    prescales->push_back( path->prescale() );
 	    trigNames->push_back( path->name() );
 	  }
@@ -319,8 +316,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(topTagNSubjets,"topTagNSubjets");
   iEvent.put(topTagPass    ,"topTagPass");    
   iEvent.put(prescales     ,"prescales");
-  iEvent.put(trigIndex     ,"trigIndex");
-  iEvent.put(myTrigIndex   ,"myTrigIndex");
+  iEvent.put(trigs         ,"trigs");
   iEvent.put(trigNames     ,"trigNames");
   iEvent.put(wTagP4Hemis0        ,"wTagP4Hemis0");
   iEvent.put(topTagP4Hemis0      ,"topTagP4Hemis0");

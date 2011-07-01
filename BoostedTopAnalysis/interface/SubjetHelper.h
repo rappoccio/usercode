@@ -18,5 +18,8 @@ namespace pat {
 
   void subjetHelper( math::XYZTLorentzVector const & p1, math::XYZTLorentzVector const & p2,
                         double & y, double & mu, double & dR , double & m_fat );
+
+  void subjetHelper( math::PtEtaPhiMLorentzVector const & p1, math::PtEtaPhiMLorentzVector const & p2,
+                        double & y, double & mu, double & dR , double  m_fat );
 }
 #endif
