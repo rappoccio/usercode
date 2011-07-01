@@ -12,5 +12,6 @@
   <use   name="DataFormats/PatCandidates"/>
   <use   name="PhysicsTools/UtilAlgos"/>
   <use   name="Analysis/BoostedTopAnalysis"/>
+  <use   name="ElectroWeakAnalysis/Utilities"/>
   <use   name="root"/>
 </library>
