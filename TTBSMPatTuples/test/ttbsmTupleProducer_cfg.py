@@ -171,7 +171,7 @@ process.p = cms.Path(
 
 
 process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string("ttbsm_ultraslim.root"),
+                               fileName = cms.untracked.string("ttbsm_ultraslim2.root"),
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       'keep *_ttbsmAna_*_*'
