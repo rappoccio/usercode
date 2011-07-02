@@ -16,6 +16,7 @@ from Analysis.TTBSMTuplesAnalysis.TriggerAndEventSelectionObject import TriggerA
 from Analysis.TTBSMTuplesAnalysis.Type12Analyzer import Type12Analyzer
 from Analysis.TTBSMTuplesAnalysis.MistagMaker import MistagMaker
 from Analysis.TTBSMTuplesAnalysis.TTKinPlotsAnalyzer import TTKinPlotsAnalyzer
+from Analysis.TTBSMTuplesAnalysis.Type11Analyzer import Type11Analyzer
 
 from optparse import OptionParser
 
@@ -86,6 +87,8 @@ if options.analyzer == "Type12Analyzer" :
     analyzer = Type12Analyzer(options.useMC, options.outfile + '_type12', options.mistagFile)
 elif options.analyzer == "MistagMaker" :
     analyzer = MistagMaker( options.outfile + '_mistag')
+elif options.analyzer == "Type11Analyzer" :
+    analyzer = Type11Analyzer(options.useMC, options.outfile + '_type11', options.mistagFile)
 elif options.analyzer == "TTKinPlotsAnalyzer" :
     analyzer = TTKinPlotsAnalyzer( options.outfile + '_kinplots')
 else :

@@ -16,43 +16,17 @@ class Type11Analyzer :
         
         self.allTopTagHandle = Handle (  "vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >"  )
         self.allTopTagLabel  = ( "ttbsmAna",   "topTagP4")
+
+        self.allTopTagTopMassHandle  = Handle( "std::vector<double>" )
+        self.allTopTagTopMassLabel   = ( "ttbsmAna",   "topTagTopMass" )
         self.allTopTagMinMassHandle  = Handle( "std::vector<double>" )
         self.allTopTagMinMassLabel   = ( "ttbsmAna",   "topTagMinMass" )
-        self.allTopTagNSubsHandle    = Handle("std::vector<double>" )
-        self.allTopTagNSubsLabel     = ( "ttbsmAna",   "topTagNSubjets" )
+        self.allTopTagNSubjetsHandle    = Handle("std::vector<double>" )
+        self.allTopTagNSubjetsLabel     = ( "ttbsmAna",   "topTagNSubjets" )
 
-        self.hemis0Handle   = Handle ("vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >")
-        self.hemis0Label    = ( "ttbsmAna", "topTagP4Hemis0" )
-
-        self.hemis0MinMassHandle     = Handle( "std::vector<double>" )
-        self.hemis0MinMassLabel  = ( "ttbsmAna", "topTagMinMassHemis0" )
-
-        self.hemis0NSubjetsHandle    = Handle( "std::vector<double>" )
-        self.hemis0NSubjetsLabel = ( "ttbsmAna", "topTagNSubjetsHemis0"  )
-
-        self.hemis0TopMassHandle     = Handle( "std::vector<double>" )
-        self.hemis0TopMassLabel  = ( "ttbsmAna", "topTagTopMassHemis0" )
-
-        self.hemis0PassHandle        = Handle( "std::vector<int>")
-        self.hemis0PassLabel   = ( "ttbsmAna", "topTagPassHemis0" )
-
-        self.hemis1Handle   = Handle ("vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >")
-        self.hemis1Label    = ( "ttbsmAna", "topTagP4Hemis1" )
-
-        self.hemis1MinMassHandle     = Handle( "std::vector<double>" )
-        self.hemis1MinMassLabel  = ( "ttbsmAna", "topTagMinMassHemis1" )
-
-        self.hemis1NSubjetsHandle    = Handle( "std::vector<double>" )
-        self.hemis1NSubjetsLabel = ( "ttbsmAna", "topTagNSubjetsHemis1"  )
-
-        self.hemis1TopMassHandle     = Handle( "std::vector<double>" )
-        self.hemis1TopMassLabel  = ( "ttbsmAna", "topTagTopMassHemis1" )
-
-        self.hemis1PassHandle        = Handle( "std::vector<int>")
-        self.hemis1PassLabel   = ( "ttbsmAna", "topTagPassHemis1" )
-
-
-
+        self.allTopTagPassHandle  = Handle( "std::vector<int>" )
+        self.allTopTagPassLabel   = ( "ttbsmAna",   "topTagPass" )
+        
         self.__book__()
 
 
@@ -76,6 +50,7 @@ class Type11Analyzer :
     def __book__( self ) :
         """(Internal) Books histograms"""
 
+        print 'Booking histograms'
         self.mistagFile = ROOT.TFile(self.mistagFileStr + ".root")
         self.mistagFile.cd()
         self.mistag = self.mistagFile.Get("TYPE12_KIN_MISTAG").Clone()
@@ -104,94 +79,78 @@ class Type11Analyzer :
 
     def analyze(self, event) :
         """Analyzes event"""
-        event.getByLabel (self.hemis0Label, self.hemis0Handle)
-        topJets0 = self.hemis0Handle.product()
+        
+        event.getByLabel (self.allTopTagLabel, self.allTopTagHandle)
+        topJets = self.allTopTagHandle.product()
         
 
-        nTopCand0 = 0
-        for i in range(0,len(topJets0) ) :
-          if( topJets0[i].pt() > 350 ) :
-            nTopCand0 = nTopCand0 + 1
+        nTopCand = 0
+        for i in range(0,len(topJets) ) :
+          if( topJets[i].pt() > 350 ) :
+            nTopCand = nTopCand + 1
 
-        if nTopCand0 < 1 :
+        if nTopCand < 2 :
             return
 
-        event.getByLabel (self.hemis1Label, self.hemis1Handle)
-        topJets1 = self.hemis1Handle.product()
-        
-        nTopCand1 = 0
-        for i in range(0,len(topJets1) ) :
-            if( topJets1[i].pt() > 350 ) :
-                nTopCand1 = nTopCand1 + 1
-
-        if nTopCand1 < 1:
-            return
         
         pairMass = 0.0
         ttMass = 0.0
 
-        event.getByLabel (hemis0MinMassLabel, hemis0MinMassHandle)
-        topJet0MinMass = hemis0MinMassHandle.product()
-        event.getByLabel (hemis0NSubjetsLabel, hemis0NSubjetsHandle)
-        topJet0NSubjets = hemis0NSubjetsHandle.product()
-        event.getByLabel (hemis0TopMassLabel, hemis0TopMassHandle)
-        topJet0Mass = hemis0TopMassHandle.product()
-        event.getByLabel (hemis0PassLabel, hemis0PassHandle )
-        topJet0Pass = hemis0PassHandle.product()
-        event.getByLabel (hemis1Label, hemis1Handle)
-        topJet1MinMass = hemis1MinMassHandle.product()
-        event.getByLabel (hemis1NSubjetsLabel, hemis1NSubjetsHandle)
-        topJet1NSubjets = hemis1NSubjetsHandle.product()
-        event.getByLabel (hemis1TopMassLabel, hemis1TopMassHandle)
-        topJet1Mass = hemis1TopMassHandle.product()
-        event.getByLabel (hemis1PassLabel, hemis1PassHandle )
-        topJet1Pass = hemis1PassHandle.product()
+        event.getByLabel (self.allTopTagMinMassLabel, self.allTopTagMinMassHandle)
+        topJetMinMass= self.allTopTagMinMassHandle.product()
+        event.getByLabel (self.allTopTagNSubjetsLabel, self.allTopTagNSubjetsHandle)
+        topJetNSubjets= self.allTopTagNSubjetsHandle.product()
+        event.getByLabel (self.allTopTagTopMassLabel, self.allTopTagTopMassHandle)
+        topJetMass= self.allTopTagTopMassHandle.product()
+        event.getByLabel (self.allTopTagPassLabel, self.allTopTagPassHandle )
+        topJetPass= self.allTopTagPassHandle.product()
+
 
         ttMass = 0.0
-        deltaPhi = topJets0[0].phi() - topJets1[0].phi()
-        if deltaPhi > pi:
-            deltaPhi = deltaPhi - 2*pi
-        if deltaPhi < -pi:
-            deltaPhi = deltaPhi + 2*pi
+        deltaPhi = topJets[0].phi() - topJets[1].phi()
+        if deltaPhi > ROOT.TMath.Pi():
+            deltaPhi = deltaPhi - 2*ROOT.TMath.Pi()
+        if deltaPhi < -ROOT.TMath.Pi():
+            deltaPhi = deltaPhi + 2*ROOT.TMath.Pi()
 
-        ptCuts = topJets0[0].pt() > 350 and topJets1[0].pt() > 350
-        etaCuts = fabs(topJets0[0].eta()) < 2.4 and fabs(topJets1[0].eta()) < 2.4
-        deltaPhiCut = fabs(deltaPhi)>2.1
+        ptCuts = topJets[0].pt() > 350 and topJets[1].pt() > 350
+        etaCuts = abs(topJets[0].eta()) < 2.4 and abs(topJets[1].eta()) < 2.4
+        deltaPhiCut = abs(deltaPhi)>2.1
         passType11KinCuts   = ptCuts and etaCuts and deltaPhiCut
     
-        topTag0        = topJet0Mass[0] > 140 and topJet0Mass[0] < 250 and topJet0MinMass[0] > 50 and topJet0NSubjets[0] > 2
-        topTag1        = topJet1Mass[0] > 140 and topJet1Mass[0] < 250 and topJet1MinMass[0] > 50 and topJet1NSubjets[0] > 2
+        topTag0        = topJetMass[0] > 140 and topJetMass[0] < 250 and topJetMinMass[0] > 50 and topJetNSubjets[0] > 2
+        topTag1        = topJetMass[1] > 140 and topJetMass[1] < 250 and topJetMinMass[1] > 50 and topJetNSubjets[1] > 2
         passType11     = topTag0 and topTag1
-        ttMass   = (topJets0[0]+topJets1[0]).mass()
+        ttMass   = (topJets[0]+topJets[1]).mass()
    
         if passType11KinCuts :
-            jetMass.Fill( topJets0[0].mass() )
-            jetMass.Fill( topJets1[0].mass() )
-            jetPt.Fill( topJets0[0].pt() )
-            jetPt.Fill( topJets1[0].pt() )
-            jetEta.Fill( topJets0[0].eta() )
-            jetEta.Fill( topJets1[0].eta() )
-            jetMinMass.Fill( topJet0MinMass[0] )
-            jetMinMass.Fill( topJet1MinMass[0] )
-            mttCandMass.Fill( ttMass )
+            self.jetMass.Fill( topJets[0].mass() )
+            self.jetMass.Fill( topJets[1].mass() )
+            self.jetPt.Fill( topJets[0].pt() )
+            self.jetPt.Fill( topJets[1].pt() )
+            self.jetEta.Fill( topJets[0].eta() )
+            self.jetEta.Fill( topJets[1].eta() )
+            self.jetMinMass.Fill( topJetMinMass[0] )
+            self.jetMinMass.Fill( topJetMinMass[1] )
+            self.mttCandMass.Fill( ttMass )
 
             if passType11  :
-                topTagMass.Fill( topJets0[0].mass() )
-                topTagMass.Fill( topJets1[0].mass() )
-                topTagPt.Fill( topJets0[0].mass() )
-                topTagPt.Fill( topJets1[0].mass() )
-                topTagMinMass.Fill( topJet0MinMass[0] )
-                topTagMinMass.Fill( topJet1MinMass[0] )
-                mttMass.Fill( ttMass )
+                self.topTagMass.Fill( topJets[0].mass() )
+                self.topTagMass.Fill( topJets[1].mass() )
+                self.topTagPt.Fill( topJets[0].mass() )
+                self.topTagPt.Fill( topJets[1].mass() )
+                self.topTagMinMass.Fill( topJetMinMass[0] )
+                self.topTagMinMass.Fill( topJetMinMass[1] )
+                self.mttMass.Fill( ttMass )
 
             #background estiation
             x = ROOT.gRandom.Uniform()        
             if x < 0.5 :
                 if topTag0 :
-                    self.mttPredDist.        Accumulate( ttMass, topJets1[0].pt(), topTag1 )
+                    self.mttPredDist.        Accumulate( ttMass, topJets[1].pt(), topTag1 )
             if x >= 0.5 :
                 if topTag1 :
-                    self.mttPredDist.        Accumulate( ttMass, topJets0[0].pt(), topTag0 )
+                    self.mttPredDist.        Accumulate( ttMass, topJets[0].pt(), topTag0 )
 
 
 
