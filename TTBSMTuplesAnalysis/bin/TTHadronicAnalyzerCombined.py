@@ -60,22 +60,23 @@ print files
 
 events = Events (files)
 
+
 myAnaTrigs = [
-    0,#'HLT_Jet240_v1',
-    1,#'HLT_Jet300_v1',
-    2,#'HLT_Jet300_v2',
-    3,#'HLT_Jet300_v3',
-    4,#'HLT_Jet300_v4',
-    5,#'HLT_Jet300_v5',
-    6,#'HLT_Jet300_v6',
-    7,#'HLT_Jet300_v7',
-    8,#'HLT_Jet370_v1',
-    9,#'HLT_Jet370_v2',
-    10,#'HLT_Jet370_v3',
-    11,#'HLT_Jet370_v4',
-    12,#'HLT_Jet370_v5',
-    13,#'HLT_Jet370_v6',
-    14,#'HLT_Jet370_v7'
+     7#    'HLT_Jet240_v1',
+   ,14#    'HLT_Jet300_v1',
+   ,15#    'HLT_Jet300_v2',
+   ,16#    'HLT_Jet300_v3',
+   ,17#    'HLT_Jet300_v4',
+   ,18#    'HLT_Jet300_v5',
+   ,19#    'HLT_Jet300_v6',
+   ,20#    'HLT_Jet300_v7',
+   ,21#    'HLT_Jet370_v1',
+   ,22#    'HLT_Jet370_v2',
+   ,23#    'HLT_Jet370_v3',
+   ,24#    'HLT_Jet370_v4',
+   ,25#    'HLT_Jet370_v5',
+   ,26#    'HLT_Jet370_v6',
+   ,27#    'HLT_Jet370_v7'
     ]
 
 triggerSelection = TriggerAndEventSelectionObject( myAnaTrigs )

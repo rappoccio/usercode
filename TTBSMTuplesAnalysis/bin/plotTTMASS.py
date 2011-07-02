@@ -5,9 +5,9 @@ gROOT.ForceStyle()
 if __name__ ==  "__main__" :
     #dataFile = TFile("../crossChecks/Jet_Run2011A-May10ReReco_ttbsm_v6_ttbsmTuples_v3.root")
     #dataFile = TFile("Jet_Run2011A-May10ReReco_ttbsm_v6_ttbsmTuples_v3_KinOnlyBkg.root")
-    dataFile = TFile("TTHadronicAnalyzerCombined_Jet_PD_May10ReReco_PromptReco_range1_range2_type12.root")
-    ttbarFile = TFile("TTHadronicAnalyzerCombined_TTJets_type12.root")
-    lumi = 865.
+    dataFile = TFile("TTHadronicAnalyzerCombined_Jet_PD_May10ReReco_PromptReco_range1_range2_v4_type12.root")
+    ttbarFile = TFile("TTHadronicAnalyzerCombined_TTJets_v4_type12.root")
+    lumi = 885.
     ttXS = 157.0
 
     mttRebin = 20
@@ -58,8 +58,8 @@ if __name__ ==  "__main__" :
 
 
 
-    c.Print("TTMASS_TYPE12_JET300_TopMistagBkg.png")
-    c.Print("TTMASS_TYPE12_JET300_TopMistagBkg.pdf")
+    c.Print("TTMASS_TYPE12_JET300_TopMistagBkg_v4.png")
+    c.Print("TTMASS_TYPE12_JET300_TopMistagBkg_v4.pdf")
 
 
 

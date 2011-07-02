@@ -15,7 +15,7 @@ def SetHistStyle( hist, x ) :
 
 if __name__   ==  "__main__"  :
     
-    f = TFile("TTHadronicAnalyzerCombined_Jet_PD_May10ReReco_PromptReco_range1_range2_mistag.root")
+    f = TFile("TTHadronicAnalyzerCombined_Jet_PD_May10ReReco_PromptReco_range1_range2_v4_mistag.root")
 
     pretagHists = [
       "topJetCandPtAll",  "topJetCandMassAll",  "topJetNsubsAll", "topJetMinMassAll" ]
