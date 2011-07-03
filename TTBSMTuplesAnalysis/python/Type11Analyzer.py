@@ -9,23 +9,27 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type11Analyzer :
     """Run 1 + 1 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile):
+    def __init__(self, useMC, outfile, mistagFile, collectionLabelSuffix):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
         self.useMC = useMC
         
+		
+        label = 'ttbsmAna'+collectionLabelSuffix
+
+
         self.allTopTagHandle = Handle (  "vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >"  )
-        self.allTopTagLabel  = ( "ttbsmAna",   "topTagP4")
+        self.allTopTagLabel  = ( label,   "topTagP4")
 
         self.allTopTagTopMassHandle  = Handle( "std::vector<double>" )
-        self.allTopTagTopMassLabel   = ( "ttbsmAna",   "topTagTopMass" )
+        self.allTopTagTopMassLabel   = ( label,   "topTagTopMass" )
         self.allTopTagMinMassHandle  = Handle( "std::vector<double>" )
-        self.allTopTagMinMassLabel   = ( "ttbsmAna",   "topTagMinMass" )
+        self.allTopTagMinMassLabel   = ( label,   "topTagMinMass" )
         self.allTopTagNSubjetsHandle    = Handle("std::vector<double>" )
-        self.allTopTagNSubjetsLabel     = ( "ttbsmAna",   "topTagNSubjets" )
+        self.allTopTagNSubjetsLabel     = ( label,   "topTagNSubjets" )
 
         self.allTopTagPassHandle  = Handle( "std::vector<int>" )
-        self.allTopTagPassLabel   = ( "ttbsmAna",   "topTagPass" )
+        self.allTopTagPassLabel   = ( label,   "topTagPass" )
         
         self.__book__()
 

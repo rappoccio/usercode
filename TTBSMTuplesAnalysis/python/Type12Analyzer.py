@@ -9,44 +9,46 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type12Analyzer :
     """Run 1 + 2 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile):
+    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
         self.useMC = useMC
-        
+       
+        label = 'ttbsmAna'+collectionLabelSuffix
+
         self.allTopTagHandle = Handle (  "vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >"  )
-        self.allTopTagLabel  = ( "ttbsmAna",   "topTagP4")
+        self.allTopTagLabel  = ( label,   "topTagP4")
         self.allTopTagMinMassHandle  = Handle( "std::vector<double>" )
-        self.allTopTagMinMassLabel   = ( "ttbsmAna",   "topTagMinMass" )
+        self.allTopTagMinMassLabel   = ( label,   "topTagMinMass" )
         self.allTopTagNSubsHandle    = Handle("std::vector<double>" )
-        self.allTopTagNSubsLabel     = ( "ttbsmAna",   "topTagNSubjets" )
+        self.allTopTagNSubsLabel     = ( label,   "topTagNSubjets" )
 
         self.hemis0Handle   = Handle ("vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >")
-        self.hemis0Label    = ( "ttbsmAna", "topTagP4Hemis0" )
+        self.hemis0Label    = ( label, "topTagP4Hemis0" )
 
         self.hemis0MinMassHandle     = Handle( "std::vector<double>" )
-        self.hemis0MinMassLabel  = ( "ttbsmAna", "topTagMinMassHemis0" )
+        self.hemis0MinMassLabel  = ( label, "topTagMinMassHemis0" )
 
         self.hemis0NSubjetsHandle    = Handle( "std::vector<double>" )
-        self.hemis0NSubjetsLabel = ( "ttbsmAna", "topTagNSubjetsHemis0"  )
+        self.hemis0NSubjetsLabel = ( label, "topTagNSubjetsHemis0"  )
 
         self.hemis0TopMassHandle     = Handle( "std::vector<double>" )
-        self.hemis0TopMassLabel  = ( "ttbsmAna", "topTagTopMassHemis0" )
+        self.hemis0TopMassLabel  = ( label, "topTagTopMassHemis0" )
 
         self.hemis0PassHandle        = Handle( "std::vector<int>")
-        self.hemis0PassLabel   = ( "ttbsmAna", "topTagPassHemis0" )
+        self.hemis0PassLabel   = ( label, "topTagPassHemis0" )
 
         self.hemis1Handle     = Handle( "vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >")
-        self.hemis1Label      = ( "ttbsmAna", "wTagP4Hemis1" )
+        self.hemis1Label      = ( label, "wTagP4Hemis1" )
 
         self.hemis1BdiscHandle         = Handle( "std::vector<double>" )
-        self.hemis1BdiscLabel    = ( "ttbsmAna",   "wTagBDiscHemis1" )
+        self.hemis1BdiscLabel    = ( label,   "wTagBDiscHemis1" )
 
         self.hemis1MuHandle           = Handle( "std::vector<double>")
-        self.hemis1MuLabel      = ( "ttbsmAna",  "wTagMuHemis1" )
+        self.hemis1MuLabel      = ( label,  "wTagMuHemis1" )
 
         self.hemis1Jet3Handle    = Handle("int")
-        self.hemis1Jet3Label     = ( "ttbsmAna", "jet3Hemis1" )
+        self.hemis1Jet3Label     = ( label, "jet3Hemis1" )
         self.__book__()
 
 
