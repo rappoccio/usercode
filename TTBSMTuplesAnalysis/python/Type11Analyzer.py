@@ -53,27 +53,33 @@ class Type11Analyzer :
         print 'Booking histograms'
         self.mistagFile = ROOT.TFile(self.mistagFileStr + ".root")
         self.mistagFile.cd()
-        self.mistag = self.mistagFile.Get("TYPE12_KIN_MISTAG").Clone()
+        self.mistag = self.mistagFile.Get("TYPE11_MISTAG").Clone()
         self.mistag.SetName('mistag')
+        self.mistagMassCut = self.mistagFile.Get("TYPE11_MISTAG_MASSCUT_LARGEBINS").Clone()
+        self.mistagMassCut.SetName('mistagMassCut')
+        print self.mistag.GetBinContent(3)
         ROOT.SetOwnership( self.mistag, False )
+        ROOT.SetOwnership( self.mistagMassCut, False )
         
         self.f = ROOT.TFile( self.outfile + ".root", "recreate" )
         self.f.cd()
 
         self.mttPredDist                 = ROOT.PredictedDistribution( self.mistag, "mttPredDist", "mTT Mass",       1000, 0,  5000 )
+        self.mttPredDistMassCut          = ROOT.PredictedDistribution( self.mistagMassCut, "mttPredDistMassCut", "mTT Mass",       1000, 0,  5000 )
 
 
         ROOT.SetOwnership( self.mttPredDist, False )
+        ROOT.SetOwnership( self.mttPredDistMassCut, False )
         
-        self.jetEta               = ROOT.TH1F("jetEta",               "jetEta",            100, -4,    4)
-        self.jetMass              = ROOT.TH1F("jetMass",              "jetMass",        100,  0,  500 )
-        self.jetPt                = ROOT.TH1F("jetPt",                "jetPt",          400,  0,  2000 )    
-        self.jetMinMass           = ROOT.TH1F("jetMinMass",           "jetMinMass",          400,  0,  200 )
-        self.topTagMass           = ROOT.TH1F("topTagMass",           "Top Tag Mass",             100,  0,  500 )
-        self.topTagMinMass        = ROOT.TH1F("topTagMinMass",               "Top Tag MinMass",             100,  0,  200 )
-        self.topTagPt             = ROOT.TH1F("topTagPt",                    "Top Tag Pt",               400,  0,  2000 )
-        self.mttCandMass          = ROOT.TH1F("mttCandMass",                     "mTT Cand Mass",                 1000, 0,  5000 )
-        self.mttMass              = ROOT.TH1F("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
+        self.jetEta               = ROOT.TH1D("jetEta",               "jetEta",            100, -4,    4)
+        self.jetMass              = ROOT.TH1D("jetMass",              "jetMass",        100,  0,  500 )
+        self.jetPt                = ROOT.TH1D("jetPt",                "jetPt",          400,  0,  2000 )    
+        self.jetMinMass           = ROOT.TH1D("jetMinMass",           "jetMinMass",          400,  0,  200 )
+        self.topTagMass           = ROOT.TH1D("topTagMass",           "Top Tag Mass",             100,  0,  500 )
+        self.topTagMinMass        = ROOT.TH1D("topTagMinMass",               "Top Tag MinMass",             100,  0,  200 )
+        self.topTagPt             = ROOT.TH1D("topTagPt",                    "Top Tag Pt",               400,  0,  2000 )
+        self.mttCandMass          = ROOT.TH1D("mttCandMass",                     "mTT Cand Mass",                 1000, 0,  5000 )
+        self.mttMass              = ROOT.TH1D("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
     
         
 
@@ -82,7 +88,7 @@ class Type11Analyzer :
         
         event.getByLabel (self.allTopTagLabel, self.allTopTagHandle)
         topJets = self.allTopTagHandle.product()
-        
+         
 
         nTopCand = 0
         for i in range(0,len(topJets) ) :
@@ -137,8 +143,8 @@ class Type11Analyzer :
             if passType11  :
                 self.topTagMass.Fill( topJets[0].mass() )
                 self.topTagMass.Fill( topJets[1].mass() )
-                self.topTagPt.Fill( topJets[0].mass() )
-                self.topTagPt.Fill( topJets[1].mass() )
+                self.topTagPt.Fill( topJets[0].pt() )
+                self.topTagPt.Fill( topJets[1].pt() )
                 self.topTagMinMass.Fill( topJetMinMass[0] )
                 self.topTagMinMass.Fill( topJetMinMass[1] )
                 self.mttMass.Fill( ttMass )
@@ -148,9 +154,11 @@ class Type11Analyzer :
             if x < 0.5 :
                 if topTag0 :
                     self.mttPredDist.        Accumulate( ttMass, topJets[1].pt(), topTag1 )
+                    self.mttPredDistMassCut. Accumulate( ttMass, topJets[1].pt(), topTag1 )
             if x >= 0.5 :
                 if topTag1 :
                     self.mttPredDist.        Accumulate( ttMass, topJets[0].pt(), topTag0 )
+                    self.mttPredDistMassCut. Accumulate( ttMass, topJets[0].pt(), topTag0 )
 
 
 

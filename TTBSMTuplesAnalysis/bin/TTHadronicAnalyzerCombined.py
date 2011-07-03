@@ -17,7 +17,7 @@ from Analysis.TTBSMTuplesAnalysis.Type12Analyzer import Type12Analyzer
 from Analysis.TTBSMTuplesAnalysis.MistagMaker import MistagMaker
 from Analysis.TTBSMTuplesAnalysis.TTKinPlotsAnalyzer import TTKinPlotsAnalyzer
 from Analysis.TTBSMTuplesAnalysis.Type11Analyzer import Type11Analyzer
-
+from Analysis.TTBSMTuplesAnalysis.MistagMakerType1 import MistagMakerType1
 from optparse import OptionParser
 
 
@@ -89,6 +89,8 @@ elif options.analyzer == "MistagMaker" :
     analyzer = MistagMaker( options.outfile + '_mistag')
 elif options.analyzer == "Type11Analyzer" :
     analyzer = Type11Analyzer(options.useMC, options.outfile + '_type11', options.mistagFile)
+elif options.analyzer == "MistagMakerType1" :
+    analyzer = MistagMakerType1( options.outfile + '_mistag1')
 elif options.analyzer == "TTKinPlotsAnalyzer" :
     analyzer = TTKinPlotsAnalyzer( options.outfile + '_kinplots')
 else :
