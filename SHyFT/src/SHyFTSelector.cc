@@ -71,6 +71,7 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    usePFIso_        (params.getParameter<bool>("usePFIso")),
    useCone3_        (params.getParameter<bool>("useCone3")),
    useNoID_         (params.getParameter<bool>("useNoID")),
+   userhoCorr_      (params.getParameter<bool>("userhoCorr")),
    useTTBSMPat_     (params.getParameter<bool>("useTTBSMPat")),
    use42X_          (params.getParameter<bool>("use42X")),  
    jecPayload_      (params.getParameter<std::string>("jecPayload"))
@@ -283,10 +284,12 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 
          reco::Candidate::LorentzVector metP4 = metHandle->at(0).p4();
          
+         double rho = 0;
          edm::Handle<double> rhoHandle;
          if(useTTBSMPat_){            
             event.getByLabel(rhoTag_, rhoHandle);
-            //double rho = *rhoHandle;
+            rho = *rhoHandle;
+            //cout << "rho -->" << rho << endl;
          }
   
          TopElectronSelector patEle95(TopElectronSelector::wp95);
@@ -345,9 +348,15 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             const double chIso03 = ielectron->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch).first;
             const double nhIso03 = ielectron->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
             const double gIso03 = ielectron->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph).first;
-                 
+                
+            double Pi = atan(1)*4; 
             if(usePFIso_ && useCone3_)       relIso = (chIso03 + nhIso03 + gIso03)/ ielectron->p4().Pt();
             else if(usePFIso_ && !useCone3_) relIso = (chIso + nhIso + gIso)/ ielectron->p4().Pt();
+            else if(userhoCorr_) {
+            relIso = (( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + ielectron->dr03HcalTowerSumEt() )- rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
+            //cout << "reliso after fastjet sub--->" << relIso << endl;
+            //cout << "and before it was --> " <<  ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + ielectron->dr03HcalTowerSumEt() )/ ielectron->p4().Pt() << endl;
+            }
             else                             relIso = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + ielectron->dr03HcalTowerSumEt() ) / ielectron->p4().Pt();
   
 //Electron Selection for e+jets

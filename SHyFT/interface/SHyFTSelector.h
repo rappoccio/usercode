@@ -162,6 +162,7 @@ class SHyFTSelector : public EventSelector {
       bool           usePFIso_;
       bool           useCone3_;
       bool           useNoID_;
+      bool           userhoCorr_;
       bool           useTTBSMPat_;
       bool           use42X_;
       // Jet energy corrections object

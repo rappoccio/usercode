@@ -34,6 +34,7 @@ wplusjetsAnalysis = cms.PSet(
     usePFIso = cms.bool(False),
     useCone3 = cms.bool(False),
     useNoID  = cms.bool(False),
+    userhoCorr = cms.bool(True),
     useTTBSMPat = cms.bool(True),
     use42X   = cms.bool(False),
     # tight muons
