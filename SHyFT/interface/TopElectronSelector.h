@@ -26,7 +26,7 @@ class TopElectronSelector : public Selector<pat::Electron>  {
 
    public: // interface  
   
-      enum Version_t { wp95, wp90, wp85, wp80, wp70, sigihih80, dphi80, deta80, hoe80, NONE };
+      enum Version_t { wp95, wp90, wp85, wp80, wp70, sigihih80, dphi80, deta80,NONE };
       TopElectronSelector() {}
   
       // initialize it by inserting directly the cut values in a parameter set
@@ -76,51 +76,51 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("sihih_EB",    1.0e-02);
             set("dphi_EB",     8.0e-01);
             set("deta_EB",     7.0e-03);
-            set("hoe_EB",      1.5e-01); 
+            //set("hoe_EB",      1.5e-01); 
             set("sihih_EE",    3.0e-02);
             set("dphi_EE",     7.0e-01);
             set("deta_EE",     1.0e-02);
-            set("hoe_EE",      1.5e-01);//7.0e-02
+            //set("hoe_EE",      1.5e-01);//7.0e-02
          }
          else if (version_ == wp90) {
             set("sihih_EB",    1.0e-02);
             set("dphi_EB",     8.0e-01);
             set("deta_EB",     7.0e-03);
-            set("hoe_EB",      1.2e-01);
+            //set("hoe_EB",      1.2e-01);
             set("sihih_EE",    3.0e-02);
             set("dphi_EE",     7.0e-01);
             set("deta_EE",     9.0e-03);
-            set("hoe_EE",      1.5e-01);//5.0e-02
+            //set("hoe_EE",      1.5e-01);//5.0e-02
          }
          else if (version_ == wp85) {
             set("sihih_EB",    1.0e-02);
             set("dphi_EB",     6.0e-02);
             set("deta_EB",     6.0e-03);
-            set("hoe_EB",      4.0e-02);
+            //set("hoe_EB",      4.0e-02);
             set("sihih_EE",    3.0e-02);
             set("dphi_EE",     4.0e-02);
             set("deta_EE",     7.0e-03);
-            set("hoe_EE",      1.5e-01);//2.5e-02
+            //set("hoe_EE",      1.5e-01);//2.5e-02
          }
          else if (version_ == wp80) {
             set("sihih_EB",    1.0e-02);
             set("dphi_EB",     6.0e-02);
             set("deta_EB",     4.0e-03);
-            set("hoe_EB",      4.0e-02);
+            //set("hoe_EB",      4.0e-02);
             set("sihih_EE",    3.0e-02);
             set("dphi_EE",     3.0e-02);
             set("deta_EE",     7.0e-03);
-            set("hoe_EE",      1.5e-01);//2.5e-02
+            //set("hoe_EE",      1.5e-01);//2.5e-02
          }
          else if (version_ == wp70) {
             set("sihih_EB",    1.0e-02);
             set("dphi_EB",     3.0e-02);
             set("deta_EB",     4.0e-03);
-            set("hoe_EB",      2.5e-02);
+            //set("hoe_EB",      2.5e-02);
             set("sihih_EE",    3.0e-02);
             set("dphi_EE",     2.0e-02);
             set("deta_EE",     5.0e-03); 
-            set("hoe_EE",      1.5e-01);//2.5e-02
+            //set("hoe_EE",      1.5e-01);//2.5e-02
          }
          else if (version == sigihih80){
             set("sihih_EB",    1.0e-02);
@@ -134,10 +134,10 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("deta_EB",     4.0e-03);
             set("deta_EE",     7.0e-03);//
          }
-         else if (version == hoe80){
-            set("hoe_EB",      4.0e-02);
-            set("hoe_EE",      1.5e-01);//2.5e-02
-         }
+         // else if (version == hoe80){
+//             set("hoe_EB",      4.0e-02);
+//             set("hoe_EE",      1.5e-01);//2.5e-02
+//          }
 
          indexSinhih_EB_     = index_type(&bits_, "sihih_EB"     ); 
          indexDphi_EB_       = index_type(&bits_, "dphi_EB"      );

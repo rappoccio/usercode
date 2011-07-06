@@ -284,14 +284,15 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 
          reco::Candidate::LorentzVector metP4 = metHandle->at(0).p4();
          
-         double rho = 0;
+         double rho = 0;//default if running on SHyfT PAT tuple (EMEEn3080)
          edm::Handle<double> rhoHandle;
          if(useTTBSMPat_){            
             event.getByLabel(rhoTag_, rhoHandle);
             rho = *rhoHandle;
             //cout << "rho -->" << rho << endl;
          }
-  
+         double Pi = atan(1)*4;
+
          TopElectronSelector patEle95(TopElectronSelector::wp95);
          TopElectronSelector patEle90(TopElectronSelector::wp90);
          TopElectronSelector patEle85(TopElectronSelector::wp85);
@@ -300,7 +301,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
          TopElectronSelector EleSihih(TopElectronSelector::sigihih80);
          TopElectronSelector EleDphi(TopElectronSelector::dphi80);
          TopElectronSelector EleDeta(TopElectronSelector::deta80); 
-         TopElectronSelector EleHoE(TopElectronSelector::hoe80); 
+         //TopElectronSelector EleHoE(TopElectronSelector::hoe80); 
       
          bool conversionVetoA = true;
          bool conversionVetoB = true;
@@ -320,7 +321,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             bool pass_sihih   = EleSihih(*ielectron);
             bool pass_dphi    = EleDphi(*ielectron);
             bool pass_deta    = EleDeta(*ielectron);
-            bool pass_hoe     = EleHoE(*ielectron);
+            //bool pass_hoe     = EleHoE(*ielectron);
     
             double scEta   = fabs( ielectron->superCluster()->eta() );
             double Et      = ielectron->et();
@@ -335,6 +336,9 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             double nhIso = ielectron->userIsolation(pat::PfNeutralHadronIso);
             double gIso  = ielectron->userIsolation(pat::PfGammaIso);
             double relIso = -1000;
+            
+            //HCal sum needs to be calulated from 0->0.3 when we remove H/E cut. The default was used from 0.15->0.3 to not to double count H from H/E.
+            double HCalSum = ielectron->dr03HcalTowerSumEt() + ielectron->hadronicOverEm() * ielectron->superCluster()->energy() *fabs(sin(ielectron->superCluster()->position().theta()));
 
             //Do some customization here:
             reco::isodeposit::Direction Dir = Direction(ielectron->eta(),ielectron->phi());
@@ -349,23 +353,24 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             const double nhIso03 = ielectron->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
             const double gIso03 = ielectron->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph).first;
                 
-            double Pi = atan(1)*4; 
-            if(usePFIso_ && useCone3_)       relIso = (chIso03 + nhIso03 + gIso03)/ ielectron->p4().Pt();
-            else if(usePFIso_ && !useCone3_) relIso = (chIso + nhIso + gIso)/ ielectron->p4().Pt();
-            else if(userhoCorr_) {
-            relIso = (( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + ielectron->dr03HcalTowerSumEt() )- rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
-            //cout << "reliso after fastjet sub--->" << relIso << endl;
-            //cout << "and before it was --> " <<  ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + ielectron->dr03HcalTowerSumEt() )/ ielectron->p4().Pt() << endl;
-            }
-            else                             relIso = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + ielectron->dr03HcalTowerSumEt() ) / ielectron->p4().Pt();
-  
 //Electron Selection for e+jets
 //-----------------------------
-            if( (scEta > 2.5 || scEta <= 1.566 )  && scEta > 1.4442 ) continue;   
+            if( (scEta > 2.5 || scEta <= 1.566 )  && scEta > 1.4442 ) continue;  //Fiducial cuts 
             if( fabs(ielectron->eta()) >= eleEtaMaxLoose_ ) continue;
-              
+            
+            //apply the rho(Fastjet subtraction) corrections to isolation
+            if(usePFIso_ && useCone3_)       relIso = (chIso03 + nhIso03 + gIso03 - rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
+            else if(usePFIso_ && !useCone3_) relIso = (chIso + nhIso + gIso - rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
+            //apply pedestal subtraction in barrel
+            else if(userhoCorr_ && ielectron->isEB()) {
+               relIso = (( ielectron->dr03TkSumPt() + max(0., ielectron->dr03EcalRecHitSumEt()-1.0 ) + HCalSum )- rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
+            }
+            else if(userhoCorr_ && ielectron->isEE()){
+               relIso = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + HCalSum - rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
+            }
+
             bool firstPass(0);
-            if( useAntiSelection_&& (pass_sihih + pass_dphi + pass_deta + pass_hoe) <= 2) firstPass=1;
+            if( useAntiSelection_&& (pass_sihih + pass_dphi + pass_deta ) <= 2) firstPass=1;
             else if( useWP95Selection_ && pass95 )firstPass=1;
             else if( useWP90Selection_ && pass90 )firstPass=1; 
             else if( useWP85Selection_ && pass85 )firstPass=1;
@@ -443,9 +448,9 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             const double nhIso03 = imuon->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
             const double gIso03 = imuon->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph).first;
             
-            if(usePFIso_ && useCone3_)           relIso = (chIso03 + nhIso03 + gIso03)/ pt;
-            else if(usePFIso_ && !useCone3_)     relIso = (chIso + nhIso + gIso)/ pt;  
-            else                                 relIso  = (ecalIso + hcalIso + trkIso) / pt;
+            if(usePFIso_ && useCone3_)           relIso = (chIso03 + nhIso03 + gIso03 - rho*Pi*0.3*0.3)/ pt;
+            else if(usePFIso_ && !useCone3_)     relIso = (chIso + nhIso + gIso - rho*Pi*0.3*0.3)/ pt;  
+            else                                 relIso  = (ecalIso + hcalIso + trkIso - rho*Pi*0.3*0.3) / pt;
 
             if ( !imuon->isGlobalMuon() ) continue;
             //if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ &&  muonIdLoose_(*imuon,event) ) {
