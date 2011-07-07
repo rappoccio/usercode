@@ -149,28 +149,29 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
 
    retInternal_ = getBitTemplate();
 
-   //use only for 4_1_X MC
-   string L1Tag, L1DataTag;
-   if(useTTBSMPat_){
-      L1Tag     = "Jec10_V3_AK5PFchs_L1FastJet.txt";
-      L1DataTag = "Jec11_V1_AK5PFchs_L1FastJet.txt";
+
+   string L1Tag, L1Tag_42X;
+   if(useTTBSMPat_){ //use with TLBSM PATs
+      L1Tag     = "Jec10_V3_AK5PFchs_L1FastJet.txt"; //for 41X
+      L1Tag_42X = "Jec11_V2_AK5PFchs_L1FastJet.txt"; //for 42X
    }
       
-   else{
-      L1Tag     = "Jec10_V3_AK5PFchs_L1Offset.txt";
-      L1DataTag = "Jec11_V1_AK5PFchs_L1Offset.txt";
+   else{// only for old SHyFT PATs
+      L1Tag     = "Jec10_V3_AK5PFchs_L1Offset.txt"; //for 41X
+      L1Tag_42X = "Jec11_V2_AK5PFchs_L1Offset.txt"; //Dummy as SHyFT PATs were not done in 42X
    }
    string L2Tag   = "Jec10_V3_AK5PFchs_L2Relative.txt";
    string L3Tag   = "Jec10_V3_AK5PFchs_L3Absolute.txt";
    string L2L3Tag = "Jec10_V3_AK5PFchs_L2L3Residual.txt"; 
 
-   //use only for 4_2_2 Data
-   string L2DataTag = "Jec11_V1_AK5PFchs_L2Relative.txt";
-   string L3DataTag = "Jec11_V1_AK5PFchs_L3Absolute.txt"; 
+   string L2Tag_42X = "Jec11_V2_AK5PFchs_L2Relative.txt";
+   string L3Tag_42X = "Jec11_V2_AK5PFchs_L3Absolute.txt"; 
+   string L2L3Tag_42X = "Jec11_V2_AK5PFchs_L2L3Residual.txt";
    
-   JetCorrectorParameters L1DataJetPar(L1DataTag);
-   JetCorrectorParameters L3DataJetPar(L3DataTag);
-   JetCorrectorParameters L2DataJetPar(L2DataTag);
+   JetCorrectorParameters L1JetPar_42X(L1Tag_42X);
+   JetCorrectorParameters L3JetPar_42X(L3Tag_42X);
+   JetCorrectorParameters L2JetPar_42X(L2Tag_42X);
+   JetCorrectorParameters L2L3JetPar_42X(L2L3Tag_42X);
      
    JetCorrectorParameters L1JetPar(L1Tag);
    JetCorrectorParameters L3JetPar(L3Tag);
@@ -181,21 +182,19 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
 
    vector<JetCorrectorParameters> vPar;
    if (use42X_){
-      vPar.push_back(L1DataJetPar);
-      vPar.push_back(L2DataJetPar);
-      vPar.push_back(L3DataJetPar);
+      vPar.push_back(L1JetPar_42X);
+      vPar.push_back(L2JetPar_42X);
+      vPar.push_back(L3JetPar_42X);
+      if (useData_)  vPar.push_back(L2L3JetPar_42X);
    }
    else{
       vPar.push_back(L1JetPar);
       vPar.push_back(L2JetPar);
       vPar.push_back(L3JetPar);
+      if (useData_)  vPar.push_back(L2L3JetPar); //if running on prompt Reco 41X for any reason
    }
    
-   if ( useData_ && !use42X_) {//if running on prompt Reco 41X
-      vPar.push_back(L2L3JetPar);
-   }
    jec_ = boost::shared_ptr<FactorizedJetCorrector> ( new FactorizedJetCorrector(vPar) );
-
 
    jecUnc_ = boost::shared_ptr<JetCorrectionUncertainty>( new JetCorrectionUncertainty(jecPayload_));
 
@@ -339,7 +338,11 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             
             //HCal sum needs to be calulated from 0->0.3 when we remove H/E cut. The default was used from 0.15->0.3 to not to double count H from H/E.
             double HCalSum = ielectron->dr03HcalTowerSumEt() + ielectron->hadronicOverEm() * ielectron->superCluster()->energy() *fabs(sin(ielectron->superCluster()->position().theta()));
-
+            double AreaTracker[2] = {0., 0.}; //   barrel/endcap
+            double AreaEcal[2]    = {0.101, 0.046}; //   barrel/endcap
+            double AreaHcal[2]    = {0.021 , 0.040 }; //   barrel/endcap
+            
+            
             //Do some customization here:
             reco::isodeposit::Direction Dir = Direction(ielectron->eta(),ielectron->phi());
             reco::isodeposit::AbsVetos  vetos_ch;
@@ -360,15 +363,21 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             
             //apply the rho(Fastjet subtraction) corrections to isolation
             if(usePFIso_ && useCone3_)       relIso = (chIso03 + nhIso03 + gIso03 - rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
-            else if(usePFIso_ && !useCone3_) relIso = (chIso + nhIso + gIso - rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
-            //apply pedestal subtraction in barrel
+            else if(usePFIso_ && !useCone3_) relIso = (chIso + nhIso + gIso - rho*Pi*0.3*0.3)/ ielectron->p4().Pt();            
             else if(userhoCorr_ && ielectron->isEB()) {
-               relIso = (( ielectron->dr03TkSumPt() + max(0., ielectron->dr03EcalRecHitSumEt()-1.0 ) + HCalSum )- rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
+               double ecalIsoCorr  = max(0., ielectron->dr03EcalRecHitSumEt()-1.0 ) - rho * AreaEcal[0]; //also apply pedestal subtraction
+               double hcalIsoCorr  = HCalSum - rho * AreaHcal[0];
+               double trkIsoCorr   = ielectron->dr03TkSumPt() - rho * AreaTracker[0];
+               relIso = (ecalIsoCorr + hcalIsoCorr + trkIsoCorr ) /ielectron->p4().Pt();
             }
             else if(userhoCorr_ && ielectron->isEE()){
-               relIso = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + HCalSum - rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
+               double ecalIsoCorr  = ielectron->dr03EcalRecHitSumEt()- rho * AreaEcal[1];
+               double hcalIsoCorr  = HCalSum - rho * AreaHcal[1];
+               double trkIsoCorr   = ielectron->dr03TkSumPt() - rho * AreaTracker[1];
+               relIso = (ecalIsoCorr + hcalIsoCorr + trkIsoCorr ) /ielectron->p4().Pt();
             }
-
+            else relIso = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + HCalSum - rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
+               
             bool firstPass(0);
             if( useAntiSelection_&& (pass_sihih + pass_dphi + pass_deta ) <= 2) firstPass=1;
             else if( useWP95Selection_ && pass95 )firstPass=1;
@@ -448,9 +457,9 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             const double nhIso03 = imuon->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
             const double gIso03 = imuon->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph).first;
             
-            if(usePFIso_ && useCone3_)           relIso = (chIso03 + nhIso03 + gIso03 - rho*Pi*0.3*0.3)/ pt;
-            else if(usePFIso_ && !useCone3_)     relIso = (chIso + nhIso + gIso - rho*Pi*0.3*0.3)/ pt;  
-            else                                 relIso  = (ecalIso + hcalIso + trkIso - rho*Pi*0.3*0.3) / pt;
+            if(usePFIso_ && useCone3_)           relIso = (chIso03 + nhIso03 + gIso03 )/ pt;
+            else if(usePFIso_ && !useCone3_)     relIso = (chIso + nhIso + gIso )/ pt;  
+            else                                 relIso  = (ecalIso + hcalIso + trkIso ) / pt;
 
             if ( !imuon->isGlobalMuon() ) continue;
             //if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ &&  muonIdLoose_(*imuon,event) ) {
