@@ -538,9 +538,8 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                jecUnc_->setJetEta( scaledJetP4.eta() );
                jecUnc_->setJetPt( scaledJetP4.pt() );
                double unc = fabs(jecUnc_->getUncertainty( bool(jetScale_ > 0) ));
-
                // Add the "flat" flavor dependent corrections in quadrature
-               unc = sqrt( unc*unc + jetUncertainty_*jetUncertainty_);
+               //unc = sqrt( unc*unc + jetUncertainty_*jetUncertainty_);
 	     
                // Scale up or down by jetScale_
                double ijetscale = (1 + jetScale_ * unc);
@@ -549,8 +548,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                // Correct the MET back again for this effect
                metP4.SetPx( metP4.Px() - uncorrJet.px() * ijetscale);
                metP4.SetPy( metP4.Py() - uncorrJet.py() * ijetscale);	     
-
-            }
+               }
             
             // -------
             // Jet energy resolution variation
