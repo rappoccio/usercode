@@ -137,6 +137,6 @@ wplusjetsAnalysis = cms.PSet(
     eleJetDR       = cms.double( 0.3 ),
     rawJetPtCut    = cms.double( 0.0 ),
     useData        = cms.bool(False),
-    useL1Offset    = cms.bool(True),
-    jecPayload     = cms.string('Jec10_V3_AK5PFchs_Uncertainty.txt')
+    useL1Offset    = cms.bool(True),#Dummy variable: will remove it next time
+    jecPayload     = cms.string('Jec11_V2_AK5PFchs_Uncertainty.txt')
 )
