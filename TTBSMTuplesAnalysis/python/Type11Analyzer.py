@@ -78,6 +78,7 @@ class Type11Analyzer :
         self.jetEta               = ROOT.TH1D("jetEta",               "jetEta",            100, -4,    4)
         self.jetMass              = ROOT.TH1D("jetMass",              "jetMass",        100,  0,  500 )
         self.jetPt                = ROOT.TH1D("jetPt",                "jetPt",          400,  0,  2000 )    
+        self.jetPtOneTag          = ROOT.TH1D("jetPtOneTag",          "jetPtOneTag",    400,  0,  2000 )
         self.jetMinMass           = ROOT.TH1D("jetMinMass",           "jetMinMass",          400,  0,  200 )
         self.topTagMass           = ROOT.TH1D("topTagMass",           "Top Tag Mass",             100,  0,  500 )
         self.topTagMinMass        = ROOT.TH1D("topTagMinMass",               "Top Tag MinMass",             100,  0,  200 )
@@ -157,10 +158,12 @@ class Type11Analyzer :
             x = ROOT.gRandom.Uniform()        
             if x < 0.5 :
                 if topTag0 :
+                    self.jetPtOneTag.Fill( topJets[1].pt() )
                     self.mttPredDist.        Accumulate( ttMass, topJets[1].pt(), topTag1 )
                     self.mttPredDistMassCut. Accumulate( ttMass, topJets[1].pt(), topTag1 )
             if x >= 0.5 :
                 if topTag1 :
+                    self.jetPtOneTag.Fill( topJets[0].pt() )
                     self.mttPredDist.        Accumulate( ttMass, topJets[0].pt(), topTag0 )
                     self.mttPredDistMassCut. Accumulate( ttMass, topJets[0].pt(), topTag0 )
 

@@ -9,10 +9,11 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type12Analyzer :
     """Run 1 + 2 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix):
+    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix, veto11):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
         self.useMC = useMC
+        self.veto11 = veto11
        
         label = 'ttbsmAna'+collectionLabelSuffix
 
@@ -318,7 +319,12 @@ class Type12Analyzer :
             if  topJets[0].mass() < 140  :
                 ttMassMod2 = ttMassMod
 
-        passKinCuts = (nTopCand == 1) and (wJets[0].pt() > 200)  and (wJetMu[0] < 0.4) and (wJets[jet3].pt() > 30 )
+        if self.veto11 :
+            secondJetCuts = wJets[0].pt() > 200 and wJets[0].pt() < 350
+        else :
+            secondJetCuts = wJets[0].pt() > 200
+
+        passKinCuts = (nTopCand == 1) and secondJetCuts  and (wJetMu[0] < 0.4) and (wJets[jet3].pt() > 30 )
         hasBTag1    = wJetBDisc[jet3] > 3.3
         hasType2Top = wJets[0].mass() > 60 and wJets[0].mass() < 130 and pairMass > 140 and pairMass < 250
         hasTopTag   = topJetMass[0] > 140 and topJetMass[0] < 250 and topJetMinMass[0] > 50 and topJetNSubjets[0] > 2

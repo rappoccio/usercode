@@ -45,6 +45,12 @@ parser.add_option('--useMC', action='store_true',
                   dest='useMC',
                   help='Use Monte Carlo')
 
+parser.add_option('--veto11', action='store_true',
+                  default=False,
+                  dest='veto11',
+                  help='Veto the type 1+1 selection in the type 1+2 selection')
+
+
 parser.add_option('-m', '--mistagFile', metavar='N', type='string', action='store',
                   default='MISTAG',
                   dest='mistagFile',
@@ -54,6 +60,7 @@ parser.add_option('-l', '--collectionLabelSuffix', metavar='N', type='string', a
                   default='',
                   dest='collectionLabelSuffix',
                   help='Collection label')
+
 
 
 (options, args) = parser.parse_args()
@@ -89,7 +96,9 @@ triggerSelection = TriggerAndEventSelectionObject( myAnaTrigs )
 
 
 if options.analyzer == "Type12Analyzer" :
-    analyzer = Type12Analyzer(options.useMC, options.outfile + '_type12_'+options.collectionLabelSuffix, options.mistagFile, options.collectionLabelSuffix)
+    analyzer = Type12Analyzer(options.useMC, options.outfile + '_type12_'+options.collectionLabelSuffix,
+                              options.mistagFile, options.collectionLabelSuffix,
+                              options.veto11 )
 elif options.analyzer == "MistagMaker" :
     analyzer = MistagMaker( options.outfile + '_mistag')
 elif options.analyzer == "Type11Analyzer" :
