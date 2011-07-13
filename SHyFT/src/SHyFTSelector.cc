@@ -59,15 +59,9 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    vCut_            (params.getParameter<double>("vertexCut")),
    dxy_             (params.getParameter<double>("dxy")),
    pvTag_           (params.getParameter<edm::InputTag>("pvSrc")),
-   useAntiSelection_(params.getParameter<bool>("useAntiSelection")),   
    useWP95Selection_(params.getParameter<bool>("useWP95Selection")),
-   useWP90Selection_(params.getParameter<bool>("useWP90Selection")),
-   useWP85Selection_(params.getParameter<bool>("useWP85Selection")),
-   useWP80Selection_(params.getParameter<bool>("useWP80Selection")),
    useWP70Selection_(params.getParameter<bool>("useWP70Selection")),
-   useEleMC_        (params.getParameter<bool>("useEleMC")),
    useData_         (params.getParameter<bool>("useData")),
-   useL1Offset_     (params.getParameter<bool>("useL1Offset")),
    usePFIso_        (params.getParameter<bool>("usePFIso")),
    useCone3_        (params.getParameter<bool>("useCone3")),
    useNoID_         (params.getParameter<bool>("useNoID")),
@@ -293,15 +287,8 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
          double Pi = atan(1)*4;
 
          TopElectronSelector patEle95(TopElectronSelector::wp95);
-         TopElectronSelector patEle90(TopElectronSelector::wp90);
-         TopElectronSelector patEle85(TopElectronSelector::wp85);
-         TopElectronSelector patEle80(TopElectronSelector::wp80);
          TopElectronSelector patEle70(TopElectronSelector::wp70);
-         TopElectronSelector EleSihih(TopElectronSelector::sigihih80);
-         TopElectronSelector EleDphi(TopElectronSelector::dphi80);
-         TopElectronSelector EleDeta(TopElectronSelector::deta80); 
-         //TopElectronSelector EleHoE(TopElectronSelector::hoe80); 
-      
+         
          bool conversionVetoA = true;
          bool conversionVetoB = true;
 
@@ -313,15 +300,8 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             ++nElectrons;
    
             bool pass95       = patEle95(*ielectron);
-            bool pass90       = patEle90(*ielectron);
-            bool pass85       = patEle85(*ielectron);
-            bool pass80       = patEle80(*ielectron);
             bool pass70       = patEle70(*ielectron);
-            bool pass_sihih   = EleSihih(*ielectron);
-            bool pass_dphi    = EleDphi(*ielectron);
-            bool pass_deta    = EleDeta(*ielectron);
-            //bool pass_hoe     = EleHoE(*ielectron);
-    
+            
             double scEta   = fabs( ielectron->superCluster()->eta() );
             double Et      = ielectron->et();
             double dB      = ielectron->dB();
@@ -341,7 +321,6 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             double AreaTracker[2] = {0., 0.}; //   barrel/endcap
             double AreaEcal[2]    = {0.101, 0.046}; //   barrel/endcap
             double AreaHcal[2]    = {0.021 , 0.040 }; //   barrel/endcap
-            
             
             //Do some customization here:
             reco::isodeposit::Direction Dir = Direction(ielectron->eta(),ielectron->phi());
@@ -378,13 +357,9 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             }
             else relIso = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + HCalSum - rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
                
-            bool firstPass(0);
-            if( useAntiSelection_&& (pass_sihih + pass_dphi + pass_deta ) <= 2) firstPass=1;
-            else if( useWP95Selection_ && pass95 )firstPass=1;
-            else if( useWP90Selection_ && pass90 )firstPass=1; 
-            else if( useWP85Selection_ && pass85 )firstPass=1;
-            else if( useWP80Selection_ && pass80 )firstPass=1;
-            else if( useWP70Selection_ && pass70 )firstPass =1;
+            bool firstPass(0);            
+            if( useWP95Selection_ && pass95 ) firstPass=1;
+            else if( useWP70Selection_ && pass70 ) firstPass =1;
             else if( useNoID_ ) firstPass=1;
 
             if(firstPass==1           &&
@@ -404,32 +379,31 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
             }   
             
-         
-//Electron Selection for mu+jets
-//------------------------------
-            bool tightID(false);
-            if(useTTBSMPat_)
-               tightID = ielectron->electronID("eidTightMC" );
-            else 
-               tightID = ielectron->electronID("eidRobustTight" );
+//Loose Electron Selection to be vetoed for mu+jets
+//-------------------------------------------------
+           //  bool tightID(false);
+//             if(useTTBSMPat_)
+//             tightID = ielectron->electronID("eidTightMC" );
+//             else 
+//              tightID = ielectron->electronID("eidRobustTight" );
             
-            // Tight cuts
-            if ( ielectron->et() > eleEtMin_ && fabs(ielectron->eta()) < eleEtaMax_ && 
-                 electronIdTight_(*ielectron) &&
-                 tightID  > 0  ) {
-               oldElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
-            } else {
-               // Loose cuts
+//             //Tight cuts
+//             if ( ielectron->et() > eleEtMin_ && fabs(ielectron->eta()) < eleEtaMax_ && 
+//                 electronIdTight_(*ielectron) &&
+//                 tightID  > 0  ) {
+//               oldElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
+//             } else {
+               //Loose cuts
                if ( ielectron->et() > eleEtMinLoose_ && fabs(ielectron->eta()) < eleEtaMaxLoose_ && 
                     electronIdLoose_(*ielectron) ) {
                   looseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                }
-            }
-         }
+               //}
+         } 
 
          
-//Loose Muon Selection to be vetoed for electron selection 
-//--------------------------------------------------------
+//Loose Muon Selection to be vetoed for e+jets 
+//--------------------------------------------
            
          for ( std::vector<pat::Muon>::const_iterator muonBegin = muonHandle->begin(),
                   muonEnd = muonHandle->end(), imuon = muonBegin;
@@ -476,7 +450,6 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                imuon != muonEnd; ++imuon ) {
             allMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
             if ( !imuon->isGlobalMuon() ) continue;
-	
             // Tight cuts
             bool passTight = muonIdTight_(*imuon,event) && imuon->isTrackerMuon() ;
             if (  imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && 
@@ -737,9 +710,14 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                
                bool oneMuon = 
                   ( selectedMuons_.size() == 1 && 
-                    looseMuons_.size() + oldElectrons_.size() + looseElectrons_.size() == 0 
+                    //looseMuons_.size() + oldElectrons_.size() + looseElectrons_.size() == 0 
+                      looseMuons_.size() + looseElectrons_.size() == 0 
                      );
-              
+               bool oneElectron =
+                  (selectedElectrons_.size() == 1 && 
+                   selectedLooseMuons_.size() + selectedLooseElectrons_.size() == 0 
+                     );
+
                bool oneMuonMuVeto = 
                   ( selectedMuons_.size() == 1 && 
                     looseMuons_.size() == 0 
@@ -756,7 +734,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                   passCut(ret, lep3Index_);
                   
                   if ( ignoreCut(lep4Index_) || 
-                       ((muPlusJets_ && oneMuon) ^ (ePlusJets_ && oneElectronMuVeto )  )
+                       ((muPlusJets_ && oneMuonMuVeto) ^ (ePlusJets_ && oneElectronMuVeto )  )
                      ) {
                      passCut(ret, lep4Index_);	  
 
@@ -770,14 +748,11 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                              conversionVetoB ) {
                            passCut(ret,conversionIndexB_);
                             
-                           //Dilepton veto 
-                           bool dileptonVeto =
-                              (selectedElectrons_.size() == 1 && 
-                               selectedLooseMuons_.size() == 0 &&
-                               selectedLooseElectrons_.size() == 0 );                             
-                           
+                           //Dilepton veto
                            if ( ignoreCut(dlepvetoIndex_) ||
-                                dileptonVeto ){
+                                (ePlusJets_ && oneElectron) ||
+                                (muPlusJets_ && oneMuon)
+                                ){
                               passCut(ret, dlepvetoIndex_);
                               
                               //ZVeto

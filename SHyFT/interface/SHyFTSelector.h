@@ -19,6 +19,9 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "RecoEgamma/EgammaIsolationAlgos/interface/EgammaTowerIsolation.h"
+#include "PhysicsTools/SelectorUtils/interface/PFElectronSelector.h"
+#include "PhysicsTools/SelectorUtils/interface/PFMuonSelector.h"
 
 class SHyFTSelector : public EventSelector {
    public:
@@ -83,9 +86,11 @@ class SHyFTSelector : public EventSelector {
       std::vector<reco::ShallowClonePtrCandidate> selectedLooseElectrons_;
       std::vector<reco::ShallowClonePtrCandidate> selectedLooseMuons_;
       PVSelector                           pvSelector_;
-      MuonVPlusJetsIDSelectionFunctor      muonIdTight_;
+      //MuonVPlusJetsIDSelectionFunctor      muonIdTight_;
+      PFMuonSelector                       muonIdTight_;
       ElectronVPlusJetsIDSelectionFunctor  electronIdTight_;//old
-      MuonVPlusJetsIDSelectionFunctor      muonIdLoose_;
+      //MuonVPlusJetsIDSelectionFunctor      muonIdLoose_;
+      PFMuonSelector                       muonIdLoose_;
       ElectronVPlusJetsIDSelectionFunctor  electronIdLoose_;//old
       JetIDSelectionFunctor                jetIdLoose_;
       PFJetIDSelectionFunctor              pfjetIdLoose_;
@@ -150,15 +155,15 @@ class SHyFTSelector : public EventSelector {
       double         vCut_;
       double         dxy_;
       edm::InputTag  pvTag_;
-      bool           useAntiSelection_;
+      //bool           useAntiSelection_;
       bool           useWP95Selection_;
-      bool           useWP90Selection_;
-      bool           useWP85Selection_;
-      bool           useWP80Selection_;
+      //bool           useWP90Selection_;
+      //bool           useWP85Selection_;
+      //bool           useWP80Selection_;
       bool           useWP70Selection_;
-      bool           useEleMC_;
+      //bool           useEleMC_;
       bool           useData_;
-      bool           useL1Offset_;
+      //bool           useL1Offset_;
       bool           usePFIso_;
       bool           useCone3_;
       bool           useNoID_;
