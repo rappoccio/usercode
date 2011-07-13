@@ -1,18 +1,17 @@
 #ifndef Analysis_SHyFT_interface_SHyFT_h
 #define Analysis_SHyFT_interface_SHyFT_h
 
-#include "PhysicsTools/UtilAlgos/interface/BasicAnalyzer.h"
-#include "Analysis/SHyFT/interface/SHyFTSelector.h"
+#include "PhysicsTools/SelectorUtils/interface/WPlusJetsEventSelector.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "DataFormats/FWLite/interface/Event.h"
 #include "Math/GenVector/PxPyPzM4D.h"
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/FWLite/interface/Record.h"
-/* #include "DataFormats/FWLite/interface/EventSetup.h" */
-/* #include "DataFormats/FWLite/interface/ESHandle.h" */
-/* #include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h" */
-/* #include "RecoBTag/PerformanceDB/interface/BtagPerformance.h" */
+#include "DataFormats/FWLite/interface/EventSetup.h"
+#include "DataFormats/FWLite/interface/ESHandle.h"
+#include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h"
+#include "RecoBTag/PerformanceDB/interface/BtagPerformance.h"
 
 
 #include <iostream>
@@ -34,7 +33,7 @@
 
 typedef std::vector<reco::ShallowClonePtrCandidate> ShallowCloneCollection;
 
-class SHyFT : public edm::BasicAnalyzer {
+class SHyFT {
 
   public:
 
@@ -90,8 +89,8 @@ class SHyFT : public edm::BasicAnalyzer {
     bool analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons);
     bool analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons);    
     bool analyze_met( const reco::ShallowClonePtrCandidate & met );
-    //std::string calcSampleName (const edm::EventBase& iEvent);
-    void weightPDF( edm::EventBase const & iEvent );
+    void calcTagWeight (const std::vector<reco::ShallowClonePtrCandidate>& jets);
+    bool calcSampleName (const edm::EventBase& iEvent, std::string &sampleName);
 
     bool make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
 			const reco::ShallowClonePtrCandidate & met,
@@ -99,18 +98,12 @@ class SHyFT : public edm::BasicAnalyzer {
 			const std::vector<reco::ShallowClonePtrCandidate>& electrons
 			);
 
-    SHyFTSelector wPlusJets;
+    WPlusJetsEventSelector wPlusJets;
     TFileDirectory& theDir;
-
-    TFileDirectory  subdirMU_plus;
-    TFileDirectory  subdirMU_minus;
-
-    TFileDirectory  subdirEB_plus;
-    TFileDirectory  subdirEE_plus;
-    
-    TFileDirectory  subdirEB_minus;
-    TFileDirectory  subdirEE_minus;
-
+    // 'registry' for the histograms                                                                                                                                                                    
+    std::map<std::string, TH1F*> histograms;
+    std::map<std::string, TH2F*> histograms2d;
+    std::map<std::string, TH3F*> histograms3d;
     // the following parameters need to come from the config
     bool muPlusJets_;
     bool ePlusJets_;
@@ -120,8 +113,17 @@ class SHyFT : public edm::BasicAnalyzer {
     std::string sampleNameInput;
     // used to be a global, what a shit!
     int HFcat_;
-    std::string sampleHistName_;
+    std::string secvtxname;
     bool doMC_;
+    std::string plRootFile_;
+    TFile f_;
+    fwlite::EventSetup es_;
+    fwlite::RecordID  recId_;
+    double btagOP_;
+    std::string bPerformanceTag_;
+    std::string cPerformanceTag_;
+    std::string lPerformanceTag_;
+    std::string btaggerString_;
     std::string identifier_;
 
     int allNumTags_;
@@ -129,37 +131,17 @@ class SHyFT : public edm::BasicAnalyzer {
     std::vector<SHyFTSummary> summary_;
 
     double globalWeight_;  // For reweighting the entire event for, e.g., pdf reweighting
+    double globalWeight_0t;  // For reweighting the entire event for probabaility to not tag
+    double globalWeight_1t;  // For reweighting the entire event for probabaility to have 1 tag
+    double globalWeight_2t;  // For reweighting the entire event for probabaility to have 2 tags
     bool reweightPDF_;
-    bool reweightBTagEff_;
     edm::InputTag pdfInputTag_; 
     std::string pdfToUse_;
-    int         pdfEigenToUse_;
     int         pdfVariation_;
 
-
-    std::string btaggerString_;
+    bool doTagWeight_;
     double bcEffScale_;
     double lfEffScale_;
-    double allDiscrCut_;
-    double bDiscrCut_;
-    double cDiscrCut_;
-    double lDiscrCut_;
-    bool useCustomPayload_;
-    std::string customTagRootFile_;
-    bool simpleSFCalc_; // Use the simple scale factor calculation where you just treat the SF
-                        // as a probability to throw away an MC event. Only works for SF < 1.0.
-                        // Technically, for systematics, SF < 1-dSF, since then you'd set this 
-                        // up and down by dSF. 
-    bool weightSFCalc_; 
-    std::string jetAlgo_;
-    boost::shared_ptr<TFile> customBtagFile_;
-
-
-    // for closure test of tag rates
-    double nExpectedTaggedJets_;
-    double nObservedTaggedJets_;
-    double nExpectedTaggedEvents_;
-    double nObservedTaggedEvents_;
 };
 
 
