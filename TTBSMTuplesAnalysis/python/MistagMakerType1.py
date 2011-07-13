@@ -9,8 +9,9 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class MistagMakerType1 :
     """Run 1 + 1 Mistag Rate"""
-    def __init__(self, outfile):
+    def __init__(self, outfile, useGenWeight=False):
         self.outfile = outfile
+        self.useGenWeight=useGenWeight
         
         self.allTopTagHandle = Handle (  "vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >"  )
         self.allTopTagLabel  = ( "ttbsmAna",   "topTagP4")
@@ -77,6 +78,13 @@ class MistagMakerType1 :
         event.getByLabel (self.allTopTagPassLabel, self.allTopTagPassHandle )
         topJetPass= self.allTopTagPassHandle.product()
 
+
+        weight = 1.0
+        if self.useGenWeight :
+            event.getByLabel( self.weightsLabel, self.weightsHandle )
+            weight = self.weightsHandle.product()[0]
+
+
         deltaPhi = topJets[0].phi() - topJets[1].phi()
         if deltaPhi > ROOT.TMath.Pi():
             deltaPhi = deltaPhi - 2*ROOT.TMath.Pi()
@@ -94,22 +102,22 @@ class MistagMakerType1 :
         failMinMass1   = topJetMass[1] > 140 and topJetMass[1] < 250 and topJetMinMass[1] < 50
  
         if passType11KinCuts :
-            x = ROOT.gRandom.Uniform(59298)        
+            x = ROOT.gRandom.Uniform(1.0)        
             if x < 0.5 :
                 if not topTag0 :
-                    self.topProbePt.Fill( topJets[1].pt() )    
+                    self.topProbePt.Fill( topJets[1].pt(), weight )    
                     if topTag1 :
-                        self.topTagPt.Fill( topJets[1].pt() )
+                        self.topTagPt.Fill( topJets[1].pt(), weight )
                 if failMinMass0 :
-                    self.testProbePt.Fill( topJets[1].pt() )
+                    self.testProbePt.Fill( topJets[1].pt(), weight )
                     if topTag1 :
-                        self.testTagPt.Fill( topJets[1].pt() )
+                        self.testTagPt.Fill( topJets[1].pt(), weight )
             if x >= 0.5 :
                 if not topTag1 :
-                    self.topProbePt.Fill( topJets[0].pt() )
+                    self.topProbePt.Fill( topJets[0].pt(), weight )
                     if topTag0 :
-                        self.topTagPt.Fill( topJets[0].pt() )
+                        self.topTagPt.Fill( topJets[0].pt(), weight )
                 if failMinMass1 :
-                    self.testProbePt.Fill( topJets[0].pt() )
+                    self.testProbePt.Fill( topJets[0].pt(), weight )
                     if topTag0 :
-                        self.testTagPt.Fill( topJets[0].pt() )
+                        self.testTagPt.Fill( topJets[0].pt(), weight )

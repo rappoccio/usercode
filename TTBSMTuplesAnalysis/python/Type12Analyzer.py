@@ -9,11 +9,12 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type12Analyzer :
     """Run 1 + 2 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix, veto11):
+    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix, veto11, useGenWeight=False):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
         self.useMC = useMC
         self.veto11 = veto11
+        self.useGenWeight=useGenWeight
        
         label = 'ttbsmAna'+collectionLabelSuffix
 
@@ -275,6 +276,12 @@ class Type12Analyzer :
         event.getByLabel (self.hemis1Jet3Label, self.hemis1Jet3Handle )
         jet3           = (self.hemis1Jet3Handle.product())[0]
 
+
+        weight = 1.0
+        if self.useGenWeight :
+            event.getByLabel( self.weightsLabel, self.weightsHandle )
+            weight = self.weightsHandle.product()[0]
+
         if jet3 < 1 :
           print "This is not expected, debug!"
           #print "The third jet is ", jet3, " pt is ", wJets[jet3].pt(), " eta is ", wJets[jet3].eta()
@@ -311,7 +318,7 @@ class Type12Analyzer :
                 break
 
             modJet1Mass = type2TopMassPdf.GetXaxis().GetBinCenter( massBin )
-            self.jet1MassMod.Fill( modJet1Mass )
+            self.jet1MassMod.Fill( modJet1Mass, weight )
             jet1P4_mod = copy.copy( topJets[0] )
             jet1P4_mod.SetM( modJet1Mass )
             ttMassMod = (wJets[jet3]+wJets[0]+jet1P4_mod).mass()
@@ -342,159 +349,159 @@ class Type12Analyzer :
 
     ######### Plot histograms
         if passKinCuts  :
-          self.nJets.Fill( len(topJets)+len(wJets) )
-          self.topJetCandMass.Fill( topJets[0].mass() )
-          self.topJetCandEta.Fill( topJets[0].eta() )
-          self.topJetCandPt.Fill( topJets[0].pt() )
-          self.wCandMassType12.Fill( wJets[0].mass() )
-          self.wCandPtType12.Fill( wJets[0].pt() )
-          self.pairMassType12.Fill( pairMass )
-          self.nearJetPt.Fill( wJets[jet3].pt() )
-          self.nearJetbValue.Fill( wJetBDisc[jet3] )
-          self.thirdLeadJetbValue.Fill( wJetBDisc[1] )
-          self.thirdLeadJetPt.Fill( wJets[1].pt() )
+          self.nJets.Fill( len(topJets)+len(wJets), weight )
+          self.topJetCandMass.Fill( topJets[0].mass(), weight )
+          self.topJetCandEta.Fill( topJets[0].eta() , weight)
+          self.topJetCandPt.Fill( topJets[0].pt(), weight )
+          self.wCandMassType12.Fill( wJets[0].mass(), weight )
+          self.wCandPtType12.Fill( wJets[0].pt(), weight )
+          self.pairMassType12.Fill( pairMass, weight )
+          self.nearJetPt.Fill( wJets[jet3].pt(), weight )
+          self.nearJetbValue.Fill( wJetBDisc[jet3], weight )
+          self.thirdLeadJetbValue.Fill( wJetBDisc[1], weight )
+          self.thirdLeadJetPt.Fill( wJets[1].pt(), weight )
 
-          self.mttBkgShape.Fill( ttMass )
+          self.mttBkgShape.Fill( ttMass, weight )
 
 
           if not self.useMC :
-              self.mttBkgShapeMassUp.Fill( ttMassJet1MassUp )
-              self.mttBkgShapeMassDown.Fill( ttMassJet1MassDown )
-          self.wCandVsTopCandMassType12.Fill( wJets[0].mass() ,  pairMass )
+              self.mttBkgShapeMassUp.Fill( ttMassJet1MassUp, weight )
+              self.mttBkgShapeMassDown.Fill( ttMassJet1MassDown, weight )
+          self.wCandVsTopCandMassType12.Fill( wJets[0].mass() ,  pairMass, weight )
 
-          self.NSubjets.Fill( topJetNSubjets[0] )
-          self.minmass.Fill( topJetMinMass[0] )
+          self.NSubjets.Fill( topJetNSubjets[0], weight )
+          self.minmass.Fill( topJetMinMass[0], weight )
           if passTopMass :
-            self.NSubjetsWithTopMass.Fill( topJetNSubjets[0] )
-            self.minmassWithTopMass.Fill( topJetMinMass[0] )
+            self.NSubjetsWithTopMass.Fill( topJetNSubjets[0], weight )
+            self.minmassWithTopMass.Fill( topJetMinMass[0], weight )
             #if topJetNSubjets[0] < 3 :
             #  NSubjetsVsMinMassAll.Fill( topJetNSubjets[0], -1. )
             #else :
-            self.NSubjetsVsMinMassAll.Fill( topJetNSubjets[0], topJetMinMass[0] )
+            self.NSubjetsVsMinMassAll.Fill( topJetNSubjets[0], topJetMinMass[0], weight )
             #if topJetNSubjets[0] == 2 :   print topJetMinMass[0]
             #if topJetMinMass[0] > 250 :   print topJetMinMass[0], topJetNSubjets[0]
 
           if hasTopTag  :
-            self.topTagMass.Fill( topJets[0].mass() )
-            self.topTagPt.Fill( topJets[0].mass() )
-            self.wCandMassType12AfterTopTag.Fill( wJets[0].mass() )
-            self.wCandPtType12AfterTopTag.Fill( wJets[0].pt() )
-            self.nearJetPtAfterTopTag.Fill( wJets[jet3].pt() )
-            self.nearJetbValueAfterTopTag.Fill( wJetBDisc[jet3] )
-            self.pairMassType12AfterTopTag.Fill( pairMass )
+            self.topTagMass.Fill( topJets[0].mass(), weight )
+            self.topTagPt.Fill( topJets[0].mass(), weight )
+            self.wCandMassType12AfterTopTag.Fill( wJets[0].mass(), weight )
+            self.wCandPtType12AfterTopTag.Fill( wJets[0].pt(), weight )
+            self.nearJetPtAfterTopTag.Fill( wJets[jet3].pt(), weight )
+            self.nearJetbValueAfterTopTag.Fill( wJetBDisc[jet3], weight )
+            self.pairMassType12AfterTopTag.Fill( pairMass, weight )
             if wJets[0].mass() > 60 and wJets[0].mass() < 130 :
-              self.pairMassType12AfterTopTagWithWMass.Fill( pairMass )
-            self.wCandVsTopCandMassType12WithTopTag.Fill( wJets[0].mass() ,  pairMass )
+              self.pairMassType12AfterTopTagWithWMass.Fill( pairMass, weight )
+            self.wCandVsTopCandMassType12WithTopTag.Fill( wJets[0].mass() ,  pairMass, weight )
 
-          self.topJetCandPtAll.Fill( topJets[0].pt() )
-          self.topJetCandMassAll.Fill( topJets[0].mass() )
-          self.topJetNsubsAll.Fill( topJetNSubjets[0] )
-          self.topJetMinMassAll.Fill( topJetMinMass[0] )
-          self.type2KinTopProbe.Fill( topJets[0].pt() )
-          if hasTopTag  :   self.type2KinTopTag.Fill(  topJets[0].pt() )
+          self.topJetCandPtAll.Fill( topJets[0].pt(), weight )
+          self.topJetCandMassAll.Fill( topJets[0].mass(), weight )
+          self.topJetNsubsAll.Fill( topJetNSubjets[0], weight )
+          self.topJetMinMassAll.Fill( topJetMinMass[0], weight )
+          self.type2KinTopProbe.Fill( topJets[0].pt(), weight )
+          if hasTopTag  :   self.type2KinTopTag.Fill(  topJets[0].pt(), weight )
           if not SBAndSR  :
-            self.type2SideBandProbe.Fill( topJets[0].pt() )
-            if hasTopTag  :   self.type2SideBandTag.Fill( topJets[0].pt() )
+            self.type2SideBandProbe.Fill( topJets[0].pt(), weight )
+            if hasTopTag  :   self.type2SideBandTag.Fill( topJets[0].pt(), weight )
 
 
 
           jet1Pt = topJets[0].pt()
           if hasType2Top  :
-            self.topJetCandPtSignal.Fill( topJets[0].pt() )
-            self.topJetCandMassSignal.Fill( topJets[0].mass() )
-            self.topJetNsubsSignal.Fill( topJetNSubjets[0] )
-            self.topJetMinMassSignal.Fill( topJetMinMass[0] )
+            self.topJetCandPtSignal.Fill( topJets[0].pt(), weight )
+            self.topJetCandMassSignal.Fill( topJets[0].mass(), weight )
+            self.topJetNsubsSignal.Fill( topJetNSubjets[0], weight )
+            self.topJetMinMassSignal.Fill( topJetMinMass[0], weight )
             if passTopMass :
-              self.NSubjetsVsMinMassSR.Fill( topJetNSubjets[0], topJetMinMass[0] )
+              self.NSubjetsVsMinMassSR.Fill( topJetNSubjets[0], topJetMinMass[0], weight )
 
             #Apply top mistag rate to estimate bkg
             ptBin = self.mistag.FindBin( jet1Pt )
 
             if not self.useMC :
                 
-                self.mttBkgWithMistag.Fill( ttMass, self.mistag.GetBinContent(ptBin) )
-                self.mttBkgWithMistagModMass.Fill( ttMassMod, self.mistag.GetBinContent(ptBin) )
+                self.mttBkgWithMistag.Fill( ttMass, self.mistag.GetBinContent(ptBin) * weight )
+                self.mttBkgWithMistagModMass.Fill( ttMassMod, self.mistag.GetBinContent(ptBin) * weight )
                 #mttPredDistModMass.Accumulate( ttMassMod, jet1Pt, hasTopTag, 1.0 )
 
-                self.mttBkgWithMistagMod2Mass.Fill( ttMassMod2, self.mistag.GetBinContent(ptBin) )
-                self.mttBkgWithMistagUp.Fill( ttMass, (self.mistag.GetBinContent(ptBin)+self.mistag.GetBinError(ptBin)) )
-                self.mttBkgWithMistagDown.Fill( ttMass, (self.mistag.GetBinContent(ptBin)-self.mistag.GetBinError(ptBin)) )
-                self.type2TopTagExp.Fill( topJets[0].pt(), self.mistag.GetBinContent(ptBin) )
-                self.jet1MassExp.Fill( topJets[0].mass(), self.mistag.GetBinContent(ptBin) )
-                self.jet1EtaExp.Fill( topJets[0].eta(), self.mistag.GetBinContent(ptBin) )
-                self.jet2PtExp.Fill( wJets[0].pt(), self.mistag.GetBinContent(ptBin) )
-                self.jet2MassExp.Fill( wJets[0].mass(), self.mistag.GetBinContent(ptBin) )
-                self.jet2EtaExp.Fill( wJets[0].eta(), self.mistag.GetBinContent(ptBin) )
-                self.jet3PtExp.Fill( wJets[1].pt(), self.mistag.GetBinContent(ptBin) )
-                self.jet3MassExp.Fill( wJets[1].mass(), self.mistag.GetBinContent(ptBin) )
-                self.jet3EtaExp.Fill( wJets[1].eta(), self.mistag.GetBinContent(ptBin) )
+                self.mttBkgWithMistagMod2Mass.Fill( ttMassMod2, self.mistag.GetBinContent(ptBin) * weight )
+                self.mttBkgWithMistagUp.Fill( ttMass, (self.mistag.GetBinContent(ptBin)+self.mistag.GetBinError(ptBin))* weight )
+                self.mttBkgWithMistagDown.Fill( ttMass, (self.mistag.GetBinContent(ptBin)-self.mistag.GetBinError(ptBin))* weight )
+                self.type2TopTagExp.Fill( topJets[0].pt(), self.mistag.GetBinContent(ptBin)* weight )
+                self.jet1MassExp.Fill( topJets[0].mass(), self.mistag.GetBinContent(ptBin)* weight )
+                self.jet1EtaExp.Fill( topJets[0].eta(), self.mistag.GetBinContent(ptBin)* weight )
+                self.jet2PtExp.Fill( wJets[0].pt(), self.mistag.GetBinContent(ptBin)* weight )
+                self.jet2MassExp.Fill( wJets[0].mass(), self.mistag.GetBinContent(ptBin)* weight )
+                self.jet2EtaExp.Fill( wJets[0].eta(), self.mistag.GetBinContent(ptBin)* weight )
+                self.jet3PtExp.Fill( wJets[1].pt(), self.mistag.GetBinContent(ptBin)* weight )
+                self.jet3MassExp.Fill( wJets[1].mass(), self.mistag.GetBinContent(ptBin)* weight )
+                self.jet3EtaExp.Fill( wJets[1].eta(), self.mistag.GetBinContent(ptBin)* weight )
 
             #Make Top mistag measurement
-            self.type2TopProbe.Fill( topJets[0].pt() )
+            self.type2TopProbe.Fill( topJets[0].pt() , weight )
             if hasTopTag :  
-              self.type2TopTag.Fill( topJets[0].pt() )
-              self.type2TopTagMass.Fill( topJets[0].mass() )
-              self.jet1MassTag.Fill( topJets[0].mass() )
-              self.jet1EtaTag.Fill( topJets[0].eta() )
-              self.jet2Pt.Fill( wJets[0].pt() )
-              self.jet2MassTag.Fill( wJets[0].mass() )
-              self.jet2EtaTag.Fill( wJets[0].eta() )
-              self.jet3Pt.Fill( wJets[1].pt() )
-              self.jet3MassTag.Fill( wJets[1].mass() )
-              self.jet3EtaTag.Fill( wJets[1].eta() )
+              self.type2TopTag.Fill( topJets[0].pt(), weight  )
+              self.type2TopTagMass.Fill( topJets[0].mass(), weight  )
+              self.jet1MassTag.Fill( topJets[0].mass(), weight  )
+              self.jet1EtaTag.Fill( topJets[0].eta(), weight  )
+              self.jet2Pt.Fill( wJets[0].pt(), weight  )
+              self.jet2MassTag.Fill( wJets[0].mass(), weight  )
+              self.jet2EtaTag.Fill( wJets[0].eta(), weight  )
+              self.jet3Pt.Fill( wJets[1].pt(), weight  )
+              self.jet3MassTag.Fill( wJets[1].mass(), weight  )
+              self.jet3EtaTag.Fill( wJets[1].eta(), weight  )
 
             if ttMass > 800 and ttMass < 900 :
-              self.type2TopTagExp800GeV.Fill( topJets[0].pt(), self.mistag.GetBinContent(ptBin) )
-              self.type2TopProbe800GeV.Fill( topJets[0].pt() )
-              if hasTopTag :    self.type2TopTag800GeV.Fill( topJets[0].pt() )
+              self.type2TopTagExp800GeV.Fill( topJets[0].pt(), self.mistag.GetBinContent(ptBin) * weight )
+              self.type2TopProbe800GeV.Fill( topJets[0].pt(), weight  )
+              if hasTopTag :    self.type2TopTag800GeV.Fill( topJets[0].pt(), weight  )
             if ttMass < 1000 :
-              self.type2TopTagExpWith1TeV.Fill( topJets[0].pt(), self.mistag.GetBinContent(ptBin) )
-              if hasTopTag :  self.type2TopTagWith1TeV.Fill( topJets[0].pt() )
+              self.type2TopTagExpWith1TeV.Fill( topJets[0].pt(), self.mistag.GetBinContent(ptBin) * weight )
+              if hasTopTag :  self.type2TopTagWith1TeV.Fill( topJets[0].pt(), weight  )
 
           if SBAndSR and (not hasType2Top) :
-            self.topJetCandPtSideBand.Fill( topJets[0].pt() )
-            self.topJetCandMassSideBand.Fill( topJets[0].mass() )
-            self.topJetNsubsSideBand.Fill( topJetNSubjets[0] )
-            self.topJetMinMassSideBand.Fill( topJetMinMass[0] )
+            self.topJetCandPtSideBand.Fill( topJets[0].pt(), weight  )
+            self.topJetCandMassSideBand.Fill( topJets[0].mass(), weight  )
+            self.topJetNsubsSideBand.Fill( topJetNSubjets[0], weight  )
+            self.topJetMinMassSideBand.Fill( topJetMinMass[0], weight  )
 
 
           if not self.useMC :
 
               if SBAndSR and passWiderTopMassCut :
-                self.mttBkgShapeWithMassCut.Fill( ttMass )
+                self.mttBkgShapeWithMassCut.Fill( ttMass, weight  )
               if SBAndSR and (not hasType2Top) and topMassSideBand :
-                self.mttBkgShapeWithSideBandMass.Fill( ttMass )
+                self.mttBkgShapeWithSideBandMass.Fill( ttMass, weight  )
               if SBAndSR and (not hasType2Top) and passWiderTopMassCut :
-                self.mttBkgShapeWithSideBand1Mass.Fill( ttMass )
+                self.mttBkgShapeWithSideBand1Mass.Fill( ttMass, weight  )
               if SBAndSR and (not hasType2Top) :
-                self.mttBkgShapeWithSideBand2Mass.Fill( ttMass )
+                self.mttBkgShapeWithSideBand2Mass.Fill( ttMass, weight  )
               if SBAndSR2 and (not SBAndSR ) and passWiderTopMassCut :
-                self.mttBkgShapeWithSideBand3Mass.Fill( ttMass )
+                self.mttBkgShapeWithSideBand3Mass.Fill( ttMass, weight  )
               if ((not passNSubjetsCut) or (not passMinMassCut)) and hasType2Top and passTopMass :
-                self.mttBkgShapeWithSideBand4Mass.Fill( ttMass )
+                self.mttBkgShapeWithSideBand4Mass.Fill( ttMass, weight  )
               if ((not passNSubjetsCut) or (not passMinMassCut)) and SBAndSR and passWiderTopMassCut :
-                self.mttBkgShapeWithSideBand5Mass.Fill( ttMass )
+                self.mttBkgShapeWithSideBand5Mass.Fill( ttMass, weight  )
               if ((not passNSubjetsCut) or (not passMinMassCut)) and SBAndSR and passTopMass :
-                self.mttBkgShapeWithSideBand6Mass.Fill( ttMass )
+                self.mttBkgShapeWithSideBand6Mass.Fill( ttMass, weight  )
               if ((not passNSubjetsCut) or (not passMinMassCut)) and hasType2Top and passWiderTopMassCut :
-                self.mttBkgShapeWithSideBand7Mass.Fill( ttMass )
+                self.mttBkgShapeWithSideBand7Mass.Fill( ttMass, weight  )
 
 
           isJetTagged = hasType2Top and hasTopTag
           if self.useMC is False and hasType2Top :
-              self.mttPredDist.        Accumulate( ttMass,      jet1Pt, isJetTagged )
-              self.mttPredDistModMass. Accumulate( ttMassMod,   jet1Pt, isJetTagged )
-              self.mttPredDistMod2Mass.Accumulate( ttMassMod2,  jet1Pt, isJetTagged )
+              self.mttPredDist.        Accumulate( ttMass,      jet1Pt, isJetTagged, weight  )
+              self.mttPredDistModMass. Accumulate( ttMassMod,   jet1Pt, isJetTagged, weight  )
+              self.mttPredDistMod2Mass.Accumulate( ttMassMod2,  jet1Pt, isJetTagged, weight  )
 
           if isJetTagged :
-            self.mttMass.Fill( ttMass )
+            self.mttMass.Fill( ttMass, weight  )
             if not self.useMC :
-                self.mttMassJet1MassDown.Fill( ttMassJet1MassDown )
+                self.mttMassJet1MassDown.Fill( ttMassJet1MassDown, weight  )
             self.nJetsSignal.Fill( len(topJets)+len(wJets) )
             if hasBTag1 :
-              self.mttMassWithBTag.Fill( ttMass )
-              self.jet3BTagPt.Fill( wJets[jet3].pt() )
-              self.signalTopTagEta.Fill( topJets[0].eta() )
-          self.signalJet3TagEta.Fill( wJets[jet3].eta() )
+              self.mttMassWithBTag.Fill( ttMass, weight  )
+              self.jet3BTagPt.Fill( wJets[jet3].pt(), weight  )
+              self.signalTopTagEta.Fill( topJets[0].eta(), weight  )
+          self.signalJet3TagEta.Fill( wJets[jet3].eta(), weight  )
 
 

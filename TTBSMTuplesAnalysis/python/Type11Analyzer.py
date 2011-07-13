@@ -9,10 +9,11 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type11Analyzer :
     """Run 1 + 1 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile, collectionLabelSuffix):
+    def __init__(self, useMC, outfile, mistagFile, collectionLabelSuffix, useGenWeight=False):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
         self.useMC = useMC
+        self.useGenWeight = useGenWeight
         
 		
         label = 'ttbsmAna'+collectionLabelSuffix
@@ -30,6 +31,9 @@ class Type11Analyzer :
 
         self.allTopTagPassHandle  = Handle( "std::vector<int>" )
         self.allTopTagPassLabel   = ( label,   "topTagPass" )
+
+        self.weightsHandle = Handle( "double" )
+        self.weightsLabel = ( label, "weight" )
         
         self.__book__()
 
@@ -107,6 +111,11 @@ class Type11Analyzer :
         pairMass = 0.0
         ttMass = 0.0
 
+        weight = 1.0
+        if self.useGenWeight :
+            event.getByLabel( self.weightsLabel, self.weightsHandle )
+            weight = self.weightsHandle.product()[0]
+
         event.getByLabel (self.allTopTagMinMassLabel, self.allTopTagMinMassHandle)
         topJetMinMass= self.allTopTagMinMassHandle.product()
         event.getByLabel (self.allTopTagNSubjetsLabel, self.allTopTagNSubjetsHandle)
@@ -135,37 +144,37 @@ class Type11Analyzer :
         ttMass   = (topJets[0]+topJets[1]).mass()
    
         if passType11KinCuts :
-            self.jetMass.Fill( topJets[0].mass() )
-            self.jetMass.Fill( topJets[1].mass() )
-            self.jetPt.Fill( topJets[0].pt() )
-            self.jetPt.Fill( topJets[1].pt() )
-            self.jetEta.Fill( topJets[0].eta() )
-            self.jetEta.Fill( topJets[1].eta() )
-            self.jetMinMass.Fill( topJetMinMass[0] )
-            self.jetMinMass.Fill( topJetMinMass[1] )
-            self.mttCandMass.Fill( ttMass )
+            self.jetMass.Fill( topJets[0].mass(), weight )
+            self.jetMass.Fill( topJets[1].mass(), weight )
+            self.jetPt.Fill( topJets[0].pt(), weight )
+            self.jetPt.Fill( topJets[1].pt(), weight )
+            self.jetEta.Fill( topJets[0].eta(), weight )
+            self.jetEta.Fill( topJets[1].eta(), weight )
+            self.jetMinMass.Fill( topJetMinMass[0], weight )
+            self.jetMinMass.Fill( topJetMinMass[1], weight )
+            self.mttCandMass.Fill( ttMass, weight )
 
             if passType11  :
-                self.topTagMass.Fill( topJets[0].mass() )
-                self.topTagMass.Fill( topJets[1].mass() )
-                self.topTagPt.Fill( topJets[0].pt() )
-                self.topTagPt.Fill( topJets[1].pt() )
-                self.topTagMinMass.Fill( topJetMinMass[0] )
-                self.topTagMinMass.Fill( topJetMinMass[1] )
-                self.mttMass.Fill( ttMass )
+                self.topTagMass.Fill( topJets[0].mass(), weight )
+                self.topTagMass.Fill( topJets[1].mass(), weight )
+                self.topTagPt.Fill( topJets[0].pt(), weight )
+                self.topTagPt.Fill( topJets[1].pt(), weight )
+                self.topTagMinMass.Fill( topJetMinMass[0], weight )
+                self.topTagMinMass.Fill( topJetMinMass[1], weight )
+                self.mttMass.Fill( ttMass, weight )
 
             #background estiation
             x = ROOT.gRandom.Uniform()        
             if x < 0.5 :
                 if topTag0 :
-                    self.jetPtOneTag.Fill( topJets[1].pt() )
-                    self.mttPredDist.        Accumulate( ttMass, topJets[1].pt(), topTag1 )
-                    self.mttPredDistMassCut. Accumulate( ttMass, topJets[1].pt(), topTag1 )
+                    self.jetPtOneTag.Fill( topJets[1].pt(), weight )
+                    self.mttPredDist.        Accumulate( ttMass, topJets[1].pt(), topTag1, weight )
+                    self.mttPredDistMassCut. Accumulate( ttMass, topJets[1].pt(), topTag1, weight )
             if x >= 0.5 :
                 if topTag1 :
-                    self.jetPtOneTag.Fill( topJets[0].pt() )
-                    self.mttPredDist.        Accumulate( ttMass, topJets[0].pt(), topTag0 )
-                    self.mttPredDistMassCut. Accumulate( ttMass, topJets[0].pt(), topTag0 )
+                    self.jetPtOneTag.Fill( topJets[0].pt(), weight )
+                    self.mttPredDist.        Accumulate( ttMass, topJets[0].pt(), topTag0, weight )
+                    self.mttPredDistMassCut. Accumulate( ttMass, topJets[0].pt(), topTag0, weight )
 
 
 

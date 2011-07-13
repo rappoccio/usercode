@@ -9,9 +9,10 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class MistagMaker :
     """Makes mistag rates"""
-    def __init__(self, outfile):
+    def __init__(self, outfile, useGenWeight=False):
         """Initialization"""
         self.outfileStr = outfile
+        self.useGenWeight = useGenWeight
         self.allTopTagHandle         = Handle (  "vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >"  )
         self.allTopTagLabel          = ( "ttbsmAna",   "topTagP4")
         self.allTopTagMinMassHandle  = Handle( "std::vector<double>" )
@@ -102,6 +103,12 @@ class MistagMaker :
         if nTopCand < 1 or len(wJets) < 2 :
           return
 
+        weight = 1.0
+        if self.useGenWeight :
+            event.getByLabel( self.weightsLabel, self.weightsHandle )
+            weight = self.weightsHandle.product()[0]
+
+
 
         event.getByLabel (self.hemis0MinMassLabel, self.hemis0MinMassHandle)
         topJetMinMass = self.hemis0MinMassHandle.product()
@@ -150,31 +157,31 @@ class MistagMaker :
 
         if passKinCuts  :
 
-          self.topJetCandPtAll.Fill( topJets[0].pt() )
-          self.topJetCandMassAll.Fill( topJets[0].mass() )
-          self.topJetNsubsAll.Fill( topJetNSubjets[0] )
-          self.topJetMinMassAll.Fill( topJetMinMass[0] )
-          self.type2KinTopProbe.Fill( topJets[0].pt() )
-          if hasTopTag  :   self.type2KinTopTag.Fill(  topJets[0].pt() )
+          self.topJetCandPtAll.Fill( topJets[0].pt(), weight )
+          self.topJetCandMassAll.Fill( topJets[0].mass(), weight )
+          self.topJetNsubsAll.Fill( topJetNSubjets[0], weight )
+          self.topJetMinMassAll.Fill( topJetMinMass[0], weight )
+          self.type2KinTopProbe.Fill( topJets[0].pt(), weight )
+          if hasTopTag  :   self.type2KinTopTag.Fill(  topJets[0].pt(), weight )
           if not SBAndSR  :
-            self.type2SideBandProbe.Fill( topJets[0].pt() )
-            if hasTopTag  :   self.type2SideBandTag.Fill( topJets[0].pt() )
+            self.type2SideBandProbe.Fill( topJets[0].pt(), weight )
+            if hasTopTag  :   self.type2SideBandTag.Fill( topJets[0].pt(), weight )
 
           if hasType2Top  :
-            self.topJetCandPtSignal.Fill( topJets[0].pt() )
-            self.topJetCandMassSignal.Fill( topJets[0].mass() )
-            self.topJetNsubsSignal.Fill( topJetNSubjets[0] )
-            self.topJetMinMassSignal.Fill( topJetMinMass[0] )
+            self.topJetCandPtSignal.Fill( topJets[0].pt(), weight )
+            self.topJetCandMassSignal.Fill( topJets[0].mass(), weight )
+            self.topJetNsubsSignal.Fill( topJetNSubjets[0], weight )
+            self.topJetMinMassSignal.Fill( topJetMinMass[0], weight )
 
             #Make Top mistag measurement
-            self.type2TopProbe.Fill( topJets[0].pt() )
+            self.type2TopProbe.Fill( topJets[0].pt(), weight )
             if hasTopTag :  
-              self.type2TopTag.Fill( topJets[0].pt() )
-              self.type2TopTagMass.Fill( topJets[0].mass() )
+              self.type2TopTag.Fill( topJets[0].pt() , weight )
+              self.type2TopTagMass.Fill( topJets[0].mass(), weight )
 
 
           if SBAndSR and (not hasType2Top) :
-            self.topJetCandPtSideBand.Fill( topJets[0].pt() )
-            self.topJetCandMassSideBand.Fill( topJets[0].mass() )
-            self.topJetNsubsSideBand.Fill( topJetNSubjets[0] )
-            self.topJetMinMassSideBand.Fill( topJetMinMass[0] )
+            self.topJetCandPtSideBand.Fill( topJets[0].pt(), weight )
+            self.topJetCandMassSideBand.Fill( topJets[0].mass(), weight )
+            self.topJetNsubsSideBand.Fill( topJetNSubjets[0], weight )
+            self.topJetMinMassSideBand.Fill( topJetMinMass[0], weight )

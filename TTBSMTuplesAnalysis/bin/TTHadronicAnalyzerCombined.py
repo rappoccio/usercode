@@ -51,6 +51,13 @@ parser.add_option('--veto11', action='store_true',
                   help='Veto the type 1+1 selection in the type 1+2 selection')
 
 
+parser.add_option('--useGenWeight', action='store_true',
+                  default=False,
+                  dest='useGenWeight',
+                  help='Use generator level weights (i.e. for QCD MC)')
+
+
+
 parser.add_option('-m', '--mistagFile', metavar='N', type='string', action='store',
                   default='MISTAG',
                   dest='mistagFile',
@@ -98,13 +105,14 @@ triggerSelection = TriggerAndEventSelectionObject( myAnaTrigs )
 if options.analyzer == "Type12Analyzer" :
     analyzer = Type12Analyzer(options.useMC, options.outfile + '_type12_'+options.collectionLabelSuffix,
                               options.mistagFile, options.collectionLabelSuffix,
-                              options.veto11 )
+                              options.veto11, options.useGenWeight )
 elif options.analyzer == "MistagMaker" :
-    analyzer = MistagMaker( options.outfile + '_mistag')
+    analyzer = MistagMaker( options.outfile + '_mistag', options.useGenWeight)
 elif options.analyzer == "Type11Analyzer" :
-    analyzer = Type11Analyzer(options.useMC, options.outfile + '_type11_'+options.collectionLabelSuffix, options.mistagFile, options.collectionLabelSuffix)
+    analyzer = Type11Analyzer(options.useMC, options.outfile + '_type11_'+options.collectionLabelSuffix,
+                              options.mistagFile, options.collectionLabelSuffix, options.useGenWeight)
 elif options.analyzer == "MistagMakerType1" :
-    analyzer = MistagMakerType1( options.outfile + '_mistag1')
+    analyzer = MistagMakerType1( options.outfile + '_mistag1', options.useGenWeight)
 elif options.analyzer == "TTKinPlotsAnalyzer" :
     analyzer = TTKinPlotsAnalyzer( options.outfile + '_kinplots')
 else :
