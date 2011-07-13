@@ -30,25 +30,21 @@ process.shyftAnalysis = inputShyftAnalysis.clone(
     metSrc = cms.InputTag('patMETsPFlow'),
     jetSrc = cms.InputTag('goodPatJetsPFlow'),
     pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
-    jetPtMin = cms.double(25.0),
+    jetPtMin = cms.double(30.0),
     minJets = cms.int32(5),
-    eRelIso = cms.double(0.1),
-    ePlusJets = cms.bool(True),
-    muPlusJets = cms.bool(False),
-    #usePFIso = cms.bool(True), ###
+    ePlusJets = cms.bool(False),
+    muPlusJets = cms.bool(True),
     metMin = cms.double(0.),
-    wMTMax = cms.double(10000.),
     cutsToIgnore=cms.vstring('Trigger'),
     #useTTBSMPat = cms.bool(False),
-    jetScale = cms.double(1.0),    
-
-    #metMax = cms.double(25.),
+    jetScale = cms.double(1.0),
     
+    #metMax = cms.double(25.),
     #***********Uncomment if want to test on WJets, ZJets, Vqq, WcJets******************
     #sampleName="Wjets",
     #sampleName = "Top",
     #doMC = True,
-    #heavyFlavour = True,  
+    #heavyFlavour = True,   
     )
 
 process.inputs = cms.PSet (
