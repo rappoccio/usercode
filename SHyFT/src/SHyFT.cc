@@ -227,28 +227,28 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
 	 forBookingDir[idir]->make<TH1F>( (sampleNameInput+"_lepPt"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "lepton p_{T}", 100, 0, 200);
 
 	 forBookingDir[idir]->make<TH2F>( (sampleNameInput+"_lepIsoVsEta"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "Lepton isolation vs Eta",
-                               12, 0., 2.4,
-                               20, 0., 1.0
+                               15, 0., 3.0,
+                               40, 0., 1.0
                );
 
 	 forBookingDir[idir]->make<TH2F>( (sampleNameInput+"_lepIsoVsHt"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "Lepton isolation vs H_{T}",
                                20., 0., 400,
-                               20, 0., 1.0
+                               40, 0., 1.0
                );
 
 	 forBookingDir[idir]->make<TH2F>( (sampleNameInput+"_lepIsoVsMET"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "Lepton isolation vs MET",
                                120., 0., 300,
-                               20, 0., 1.0
+                               40, 0., 1.0
                );
 
 	 forBookingDir[idir]->make<TH2F>( (sampleNameInput+"_lepIsoVswMT"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "Lepton isolation vs wMT",
                                20., 0., 200,
-                               20, 0., 1.0
+                               40, 0., 1.0
                );
 
 	 forBookingDir[idir]->make<TH2F>( (sampleNameInput+"_lepIsoVsD0"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "Lepton isolation vs D0",
                                100., 0., 0.2,
-                               20, 0., 1.0
+                               40, 0., 1.0
                );
 
        } // End loop over itags (0,1,2)
@@ -259,7 +259,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
 	 if (i==0) break; //we need at least 1 jet
 	 forBookingDir[idir]->make<TH1F>((sampleNameInput+"_secvtxMass"+jtNum+"_"+secvtxEnd[l]).c_str(), "secvtxmass", 40,    0.,   10.);
 	 forBookingDir[idir]->make<TH2F>((sampleNameInput+"_secvtxMass"+jtNum+"_"+secvtxEnd[l]+"_vs_iso").c_str(), "lepton isolation vs. secvtxmass", 40,    0,   10,
-					20, 0., 1.0 );
+					40, 0., 1.0 );
 	 if(i==1 && l==4) break; 
 	 else if( (!doMC_) && i==1 && l==0) break;  
        }//l
@@ -396,6 +396,11 @@ bool SHyFT::analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muo
    double hCalIso_    = globalMuon->hcalIso();
    double relIso_     = ( trackIso_ + eCalIso_ + hCalIso_ )/muPt_ ;
 
+   double chIso = globalMuon->userIsolation(pat::PfChargedHadronIso);
+   double nhIso = globalMuon->userIsolation(pat::PfNeutralHadronIso);
+   double gIso  = globalMuon->userIsolation(pat::PfGammaIso);
+   double pfIso = (chIso + nhIso + gIso) / muPt_;
+
    theDir.getObject<TH1>( "lepPt"      )->Fill( muPt_        , globalWeight_);
    theDir.getObject<TH1>( "lepEta"     )->Fill( muEta_       , globalWeight_);
    theDir.getObject<TH1>( "lepPhi"     )->Fill( muPhi_       , globalWeight_);
@@ -403,7 +408,8 @@ bool SHyFT::analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muo
    theDir.getObject<TH1>( "lepTrackIso")->Fill( trackIso_    , globalWeight_);
    theDir.getObject<TH1>( "lepECalIso" )->Fill( eCalIso_     , globalWeight_);
    theDir.getObject<TH1>( "lepHCalIso" )->Fill( hCalIso_     , globalWeight_);
-   theDir.getObject<TH1>( "lepRelIso"  )->Fill( relIso_      , globalWeight_);
+   // theDir.getObject<TH1>( "lepRelIso"  )->Fill( relIso_      , globalWeight_);
+   theDir.getObject<TH1>( "lepRelIso"  )->Fill( pfIso        , globalWeight_);
 
    theDir.getObject<TH1>( "muNhits"   )->Fill( nhits_       , globalWeight_);
    theDir.getObject<TH1>( "muChi2"    )->Fill( norm_chi2_   , globalWeight_);
@@ -464,10 +470,16 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     trkIso  = patMuon->trackIso();
     lepPt      = patMuon->pt() ;
     lepD0      = fabs(patMuon->dB());  
-    relIso  = (ecalIso + hcalIso + trkIso) / lepPt;
+    //relIso  = (ecalIso + hcalIso + trkIso) / lepPt;
     lepEta  = patMuon->eta();
     lepPhi  = patMuon->phi();
-  }
+ 
+    double chIso = patMuon->userIsolation(pat::PfChargedHadronIso);
+    double nhIso = patMuon->userIsolation(pat::PfNeutralHadronIso);
+    double gIso  = patMuon->userIsolation(pat::PfGammaIso);
+    relIso = (chIso + nhIso + gIso) / lepPt;
+
+ }
   else if(ePlusJets_){
     pat::Electron const * patElectron = dynamic_cast<pat::Electron const *>(&* electrons[0].masterClonePtr());
     if ( patElectron == 0 )
