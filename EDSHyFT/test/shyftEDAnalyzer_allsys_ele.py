@@ -68,6 +68,10 @@ if options.useFlavorHistory > 0 :
 else :
     useFlavorHistory = False
 
+if options.use42X > 0:
+   use42XMC = True
+else: use42XMC = False
+
 inputDoMC=True
 
 inputSampleName = options.sampleNameInput
@@ -127,7 +131,7 @@ if options.ttbsmPAT > 0:
         jetPtMin = cms.double(30.0),##
         minJets = cms.int32(5),
         metMin = cms.double(20.0),
-        use42X  = cms.bool(False),
+        use42X  = cms.bool(use42XMC),
         heavyFlavour = cms.bool( useFlavorHistory ),
         doMC = cms.bool( inputDoMC),
         sampleName = cms.string(inputSampleName),
@@ -142,52 +146,52 @@ if options.ttbsmPAT > 0:
         jetSmear = cms.double(0.1),
         cutsToIgnore=cms.vstring(inputCutsToIgnore),
         
-        pvSelector = cms.PSet(
-        pvSrc = cms.InputTag('goodOfflinePrimaryVertices'),
-        minNdof = cms.double(4.0),
-        maxZ = cms.double(15.0),
-        maxRho = cms.double(2.0)
-        ),
+       ##  pvSelector = cms.PSet(
+##         pvSrc = cms.InputTag('goodOfflinePrimaryVertices'),
+##         minNdof = cms.double(4.0),
+##         maxZ = cms.double(15.0),
+##         maxRho = cms.double(2.0)
+##         ),
         
-        muonIdTight = cms.PSet(
-        version = cms.string('FALL10'),
-        Chi2 = cms.double(10.0),
-        D0 = cms.double(0.02),
-        ED0 = cms.double(999.0),
-        SD0 = cms.double(999.0),
-        NHits = cms.int32(11),
-        NValMuHits = cms.int32(0),
-        ECalVeto = cms.double(999.0),
-        HCalVeto = cms.double(999.0),
-        RelIso = cms.double(0.05),
-        LepZ = cms.double(1.0),
-        nPixelHits = cms.int32(1),
-        nMatchedStations=cms.int32(1),
-        cutsToIgnore = cms.vstring('ED0', 'SD0', 'ECalVeto', 'HCalVeto'),
-        RecalcFromBeamSpot = cms.bool(False),
-        beamLineSrc = cms.InputTag("offlineBeamSpot"),
-        pvSrc = cms.InputTag("goodOfflinePrimaryVertices"),
-        ),
+##         muonIdTight = cms.PSet(
+##         version = cms.string('FALL10'),
+##         Chi2 = cms.double(10.0),
+##         D0 = cms.double(0.02),
+##         ED0 = cms.double(999.0),
+##         SD0 = cms.double(999.0),
+##         NHits = cms.int32(11),
+##         NValMuHits = cms.int32(0),
+##         ECalVeto = cms.double(999.0),
+##         HCalVeto = cms.double(999.0),
+##         RelIso = cms.double(0.05),
+##         LepZ = cms.double(1.0),
+##         nPixelHits = cms.int32(1),
+##         nMatchedStations=cms.int32(1),
+##         cutsToIgnore = cms.vstring('ED0', 'SD0', 'ECalVeto', 'HCalVeto'),
+##         RecalcFromBeamSpot = cms.bool(False),
+##         beamLineSrc = cms.InputTag("offlineBeamSpot"),
+##         pvSrc = cms.InputTag("goodOfflinePrimaryVertices"),
+##         ),
         
-        muonIdLoose = cms.PSet(
-        version = cms.string('FALL10'),
-        Chi2 = cms.double(999.0),
-        D0 = cms.double(999.0),
-        ED0 = cms.double(999.0),
-        SD0 = cms.double(999.0),
-        NHits = cms.int32(-1),
-        NValMuHits = cms.int32(-1),
-        ECalVeto = cms.double(999.0),
-        HCalVeto = cms.double(999.0),
-        RelIso = cms.double(0.2),
-        LepZ = cms.double(1.0),
-        nPixelHits = cms.int32(1),
-        nMatchedStations=cms.int32(1),        
-        cutsToIgnore = cms.vstring('Chi2', 'D0', 'ED0', 'SD0', 'NHits','NValMuHits','ECalVeto','HCalVeto','LepZ','nPixelHits','nMatchedStations'),
-        RecalcFromBeamSpot = cms.bool(False),
-        beamLineSrc = cms.InputTag("offlineBeamSpot"),
-        pvSrc = cms.InputTag("goodOfflinePrimaryVertices"),
-        ),    
+##         muonIdLoose = cms.PSet(
+##         version = cms.string('FALL10'),
+##         Chi2 = cms.double(999.0),
+##         D0 = cms.double(999.0),
+##         ED0 = cms.double(999.0),
+##         SD0 = cms.double(999.0),
+##         NHits = cms.int32(-1),
+##         NValMuHits = cms.int32(-1),
+##         ECalVeto = cms.double(999.0),
+##         HCalVeto = cms.double(999.0),
+##         RelIso = cms.double(0.2),
+##         LepZ = cms.double(1.0),
+##         nPixelHits = cms.int32(1),
+##         nMatchedStations=cms.int32(1),        
+##         cutsToIgnore = cms.vstring('Chi2', 'D0', 'ED0', 'SD0', 'NHits','NValMuHits','ECalVeto','HCalVeto','LepZ','nPixelHits','nMatchedStations'),
+##         RecalcFromBeamSpot = cms.bool(False),
+##         beamLineSrc = cms.InputTag("offlineBeamSpot"),
+##         pvSrc = cms.InputTag("goodOfflinePrimaryVertices"),
+##         ),    
         
         )                                    
                                         )
