@@ -132,14 +132,14 @@ for event in events:
         print 'Processing {0:10.0f}/{1:10.0f} : {2:5.2f} %'.format(
             count, ntotal, percentDone )
 
-
+    #if options.useGenWeight:
+    #    analyzer.analyze(event)
     if not options.useMC :
         eventPassed = triggerSelection.select(event)
 
         if not eventPassed :
             continue
 
-    
     analyzer.analyze(event)
 
 

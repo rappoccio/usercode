@@ -26,6 +26,10 @@ class MistagMakerType1 :
         self.allTopTagPassHandle  = Handle( "std::vector<int>" )
         self.allTopTagPassLabel   = ( "ttbsmAna",   "topTagPass" )
         
+        self.weightsHandle = Handle( "double" )
+        self.weightsLabel = ( "ttbsmAna", "weight" )
+
+
         self.__book__()
 
 
@@ -57,7 +61,6 @@ class MistagMakerType1 :
 
     def analyze(self, event) :
         """Analyzes event"""
-        
         event.getByLabel (self.allTopTagLabel, self.allTopTagHandle)
         topJets = self.allTopTagHandle.product()
 
