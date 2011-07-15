@@ -114,7 +114,7 @@ class Type11Analyzer :
         self.topTagPt             = ROOT.TH1D("topTagPt",                    "Top Tag Pt",               400,  0,  2000 )
         self.mttCandMass          = ROOT.TH1D("mttCandMass",                     "mTT Cand Mass",                 1000, 0,  5000 )
         self.mttMass              = ROOT.TH1D("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
-    
+        self.cutflow              = ROOT.TH1D("cutflow",                     "cutflow",                 7, 0,  7 ) 
         
 
     def analyze(self, event) :
@@ -123,6 +123,7 @@ class Type11Analyzer :
         event.getByLabel (self.allTopTagLabel, self.allTopTagHandle)
         topJets = self.allTopTagHandle.product()
          
+        self.cutflow.Fill(0.5,1)    
 
         nTopCand = 0
         for i in range(0,len(topJets) ) :
@@ -158,11 +159,29 @@ class Type11Analyzer :
         if deltaPhi < -ROOT.TMath.Pi():
             deltaPhi = deltaPhi + 2*ROOT.TMath.Pi()
 
+        #ptCuts = topJets[0].pt() > 450 and topJets[1].pt() > 450
         ptCuts = topJets[0].pt() > 350 and topJets[1].pt() > 350
         etaCuts = abs(topJets[0].eta()) < 2.4 and abs(topJets[1].eta()) < 2.4
         deltaPhiCut = abs(deltaPhi)>2.1
         passType11KinCuts   = ptCuts and etaCuts and deltaPhiCut
-    
+
+        if ptCuts:
+            self.cutflow.Fill(1.5,1)  
+            if etaCuts:
+                self.cutflow.Fill(2.5,1)  
+                if deltaPhiCut:
+                    self.cutflow.Fill(3.5,1) 
+                    topMassCuts = topJetMass[0] > 140 and topJetMass[0] < 250 and topJetMass[1] > 140 and topJetMass[1] < 250   
+                    if topMassCuts:
+                        self.cutflow.Fill(4.5,1)
+                        nSubjetsCuts = topJetNSubjets[0] > 2 and topJetNSubjets[1] > 2
+                        if nSubjetsCuts:
+                            self.cutflow.Fill(5.5,1)
+                            minMassCuts = topJetMinMass[0] > 50 and topJetMinMass[1] > 50
+                            if minMassCuts:
+                                self.cutflow.Fill(6.5,1)
+ 
+
         if passType11KinCuts :
 
             topTag0        = topJetMass[0] > 140 and topJetMass[0] < 250 and topJetMinMass[0] > 50 and topJetNSubjets[0] > 2
@@ -200,7 +219,7 @@ class Type11Analyzer :
             self.jetMinMass.Fill( topJetMinMass[1], weight )
             self.mttCandMass.Fill( ttMass, weight )
             
-            
+
             if passType11  :
                 self.topTagMass.Fill( topJets[0].mass(), weight )
                 self.topTagMass.Fill( topJets[1].mass(), weight )

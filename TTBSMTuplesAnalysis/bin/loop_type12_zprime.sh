@@ -5,5 +5,5 @@ for DIR in Zprime_M1000GeV_W10GeV_ttbsm_v8_ttbsmTuples_v4_noPDF Zprime_M1500GeV_
 do
 	echo $DIR
 	echo '/uscms_data/d2/jdolen/BoostedTop424Ntuple/CMSSW_4_2_4/src/Analysis/TTBSMPatTuples/test/retry/${DIR}/res/'
-	python TTHadronicAnalyzerCombined.py --dirs=/uscms_data/d2/jdolen/BoostedTop424Ntuple/CMSSW_4_2_4/src/Analysis/TTBSMPatTuples/test/retry/${DIR}/res/ --outfile=TTHadronicAnalyzerCombined_${DIR}_cutflow --analyzer=Type11Analyzer --mistagFile=MISTAG_RATE_TYPE1_SUBTRACT --useMC
+	python TTHadronicAnalyzerCombined.py --dirs=/uscms_data/d2/jdolen/BoostedTop424Ntuple/CMSSW_4_2_4/src/Analysis/TTBSMPatTuples/test/retry/${DIR}/res/ --outfile=TTHadronicAnalyzerCombined_${DIR}_cutflow --analyzer=Type12Analyzer --mistagFile=MISTAG_RATE_TYPE12_SUBTRACT --useMC
 done

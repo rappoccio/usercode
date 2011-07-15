@@ -89,7 +89,6 @@ class Type12Analyzer :
         self.mttPredDistMod3MassFlatSubtract.GetObservedHist().Write()
         self.mttPredDistMod3MassFlatSubtract.GetTaggableHist().Write()
         
-
    
  
         print '3'
@@ -167,7 +166,9 @@ class Type12Analyzer :
         self.topTagMass                  = ROOT.TH1F("topTagMass",                  "Top Tag Mass",             100,  0,  500 )
         self.topTagPt                    = ROOT.TH1F("topTagPt",                    "Top Tag Pt",               400,  0,  2000 )
         self.mttMass                     = ROOT.TH1F("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeight        = ROOT.TH1F("mttMassTriggerWeight",        "mTT Mass",                 1000, 0,  5000 )
         self.mttMassVeto11               = ROOT.TH1F("mttMassVeto11",               "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeightVeto11  = ROOT.TH1F("mttMassTriggerWeightVeto11",  "mTT Mass",                 1000, 0,  5000 )
         self.mttMassJet1MassDown         = ROOT.TH1F("mttMassJet1MassDown",         "mTT Mass",                 1000, 0,  5000 )
         self.mttBkgWithMistag            = ROOT.TH1F("mttBkgWithMistag",            "mTT Mass",                 1000, 0,  5000 )
         self.mttBkgWithMistag.Sumw2()
@@ -263,6 +264,7 @@ class Type12Analyzer :
         self.NSubjetsVsMinMassSR         = ROOT.TH2F("NSubjetsVsMinMassSR",          "NSubjets Vs Min Mass",     10,   -0.5,   9.5,    51,   -5.0,    250 )
 
         self.nJetsSignal                 = ROOT.TH1F("nJetsSignal",                  "N Jets",                   20,   -0.5,   19.5 )
+        self.cutflow                     = ROOT.TH1F("cutflow",                  "cutflow",                   10,   0,   10 )
 
 
         
@@ -271,6 +273,8 @@ class Type12Analyzer :
         """Analyzes event"""
         event.getByLabel (self.hemis0Label, self.hemis0Handle)
         topJets = self.hemis0Handle.product()
+        
+        self.cutflow.Fill(0.5,1)
 
         nTopCand = 0
         for i in range(0,len(topJets) ) :
@@ -280,11 +284,15 @@ class Type12Analyzer :
         if nTopCand < 1 :
             return
 
+        self.cutflow.Fill(1.5,1)
+
         event.getByLabel (self.hemis1Label, self.hemis1Handle)
         wJets = self.hemis1Handle.product()
 
         if len(wJets) < 2 :
           return
+
+        self.cutflow.Fill(2.5,1)
 
         pairMass = 0.0
         ttMass = 0.0
@@ -383,6 +391,19 @@ class Type12Analyzer :
         ##   if( wJets[i].pt() > 200 and wJets[i].mass() > 60 and wJets[i].mass() < 130 and wJetMu[i] < 0.4 )  :
         ##     checkWTag += 1
         ##     break
+
+        if nTopCand == 1:
+            self.cutflow.Fill(3.5,1)
+            if secondJetCuts:
+                self.cutflow.Fill(4.5,1)
+                if wJets[jet3].pt() > 30:
+                    self.cutflow.Fill(5.5,1)
+                    if wJetMu[0] < 0.4:
+                        self.cutflow.Fill(6.5,1)
+                        if hasTopTag:
+                            self.cutflow.Fill(7.5,1)
+                            if hasType2Top:
+                                self.cutflow.Fill(8.5,1)
 
     ######### Plot histograms
         if passKinCuts  :
@@ -523,6 +544,10 @@ class Type12Analyzer :
               if ((not passNSubjetsCut) or (not passMinMassCut)) and hasType2Top and passWiderTopMassCut :
                 self.mttBkgShapeWithSideBand7Mass.Fill( ttMass, weight  )
 
+          triggerWeight = 1.0
+          if topJets[0].pt() < 450:
+            triggerWeight = 0.7
+
 
           isJetTagged = hasType2Top and hasTopTag
           if self.useMC is False and hasType2Top :
@@ -532,9 +557,11 @@ class Type12Analyzer :
               self.mttPredDistModMassFlat.Accumulate( ttMassModFlat,  jet1Pt, isJetTagged, weight )  
               self.mttPredDistMod3MassFlat.Accumulate( ttMassMod3Flat,  jet1Pt, isJetTagged,weight )
               self.mttPredDistMod3MassFlatSubtract.Accumulate( ttMassMod3Flat,  jet1Pt, isJetTagged, weight  )
+			
 
           if isJetTagged :
             self.mttMass.Fill( ttMass, weight  )
+            self.mttMassTriggerWeight.Fill( ttMass, weight*triggerWeight  )
             if not self.useMC :
                 self.mttMassJet1MassDown.Fill( ttMassJet1MassDown, weight  )
             self.nJetsSignal.Fill( len(topJets)+len(wJets) )
@@ -555,7 +582,8 @@ class Type12Analyzer :
           topTag1        = topJetMass[1] > 140 and topJetMass[1] < 250 and topJetMinMass[1] > 50 and topJetNSubjets[1] > 2
           passType11     = topTag0 and topTag1
           if not passType11 and isJetTagged:
-             self.mttMassVeto11.Fill( ttMass, weight  )
+            self.mttMassVeto11.Fill( ttMass, weight  )
+            self.mttMassTriggerWeightVeto11.Fill( ttMass, weight*triggerWeight  )
 
 
           
