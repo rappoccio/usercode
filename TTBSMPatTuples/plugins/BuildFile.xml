@@ -13,5 +13,6 @@
   <use   name="PhysicsTools/UtilAlgos"/>
   <use   name="Analysis/BoostedTopAnalysis"/>
   <use   name="ElectroWeakAnalysis/Utilities"/>
+  <use   name="HLTrigger/HLTcore"/>
   <use   name="root"/>
 </library>
