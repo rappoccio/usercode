@@ -58,7 +58,11 @@ class MistagMakerType1 :
         self.testTagPt            = ROOT.TH1D("testTagPt",            "Top Tag Pt",               400,  0,  2000 )
         self.testProbePt          = ROOT.TH1D("testProbePt",          "Top Probe Pt",             400,  0,  2000 )
         
-
+        self.topTagPt.Sumw2()
+        self.topProbePt.Sumw2()
+        self.testTagPt.Sumw2()
+        self.testProbePt.Sumw2()
+        
     def analyze(self, event) :
         """Analyzes event"""
         event.getByLabel (self.allTopTagLabel, self.allTopTagHandle)

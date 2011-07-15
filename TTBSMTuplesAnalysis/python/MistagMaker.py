@@ -37,6 +37,8 @@ class MistagMaker :
         self.hemis1MuLabel           = ( "ttbsmAna",  "wTagMuHemis1" )
         self.hemis1Jet3Handle        = Handle("int")
         self.hemis1Jet3Label         = ( "ttbsmAna", "jet3Hemis1" )
+        self.weightsHandle           = Handle( "double" )
+        self.weightsLabel            = ( "ttbsmAna", "weight" )
 
         self.__book__()
 
@@ -77,6 +79,13 @@ class MistagMaker :
         self.type2SideBandTag            = ROOT.TH1D("type2SideBandTag",           "Top Tag Pt",                 400,  0,  2000 )
         self.randomTopProbe              = ROOT.TH1D("randomTopProbe",             "Top Probe Pt",               400,  0,  2000 )
         self.randomTopTag                = ROOT.TH1D("randomTopTag",               "Top Tag Pt",                 400,  0,  2000 )
+
+        self.type2KinTopProbe.Sumw2()
+        self.type2KinTopTag.Sumw2()
+        self.type2SideBandProbe.Sumw2()
+        self.type2SideBandTag.Sumw2()
+        self.randomTopProbe.Sumw2()
+        self.randomTopTag.Sumw2()
 
 
     def analyze(self, event):

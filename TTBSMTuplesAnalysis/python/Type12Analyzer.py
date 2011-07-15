@@ -267,8 +267,12 @@ class Type12Analyzer :
         self.cutflow                     = ROOT.TH1F("cutflow",                  "cutflow",                   10,   0,   10 )
 
 
-        
-
+        self.mttMass.Sumw2() 
+        self.mttMassTriggerWeight.Sumw2() 
+        self.mttMassVeto11.Sumw2() 
+        self.mttMassTriggerWeightVeto11.Sumw2() 
+    
+    
     def analyze(self, event) :
         """Analyzes event"""
         event.getByLabel (self.hemis0Label, self.hemis0Handle)

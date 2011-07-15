@@ -82,8 +82,12 @@ class Type11Analyzer :
         self.mistag.SetName('mistag')
         self.mistagMassCut = self.mistagFile.Get("TYPE11_MISTAG_MASSCUT_LARGEBINS").Clone()
         self.mistagMassCut.SetName('mistagMassCut')
-        self.mistagMassCutSubtract = self.mistagFile.Get("TYPE11_MISTAG_MASSCUT_SUBTRACT_TTBAR_LARGEBINS").Clone()
-        self.mistagMassCutSubtract.SetName('mistagMassCutSubtract')
+        if not self.useGenWeight:
+            self.mistagMassCutSubtract = self.mistagFile.Get("TYPE11_MISTAG_MASSCUT_SUBTRACT_TTBAR_LARGEBINS").Clone()
+            self.mistagMassCutSubtract.SetName('mistagMassCutSubtract')
+        if self.useGenWeight:
+            self.mistagMassCutSubtract = self.mistagFile.Get("TYPE11_MISTAG_MASSCUT_LARGEBINS").Clone()
+            self.mistagMassCutSubtract.SetName('mistagMassCutSubtract')
         print self.mistag.GetBinContent(3)
         ROOT.SetOwnership( self.mistag, False )
         ROOT.SetOwnership( self.mistagMassCut, False )
@@ -116,6 +120,8 @@ class Type11Analyzer :
         self.mttMass              = ROOT.TH1D("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
         self.cutflow              = ROOT.TH1D("cutflow",                     "cutflow",                 7, 0,  7 ) 
         
+        self.mttMass.Sumw2()
+
 
     def analyze(self, event) :
         """Analyzes event"""
