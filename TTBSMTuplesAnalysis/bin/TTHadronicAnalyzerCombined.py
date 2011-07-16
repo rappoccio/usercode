@@ -68,6 +68,10 @@ parser.add_option('-l', '--collectionLabelSuffix', metavar='N', type='string', a
                   dest='collectionLabelSuffix',
                   help='Collection label')
 
+parser.add_option('-t', '--triggerFile', metavar='N', type='string', action='store',
+                  default='TRIGGER_EFFIC',
+                  dest='triggerFile',
+                  help='trigger file')
 
 
 (options, args) = parser.parse_args()
@@ -105,12 +109,12 @@ triggerSelection = TriggerAndEventSelectionObject( myAnaTrigs )
 if options.analyzer == "Type12Analyzer" :
     analyzer = Type12Analyzer(options.useMC, options.outfile + '_type12_'+options.collectionLabelSuffix,
                               options.mistagFile, options.collectionLabelSuffix,
-                              options.veto11, options.useGenWeight )
+                              options.veto11, options.useGenWeight, options.triggerFile )
 elif options.analyzer == "MistagMaker" :
     analyzer = MistagMaker( options.outfile + '_mistag', options.useGenWeight)
 elif options.analyzer == "Type11Analyzer" :
     analyzer = Type11Analyzer(options.useMC, options.outfile + '_type11_'+options.collectionLabelSuffix,
-                              options.mistagFile, options.collectionLabelSuffix, options.useGenWeight)
+                              options.mistagFile, options.collectionLabelSuffix, options.useGenWeight, options.triggerFile)
 elif options.analyzer == "MistagMakerType1" :
     analyzer = MistagMakerType1( options.outfile + '_mistag1', options.useGenWeight)
 elif options.analyzer == "TTKinPlotsAnalyzer" :

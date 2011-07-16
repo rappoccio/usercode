@@ -9,9 +9,10 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type12Analyzer :
     """Run 1 + 2 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix, veto11, useGenWeight=False):
+    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix, veto11, useGenWeight, triggerFile):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
+        self.triggerFileStr = triggerFile
         self.useMC = useMC
         self.veto11 = veto11
         self.useGenWeight=useGenWeight
@@ -97,6 +98,7 @@ class Type12Analyzer :
         self.f.Close()
         print '4'
         self.mistagFile.Close()
+        self.triggerFile.Close()
         print '5'
 
         print 'So long!'
@@ -111,7 +113,13 @@ class Type12Analyzer :
         self.mistagSubtract = self.mistagFile.Get("TYPE12_KIN_MISTAG_SUBTRACT_TTBAR").Clone()
         self.mistagSubtract.SetName('mistagSubtract')
         ROOT.SetOwnership( self.mistag, False )
-        
+       
+        self.triggerFile = ROOT.TFile(self.triggerFileStr + ".root")
+        self.triggerFile.cd()
+        self.triggerHist = self.triggerFile.Get("TYPE12_TRIGGER_EFFIC").Clone()
+        self.triggerHist.SetName('triggerHist')
+        ROOT.SetOwnership( self.triggerHist, False )
+
         self.f = ROOT.TFile( self.outfile + ".root", "recreate" )
         self.f.cd()
 
@@ -166,9 +174,11 @@ class Type12Analyzer :
         self.topTagMass                  = ROOT.TH1F("topTagMass",                  "Top Tag Mass",             100,  0,  500 )
         self.topTagPt                    = ROOT.TH1F("topTagPt",                    "Top Tag Pt",               400,  0,  2000 )
         self.mttMass                     = ROOT.TH1F("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
-        self.mttMassTriggerWeight        = ROOT.TH1F("mttMassTriggerWeight",        "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeighted      = ROOT.TH1F("mttMassTriggerWeighted",        "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassFlatTriggerWeighted  = ROOT.TH1F("mttMassFlatTriggerWeighted",        "mTT Mass",                 1000, 0,  5000 )
         self.mttMassVeto11               = ROOT.TH1F("mttMassVeto11",               "mTT Mass",                 1000, 0,  5000 )
-        self.mttMassTriggerWeightVeto11  = ROOT.TH1F("mttMassTriggerWeightVeto11",  "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeightedVeto11  = ROOT.TH1F("mttMassTriggerWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassFlatTriggerWeightedVeto11  = ROOT.TH1F("mttMassFlatTriggerWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
         self.mttMassJet1MassDown         = ROOT.TH1F("mttMassJet1MassDown",         "mTT Mass",                 1000, 0,  5000 )
         self.mttBkgWithMistag            = ROOT.TH1F("mttBkgWithMistag",            "mTT Mass",                 1000, 0,  5000 )
         self.mttBkgWithMistag.Sumw2()
@@ -268,9 +278,11 @@ class Type12Analyzer :
 
 
         self.mttMass.Sumw2() 
-        self.mttMassTriggerWeight.Sumw2() 
+        self.mttMassTriggerWeighted.Sumw2() 
+        self.mttMassFlatTriggerWeighted.Sumw2() 
         self.mttMassVeto11.Sumw2() 
-        self.mttMassTriggerWeightVeto11.Sumw2() 
+        self.mttMassTriggerWeightedVeto11.Sumw2() 
+        self.mttMassFlatTriggerWeightedVeto11.Sumw2() 
     
     
     def analyze(self, event) :
@@ -322,6 +334,15 @@ class Type12Analyzer :
         if self.useGenWeight :
             event.getByLabel( self.weightsLabel, self.weightsHandle )
             weight = self.weightsHandle.product()[0]
+
+        jetTriggerWeight = 1.0
+        if topJets[0].pt() < 800:
+            bin0 = self.triggerHist.FindBin(topJets[0].pt())
+            jetTriggerWeight = self.triggerHist.GetBinContent(bin0)
+
+        flatTriggerWeight = 1.0
+        if topJets[0].pt() < 450:
+            flatTriggerWeight = 0.7
 
         if jet3 < 1 :
           print "This is not expected, debug!"
@@ -548,9 +569,6 @@ class Type12Analyzer :
               if ((not passNSubjetsCut) or (not passMinMassCut)) and hasType2Top and passWiderTopMassCut :
                 self.mttBkgShapeWithSideBand7Mass.Fill( ttMass, weight  )
 
-          triggerWeight = 1.0
-          if topJets[0].pt() < 450:
-            triggerWeight = 0.7
 
 
           isJetTagged = hasType2Top and hasTopTag
@@ -565,7 +583,8 @@ class Type12Analyzer :
 
           if isJetTagged :
             self.mttMass.Fill( ttMass, weight  )
-            self.mttMassTriggerWeight.Fill( ttMass, weight*triggerWeight  )
+            self.mttMassTriggerWeighted.Fill( ttMass, weight*jetTriggerWeight  )
+            self.mttMassFlatTriggerWeighted.Fill( ttMass, weight*flatTriggerWeight  )
             if not self.useMC :
                 self.mttMassJet1MassDown.Fill( ttMassJet1MassDown, weight  )
             self.nJetsSignal.Fill( len(topJets)+len(wJets) )
@@ -587,7 +606,8 @@ class Type12Analyzer :
           passType11     = topTag0 and topTag1
           if not passType11 and isJetTagged:
             self.mttMassVeto11.Fill( ttMass, weight  )
-            self.mttMassTriggerWeightVeto11.Fill( ttMass, weight*triggerWeight  )
+            self.mttMassTriggerWeightedVeto11.Fill( ttMass, weight*jetTriggerWeight  )
+            self.mttMassFlatTriggerWeightedVeto11.Fill( ttMass, weight*flatTriggerWeight  )
 
 
           

@@ -9,9 +9,10 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type11Analyzer :
     """Run 1 + 1 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile, collectionLabelSuffix, useGenWeight=False):
+    def __init__(self, useMC, outfile, mistagFile, collectionLabelSuffix, useGenWeight, triggerFile):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
+        self.triggerFileStr = triggerFile
         self.useMC = useMC
         self.useGenWeight = useGenWeight
         
@@ -68,6 +69,7 @@ class Type11Analyzer :
         self.f.Close()
         print '4'
         self.mistagFile.Close()
+        self.triggerFile.Close()
         print '5'
 
         print 'So long!'
@@ -91,7 +93,13 @@ class Type11Analyzer :
         print self.mistag.GetBinContent(3)
         ROOT.SetOwnership( self.mistag, False )
         ROOT.SetOwnership( self.mistagMassCut, False )
-        
+       
+        self.triggerFile = ROOT.TFile(self.triggerFileStr + ".root")
+        self.triggerFile.cd()
+        self.triggerHist = self.triggerFile.Get("TYPE11_TRIGGER_EFFIC").Clone()
+        self.triggerHist.SetName('triggerHist')
+        ROOT.SetOwnership( self.triggerHist, False )
+
         self.f = ROOT.TFile( self.outfile + ".root", "recreate" )
         self.f.cd()
 
@@ -118,10 +126,11 @@ class Type11Analyzer :
         self.topTagPt             = ROOT.TH1D("topTagPt",                    "Top Tag Pt",               400,  0,  2000 )
         self.mttCandMass          = ROOT.TH1D("mttCandMass",                     "mTT Cand Mass",                 1000, 0,  5000 )
         self.mttMass              = ROOT.TH1D("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeighted   = ROOT.TH1D("mttMassTriggerWeighted",                     "mTT Mass",                 1000, 0,  5000 )
         self.cutflow              = ROOT.TH1D("cutflow",                     "cutflow",                 7, 0,  7 ) 
         
         self.mttMass.Sumw2()
-
+        self.mttMassTriggerWeighted.Sumw2()
 
     def analyze(self, event) :
         """Analyzes event"""
@@ -147,6 +156,14 @@ class Type11Analyzer :
         if self.useGenWeight :
             event.getByLabel( self.weightsLabel, self.weightsHandle )
             weight = self.weightsHandle.product()[0]
+
+        jetTriggerWeight = 1.0
+        if topJets[0].pt() < 800:
+            bin0 = self.triggerHist.FindBin(topJets[0].pt()) 
+            jetTriggerWeight = self.triggerHist.GetBinContent(bin0)
+
+        #print 'topJets[0].pt() ' + str(topJets[0].pt())    
+        #print 'jetTriggerWeight ' + str(jetTriggerWeight)    
 
         event.getByLabel (self.allTopTagMinMassLabel, self.allTopTagMinMassHandle)
         topJetMinMass= self.allTopTagMinMassHandle.product()
@@ -234,6 +251,7 @@ class Type11Analyzer :
                 self.topTagMinMass.Fill( topJetMinMass[0], weight )
                 self.topTagMinMass.Fill( topJetMinMass[1], weight )
                 self.mttMass.Fill( ttMass, weight )
+                self.mttMassTriggerWeighted.Fill( ttMass, weight*jetTriggerWeight )   
 
             #background estiation
             x = ROOT.gRandom.Uniform()        
