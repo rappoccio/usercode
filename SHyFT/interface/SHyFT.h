@@ -9,6 +9,7 @@
 #include "Math/GenVector/PxPyPzM4D.h"
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/FWLite/interface/Record.h"
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 /* #include "DataFormats/FWLite/interface/EventSetup.h" */
 /* #include "DataFormats/FWLite/interface/ESHandle.h" */
 /* #include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h" */
@@ -92,6 +93,7 @@ class SHyFT : public edm::BasicAnalyzer {
     bool analyze_met( const reco::ShallowClonePtrCandidate & met );
     //std::string calcSampleName (const edm::EventBase& iEvent);
     void weightPDF( edm::EventBase const & iEvent );
+    void initializeMCPUWeight();
 
     bool make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
 			const reco::ShallowClonePtrCandidate & met,
@@ -111,10 +113,16 @@ class SHyFT : public edm::BasicAnalyzer {
     TFileDirectory  subdirEB_minus;
     TFileDirectory  subdirEE_minus;
 
+    // used for reweighting
+    edm::LumiReWeighting lumiWeights_;
+      //void plotNPV(const edm::EventBase &, const char*, double);
+    void weightPU( edm::EventBase const & iEvent);
+    
     // the following parameters need to come from the config
     bool muPlusJets_;
     bool ePlusJets_;
-    bool useHFcat_;
+    bool use42X_;
+    bool useHFcat_;   
     int nJetsCut_ ;
     int mode;
     std::string sampleNameInput;
@@ -131,7 +139,9 @@ class SHyFT : public edm::BasicAnalyzer {
     double globalWeight_;  // For reweighting the entire event for, e.g., pdf reweighting
     bool reweightPDF_;
     bool reweightBTagEff_;
+    bool reweightPU_;
     edm::InputTag pdfInputTag_; 
+    edm::InputTag pvTag_;
     std::string pdfToUse_;
     int         pdfEigenToUse_;
     int         pdfVariation_;

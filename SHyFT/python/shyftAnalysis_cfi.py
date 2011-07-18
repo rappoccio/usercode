@@ -21,6 +21,7 @@ shyftAnalysis = cms.PSet(
     pdfToUse = cms.string('cteq6ll.LHpdf'),
     pdfVariation = cms.int32(1),
     reweightBTagEff = cms.bool(False),
+    reweightPU = cms.bool(True),
     bcEffScale = cms.double(1.0),
     lfEffScale = cms.double(1.0),
     useDefaultDiscriminant = cms.bool(True),

@@ -7,6 +7,8 @@
 // #include "/uscmst1/prod/sw/cms/slc5_ia32_gcc434/external/lhapdf/5.6.0/full/include/LHAPDF/LHAPDF.h"
 #include "/uscmst1/prod/sw/cms/slc5_ia32_gcc434/external/lhapdf/5.6.0-cms2/share/lhapdf/PDFsets/../../../include/LHAPDF/LHAPDF.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" 
+#include <DataFormats/Common/interface/Handle.h>
 // namespace LHAPDF {
       
 //       void initPDF(int nset);
@@ -41,6 +43,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
  
   muPlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("muPlusJets")),
   ePlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("ePlusJets")),
+  use42X_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("use42X")),  
   //useHFcat will no longer do anything
   useHFcat_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("heavyFlavour")),
   nJetsCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("minJets")),  
@@ -49,7 +52,9 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   identifier_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("identifier")),
   reweightPDF_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPDF")),
   reweightBTagEff_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightBTagEff")),
+  reweightPU_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPU")),
   pdfInputTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("pdfSrc")),
+  pvTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("pvSrc")),
   pdfToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("pdfToUse")),
   pdfEigenToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("pdfEigenToUse")),
   pdfVariation_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("pdfVariation")),
@@ -75,15 +80,20 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
    // How about whatever we create and fill separately for +/- charge we also fill for the combined charges 
   TFileDirectory *forBookingDir[7]={&subdirEB_plus,&subdirEB_minus,&subdirEE_plus,&subdirEE_minus,&theDir,&subdirMU_plus,&subdirMU_minus};
   
-
-   if ( simpleSFCalc_) 
-      gRandom->SetSeed( 960622508 );
+  if ( simpleSFCalc_) 
+     gRandom->SetSeed( 960622508 );
   
-
+  
    if ( useCustomPayload_ ) {
       customBtagFile_ = boost::shared_ptr<TFile>( new TFile(customTagRootFile_.c_str(), "READ") );
    }
-
+   
+    // initialize weights for PU reweighting
+   if(doMC_){
+      initializeMCPUWeight();
+      std::cout << "Initializing pu weights, identifier = " << identifier_ << std::endl;
+   }
+  
    //cout <<"let book the histo " << endl;
    //book all the histograms for leptons
    theDir.make<TH1F>("lepPt",       "Lepton p_{T} (GeV/c) ",   100,    0, 200);
@@ -94,8 +104,30 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
    theDir.make<TH1F>("lepECalIso",  "Lepton ECal Iso",          50,    0,  5);
    theDir.make<TH1F>("lepHCalIso",  "Lepton HCal Iso",          50,    0,  5);
    theDir.make<TH1F>("lepRelIso",   "Lepton Rel Iso",           100,   0,  0.5);
-   theDir.make<TH1F>("lepJetdR",    "dR b/w closest jet and lepton", 60, 0, 3.0);
-     
+   theDir.make<TH1F>("lepJetdR",    "dR b/w jet and lepton",    60,    0,  3.0);
+   theDir.make<TH1F>("nPrimVertices","Num primary vertices",    25,    0,  25);  
+    
+   if(doMC_) {
+      theDir.make<TH1F>("npuTruth", "Num primary interactions MCTrue", 25,0,25);
+      theDir.make<TH1F>("bmass",    "B Sec Vtx Mass",          40,    0,   10);
+      theDir.make<TH1F>("cmass",    "C Sec Vtx Mass",          40,    0,   10);
+      theDir.make<TH1F>("lfmass",   "LF Sec Vtx Mass",         40,    0,   10);
+      if(reweightPU_)
+         theDir.make<TH1F>("npuReweight", "Num primary interaction  reweighted", 25,0,25);
+      if(useHFcat_) //flavor history
+         theDir.make<TH1F>("flavorHistory", "Flavor History",     12,    0,   12);   
+      if(reweightPDF_)
+         theDir.make<TH1F>("pdfWeight", "PDF Weight", 50, 0., 2.0);
+   }
+   
+   theDir.make<TH1F>("nJets",        "N Jets, pt>30, eta<2.4",   15,    0,   15);
+   theDir.make<TH1F>("nTags",        "number of Tags",           3,     0,    3);
+   theDir.make<TH1F>("discriminator","BTag Discriminator",       30,    2,    8);
+   theDir.make<TH1F>("nSecVertices", "num sec Vertices",         5,     0,    5);
+   theDir.make<TH1F>("m3",           "M3 pretag",                60,    0,  600);
+   theDir.make<TH1F>("metPt",        "Missing p_{T} (GeV/c)",    100,   0, 200 );
+   theDir.make<TH2F>("massVsPt",     "Mass vs pt",               25, 0, 250, 25, 0, 500);
+   
    // book histograms that are specific to muons
    if(muPlusJets_){
      theDir.make<TH1F>("muNhits",    "Muon N Hits",            35,    0,  35);
@@ -115,10 +147,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
       theDir.make<TH1F>("eHoE_EE", "HoE in EE", 30, 0, 0.15);
       theDir.make<TH1F>("eHoE_EB", "HoE in EB", 30, 0, 0.15);  
    }
-  
-   theDir.make<TH1F>("metPt", "Missing p_{T} (GeV/c)", 100, 0, 200 );
-   theDir.make<TH2F>("massVsPt", "Mass vs pt", 25, 0, 250, 25, 0, 500);
-
+ 
   std::vector<std::string> secvtxEnd;
   std::vector<std::string> twoTagsEnd;
   std::vector<std::string> allTagsEnd;
@@ -164,7 +193,6 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
     allTagsEnd.push_back("0t"); allTagsEnd.push_back("1t"); allTagsEnd.push_back("2t");
   }
 
-   theDir.make<TH1F>("nJets",    "N Jets, pt>30, eta<2.4",  15,    0,   15);
    for(unsigned int i=1; i<5; ++i) {
       string jtNum = Form("%d",i);
       theDir.make<TH1F>(("jet"+jtNum+"Pt").c_str(),   ("jet "+jtNum+" leading jet pt").c_str(),     150,    0,  300);
@@ -177,20 +205,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
       }
    }
 
-   if(doMC_) {
-     theDir.make<TH1F>("bmass",    "B Sec Vtx Mass",          40,    0,   10);
-     theDir.make<TH1F>("cmass",    "C Sec Vtx Mass",          40,    0,   10);
-     theDir.make<TH1F>("lfmass",   "LF Sec Vtx Mass",         40,    0,   10);
-     theDir.make<TH1F>("flavorHistory", "Flavor History",     12,    0,   12);
-      if ( reweightPDF_ )
-	theDir.make<TH1F>("pdfWeight", "PDF Weight", 50, 0., 2.0);
-   }
-   theDir.make<TH1F>("discriminator", "BTag Discriminator", 30,    2,    8);
-   theDir.make<TH1F>("nVertices",     "num sec Vertices",    5,    0,    5);
-   theDir.make<TH1F>("nTags",     "number of Tags",          3,    0,    3);
   
-   theDir.make<TH1F>("m3", "M3 pretag", 60, 0, 600);
-   
    //Histogram booking without splitting into flavor paths but into tags
    //-------------------------------------------------------------------
    for ( int itag = 0; itag <= 2; ++itag ) {
@@ -307,7 +322,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
    allNumTags_ = 0;
    allNumJets_ = 0;
    
-   if ( reweightPDF_ ) {
+   if (doMC_ && reweightPDF_) {
       std::cout << "Initializing pdfs, identifier = " << identifier_ << std::endl;
       // For the first one, MAKE ABSOLUTELY SURE it is the one used to generate
       // your sample. 
@@ -316,7 +331,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
       std::cout << "Done initializing pdfs" << std::endl;
    }
 
-
+  
    // for closure test
    nExpectedTaggedJets_ = 0.;
    nObservedTaggedJets_ = 0.;
@@ -394,7 +409,7 @@ bool SHyFT::analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muo
    double trackIso_   = globalMuon->trackIso();
    double eCalIso_    = globalMuon->ecalIso();
    double hCalIso_    = globalMuon->hcalIso();
-   double relIso_     = ( trackIso_ + eCalIso_ + hCalIso_ )/muPt_ ;
+   //double relIso_     = ( trackIso_ + eCalIso_ + hCalIso_ )/muPt_ ;
 
    double chIso = globalMuon->userIsolation(pat::PfChargedHadronIso);
    double nhIso = globalMuon->userIsolation(pat::PfNeutralHadronIso);
@@ -601,7 +616,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       jetEt += jet->et();
       hT += jet->et();
       jetE += jet->energy();
-      //cout << "jetEt = " << jetEt << ", jet E = " << jetE  << ", centrality = " << jetEt/jetE << endl;
+     //cout << "jetEt = " << jetEt << ", jet E = " << jetE  << ", centrality = " << jetEt/jetE << endl;
       static_cast<TH2*>(theDir.getObject<TH1>( "massVsPt") )->Fill( jetPt, jet->mass(), globalWeight_ );
 
       //dR b/w jet and lepton
@@ -632,7 +647,7 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
       if ( svTagInfos == 0 ) { 
 	continue;
       }
-      theDir.getObject<TH1>( "nVertices")-> Fill( svTagInfos->nVertices(), globalWeight_ );
+      theDir.getObject<TH1>( "nSecVertices")-> Fill( svTagInfos->nVertices(), globalWeight_ );
       
       // Check to make sure we have a vertex
       if ( svTagInfos->nVertices() <= 0 ) {
@@ -1135,28 +1150,34 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   // if not passed trigger, next event
   if ( !passTrigger )  return;
   
-  if (doMC_ && reweightPDF_) {
+  if ( doMC_ && reweightPDF_) {
     weightPDF(iEvent);
   }
-  
+
+  if ( doMC_) { 
+     weightPU( iEvent );  
+  } 
+
   if(useHFcat_) {
     edm::Handle< unsigned int > heavyFlavorCategory;
     iEvent.getByLabel ( edm::InputTag("flavorHistoryFilter"),heavyFlavorCategory);
     assert ( heavyFlavorCategory.isValid() );
     if ( useHFcat_ ) theDir.getObject<TH1>( "flavorHistory")-> Fill ( *heavyFlavorCategory, globalWeight_ );
   }
-
-
+  edm::Handle<std::vector<reco::Vertex> > primVtxHandle;
+  iEvent.getByLabel(pvTag_, primVtxHandle);
+  assert (primVtxHandle.isValid() );
+  
   if (passPre) 
-    {
+  {  
+      theDir.getObject<TH1>("nPrimVertices")->Fill (primVtxHandle->size(), globalWeight_ );
       theDir.getObject<TH1>( "nJets")->Fill( jets.size(), globalWeight_ );
       //if(useHFcat_ && sampleHistName_ == sampleNameInput) return;
       make_templates(jets, met, muons, electrons);
       analyze_met( met );
       if ( muPlusJets_ ) analyze_muons(muons);
       if ( ePlusJets_ ) analyze_electrons(electrons);          
-
-      if ( !doMC_) {
+          if ( !doMC_) {
 	summary_.push_back( SHyFTSummary(iEvent.id().run(),
 					 iEvent.id().luminosityBlock(),
 					 iEvent.id().event(),
@@ -1168,9 +1189,6 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
 
 }
   
-
-
-
 void SHyFT::endJob()
 {
 
@@ -1192,6 +1210,151 @@ void SHyFT::endJob()
   std::cout << "  N_obs jettags : " << nObservedTaggedJets_ << std::endl;
 }
 
+void SHyFT::initializeMCPUWeight()
+{
+
+  // should probably add a parameter to configure the era of MC we want to use
+  // so the weight can be included - melo 7/2011
+   std::vector< float > TrueDist2011;
+   float TrueDist2011_f[25] = {
+     0.019091,
+     0.0293974,
+     0.0667931,
+     0.108859,
+     0.139533,
+     0.149342,
+     0.138629,
+     0.114582,
+     0.0859364,
+     0.059324,
+     0.0381123,
+     0.0229881,
+     0.0131129,
+     0.00711764,
+     0.00369635,
+     0.00184543,
+     0.000889604,
+     0.000415683,
+     0.000188921,
+     0.000146288,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+   };
+   
+   std::vector< float > probdistFlat10;
+   float probdistFlat10_d[25] = {
+    0.0698146584,
+    0.0698146584,
+    0.0698146584,
+    0.0698146584,
+    0.0698146584,
+    0.0698146584,
+    0.0698146584,
+    0.0698146584,
+    0.0698146584,
+    0.0698146584,
+    0.0698146584,
+    0.0630151648,
+    0.0526654164,
+    0.0402754482,
+    0.0292988928,
+    0.0194384503,
+    0.0122016783,
+    0.007207042,
+    0.004003637,
+    0.0020278322,
+    0.0010739954,
+    0.0004595759,
+    0.0002229748,
+    0.0001028162,
+    4.58337152809607E-05
+  };
+ 
+   // Summer11 PU_S4, distribution obtained by averaging the number of interactions
+ // in each beam crossing to estimate the true mean.  THIS IS THE RECOMMENDED ONE for reweighting.
+
+   std::vector< float > poissonIntDist;
+   float poissonIntDist_d[25] = {
+    0.104109,
+    0.0703573,
+    0.0698445,
+    0.0698254,
+    0.0697054,
+    0.0697907,
+    0.0696751,
+    0.0694486,
+    0.0680332,
+    0.0651044,
+    0.0598036,
+    0.0527395,
+    0.0439513,
+    0.0352202,
+    0.0266714,
+    0.019411,
+    0.0133974,
+    0.00898536,
+    0.0057516,
+    0.00351493,
+    0.00212087,
+    0.00122891,
+    0.00070592,
+    0.000384744,
+    0.000219377
+  };
+
+   
+
+   for( int i=0; i<25; ++i) {
+     TrueDist2011.push_back(TrueDist2011_f[i]);
+     probdistFlat10.push_back(probdistFlat10_d[i]);
+     poissonIntDist.push_back(poissonIntDist_d[i]);
+   }
+   //now do what ever initialization is needed
+   if(use42X_){
+      lumiWeights_ = edm::LumiReWeighting( poissonIntDist, TrueDist2011);
+   }
+   else
+      lumiWeights_ = edm::LumiReWeighting( probdistFlat10, TrueDist2011);
+   
+   // will need it for systematics
+//   PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
+//   PShiftUp_ = reweight::PoissonMeanShifter(0.5);
+
+
+}
+void SHyFT::weightPU( edm::EventBase const & iEvent) {
+  // get weights from MC PU
+  edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+  iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+  std::vector<PileupSummaryInfo>::const_iterator PVI;
+
+  int npv = -1; float sum_nvtx = -1000.0; double puweight = -1000.0;
+  for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+     
+     int BX = PVI->getBunchCrossing();
+
+     if(BX == 0 && !use42X_) { //skip the OOT PU for Spring11
+        npv = PVI->getPU_NumInteractions();
+        continue;
+     }
+     else {
+        npv = PVI->getPU_NumInteractions();
+        sum_nvtx += float(npv);
+     }
+         
+  }
+  float ave_nvtx = sum_nvtx/3.;
+  theDir.getObject<TH1>("npuTruth")->Fill(npv, 1.0);
+  if(reweightPU_){
+     if(use42X_) puweight = lumiWeights_.weight( ave_nvtx);
+     else  puweight = lumiWeights_.weight( npv ); 
+     globalWeight_ *= puweight;
+     theDir.getObject<TH1>("npuReweight")->Fill(npv, puweight );
+  }
+}
 
 void SHyFT::weightPDF(  edm::EventBase const & iEvent) 
 {
@@ -1242,9 +1405,6 @@ void SHyFT::weightPDF(  edm::EventBase const & iEvent)
   // std::cout << buff << std::endl;
   
 
-
-
-    
   globalWeight_ *= iWeightSum ;
   // std::cout << "Global weight = " << globalWeight_ << std::endl;
   theDir.getObject<TH1>( "pdfWeight")->Fill( globalWeight_ );

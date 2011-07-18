@@ -341,8 +341,8 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             if( fabs(ielectron->eta()) >= eleEtaMaxLoose_ ) continue;
             
             //apply the rho(Fastjet subtraction) corrections to isolation
-            if(usePFIso_ && useCone3_)       relIso = (chIso03 + nhIso03 + gIso03 - rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
-            else if(usePFIso_ && !useCone3_) relIso = (chIso + nhIso + gIso - rho*Pi*0.3*0.3)/ ielectron->p4().Pt();            
+            if(usePFIso_ && useCone3_)       relIso = (chIso03 + nhIso03 + gIso03 )/ ielectron->p4().Pt();
+            else if(usePFIso_ && !useCone3_) relIso = (chIso + nhIso + gIso )/ ielectron->p4().Pt();            
             else if(userhoCorr_ && ielectron->isEB()) {
                double ecalIsoCorr  = max(0., ielectron->dr03EcalRecHitSumEt()-1.0 ) - rho * AreaEcal[0]; //also apply pedestal subtraction
                double hcalIsoCorr  = HCalSum - rho * AreaHcal[0];
@@ -355,7 +355,8 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                double trkIsoCorr   = ielectron->dr03TkSumPt() - rho * AreaTracker[1];
                relIso = (ecalIsoCorr + hcalIsoCorr + trkIsoCorr ) /ielectron->p4().Pt();
             }
-            else relIso = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() + HCalSum - rho*Pi*0.3*0.3)/ ielectron->p4().Pt();
+            else relIso = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() +  ielectron->dr03HcalTowerSumEt() ) / ielectron->p4().Pt();
+            
                
             bool firstPass(0);            
             if( useWP95Selection_ && pass95 ) firstPass=1;
