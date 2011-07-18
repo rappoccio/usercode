@@ -55,12 +55,19 @@ options.register('triggerName',
                  VarParsing.varType.string,
                  "Electron trigger to run")
 
+options.register('eleEt',
+                  30.,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.float,
+                 "electron et threshold")
+
 options.register('ttbsmPAT',
                  1,
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.int,
                  "If running on ttbsm PAT tuples"
                  )
+
 options.register('use42X',
                  1,
                  VarParsing.multiplicity.singleton,
@@ -176,8 +183,10 @@ if options.ttbsmPAT > 0 and options.use42X > 0:
         eleTrig = cms.string(options.triggerName),	
         pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
         jetPtMin = cms.double(30.0),##
+        eEtCut = cms.double(options.eleEt),
         minJets = cms.int32(5),
         metMin = cms.double(20.0),
+        reweightPU = cms.bool(False), 
         use42X  = cms.bool(True),
         useData = cms.bool( not inputDoMC ),       
         heavyFlavour = cms.bool( useFlavorHistory ),
@@ -251,6 +260,7 @@ elif options.ttbsmPAT == 0 and options.use42X == 0:
         jetPtMin = cms.double(30.0),##
         minJets = cms.int32(5),
         metMin = cms.double(20.0),
+        eEtCut = cms.double(options.eleEt),
         useData = cms.bool( not inputDoMC ),
         heavyFlavour = cms.bool( useFlavorHistory ),
         doMC = cms.bool( inputDoMC),

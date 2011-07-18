@@ -43,6 +43,12 @@ options.register('ignoreTrigger',
                   VarParsing.varType.int,
                   "Ignore trigger in selection")
 
+options.register('eleEt',
+                  30.,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.float,
+                 "electron et threshold")
+
 options.register('ttbsmPAT',
                  1,
                  VarParsing.multiplicity.singleton,
@@ -131,6 +137,7 @@ if options.ttbsmPAT > 0:
         jetPtMin = cms.double(30.0),##
         minJets = cms.int32(5),
         metMin = cms.double(20.0),
+        eEtCut = cms.double(options.eleEt),
         use42X  = cms.bool(use42XMC),
         heavyFlavour = cms.bool( useFlavorHistory ),
         doMC = cms.bool( inputDoMC),
@@ -207,7 +214,8 @@ elif options.ttbsmPAT == 0 :
         muPlusJets = cms.bool(False),
         jetPtMin = cms.double(30.0),##
         minJets = cms.int32(5),
-        metMin = cms.double(20.0),                                        
+        metMin = cms.double(20.0),
+        eEtCut = cms.double(options.eleEt),
         heavyFlavour = cms.bool( useFlavorHistory ),
         doMC = cms.bool( inputDoMC),
         sampleName = cms.string(inputSampleName),
