@@ -59,11 +59,11 @@ if options.data == 1:
       ['/SingleElectron/skhalil-ttbsm_v8_Run2011-May10ReReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',  60, 30.0, 0, 'Data', 1, 0, 0,'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3', '163286-163869', 'p3'],
 
       ####______________change the prompt Reco json by hand please________________________________
-      ['/SingleElectron/srappocc-ttbsm_v8_Run2011-PromptReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',  60, 35.0, 0, 'Data', 1, 0, 0,'HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3', '165088-165633', 'p4'],
-      ['/SingleElectron/srappocc-ttbsm_v8_Run2011-PromptReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',  60, 45.0, 0, 'Data', 1, 0, 0,'HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '165970-166701', 'p5a'],
-      ['/SingleElectron/cjenkins-ttbsm_v8_Run2011-PromptReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',  60, 45.0, 0, 'Data', 1, 0, 0,'HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '166763-166967', 'p5b'],
+      #['/SingleElectron/srappocc-ttbsm_v8_Run2011-PromptReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',  60, 35.0, 0, 'Data', 1, 0, 0,'HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3', '165088-165633', 'p4'],
+      #['/SingleElectron/srappocc-ttbsm_v8_Run2011-PromptReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',  60, 45.0, 0, 'Data', 1, 0, 0,'HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '165970-166701', 'p5a'],
+      #['/SingleElectron/cjenkins-ttbsm_v8_Run2011-PromptReco-0d3d9a54f3a29af186ad87df2a0c3ce1/USER',  60, 45.0, 0, 'Data', 1, 0, 0,'HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1', '166763-166967', 'p5b'],
       ]
-elif options.summer11MC == 1:
+elif options.summer11MC == 1 and options.data == 0:
    inputCMSSW = 'shyftEDAnalyzer_allsys_ele.py'
    outputLable = '_tlbsm_424_v8'
    crabFileStrs = [
@@ -76,7 +76,7 @@ elif options.summer11MC == 1:
       ['/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/srappocc-ttbsm_v8_Summer11-PU_S4_START42_V11-v1-87037ef7c828ea57e128f1ace23a632e/USER',      50, eleEt, 1, 'Wjets',  1,  1, 1],
       ['/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/skhalil-ttbsm_v8_Summer11-PU_S4_START42_V11-v1-87037ef7c828ea57e128f1ace23a632e/USER',  40, eleEt, 1, 'Zjets',  1,  1, 1],
       ]
-else:
+elif options.summer11MC == 0 and options.data == 0:
    inputCMSSW = 'shyftEDAnalyzer_allsys_ele.py'
    outputLable = '_tlbsm_415_v7'   
    crabFileStrs = [
@@ -140,7 +140,7 @@ for crabFileStr in crabFileStrs :
 
     if options.data == 1:
        a10 = (a9.replace( ' allSys=0', '')).replace('total_number_of_events = -1', 'total_number_of_lumis = -1')
-       print crabFileStr[7]
+       #print crabFileStr[7]
        a11 = (a10.replace( 'DUMMY_TRIGGER', str(crabFileStr[8]) )).replace('DUMMY_RUNS', str(crabFileStr[9]) )
     else:
        a10 = (a9.replace( 'lumi_mask=Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v2.txt', '')).replace(' triggerName=DUMMY_TRIGGER', '')
