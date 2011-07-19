@@ -2,22 +2,6 @@
 import os
 import glob
 
-
-
-
-import ROOT
-ROOT.gROOT.Macro("rootlogon.C")
-
-
-import sys
-from DataFormats.FWLite import Events, Handle
-
-from Analysis.TTBSMTuplesAnalysis.TriggerAndEventSelectionObject import TriggerAndEventSelectionObject
-from Analysis.TTBSMTuplesAnalysis.Type12Analyzer import Type12Analyzer
-from Analysis.TTBSMTuplesAnalysis.MistagMaker import MistagMaker
-from Analysis.TTBSMTuplesAnalysis.TTKinPlotsAnalyzer import TTKinPlotsAnalyzer
-from Analysis.TTBSMTuplesAnalysis.Type11Analyzer import Type11Analyzer
-from Analysis.TTBSMTuplesAnalysis.MistagMakerType1 import MistagMakerType1
 from optparse import OptionParser
 
 
@@ -88,6 +72,22 @@ print files
 
 
 
+
+
+
+import ROOT
+ROOT.gROOT.Macro("rootlogon.C")
+
+
+import sys
+from DataFormats.FWLite import Events, Handle
+
+from Analysis.TTBSMTuplesAnalysis.TriggerAndEventSelectionObject import TriggerAndEventSelectionObject
+from Analysis.TTBSMTuplesAnalysis.Type12Analyzer import Type12Analyzer
+from Analysis.TTBSMTuplesAnalysis.MistagMaker import MistagMaker
+from Analysis.TTBSMTuplesAnalysis.TTKinPlotsAnalyzer import TTKinPlotsAnalyzer
+from Analysis.TTBSMTuplesAnalysis.Type11Analyzer import Type11Analyzer
+from Analysis.TTBSMTuplesAnalysis.MistagMakerType1 import MistagMakerType1
 
 events = Events (files)
 
