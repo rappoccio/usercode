@@ -16,7 +16,7 @@ parser.add_option('-i', '--dirs', metavar='F', type='string', action='store',
 parser.add_option('-a', '--analyzer', metavar='F', type='string', action='store',
                   default='Type12Analyzer',
                   dest='analyzer',
-                  help='Analyzer to run. Options are Type12Analyzer, MistagMaker')
+                  help='Analyzer to run. Options are Type11Analyzer,Type12Analyzer,MistagMakerType1,MistagMaker,TTKinPlotsAnalyzer')
 
 
 parser.add_option('-o', '--outfile', metavar='N', type='string', action='store',
