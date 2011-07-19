@@ -98,8 +98,10 @@ if options.ignoreTrigger == 1 :
 if len(options.inputFiles) == 0  and options.ttbsmPAT > 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-        '/store/user/lpctlbsm/srappocc/SingleElectron/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_9_1_iRC.root',
-        '/store/user/lpctlbsm/srappocc/SingleElectron/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_99_1_L5Q.root',
+        '/store/user/lpctlbsm/srappocc/SingleElectron/ttbsm_v6_Run2011-May10ReReco/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_9_1_fbP.root',
+        '/store/user/lpctlbsm/srappocc/SingleElectron/ttbsm_v6_Run2011-May10ReReco/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_99_0_fMQ.root',
+        '/store/user/lpctlbsm/srappocc/SingleElectron/ttbsm_v6_Run2011-May10ReReco/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_98_0_CMU.root',
+        '/store/user/lpctlbsm/srappocc/SingleElectron/ttbsm_v6_Run2011-May10ReReco/7e150b77ce1bf887c7a9afa63377fb1c/ttbsm_42x_data_97_0_87b.root',
         )
                                 )
     
@@ -146,7 +148,7 @@ if inputDoMC == False :
     process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( myList )
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(500) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
