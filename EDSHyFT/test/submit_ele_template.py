@@ -69,7 +69,7 @@ elif options.summer11MC == 1 and options.data == 0:
    crabFileStrs = [
 
       ###################################################################################################################################
-      #                 For Summer 11 use: python submit_ele_template.py --data=0 with option use42X
+      #                 For Summer 11 use: python submit_ele_template.py --summer11MC=1 --data=0
       ###################################################################################################################################
       
       ['/TTJets_TuneZ2_7TeV-madgraph-tauola/srappocc-ttbsm_v8_Summer11-PU_S4_START42_V11-v1-5c91b0700768331a44f51c8a9892d391/USER',          30, eleEt, 0, 'Top',    1,  1, 1],
@@ -77,6 +77,7 @@ elif options.summer11MC == 1 and options.data == 0:
       ['/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/skhalil-ttbsm_v8_Summer11-PU_S4_START42_V11-v1-87037ef7c828ea57e128f1ace23a632e/USER',  40, eleEt, 1, 'Zjets',  1,  1, 1],
       ]
 elif options.summer11MC == 0 and options.data == 0:
+   print options.summer11MC 
    inputCMSSW = 'shyftEDAnalyzer_allsys_ele.py'
    outputLable = '_tlbsm_415_v7'   
    crabFileStrs = [
@@ -166,5 +167,3 @@ for crabFileStr in crabFileStrs :
     s = 'crab -submit -c ' + outlocation
     print s
     subprocess.call( [s], shell=True )
-
-

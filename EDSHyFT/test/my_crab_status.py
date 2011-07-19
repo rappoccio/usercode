@@ -13,26 +13,26 @@ argument=""
 for i in argv[1:]:
     argument += i+" "
 
-crabPath='/uscms_data/d2/skhalil/ShyftTemplates11'
+crabPath='/uscms_data/d2/skhalil/'
 
 
 crabFiles = [
-    'SingleElectron_ttbsm_423_v6_p1',
-    'SingleElectron_ttbsm_423_v6_p2',
-    'SingleElectron_ttbsm_423_v6_p3',
-    'TTJets_TuneD6T_7TeV-madgraph-tauola_ttbsm_415_v7',
-    'WJetsToLNu_TuneD6T_7TeV-madgraph-tauola_ttbsm_415_v7',
-    'DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_ttbsm_415_v7',
-    'TToBLNu_TuneZ2_t-channel_7TeV-madgraph_ttbsm_415_v7',
-    'TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_ttbsm_415_v7',
-    'GJets_TuneD6T_HT-40To100_7TeV-madgraph_ttbsm_415_v7',
-    'GJets_TuneD6T_HT-100To200_7TeV-madgraph_ttbsm_415_v7',
-    'GJets_TuneD6T_HT-200_7TeV-madgraph_ttbsm_415_v7',
-    'QCD_Pt-20to30_BCtoE_TuneZ2_7TeV-pythia6_ttbsm_415_v7',
-    'QCD_Pt-30to80_BCtoE_TuneZ2_7TeV-pythia6_ttbsm_415_v7',
-    'QCD_Pt-80to170_BCtoE_TuneZ2_7TeV-pythia6_ttbsm_415_v7',
-    'QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6_ttbsm_415_v7',
-    'QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6_ttbsm_415_v7',
+    'ShyftTemplates12a/SingleElectron_tlbsm_424_v8_160404-161176_p1',
+    'ShyftTemplates12a/SingleElectron_tlbsm_424_v8_161216-163261_p2',
+    'ShyftTemplates12a/SingleElectron_tlbsm_424_v8_163286-163869_p3',
+    'ShyftTemplates12a/SingleElectron_tlbsm_424_v8_165088-165633_p4',
+    'ShyftTemplates12a/SingleElectron_tlbsm_424_v8_165970-166701_p5a',
+    'ShyftTemplates12a/SingleElectron_tlbsm_424_v8_166763-166967_p5b',
+    'ShyftTemplates12a/TTJets_TuneZ2_7TeV-madgraph-tauola_tlbsm_424_v8',
+    'ShyftTemplates12a/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_tlbsm_424_v8',
+    'ShyftTemplates12a/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_tlbsm_424_v8',
+    'ShyftTemplates12b/TTJets_TuneZ2_7TeV-madgraph-tauola_tlbsm_424_v8',
+    'ShyftTemplates12b/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_tlbsm_424_v8',
+    'ShyftTemplates12b/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_tlbsm_424_v8',
+    'ShyftTemplates12c/TTJets_TuneZ2_7TeV-madgraph-tauola_tlbsm_424_v8',
+    'ShyftTemplates12c/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_tlbsm_424_v8',
+    'ShyftTemplates12c/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_tlbsm_424_v8',
+    
 ]
 
 for crabFile in crabFiles :
