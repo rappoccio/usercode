@@ -1,5 +1,7 @@
 import ROOT
 import copy
+from math import *
+from operator import itemgetter, attrgetter
 
 ROOT.gSystem.Load("libFWCoreFWLite.so")
 ROOT.AutoLibraryLoader.enable()
@@ -9,12 +11,13 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type11Analyzer :
     """Run 1 + 1 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile, collectionLabelSuffix, useGenWeight, triggerFile):
+    def __init__(self, useMC, outfile, mistagFile, collectionLabelSuffix, useGenWeight, triggerFile, pdfWeight="nominal"):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
         self.triggerFileStr = triggerFile
         self.useMC = useMC
         self.useGenWeight = useGenWeight
+        self.pdfWeight = pdfWeight
         
 		
         label = 'ttbsmAna'+collectionLabelSuffix
@@ -35,6 +38,8 @@ class Type11Analyzer :
 
         self.weightsHandle = Handle( "double" )
         self.weightsLabel = ( label, "weight" )
+        self.pdfHandle = Handle("std::vector<double>")
+        self.pdfLabel = ( label, "pdfWeights")
         
         self.__book__()
 
@@ -63,6 +68,12 @@ class Type11Analyzer :
         self.mttPredDistMod3MassFlatSubtract.GetPredictedHist().Write()
         self.mttPredDistMod3MassFlatSubtract.GetObservedHist().Write()
         self.mttPredDistMod3MassFlatSubtract.GetTaggableHist().Write()
+
+        
+        for pair in sorted(self.runPairs, key=itemgetter(3)) :
+            print '{0:12.2f} : Run {1:15.0f}, LumiBlock {2:15.0f}, Event {3:30.0f}'.format(
+                pair[3], pair[0], pair[2], pair[1]
+                )
 
         print '1'
         self.f.Write()
@@ -130,6 +141,7 @@ class Type11Analyzer :
         self.cutflow              = ROOT.TH1D("cutflow",                     "cutflow",                 7, 0,  7 ) 
         
         self.mttMass.Sumw2()
+        self.runPairs = []
         self.mttMassTriggerWeighted.Sumw2()
 
     def analyze(self, event) :
@@ -174,6 +186,19 @@ class Type11Analyzer :
         event.getByLabel (self.allTopTagPassLabel, self.allTopTagPassHandle )
         topJetPass= self.allTopTagPassHandle.product()
 
+
+        if self.pdfWeight != "nominal" :
+            iweight = 0.0
+            event.getByLabel( self.pdfLabel, self.pdfHandle )
+            pdfs = self.pdfHandle.product()
+            if self.pdfWeight == "up" :
+                for pdf in pdfs[0::2] :
+                    iweight = iweight + pdf*pdf
+            else :
+                for pdf in pdfs[1::2] :
+                    iweight = iweight + pdf*pdf
+            iweight = iweight / len(pdfs) * 0.5
+            weight = sqrt(weight*weight + iweight*iweight)
 
         ttMass = 0.0
         deltaPhi = topJets[0].phi() - topJets[1].phi()
@@ -251,6 +276,11 @@ class Type11Analyzer :
                 self.topTagMinMass.Fill( topJetMinMass[0], weight )
                 self.topTagMinMass.Fill( topJetMinMass[1], weight )
                 self.mttMass.Fill( ttMass, weight )
+                if not self.useMC :
+                    self.runPairs.append( [event.object().id().run(),
+                                           event.object().id().event(),
+                                           event.object().id().luminosityBlock() ,
+                                           ttMass] )
                 self.mttMassTriggerWeighted.Fill( ttMass, weight*jetTriggerWeight )   
 
             #background estiation

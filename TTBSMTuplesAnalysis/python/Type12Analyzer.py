@@ -1,5 +1,7 @@
 import ROOT
 import copy
+from math import *
+from operator import itemgetter, attrgetter
 
 ROOT.gSystem.Load("libFWCoreFWLite.so")
 ROOT.AutoLibraryLoader.enable()
@@ -9,13 +11,14 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type12Analyzer :
     """Run 1 + 2 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix, veto11, useGenWeight, triggerFile):
+    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix, veto11, useGenWeight, triggerFile, pdfWeight = "nominal"):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
         self.triggerFileStr = triggerFile
         self.useMC = useMC
         self.veto11 = veto11
         self.useGenWeight=useGenWeight
+        self.pdfWeight = pdfWeight
        
         label = 'ttbsmAna'+collectionLabelSuffix
 
@@ -56,6 +59,13 @@ class Type12Analyzer :
 
         self.hemis1Jet3Handle    = Handle("int")
         self.hemis1Jet3Label     = ( label, "jet3Hemis1" )
+
+
+        self.weightsHandle = Handle( "double" )
+        self.weightsLabel = ( label, "weight" )
+        self.pdfHandle = Handle("std::vector<double>")
+        self.pdfLabel = ( label, "pdfWeights")
+
         self.__book__()
 
 
@@ -90,7 +100,11 @@ class Type12Analyzer :
         self.mttPredDistMod3MassFlatSubtract.GetObservedHist().Write()
         self.mttPredDistMod3MassFlatSubtract.GetTaggableHist().Write()
         
-   
+        for pair in sorted(self.runPairs, key=itemgetter(3)) :
+            print '{0:12.2f} : Run {1:15.0f}, LumiBlock {2:15.0f}, Event {3:30.0f}, BTag {4:5.0f}'.format(
+                pair[3], pair[0], pair[2], pair[1], pair[4]
+                )
+
  
         print '3'
 
@@ -281,10 +295,11 @@ class Type12Analyzer :
         self.mttMassTriggerWeighted.Sumw2() 
         self.mttMassFlatTriggerWeighted.Sumw2() 
         self.mttMassVeto11.Sumw2() 
+
         self.mttMassTriggerWeightedVeto11.Sumw2() 
         self.mttMassFlatTriggerWeightedVeto11.Sumw2() 
-    
-    
+        self.runPairs = []    
+
     def analyze(self, event) :
         """Analyzes event"""
         event.getByLabel (self.hemis0Label, self.hemis0Handle)
@@ -334,6 +349,20 @@ class Type12Analyzer :
         if self.useGenWeight :
             event.getByLabel( self.weightsLabel, self.weightsHandle )
             weight = self.weightsHandle.product()[0]
+
+
+        if self.pdfWeight != "nominal" :
+            iweight = 0.0
+            event.getByLabel( self.pdfLabel, self.pdfHandle )
+            pdfs = self.pdfHandle.product()
+            if self.pdfWeight == "up" :
+                for pdf in pdfs[0::2] :
+                    iweight = iweight + pdf*pdf
+            else :
+                for pdf in pdfs[1::2] :
+                    iweight = iweight + pdf*pdf
+            iweight = iweight / len(pdfs) * 0.5
+            weight = sqrt(weight*weight + iweight*iweight)
 
         jetTriggerWeight = 1.0
         if topJets[0].pt() < 800:
@@ -583,6 +612,12 @@ class Type12Analyzer :
 
           if isJetTagged :
             self.mttMass.Fill( ttMass, weight  )
+            if not self.useMC :
+                self.runPairs.append( [event.object().id().run(),
+                                       event.object().id().event(),
+                                       event.object().id().luminosityBlock() ,
+                                       ttMass,
+                                       hasBTag1] )
             self.mttMassTriggerWeighted.Fill( ttMass, weight*jetTriggerWeight  )
             self.mttMassFlatTriggerWeighted.Fill( ttMass, weight*flatTriggerWeight  )
             if not self.useMC :

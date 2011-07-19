@@ -63,6 +63,13 @@ parser.add_option('-m', '--mistagFile', metavar='N', type='string', action='stor
                   dest='mistagFile',
                   help='mistag file')
 
+
+parser.add_option('-w', '--pdfWeight', metavar='W', type='string', action='store',
+                  default='nominal',
+                  dest='pdfWeight',
+                  help='weight PDF as nominal, up, or down')
+
+
 parser.add_option('-l', '--collectionLabelSuffix', metavar='N', type='string', action='store',
                   default='',
                   dest='collectionLabelSuffix',
@@ -109,12 +116,12 @@ triggerSelection = TriggerAndEventSelectionObject( myAnaTrigs )
 if options.analyzer == "Type12Analyzer" :
     analyzer = Type12Analyzer(options.useMC, options.outfile + '_type12_'+options.collectionLabelSuffix,
                               options.mistagFile, options.collectionLabelSuffix,
-                              options.veto11, options.useGenWeight, options.triggerFile )
+                              options.veto11, options.useGenWeight, options.triggerFile, options.pdfWeight )
 elif options.analyzer == "MistagMaker" :
     analyzer = MistagMaker( options.outfile + '_mistag', options.useGenWeight)
 elif options.analyzer == "Type11Analyzer" :
     analyzer = Type11Analyzer(options.useMC, options.outfile + '_type11_'+options.collectionLabelSuffix,
-                              options.mistagFile, options.collectionLabelSuffix, options.useGenWeight, options.triggerFile)
+                              options.mistagFile, options.collectionLabelSuffix, options.useGenWeight, options.triggerFile, options.pdfWeight)
 elif options.analyzer == "MistagMakerType1" :
     analyzer = MistagMakerType1( options.outfile + '_mistag1', options.useGenWeight)
 elif options.analyzer == "TTKinPlotsAnalyzer" :
