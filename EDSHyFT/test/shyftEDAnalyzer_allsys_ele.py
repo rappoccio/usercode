@@ -216,6 +216,7 @@ elif options.ttbsmPAT == 0 :
         minJets = cms.int32(5),
         metMin = cms.double(20.0),
         eEtCut = cms.double(options.eleEt),
+        use42X  = cms.bool(use42XMC),
         heavyFlavour = cms.bool( useFlavorHistory ),
         doMC = cms.bool( inputDoMC),
         sampleName = cms.string(inputSampleName),
