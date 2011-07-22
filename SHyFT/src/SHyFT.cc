@@ -1154,7 +1154,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
     weightPDF(iEvent);
   }
 
-  if ( doMC_) { 
+  if ( doMC_ && reweightPU_) { 
      weightPU( iEvent );  
   } 
 
@@ -1331,7 +1331,7 @@ void SHyFT::weightPU( edm::EventBase const & iEvent) {
   iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
   std::vector<PileupSummaryInfo>::const_iterator PVI;
 
-  int npv = -1; float sum_nvtx = -1000.0; double puweight = -1000.0;
+  int npv = -1; float sum_nvtx = 0.0; double puweight = -1000.0;
   for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
      
      int BX = PVI->getBunchCrossing();
@@ -1342,14 +1342,16 @@ void SHyFT::weightPU( edm::EventBase const & iEvent) {
      }
      else {
         npv = PVI->getPU_NumInteractions();
+        //cout << npv << endl;
         sum_nvtx += float(npv);
      }
          
   }
   float ave_nvtx = sum_nvtx/3.;
+  //cout << "sum_nvtx = " << sum_nvtx << "ave_nvtx = "<< ave_nvtx << endl;
   theDir.getObject<TH1>("npuTruth")->Fill(npv, 1.0);
   if(reweightPU_){
-     if(use42X_) puweight = lumiWeights_.weight( ave_nvtx);
+     if(use42X_)  puweight = lumiWeights_.weight( ave_nvtx);
      else  puweight = lumiWeights_.weight( npv ); 
      globalWeight_ *= puweight;
      theDir.getObject<TH1>("npuReweight")->Fill(npv, puweight );
