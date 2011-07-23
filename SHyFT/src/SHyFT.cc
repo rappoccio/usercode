@@ -266,6 +266,16 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
                                40, 0., 1.0
                );
 
+	forBookingDir[idir]->make<TH2F>( (sampleNameInput+"_lepIsoVsCentral"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "Lepton isolation vs centrality",
+                               120., 0., 1.2,
+                               40, 0., 1.0
+               );
+
+	forBookingDir[idir]->make<TH2F>( (sampleNameInput+"_lepIsoVsjetEt"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "Lepton isolation vs jetEt",
+                               100, 0., 1000,
+                               40, 0., 1.0
+               );
+
        } // End loop over itags (0,1,2)
 
        // For histograms where we want _b _c _q _x endings too for MC, we'll do separately for now
@@ -911,12 +921,16 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVswMT_%dj_%dt", numJets, numTags)))->Fill( wMT, relIso, globalWeight_ );
     static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsMET_%dj_%dt", numJets, numTags)))->Fill( met.pt(), relIso, globalWeight_ );
     static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsD0_%dj_%dt",  numJets, numTags)))->Fill( lepD0, relIso, globalWeight_ );
+    static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsCentral_%dj_%dt",  numJets, numTags)))->Fill( jetEt/jetE, relIso, globalWeight_ );
+    static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsjetEt_%dj_%dt",  numJets, numTags)))->Fill( jetEt, relIso, globalWeight_ );
 
     static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsEta_%dj_%dt", numJets, numTags)))->Fill( fabs(lepEta), relIso, globalWeight_ );
     static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsHt_%dj_%dt",  numJets, numTags)))->Fill( hT, relIso, globalWeight_ );
     static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVswMT_%dj_%dt", numJets, numTags)))->Fill( wMT, relIso, globalWeight_ );
     static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsMET_%dj_%dt", numJets, numTags)))->Fill( met.pt(), relIso, globalWeight_ );
     static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsD0_%dj_%dt",  numJets, numTags)))->Fill( lepD0, relIso, globalWeight_ );
+    static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsCentral_%dj_%dt",  numJets, numTags)))->Fill( jetEt/jetE, relIso, globalWeight_ );
+    static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsjetEt_%dj_%dt",  numJets, numTags)))->Fill( jetEt, relIso, globalWeight_ );
   }// end if not reweighting b-tag eff
   
   else {  // reweighting b-tag eff:
@@ -1087,12 +1101,16 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVswMT_%dj_%dt", numJets, kknumTags)))->Fill( wMT, relIso, globalWeight_ * iprob );
 	static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsMET_%dj_%dt", numJets, kknumTags)))->Fill( met.pt(), relIso, globalWeight_ * iprob );
 	static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsD0_%dj_%dt",  numJets, kknumTags)))->Fill( lepD0, relIso, globalWeight_ * iprob );
+	static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsCentral_%dj_%dt",  numJets, numTags)))->Fill( jetEt/jetE, relIso, globalWeight_ * iprob );
+	static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsjetEt_%dj_%dt",  numJets, numTags)))->Fill( jetEt, relIso, globalWeight_ * iprob );
 	
 	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsEta_%dj_%dt", numJets, kknumTags)))->Fill( fabs(lepEta), relIso, globalWeight_ * iprob );
 	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsHt_%dj_%dt",  numJets, kknumTags)))->Fill( hT, relIso, globalWeight_ * iprob );
 	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVswMT_%dj_%dt", numJets, kknumTags)))->Fill( wMT, relIso, globalWeight_ * iprob );
 	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsMET_%dj_%dt", numJets, kknumTags)))->Fill( met.pt(), relIso, globalWeight_ * iprob );
 	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsD0_%dj_%dt",  numJets, kknumTags)))->Fill( lepD0, relIso, globalWeight_ * iprob );
+	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsCentral_%dj_%dt",  numJets, numTags)))->Fill( jetEt/jetE, relIso, globalWeight_ * iprob );
+	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsjetEt_%dj_%dt",  numJets, numTags)))->Fill( jetEt, relIso, globalWeight_ * iprob );
 	
      
       } while (shyft::helper::next_combination(effs.begin(),effs.begin() + inumTags, effs.end())); 
