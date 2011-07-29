@@ -53,6 +53,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   reweightPDF_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPDF")),
   reweightBTagEff_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightBTagEff")),
   reweightPU_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPU")),
+  puUp_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("puUp")),
+  puDn_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("puDn")),
   pdfInputTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("pdfSrc")),
   pvTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("pvSrc")),
   pdfToUse_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("pdfToUse")),
@@ -80,6 +82,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
    // How about whatever we create and fill separately for +/- charge we also fill for the combined charges 
   TFileDirectory *forBookingDir[7]={&subdirEB_plus,&subdirEB_minus,&subdirEE_plus,&subdirEE_minus,&theDir,&subdirMU_plus,&subdirMU_minus};
   
+
   if ( simpleSFCalc_) 
      gRandom->SetSeed( 960622508 );
   
@@ -89,7 +92,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
    }
    
     // initialize weights for PU reweighting
-   if(doMC_){
+   if(doMC_){      
       initializeMCPUWeight();
       std::cout << "Initializing pu weights, identifier = " << identifier_ << std::endl;
    }
@@ -263,16 +266,6 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
 
 	 forBookingDir[idir]->make<TH2F>( (sampleNameInput+"_lepIsoVsD0"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "Lepton isolation vs D0",
                                100., 0., 0.2,
-                               40, 0., 1.0
-               );
-
-	forBookingDir[idir]->make<TH2F>( (sampleNameInput+"_lepIsoVsCentral"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "Lepton isolation vs centrality",
-                               120., 0., 1.2,
-                               40, 0., 1.0
-               );
-
-	forBookingDir[idir]->make<TH2F>( (sampleNameInput+"_lepIsoVsjetEt"+jtNum+ + "_" + boost::lexical_cast<std::string>(itag) + "t").c_str(), "Lepton isolation vs jetEt",
-                               100, 0., 1000,
                                40, 0., 1.0
                );
 
@@ -921,16 +914,12 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVswMT_%dj_%dt", numJets, numTags)))->Fill( wMT, relIso, globalWeight_ );
     static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsMET_%dj_%dt", numJets, numTags)))->Fill( met.pt(), relIso, globalWeight_ );
     static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsD0_%dj_%dt",  numJets, numTags)))->Fill( lepD0, relIso, globalWeight_ );
-    static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsCentral_%dj_%dt",  numJets, numTags)))->Fill( jetEt/jetE, relIso, globalWeight_ );
-    static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsjetEt_%dj_%dt",  numJets, numTags)))->Fill( jetEt, relIso, globalWeight_ );
 
     static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsEta_%dj_%dt", numJets, numTags)))->Fill( fabs(lepEta), relIso, globalWeight_ );
     static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsHt_%dj_%dt",  numJets, numTags)))->Fill( hT, relIso, globalWeight_ );
     static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVswMT_%dj_%dt", numJets, numTags)))->Fill( wMT, relIso, globalWeight_ );
     static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsMET_%dj_%dt", numJets, numTags)))->Fill( met.pt(), relIso, globalWeight_ );
     static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsD0_%dj_%dt",  numJets, numTags)))->Fill( lepD0, relIso, globalWeight_ );
-    static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsCentral_%dj_%dt",  numJets, numTags)))->Fill( jetEt/jetE, relIso, globalWeight_ );
-    static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsjetEt_%dj_%dt",  numJets, numTags)))->Fill( jetEt, relIso, globalWeight_ );
   }// end if not reweighting b-tag eff
   
   else {  // reweighting b-tag eff:
@@ -1101,16 +1090,12 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 	static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVswMT_%dj_%dt", numJets, kknumTags)))->Fill( wMT, relIso, globalWeight_ * iprob );
 	static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsMET_%dj_%dt", numJets, kknumTags)))->Fill( met.pt(), relIso, globalWeight_ * iprob );
 	static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsD0_%dj_%dt",  numJets, kknumTags)))->Fill( lepD0, relIso, globalWeight_ * iprob );
-	static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsCentral_%dj_%dt",  numJets, numTags)))->Fill( jetEt/jetE, relIso, globalWeight_ * iprob );
-	static_cast<TH2*>(subDir->getObject<TH1>(sampleNameInput + Form("_lepIsoVsjetEt_%dj_%dt",  numJets, numTags)))->Fill( jetEt, relIso, globalWeight_ * iprob );
 	
 	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsEta_%dj_%dt", numJets, kknumTags)))->Fill( fabs(lepEta), relIso, globalWeight_ * iprob );
 	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsHt_%dj_%dt",  numJets, kknumTags)))->Fill( hT, relIso, globalWeight_ * iprob );
 	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVswMT_%dj_%dt", numJets, kknumTags)))->Fill( wMT, relIso, globalWeight_ * iprob );
 	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsMET_%dj_%dt", numJets, kknumTags)))->Fill( met.pt(), relIso, globalWeight_ * iprob );
 	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsD0_%dj_%dt",  numJets, kknumTags)))->Fill( lepD0, relIso, globalWeight_ * iprob );
-	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsCentral_%dj_%dt",  numJets, numTags)))->Fill( jetEt/jetE, relIso, globalWeight_ * iprob );
-	static_cast<TH2*>(theDir.getObject<TH1>(sampleNameInput + Form("_lepIsoVsjetEt_%dj_%dt",  numJets, numTags)))->Fill( jetEt, relIso, globalWeight_ * iprob );
 	
      
       } while (shyft::helper::next_combination(effs.begin(),effs.begin() + inumTags, effs.end())); 
@@ -1171,7 +1156,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   if ( doMC_ && reweightPDF_) {
     weightPDF(iEvent);
   }
-
+  
   if ( doMC_ && reweightPU_) { 
      weightPU( iEvent );  
   } 
@@ -1338,9 +1323,8 @@ void SHyFT::initializeMCPUWeight()
       lumiWeights_ = edm::LumiReWeighting( probdistFlat10, TrueDist2011);
    
    // will need it for systematics
-//   PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
-//   PShiftUp_ = reweight::PoissonMeanShifter(0.5);
-
+   PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
+   PShiftUp_ = reweight::PoissonMeanShifter(0.5);
 
 }
 void SHyFT::weightPU( edm::EventBase const & iEvent) {
@@ -1349,7 +1333,7 @@ void SHyFT::weightPU( edm::EventBase const & iEvent) {
   iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
   std::vector<PileupSummaryInfo>::const_iterator PVI;
 
-  int npv = -1; float sum_nvtx = 0.0; double puweight = -1000.0;
+  int npv = -1; float sum_nvtx = 0.0; double puweight = -1000.0; double puweightShift = -1000.0;
   for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
      
      int BX = PVI->getBunchCrossing();
@@ -1369,9 +1353,18 @@ void SHyFT::weightPU( edm::EventBase const & iEvent) {
   //cout << "sum_nvtx = " << sum_nvtx << "ave_nvtx = "<< ave_nvtx << endl;
   theDir.getObject<TH1>("npuTruth")->Fill(npv, 1.0);
   if(reweightPU_){
-     if(use42X_)  puweight = lumiWeights_.weight( ave_nvtx);
-     else  puweight = lumiWeights_.weight( npv ); 
-     globalWeight_ *= puweight;
+     if(use42X_){
+        puweight = lumiWeights_.weight( ave_nvtx);//default for 42X
+        if(puUp_) puweightShift = puweight * PShiftUp_.ShiftWeight( ave_nvtx );  
+        else if(puDn_) puweightShift = puweight * PShiftDown_.ShiftWeight( ave_nvtx );
+     }  
+     else{  
+        puweight = lumiWeights_.weight( npv ); 
+        if(puUp_) puweightShift = puweight * PShiftUp_.ShiftWeight( npv );
+        else if(puDn_) puweightShift = puweight * PShiftDown_.ShiftWeight( npv );
+     }
+     if( puUp_ || puDn_ ) globalWeight_ *= puweightShift; 
+     else               globalWeight_ *= puweight;
      theDir.getObject<TH1>("npuReweight")->Fill(npv, puweight );
   }
 }

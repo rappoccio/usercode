@@ -115,7 +115,9 @@ class SHyFT : public edm::BasicAnalyzer {
 
     // used for reweighting
     edm::LumiReWeighting lumiWeights_;
-      //void plotNPV(const edm::EventBase &, const char*, double);
+    reweight::PoissonMeanShifter PShiftDown_;
+    reweight::PoissonMeanShifter PShiftUp_;
+    //void plotNPV(const edm::EventBase &, const char*, double);
     void weightPU( edm::EventBase const & iEvent);
     
     // the following parameters need to come from the config
@@ -140,6 +142,8 @@ class SHyFT : public edm::BasicAnalyzer {
     bool reweightPDF_;
     bool reweightBTagEff_;
     bool reweightPU_;
+    bool puUp_;
+    bool puDn_;
     edm::InputTag pdfInputTag_; 
     edm::InputTag pvTag_;
     std::string pdfToUse_;
