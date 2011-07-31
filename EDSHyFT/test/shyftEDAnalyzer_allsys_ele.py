@@ -212,6 +212,7 @@ elif options.ttbsmPAT == 0 :
         jetSrc = cms.InputTag('selectedPatJetsPFlow'),
         ePlusJets = cms.bool(True),
         muPlusJets = cms.bool(False),
+        pvSrc   = cms.InputTag('offlinePrimaryVertices'),
         jetPtMin = cms.double(30.0),##
         minJets = cms.int32(5),
         metMin = cms.double(20.0),
@@ -230,10 +231,19 @@ elif options.ttbsmPAT == 0 :
         bcEffScale = cms.double(1.00),
         lfEffScale = cms.double(1.00),
         jetSmear = cms.double(0.1),
-        cutsToIgnore=cms.vstring(inputCutsToIgnore)
+        cutsToIgnore=cms.vstring(inputCutsToIgnore),
+        reweightPU = cms.bool(False),
+    
+        pvSelector = cms.PSet(
+        pvSrc = cms.InputTag('offlinePrimaryVertices'),
+        minNdof = cms.double(4.0),
+        maxZ = cms.double(24.0),
+        maxRho = cms.double(2.0),
+        ),
+
         )                                    
                                         )
-
+    
 #___________Special case of MET < 20 GeV_________________
 process.pfShyftAnaMETMax20 = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
@@ -464,6 +474,27 @@ process.pfShyftAnaJER020 = process.pfShyftAna.clone(
         )
     )
 
+#____________________Pileup _______________________
+process.pfShyftAnaPUup = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        puUp = cms.bool(True),
+        identifier = cms.string('PFPUup')
+        )
+    )
+
+process.pfShyftAnaPUdown = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        puDn = cms.bool(True),
+        identifier = cms.string('PFPUdown')
+        )
+    )
+
+process.pfShyftAnaNoPUReweight = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+        reweightPU_ = cms.bool(False),
+        identifier = cms.string('PFNoPUReweighting')
+        )
+    )
 #____________________MET Resolution _______________________
 process.pfShyftAnaMETRES090 = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
@@ -505,6 +536,9 @@ process.s = cms.Sequence(
    process.pfShyftAnaMETRES110*
    process.pfShyftAnaJER000*
    process.pfShyftAnaJER020*
+   process.pfShyftAnaPUup*
+   process.pfShyftAnaPUdown*
+   process.pfShyftAnaNoPUReweight*
    process.pfShyftAnaEleEEPt125*
    process.pfShyftAnaEleEEPt075*
    process.pfShyftAnaMC*
