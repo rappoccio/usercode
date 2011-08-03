@@ -73,7 +73,7 @@ mWCand = ROOT.TH1F("mWCand",         "Mass of W Candidate from Hadronic Jets;Mas
 mTopCand = ROOT.TH1F("mTopCand",         "Mass of Top Candidate from Hadronic Jets;Mass;Number",  300, 0., 600. )
 
 mWCandVsMuCut = ROOT.TH2F("mWCandVsMuCut", "Mass of W candidate versus #mu cut", 20, 0, 200, 10, 0, 1.0)
-
+mWCandVsMTopCand = ROOT.TH2F("mWCandVsMTopCand","WCand+bJet Mass vs WCand mass",200,0.,200.,600,0.,600.)
 
 events = Events (files)
 
@@ -326,12 +326,14 @@ for event in events:
         if hadJetsMu[highestMassJetIndex] < 0.4 :
             mWCand.Fill( highestJetMass )
             scale = 1.0
-            if bJetCandIndex >= 0 and abs(highestJetMass - 80.4) < 20 :
+            if bJetCandIndex >= 0 :
                 hadJets[highestMassJetIndex] *= scale
                 hadJets[bJetCandIndex] *= scale
                 topCandP4 = hadJets[highestMassJetIndex] + hadJets[bJetCandIndex]
-                mTopCand.Fill( topCandP4.M() )
-            
+                mWCandVsMTopCand.Fill( highestJetMass, topCandP4.M() )
+                if abs(highestJetMass - 80.4) < 20 :
+                    mTopCand.Fill( topCandP4.M() )
+
 f.cd()
 f.Write()
 f.Close()
