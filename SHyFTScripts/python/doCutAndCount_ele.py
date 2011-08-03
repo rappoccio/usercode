@@ -1,3 +1,4 @@
+
 #!/bin/python
 from ROOT import *
 import math
@@ -29,15 +30,15 @@ def doCutAndCount( lum, Top, SingTop, QCD, Wbx, Wcx, Wqx, Zbx, Zcx, Zqx, Data, n
         dsf_btag= 0.099 / 0.9 * 2.0
     fsf_btag= dsf_btag / sf_btag
 
-    sf_lep  = 1.0   # 0.93 From Jason, trigger SF = 98 +- 1 %, eff SF = 95.0 +- 3.3%
-    dsf_lep = 0.03 
+    sf_lep  = 1.0   # 0.9604 From Misha, trigger eff = 97.5 +- 1 %, Data/MC eff SF = 98.0\5 +- 1%
+    dsf_lep = 0.01 
 
     fsf_lep = dsf_lep / sf_lep
 
     # the JEC is derived directly from this script, using the "up and down" JEC templates
 
-    deff_jec_up = 0.09
-    deff_jec_dn = 0.08    
+    deff_jec_up = 0.0425
+    deff_jec_dn = 0.0431    
 
 
     deff_jec_av = (deff_jec_up + deff_jec_dn) / 2.0
@@ -73,7 +74,7 @@ def doCutAndCount( lum, Top, SingTop, QCD, Wbx, Wcx, Wqx, Zbx, Zcx, Zqx, Data, n
     print 'Efficiency*Acc      = {0:6.3f} +- {1:6.3f}'.format(eff/BR,dEff * eff/BR)
 
     # 10% lumi uncertainty
-    dxs_lum = 0.11
+    dxs_lum = 0.6
 
 
     dxs_sys = sqrt( dxs_bkg*dxs_bkg + dxs_eff*dxs_eff + dxs_lum*dxs_lum)
