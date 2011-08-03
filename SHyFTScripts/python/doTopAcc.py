@@ -6,7 +6,7 @@ from array import *
 gROOT.Macro("~/rootlogon.C")
 gStyle.SetOptStat(000000)
 
-f_nominal = TFile('../RootFiles_v5/TTJets_TuneZ2_7TeV-madgraph-tauola_tlbsm_424_v8.root')
+f_nominal = TFile('../RootFiles_v5b/TTJets_TuneZ2_7TeV-madgraph-tauola_tlbsm_424_v8.root')
 n_ttbar_central =  3688248
 
 ##Due to JES
@@ -154,6 +154,44 @@ print 'Delta_A_metResup = {0:3.1f} %, Delta_A_metResdn = {1:3.1f} %, Ave = {2:3.
 
 ##Due to PileUp
 ##=============================
+hist_PUup = 'pfShyftAnaPUup/Top_secvtxMass_'
+hist_PUdn = 'pfShyftAnaPUdown/Top_secvtxMass_'
+
+hists_tag_PUup = []
+hists_tag_PUdn = []
+
+# >= 3jets, >=1 tags
+for ijet in range(3,6) :
+    for itag in range(1, min(ijet,2) + 1) :
+        hist_tag_PUup   = f_nominal.Get( hist_PUup + str(ijet) + 'j_' + str(itag) + 't' ).Clone()
+        hist_tag_PUdn   = f_nominal.Get( hist_PUdn + str(ijet) + 'j_' + str(itag) + 't' ).Clone()
+        hists_tag_PUup.append( hist_tag_PUup )
+        hists_tag_PUdn.append( hist_tag_PUdn )
+        
+
+hist_tag_PUup_sum = hists_tag_PUup[0]
+for hist in range(1,len(hists_tag_PUup)):
+    hist_tag_PUup_sum.Add( hists_tag_PUup[hist] )
+
+accept_PUup =  hist_tag_PUup_sum.Integral()/n_ttbar_central
+print '>=3jets,>=1tag PU up events = {0:6.1f}, Acceptance = {1:6.3f} '.format(
+        hist_tag_PUup_sum.Integral(), accept_PUup
+        )
+
+hist_tag_PUdn_sum = hists_tag_PUdn[0]
+for hist in range(1,len(hists_tag_PUdn)):
+    hist_tag_PUdn_sum.Add( hists_tag_PUdn[hist] )
+
+accept_PUdn =  hist_tag_PUdn_sum.Integral()/n_ttbar_central
+print '>=3jets,>=1tag PU dn events = {0:6.1f}, Acceptance = {1:6.3f} '.format(
+        hist_tag_PUdn_sum.Integral(), accept_PUdn
+        )
+
+delta_accp_PUup  = ((accept - accept_PUup)/accept)*100
+delta_accp_PUdn  = ((accept - accept_PUdn)/accept)*100
+print '_____Delta Acceptance for PileUp for >=3jets,>=1 tag_____'
+print 'Delta_A_PUup = {0:3.1f} %, Delta_A_PUdn = {1:3.1f} %, Ave = {2:3.1f}%'.format(
+       delta_accp_PUup, delta_accp_PUdn, (fabs(delta_accp_PUup)+fabs(delta_accp_PUdn))/2)
 
 
 ##Due to B-Tagging
