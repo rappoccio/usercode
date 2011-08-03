@@ -56,17 +56,19 @@ process.source = cms.Source("PoolSource",
 )
 )
 
-payloadsData = ['Jec11_V1_AK5PFchs_L1FastJet.txt',
-                'Jec11_V1_AK5PFchs_L2Relative.txt',
-                'Jec11_V1_AK5PFchs_L3Absolute.txt',
-                'Jec10_V3_AK5PFchs_Uncertainty.txt'
+payloadsData = [
+    'Jec11_V3_L1FastJet_AK5PFchs.txt',
+    'Jec11_V3_L2Relative_AK5PFchs.txt',
+    'Jec11_V3_L3Absolute_AK5PFchs.txt',
+    'Jec11_V3_L2L3Residual_AK5PFchs.txt',
+    'Jec11_V3_Uncertainty_AK5PFchs.txt'
                 ]
 
-payloadsMC = ['Jec10_V3_AK5PFchs_L1FastJet.txt',
-              'Jec10_V3_AK5PFchs_L2Relative.txt',
-              'Jec10_V3_AK5PFchs_L3Absolute.txt',
-              'Jec10_V3_AK5PFchs_L2L3Residual.txt',
-              'Jec10_V3_AK5PFchs_Uncertainty.txt'
+payloadsMC = [
+    'Jec11_V3_L1FastJet_AK5PFchs.txt',
+    'Jec11_V3_L2Relative_AK5PFchs.txt',
+    'Jec11_V3_L3Absolute_AK5PFchs.txt',
+    'Jec11_V3_Uncertainty_AK5PFchs.txt'
 ]
 
 if options.useData :
@@ -93,7 +95,7 @@ else :
     process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = ['HLT_Mu30_v1',
                                                                                                        'HLT_Mu30_v2',
                                                                                                        'HLT_Mu30_v3',
-                                                                                                       'HLT_Mu40_v1'])
+                                                                                                       'HLT_Mu40_v*'])
     process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths =  ['HLT_Ele45_CaloIdVT_TrkIdT_v1',
                                                                                                          'HLT_Ele45_CaloIdVT_TrkIdT_v2',
                                                                                                          'HLT_Ele45_CaloIdVT_TrkIdT_v3',
