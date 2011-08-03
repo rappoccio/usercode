@@ -98,8 +98,8 @@ class SHyFT : public edm::BasicAnalyzer {
     bool make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
 			const reco::ShallowClonePtrCandidate & met,
 			const std::vector<reco::ShallowClonePtrCandidate>& muons,
-			const std::vector<reco::ShallowClonePtrCandidate>& electrons
-			);
+            const std::vector<reco::ShallowClonePtrCandidate>& electrons,
+            const edm::EventBase& iEvent);
 
     SHyFTSelector wPlusJets;
     TFileDirectory& theDir;

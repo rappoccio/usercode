@@ -108,7 +108,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
    theDir.make<TH1F>("lepHCalIso",  "Lepton HCal Iso",          50,    0,  5);
    theDir.make<TH1F>("lepRelIso",   "Lepton Rel Iso",           100,   0,  0.5);
    theDir.make<TH1F>("lepJetdR",    "dR b/w jet and lepton",    60,    0,  3.0);
-   theDir.make<TH1F>("nPrimVertices","Num primary vertices",    25,    0,  25);  
+   theDir.make<TH1F>("nPrimVertices","Num primary vertices",    25,    0,  25);
+   theDir.make<TH1F>("nPrimVerticesTagJets","Num primary vertices for tag jets events",    25,    0,  25);  
     
    if(doMC_) {
       theDir.make<TH1F>("npuTruth", "Num primary interactions MCTrue", 25,0,25);
@@ -452,7 +453,8 @@ bool SHyFT::analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muo
 bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
                            const reco::ShallowClonePtrCandidate             & met,
                            const std::vector<reco::ShallowClonePtrCandidate>& muons,
-                           const std::vector<reco::ShallowClonePtrCandidate>& electrons)
+                           const std::vector<reco::ShallowClonePtrCandidate>& electrons,
+                           const edm::EventBase& iEvent )
 {
   TFileDirectory *subDir = 0;//Dummy sub directory to be replaced either by EE,EB,or MU; plus or minus 
   allNumTags_ = 0;
@@ -472,6 +474,9 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
     pEff = (TH1*)customBtagFile_->Get( pstr.c_str() );        
   }
   //-----------end old stuff-------------
+  edm::Handle<std::vector<reco::Vertex> > primVtxHandle;
+  iEvent.getByLabel(pvTag_, primVtxHandle);
+
   // std::cout << "Filling global weight in make_templates : " << globalWeight_ << std::endl;
   reco::Candidate::LorentzVector nu_p4 = met.p4();
   reco::Candidate::LorentzVector lep_p4 = ( muPlusJets_  ? muons[0].p4() : electrons[0].p4() );
@@ -800,6 +805,10 @@ bool SHyFT::make_templates(const std::vector<reco::ShallowClonePtrCandidate>& je
 //--------------------------------
   double M2Min = -99.; 
   //At least 2 tags
+  if(numJets >=1 && numTags >= 1 ){ 
+     //add primary vertex plot here
+     theDir.getObject<TH1>("nPrimVerticesTagJets")->Fill (primVtxHandle->size(), globalWeight_ );
+  }
   if(numJets>3 && numTags == 2){
 
      //for(std::vector<int>::iterator ti=taggedIndex.begin(); ti!=taggedIndex.end(); ti++)
@@ -1193,7 +1202,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
       theDir.getObject<TH1>("nPrimVertices")->Fill (primVtxHandle->size(), globalWeight_ );
       theDir.getObject<TH1>( "nJets")->Fill( jets.size(), globalWeight_ );
       //if(useHFcat_ && sampleHistName_ == sampleNameInput) return;
-      make_templates(jets, met, muons, electrons);
+      make_templates(jets, met, muons, electrons, iEvent);
       analyze_met( met );
       if ( muPlusJets_ ) analyze_muons(muons);
       if ( ePlusJets_ ) analyze_electrons(electrons);          
