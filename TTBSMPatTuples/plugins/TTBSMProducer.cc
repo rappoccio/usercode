@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: TTBSMProducer.cc,v 1.7 2011/06/28 18:52:30 srappocc Exp $
+// $Id: TTBSMProducer.cc,v 1.8 2011/07/01 17:53:07 srappocc Exp $
 //
 //
 
@@ -451,7 +451,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     reco::Candidate::PolarLorentzVector corrJet (uncorrJet.pt(), uncorrJet.eta(), uncorrJet.phi(), uncorrJet.mass());
     corrJet *=  (corr * ptSmear_);
     corrJet.SetEta( corrJet.eta() * etaScale_ );
-    corrJet.SetPhi( corrJet.phi() * etaScale_ );
+    corrJet.SetPhi( corrJet.phi() * phiScale_ );
 
     const reco::CATopJetTagInfo * catopTag = 
       dynamic_cast<reco::CATopJetTagInfo const *>(ijet->tagInfo(topTagName_));
