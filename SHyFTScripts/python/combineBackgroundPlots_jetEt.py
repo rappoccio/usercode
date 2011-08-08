@@ -93,7 +93,7 @@ parser.add_option('--wjetsQ2Var', metavar='V', type='string', action='store',
 
 
 parser.add_option('--lum', metavar='L', action='store',
-                  default=1038.85,
+                  default=1087,
                   dest='lum',
                   help='Luminosity of the data')
 
@@ -135,9 +135,12 @@ for item in f_ttbar.GetListOfKeys() :
 f_zjets = TFile('DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_'+inFileEnd+'.root')
 if not useDataQCD: 
     f_qcd   = TFile('QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6_'+inFileEnd+'.root')
-f_st_s  = TFile('TToBLNu_TuneZ2_s-channel_7TeV-madgraph_'+inFileEnd+'.root')
-f_st_t  = TFile('TToBLNu_TuneZ2_t-channel_7TeV-madgraph_'+inFileEnd+'.root')
-f_st_tW = TFile('TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_'+inFileEnd+'.root')
+f_st_s  = TFile('T_TuneZ2_s-channel_7TeV-powheg-tauola_'+inFileEnd+'.root')
+f_st_t  = TFile('T_TuneZ2_t-channel_7TeV-powheg-tauola_'+inFileEnd+'.root')
+f_st_tW = TFile('T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_'+inFileEnd+'.root')
+f_stbar_s  = TFile('Tbar_TuneZ2_s-channel_7TeV-powheg-tauola_'+inFileEnd+'.root')
+f_stbar_t  = TFile('Tbar_TuneZ2_t-channel_7TeV-powheg-tauola_'+inFileEnd+'.root')
+f_stbar_tW = TFile('Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_'+inFileEnd+'.root')
 
 if options.wjetsQ2Var is None :
     f_wjets = TFile('WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_'+inFileEnd+'.root')
@@ -162,7 +165,7 @@ if  (options.dataFile.find('pf') >= 0 and options.dataQCDFile.find('pf') == -1) 
 # ---------------------------------------------
 lum = options.lum
 
-globalSF = 0.965 # From muon trigger efficiency
+globalSF = 0.934 # From muon trigger efficiency
 
 # ---------------------------------------------
 # Leading order cross sections (pb)
@@ -174,9 +177,12 @@ xs_wtot  = 31314.0 * globalSF # NNLO
 xs_zjets =  2289.0 * globalSF # LO
 xs_ztot  =  3048.0 * globalSF # NNLO
 xs_qcd   = 79688.0 * globalSF # Dummy for e+jets
-xs_st_t  =   20.93 * globalSF
-xs_st_s  =    1.53 * globalSF # xs_singS  =     4.6 * 0.32442
-xs_st_tW =    10.6 * globalSF
+xs_st_t  =   41.92 * globalSF
+xs_st_s  =    3.19 * globalSF # xs_singS  =     4.6 * 0.32442
+xs_st_tW =    7.87 * globalSF
+xs_stbar_t  =   41.92 * globalSF
+xs_stbar_s  =    3.19 * globalSF
+xs_stbar_tW =    7.87 * globalSF
 
 
 # ---------------------------------------------
@@ -198,9 +204,12 @@ s_wqq = 1.0
 # Number of generated events
 # ---------------------------------------------
 n_qcd   =  24575292  ##Dummy for mu+jets
-n_st_s  =  494967
-n_st_t  =  484060
-n_st_tW =  489417
+n_st_s  =  259971
+n_st_t  =  3900171
+n_st_tW =  814390
+n_stbar_s  =  137980
+n_stbar_t  =  1896207	# 1944826
+n_stbar_tW =  809984
 n_zjets =  32512091 ##Summer11
 n_ttbar =  3688248  ##Summer11
 
@@ -403,6 +412,9 @@ singleTopSamples = [
     ['SingleToptW_', f_st_tW, xs_st_tW, n_st_tW],
     ['SingleTopT_',  f_st_t,  xs_st_t,  n_st_t],
     ['SingleTopS_',  f_st_s,  xs_st_s,  n_st_s]
+	['SingleTopbartW_', f_stbar_tW, xs_stbar_tW, n_stbar_tW],
+	['SingleTopbarT_',  f_stbar_t,  xs_stbar_t,  n_stbar_t],
+	['SingleTopbarS_',  f_stbar_s,  xs_stbar_s,  n_stbar_s]
     ]
 
 singleTopLabel = 'SingleTop_'
