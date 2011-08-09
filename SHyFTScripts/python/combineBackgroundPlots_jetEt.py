@@ -411,7 +411,7 @@ singleTopHists = []
 singleTopSamples = [
     ['SingleToptW_', f_st_tW, xs_st_tW, n_st_tW],
     ['SingleTopT_',  f_st_t,  xs_st_t,  n_st_t],
-    ['SingleTopS_',  f_st_s,  xs_st_s,  n_st_s]
+    ['SingleTopS_',  f_st_s,  xs_st_s,  n_st_s],
 	['SingleTopbartW_', f_stbar_tW, xs_stbar_tW, n_stbar_tW],
 	['SingleTopbarT_',  f_stbar_t,  xs_stbar_t,  n_stbar_t],
 	['SingleTopbarS_',  f_stbar_s,  xs_stbar_s,  n_stbar_s]
