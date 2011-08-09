@@ -180,8 +180,8 @@ xs_qcd   = 79688.0 * globalSF # Dummy for e+jets
 xs_st_t  =   41.92 * globalSF
 xs_st_s  =    3.19 * globalSF # xs_singS  =     4.6 * 0.32442
 xs_st_tW =    7.87 * globalSF
-xs_stbar_t  =   41.92 * globalSF
-xs_stbar_s  =    3.19 * globalSF
+xs_stbar_t  =   22.65 * globalSF
+xs_stbar_s  =    1.44 * globalSF
 xs_stbar_tW =    7.87 * globalSF
 
 
