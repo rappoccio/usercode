@@ -178,7 +178,7 @@ class Type11Analyzer :
 
         jetTriggerWeightUp = jetTriggerWeight+0.05*jetTriggerWeight
         if jetTriggerWeightUp > 1.0:
-            jetTriggerWeightUp = jetTriggerWeight
+            jetTriggerWeightUp = 1.0
         jetTriggerWeightDown = jetTriggerWeight-0.05*jetTriggerWeight
 
 
