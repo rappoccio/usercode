@@ -6,21 +6,6 @@ process = cms.Process("ANA")
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
 
-## Options and Output Report
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-
-
-###############################
-####### Parameters ############
-###############################
-from FWCore.ParameterSet.VarParsing import VarParsing
-options = VarParsing ('python')
-
-
-
-options.parseArguments()
-
-print options
 
 import sys
 
@@ -102,38 +87,6 @@ process.pfShyftTupleJets = cms.EDProducer(
         cms.PSet(
             tag = cms.untracked.string("jetArea"),
             quantity = cms.untracked.string("jetArea")
-            ),
-        cms.PSet(
-            tag = cms.untracked.string("da0Pt"),
-            quantity = cms.untracked.string("daughter(0).pt()")
-            ),
-        cms.PSet(
-            tag = cms.untracked.string("da0Eta"),
-            quantity = cms.untracked.string("daughter(0).eta()")
-            ),
-        cms.PSet(
-            tag = cms.untracked.string("da0Phi"),
-            quantity = cms.untracked.string("daughter(0).phi()")
-            ),
-        cms.PSet(
-            tag = cms.untracked.string("da0Mass"),
-            quantity = cms.untracked.string("daughter(0).mass()")
-            ),
-        cms.PSet(
-            tag = cms.untracked.string("da1Pt"),
-            quantity = cms.untracked.string("daughter(1).pt()")
-            ),
-        cms.PSet(
-            tag = cms.untracked.string("da1Eta"),
-            quantity = cms.untracked.string("daughter(1).eta()")
-            ),
-        cms.PSet(
-            tag = cms.untracked.string("da1Phi"),
-            quantity = cms.untracked.string("daughter(1).phi()")
-            ),
-        cms.PSet(
-            tag = cms.untracked.string("da1Mass"),
-            quantity = cms.untracked.string("daughter(1).mass()")
             ),
         )  
     )
