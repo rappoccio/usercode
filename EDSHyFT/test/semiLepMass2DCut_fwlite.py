@@ -243,11 +243,13 @@ for event in events:
                     mu = mu1
                 hadJetsMu.append( mu )
             else :
-                if dR > 0.1 :
-                    if dR < dRMin :
-                        dRMin = dR
-                        ptRel = jet.Perp( lepP4.Vect() )
-                    lepJets.append( jet )
+                if dR < dRMin :
+                    #print 'dR = ' + str(dR)
+                    #print 'jet = {0:6.2f}, {1:6.2f}, {2:6.2f}, {3:6.2f}'.format( jetPts[ijet], jetEtas[ijet], jetPhis[ijet], jetMasss[ijet] )
+                    #print 'lep = {0:6.2f}, {1:6.2f}, {2:6.2f}, {3:6.2f}'.format( lepPt, lepEta, lepPhi, lepMass )
+                    dRMin = dR
+                    ptRel = jet.Perp( lepP4.Vect() )
+                lepJets.append( jet )
 
     # Fill the njets plot
     nJets.Fill( nJetsVal )             
@@ -267,6 +269,7 @@ for event in events:
 
     # Compute the 2d cut
     pass2D = dRMin > 0.5 or ptRel > 25.0
+
 
     # If using signal selection ( not loose ), then
     # require the 2d cut to continue.
