@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: PdfWeightProducer.cc,v 1.8 2011/07/01 17:53:07 srappocc Exp $
+// $Id: PdfWeightProducer.cc,v 1.1 2011/08/11 14:21:22 srappocc Exp $
 //
 //
 
@@ -29,7 +29,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 namespace LHAPDF {
       void initPDFSet(int nset, const std::string& filename, int member=0);
@@ -54,7 +54,7 @@ class PdfWeightProducer : public edm::EDProducer {
 
    private:
       virtual void beginJob() ;
-      virtual bool produce(edm::Event&, const edm::EventSetup&);
+      virtual void produce(edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
 
   std::string               pdfSet_; /// lhapdf string
@@ -135,7 +135,6 @@ PdfWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   iEvent.put( pdf_weights, "pdfWeights");
 
-  return true;
 }
 
 // ------------ method called once each job just before starting event loop  ------------

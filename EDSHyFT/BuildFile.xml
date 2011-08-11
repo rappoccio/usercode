@@ -10,5 +10,6 @@
 <use   name="MagneticField/Engine"/>
 <use   name="RecoEgamma/EgammaTools"/>
 <use   name="TopQuarkAnalysis/TopKinFitter"/>
+<use   name="Analysis/PdfWeights"/>
 <export>
 </export>

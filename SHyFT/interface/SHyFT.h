@@ -92,7 +92,6 @@ class SHyFT : public edm::BasicAnalyzer {
     bool analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons);    
     bool analyze_met( const reco::ShallowClonePtrCandidate & met );
     //std::string calcSampleName (const edm::EventBase& iEvent);
-    void weightPDF( edm::EventBase const & iEvent );
     void initializeMCPUWeight();
 
     bool make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,

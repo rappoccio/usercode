@@ -9,5 +9,6 @@
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Common"/>
   <use   name="root"/>
-  <use   name="lhapdf"/>
+  <use   name="lhapdffull"/>
+  <use   name="SimDataFormats/GeneratorProducts"/>
 </library>

@@ -4,24 +4,9 @@
 #include <sstream>
 #include "TRandom.h"
 #include "Analysis/SHyFT/interface/combinatorics.h"
-// #include "/uscmst1/prod/sw/cms/slc5_ia32_gcc434/external/lhapdf/5.6.0/full/include/LHAPDF/LHAPDF.h"
-#include "/uscmst1/prod/sw/cms/slc5_ia32_gcc434/external/lhapdf/5.6.0-cms2/share/lhapdf/PDFsets/../../../include/LHAPDF/LHAPDF.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" 
 #include <DataFormats/Common/interface/Handle.h>
-// namespace LHAPDF {
-      
-//       void initPDF(int nset);
-//       void initPDFSet(int nset, const std::string& filename, int member=0);
-//       int numberPDF(int nset);
-//       void usePDFMember(int nset, int member);
-//       double xfx(int nset, double x, double Q, int fl);
-//       double getXmin(int nset, int member);
-//       double getXmax(int nset, int member);
-//       double getQ2min(int nset, int member);
-//       double getQ2max(int nset, int member);
-//       void extrapolate(bool extrapolate=true);
-// }
 
 
 using namespace std;
@@ -335,15 +320,6 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
 
    allNumTags_ = 0;
    allNumJets_ = 0;
-   
-   if (doMC_ && reweightPDF_) {
-      std::cout << "Initializing pdfs, identifier = " << identifier_ << std::endl;
-      // For the first one, MAKE ABSOLUTELY SURE it is the one used to generate
-      // your sample. 
-      std::cout << "PDF to use = " << pdfToUse_ << std::endl;
-      LHAPDF::initPDFSet(pdfToUse_);
-      std::cout << "Done initializing pdfs" << std::endl;
-   }
 
   
    // for closure test
@@ -1178,11 +1154,7 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   
   // if not passed trigger, next event
   if ( !passTrigger )  return;
-  
-  if ( doMC_ && reweightPDF_) {
-    weightPDF(iEvent);
-  }
-  
+    
   if ( doMC_ && reweightPU_) { 
      weightPU( iEvent );  
   } 
@@ -1393,60 +1365,5 @@ void SHyFT::weightPU( edm::EventBase const & iEvent) {
      else               globalWeight_ *= puweight;
      theDir.getObject<TH1>("npuReweight")->Fill(npv, puweight );
   }
-}
-
-void SHyFT::weightPDF(  edm::EventBase const & iEvent) 
-{
-  // 
-  // NOTA BENE!!!!
-  //
-  //     The values "pdf1" and "pdf2" below are *wrong* for madgraph or alpgen samples.
-  //     They must be taken from the "zeroth" PDF in the PDF set, assuming that is set
-    
-  double iWeightSum = 0.0;
-  edm::Handle<GenEventInfoProduct> pdfstuff;
-  iEvent.getByLabel(pdfInputTag_, pdfstuff);
-       
-  float Q = pdfstuff->pdf()->scalePDF;
-  int id1 = pdfstuff->pdf()->id.first;
-  double x1 = pdfstuff->pdf()->x.first;
-  int id2 = pdfstuff->pdf()->id.second;
-  double x2 = pdfstuff->pdf()->x.second;
-
-  // BROKEN for Madgraph productions:
-  // double pdf1 = pdfstuff->pdf()->xPDF.first;
-  // double pdf2 = pdfstuff->pdf()->xPDF.second;  
-
-  LHAPDF::usePDFMember(1,0);
-  double xpdf1 = LHAPDF::xfx(1, x1, Q, id1);
-  double xpdf2 = LHAPDF::xfx(1, x2, Q, id2);
-  double w0 = xpdf1 * xpdf2;
-
-  for(int i=1; i <=44; ++i){
-    LHAPDF::usePDFMember(1,i);
-    double xpdf1_new = LHAPDF::xfx(1, x1, Q, id1);
-    double xpdf2_new = LHAPDF::xfx(1, x2, Q, id2);
-    double weight = xpdf1_new * xpdf2_new / w0;
-    iWeightSum += weight*weight;
-  }
-
-
-  iWeightSum = TMath::Sqrt(iWeightSum) ;
-
-  // char buff[1000];
-  // sprintf(buff, "Q = %6.2f, id1 = %4d, id2 = %4d, x1 = %6.2f, x2 = %6.2f, pdf1 = %6.2f, pdf2 = %6.2f",
-  // 	  Q, id1, id2, x1, x2, pdf1, pdf2
-  // 	  );
-  // std::cout << buff << std::endl;
-  // sprintf(buff, "  New :  pdf1 = %6.2f, pdf2 = %6.2f, prod=%6.2f",
-  // 	  newpdf1, newpdf2, prod
-  // 	  );
-  // std::cout << buff << std::endl;
-  
-
-  globalWeight_ *= iWeightSum ;
-  // std::cout << "Global weight = " << globalWeight_ << std::endl;
-  theDir.getObject<TH1>( "pdfWeight")->Fill( globalWeight_ );
-
 }
 
