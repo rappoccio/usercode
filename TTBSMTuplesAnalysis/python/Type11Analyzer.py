@@ -138,6 +138,8 @@ class Type11Analyzer :
         self.mttCandMass          = ROOT.TH1D("mttCandMass",                     "mTT Cand Mass",                 1000, 0,  5000 )
         self.mttMass              = ROOT.TH1D("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
         self.mttMassTriggerWeighted   = ROOT.TH1D("mttMassTriggerWeighted",                     "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeightedUp   = ROOT.TH1D("mttMassTriggerWeightedUp",                     "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeightedDown   = ROOT.TH1D("mttMassTriggerWeightedDown",                     "mTT Mass",                 1000, 0,  5000 )
         self.cutflow              = ROOT.TH1D("cutflow",                     "cutflow",                 7, 0,  7 ) 
         
         self.mttMass.Sumw2()
@@ -173,6 +175,12 @@ class Type11Analyzer :
         if topJets[0].pt() < 800:
             bin0 = self.triggerHist.FindBin(topJets[0].pt()) 
             jetTriggerWeight = self.triggerHist.GetBinContent(bin0)
+
+        jetTriggerWeightUp = jetTriggerWeight+0.05*jetTriggerWeight
+        if jetTriggerWeightUp > 1.0:
+            jetTriggerWeightUp = jetTriggerWeight
+        jetTriggerWeightDown = jetTriggerWeight-0.05*jetTriggerWeight
+
 
         #print 'topJets[0].pt() ' + str(topJets[0].pt())    
         #print 'jetTriggerWeight ' + str(jetTriggerWeight)    
@@ -282,6 +290,8 @@ class Type11Analyzer :
                                            event.object().id().luminosityBlock() ,
                                            ttMass] )
                 self.mttMassTriggerWeighted.Fill( ttMass, weight*jetTriggerWeight )   
+                self.mttMassTriggerWeightedUp.Fill( ttMass, weight*jetTriggerWeightUp )   
+                self.mttMassTriggerWeightedDown.Fill( ttMass, weight*jetTriggerWeightDown )   
 
             #background estiation
             x = ROOT.gRandom.Uniform()        
