@@ -189,9 +189,13 @@ class Type12Analyzer :
         self.topTagPt                    = ROOT.TH1F("topTagPt",                    "Top Tag Pt",               400,  0,  2000 )
         self.mttMass                     = ROOT.TH1F("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
         self.mttMassTriggerWeighted      = ROOT.TH1F("mttMassTriggerWeighted",        "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeightedUp      = ROOT.TH1F("mttMassTriggerWeightedUp",        "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeightedDown      = ROOT.TH1F("mttMassTriggerWeightedDown",        "mTT Mass",                 1000, 0,  5000 )
         self.mttMassFlatTriggerWeighted  = ROOT.TH1F("mttMassFlatTriggerWeighted",        "mTT Mass",                 1000, 0,  5000 )
         self.mttMassVeto11               = ROOT.TH1F("mttMassVeto11",               "mTT Mass",                 1000, 0,  5000 )
         self.mttMassTriggerWeightedVeto11  = ROOT.TH1F("mttMassTriggerWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeightedUpVeto11  = ROOT.TH1F("mttMassTriggerUpWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeightedDownVeto11  = ROOT.TH1F("mttMassTriggerDownWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
         self.mttMassFlatTriggerWeightedVeto11  = ROOT.TH1F("mttMassFlatTriggerWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
         self.mttMassJet1MassDown         = ROOT.TH1F("mttMassJet1MassDown",         "mTT Mass",                 1000, 0,  5000 )
         self.mttBkgWithMistag            = ROOT.TH1F("mttBkgWithMistag",            "mTT Mass",                 1000, 0,  5000 )
@@ -369,6 +373,13 @@ class Type12Analyzer :
             bin0 = self.triggerHist.FindBin(topJets[0].pt())
             jetTriggerWeight = self.triggerHist.GetBinContent(bin0)
 
+        jetTriggerWeightUp = jetTriggerWeight+0.05*jetTriggerWeight
+        if jetTriggerWeightUp > 1.0:
+            jetTriggerWeightUp = jetTriggerWeight
+        jetTriggerWeightDown = jetTriggerWeight-0.05*jetTriggerWeight
+
+
+
         flatTriggerWeight = 1.0
         if topJets[0].pt() < 450:
             flatTriggerWeight = 0.7
@@ -446,6 +457,15 @@ class Type12Analyzer :
         ##     checkWTag += 1
         ##     break
 
+        event.getByLabel (self.allTopTagMinMassLabel, self.allTopTagMinMassHandle)
+        topJetMinMass= self.allTopTagMinMassHandle.product()
+        event.getByLabel (self.allTopTagTopMassLabel, self.allTopTagTopMassHandle)
+        topJetMass= self.allTopTagTopMassHandle.product()
+        event.getByLabel (self.allTopTagNSubjetsLabel, self.allTopTagNSubjetsHandle)
+        topJetNSubjets= self.allTopTagNSubjetsHandle.product()
+
+
+
         if nTopCand == 1:
             self.cutflow.Fill(3.5,1)
             if secondJetCuts:
@@ -458,6 +478,11 @@ class Type12Analyzer :
                             self.cutflow.Fill(7.5,1)
                             if hasType2Top:
                                 self.cutflow.Fill(8.5,1)
+                                topTag0        = topJetMass[0] > 140 and topJetMass[0] < 250 and topJetMinMass[0] > 50 and topJetNSubjets[0] > 2
+                                topTag1        = topJetMass[1] > 140 and topJetMass[1] < 250 and topJetMinMass[1] > 50 and topJetNSubjets[1] > 2
+                                passType11     = topTag0 and topTag1
+                                if not passType11:
+                                    self.cutflow.Fill(9.5,1)
 
     ######### Plot histograms
         if passKinCuts  :
@@ -619,6 +644,8 @@ class Type12Analyzer :
                                        ttMass,
                                        hasBTag1] )
             self.mttMassTriggerWeighted.Fill( ttMass, weight*jetTriggerWeight  )
+            self.mttMassTriggerWeightedUp.Fill( ttMass, weight*jetTriggerWeightUp  )
+            self.mttMassTriggerWeightedDown.Fill( ttMass, weight*jetTriggerWeightDown  )
             self.mttMassFlatTriggerWeighted.Fill( ttMass, weight*flatTriggerWeight  )
             if not self.useMC :
                 self.mttMassJet1MassDown.Fill( ttMassJet1MassDown, weight  )
@@ -629,12 +656,12 @@ class Type12Analyzer :
               self.signalTopTagEta.Fill( topJets[0].eta(), weight  )
           self.signalJet3TagEta.Fill( wJets[jet3].eta(), weight  )
 
-          event.getByLabel (self.allTopTagMinMassLabel, self.allTopTagMinMassHandle)
-          topJetMinMass= self.allTopTagMinMassHandle.product()
-          event.getByLabel (self.allTopTagTopMassLabel, self.allTopTagTopMassHandle)
-          topJetMass= self.allTopTagTopMassHandle.product()
-          event.getByLabel (self.allTopTagNSubjetsLabel, self.allTopTagNSubjetsHandle)
-          topJetNSubjets= self.allTopTagNSubjetsHandle.product()
+          #event.getByLabel (self.allTopTagMinMassLabel, self.allTopTagMinMassHandle)
+          #topJetMinMass= self.allTopTagMinMassHandle.product()
+          #event.getByLabel (self.allTopTagTopMassLabel, self.allTopTagTopMassHandle)
+          #topJetMass= self.allTopTagTopMassHandle.product()
+          #event.getByLabel (self.allTopTagNSubjetsLabel, self.allTopTagNSubjetsHandle)
+          #topJetNSubjets= self.allTopTagNSubjetsHandle.product()
 
           topTag0        = topJetMass[0] > 140 and topJetMass[0] < 250 and topJetMinMass[0] > 50 and topJetNSubjets[0] > 2
           topTag1        = topJetMass[1] > 140 and topJetMass[1] < 250 and topJetMinMass[1] > 50 and topJetNSubjets[1] > 2
@@ -642,6 +669,8 @@ class Type12Analyzer :
           if not passType11 and isJetTagged:
             self.mttMassVeto11.Fill( ttMass, weight  )
             self.mttMassTriggerWeightedVeto11.Fill( ttMass, weight*jetTriggerWeight  )
+            self.mttMassTriggerWeightedUpVeto11.Fill( ttMass, weight*jetTriggerWeightUp  )
+            self.mttMassTriggerWeightedDownVeto11.Fill( ttMass, weight*jetTriggerWeightDown  )
             self.mttMassFlatTriggerWeightedVeto11.Fill( ttMass, weight*flatTriggerWeight  )
 
 
