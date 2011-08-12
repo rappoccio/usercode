@@ -174,6 +174,8 @@ class Type11Analyzer :
             weight = self.weightsHandle.product()[0]
 
         jetTriggerWeight = 1.0
+        jetTriggerWeightUp = 1.0
+        jetTriggerWeightDown = 1.0
         if topJets[0].pt() < 800:
             bin0 = self.triggerHist.FindBin(topJets[0].pt()) 
             jetTriggerWeight = self.triggerHist.GetBinContent(bin0)

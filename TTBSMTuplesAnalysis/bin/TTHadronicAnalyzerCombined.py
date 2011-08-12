@@ -112,6 +112,7 @@ myAnaTrigs = [
 
 triggerSelection = TriggerAndEventSelectionObject( myAnaTrigs )
 
+if options.useMC :  print "Running on MC!"
 
 if options.analyzer == "Type12Analyzer" :
     analyzer = Type12Analyzer(options.useMC, options.outfile + '_type12_'+options.collectionLabelSuffix,
