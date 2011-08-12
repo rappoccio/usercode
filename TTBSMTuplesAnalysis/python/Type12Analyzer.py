@@ -194,8 +194,8 @@ class Type12Analyzer :
         self.mttMassFlatTriggerWeighted  = ROOT.TH1F("mttMassFlatTriggerWeighted",        "mTT Mass",                 1000, 0,  5000 )
         self.mttMassVeto11               = ROOT.TH1F("mttMassVeto11",               "mTT Mass",                 1000, 0,  5000 )
         self.mttMassTriggerWeightedVeto11  = ROOT.TH1F("mttMassTriggerWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
-        self.mttMassTriggerWeightedUpVeto11  = ROOT.TH1F("mttMassTriggerUpWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
-        self.mttMassTriggerWeightedDownVeto11  = ROOT.TH1F("mttMassTriggerDownWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeightedUpVeto11  = ROOT.TH1F("mttMassTriggerWeightedUpVeto11",  "mTT Mass",                 1000, 0,  5000 )
+        self.mttMassTriggerWeightedDownVeto11  = ROOT.TH1F("mttMassTriggerWeightedDownVeto11",  "mTT Mass",                 1000, 0,  5000 )
         self.mttMassFlatTriggerWeightedVeto11  = ROOT.TH1F("mttMassFlatTriggerWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
         self.mttMassJet1MassDown         = ROOT.TH1F("mttMassJet1MassDown",         "mTT Mass",                 1000, 0,  5000 )
         self.mttBkgWithMistag            = ROOT.TH1F("mttBkgWithMistag",            "mTT Mass",                 1000, 0,  5000 )
@@ -297,10 +297,14 @@ class Type12Analyzer :
 
         self.mttMass.Sumw2() 
         self.mttMassTriggerWeighted.Sumw2() 
+        self.mttMassTriggerWeightedUp.Sumw2()
+        self.mttMassTriggerWeightedDown.Sumw2()
         self.mttMassFlatTriggerWeighted.Sumw2() 
         self.mttMassVeto11.Sumw2() 
 
         self.mttMassTriggerWeightedVeto11.Sumw2() 
+        self.mttMassTriggerWeightedUpVeto11.Sumw2()
+        self.mttMassTriggerWeightedDownVeto11.Sumw2()
         self.mttMassFlatTriggerWeightedVeto11.Sumw2() 
         self.runPairs = []    
 
@@ -372,12 +376,11 @@ class Type12Analyzer :
         if topJets[0].pt() < 800:
             bin0 = self.triggerHist.FindBin(topJets[0].pt())
             jetTriggerWeight = self.triggerHist.GetBinContent(bin0)
-
-        jetTriggerWeightUp = jetTriggerWeight+0.05*jetTriggerWeight
-        if jetTriggerWeightUp > 1.0:
-            jetTriggerWeightUp = 1.0
-        jetTriggerWeightDown = jetTriggerWeight-0.05*jetTriggerWeight
-
+            deltaTriggerEff  = 0.5*(1.0-jetTriggerWeight)
+            jetTriggerWeightUp  =   jetTriggerWeight + deltaTriggerEff
+            jetTriggerWeightDown  = jetTriggerWeight - deltaTriggerEff
+            jetTriggerWeightUp  = min(1.0,jetTriggerWeightUp)
+            jetTriggerWeightDown  = max(0.0,jetTriggerWeightDown)
 
 
         flatTriggerWeight = 1.0

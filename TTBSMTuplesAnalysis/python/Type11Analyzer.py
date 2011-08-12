@@ -145,6 +145,8 @@ class Type11Analyzer :
         self.mttMass.Sumw2()
         self.runPairs = []
         self.mttMassTriggerWeighted.Sumw2()
+        self.mttMassTriggerWeightedUp.Sumw2()
+        self.mttMassTriggerWeightedDown.Sumw2()
 
     def analyze(self, event) :
         """Analyzes event"""
@@ -175,11 +177,11 @@ class Type11Analyzer :
         if topJets[0].pt() < 800:
             bin0 = self.triggerHist.FindBin(topJets[0].pt()) 
             jetTriggerWeight = self.triggerHist.GetBinContent(bin0)
-
-        jetTriggerWeightUp = jetTriggerWeight+0.05*jetTriggerWeight
-        if jetTriggerWeightUp > 1.0:
-            jetTriggerWeightUp = 1.0
-        jetTriggerWeightDown = jetTriggerWeight-0.05*jetTriggerWeight
+            deltaTriggerEff  = 0.5*(1.0-jetTriggerWeight)
+            jetTriggerWeightUp  =   jetTriggerWeight + deltaTriggerEff
+            jetTriggerWeightDown  = jetTriggerWeight - deltaTriggerEff
+            jetTriggerWeightUp  = min(1.0,jetTriggerWeightUp)
+            jetTriggerWeightDown  = max(0.0,jetTriggerWeightDown)
 
 
         #print 'topJets[0].pt() ' + str(topJets[0].pt())    
