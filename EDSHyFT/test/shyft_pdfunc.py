@@ -16,6 +16,13 @@ parser.add_option('--files', metavar='F', type='string', action='store',
                   help='Input files')
 
 
+# Output file name
+parser.add_option('--outfile', metavar='F', type='string', action='store',
+                  dest='outfile',
+                  default='TTJets_pdfunc.root',
+                  help='Ouptut file name')
+
+
 # This will use the loose selections, and negate the isolation
 # criteria
 parser.add_option('--useLoose', metavar='F', action='store_true',
@@ -91,6 +98,13 @@ metLabel = ("pfShyftTupleMET" + postfix,   "pt" )
 pdfHandle = Handle("std::vector<double>")
 pdfLabel = ( 'pdfWeightProducer', "pdfWeights")
 
+
+outfile = ROOT.TFile(options.outfile, 'RECREATE')
+outfile.cd()
+nJetsHists = []
+nEigenvectors = 44
+for ieig in range(0,nEigenvectors) :
+    nJetsHists.append( ROOT.TH1F('nJets' + str(ieig), 'N Jets, Eigenvector = ' + str(ieig), 5, 0, 5 ) )
 
 # Sum of weights
 weightUp = 0.0
@@ -186,11 +200,16 @@ for event in events:
     event.getByLabel( pdfLabel, pdfHandle )
 
     pdfs = pdfHandle.product()
+    ipdf = 0
     for pdf in pdfs[0::2] :
         iweightUp = iweightUp + pdf*pdf
+        nJetsHists[ipdf].Fill( njets, pdf )
+        ipdf += 2
+    ipdf = 1
     for pdf in pdfs[1::2] :
         iweightDown = iweightDown + pdf*pdf
-
+        nJetsHists[ipdf].Fill( njets, pdf )
+        ipdf += 2
 
 
     iweightUp = iweightUp / (len(pdfs) * 0.5)
@@ -208,3 +227,7 @@ print 'PDF Sys    up   = ' + str( weightUp / nWeights)
 print 'PDF Sys    down = ' + str( weightDown / nWeights) 
 
 
+
+outfile.cd()
+outfile.Write()
+outfile.Close()

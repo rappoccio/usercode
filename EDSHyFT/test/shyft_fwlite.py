@@ -1,11 +1,16 @@
 #! /usr/bin/env python
 import os
 import glob
+import math
 
 from optparse import OptionParser
 
-
 parser = OptionParser()
+
+
+############################################
+#            Job steering                  #
+############################################
 
 # Input files to use. This is in "glob" format, so you can use wildcards.
 # If you get a "cannot find file" type of error, be sure to use "\*" instead
@@ -26,6 +31,7 @@ parser.add_option('--sampleName', metavar='F', type='string', action='store',
                   dest='sampleName',
                   help='output name')
 
+
 # This will use the loose selections, and negate the isolation
 # criteria
 parser.add_option('--useLoose', metavar='F', action='store_true',
@@ -33,11 +39,30 @@ parser.add_option('--useLoose', metavar='F', action='store_true',
                   dest='useLoose',
                   help='use loose leptons (exclusive from tight)')
 
-
+# Using data or not. For MC, truth information is accessed.
 parser.add_option('--useData', metavar='F', action='store_true',
                   default=False,
                   dest='useData',
                   help='use data')
+
+# JEC systematics
+parser.add_option('--jecSys', metavar='F', type='string', action='store',
+                  default='nominal',
+                  dest='jecSys',
+                  help='JEC Systematic variation. Options are "nominal, up, down"')
+
+# BTag systematics
+parser.add_option('--btagSys', metavar='F', type='string', action='store',
+                  default='nominal',
+                  dest='btagSys',
+                  help='BTag Systematic variation. Options are "nominal, up, down"')
+
+# LFTag systematics
+parser.add_option('--lftagSys', metavar='F', type='string', action='store',
+                  default='nominal',
+                  dest='lftagSys',
+                  help='LFTag Systematic variation. Options are "nominal, up, down"')
+
 
 (options, args) = parser.parse_args()
 
@@ -50,6 +75,13 @@ ROOT.gROOT.Macro("rootlogon.C")
 # Import stuff from FWLite
 import sys
 from DataFormats.FWLite import Events, Handle
+
+from Analysis.SHyFTScripts.combinations import *
+
+ROOT.gSystem.Load('libCondFormatsJetMETObjects')
+
+#from CondFormats.JetMETObjects import *
+
 
 print 'Getting files from this dir: ' + options.files
 
@@ -83,7 +115,6 @@ maxJets = 5
 maxTags = 2
 flavors = ['_b','_c','_q','']
 
-
 allVarPlots = [
     secvtxMassPlots,
     lepEtaPlots,
@@ -111,6 +142,52 @@ for iplot in range(0,len(allVarPlots)) :
                                                         titles[iplot] + ", njets = " + str(ijet) + ', ntags = ' + str(itag),
                                                         bounds[iplot][0], bounds[iplot][1], bounds[iplot][2])
                                              )
+
+
+############################################
+#     Jet energy scale uncertainties       #
+############################################
+
+
+jecParStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
+jecUnc = ROOT.JetCorrectionUncertainty( jecParStr )
+
+
+
+############################################
+# Physics level parameters for systematics #
+############################################
+
+# Kinematic cuts:
+jetPtMin = 30.0
+muonPtMin = 45.0
+electronPtMin = 45.0
+looseMuonIsoMax = 0.2
+looseElectronIsoMax = 0.2
+ssvheCut = 2.74
+
+# Per-jet scale factors:
+sfB = 1.00
+sfC = 1.00
+sfQ = 1.00
+if options.btagSys == 'up' :
+    sfB = 1.10
+    sfC = 1.10
+elif options.btagSys == 'down' :
+    sfB = 0.90
+    sfC = 0.90
+if options.lftagSys == 'up' :
+    sfQ = 1.10
+elif options.lftagSys == 'down' :
+    sfQ = 0.90
+
+# JEC scales
+jecScale = 0.0
+if options.jecSys == 'up' :
+    jecScale = 1.0
+elif options.jecSys == 'down' :
+    jecScale = -1.0
+flatJecUnc = 0.05
 
 
 
@@ -157,6 +234,8 @@ electronPfisoLabel    = ( "pfShyftTupleElectrons" + postfix,   "pfiso" )
 
 metHandle = Handle( "std::vector<float>" )
 metLabel = ("pfShyftTupleMET" + postfix,   "pt" )
+metPhiHandle = Handle( "std::vector<float>" )
+metPhiLabel = ("pfShyftTupleMET" + postfix,   "phi" )
 
 
 
@@ -220,9 +299,9 @@ for event in events:
     nMuonsVal = 0
     for imuonPt in range(0,len(muonPts)):
         muonPt = muonPts[imuonPt]
-        if muonPt > 45.0 :
+        if muonPt > muonPtMin :
             if options.useLoose :
-                if muonPfisos[imuonPt] / muonPt < 0.2 :
+                if muonPfisos[imuonPt] / muonPt < looseMuonIsoMax :
                     continue
                 else :
                     nMuonsVal += 1
@@ -242,9 +321,9 @@ for event in events:
     if nMuonsVal == 0 :
         for ielectronPt in range(0,len(electronPts)):
             electronPt = electronPts[ielectronPt]
-            if electronPt > 45.0 :
+            if electronPt > electronPtMin :
                 if options.useLoose :
-                    if electronPfisos[ielectronPt] / electronPt < 0.2 :
+                    if electronPfisos[ielectronPt] / electronPt < looseElectronIsoMax :
                         continue
                     else :
                         nElectronsVal += 1
@@ -269,23 +348,65 @@ for event in events:
     # Now get the number of jets
     event.getByLabel( jetPtLabel, jetPtHandle )
     jetPts = jetPtHandle.product()
-
-    njets = 0
-    for jetPt in jetPts :
-        if jetPt > 30.0 :
-            njets += 1
-
-
-    if njets < 1 :
-        continue
-
-    # Get the rest of the jet 4-vector
     event.getByLabel( jetEtaLabel, jetEtaHandle )
     jetEtas = jetEtaHandle.product()
     event.getByLabel( jetPhiLabel, jetPhiHandle )
     jetPhis = jetPhiHandle.product()
     event.getByLabel( jetMassLabel, jetMassHandle )
     jetMasses = jetMassHandle.product()
+
+    event.getByLabel( metLabel, metHandle )
+    metRaw = metHandle.product()[0]
+    event.getByLabel( metPhiLabel, metPhiHandle )
+    metPhiRaw = metPhiHandle.product()[0]
+
+
+    jets = []
+    met_px = metRaw * math.cos( metPhiRaw )
+    met_py = metRaw * math.sin( metPhiRaw )
+
+
+    for ijet in range(0,len(jetPts) ):
+        jetScale = 1.0
+        if abs(jecScale) > 0.0001 :
+            #print 'Modifying jet pts according to jecScale = ' + str(jecScale)
+            jecUnc.setJetEta( jetEtas[ijet] )
+            jecUnc.setJetPt( jetPts[ijet] )
+
+            upOrDown = bool(jecScale > 0.0)
+
+            unc1 = abs(jecUnc.getUncertainty(upOrDown))
+            unc2 = flatJecUnc
+            unc = math.sqrt(unc1*unc1 + unc2*unc2)
+            #print 'Correction = ' + str( 1 + unc * jecScale)
+            jetScale = 1 + unc * jecScale
+
+        thisJet = ROOT.TLorentzVector()
+        thisJet.SetPtEtaPhiM(jetPts[ijet],
+                             jetEtas[ijet],
+                             jetPhis[ijet],
+                             jetMasses[ijet])
+
+
+        met_px = met_px + thisJet.Px()
+        met_py = met_py + thisJet.Py()
+        thisJet = thisJet * jetScale
+        met_px = met_px - thisJet.Px()
+        met_py = met_py - thisJet.Py()
+        jets.append( thisJet )
+
+
+    met = math.sqrt(met_px*met_px + met_py*met_py)
+
+    njets = 0
+    for jet in jets :
+        if jet.Pt() > jetPtMin :
+            njets += 1
+
+
+    if njets < 1 :
+        continue
+
 
     # Now get the number of SSVHEM tags and vertex mass.
     # If using MC, get the jet flavor also
@@ -300,7 +421,7 @@ for event in events:
     # Compute the number of tags, the secondary vertex mass,
     # and the jet flavor (MC only)
     ntags = 0
-    secvtxMass = -1.0
+    secvtxMass = 0.0
     flavorIndex = -1
     numB = 0
     numC = 0
@@ -308,36 +429,54 @@ for event in events:
     sumEt = 0.
     sumPt = 0.
     sumE = 0.
+    effs = []
     # The vertex mass for the event is the vertex mass
     # of the first tagged jet (ordered by pt).
     # The flavor for the event is the highest flavor
     # in the event out of b, c, and light flavor.
-    for ijet in range(0,len(jetPts)) :
-        jetP4 = ROOT.TLorentzVector()
-        jetP4.SetPtEtaPhiM( jetPts[ijet],
-                            jetEtas[ijet],
-                            jetPhis[ijet],
-                            jetMasses[ijet] )
+    for ijet in range(0,len(jets)) :
+        jetP4 = jets[ijet]
+        if jetP4.Pt() < jetPtMin :
+            continue
         sumEt = sumEt + jetP4.Et()
         sumPt = sumPt + jetP4.Pt()
         sumE = sumE + jetP4.E()
         ssvhe = jetSSVHEs[ijet]
+        isf = 1.0
+        iflavor = -1
         if not options.useData :
             jetFlavor = jetFlavors[ijet]
+            
             #print 'jet flavor = ' + str(jetFlavor)
             if abs(jetFlavor) == 5 :
                 numB = numB + 1
+                isf = sfB
+                iflavor = 0
             elif abs(jetFlavor) == 4 :
                 numC = numC + 1
+                isf = sfC
+                iflavor = 1
             else :
                 numQ = numQ + 1
+                isf = sfQ
+                iflavor = 2
         # Only consider tagged jets for the vertex mass
-        if ssvhe > 2.74 :
+        if ssvhe > ssvheCut :
             ntags += 1
             # The
             if secvtxMass <= 0.0001 : # Stop at the first nontrivial secvtx mass
                 secvtxMass = jetSecvtxMasses[ijet]
 
+
+
+        # For the SF weighting, use :
+        # the scale factors if tagged
+        # zero if not tagged
+        if not options.useData :
+            if ssvhe > ssvheCut :
+                effs.append( EffInfo(ijet, isf, iflavor) )
+            else :
+                effs.append( EffInfo(ijet, 0.0, iflavor) )
 
     if numB > 0 :
         flavorIndex = 0
@@ -345,6 +484,10 @@ for event in events:
         flavorIndex = 1
     else :
         flavorIndex = 2
+
+
+
+    nJets.Fill( njets )
 
     if njets > maxJets :
         njets = maxJets
@@ -361,18 +504,42 @@ for event in events:
 
     # Now fill discriminator variables
 
-    # always fill the "total" 
-    secvtxMassPlots[njets][ntags][3].Fill( secvtxMass ) 
-    lepEtaPlots[njets][ntags][3].Fill( lepEta )
-    centralityPlots[njets][ntags][3].Fill( sumEt / sumE )
-    sumPtPlots[njets][ntags][3].Fill( sumPt )
+    if options.useData :
+        # always fill the "total" 
+        secvtxMassPlots[njets][ntags][3].Fill( secvtxMass ) 
+        lepEtaPlots[njets][ntags][3].Fill( lepEta )
+        centralityPlots[njets][ntags][3].Fill( sumEt / sumE )
+        sumPtPlots[njets][ntags][3].Fill( sumPt )
 
-    if flavorIndex >= 0 :
-        secvtxMassPlots[njets][ntags][flavorIndex].Fill( secvtxMass ) # Fill each jet flavor individually
-        lepEtaPlots[njets][ntags][flavorIndex].Fill( lepEta )
-        centralityPlots[njets][ntags][flavorIndex].Fill( sumEt / sumE )
-        sumPtPlots[njets][ntags][flavorIndex].Fill( sumPt )
+        if flavorIndex >= 0 :
+            secvtxMassPlots[njets][ntags][flavorIndex].Fill( secvtxMass ) # Fill each jet flavor individually
+            lepEtaPlots[njets][ntags][flavorIndex].Fill( lepEta )
+            centralityPlots[njets][ntags][flavorIndex].Fill( sumEt / sumE )
+            sumPtPlots[njets][ntags][flavorIndex].Fill( sumPt )
+    else :
 
+        # otherwise, loop over all of the SF combinatorics to tag itag out of njet jets
+        # and weight the distributions by the resultant probability. 
+        effCombos = EffInfoCombinations( effs, verbose=False )
+
+        for itag in range(0,njets) :
+            pTag = effCombos.pTag( itag )
+            jtag = itag
+            if jtag > maxTags :
+                jtag = maxTags
+            # always fill the "total"
+            if jtag > 0 :
+                secvtxMassPlots[njets][jtag][3].Fill( secvtxMass, pTag ) 
+            lepEtaPlots[njets][jtag][3].Fill( lepEta, pTag )
+            centralityPlots[njets][jtag][3].Fill( sumEt / sumE, pTag )
+            sumPtPlots[njets][jtag][3].Fill( sumPt, pTag )
+
+            if flavorIndex >= 0 :
+                if jtag > 0 :
+                    secvtxMassPlots[njets][jtag][flavorIndex].Fill( secvtxMass, pTag ) # Fill each jet flavor individually
+                lepEtaPlots[njets][jtag][flavorIndex].Fill( lepEta, pTag )
+                centralityPlots[njets][jtag][flavorIndex].Fill( sumEt / sumE, pTag )
+                sumPtPlots[njets][jtag][flavorIndex].Fill( sumPt, pTag )
 
 
 f.cd()
