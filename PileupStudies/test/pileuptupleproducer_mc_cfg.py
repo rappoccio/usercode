@@ -19,20 +19,13 @@ options.register ('useData',
 
 options.parseArguments()
 
-if not options.useData :
-    #mytrigs = ['HLT_Jet100U*']
-    mytrigs = ['HLT_Jet30U*']
-    inputJetCorrLabel = ('AK5PF', ['L2Relative', 'L3Absolute'])
-    process.source = cms.Source("PoolSource",
-                                fileNames = cms.untracked.vstring( 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/QCD_Pt_15to3000_TuneZ2_Flat_7TeV_pythia6/pileupstudies_387_v1/354f7f597ac7df252a905f080fd28889/pileupstudies_387_1_1_qxF.root'
-                                    )
+
+process.source = cms.Source("PoolSource",
+                            fileNames = cms.untracked.vstring(
+                                'file:patTuple.root'
                                 )
-else :
-    process.source = cms.Source("PoolSource",
-                                fileNames = cms.untracked.vstring(
-                                    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/Run2010B-Nov4ReReco_v1_pileupstudies_387_v2/9f1aaecf6c0c99a7f05a653bbea518c1/pileupstudies_387_1_1_IPn.root'
-                                    )
-                                )
+                            )
+
 
 
 ## Options and Output Report
@@ -45,23 +38,17 @@ import sys
 
 from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
 
-process.pvSel = cms.EDFilter(
-    "PrimaryVertexObjectFilter",
-    filterParams = pvSelector.clone( maxZ = cms.double(24.0) ),
-    src=cms.InputTag('offlinePrimaryVertices')    
-    )
-
 process.pvCount = cms.EDFilter(
     "EDPileupAna",
-    src=cms.InputTag('pvSel')
+    src=cms.InputTag('goodOfflinePrimaryVertices')
     )
 
 process.ak5Def = cms.EDProducer(
     "CandViewNtpProducer", 
-    src = cms.InputTag("goodPatJetsPFlowAK5"),
+    src = cms.InputTag("goodPatJets"),
     lazyParser = cms.untracked.bool(True),
     prefix = cms.untracked.string(""),
-    eventInfo = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
     variables = cms.VPSet(
         cms.PSet(
             tag = cms.untracked.string("pt"),
@@ -88,41 +75,41 @@ process.ak5Def = cms.EDProducer(
 
 process.ak5CHS = cms.EDProducer(
     "CandViewNtpProducer", 
-    src = cms.InputTag("goodPatJetsPFlowPUSubAK5"),
+    src = cms.InputTag("goodPatJetsPFlow"),
     lazyParser = cms.untracked.bool(True),
     prefix = cms.untracked.string(""),
-    eventInfo = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
     variables = cms.VPSet(
         cms.PSet(
             tag = cms.untracked.string("pt"),
-            quantity = cms.untracked.string("pt")
+            quantity = cms.untracked.string("correctedJet(0).pt")
             ),
         cms.PSet(
             tag = cms.untracked.string("jetArea"),
-            quantity = cms.untracked.string("jetArea")
+            quantity = cms.untracked.string("correctedJet(0).jetArea")
             ),
         cms.PSet(
             tag = cms.untracked.string("eta"),
-            quantity = cms.untracked.string("eta")
+            quantity = cms.untracked.string("correctedJet(0).eta")
             ),
         cms.PSet(
             tag = cms.untracked.string("phi"),
-            quantity = cms.untracked.string("phi")
+            quantity = cms.untracked.string("correctedJet(0).phi")
             ), 
         cms.PSet(
             tag = cms.untracked.string("mass"),
-            quantity = cms.untracked.string("mass")
+            quantity = cms.untracked.string("correctedJet(0).mass")
             ), 
         )  
     )
 
 
-process.genJets = cms.EDProducer(
+process.ak5Gen = cms.EDProducer(
     "CandViewNtpProducer", 
-    src = cms.InputTag("ak5GenJets"),
+    src = cms.InputTag("ak5GenJetsNoNu"),
     lazyParser = cms.untracked.bool(True),
     prefix = cms.untracked.string(""),
-    eventInfo = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
     variables = cms.VPSet(
         cms.PSet(
             tag = cms.untracked.string("pt"),
@@ -146,11 +133,10 @@ process.genJets = cms.EDProducer(
 
 
 process.patseq = cms.Sequence(
-    process.pvSel *
     process.pvCount*
     process.ak5Def *
     process.ak5CHS *
-    process.genJets
+    process.ak5Gen
     )
 
 
@@ -160,15 +146,18 @@ process.p0 = cms.Path(
 
 
 process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string('pileuptuple_387.root'),
+                               fileName = cms.untracked.string('pileuptuple_424.root'),
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p0') ),
                                outputCommands = cms.untracked.vstring(
                                    'drop *',
                                    'keep *_ak5CHS_*_*',
+                                   'keep *_ak5Gen_*_*',
                                    'keep *_ak5Def_*_*',
                                    'keep *_pvCount_*_*',
                                    'keep double_*PFlow*_*_*',
-                                   'keep double_*kt6*_*_*'
+                                   'keep double_*kt6*_*_*',
+                                   'keep double_fixed*_*_*',
+                                   'keep *_addPileupInfo_*_*'
                                    ),
                                dropMetaData = cms.untracked.string("DROPPED")
                                )
