@@ -5,21 +5,6 @@ process = cms.Process("ANA")
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
-###############################
-####### Parameters ############
-###############################
-from FWCore.ParameterSet.VarParsing import VarParsing
-options = VarParsing ('python')
-
-options.register ('useData',
-                  False,
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "Run this on real data")
-
-options.parseArguments()
-
-
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
 'dcap:///pnfs/cms/WAX/11/store/user/rappocc/QCD_Pt-15to3000_TuneZ2_Flat_7TeV_pythia6/pileupstudies_424_v2/a9c957deb24827efe91ad47274317b2d/patTuple_78_1_P9G.root'
@@ -31,8 +16,6 @@ process.source = cms.Source("PoolSource",
 ## Options and Output Report
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-
-print options
 
 import sys
 
