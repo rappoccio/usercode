@@ -22,7 +22,7 @@ options.parseArguments()
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-                                'file:patTuple.root'
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/QCD_Pt-15to3000_TuneZ2_Flat_7TeV_pythia6/pileupstudies_424_v2/a9c957deb24827efe91ad47274317b2d/patTuple_78_1_P9G.root'
                                 )
                             )
 
@@ -52,23 +52,23 @@ process.ak5Def = cms.EDProducer(
     variables = cms.VPSet(
         cms.PSet(
             tag = cms.untracked.string("pt"),
-            quantity = cms.untracked.string("pt")
+            quantity = cms.untracked.string("correctedJet(0).pt")
             ),
         cms.PSet(
             tag = cms.untracked.string("jetArea"),
-            quantity = cms.untracked.string("jetArea")
+            quantity = cms.untracked.string("correctedJet(0).jetArea")
             ),
         cms.PSet(
             tag = cms.untracked.string("eta"),
-            quantity = cms.untracked.string("eta")
+            quantity = cms.untracked.string("correctedJet(0).eta")
             ),
         cms.PSet(
             tag = cms.untracked.string("phi"),
-            quantity = cms.untracked.string("phi")
+            quantity = cms.untracked.string("correctedJet(0).phi")
             ), 
         cms.PSet(
             tag = cms.untracked.string("mass"),
-            quantity = cms.untracked.string("mass")
+            quantity = cms.untracked.string("correctedJet(0).mass")
             ), 
         )  
     )
