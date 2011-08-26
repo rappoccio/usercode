@@ -26,6 +26,13 @@ parser.add_option('--outname', metavar='F', type='string', action='store',
                   help='output name')
 
 
+# Output name to use. 
+parser.add_option('--max', metavar='M', type='int', action='store',
+                  default=-1,
+                  dest='max',
+                  help='Maximum number of events to process, default = all')
+
+
 (options, args) = parser.parse_args()
 
 argv = []
@@ -41,6 +48,14 @@ from DataFormats.FWLite import Events, Handle
 ROOT.gSystem.Load('libCondFormatsJetMETObjects')
 
 #from CondFormats.JetMETObjects import *
+
+
+def findGenJet( recoJet0, genJets ) :
+    minDR = 0.5
+    for genJet in genJets :
+        dR = recoJet.DeltaR( genJet )
+        if dR < minDR :
+            return genJet
 
 
 print 'Getting files from this dir: ' + options.files
@@ -95,9 +110,9 @@ jecUnc = ROOT.JetCorrectionUncertainty( jecUncStr )
 jetPtMin = 30.0
 
 
-
-
+print 'Creating events...',
 events = Events (files)
+print 'Done'
 
 jetPtHandle         = Handle( "std::vector<float>" )
 jetPtLabel    = ( "ak5CHS",   "pt" )
@@ -110,13 +125,46 @@ jetMassLabel    = ( "ak5CHS",   "mass" )
 jetAreaHandle         = Handle( "std::vector<float>" )
 jetAreaLabel    = ( "ak5CHS",   "jetArea" )
 
+
+genJetPtHandle         = Handle( "std::vector<float>" )
+genJetPtLabel    = ( "ak5Gen",   "pt" )
+genJetEtaHandle         = Handle( "std::vector<float>" )
+genJetEtaLabel    = ( "ak5Gen",   "eta" )
+genJetPhiHandle         = Handle( "std::vector<float>" )
+genJetPhiLabel    = ( "ak5Gen",   "phi" )
+genJetMassHandle         = Handle( "std::vector<float>" )
+genJetMassLabel    = ( "ak5Gen",   "mass" )
+
+puHandle = Handle("std::vector<PileupSummaryInfo>")
+puLabel = ( "addPileupInfo", "")
+
+rhoLabels = [
+    ( "kt6PFJetsPFlow",   "rho" ),
+    ( "kt6PFJets",   "rho" ),
+    ( "fixedGridRhoAllCHS", "" ),
+    ( "fixedGridRhoAll", "" )
+    ]
+
+ptRatioHists = []
+etaRatioHists = []
+
+for rhoLabel in rhoLabels :
+    rhoVal = rhoLabel[0]
+    etaRatioHists.append(
+        ROOT.TH3F('etaRatio_' + rhoLabel[0], 'etaRecoRatio_' + rhoLabel[0], 50, -5.0, 5.0, 200, 0., 2.0, 5, 0, 25)
+        )
+    ptRatioHists.append(
+        ROOT.TH3F('ptRatio_' + rhoLabel[0], 'ptRecoRatio_' + rhoLabel[0], 50, 0., 500., 200, 0., 2.0, 5, 0, 25)
+        )
+
+
 rhoHandle         = Handle( "double" )
-rhoLabel    = ( "kt6PFJetsPFlow",   "rho" )
-
-
+    
 # loop over events
 count = 0
 ntotal = events.size()
+if options.max > 0 :
+    ntotal = options.max
 percentDone = 0.0
 ipercentDone = 0
 ipercentDoneLast = -1
@@ -129,47 +177,110 @@ for event in events:
             count, ntotal, ipercentDone )
     count = count + 1
     percentDone = float(count) / float(ntotal) * 100.0
-    
+
+
+    if options.max > 0 and count > options.max :
+        break
 
     event.getByLabel( jetPtLabel, jetPtHandle )
     jetPts = jetPtHandle.product()
+
+    njet = 0
+    for jetPt in jetPts :
+        if jetPt > 30.0 :
+            njet += 1
+    if njet < 2 :
+        continue
+
+
+
+    event.getByLabel( genJetPtLabel, genJetPtHandle )
+    genJetPts = genJetPtHandle.product()
+
+    ngenjet = 0
+    for jetPt in genJetPts :
+        if jetPt > 30.0 :
+            ngenjet += 1
+    if ngenjet < 2 :
+        continue
+
+
+    event.getByLabel( puLabel, puHandle )
+    puInfos = puHandle.product()
+
+    npu = puInfos[0].getPU_NumInteractions()
+
+#    print '======================================'
+#    print 'NPU = ' + str(npu)
+
+
+    
     event.getByLabel( jetEtaLabel, jetEtaHandle )
     jetEtas = jetEtaHandle.product()
     event.getByLabel( jetPhiLabel, jetPhiHandle )
     jetPhis = jetPhiHandle.product()
-    event.getByLabel( jetMassLabel, jetMassHandle )
-    jetMasses = jetMassHandle.product()
+    ## event.getByLabel( jetMassLabel, jetMassHandle )
+    ## jetMasses = jetMassHandle.product()
     event.getByLabel( jetAreaLabel, jetAreaHandle )
     jetAreas = jetAreaHandle.product()
-    event.getByLabel( rhoLabel, rhoHandle )
-    rho = rhoHandle.product()[0]
 
 
-    jetP4s = []
 
-    for ijet in range(0,len(jetPts)):
+    event.getByLabel( genJetEtaLabel, genJetEtaHandle )
+    genJetEtas = genJetEtaHandle.product()
+    event.getByLabel( genJetPhiLabel, genJetPhiHandle )
+    genJetPhis = genJetPhiHandle.product()
+    ## event.getByLabel( genJetMassLabel, genJetMassHandle )
+    ## genJetMasses = genJetMassHandle.product()
 
-        jec.setJetEta(jetEtas[ijet])
-        jec.setJetPt(jetPts[ijet])
-        jec.setJetA(jetAreas[ijet])
-        jec.setRho(rho)
-        factor = jec.getCorrection()
-        jet = ROOT.TLorentzVector()
-        jet.SetPtEtaPhiM(
+    #print 'got all products'
+
+    genJets = []
+    for igen in range(0,len(genJetPts)):
+        if genJetPts[igen] < 30.0 :
+            continue
+        jgen = ROOT.TLorentzVector()
+        jgen.SetPtEtaPhiM(
+            genJetPts[igen],
+            genJetEtas[igen],
+            genJetPhis[igen],
+            0.0 #genJetMasses[igen],
+            )
+        genJets.append( jgen )
+
+
+    for ijet in range(0,2):
+
+        if jetPts[ijet] < 30.0 :
+            continue
+
+        recoJet = ROOT.TLorentzVector()
+        recoJet.SetPtEtaPhiM(
             jetPts[ijet],
             jetEtas[ijet],
             jetPhis[ijet],
-            jetMasses[ijet] )
-        jet *= factor
-        jetP4s.append( jet )
-        print 'Jet {0:3.0f}, pt = {1:6.2f}, eta = {2:6.2f}, phi = {3:6.2f}, m = {4:6.2f}, area = {5:6.2f}'.format(
-            ijet,
-            jet.Pt(),
-            jet.Eta(),
-            jet.Phi(),
-            jet.M(),
-            jetAreas[ijet]
+            0.0 #jetMasses[ijet] 
             )
+
+        #print 'getting gen jet matched'
+        genJet = findGenJet( recoJet,
+                             genJets )
+
+        for irhoLabel in range(0,len(rhoLabels)) :
+            rhoLabel = rhoLabels[irhoLabel]
+            event.getByLabel( rhoLabel, rhoHandle )
+            rho = rhoHandle.product()[0]
+
+
+            jec.setJetEta(jetEtas[ijet])
+            jec.setJetPt(jetPts[ijet])
+            jec.setJetA(jetAreas[ijet])
+            jec.setRho(rho)
+            factor = jec.getCorrection()
+
+            if genJet is not None  :
+                ptRatioHists [ irhoLabel ].Fill( genJet.Pt(),  factor * recoJet.Pt() /genJet.Pt(),  npu )
+                etaRatioHists[ irhoLabel ].Fill( genJet.Eta(), factor * recoJet.Pt() /genJet.Pt(),  npu )
 
 
 f.cd()
