@@ -11,7 +11,7 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type12Analyzer :
     """Run 1 + 2 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix, veto11, useGenWeight, triggerFile, pdfWeight = "nominal"):
+    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix, veto11, useGenWeight, triggerFile, pdfWeight = "nominal", triggerWeight = "noWeight"):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
         self.triggerFileStr = triggerFile
@@ -19,6 +19,7 @@ class Type12Analyzer :
         self.veto11 = veto11
         self.useGenWeight=useGenWeight
         self.pdfWeight = pdfWeight
+        self.triggerWeight = triggerWeight
        
         label = 'ttbsmAna'+collectionLabelSuffix
 
@@ -189,13 +190,9 @@ class Type12Analyzer :
         self.topTagPt                    = ROOT.TH1F("topTagPt",                    "Top Tag Pt",               400,  0,  2000 )
         self.mttMass                     = ROOT.TH1F("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
         self.mttMassTriggerWeighted      = ROOT.TH1F("mttMassTriggerWeighted",        "mTT Mass",                 1000, 0,  5000 )
-        self.mttMassTriggerWeightedUp      = ROOT.TH1F("mttMassTriggerWeightedUp",        "mTT Mass",                 1000, 0,  5000 )
-        self.mttMassTriggerWeightedDown      = ROOT.TH1F("mttMassTriggerWeightedDown",        "mTT Mass",                 1000, 0,  5000 )
         self.mttMassFlatTriggerWeighted  = ROOT.TH1F("mttMassFlatTriggerWeighted",        "mTT Mass",                 1000, 0,  5000 )
         self.mttMassVeto11               = ROOT.TH1F("mttMassVeto11",               "mTT Mass",                 1000, 0,  5000 )
         self.mttMassTriggerWeightedVeto11  = ROOT.TH1F("mttMassTriggerWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
-        self.mttMassTriggerWeightedUpVeto11  = ROOT.TH1F("mttMassTriggerWeightedUpVeto11",  "mTT Mass",                 1000, 0,  5000 )
-        self.mttMassTriggerWeightedDownVeto11  = ROOT.TH1F("mttMassTriggerWeightedDownVeto11",  "mTT Mass",                 1000, 0,  5000 )
         self.mttMassFlatTriggerWeightedVeto11  = ROOT.TH1F("mttMassFlatTriggerWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
         self.mttMassJet1MassDown         = ROOT.TH1F("mttMassJet1MassDown",         "mTT Mass",                 1000, 0,  5000 )
         self.mttBkgWithMistag            = ROOT.TH1F("mttBkgWithMistag",            "mTT Mass",                 1000, 0,  5000 )
@@ -297,14 +294,10 @@ class Type12Analyzer :
 
         self.mttMass.Sumw2() 
         self.mttMassTriggerWeighted.Sumw2() 
-        self.mttMassTriggerWeightedUp.Sumw2()
-        self.mttMassTriggerWeightedDown.Sumw2()
         self.mttMassFlatTriggerWeighted.Sumw2() 
         self.mttMassVeto11.Sumw2() 
 
         self.mttMassTriggerWeightedVeto11.Sumw2() 
-        self.mttMassTriggerWeightedUpVeto11.Sumw2()
-        self.mttMassTriggerWeightedDownVeto11.Sumw2()
         self.mttMassFlatTriggerWeightedVeto11.Sumw2() 
         self.runPairs = []    
 
@@ -372,18 +365,22 @@ class Type12Analyzer :
             iweight = iweight / len(pdfs) * 0.5
             weight = sqrt(weight*weight + iweight*iweight)
 
-        jetTriggerWeight = 1.0
-        jetTriggerWeightUp = 1.0
-        jetTriggerWeightDown = 1.0
-        if topJets[0].pt() < 800:
-            bin0 = self.triggerHist.FindBin(topJets[0].pt())
-            jetTriggerWeight = self.triggerHist.GetBinContent(bin0)
-            deltaTriggerEff  = 0.5*(1.0-jetTriggerWeight)
-            jetTriggerWeightUp  =   jetTriggerWeight + deltaTriggerEff
-            jetTriggerWeightDown  = jetTriggerWeight - deltaTriggerEff
-            jetTriggerWeightUp  = min(1.0,jetTriggerWeightUp)
-            jetTriggerWeightDown  = max(0.0,jetTriggerWeightDown)
-
+        if self.triggerWeight != "noWeight" :
+            jetTriggerWeight = 1.0
+            if topJets[0].pt() < 800:
+                bin0 = self.triggerHist.FindBin(topJets[0].pt())
+                jetTriggerWeight = self.triggerHist.GetBinContent(bin0)
+                deltaTriggerEff  = 0.5*(1.0-jetTriggerWeight)
+                jetTriggerWeightUp  =   jetTriggerWeight + deltaTriggerEff
+                jetTriggerWeightDown  = jetTriggerWeight - deltaTriggerEff
+                jetTriggerWeightUp  = min(1.0,jetTriggerWeightUp)
+                jetTriggerWeightDown  = max(0.0,jetTriggerWeightDown)
+                if self.triggerWeight == "nominal" :
+                    weight = weight*jetTriggerWeight
+                if self.triggerWeight == "up" :
+                    weight = weight*jetTriggerWeightUp
+                if self.triggerWeight == "down" :
+                    weight = weight*jetTriggerWeightDown
 
         flatTriggerWeight = 1.0
         if topJets[0].pt() < 450:
@@ -648,9 +645,7 @@ class Type12Analyzer :
                                        event.object().id().luminosityBlock() ,
                                        ttMass,
                                        hasBTag1] )
-            self.mttMassTriggerWeighted.Fill( ttMass, weight*jetTriggerWeight  )
-            self.mttMassTriggerWeightedUp.Fill( ttMass, weight*jetTriggerWeightUp  )
-            self.mttMassTriggerWeightedDown.Fill( ttMass, weight*jetTriggerWeightDown  )
+            self.mttMassTriggerWeighted.Fill( ttMass, weight  )
             self.mttMassFlatTriggerWeighted.Fill( ttMass, weight*flatTriggerWeight  )
             if not self.useMC :
                 self.mttMassJet1MassDown.Fill( ttMassJet1MassDown, weight  )
@@ -673,9 +668,7 @@ class Type12Analyzer :
           passType11     = topTag0 and topTag1
           if not passType11 and isJetTagged:
             self.mttMassVeto11.Fill( ttMass, weight  )
-            self.mttMassTriggerWeightedVeto11.Fill( ttMass, weight*jetTriggerWeight  )
-            self.mttMassTriggerWeightedUpVeto11.Fill( ttMass, weight*jetTriggerWeightUp  )
-            self.mttMassTriggerWeightedDownVeto11.Fill( ttMass, weight*jetTriggerWeightDown  )
+            self.mttMassTriggerWeightedVeto11.Fill( ttMass, weight  )
             self.mttMassFlatTriggerWeightedVeto11.Fill( ttMass, weight*flatTriggerWeight  )
 
 

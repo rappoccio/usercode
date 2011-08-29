@@ -11,14 +11,14 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type11Analyzer :
     """Run 1 + 1 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile, collectionLabelSuffix, useGenWeight, triggerFile, pdfWeight="nominal"):
+    def __init__(self, useMC, outfile, mistagFile, collectionLabelSuffix, useGenWeight, triggerFile, pdfWeight="nominal", triggerWeight = "noWeight"):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
         self.triggerFileStr = triggerFile
         self.useMC = useMC
         self.useGenWeight = useGenWeight
         self.pdfWeight = pdfWeight
-        
+        self.triggerWeight = triggerWeight
 		
         label = 'ttbsmAna'+collectionLabelSuffix
 
@@ -138,15 +138,11 @@ class Type11Analyzer :
         self.mttCandMass          = ROOT.TH1D("mttCandMass",                     "mTT Cand Mass",                 1000, 0,  5000 )
         self.mttMass              = ROOT.TH1D("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
         self.mttMassTriggerWeighted   = ROOT.TH1D("mttMassTriggerWeighted",                     "mTT Mass",                 1000, 0,  5000 )
-        self.mttMassTriggerWeightedUp   = ROOT.TH1D("mttMassTriggerWeightedUp",                     "mTT Mass",                 1000, 0,  5000 )
-        self.mttMassTriggerWeightedDown   = ROOT.TH1D("mttMassTriggerWeightedDown",                     "mTT Mass",                 1000, 0,  5000 )
         self.cutflow              = ROOT.TH1D("cutflow",                     "cutflow",                 7, 0,  7 ) 
         
         self.mttMass.Sumw2()
         self.runPairs = []
         self.mttMassTriggerWeighted.Sumw2()
-        self.mttMassTriggerWeightedUp.Sumw2()
-        self.mttMassTriggerWeightedDown.Sumw2()
 
     def analyze(self, event) :
         """Analyzes event"""
@@ -173,17 +169,22 @@ class Type11Analyzer :
             event.getByLabel( self.weightsLabel, self.weightsHandle )
             weight = self.weightsHandle.product()[0]
 
-        jetTriggerWeight = 1.0
-        jetTriggerWeightUp = 1.0
-        jetTriggerWeightDown = 1.0
-        if topJets[0].pt() < 800:
-            bin0 = self.triggerHist.FindBin(topJets[0].pt()) 
-            jetTriggerWeight = self.triggerHist.GetBinContent(bin0)
-            deltaTriggerEff  = 0.5*(1.0-jetTriggerWeight)
-            jetTriggerWeightUp  =   jetTriggerWeight + deltaTriggerEff
-            jetTriggerWeightDown  = jetTriggerWeight - deltaTriggerEff
-            jetTriggerWeightUp  = min(1.0,jetTriggerWeightUp)
-            jetTriggerWeightDown  = max(0.0,jetTriggerWeightDown)
+        if self.triggerWeight != "noWeight" :
+            jetTriggerWeight = 1.0
+            if topJets[0].pt() < 800:
+                bin0 = self.triggerHist.FindBin(topJets[0].pt()) 
+                jetTriggerWeight = self.triggerHist.GetBinContent(bin0)
+                deltaTriggerEff  = 0.5*(1.0-jetTriggerWeight)
+                jetTriggerWeightUp  =   jetTriggerWeight + deltaTriggerEff
+                jetTriggerWeightDown  = jetTriggerWeight - deltaTriggerEff
+                jetTriggerWeightUp  = min(1.0,jetTriggerWeightUp)
+                jetTriggerWeightDown  = max(0.0,jetTriggerWeightDown)
+                if self.triggerWeight == "nominal" :
+                    weight = weight*jetTriggerWeight
+                if self.triggerWeight == "up" :
+                    weight = weight*jetTriggerWeightUp
+                if self.triggerWeight == "down" :
+                    weight = weight*jetTriggerWeightDown
 
 
         #print 'topJets[0].pt() ' + str(topJets[0].pt())    
@@ -293,9 +294,7 @@ class Type11Analyzer :
                                            event.object().id().event(),
                                            event.object().id().luminosityBlock() ,
                                            ttMass] )
-                self.mttMassTriggerWeighted.Fill( ttMass, weight*jetTriggerWeight )   
-                self.mttMassTriggerWeightedUp.Fill( ttMass, weight*jetTriggerWeightUp )   
-                self.mttMassTriggerWeightedDown.Fill( ttMass, weight*jetTriggerWeightDown )   
+                self.mttMassTriggerWeighted.Fill( ttMass, weight )   
 
             #background estiation
             x = ROOT.gRandom.Uniform()        

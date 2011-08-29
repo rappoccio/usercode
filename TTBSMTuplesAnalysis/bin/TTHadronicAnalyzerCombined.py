@@ -65,6 +65,12 @@ parser.add_option('-t', '--triggerFile', metavar='N', type='string', action='sto
                   help='trigger file')
 
 
+parser.add_option('--triggerWeight', metavar='N', type='string', action='store',
+                  default='noWeight',
+                  dest='triggerWeight',
+                  help='noWeight, or weight trigger as nominal, up, or down')
+
+
 (options, args) = parser.parse_args()
 
 files = glob.glob( options.dirs + "*.root" )
@@ -115,14 +121,14 @@ triggerSelection = TriggerAndEventSelectionObject( myAnaTrigs )
 if options.useMC :  print "Running on MC!"
 
 if options.analyzer == "Type12Analyzer" :
-    analyzer = Type12Analyzer(options.useMC, options.outfile + '_type12_'+options.collectionLabelSuffix,
+    analyzer = Type12Analyzer(options.useMC, options.outfile + '_type12_'+options.collectionLabelSuffix + '_trigger_' + options.triggerWeight,
                               options.mistagFile, options.collectionLabelSuffix,
-                              options.veto11, options.useGenWeight, options.triggerFile, options.pdfWeight )
+                              options.veto11, options.useGenWeight, options.triggerFile, options.pdfWeight, options.triggerWeight )
 elif options.analyzer == "MistagMaker" :
     analyzer = MistagMaker( options.outfile + '_mistag', options.useGenWeight)
 elif options.analyzer == "Type11Analyzer" :
-    analyzer = Type11Analyzer(options.useMC, options.outfile + '_type11_'+options.collectionLabelSuffix,
-                              options.mistagFile, options.collectionLabelSuffix, options.useGenWeight, options.triggerFile, options.pdfWeight)
+    analyzer = Type11Analyzer(options.useMC, options.outfile + '_type11_'+options.collectionLabelSuffix + '_trigger_' + options.triggerWeight,
+                              options.mistagFile, options.collectionLabelSuffix, options.useGenWeight, options.triggerFile, options.pdfWeight, options.triggerWeight)
 elif options.analyzer == "MistagMakerType1" :
     analyzer = MistagMakerType1( options.outfile + '_mistag1', options.useGenWeight)
 elif options.analyzer == "TTKinPlotsAnalyzer" :
