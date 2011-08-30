@@ -179,11 +179,11 @@ class Type11Analyzer :
                 jetTriggerWeightDown  = jetTriggerWeight - deltaTriggerEff
                 jetTriggerWeightUp  = min(1.0,jetTriggerWeightUp)
                 jetTriggerWeightDown  = max(0.0,jetTriggerWeightDown)
-                if self.triggerWeight == "nominal" :
+                if self.triggerWeight == "Nominal" :
                     weight = weight*jetTriggerWeight
-                if self.triggerWeight == "up" :
+                if self.triggerWeight == "Up" :
                     weight = weight*jetTriggerWeightUp
-                if self.triggerWeight == "down" :
+                if self.triggerWeight == "Down" :
                     weight = weight*jetTriggerWeightDown
 
 
