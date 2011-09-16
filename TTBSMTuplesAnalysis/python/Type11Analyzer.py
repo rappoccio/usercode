@@ -222,7 +222,7 @@ class Type11Analyzer :
 
         #ptCuts = topJets[0].pt() > 450 and topJets[1].pt() > 450
         ptCuts = topJets[0].pt() > 350 and topJets[1].pt() > 350
-        etaCuts = abs(topJets[0].eta()) < 2.4 and abs(topJets[1].eta()) < 2.4
+        etaCuts = abs(topJets[0].Rapidity()) < 2.4 and abs(topJets[1].Rapidity()) < 2.4
         deltaPhiCut = abs(deltaPhi)>2.1
         passType11KinCuts   = ptCuts and etaCuts and deltaPhiCut
 
