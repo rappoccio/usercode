@@ -13,7 +13,7 @@
 //
 // Original Author:  Benedikt Hegner
 //         Created:  Sat July 15 11:39:14 CDT 2011
-// $Id$
+// $Id: BoostedTopTrigger.cc,v 1.1 2011/07/15 20:26:34 srappocc Exp $
 //
 //
 
@@ -81,14 +81,17 @@ class BoostedTopTrigger : public edm::EDAnalyzer {
       // ----------member data ---------------------------
 
       std::string targetTrigger;
+      double threshold_;
       std::string theHltProcessName; 
       bool verbose_;
       InputTag nameOfHLTFinalFilterModule;
       InputTag jetTag1_;     
       InputTag jetTag2_;
 
-  std::map<std::string, TH1F*> histograms1d;
-      std::map<std::string, TH2F*> histograms2d;
+  TH1D * jetPtType11Num;
+  TH1D * jetPtType11Den;
+  TH1D * jetPtType12Num;
+  TH1D * jetPtType12Den;
 
   int nPassed11_;
   int nTotal11_;
@@ -113,12 +116,22 @@ BoostedTopTrigger::BoostedTopTrigger(const edm::ParameterSet& iConfig)
   verbose_ = iConfig.getUntrackedParameter<bool>("Verbose", false);
   theHltProcessName = iConfig.getUntrackedParameter<std::string>("HltProcessName", "HLT");
   targetTrigger = iConfig.getUntrackedParameter<std::string>("TargetTrigger", "HLT_Jet300_v1");
+  threshold_ = iConfig.getUntrackedParameter<double>("threshold", 300.0);
   jetTag1_ = iConfig.getUntrackedParameter<edm::InputTag>("jetTag1");
   jetTag2_ = iConfig.getUntrackedParameter<edm::InputTag>("jetTag2");
 
   edm::Service<TFileService> fs;
   nPassed11_ = nTotal11_ = nPassed12_ = nTotal12_ = 0;
+
+
+  jetPtType11Num = fs->make<TH1D>("jetPtType11Num",  "Jet p_{T}, Type 1 + 1, Numerator",   150, 0., 1500.);
+  jetPtType11Den = fs->make<TH1D>("jetPtType11Den",  "Jet p_{T}, Type 1 + 1, Denominator", 150, 0., 1500.);
+
+
+  jetPtType12Num = fs->make<TH1D>("jetPtType12Num",  "Jet p_{T}, Type 1 + 1, Numerator",   150, 0., 1500.);
+  jetPtType12Den = fs->make<TH1D>("jetPtType12Den",  "Jet p_{T}, Type 1 + 1, Denominator", 150, 0., 1500.);
 }
+
 
 
 BoostedTopTrigger::~BoostedTopTrigger()
@@ -186,17 +199,19 @@ BoostedTopTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	  mass1 && substructure1
 	  ) {
        
+       jetPtType11Den->Fill( jet0.pt() );
        pass11 = true;
        ++nTotal11_;
        
        bool passedTrig = false;
        if ( foundHLTTrigObjs.size() != 0 ){
 	 double trigPt = foundHLTTrigObjs[0].pt();
-	 if ( trigPt > 300 ) {
+	 if ( trigPt > threshold_ ) {
 	   passedTrig = true;
 	 }
        }
        if ( passedTrig ) {
+	 jetPtType11Num->Fill( jet0.pt() );
 	 ++nPassed11_;
        }
      }
@@ -226,6 +241,8 @@ BoostedTopTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    mass1 &&
 	    jet2.pt() > 30
 	    ) {
+
+	 jetPtType12Den->Fill( jet0.pt() );
        
 	 pass12 = true;
 	 ++nTotal12_;
@@ -238,6 +255,7 @@ BoostedTopTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	   }
 	 }
 	 if ( passedTrig ) {
+	   jetPtType12Num->Fill( jet0.pt() );
 	   ++nPassed12_;
 	 }
        }
