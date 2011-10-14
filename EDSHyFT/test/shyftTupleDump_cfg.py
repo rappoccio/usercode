@@ -33,6 +33,10 @@ options.parseArguments()
 
 print options
 
+useData = True
+if options.useData == 0 :
+    useData = False
+
 import sys
 
 process.source = cms.Source("PoolSource",
@@ -58,34 +62,59 @@ payloads = [
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
 
-from Analysis.SHyFT.shyftPFSelection_cfi import shyftPFSelection as shyftPFSelectionInput
+from Analysis.SHyFT.shyftselection_cfi import wplusjetsAnalysis as shyftSelectionInput
 
 
 process.load('Analysis.PdfWeights.pdfWeightProducer_cfi')
 
 
-process.pfShyftProducer = cms.EDFilter('EDSHyFTPFSelector',
-                                    shyftPFSelection = shyftPFSelectionInput.clone(
-                                           jetSrc = cms.InputTag('goodPatJetsPFlow'),
-                                           jecPayloads = cms.vstring( payloads )
-                                        )
-                                    )
+process.pfShyftProducerMu = cms.EDFilter('EDSHyFTSelector',
+                                    shyftSelection = shyftSelectionInput.clone(
+        muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
+        electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
+        metSrc = cms.InputTag('patMETsPFlow'),
+        jetSrc = cms.InputTag('goodPatJetsPFlow'),
+        pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
+        ePlusJets = cms.bool( False ),
+        muPlusJets = cms.bool( True ),
+        jetPtMin = cms.double(30.0),##
+        use42X  = cms.bool(True),
+        minJets = cms.int32(1),
+        metMin = cms.double(0.0),
+	muPtMin = cms.double(35.0),
+        identifier = cms.string('PFMu'),
+        cutsToIgnore=cms.vstring( ['Trigger'] ),
+        useData = cms.bool(useData)
+        #,jecPayloads = cms.vstring( payloads )
+        )
+        )
+
+process.pfShyftProducerEle = cms.EDFilter('EDSHyFTSelector',
+                                    shyftSelection = shyftSelectionInput.clone(
+        muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
+        electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
+        metSrc = cms.InputTag('patMETsPFlow'),
+        jetSrc = cms.InputTag('goodPatJetsPFlow'),
+        pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
+        ePlusJets = cms.bool( True ),
+        muPlusJets = cms.bool( False ),
+        jetPtMin = cms.double(30.0),##
+        eEtCut = cms.double(45.0),
+        use42X  = cms.bool(True),
+        minJets = cms.int32(1),
+        metMin = cms.double(0.0),
+	muPtMin = cms.double(35.0),
+        identifier = cms.string('PFEle'),
+        cutsToIgnore=cms.vstring( ['Trigger'] ),
+        useData = cms.bool(useData)
+        #,jecPayloads = cms.vstring( payloads )
+        )
+        )
 
 
-## std sequence to produce the kinematic fit for semi-leptonic events
-process.load('TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Muons_cfi')
-
-process.kinFitTtSemiLepEvent.jets = cms.InputTag("pfShyftProducer", "jets")
-process.kinFitTtSemiLepEvent.mets = cms.InputTag("pfShyftProducer", "MET")
-process.kinFitTtSemiLepEvent.leps = cms.InputTag("pfShyftProducer", "muons")
-
-process.load("TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Muons_cfi")
-
-
-
-process.pfShyftTupleJets = cms.EDProducer(
+process.pfShyftTupleJetsMu = cms.EDProducer(
     "CandViewNtpProducer", 
-    src = cms.InputTag("pfShyftProducer", "jets"),
+    src = cms.InputTag("pfShyftProducerMu", "jets"),
     lazyParser = cms.untracked.bool(True),
     eventInfo = cms.untracked.bool(False),
     variables = cms.VPSet(
@@ -121,17 +150,20 @@ process.pfShyftTupleJets = cms.EDProducer(
     )
 
 if not options.useData :
-    process.pfShyftTupleJets.variables.append(
+    process.pfShyftTupleJetsMu.variables.append(
         cms.PSet(
             tag = cms.untracked.string("flavor"),
             quantity = cms.untracked.string("partonFlavour()")
             )
         )
 
+process.pfShyftTupleJetsEle = process.pfShyftTupleJetsMu.clone(
+    src = cms.InputTag("pfShyftProducerEle", "jets"),
+    )
 
 process.pfShyftTupleMuons = cms.EDProducer(
     "CandViewNtpProducer", 
-    src = cms.InputTag("pfShyftProducer", "muons"),
+    src = cms.InputTag("pfShyftProducerMu", "muons"),
     lazyParser = cms.untracked.bool(True),
     eventInfo = cms.untracked.bool(False),
     variables = cms.VPSet(
@@ -158,9 +190,9 @@ process.pfShyftTupleMuons = cms.EDProducer(
     )
 
 
-process.pfShyftTupleMET = cms.EDProducer(
+process.pfShyftTupleMETMu = cms.EDProducer(
     "CandViewNtpProducer", 
-    src = cms.InputTag("pfShyftProducer", "MET"),
+    src = cms.InputTag("pfShyftProducerMu", "MET"),
     lazyParser = cms.untracked.bool(True),
     eventInfo = cms.untracked.bool(False),
     variables = cms.VPSet(
@@ -175,10 +207,13 @@ process.pfShyftTupleMET = cms.EDProducer(
         )  
     )
 
+process.pfShyftTupleMETEle = process.pfShyftTupleMETMu.clone(
+    src = cms.InputTag("pfShyftProducerEle", "MET"),
+    )
 
 process.pfShyftTupleElectrons = cms.EDProducer(
     "CandViewNtpProducer", 
-    src = cms.InputTag("pfShyftProducer", "electrons"),
+    src = cms.InputTag("pfShyftProducerEle", "electrons"),
     lazyParser = cms.untracked.bool(True),
     eventInfo = cms.untracked.bool(False),
     variables = cms.VPSet(
@@ -202,16 +237,24 @@ process.pfShyftTupleElectrons = cms.EDProducer(
     )
 
 
-process.p = cms.Path(
-    process.pfShyftProducer*
-    process.pfShyftTupleJets*
+process.p1 = cms.Path(
+    process.pfShyftProducerMu*
+    process.pfShyftTupleJetsMu*
     process.pfShyftTupleMuons*
-    process.pfShyftTupleElectrons*
-    process.pfShyftTupleMET
+    process.pfShyftTupleMETMu
     )
 
+process.p2 = cms.Path(
+    process.pfShyftProducerEle*
+    process.pfShyftTupleJetsEle*
+    process.pfShyftTupleElectrons*
+    process.pfShyftTupleMETEle
+    )
+
+
 if options.usePDFs :
-    process.p += process.pdfWeightProducer
+    process.p1 += process.pdfWeightProducer
+    process.p2 += process.pdfWeightProducer
 
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
@@ -221,7 +264,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string("TTJets_TuneZ2_7TeV_madgraphTauola_Summer11_PU_S4_START42_V11_v1_shyftDump.root"),
-                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
+                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p1','p2') ),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       #'keep *_pfShyftProducer_*_*',
                                                                       'keep *_pfShyftTuple*_*_*',

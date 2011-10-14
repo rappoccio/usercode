@@ -64,6 +64,14 @@ parser.add_option('--lftagSys', metavar='F', type='string', action='store',
                   help='LFTag Systematic variation. Options are "nominal, up, down"')
 
 
+# LFTag systematics
+parser.add_option('--lepType', metavar='F', type='int', action='store',
+                  default=0,
+                  dest='lepType',
+                  help='Lepton type. Options are 0 = muons, 1 = electrons')
+
+
+
 (options, args) = parser.parse_args()
 
 argv = []
@@ -106,10 +114,14 @@ ptMu = ROOT.TH1F("ptMu", "p_{T} of Muon", 200, 0., 200.)
 ptEle= ROOT.TH1F("ptEle", "p_{T} of Electron", 200, 0., 200.)
 ptJet0 = ROOT.TH1F("ptJet0", "p_{T} Of Leading Jet", 300, 0., 600.)
 
+
+
 secvtxMassPlots = []
 lepEtaPlots = []
 centralityPlots = []
 sumPtPlots = []
+jet1PtPlots = []
+
 
 maxJets = 5
 maxTags = 2
@@ -119,14 +131,24 @@ allVarPlots = [
     secvtxMassPlots,
     lepEtaPlots,
     centralityPlots,
-    sumPtPlots
+    sumPtPlots,
+    jet1PtPlots
     ]
-names = ['secvtxMass','lepEta','centrality','sumPt']
-titles = ['SecVtx Mass','Lepton #eta','Centrality','#sum p_{T}']
+names = ['secvtxMass','lepEta','centrality','sumPt', 'jetPt1']
+titles = ['SecVtx Mass','Lepton #eta','Centrality','#sum p_{T}','Jet 1 p_{T}']
 bounds = [ [40,0.,10.],
            [40,0.,2.5],
            [40,0.,1.0],
-           [50,0.,500.] ]
+           [50,0.,500.],
+           [50,0.,500.]
+           ]
+
+mbb = []
+dRbb = []
+for ijet in range(0,maxJets+1) :
+    mbb.append( ROOT.TH1F("mbb_" + str(ijet) + 'j', "Mass of bb Pair", 150, 0., 1500.) )
+    dRbb.append( ROOT.TH1F("dRbb_" + str(ijet) + 'j', "#Delta R_{bb}", 150, -ROOT.TMath.Pi(), ROOT.TMath.Pi() ) )
+
 
 for iplot in range(0,len(allVarPlots)) :
     varPlots = allVarPlots[iplot]
@@ -160,11 +182,23 @@ jecUnc = ROOT.JetCorrectionUncertainty( jecParStr )
 
 # Kinematic cuts:
 jetPtMin = 30.0
-muonPtMin = 45.0
-electronPtMin = 45.0
+leadJetPtMin = 30.0
 looseMuonIsoMax = 0.2
 looseElectronIsoMax = 0.2
 ssvheCut = 2.74
+
+
+if options.lepType == 0 :
+    muonPtMin = 35.0
+    electronPtMin = 20.0
+    metMin = 20.0
+    lepStr = 'Mu'
+else:
+    muonPtMin = 35.0
+    electronPtMin = 45.0
+    metMin = 20.0
+    lepStr = 'Ele'
+
 
 # Per-jet scale factors:
 sfB = 1.00
@@ -190,6 +224,15 @@ elif options.jecSys == 'down' :
 flatJecUnc = 0.05
 
 
+cutFlow = [
+    [0,'Inclusive'],
+    [0,'>=1 Lepton'],
+    [0,'0 other lepton'],
+    [0,'MET Cut min'],
+    [0,'>= Jet'],
+    [0,'Jet pt 0 > min']
+    ]
+
 
 events = Events (files)
 
@@ -200,42 +243,42 @@ if options.useLoose :
     postfix = "Loose"
 
 jetPtHandle         = Handle( "std::vector<float>" )
-jetPtLabel    = ( "pfShyftTupleJets" + postfix,   "pt" )
+jetPtLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "pt" )
 jetEtaHandle         = Handle( "std::vector<float>" )
-jetEtaLabel    = ( "pfShyftTupleJets" + postfix,   "eta" )
+jetEtaLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "eta" )
 jetPhiHandle         = Handle( "std::vector<float>" )
-jetPhiLabel    = ( "pfShyftTupleJets" + postfix,   "phi" )
+jetPhiLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "phi" )
 jetMassHandle         = Handle( "std::vector<float>" )
-jetMassLabel    = ( "pfShyftTupleJets" + postfix,   "mass" )
+jetMassLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "mass" )
 jetSecvtxMassHandle         = Handle( "std::vector<float>" )
-jetSecvtxMassLabel    = ( "pfShyftTupleJets" + postfix,   "secvtxMass" )
+jetSecvtxMassLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "secvtxMass" )
 jetSSVHEHandle         = Handle( "std::vector<float>" )
-jetSSVHELabel    = ( "pfShyftTupleJets" + postfix,   "ssvhe" )
+jetSSVHELabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "ssvhe" )
 jetFlavorHandle         = Handle( "std::vector<float>" )
-jetFlavorLabel    = ( "pfShyftTupleJets" + postfix,   "flavor" )
+jetFlavorLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "flavor" )
 
 muonPtHandle         = Handle( "std::vector<float>" )
-muonPtLabel    = ( "pfShyftTupleMuons" + postfix,   "pt" )
+muonPtLabel    = ( "pfShyftTupleMuons"+  postfix,   "pt" )
 muonEtaHandle         = Handle( "std::vector<float>" )
-muonEtaLabel    = ( "pfShyftTupleMuons" + postfix,   "eta" )
+muonEtaLabel    = ( "pfShyftTupleMuons"+  postfix,   "eta" )
 muonPhiHandle         = Handle( "std::vector<float>" )
-muonPhiLabel    = ( "pfShyftTupleMuons" + postfix,   "phi" )
+muonPhiLabel    = ( "pfShyftTupleMuons"+  postfix,   "phi" )
 muonPfisoHandle         = Handle( "std::vector<float>" )
-muonPfisoLabel    = ( "pfShyftTupleMuons" + postfix,   "pfiso" )
+muonPfisoLabel    = ( "pfShyftTupleMuons"+  postfix,   "pfiso" )
 
 electronPtHandle         = Handle( "std::vector<float>" )
-electronPtLabel    = ( "pfShyftTupleElectrons" + postfix,   "pt" )
+electronPtLabel    = ( "pfShyftTupleElectrons"+  postfix,   "pt" )
 electronEtaHandle         = Handle( "std::vector<float>" )
-electronEtaLabel    = ( "pfShyftTupleElectrons" + postfix,   "eta" )
+electronEtaLabel    = ( "pfShyftTupleElectrons"+  postfix,   "eta" )
 electronPhiHandle         = Handle( "std::vector<float>" )
-electronPhiLabel    = ( "pfShyftTupleElectrons" + postfix,   "phi" )
+electronPhiLabel    = ( "pfShyftTupleElectrons"+  postfix,   "phi" )
 electronPfisoHandle         = Handle( "std::vector<float>" )
-electronPfisoLabel    = ( "pfShyftTupleElectrons" + postfix,   "pfiso" )
+electronPfisoLabel    = ( "pfShyftTupleElectrons"+  postfix,   "pfiso" )
 
 metHandle = Handle( "std::vector<float>" )
-metLabel = ("pfShyftTupleMET" + postfix,   "pt" )
+metLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "pt" )
 metPhiHandle = Handle( "std::vector<float>" )
-metPhiLabel = ("pfShyftTupleMET" + postfix,   "phi" )
+metPhiLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "phi" )
 
 
 
@@ -248,6 +291,7 @@ ipercentDone = 0
 ipercentDoneLast = -1
 print "Start looping"
 for event in events:
+    cutFlow[0][0] += 1
     ipercentDone = int(percentDone)
     if ipercentDone != ipercentDoneLast :
         ipercentDoneLast = ipercentDone
@@ -255,70 +299,55 @@ for event in events:
             count, ntotal, ipercentDone )
     count = count + 1
     percentDone = float(count) / float(ntotal) * 100.0
-    
 
     #Require exactly one lepton (e or mu)
 
-    lepType = 0 # Let 0 = muon, 1 = electron    
     event.getByLabel (muonPtLabel, muonPtHandle)
     if not muonPtHandle.isValid():
-        continue
-    muonPts = muonPtHandle.product()
-
-    event.getByLabel (muonEtaLabel, muonEtaHandle)
-    muonEtas = muonEtaHandle.product()
-    event.getByLabel (muonPhiLabel, muonPhiHandle)
-    muonPhis = muonPhiHandle.product()
-
-
+        muonPts = None
+    else :
+        muonPts = muonPtHandle.product()
     
     event.getByLabel (electronPtLabel, electronPtHandle)
     if not electronPtHandle.isValid():
-        continue
-    electronPts = electronPtHandle.product()
-    event.getByLabel (electronEtaLabel, electronEtaHandle)
-    electronEtas = electronEtaHandle.product()
-    event.getByLabel (electronPhiLabel, electronPhiHandle)
-    electronPhis = electronPhiHandle.product()
-
+        electronPts = None
+    else :
+        electronPts = electronPtHandle.product()
 
     # Get the isolation values if needed
     if options.useLoose :
-        event.getByLabel (muonPfisoLabel, muonPfisoHandle)
-        if not muonPfisoHandle.isValid():
-            continue
-        muonPfisos = muonPfisoHandle.product()
-        event.getByLabel (electronPfisoLabel, electronPfisoHandle)
-        if not electronPfisoHandle.isValid():
-            continue
-        electronPfisos = electronPfisoHandle.product()
-
-
-    
+        if muonPts is not None :
+            event.getByLabel (muonPfisoLabel, muonPfisoHandle)
+            if not muonPfisoHandle.isValid():
+                continue
+            muonPfisos = muonPfisoHandle.product()
+        if electronPts is not None:
+            event.getByLabel (electronPfisoLabel, electronPfisoHandle)
+            if not electronPfisoHandle.isValid():
+                continue
+            electronPfisos = electronPfisoHandle.product()
 
     nMuonsVal = 0
-    for imuonPt in range(0,len(muonPts)):
-        muonPt = muonPts[imuonPt]
-        if muonPt > muonPtMin :
-            if options.useLoose :
-                if muonPfisos[imuonPt] / muonPt < looseMuonIsoMax :
-                    continue
+    if muonPts is not None:
+        for imuonPt in range(0,len(muonPts)):
+            muonPt = muonPts[imuonPt]
+            if muonPt > muonPtMin :
+                if options.useLoose :
+                    if muonPfisos[imuonPt] / muonPt < looseMuonIsoMax :
+                        continue
+                    else :
+                        nMuonsVal += 1
                 else :
                     nMuonsVal += 1
-                    lepType = 0
-            else :
-                nMuonsVal += 1
-                lepType = 0                
                     
-    nMuons.Fill( nMuonsVal )
-    if nMuonsVal > 0 :
-        ptMu.Fill( muonPts[0] )
+        nMuons.Fill( nMuonsVal )
+        if nMuonsVal > 0 :
+            ptMu.Fill( muonPts[0] )
 
-    event.getByLabel (electronPtLabel, electronPtHandle)
-    electronPts = electronPtHandle.product()
 
-    nElectronsVal = 0
-    if nMuonsVal == 0 :
+
+    if electronPts is not None:
+        nElectronsVal = 0
         for ielectronPt in range(0,len(electronPts)):
             electronPt = electronPts[ielectronPt]
             if electronPt > electronPtMin :
@@ -327,25 +356,58 @@ for event in events:
                         continue
                     else :
                         nElectronsVal += 1
-                        lepType = 1
                 else :
                     nElectronsVal += 1
-                    lepType = 1
-                        
-    nElectrons.Fill( nElectronsVal )
+
+        nElectrons.Fill( nElectronsVal )
 
 
     # Require exactly one lepton
-    if nMuonsVal + nElectronsVal != 1 :
+    if muonPts is None and electronPts is None :
         continue
 
-    lepEta = -999.0
-    if nMuonsVal > 0 :
-        lepEta = muonEtas[0]
-    else :
-        lepEta = electronEtas[0]
+    cutFlow[1][0] += 1
 
-    # Now get the number of jets
+
+    if options.lepType == 0 and muonPts is None :
+        continue
+    if options.lepType == 1 and electronPts is None :
+        continue
+    
+    cutFlow[2][0] += 1
+
+    # Now get the MET
+    event.getByLabel( metLabel, metHandle )
+    metRaw = metHandle.product()[0]
+    event.getByLabel( metPhiLabel, metPhiHandle )
+    metPhiRaw = metPhiHandle.product()[0]
+
+    if metRaw < metMin :
+        continue
+
+    cutFlow[3][0] += 1
+
+    jets = []
+    taggedJets = []
+    met_px = metRaw * math.cos( metPhiRaw )
+    met_py = metRaw * math.sin( metPhiRaw )
+
+
+    # Now get the number of jets and the rest of the lepton 4-vector
+
+    if muonPts is not None:
+        event.getByLabel (muonEtaLabel, muonEtaHandle)
+        muonEtas = muonEtaHandle.product()
+        event.getByLabel (muonPhiLabel, muonPhiHandle)
+        muonPhis = muonPhiHandle.product()
+
+    if electronPts is not None:
+        electronPts = electronPtHandle.product()
+        event.getByLabel (electronEtaLabel, electronEtaHandle)
+        electronEtas = electronEtaHandle.product()
+        event.getByLabel (electronPhiLabel, electronPhiHandle)
+        electronPhis = electronPhiHandle.product()
+
     event.getByLabel( jetPtLabel, jetPtHandle )
     jetPts = jetPtHandle.product()
     event.getByLabel( jetEtaLabel, jetEtaHandle )
@@ -355,15 +417,12 @@ for event in events:
     event.getByLabel( jetMassLabel, jetMassHandle )
     jetMasses = jetMassHandle.product()
 
-    event.getByLabel( metLabel, metHandle )
-    metRaw = metHandle.product()[0]
-    event.getByLabel( metPhiLabel, metPhiHandle )
-    metPhiRaw = metPhiHandle.product()[0]
 
-
-    jets = []
-    met_px = metRaw * math.cos( metPhiRaw )
-    met_py = metRaw * math.sin( metPhiRaw )
+    lepEta = -999.0
+    if options.lepType == 0 :
+        lepEta = muonEtas[0]
+    else :
+        lepEta = electronEtas[0]
 
 
     for ijet in range(0,len(jetPts) ):
@@ -407,6 +466,12 @@ for event in events:
     if njets < 1 :
         continue
 
+    cutFlow[4][0] += 1
+
+    if jets[0].Pt() < leadJetPtMin :
+        continue
+
+    cutFlow[5][0] += 1
 
     # Now get the number of SSVHEM tags and vertex mass.
     # If using MC, get the jet flavor also
@@ -429,6 +494,7 @@ for event in events:
     sumEt = 0.
     sumPt = 0.
     sumE = 0.
+    jet1Pt = -1.0
     effs = []
     # The vertex mass for the event is the vertex mass
     # of the first tagged jet (ordered by pt).
@@ -438,6 +504,8 @@ for event in events:
         jetP4 = jets[ijet]
         if jetP4.Pt() < jetPtMin :
             continue
+        if jet1Pt < 0.0 :
+            jet1Pt = jetP4.Pt()
         sumEt = sumEt + jetP4.Et()
         sumPt = sumPt + jetP4.Pt()
         sumE = sumE + jetP4.E()
@@ -463,6 +531,7 @@ for event in events:
         # Only consider tagged jets for the vertex mass
         if ssvhe > ssvheCut :
             ntags += 1
+            taggedJets.append( jetP4 )
             # The
             if secvtxMass <= 0.0001 : # Stop at the first nontrivial secvtx mass
                 secvtxMass = jetSecvtxMasses[ijet]
@@ -504,18 +573,29 @@ for event in events:
 
     # Now fill discriminator variables
 
+    if njets >= 2 :
+        taggedJet0 = jets[0]
+        taggedJet1 = jets[1]
+        bbCand = taggedJet0 + taggedJet1
+        imbb = bbCand.M()
+        idR = taggedJet0.DeltaR( taggedJet1 )
+        mbb[njets].Fill( imbb )
+        dRbb[njets].Fill( idR )
+
     if options.useData :
         # always fill the "total" 
         secvtxMassPlots[njets][ntags][3].Fill( secvtxMass ) 
         lepEtaPlots[njets][ntags][3].Fill( lepEta )
         centralityPlots[njets][ntags][3].Fill( sumEt / sumE )
         sumPtPlots[njets][ntags][3].Fill( sumPt )
+        jet1PtPlots[njets][ntags][3].Fill( jet1Pt )
 
         if flavorIndex >= 0 :
             secvtxMassPlots[njets][ntags][flavorIndex].Fill( secvtxMass ) # Fill each jet flavor individually
             lepEtaPlots[njets][ntags][flavorIndex].Fill( lepEta )
             centralityPlots[njets][ntags][flavorIndex].Fill( sumEt / sumE )
             sumPtPlots[njets][ntags][flavorIndex].Fill( sumPt )
+            jet1PtPlots[njets][ntags][flavorIndex].Fill( jet1Pt )
     else :
 
         # otherwise, loop over all of the SF combinatorics to tag itag out of njet jets
@@ -533,6 +613,7 @@ for event in events:
             lepEtaPlots[njets][jtag][3].Fill( lepEta, pTag )
             centralityPlots[njets][jtag][3].Fill( sumEt / sumE, pTag )
             sumPtPlots[njets][jtag][3].Fill( sumPt, pTag )
+            jet1PtPlots[njets][jtag][3].Fill( jet1Pt, pTag )
 
             if flavorIndex >= 0 :
                 if jtag > 0 :
@@ -540,7 +621,15 @@ for event in events:
                 lepEtaPlots[njets][jtag][flavorIndex].Fill( lepEta, pTag )
                 centralityPlots[njets][jtag][flavorIndex].Fill( sumEt / sumE, pTag )
                 sumPtPlots[njets][jtag][flavorIndex].Fill( sumPt, pTag )
+                jet1PtPlots[njets][jtag][flavorIndex].Fill( jet1Pt, pTag )
 
+
+
+print '----- Cut Flow -----'
+for cut in cutFlow:
+    print '{0:15s} = {1:10.0f}'.format(
+        cut[1], cut[0]
+        )
 
 f.cd()
 f.Write()
