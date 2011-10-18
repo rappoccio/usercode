@@ -11,10 +11,11 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type11Analyzer :
     """Run 1 + 1 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile, collectionLabelSuffix, useGenWeight, triggerFile, pdfWeight="nominal", triggerWeight = "noWeight"):
+    def __init__(self, useMC, outfile, mistagFile, collectionLabelSuffix, useGenWeight, triggerFile, modMassFile, pdfWeight="nominal", triggerWeight = "noWeight"):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
         self.triggerFileStr = triggerFile
+        self.modMassFileStr = modMassFile
         self.useMC = useMC
         self.useGenWeight = useGenWeight
         self.pdfWeight = pdfWeight
@@ -69,6 +70,10 @@ class Type11Analyzer :
         self.mttPredDistMod3MassFlatSubtract.GetObservedHist().Write()
         self.mttPredDistMod3MassFlatSubtract.GetTaggableHist().Write()
 
+        self.mttPredDistModMassQCDdistSubtract.GetPredictedHist().Write()
+        self.mttPredDistModMassQCDdistSubtract.GetObservedHist().Write()
+        self.mttPredDistModMassQCDdistSubtract.GetTaggableHist().Write()
+
         
         for pair in sorted(self.runPairs, key=itemgetter(3)) :
             print '{0:12.2f} : Run {1:15.0f}, LumiBlock {2:15.0f}, Event {3:30.0f}'.format(
@@ -81,6 +86,7 @@ class Type11Analyzer :
         print '4'
         self.mistagFile.Close()
         self.triggerFile.Close()
+        self.modMassFile.Close()
         print '5'
 
         print 'So long!'
@@ -107,10 +113,21 @@ class Type11Analyzer :
        
         self.triggerFile = ROOT.TFile(self.triggerFileStr + ".root")
         self.triggerFile.cd()
+        self.triggerFile.ls()
         self.triggerHist = self.triggerFile.Get("TYPE11_TRIGGER_EFFIC").Clone()
         self.triggerHist.SetName('triggerHist')
         ROOT.SetOwnership( self.triggerHist, False )
 
+        self.modMassFile = ROOT.TFile(self.modMassFileStr + ".root")
+        self.modMassFile.cd()
+        self.modMassFile.ls()
+        #self.modMassHist = self.modMassFile.Get("jetMass").Clone()
+        self.modMassHist = self.modMassFile.Get("jetMassOneTag_MassWindow").Clone()
+        self.modMassHist.SetName('modMassHist')
+        ROOT.SetOwnership( self.modMassHist, False )
+        print "integral "+str(self.modMassHist.Integral())
+       # print "integral "+str(self.jetMassOneTag_MassWindow.Integral())
+       
         self.f = ROOT.TFile( self.outfile + ".root", "recreate" )
         self.f.cd()
 
@@ -119,6 +136,7 @@ class Type11Analyzer :
         self.mttPredDistModMassFlat      = ROOT.PredictedDistribution( self.mistagMassCut, "mttPredDistModMassFlat", "mTT Mass",       1000, 0,  5000 )
         self.mttPredDistMod3MassFlat     = ROOT.PredictedDistribution( self.mistagMassCut, "mttPredDistMod3MassFlat", "mTT Mass",       1000, 0,  5000 )
         self.mttPredDistMod3MassFlatSubtract     = ROOT.PredictedDistribution( self.mistagMassCutSubtract, "mttPredDistMod3MassFlatSubtract", "mTT Mass",       1000, 0,  5000 )
+        self.mttPredDistModMassQCDdistSubtract     = ROOT.PredictedDistribution( self.mistagMassCutSubtract, "mttPredDistModMassQCDdistSubtract", "mTT Mass",       1000, 0,  5000 )
 
 
         ROOT.SetOwnership( self.mttPredDist, False )
@@ -126,9 +144,11 @@ class Type11Analyzer :
         ROOT.SetOwnership( self.mttPredDistModMassFlat, False )
         ROOT.SetOwnership( self.mttPredDistMod3MassFlat, False )
         ROOT.SetOwnership( self.mttPredDistMod3MassFlatSubtract, False )
+        ROOT.SetOwnership( self.mttPredDistModMassQCDdistSubtract, False )
 
         self.jetEta               = ROOT.TH1D("jetEta",               "jetEta",            100, -4,    4)
         self.jetMass              = ROOT.TH1D("jetMass",              "jetMass",        100,  0,  500 )
+        self.jetMassOneTag        = ROOT.TH1D("jetMassOneTag",        "jetMassOneTag",        100,  0,  500 )
         self.jetPt                = ROOT.TH1D("jetPt",                "jetPt",          400,  0,  2000 )    
         self.jetPtOneTag          = ROOT.TH1D("jetPtOneTag",          "jetPtOneTag",    400,  0,  2000 )
         self.jetMinMass           = ROOT.TH1D("jetMinMass",           "jetMinMass",          400,  0,  200 )
@@ -259,7 +279,20 @@ class Type11Analyzer :
             jet1P4_massFlat = copy.copy(topJets[1])
             jet1P4_massFlat.SetM( myrand2 )
             ttMassJet1MassFlat = (topJets[0]+jet1P4_massFlat).mass()
+           
+            myrand_QCDdist_jet0 = self.modMassHist.GetRandom()
+            jet0P4_modmassQCDdist = copy.copy(topJets[0])
+            jet0P4_modmassQCDdist.SetM( myrand_QCDdist_jet0 )
+            ttMassJet0modmassQCDdist = (topJets[1]+jet0P4_modmassQCDdist).mass()
             
+
+            myrand_QCDdist_jet1 = self.modMassHist.GetRandom()
+            jet1P4_modmassQCDdist = copy.copy(topJets[1])
+            jet1P4_modmassQCDdist.SetM( myrand_QCDdist_jet1 )
+            ttMassJet1modmassQCDdist = (topJets[0]+jet1P4_modmassQCDdist).mass()
+		    
+            #ibin0 = self.triggerHist.FindBin(topJets[0].pt())
+		    #jetTriggerWeight = self.triggerHist.GetBinContent(bin0)
 
             ttMassMod3Jet0Flat = ttMass
             ttMassMod3Jet1Flat = ttMass
@@ -267,7 +300,15 @@ class Type11Analyzer :
                 ttMassMod3Jet0Flat = ttMassJet0MassFlat
             if topJets[1].mass() < 140 or topJets[1].mass() > 250:
                 ttMassMod3Jet1Flat = ttMassJet1MassFlat
-            
+           
+            ttMassModJet0QCDdist = ttMass
+            ttMassModJet1QCDdist = ttMass
+            if topJets[0].mass() < 140 or topJets[0].mass() > 250:
+                ttMassModJet0QCDdist = ttMassJet0modmassQCDdist
+            if topJets[1].mass() < 140 or topJets[1].mass() > 250:
+                ttMassModJet1QCDdist = ttMassJet1modmassQCDdist
+
+
 
 
             self.jetMass.Fill( topJets[0].mass(), weight )
@@ -301,19 +342,23 @@ class Type11Analyzer :
             if x < 0.5 :
                 if topTag0 :
                     self.jetPtOneTag.Fill( topJets[1].pt(), weight )
+                    self.jetMassOneTag.Fill( topJets[1].mass(), weight )
                     self.mttPredDist.             Accumulate( ttMass,             topJets[1].pt(), topTag1, weight )
                     self.mttPredDistMassCut.      Accumulate( ttMass,             topJets[1].pt(), topTag1, weight )
                     self.mttPredDistModMassFlat.  Accumulate( ttMassJet1MassFlat, topJets[1].pt(), topTag1, weight )
                     self.mttPredDistMod3MassFlat. Accumulate( ttMassMod3Jet1Flat, topJets[1].pt(), topTag1, weight )
                     self.mttPredDistMod3MassFlatSubtract. Accumulate( ttMassMod3Jet1Flat, topJets[1].pt(), topTag1, weight )
+                    self.mttPredDistModMassQCDdistSubtract. Accumulate( ttMassModJet1QCDdist, topJets[1].pt(), topTag1, weight )
             if x >= 0.5 :
                 if topTag1 :
                     self.jetPtOneTag.Fill( topJets[0].pt(), weight )
+                    self.jetMassOneTag.Fill( topJets[0].mass(), weight )
                     self.mttPredDist.             Accumulate( ttMass,             topJets[0].pt(), topTag0, weight )
                     self.mttPredDistMassCut.      Accumulate( ttMass,             topJets[0].pt(), topTag0, weight )
                     self.mttPredDistModMassFlat.  Accumulate( ttMassJet0MassFlat, topJets[0].pt(), topTag0, weight )
                     self.mttPredDistMod3MassFlat. Accumulate( ttMassMod3Jet0Flat, topJets[0].pt(), topTag0, weight )
                     self.mttPredDistMod3MassFlatSubtract. Accumulate( ttMassMod3Jet0Flat, topJets[0].pt(), topTag0, weight )
+                    self.mttPredDistModMassQCDdistSubtract. Accumulate( ttMassModJet0QCDdist, topJets[0].pt(), topTag0, weight )
 
 
 
