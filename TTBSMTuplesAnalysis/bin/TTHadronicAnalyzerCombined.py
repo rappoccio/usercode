@@ -70,6 +70,12 @@ parser.add_option('--triggerWeight', metavar='N', type='string', action='store',
                   dest='triggerWeight',
                   help='noWeight, or weight trigger as Nominal, Up, or Down')
 
+parser.add_option('-z', '--modMassFile', metavar='N', type='string', action='store',
+                  default='ModMassFile',
+                  dest='modMassFile',
+                  help='modMass file')
+
+
 
 (options, args) = parser.parse_args()
 
@@ -128,7 +134,7 @@ elif options.analyzer == "MistagMaker" :
     analyzer = MistagMaker( options.outfile + '_mistag', options.useGenWeight)
 elif options.analyzer == "Type11Analyzer" :
     analyzer = Type11Analyzer(options.useMC, options.outfile + '_type11_'+options.collectionLabelSuffix + '_Trigger' + options.triggerWeight,
-                              options.mistagFile, options.collectionLabelSuffix, options.useGenWeight, options.triggerFile, options.pdfWeight, options.triggerWeight)
+                              options.mistagFile, options.collectionLabelSuffix, options.useGenWeight, options.triggerFile, options.modMassFile, options.pdfWeight, options.triggerWeight)
 elif options.analyzer == "MistagMakerType1" :
     analyzer = MistagMakerType1( options.outfile + '_mistag1', options.useGenWeight)
 elif options.analyzer == "TTKinPlotsAnalyzer" :
@@ -141,6 +147,7 @@ else :
 # loop over events
 count = 0
 ntotal = events.size()
+print "Nevents = "+str(ntotal)
 print "Start looping"
 for event in events:
 
