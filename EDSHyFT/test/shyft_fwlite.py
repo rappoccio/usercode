@@ -51,6 +51,12 @@ parser.add_option('--jecSys', metavar='F', type='string', action='store',
                   dest='jecSys',
                   help='JEC Systematic variation. Options are "nominal, up, down"')
 
+# Pileup systematics
+parser.add_option('--pileupReweight', metavar='F', type='string', action='store',
+                  default='unity',
+                  dest='pileupReweight',
+                  help='Pileup reweighting. Options are "nominal, up, down, unity"')
+
 # BTag systematics
 parser.add_option('--btagSys', metavar='F', type='string', action='store',
                   default='nominal',
@@ -107,8 +113,8 @@ f.cd()
 print "Creating histograms"
 
 nJets = ROOT.TH1F("nJets",         "Number of Jets, p_{T} > 30 GeV;N_{Jets};Number",               20, -0.5, 19.5 )
-nMuons = ROOT.TH1F("nMuons",         "Number of Muons, p_{T} > 45 GeV;N_{Muons};Number",               5, -0.5, 4.5 )
-nElectrons = ROOT.TH1F("nElectrons",         "Number of Electrons, p_{T} > 60 GeV;N_{Jets};Number",               5, -0.5, 4.5 )
+nMuons = ROOT.TH1F("nMuons",         "Number of Muons, p_{T} > 35 GeV;N_{Muons};Number",               5, -0.5, 4.5 )
+nElectrons = ROOT.TH1F("nElectrons",         "Number of Electrons, p_{T} > 45 GeV;N_{Jets};Number",               5, -0.5, 4.5 )
 
 ptMu = ROOT.TH1F("ptMu", "p_{T} of Muon", 200, 0., 200.)
 ptEle= ROOT.TH1F("ptEle", "p_{T} of Electron", 200, 0., 200.)
@@ -280,8 +286,10 @@ metLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "pt" )
 metPhiHandle = Handle( "std::vector<float>" )
 metPhiLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "phi" )
 
+pileupHandle = Handle( "std::vector<float>" )
+pileupLabel = ("PUNtupleDumper",   "PUweightNominalUpDown" )
 
-
+PUweight = 1.0
 
 # loop over events
 count = 0
@@ -301,7 +309,6 @@ for event in events:
     percentDone = float(count) / float(ntotal) * 100.0
 
     #Require exactly one lepton (e or mu)
-
     event.getByLabel (muonPtLabel, muonPtHandle)
     if not muonPtHandle.isValid():
         muonPts = None
@@ -324,8 +331,26 @@ for event in events:
         if electronPts is not None:
             event.getByLabel (electronPfisoLabel, electronPfisoHandle)
             if not electronPfisoHandle.isValid():
+                print 'here'
                 continue
             electronPfisos = electronPfisoHandle.product()
+
+    # get the PU weight before filling any histogram
+    if not options.useData and options.pileupReweight!='unity':
+        event.getByLabel( pileupLabel, pileupHandle )
+        if not pileupHandle.isValid():
+            print 'You want pileup reweighting for MC but there is no weights stored. '\
+                  'Use "--pileupReweight unity" to skip this.'
+        PUw = pileupHandle.product()
+        if len(PUw)!=3:
+            print 'I expect 3 numbers in the PUweightNominalUpDown vector!'
+        else:
+            if options.pileupReweight=='nominal': PUweight=PUw[0]
+            elif options.pileupReweight=='up': PUweight=PUw[1]
+            elif options.pileupReweight=='down': PUweight=PUw[2]
+            else:
+                print 'unknown option in --pileupReweight, use unity'
+                PUweight=1.0
 
     nMuonsVal = 0
     if muonPts is not None:
@@ -340,14 +365,13 @@ for event in events:
                 else :
                     nMuonsVal += 1
                     
-        nMuons.Fill( nMuonsVal )
+        nMuons.Fill( nMuonsVal, PUweight )
         if nMuonsVal > 0 :
-            ptMu.Fill( muonPts[0] )
-
-
-
+            ptMu.Fill( muonPts[0], PUweight )
+    
+    
+    nElectronsVal = 0
     if electronPts is not None:
-        nElectronsVal = 0
         for ielectronPt in range(0,len(electronPts)):
             electronPt = electronPts[ielectronPt]
             if electronPt > electronPtMin :
@@ -358,8 +382,9 @@ for event in events:
                         nElectronsVal += 1
                 else :
                     nElectronsVal += 1
-
-        nElectrons.Fill( nElectronsVal )
+        nElectrons.Fill( nElectronsVal, PUweight )
+        if nElectronsVal > 0:
+            ptEle.Fill( electronPts[0], PUweight )
 
 
     # Require exactly one lepton
@@ -402,7 +427,6 @@ for event in events:
         muonPhis = muonPhiHandle.product()
 
     if electronPts is not None:
-        electronPts = electronPtHandle.product()
         event.getByLabel (electronEtaLabel, electronEtaHandle)
         electronEtas = electronEtaHandle.product()
         event.getByLabel (electronPhiLabel, electronPhiHandle)
@@ -556,7 +580,7 @@ for event in events:
 
 
 
-    nJets.Fill( njets )
+    nJets.Fill( njets, PUweight )
 
     if njets > maxJets :
         njets = maxJets
@@ -579,23 +603,23 @@ for event in events:
         bbCand = taggedJet0 + taggedJet1
         imbb = bbCand.M()
         idR = taggedJet0.DeltaR( taggedJet1 )
-        mbb[njets].Fill( imbb )
-        dRbb[njets].Fill( idR )
+        mbb[njets].Fill( imbb, PUweight )
+        dRbb[njets].Fill( idR, PUweight )
 
     if options.useData :
         # always fill the "total" 
-        secvtxMassPlots[njets][ntags][3].Fill( secvtxMass ) 
-        lepEtaPlots[njets][ntags][3].Fill( lepEta )
-        centralityPlots[njets][ntags][3].Fill( sumEt / sumE )
-        sumPtPlots[njets][ntags][3].Fill( sumPt )
-        jet1PtPlots[njets][ntags][3].Fill( jet1Pt )
+        secvtxMassPlots[njets][ntags][3].Fill( secvtxMass, PUweight ) 
+        lepEtaPlots[njets][ntags][3].Fill( lepEta, PUweight )
+        centralityPlots[njets][ntags][3].Fill( sumEt / sumE, PUweight )
+        sumPtPlots[njets][ntags][3].Fill( sumPt, PUweight )
+        jet1PtPlots[njets][ntags][3].Fill( jet1Pt, PUweight )
 
         if flavorIndex >= 0 :
-            secvtxMassPlots[njets][ntags][flavorIndex].Fill( secvtxMass ) # Fill each jet flavor individually
-            lepEtaPlots[njets][ntags][flavorIndex].Fill( lepEta )
-            centralityPlots[njets][ntags][flavorIndex].Fill( sumEt / sumE )
-            sumPtPlots[njets][ntags][flavorIndex].Fill( sumPt )
-            jet1PtPlots[njets][ntags][flavorIndex].Fill( jet1Pt )
+            secvtxMassPlots[njets][ntags][flavorIndex].Fill( secvtxMass, PUweight ) # Fill each jet flavor individually
+            lepEtaPlots[njets][ntags][flavorIndex].Fill( lepEta, PUweight )
+            centralityPlots[njets][ntags][flavorIndex].Fill( sumEt / sumE, PUweight )
+            sumPtPlots[njets][ntags][flavorIndex].Fill( sumPt, PUweight )
+            jet1PtPlots[njets][ntags][flavorIndex].Fill( jet1Pt, PUweight )
     else :
 
         # otherwise, loop over all of the SF combinatorics to tag itag out of njet jets
@@ -607,10 +631,12 @@ for event in events:
             jtag = itag
             if jtag > maxTags :
                 jtag = maxTags
+            # use pileup reweighting factor
+            pTag*=PUweight
             # always fill the "total"
             if jtag > 0 :
                 secvtxMassPlots[njets][jtag][3].Fill( secvtxMass, pTag ) 
-            lepEtaPlots[njets][jtag][3].Fill( lepEta, pTag )
+            lepEtaPlots[njets][jtag][3].Fill( lepEta, pTag)
             centralityPlots[njets][jtag][3].Fill( sumEt / sumE, pTag )
             sumPtPlots[njets][jtag][3].Fill( sumPt, pTag )
             jet1PtPlots[njets][jtag][3].Fill( jet1Pt, pTag )

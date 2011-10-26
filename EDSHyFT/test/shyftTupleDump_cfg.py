@@ -22,7 +22,7 @@ options.register('usePDFs',
 
 
 options.register('useData',
-                 1,
+                 0,
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.int,
                  "Use data (1) or MC (0)")
@@ -65,7 +65,8 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
 from Analysis.SHyFT.shyftselection_cfi import wplusjetsAnalysis as shyftSelectionInput
 
 
-process.load('Analysis.PdfWeights.pdfWeightProducer_cfi')
+if options.usePDFs: 
+	process.load('Analysis.PdfWeights.pdfWeightProducer_cfi')
 
 
 process.pfShyftProducerMu = cms.EDFilter('EDSHyFTSelector',
@@ -77,11 +78,11 @@ process.pfShyftProducerMu = cms.EDFilter('EDSHyFTSelector',
         pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
         ePlusJets = cms.bool( False ),
         muPlusJets = cms.bool( True ),
-        jetPtMin = cms.double(30.0),##
+        jetPtMin = cms.double(20.0),##
         use42X  = cms.bool(True),
         minJets = cms.int32(1),
         metMin = cms.double(0.0),
-	muPtMin = cms.double(35.0),
+	muPtMin = cms.double(30.0),
         identifier = cms.string('PFMu'),
         cutsToIgnore=cms.vstring( ['Trigger'] ),
         useData = cms.bool(useData)
@@ -98,8 +99,8 @@ process.pfShyftProducerEle = cms.EDFilter('EDSHyFTSelector',
         pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
         ePlusJets = cms.bool( True ),
         muPlusJets = cms.bool( False ),
-        jetPtMin = cms.double(30.0),##
-        eEtCut = cms.double(45.0),
+        jetPtMin = cms.double(20.0),##
+        eEtCut = cms.double(35.0),
         use42X  = cms.bool(True),
         minJets = cms.int32(1),
         metMin = cms.double(0.0),
@@ -236,6 +237,15 @@ process.pfShyftTupleElectrons = cms.EDProducer(
         )  
     )
 
+process.PUNtupleDumper = cms.EDProducer(
+    "PUNtupleDumper",
+    PUscenario = cms.string("42X")
+    )
+
+## if not options.useData:
+##     process.p0 = cms.Path(
+##         process.PUNtupleDumper
+##         )
 
 process.p1 = cms.Path(
     process.pfShyftProducerMu*
@@ -250,6 +260,9 @@ process.p2 = cms.Path(
     process.pfShyftTupleElectrons*
     process.pfShyftTupleMETEle
     )
+
+if not options.useData:
+    process.p0 = cms.Path( process.PUNtupleDumper )
 
 
 if options.usePDFs :
@@ -267,6 +280,7 @@ process.out = cms.OutputModule("PoolOutputModule",
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p1','p2') ),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       #'keep *_pfShyftProducer_*_*',
+                                                                      'keep *_PUNtupleDumper_*_*',
                                                                       'keep *_pfShyftTuple*_*_*',
                                                                       'keep *_pdfWeightProducer_*_*'
                                                                       #'keep *_kinFitTtSemiLepEvent_*_*'
