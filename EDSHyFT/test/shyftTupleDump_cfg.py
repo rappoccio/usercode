@@ -85,7 +85,8 @@ process.pfShyftProducerMu = cms.EDFilter('EDSHyFTSelector',
 	muPtMin = cms.double(35.0),
         identifier = cms.string('PFMu'),
         cutsToIgnore=cms.vstring( ['Trigger'] ),
-        useData = cms.bool(useData)
+        useData = cms.bool(useData),
+        jetSmear = cms.double(0.1),
         #,jecPayloads = cms.vstring( payloads )
         )
         )
@@ -107,7 +108,8 @@ process.pfShyftProducerEle = cms.EDFilter('EDSHyFTSelector',
 	muPtMin = cms.double(35.0),
         identifier = cms.string('PFEle'),
         cutsToIgnore=cms.vstring( ['Trigger'] ),
-        useData = cms.bool(useData)
+        useData = cms.bool(useData),
+        jetSmear = cms.double(0.1),
         #,jecPayloads = cms.vstring( payloads )
         )
         )

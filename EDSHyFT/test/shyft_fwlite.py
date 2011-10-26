@@ -164,6 +164,10 @@ for iplot in range(0,len(allVarPlots)) :
             if itag > ijet :
                 continue
             varPlots[ijet].append( [] )
+            if names[iplot]=='secvtxMass' and itag==0 :
+                continue
+            if ( names[iplot]=='jetPt1' or names[iplot]=='sumPt' or names[iplot]=='centrality' ) and ijet==0:
+                continue
             for iflav in range(0,len(flavors)) :
                 flav = flavors[iflav]
                 varPlots[ijet][itag].append( ROOT.TH1F( options.sampleName + "_" + names[iplot] + "_" + str(ijet) + 'j_' + str(itag) + 't' + flav,
@@ -175,7 +179,6 @@ for iplot in range(0,len(allVarPlots)) :
 ############################################
 #     Jet energy scale uncertainties       #
 ############################################
-
 
 jecParStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
 jecUnc = ROOT.JetCorrectionUncertainty( jecParStr )
@@ -191,7 +194,7 @@ jetPtMin = 30.0
 leadJetPtMin = 30.0
 looseMuonIsoMax = 0.2
 looseElectronIsoMax = 0.2
-ssvheCut = 2.74
+ssvheCut = 1.74
 
 
 if options.lepType == 0 :
@@ -390,6 +393,9 @@ for event in events:
     # Require exactly one lepton
     if muonPts is None and electronPts is None :
         continue
+    # to be sure...
+    if nElectronsVal+nMuonsVal != 1 :
+        continue
 
     cutFlow[1][0] += 1
 
@@ -398,6 +404,12 @@ for event in events:
         continue
     if options.lepType == 1 and electronPts is None :
         continue
+    # to be sure again
+    if options.lepType == 0 and nMuonsVal!=1 :
+        continue
+    if options.lepType == 1 and nElectronsVal!=1 :
+        continue
+
     
     cutFlow[2][0] += 1
 
@@ -494,9 +506,10 @@ for event in events:
 
     if jets[0].Pt() < leadJetPtMin :
         continue
-
+    
     cutFlow[5][0] += 1
-
+    ptJet0.Fill(jets[0].Pt(), PUweight )
+    
     # Now get the number of SSVHEM tags and vertex mass.
     # If using MC, get the jet flavor also
     event.getByLabel (jetSSVHELabel, jetSSVHEHandle)
