@@ -102,7 +102,8 @@ class Type11Analyzer :
         self.mistagMassCut = self.mistagFile.Get("TYPE11_MISTAG_MASSCUT_LARGEBINS").Clone()
         self.mistagMassCut.SetName('mistagMassCut')
         if not self.useGenWeight:
-            self.mistagMassCutSubtract = self.mistagFile.Get("TYPE11_MISTAG_MASSCUT_SUBTRACT_TTBAR_LARGEBINS").Clone()
+            #self.mistagMassCutSubtract = self.mistagFile.Get("TYPE11_MISTAG_MASSCUT_SUBTRACT_TTBAR_LARGEBINS").Clone()
+            self.mistagMassCutSubtract = self.mistagFile.Get("MISTAG_MU_REVERSE_SUB_TTBAR").Clone()
             self.mistagMassCutSubtract.SetName('mistagMassCutSubtract')
         if self.useGenWeight:
             self.mistagMassCutSubtract = self.mistagFile.Get("TYPE11_MISTAG_MASSCUT_LARGEBINS").Clone()
