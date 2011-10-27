@@ -9,10 +9,13 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class MistagMaker :
     """Makes mistag rates"""
-    def __init__(self, outfile, useGenWeight=False):
+    def __init__(self, outfile, useGenWeight=False, triggerWeight = "noWeight"):
         """Initialization"""
         self.outfileStr = outfile
         self.useGenWeight = useGenWeight
+        self.triggerFile = ROOT.TFile("TRIGGER_EFFIC.root")
+        self.triggerHist = self.triggerFile.Get("TYPE12_TRIGGER_EFFIC").Clone()
+        self.triggerWeight = triggerWeight
         self.allTopTagHandle         = Handle (  "vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >"  )
         self.allTopTagLabel          = ( "ttbsmAna",   "topTagP4")
         self.allTopTagMinMassHandle  = Handle( "std::vector<double>" )
@@ -123,7 +126,12 @@ class MistagMaker :
             event.getByLabel( self.weightsLabel, self.weightsHandle )
             weight = self.weightsHandle.product()[0]
 
-
+        if self.triggerWeight != "noWeight" :
+            jetTriggerWeight = 1.0
+            if topJets[0].pt() < 800:
+                bin0 = self.triggerHist.FindBin(topJets[0].pt())
+                jetTriggerWeight = self.triggerHist.GetBinContent(bin0)
+                weight = weight*jetTriggerWeight
 
         event.getByLabel (self.hemis0MinMassLabel, self.hemis0MinMassHandle)
         topJetMinMass = self.hemis0MinMassHandle.product()
@@ -188,9 +196,9 @@ class MistagMaker :
             if hasTopTag  :   self.type2SideBandTag.Fill( topJets[0].pt(), weight )
 
           if passPairMass and failWMass:
-            self.jet1PtProbe.Fill(topJets[0].pt())
+            self.jet1PtProbe.Fill(topJets[0].pt(), weight)
             if hasTopTag :
-              self.jet1PtTag.Fill(topJets[0].pt())
+              self.jet1PtTag.Fill(topJets[0].pt(), weight)
 
           if hasType2Top  :
             self.topJetCandPtSignal.Fill( topJets[0].pt(), weight )
@@ -213,5 +221,5 @@ class MistagMaker :
         
         if passKinCuts2:
           if hasType2Top:
-            self.jet1PtProbe_mu.Fill( topJets[0].pt() )
-            if hasTopTag:   self.jet1PtTag_mu.Fill( topJets[0].pt() )
+            self.jet1PtProbe_mu.Fill( topJets[0].pt(), weight )
+            if hasTopTag:   self.jet1PtTag_mu.Fill( topJets[0].pt(), weight )

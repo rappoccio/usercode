@@ -155,7 +155,7 @@ class Type12Analyzer :
         self.f = ROOT.TFile( self.outfile + ".root", "recreate" )
         self.f.cd()
 
-        self.mttPredDist                 = ROOT.PredictedDistribution( self.mistag, "mttPredDist", "mTT Mass",       1000, 0,  5000 )
+        self.mttPredDist                 = ROOT.PredictedDistribution( self.mistagSubtract, "mttPredDist", "mTT Mass",       1000, 0,  5000 )
         self.mttPredDistModMass          = ROOT.PredictedDistribution( self.mistag, "mttPredDistModMass","mTT Mass", 1000, 0,  5000 )
         self.mttPredDistMod2Mass         = ROOT.PredictedDistribution( self.mistag, "mttPredDistMod2Mass","mTT Mass",1000, 0,  5000 )
         self.mttPredDistModMassFlat      = ROOT.PredictedDistribution( self.mistag, "mttPredDistModMassFlat","mTT Mass",1000, 0,  5000 )
