@@ -124,7 +124,9 @@ myAnaTrigs = [
     'HLT_Jet370_v4',
     'HLT_Jet370_v5',
     'HLT_Jet370_v6',
-    'HLT_Jet370_v7'
+    'HLT_Jet370_v7',
+    'HLT_Jet370_v10',
+    'HLT_Jet300_v9'
     ]
 process.ttbsmAna = cms.EDFilter('TTBSMProducer',
                                 wTagSrc = cms.InputTag('goodPatJetsCA8PrunedPF'),
