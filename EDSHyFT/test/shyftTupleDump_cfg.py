@@ -78,7 +78,7 @@ process.pfShyftProducerMu = cms.EDFilter('EDSHyFTSelector',
         pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
         ePlusJets = cms.bool( False ),
         muPlusJets = cms.bool( True ),
-        jetPtMin = cms.double(20.0),##
+        jetPtMin = cms.double(10.0),##
         use42X  = cms.bool(True),
         minJets = cms.int32(1),
         metMin = cms.double(0.0),
@@ -100,7 +100,7 @@ process.pfShyftProducerEle = cms.EDFilter('EDSHyFTSelector',
         pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
         ePlusJets = cms.bool( True ),
         muPlusJets = cms.bool( False ),
-        jetPtMin = cms.double(20.0),##
+        jetPtMin = cms.double(10.0),##
         eEtCut = cms.double(45.0),
         use42X  = cms.bool(True),
         minJets = cms.int32(1),
@@ -137,7 +137,7 @@ process.pfShyftTupleJetsMu = cms.EDProducer(
             tag = cms.untracked.string("phi"),
             quantity = cms.untracked.string("phi")
             ),
-        cms.PSet(
+     cms.PSet(
             tag = cms.untracked.string("ssvhe"),
             quantity = cms.untracked.string("bDiscriminator('simpleSecondaryVertexHighEffBJetTags')")
             ),
@@ -159,6 +159,13 @@ if not options.useData :
             quantity = cms.untracked.string("partonFlavour()")
             )
         )
+    process.pfShyftTupleJetsMu.variables.append(
+        cms.PSet(
+            tag = cms.untracked.string("genJetPt"),
+            quantity = cms.untracked.string("? userInt('matched') ? genJet().pt : -10")
+            )
+    )
+
 
 process.pfShyftTupleJetsEle = process.pfShyftTupleJetsMu.clone(
     src = cms.InputTag("pfShyftProducerEle", "jets"),
