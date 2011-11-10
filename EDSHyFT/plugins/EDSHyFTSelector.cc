@@ -16,17 +16,16 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
   std::auto_ptr< std::vector<pat::Electron> > electrons ( new std::vector<pat::Electron> );
 
   mets->push_back( *(dynamic_cast<pat::MET const *>( imet.masterClonePtr().get() )) );
-  if ( imet.masterClonePtr().get() != 0 ){
-    mets->back().setP4( imet.p4() );//set back the P4 to the clonned met
-  }
   
   typedef std::vector<reco::ShallowClonePtrCandidate>::const_iterator clone_iter;
   for ( clone_iter ibegin = ijets.begin(), iend = ijets.end(), i = ibegin;
 	i != iend; ++i ) {
     pat::Jet const * ijet = dynamic_cast<pat::Jet const *>( i->masterClonePtr().get() );
     if ( ijet != 0 ){
+      int matched = 0;
+      if(ijet->genJet()) matched=1;
       jets->push_back( *ijet );
-      jets->back().setP4( i->p4() );//set back the P4 to the clonned jet
+      jets->back().addUserInt("matched",matched);
     }
   }
 
