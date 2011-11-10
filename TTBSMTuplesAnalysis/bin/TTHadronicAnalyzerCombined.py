@@ -121,7 +121,9 @@ myAnaTrigs = [
    ,24#    'HLT_Jet370_v4',
    ,25#    'HLT_Jet370_v5',
    ,26#    'HLT_Jet370_v6',
-   ,27#    'HLT_Jet370_v7'
+   ,27#    'HLT_Jet370_v7',
+   ,28#    'HLT_Jet370_v10',
+   ,29#    'HLT_Jet300_v9',
     ]
 
 triggerSelection = TriggerAndEventSelectionObject( myAnaTrigs )
