@@ -51,6 +51,12 @@ parser.add_option('--jecSys', metavar='F', type='string', action='store',
                   dest='jecSys',
                   help='JEC Systematic variation. Options are "nominal, up, down"')
 
+# JER systematics
+parser.add_option('--jetSmear', metavar='F', type='float', action='store',
+                  default=0.0,
+                  dest='jetSmear',
+                  help='JER smearing. Standard values are 0.1 (nominal), 0.0 (down), 0.2 (up)')
+
 # Pileup systematics
 parser.add_option('--pileupReweight', metavar='F', type='string', action='store',
                   default='unity',
@@ -116,8 +122,8 @@ nJets = ROOT.TH1F("nJets",         "Number of Jets, p_{T} > 30 GeV;N_{Jets};Numb
 nMuons = ROOT.TH1F("nMuons",         "Number of Muons, p_{T} > 35 GeV;N_{Muons};Number",               5, -0.5, 4.5 )
 nElectrons = ROOT.TH1F("nElectrons",         "Number of Electrons, p_{T} > 45 GeV;N_{Jets};Number",               5, -0.5, 4.5 )
 
-ptMu = ROOT.TH1F("ptMu", "p_{T} of Muon", 200, 0., 200.)
-ptEle= ROOT.TH1F("ptEle", "p_{T} of Electron", 200, 0., 200.)
+ptMu = ROOT.TH1F("ptMu", "p_{T} of Muon", 100, 0., 200.)
+ptEle= ROOT.TH1F("ptEle", "p_{T} of Electron", 100, 0., 200.)
 ptJet0 = ROOT.TH1F("ptJet0", "p_{T} Of Leading Jet", 300, 0., 600.)
 
 
@@ -180,7 +186,8 @@ for iplot in range(0,len(allVarPlots)) :
 #     Jet energy scale uncertainties       #
 ############################################
 
-jecParStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
+#jecParStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
+jecParStr = ROOT.std.string('Jec11_V2_AK5PFchs_Uncertainty.txt')
 jecUnc = ROOT.JetCorrectionUncertainty( jecParStr )
 
 
@@ -230,13 +237,14 @@ if options.jecSys == 'up' :
     jecScale = 1.0
 elif options.jecSys == 'down' :
     jecScale = -1.0
-flatJecUnc = 0.05
+flatJecUnc = 0.0
+#flatJecUnc = 0.05
 
 
 cutFlow = [
     [0,'Inclusive'],
-    [0,'>=1 Lepton'],
-    [0,'0 other lepton'],
+    [0,'==1 Lepton'],
+    [0,'==1 Lepton, 0 other lepton'],
     [0,'MET Cut min'],
     [0,'>= Jet'],
     [0,'Jet pt 0 > min']
@@ -253,6 +261,8 @@ if options.useLoose :
 
 jetPtHandle         = Handle( "std::vector<float>" )
 jetPtLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "pt" )
+genJetPtHandle          = Handle( "std::vector<float>" )
+genJetPtLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "genJetPt" )
 jetEtaHandle         = Handle( "std::vector<float>" )
 jetEtaLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "eta" )
 jetPhiHandle         = Handle( "std::vector<float>" )
@@ -419,11 +429,6 @@ for event in events:
     event.getByLabel( metPhiLabel, metPhiHandle )
     metPhiRaw = metPhiHandle.product()[0]
 
-    if metRaw < metMin :
-        continue
-
-    cutFlow[3][0] += 1
-
     jets = []
     taggedJets = []
     met_px = metRaw * math.cos( metPhiRaw )
@@ -431,7 +436,6 @@ for event in events:
 
 
     # Now get the number of jets and the rest of the lepton 4-vector
-
     if muonPts is not None:
         event.getByLabel (muonEtaLabel, muonEtaHandle)
         muonEtas = muonEtaHandle.product()
@@ -446,6 +450,12 @@ for event in events:
 
     event.getByLabel( jetPtLabel, jetPtHandle )
     jetPts = jetPtHandle.product()
+    event.getByLabel( genJetPtLabel, genJetPtHandle )
+    if genJetPtHandle.isValid(): 
+        genJetPts = genJetPtHandle.product()
+    elif abs(options.jetSmear)>0.0001:
+        print "You want to use jetSmear but there is no genJetPt collection!!"
+        exit()
     event.getByLabel( jetEtaLabel, jetEtaHandle )
     jetEtas = jetEtaHandle.product()
     event.getByLabel( jetPhiLabel, jetPhiHandle )
@@ -476,6 +486,16 @@ for event in events:
             #print 'Correction = ' + str( 1 + unc * jecScale)
             jetScale = 1 + unc * jecScale
 
+        ## also do Jet energy resolution variation here
+        ## and correct MET
+        if abs(options.jetSmear)>0.0001 and genJetPts[ijet]>15.0:
+            scale = options.jetSmear
+            recopt = jetPts[ijet]
+            genpt = genJetPts[ijet]
+            deltapt = (recopt-genpt)*scale
+            ptscale = max(0.0, (recopt+deltapt)/recopt)
+            jetScale*=ptscale
+        
         thisJet = ROOT.TLorentzVector()
         thisJet.SetPtEtaPhiM(jetPts[ijet],
                              jetEtas[ijet],
@@ -492,6 +512,13 @@ for event in events:
 
 
     met = math.sqrt(met_px*met_px + met_py*met_py)
+
+    # cutting on met after scaling
+    if met < metMin :
+        continue
+    
+    cutFlow[3][0] += 1
+
 
     njets = 0
     for jet in jets :
