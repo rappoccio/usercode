@@ -186,8 +186,8 @@ for iplot in range(0,len(allVarPlots)) :
 #     Jet energy scale uncertainties       #
 ############################################
 
-#jecParStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
-jecParStr = ROOT.std.string('Jec11_V2_AK5PFchs_Uncertainty.txt')
+jecParStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
+#jecParStr = ROOT.std.string('Jec11_V2_AK5PFchs_Uncertainty.txt')
 jecUnc = ROOT.JetCorrectionUncertainty( jecParStr )
 
 
