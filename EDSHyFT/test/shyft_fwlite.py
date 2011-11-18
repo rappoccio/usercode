@@ -53,7 +53,7 @@ parser.add_option('--jecSys', metavar='F', type='string', action='store',
 
 # JER systematics
 parser.add_option('--jetSmear', metavar='F', type='float', action='store',
-                  default=0.0,
+                  default=0.1,
                   dest='jetSmear',
                   help='JER smearing. Standard values are 0.1 (nominal), 0.0 (down), 0.2 (up)')
 
@@ -502,7 +502,6 @@ for event in events:
                              jetPhis[ijet],
                              jetMasses[ijet])
 
-
         met_px = met_px + thisJet.Px()
         met_py = met_py + thisJet.Py()
         thisJet = thisJet * jetScale
@@ -624,6 +623,7 @@ for event in events:
 
     if njets > maxJets :
         njets = maxJets
+        
     if ntags > maxTags :
         ntags = maxTags
 
@@ -655,6 +655,7 @@ for event in events:
         jet1PtPlots[njets][ntags][3].Fill( jet1Pt, PUweight )
 
         if flavorIndex >= 0 :
+            print "we should not be here!"
             secvtxMassPlots[njets][ntags][flavorIndex].Fill( secvtxMass, PUweight ) # Fill each jet flavor individually
             lepEtaPlots[njets][ntags][flavorIndex].Fill( lepEta, PUweight )
             centralityPlots[njets][ntags][flavorIndex].Fill( sumEt / sumE, PUweight )
@@ -666,7 +667,7 @@ for event in events:
         # and weight the distributions by the resultant probability. 
         effCombos = EffInfoCombinations( effs, verbose=False )
 
-        for itag in range(0,njets) :
+        for itag in range(0,njets+1) :
             pTag = effCombos.pTag( itag )
             jtag = itag
             if jtag > maxTags :
