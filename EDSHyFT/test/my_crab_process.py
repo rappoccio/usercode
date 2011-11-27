@@ -2,34 +2,22 @@
 
 import subprocess
 import sys
-import glob
 
+command = sys.argv[1]
 
-from optparse import OptionParser
+dirs = [
+'SingleElectron_Run2011A-May10ReReco_ttbsm_v8_shyftSubstructureTuples_v6/',
+'SingleElectron_Run2011A-PromptReco-v4_ttbsm_v8_shyftSubstructureTuples_v6/',
+'SingleMu_Run2011A-May10ReReco_ttbsm_v8_shyftSubstructureTuples_v6/',
+'SingleMu_Run2011A-PromptReco-v4_ttbsm_v8_shyftSubstructureTuples_v6/'
 
-
-parser = OptionParser()
-
-parser.add_option('--files', metavar='F', type='string', action='store',
-                  dest='files',
-                  help='Input files')
-
-parser.add_option('--command', metavar = 'C', type='string', action='store',
-                  dest='command',
-                  default='status',
-                  help='CRAB command to run')
-
-(options, args) = parser.parse_args()
-
-
-argv = []
-
-dirs = glob.glob( options.files )
+    
+]
 
 for idir in dirs :
     print '--------------------------------'
     print '--------------------------------'
     print '--------------------------------'    
-    s = "crab -" + options.command + " -c " + idir
+    s = "crab -" + command + " -c " + idir
     print s
     subprocess.call( [s, ""], shell=True )

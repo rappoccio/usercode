@@ -51,18 +51,6 @@ parser.add_option('--jecSys', metavar='F', type='string', action='store',
                   dest='jecSys',
                   help='JEC Systematic variation. Options are "nominal, up, down"')
 
-# JER systematics
-parser.add_option('--jetSmear', metavar='F', type='float', action='store',
-                  default=0.1,
-                  dest='jetSmear',
-                  help='JER smearing. Standard values are 0.1 (nominal), 0.0 (down), 0.2 (up)')
-
-# Pileup systematics
-parser.add_option('--pileupReweight', metavar='F', type='string', action='store',
-                  default='unity',
-                  dest='pileupReweight',
-                  help='Pileup reweighting. Options are "nominal, up, down, unity"')
-
 # BTag systematics
 parser.add_option('--btagSys', metavar='F', type='string', action='store',
                   default='nominal',
@@ -74,14 +62,6 @@ parser.add_option('--lftagSys', metavar='F', type='string', action='store',
                   default='nominal',
                   dest='lftagSys',
                   help='LFTag Systematic variation. Options are "nominal, up, down"')
-
-
-# LFTag systematics
-parser.add_option('--lepType', metavar='F', type='int', action='store',
-                  default=0,
-                  dest='lepType',
-                  help='Lepton type. Options are 0 = muons, 1 = electrons')
-
 
 
 (options, args) = parser.parse_args()
@@ -119,21 +99,17 @@ f.cd()
 print "Creating histograms"
 
 nJets = ROOT.TH1F("nJets",         "Number of Jets, p_{T} > 30 GeV;N_{Jets};Number",               20, -0.5, 19.5 )
-nMuons = ROOT.TH1F("nMuons",         "Number of Muons, p_{T} > 35 GeV;N_{Muons};Number",               5, -0.5, 4.5 )
-nElectrons = ROOT.TH1F("nElectrons",         "Number of Electrons, p_{T} > 45 GeV;N_{Jets};Number",               5, -0.5, 4.5 )
+nMuons = ROOT.TH1F("nMuons",         "Number of Muons, p_{T} > 45 GeV;N_{Muons};Number",               5, -0.5, 4.5 )
+nElectrons = ROOT.TH1F("nElectrons",         "Number of Electrons, p_{T} > 60 GeV;N_{Jets};Number",               5, -0.5, 4.5 )
 
-ptMu = ROOT.TH1F("ptMu", "p_{T} of Muon", 100, 0., 200.)
-ptEle= ROOT.TH1F("ptEle", "p_{T} of Electron", 100, 0., 200.)
+ptMu = ROOT.TH1F("ptMu", "p_{T} of Muon", 200, 0., 200.)
+ptEle= ROOT.TH1F("ptEle", "p_{T} of Electron", 200, 0., 200.)
 ptJet0 = ROOT.TH1F("ptJet0", "p_{T} Of Leading Jet", 300, 0., 600.)
-
-
 
 secvtxMassPlots = []
 lepEtaPlots = []
 centralityPlots = []
 sumPtPlots = []
-jet1PtPlots = []
-
 
 maxJets = 5
 maxTags = 2
@@ -143,24 +119,14 @@ allVarPlots = [
     secvtxMassPlots,
     lepEtaPlots,
     centralityPlots,
-    sumPtPlots,
-    jet1PtPlots
+    sumPtPlots
     ]
-names = ['secvtxMass','lepEta','centrality','sumPt', 'jetPt1']
-titles = ['SecVtx Mass','Lepton #eta','Centrality','#sum p_{T}','Jet 1 p_{T}']
+names = ['secvtxMass','lepEta','centrality','sumPt']
+titles = ['SecVtx Mass','Lepton #eta','Centrality','#sum p_{T}']
 bounds = [ [40,0.,10.],
            [40,0.,2.5],
            [40,0.,1.0],
-           [50,0.,500.],
-           [50,0.,500.]
-           ]
-
-mbb = []
-dRbb = []
-for ijet in range(0,maxJets+1) :
-    mbb.append( ROOT.TH1F("mbb_" + str(ijet) + 'j', "Mass of bb Pair", 150, 0., 1500.) )
-    dRbb.append( ROOT.TH1F("dRbb_" + str(ijet) + 'j', "#Delta R_{bb}", 150, -ROOT.TMath.Pi(), ROOT.TMath.Pi() ) )
-
+           [50,0.,500.] ]
 
 for iplot in range(0,len(allVarPlots)) :
     varPlots = allVarPlots[iplot]
@@ -170,10 +136,6 @@ for iplot in range(0,len(allVarPlots)) :
             if itag > ijet :
                 continue
             varPlots[ijet].append( [] )
-            if names[iplot]=='secvtxMass' and itag==0 :
-                continue
-            if ( names[iplot]=='jetPt1' or names[iplot]=='sumPt' or names[iplot]=='centrality' ) and ijet==0:
-                continue
             for iflav in range(0,len(flavors)) :
                 flav = flavors[iflav]
                 varPlots[ijet][itag].append( ROOT.TH1F( options.sampleName + "_" + names[iplot] + "_" + str(ijet) + 'j_' + str(itag) + 't' + flav,
@@ -186,8 +148,8 @@ for iplot in range(0,len(allVarPlots)) :
 #     Jet energy scale uncertainties       #
 ############################################
 
+
 jecParStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
-#jecParStr = ROOT.std.string('Jec11_V2_AK5PFchs_Uncertainty.txt')
 jecUnc = ROOT.JetCorrectionUncertainty( jecParStr )
 
 
@@ -198,23 +160,11 @@ jecUnc = ROOT.JetCorrectionUncertainty( jecParStr )
 
 # Kinematic cuts:
 jetPtMin = 30.0
-leadJetPtMin = 30.0
+muonPtMin = 45.0
+electronPtMin = 45.0
 looseMuonIsoMax = 0.2
 looseElectronIsoMax = 0.2
-ssvheCut = 1.74
-
-
-if options.lepType == 0 :
-    muonPtMin = 35.0
-    electronPtMin = 20.0
-    metMin = 20.0
-    lepStr = 'Mu'
-else:
-    muonPtMin = 35.0
-    electronPtMin = 45.0
-    metMin = 20.0
-    lepStr = 'Ele'
-
+ssvheCut = 2.74
 
 # Per-jet scale factors:
 sfB = 1.00
@@ -237,18 +187,8 @@ if options.jecSys == 'up' :
     jecScale = 1.0
 elif options.jecSys == 'down' :
     jecScale = -1.0
-flatJecUnc = 0.0
-#flatJecUnc = 0.05
+flatJecUnc = 0.05
 
-
-cutFlow = [
-    [0,'Inclusive'],
-    [0,'==1 Lepton'],
-    [0,'==1 Lepton, 0 other lepton'],
-    [0,'MET Cut min'],
-    [0,'>= Jet'],
-    [0,'Jet pt 0 > min']
-    ]
 
 
 events = Events (files)
@@ -260,49 +200,45 @@ if options.useLoose :
     postfix = "Loose"
 
 jetPtHandle         = Handle( "std::vector<float>" )
-jetPtLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "pt" )
-genJetPtHandle          = Handle( "std::vector<float>" )
-genJetPtLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "genJetPt" )
+jetPtLabel    = ( "pfShyftTupleJets" + postfix,   "pt" )
 jetEtaHandle         = Handle( "std::vector<float>" )
-jetEtaLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "eta" )
+jetEtaLabel    = ( "pfShyftTupleJets" + postfix,   "eta" )
 jetPhiHandle         = Handle( "std::vector<float>" )
-jetPhiLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "phi" )
+jetPhiLabel    = ( "pfShyftTupleJets" + postfix,   "phi" )
 jetMassHandle         = Handle( "std::vector<float>" )
-jetMassLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "mass" )
+jetMassLabel    = ( "pfShyftTupleJets" + postfix,   "mass" )
 jetSecvtxMassHandle         = Handle( "std::vector<float>" )
-jetSecvtxMassLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "secvtxMass" )
+jetSecvtxMassLabel    = ( "pfShyftTupleJets" + postfix,   "secvtxMass" )
 jetSSVHEHandle         = Handle( "std::vector<float>" )
-jetSSVHELabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "ssvhe" )
+jetSSVHELabel    = ( "pfShyftTupleJets" + postfix,   "ssvhe" )
 jetFlavorHandle         = Handle( "std::vector<float>" )
-jetFlavorLabel    = ( "pfShyftTupleJets" + lepStr +  postfix,   "flavor" )
+jetFlavorLabel    = ( "pfShyftTupleJets" + postfix,   "flavor" )
 
 muonPtHandle         = Handle( "std::vector<float>" )
-muonPtLabel    = ( "pfShyftTupleMuons"+  postfix,   "pt" )
+muonPtLabel    = ( "pfShyftTupleMuons" + postfix,   "pt" )
 muonEtaHandle         = Handle( "std::vector<float>" )
-muonEtaLabel    = ( "pfShyftTupleMuons"+  postfix,   "eta" )
+muonEtaLabel    = ( "pfShyftTupleMuons" + postfix,   "eta" )
 muonPhiHandle         = Handle( "std::vector<float>" )
-muonPhiLabel    = ( "pfShyftTupleMuons"+  postfix,   "phi" )
+muonPhiLabel    = ( "pfShyftTupleMuons" + postfix,   "phi" )
 muonPfisoHandle         = Handle( "std::vector<float>" )
-muonPfisoLabel    = ( "pfShyftTupleMuons"+  postfix,   "pfiso" )
+muonPfisoLabel    = ( "pfShyftTupleMuons" + postfix,   "pfiso" )
 
 electronPtHandle         = Handle( "std::vector<float>" )
-electronPtLabel    = ( "pfShyftTupleElectrons"+  postfix,   "pt" )
+electronPtLabel    = ( "pfShyftTupleElectrons" + postfix,   "pt" )
 electronEtaHandle         = Handle( "std::vector<float>" )
-electronEtaLabel    = ( "pfShyftTupleElectrons"+  postfix,   "eta" )
+electronEtaLabel    = ( "pfShyftTupleElectrons" + postfix,   "eta" )
 electronPhiHandle         = Handle( "std::vector<float>" )
-electronPhiLabel    = ( "pfShyftTupleElectrons"+  postfix,   "phi" )
+electronPhiLabel    = ( "pfShyftTupleElectrons" + postfix,   "phi" )
 electronPfisoHandle         = Handle( "std::vector<float>" )
-electronPfisoLabel    = ( "pfShyftTupleElectrons"+  postfix,   "pfiso" )
+electronPfisoLabel    = ( "pfShyftTupleElectrons" + postfix,   "pfiso" )
 
 metHandle = Handle( "std::vector<float>" )
-metLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "pt" )
+metLabel = ("pfShyftTupleMET" + postfix,   "pt" )
 metPhiHandle = Handle( "std::vector<float>" )
-metPhiLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "phi" )
+metPhiLabel = ("pfShyftTupleMET" + postfix,   "phi" )
 
-pileupHandle = Handle( "std::vector<float>" )
-pileupLabel = ("PUNtupleDumper",   "PUweightNominalUpDown" )
 
-PUweight = 1.0
+
 
 # loop over events
 count = 0
@@ -312,7 +248,6 @@ ipercentDone = 0
 ipercentDoneLast = -1
 print "Start looping"
 for event in events:
-    cutFlow[0][0] += 1
     ipercentDone = int(percentDone)
     if ipercentDone != ipercentDoneLast :
         ipercentDoneLast = ipercentDone
@@ -320,71 +255,70 @@ for event in events:
             count, ntotal, ipercentDone )
     count = count + 1
     percentDone = float(count) / float(ntotal) * 100.0
+    
 
     #Require exactly one lepton (e or mu)
+
+    lepType = 0 # Let 0 = muon, 1 = electron    
     event.getByLabel (muonPtLabel, muonPtHandle)
     if not muonPtHandle.isValid():
-        muonPts = None
-    else :
-        muonPts = muonPtHandle.product()
+        continue
+    muonPts = muonPtHandle.product()
+
+    event.getByLabel (muonEtaLabel, muonEtaHandle)
+    muonEtas = muonEtaHandle.product()
+    event.getByLabel (muonPhiLabel, muonPhiHandle)
+    muonPhis = muonPhiHandle.product()
+
+
     
     event.getByLabel (electronPtLabel, electronPtHandle)
     if not electronPtHandle.isValid():
-        electronPts = None
-    else :
-        electronPts = electronPtHandle.product()
+        continue
+    electronPts = electronPtHandle.product()
+    event.getByLabel (electronEtaLabel, electronEtaHandle)
+    electronEtas = electronEtaHandle.product()
+    event.getByLabel (electronPhiLabel, electronPhiHandle)
+    electronPhis = electronPhiHandle.product()
+
 
     # Get the isolation values if needed
     if options.useLoose :
-        if muonPts is not None :
-            event.getByLabel (muonPfisoLabel, muonPfisoHandle)
-            if not muonPfisoHandle.isValid():
-                continue
-            muonPfisos = muonPfisoHandle.product()
-        if electronPts is not None:
-            event.getByLabel (electronPfisoLabel, electronPfisoHandle)
-            if not electronPfisoHandle.isValid():
-                print 'here'
-                continue
-            electronPfisos = electronPfisoHandle.product()
+        event.getByLabel (muonPfisoLabel, muonPfisoHandle)
+        if not muonPfisoHandle.isValid():
+            continue
+        muonPfisos = muonPfisoHandle.product()
+        event.getByLabel (electronPfisoLabel, electronPfisoHandle)
+        if not electronPfisoHandle.isValid():
+            continue
+        electronPfisos = electronPfisoHandle.product()
 
-    # get the PU weight before filling any histogram
-    if not options.useData and options.pileupReweight!='unity':
-        event.getByLabel( pileupLabel, pileupHandle )
-        if not pileupHandle.isValid():
-            print 'You want pileup reweighting for MC but there is no weights stored. '\
-                  'Use "--pileupReweight unity" to skip this.'
-        PUw = pileupHandle.product()
-        if len(PUw)!=3:
-            print 'I expect 3 numbers in the PUweightNominalUpDown vector!'
-        else:
-            if options.pileupReweight=='nominal': PUweight=PUw[0]
-            elif options.pileupReweight=='up': PUweight=PUw[1]
-            elif options.pileupReweight=='down': PUweight=PUw[2]
-            else:
-                print 'unknown option in --pileupReweight, use unity'
-                PUweight=1.0
+
+    
 
     nMuonsVal = 0
-    if muonPts is not None:
-        for imuonPt in range(0,len(muonPts)):
-            muonPt = muonPts[imuonPt]
-            if muonPt > muonPtMin :
-                if options.useLoose :
-                    if muonPfisos[imuonPt] / muonPt < looseMuonIsoMax :
-                        continue
-                    else :
-                        nMuonsVal += 1
+    for imuonPt in range(0,len(muonPts)):
+        muonPt = muonPts[imuonPt]
+        if muonPt > muonPtMin :
+            if options.useLoose :
+                if muonPfisos[imuonPt] / muonPt < looseMuonIsoMax :
+                    continue
                 else :
                     nMuonsVal += 1
+                    lepType = 0
+            else :
+                nMuonsVal += 1
+                lepType = 0                
                     
-        nMuons.Fill( nMuonsVal, PUweight )
-        if nMuonsVal > 0 :
-            ptMu.Fill( muonPts[0], PUweight )
-    
-    
+    nMuons.Fill( nMuonsVal )
+    if nMuonsVal > 0 :
+        ptMu.Fill( muonPts[0] )
+
+    event.getByLabel (electronPtLabel, electronPtHandle)
+    electronPts = electronPtHandle.product()
+
     nElectronsVal = 0
-    if electronPts is not None:
+    if nMuonsVal == 0 :
         for ielectronPt in range(0,len(electronPts)):
             electronPt = electronPts[ielectronPt]
             if electronPt > electronPtMin :
@@ -393,69 +327,27 @@ for event in events:
                         continue
                     else :
                         nElectronsVal += 1
+                        lepType = 1
                 else :
                     nElectronsVal += 1
-        nElectrons.Fill( nElectronsVal, PUweight )
-        if nElectronsVal > 0:
-            ptEle.Fill( electronPts[0], PUweight )
+                    lepType = 1
+                        
+    nElectrons.Fill( nElectronsVal )
 
 
     # Require exactly one lepton
-    if muonPts is None and electronPts is None :
-        continue
-    # to be sure...
-    if nElectronsVal+nMuonsVal != 1 :
+    if nMuonsVal + nElectronsVal != 1 :
         continue
 
-    cutFlow[1][0] += 1
+    lepEta = -999.0
+    if nMuonsVal > 0 :
+        lepEta = muonEtas[0]
+    else :
+        lepEta = electronEtas[0]
 
-
-    if options.lepType == 0 and muonPts is None :
-        continue
-    if options.lepType == 1 and electronPts is None :
-        continue
-    # to be sure again
-    if options.lepType == 0 and nMuonsVal!=1 :
-        continue
-    if options.lepType == 1 and nElectronsVal!=1 :
-        continue
-
-    
-    cutFlow[2][0] += 1
-
-    # Now get the MET
-    event.getByLabel( metLabel, metHandle )
-    metRaw = metHandle.product()[0]
-    event.getByLabel( metPhiLabel, metPhiHandle )
-    metPhiRaw = metPhiHandle.product()[0]
-
-    jets = []
-    taggedJets = []
-    met_px = metRaw * math.cos( metPhiRaw )
-    met_py = metRaw * math.sin( metPhiRaw )
-
-
-    # Now get the number of jets and the rest of the lepton 4-vector
-    if muonPts is not None:
-        event.getByLabel (muonEtaLabel, muonEtaHandle)
-        muonEtas = muonEtaHandle.product()
-        event.getByLabel (muonPhiLabel, muonPhiHandle)
-        muonPhis = muonPhiHandle.product()
-
-    if electronPts is not None:
-        event.getByLabel (electronEtaLabel, electronEtaHandle)
-        electronEtas = electronEtaHandle.product()
-        event.getByLabel (electronPhiLabel, electronPhiHandle)
-        electronPhis = electronPhiHandle.product()
-
+    # Now get the number of jets
     event.getByLabel( jetPtLabel, jetPtHandle )
     jetPts = jetPtHandle.product()
-    event.getByLabel( genJetPtLabel, genJetPtHandle )
-    if genJetPtHandle.isValid(): 
-        genJetPts = genJetPtHandle.product()
-    elif abs(options.jetSmear)>0.0001:
-        print "You want to use jetSmear but there is no genJetPt collection!!"
-        exit()
     event.getByLabel( jetEtaLabel, jetEtaHandle )
     jetEtas = jetEtaHandle.product()
     event.getByLabel( jetPhiLabel, jetPhiHandle )
@@ -463,12 +355,15 @@ for event in events:
     event.getByLabel( jetMassLabel, jetMassHandle )
     jetMasses = jetMassHandle.product()
 
+    event.getByLabel( metLabel, metHandle )
+    metRaw = metHandle.product()[0]
+    event.getByLabel( metPhiLabel, metPhiHandle )
+    metPhiRaw = metPhiHandle.product()[0]
 
-    lepEta = -999.0
-    if options.lepType == 0 :
-        lepEta = muonEtas[0]
-    else :
-        lepEta = electronEtas[0]
+
+    jets = []
+    met_px = metRaw * math.cos( metPhiRaw )
+    met_py = metRaw * math.sin( metPhiRaw )
 
 
     for ijet in range(0,len(jetPts) ):
@@ -486,21 +381,12 @@ for event in events:
             #print 'Correction = ' + str( 1 + unc * jecScale)
             jetScale = 1 + unc * jecScale
 
-        ## also do Jet energy resolution variation here
-        ## and correct MET
-        if abs(options.jetSmear)>0.0001 and genJetPts[ijet]>15.0:
-            scale = options.jetSmear
-            recopt = jetPts[ijet]
-            genpt = genJetPts[ijet]
-            deltapt = (recopt-genpt)*scale
-            ptscale = max(0.0, (recopt+deltapt)/recopt)
-            jetScale*=ptscale
-        
         thisJet = ROOT.TLorentzVector()
         thisJet.SetPtEtaPhiM(jetPts[ijet],
                              jetEtas[ijet],
                              jetPhis[ijet],
                              jetMasses[ijet])
+
 
         met_px = met_px + thisJet.Px()
         met_py = met_py + thisJet.Py()
@@ -512,13 +398,6 @@ for event in events:
 
     met = math.sqrt(met_px*met_px + met_py*met_py)
 
-    # cutting on met after scaling
-    if met < metMin :
-        continue
-    
-    cutFlow[3][0] += 1
-
-
     njets = 0
     for jet in jets :
         if jet.Pt() > jetPtMin :
@@ -528,14 +407,7 @@ for event in events:
     if njets < 1 :
         continue
 
-    cutFlow[4][0] += 1
 
-    if jets[0].Pt() < leadJetPtMin :
-        continue
-    
-    cutFlow[5][0] += 1
-    ptJet0.Fill(jets[0].Pt(), PUweight )
-    
     # Now get the number of SSVHEM tags and vertex mass.
     # If using MC, get the jet flavor also
     event.getByLabel (jetSSVHELabel, jetSSVHEHandle)
@@ -557,7 +429,6 @@ for event in events:
     sumEt = 0.
     sumPt = 0.
     sumE = 0.
-    jet1Pt = -1.0
     effs = []
     # The vertex mass for the event is the vertex mass
     # of the first tagged jet (ordered by pt).
@@ -567,8 +438,6 @@ for event in events:
         jetP4 = jets[ijet]
         if jetP4.Pt() < jetPtMin :
             continue
-        if jet1Pt < 0.0 :
-            jet1Pt = jetP4.Pt()
         sumEt = sumEt + jetP4.Et()
         sumPt = sumPt + jetP4.Pt()
         sumE = sumE + jetP4.E()
@@ -594,7 +463,6 @@ for event in events:
         # Only consider tagged jets for the vertex mass
         if ssvhe > ssvheCut :
             ntags += 1
-            taggedJets.append( jetP4 )
             # The
             if secvtxMass <= 0.0001 : # Stop at the first nontrivial secvtx mass
                 secvtxMass = jetSecvtxMasses[ijet]
@@ -619,11 +487,10 @@ for event in events:
 
 
 
-    nJets.Fill( njets, PUweight )
+    nJets.Fill( njets )
 
     if njets > maxJets :
         njets = maxJets
-        
     if ntags > maxTags :
         ntags = maxTags
 
@@ -637,50 +504,35 @@ for event in events:
 
     # Now fill discriminator variables
 
-    if njets >= 2 :
-        taggedJet0 = jets[0]
-        taggedJet1 = jets[1]
-        bbCand = taggedJet0 + taggedJet1
-        imbb = bbCand.M()
-        idR = taggedJet0.DeltaR( taggedJet1 )
-        mbb[njets].Fill( imbb, PUweight )
-        dRbb[njets].Fill( idR, PUweight )
-
     if options.useData :
         # always fill the "total" 
-        secvtxMassPlots[njets][ntags][3].Fill( secvtxMass, PUweight ) 
-        lepEtaPlots[njets][ntags][3].Fill( lepEta, PUweight )
-        centralityPlots[njets][ntags][3].Fill( sumEt / sumE, PUweight )
-        sumPtPlots[njets][ntags][3].Fill( sumPt, PUweight )
-        jet1PtPlots[njets][ntags][3].Fill( jet1Pt, PUweight )
+        secvtxMassPlots[njets][ntags][3].Fill( secvtxMass ) 
+        lepEtaPlots[njets][ntags][3].Fill( lepEta )
+        centralityPlots[njets][ntags][3].Fill( sumEt / sumE )
+        sumPtPlots[njets][ntags][3].Fill( sumPt )
 
         if flavorIndex >= 0 :
-            print "we should not be here!"
-            secvtxMassPlots[njets][ntags][flavorIndex].Fill( secvtxMass, PUweight ) # Fill each jet flavor individually
-            lepEtaPlots[njets][ntags][flavorIndex].Fill( lepEta, PUweight )
-            centralityPlots[njets][ntags][flavorIndex].Fill( sumEt / sumE, PUweight )
-            sumPtPlots[njets][ntags][flavorIndex].Fill( sumPt, PUweight )
-            jet1PtPlots[njets][ntags][flavorIndex].Fill( jet1Pt, PUweight )
+            secvtxMassPlots[njets][ntags][flavorIndex].Fill( secvtxMass ) # Fill each jet flavor individually
+            lepEtaPlots[njets][ntags][flavorIndex].Fill( lepEta )
+            centralityPlots[njets][ntags][flavorIndex].Fill( sumEt / sumE )
+            sumPtPlots[njets][ntags][flavorIndex].Fill( sumPt )
     else :
 
         # otherwise, loop over all of the SF combinatorics to tag itag out of njet jets
         # and weight the distributions by the resultant probability. 
         effCombos = EffInfoCombinations( effs, verbose=False )
 
-        for itag in range(0,njets+1) :
+        for itag in range(0,njets) :
             pTag = effCombos.pTag( itag )
             jtag = itag
             if jtag > maxTags :
                 jtag = maxTags
-            # use pileup reweighting factor
-            pTag*=PUweight
             # always fill the "total"
             if jtag > 0 :
                 secvtxMassPlots[njets][jtag][3].Fill( secvtxMass, pTag ) 
-            lepEtaPlots[njets][jtag][3].Fill( lepEta, pTag)
+            lepEtaPlots[njets][jtag][3].Fill( lepEta, pTag )
             centralityPlots[njets][jtag][3].Fill( sumEt / sumE, pTag )
             sumPtPlots[njets][jtag][3].Fill( sumPt, pTag )
-            jet1PtPlots[njets][jtag][3].Fill( jet1Pt, pTag )
 
             if flavorIndex >= 0 :
                 if jtag > 0 :
@@ -688,15 +540,7 @@ for event in events:
                 lepEtaPlots[njets][jtag][flavorIndex].Fill( lepEta, pTag )
                 centralityPlots[njets][jtag][flavorIndex].Fill( sumEt / sumE, pTag )
                 sumPtPlots[njets][jtag][flavorIndex].Fill( sumPt, pTag )
-                jet1PtPlots[njets][jtag][flavorIndex].Fill( jet1Pt, pTag )
 
-
-
-print '----- Cut Flow -----'
-for cut in cutFlow:
-    print '{0:15s} = {1:10.0f}'.format(
-        cut[1], cut[0]
-        )
 
 f.cd()
 f.Write()

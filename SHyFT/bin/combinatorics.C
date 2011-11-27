@@ -1,9 +1,6 @@
 #include "Analysis/SHyFT/interface/combinatorics.h"
 
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <iterator>
+
 
 int main (int argc, char ** argv)
 {
