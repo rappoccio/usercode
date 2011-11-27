@@ -44,24 +44,10 @@ options.register('ignoreTrigger',
                   "Ignore trigger in selection")
 
 options.register('eleEt',
-                  30.,
+                  35.,
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.float,
                  "electron et threshold")
-
-options.register('ttbsmPAT',
-                 1,
-                 VarParsing.multiplicity.singleton,
-                 VarParsing.varType.int,
-                 "If running on ttbsm PAT tuples"
-                 )
-options.register('use42X',
-                 0,
-                 VarParsing.multiplicity.singleton,
-                 VarParsing.varType.int,
-                 "PAT tuplese done in 4_2_2"
-                 )
-
 
 options.parseArguments()
 
@@ -74,10 +60,6 @@ if options.useFlavorHistory > 0 :
 else :
     useFlavorHistory = False
 
-if options.use42X > 0:
-   use42XMC = True
-else: use42XMC = False
-
 inputDoMC=True
 
 inputSampleName = options.sampleNameInput
@@ -87,20 +69,12 @@ if options.ignoreTrigger == 1 :
     inputCutsToIgnore.append( 'Trigger' )
 
 ## Source
-if len(options.inputFiles) == 0 and options.ttbsmPAT > 0 :
+if len(options.inputFiles) == 0:
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-        '/store/user/lpctlbsm/skhalil/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_9_1_gsY.root',
-        '/store/user/lpctlbsm/skhalil/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_99_1_AgZ.root',
+        '/store/user/lpctlbsm/skhalil/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/ttbsm_v8_Summer11-PU_S4_START42_V11-v1/87037ef7c828ea57e128f1ace23a632e/ttbsm_42x_mc_9_1_qHp.root',
         )
                                 )                           
-elif len(options.inputFiles) == 0 and options.ttbsmPAT == 0:
-    process.source = cms.Source("PoolSource",
-                                fileNames = cms.untracked.vstring(
-        '/store/user/makouski/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/shyft_414_v1/4102b2143a05266d07e3ed7d177f56c8/shyft_414patch1_mc_9_1_Z8F.root',
-        '/store/user/makouski/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/shyft_414_v1/4102b2143a05266d07e3ed7d177f56c8/shyft_414patch1_mc_99_1_yiR.root',
-        )
-    )
 else :
     filelist = open( options.inputFiles[0], 'r' )
     process.source = cms.Source("PoolSource",
@@ -113,7 +87,7 @@ if inputDoMC == False :
     process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( myList )
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(3000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 
@@ -122,155 +96,46 @@ process.TFileService = cms.Service("TFileService",
                                    )
 
 #_____________________________________PF__________________________________________________
+    
+process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
+                                    shyftAnalysis = inputShyftAnalysis.clone(
+    muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
+    electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
+    metSrc = cms.InputTag('patMETsPFlow'),
+    jetSrc = cms.InputTag('goodPatJetsPFlow'),
+    pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
+    ePlusJets = cms.bool( True ),
+    muPlusJets = cms.bool(False),
+    usePFIso = cms.bool(True),
+    eEtCut = cms.double(options.eleEt),
+    useVBTFDetIso  = cms.bool(False),
+    jetPtMin = cms.double(35.0),##
+    minJets = cms.int32(5),
+    metMin = cms.double(20.0),      
+    reweightPU = cms.bool(True),  
+    heavyFlavour = cms.bool( useFlavorHistory ),
+    doMC = cms.bool( inputDoMC),
+    sampleName = cms.string(inputSampleName),   
+    jetAlgo = cms.string("pf"),
+    simpleSFCalc = cms.bool(False),                                            
+    weightSFCalc = cms.bool(True),
+    reweightBTagEff = cms.bool(True),
+    useCustomPayload = cms.bool(False),
+    bcEffScale = cms.double(1.00),
+    lfEffScale = cms.double(1.00),
+    jetSmear = cms.double(0.1),
+    cutsToIgnore=cms.vstring(inputCutsToIgnore),
+    identifier = cms.string('PF'),
+    )                                    
+                                    )
 
-if options.ttbsmPAT > 0:
-    
-    process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
-                                        shyftAnalysis = inputShyftAnalysis.clone(
-        muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
-        electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
-        metSrc = cms.InputTag('patMETsPFlow'),
-        jetSrc = cms.InputTag('goodPatJetsPFlow'),
-        pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
-        ePlusJets = cms.bool( True ),
-        muPlusJets = cms.bool(False),        
-        jetPtMin = cms.double(30.0),##
-        minJets = cms.int32(5),
-        metMin = cms.double(20.0),
-        eEtCut = cms.double(options.eleEt),
-        use42X  = cms.bool(use42XMC),
-        heavyFlavour = cms.bool( useFlavorHistory ),
-        doMC = cms.bool( inputDoMC),
-        sampleName = cms.string(inputSampleName),
-        identifier = cms.string('PF'),
-        jetAlgo = cms.string("pf"),
-        simpleSFCalc = cms.bool(False),                                        
-        reweightBTagEff = cms.bool(True),
-        weightSFCalc = cms.bool(True),                                        
-        useCustomPayload = cms.bool(False),
-        bcEffScale = cms.double(1.00),
-        lfEffScale = cms.double(1.00),
-        jetSmear = cms.double(0.1),
-        cutsToIgnore=cms.vstring(inputCutsToIgnore),
-        
-       ##  pvSelector = cms.PSet(
-##         pvSrc = cms.InputTag('goodOfflinePrimaryVertices'),
-##         minNdof = cms.double(4.0),
-##         maxZ = cms.double(15.0),
-##         maxRho = cms.double(2.0)
-##         ),
-        
-##         muonIdTight = cms.PSet(
-##         version = cms.string('FALL10'),
-##         Chi2 = cms.double(10.0),
-##         D0 = cms.double(0.02),
-##         ED0 = cms.double(999.0),
-##         SD0 = cms.double(999.0),
-##         NHits = cms.int32(11),
-##         NValMuHits = cms.int32(0),
-##         ECalVeto = cms.double(999.0),
-##         HCalVeto = cms.double(999.0),
-##         RelIso = cms.double(0.05),
-##         LepZ = cms.double(1.0),
-##         nPixelHits = cms.int32(1),
-##         nMatchedStations=cms.int32(1),
-##         cutsToIgnore = cms.vstring('ED0', 'SD0', 'ECalVeto', 'HCalVeto'),
-##         RecalcFromBeamSpot = cms.bool(False),
-##         beamLineSrc = cms.InputTag("offlineBeamSpot"),
-##         pvSrc = cms.InputTag("goodOfflinePrimaryVertices"),
-##         ),
-        
-##         muonIdLoose = cms.PSet(
-##         version = cms.string('FALL10'),
-##         Chi2 = cms.double(999.0),
-##         D0 = cms.double(999.0),
-##         ED0 = cms.double(999.0),
-##         SD0 = cms.double(999.0),
-##         NHits = cms.int32(-1),
-##         NValMuHits = cms.int32(-1),
-##         ECalVeto = cms.double(999.0),
-##         HCalVeto = cms.double(999.0),
-##         RelIso = cms.double(0.2),
-##         LepZ = cms.double(1.0),
-##         nPixelHits = cms.int32(1),
-##         nMatchedStations=cms.int32(1),        
-##         cutsToIgnore = cms.vstring('Chi2', 'D0', 'ED0', 'SD0', 'NHits','NValMuHits','ECalVeto','HCalVeto','LepZ','nPixelHits','nMatchedStations'),
-##         RecalcFromBeamSpot = cms.bool(False),
-##         beamLineSrc = cms.InputTag("offlineBeamSpot"),
-##         pvSrc = cms.InputTag("goodOfflinePrimaryVertices"),
-##         ),    
-        
-        )                                    
-                                        )
-    
-elif options.ttbsmPAT == 0 :    
-    process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
-                                        shyftAnalysis = inputShyftAnalysis.clone(
-        muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
-        electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
-        metSrc = cms.InputTag('patMETsPFlow'),
-        jetSrc = cms.InputTag('selectedPatJetsPFlow'),
-        ePlusJets = cms.bool(True),
-        muPlusJets = cms.bool(False),
-        pvSrc   = cms.InputTag('offlinePrimaryVertices'),
-        jetPtMin = cms.double(30.0),##
-        minJets = cms.int32(5),
-        metMin = cms.double(20.0),
-        eEtCut = cms.double(options.eleEt),
-        use42X  = cms.bool(use42XMC),
-        heavyFlavour = cms.bool( useFlavorHistory ),
-        doMC = cms.bool( inputDoMC),
-        sampleName = cms.string(inputSampleName),
-        identifier = cms.string('PF'),
-        jetAlgo = cms.string("pf"),
-        simpleSFCalc = cms.bool(False),                                        
-        reweightBTagEff = cms.bool(True),
-        weightSFCalc = cms.bool(True),                                        
-        useCustomPayload = cms.bool(False),
-        useTTBSMPat = cms.bool(False),
-        bcEffScale = cms.double(1.00),
-        lfEffScale = cms.double(1.00),
-        jetSmear = cms.double(0.1),
-        cutsToIgnore=cms.vstring(inputCutsToIgnore),
-        reweightPU = cms.bool(False),
-    
-        pvSelector = cms.PSet(
-        pvSrc = cms.InputTag('offlinePrimaryVertices'),
-        minNdof = cms.double(4.0),
-        maxZ = cms.double(24.0),
-        maxRho = cms.double(2.0),
-        ),
-
-        )                                    
-                                        )
-    
-#___________Special case of MET < 20 GeV_________________
-process.pfShyftAnaMETMax20 = process.pfShyftAna.clone(
+process.pfShyftAnaMC = process.pfShyftAna.clone( #To extract secvtx shapes and >=3 tag jets count
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-    identifier = cms.string('PF MET <20'),
-    metMin = cms.double(0.0),
-    metMax = cms.double(20.0),
-    )
-    )
-    
-#_____________QCD WP95_______________________
-process.pfShyftAnaQCDWP95 = process.pfShyftAna.clone(
-    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
-    useWP95Selection = cms.bool(True),
-    useWP70Selection = cms.bool(False),
-    eRelIso = cms.double(0.15),
-    identifier = cms.string('PF MET, WP95')
-    )
-    )
-
-process.pfShyftAnaMETMax20QCDWP95 = process.pfShyftAna.clone(
-    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-    identifier = cms.string('PF MET <20, WP95'),
-    useWP95Selection = cms.bool(True),
-    useWP70Selection = cms.bool(False),
-    metMin = cms.double(0.0),
-    metMax = cms.double(20.0),
-    eRelIso = cms.double(0.15),
+    weightSFCalc = cms.bool(False),
+    simpleSFCalc = cms.bool(False),
+	reweightBTagEff = cms.bool(False),
+    useCustomPayload = cms.bool(False),
+    identifier = cms.string('PF MC'),
     )
     )
 #___________no MET cut________________
@@ -281,64 +146,22 @@ process.pfShyftAnaNoMET = process.pfShyftAna.clone(
     )
     )
 
-process.pfShyftAnaQCDWP95NoMET = process.pfShyftAna.clone(
-    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
-    metMin = cms.double(0.0),
-    useWP95Selection = cms.bool(True),
-    useWP70Selection = cms.bool(False),
-    eRelIso = cms.double(0.15),
-    identifier = cms.string('PF no MET, WP95')
-    )
-    )
-
-#______________To extract secvtx shapes and >=3 tag jets count _____________________
-
-process.pfShyftAnaMC = process.pfShyftAna.clone(
-    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-    identifier = cms.string('PF MC'),
-    weightSFCalc = cms.bool(False),
-    simpleSFCalc = cms.bool(False),
-	reweightBTagEff = cms.bool(False),
-    useCustomPayload = cms.bool(False),
-    )
-    )
-
 process.pfShyftAnaMCNoMET = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-    identifier = cms.string('PF MC no MET'),
+    metMin = cms.double(0.0), 
     weightSFCalc = cms.bool(False),
     simpleSFCalc = cms.bool(False),
     reweightBTagEff = cms.bool(False),
     useCustomPayload = cms.bool(False),
-    metMin = cms.double(0.0),
+    identifier = cms.string('PF MC no MET'),
     )
     )
-
-
-process.pfShyftAnaMCQCDWP95 = process.pfShyftAna.clone(
+#___________Special case of MET < 20 GeV_________________
+process.pfShyftAnaMETMax20 = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-    identifier = cms.string('PF MC WP95'),
-    useWP95Selection = cms.bool(True),
-    useWP70Selection = cms.bool(False),
-    weightSFCalc = cms.bool(False),
-    simpleSFCalc = cms.bool(False),
-	reweightBTagEff = cms.bool(False),
-    useCustomPayload = cms.bool(False),
-    eRelIso = cms.double(0.15),
-    )
-    )
-
-process.pfShyftAnaMCQCDWP95NoMET = process.pfShyftAna.clone(
-    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-    identifier = cms.string('PF MC WP95, NoMET'),
-    useWP95Selection = cms.bool(True),
-    useWP70Selection = cms.bool(False),
-    weightSFCalc = cms.bool(False),
-    simpleSFCalc = cms.bool(False),
-	reweightBTagEff = cms.bool(False),
-    useCustomPayload = cms.bool(False),
-    eRelIso = cms.double(0.15),
+    identifier = cms.string('PF MET <20'),
     metMin = cms.double(0.0),
+    metMax = cms.double(20.0),
     )
     )
 
@@ -353,25 +176,86 @@ process.pfShyftAnaMCMETMax20 = process.pfShyftAna.clone(
     metMax = cms.double(20.0),
     )
     )
+#_____________QCD WP95_______________________
+process.pfShyftAnaQCDWP95 = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(    
+    useWP95Selection = cms.bool(True),# if CiC ID loose, then pf reliso<0.2 is applied
+    useWP70Selection = cms.bool(False),
+    #eRelIso = cms.double(0.15),     
+    #useVBTFDetIso  = cms.bool(True),
+    identifier = cms.string('PF MET, WP95')
+    )
+    )
+
+process.pfShyftAnaMCQCDWP95 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+    useWP95Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    weightSFCalc = cms.bool(False),
+    simpleSFCalc = cms.bool(False),
+	reweightBTagEff = cms.bool(False),
+    useCustomPayload = cms.bool(False),
+    #eRelIso = cms.double(0.15),
+    #useVBTFDetIso  = cms.bool(True),
+    identifier = cms.string('PF MC WP95'),
+    )
+    )
+
+#___________QCD WP95, no MET cut________________
+process.pfShyftAnaQCDWP95NoMET = process.pfShyftAna.clone(
+    shyftAnalysis=process.pfShyftAna.shyftAnalysis.clone(
+    metMin = cms.double(0.0),
+    useWP95Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    #eRelIso = cms.double(0.15),
+    #useVBTFDetIso  = cms.bool(True),
+    identifier = cms.string('PF no MET, WP95')
+    )
+    )
+
+process.pfShyftAnaMCQCDWP95NoMET = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
+    metMin = cms.double(0.0),
+    useWP95Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    weightSFCalc = cms.bool(False),
+    simpleSFCalc = cms.bool(False),
+	reweightBTagEff = cms.bool(False),
+    useCustomPayload = cms.bool(False),
+    #eRelIso = cms.double(0.15),
+    #useVBTFDetIso  = cms.bool(True),
+    identifier = cms.string('PF MC WP95, NoMET'),
+    )
+    )
+
+#___________QCD WP95, MET < 20 GeV ________________
+process.pfShyftAnaMETMax20QCDWP95 = process.pfShyftAna.clone(
+    shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(    
+    useWP95Selection = cms.bool(True),
+    useWP70Selection = cms.bool(False),
+    metMin = cms.double(0.0),
+    metMax = cms.double(20.0),
+    #eRelIso = cms.double(0.15),
+    #useVBTFDetIso  = cms.bool(True),
+    identifier = cms.string('PF MET <20, WP95'),
+    )
+    )
+
 process.pfShyftAnaMCMETMax20QCDWP95 = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-    identifier = cms.string('PF MC MET < 20, WP95'),
+    metMin = cms.double(0.0),
+    metMax = cms.double(20.0),
     useWP95Selection = cms.bool(True),
     useWP70Selection = cms.bool(False),
     weightSFCalc = cms.bool(False),
     simpleSFCalc = cms.bool(False),
     reweightBTagEff = cms.bool(False),
     useCustomPayload = cms.bool(False),
-    eRelIso = cms.double(0.15),
-    metMin = cms.double(0.0),
-    metMax = cms.double(20.0),
+    #eRelIso = cms.double(0.15),
+    #useVBTFDetIso  = cms.bool(True),
+    identifier = cms.string('PF MC MET < 20, WP95'),
     )
     )
-
-
-
-
-
 
 ################################################
 #_______________Systematics__________________
@@ -491,7 +375,7 @@ process.pfShyftAnaPUdown = process.pfShyftAna.clone(
 
 process.pfShyftAnaNoPUReweight = process.pfShyftAna.clone(
     shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-        reweightPU_ = cms.bool(False),
+        reweightPU = cms.bool(False),
         identifier = cms.string('PFNoPUReweighting')
         )
     )
@@ -529,6 +413,7 @@ process.pfShyftAnaEleEEPt075 =  process.pfShyftAna.clone(
 process.s = cms.Sequence(
    process.pfShyftAna*                 
    process.pfShyftAnaNoMET*
+   process.pfShyftAnaMETMax20*
    
    process.pfShyftAnaJES095*    
    process.pfShyftAnaJES105*
@@ -541,10 +426,6 @@ process.s = cms.Sequence(
    process.pfShyftAnaNoPUReweight*
    process.pfShyftAnaEleEEPt125*
    process.pfShyftAnaEleEEPt075*
-   process.pfShyftAnaMC*
-   process.pfShyftAnaMCNoMET*   
-   process.pfShyftAnaMETMax20*
-   process.pfShyftAnaMCMETMax20*
    process.pfShyftAnaReweightedBTag080*
    process.pfShyftAnaReweightedBTag090*
    process.pfShyftAnaReweightedBTag110*
@@ -553,21 +434,26 @@ process.s = cms.Sequence(
    process.pfShyftAnaReweightedLFTag090*
    process.pfShyftAnaReweightedLFTag110*
    process.pfShyftAnaReweightedLFTag120*
-   
+    
    process.pfShyftAnaQCDWP95*
    process.pfShyftAnaQCDWP95NoMET*
+   process.pfShyftAnaMETMax20QCDWP95*
+
+   process.pfShyftAnaMC*
+   process.pfShyftAnaMCNoMET*
+   process.pfShyftAnaMCMETMax20*
    process.pfShyftAnaMCQCDWP95*
    process.pfShyftAnaMCQCDWP95NoMET*
-   process.pfShyftAnaMETMax20QCDWP95*
-   process.pfShyftAnaMCMETMax20QCDWP95
+   process.pfShyftAnaMCMETMax20QCDWP95*
+   process.pfShyftAnaMETMax20QCDWP95
+     
    )
 
 process.p = cms.Path(
-    process.pfShyftAna*
-    process.pfShyftAnaMC
+    process.pfShyftAna
+    #process.pfShyftAnaMC
     )
 
 if options.allSys == 1 :
     process.p *= process.s
-
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
