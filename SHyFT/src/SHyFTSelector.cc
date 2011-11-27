@@ -26,8 +26,6 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    electronIdTight_ (params.getParameter<edm::ParameterSet>("electronIdTight") ),
    muonIdLoose_     (params.getParameter<edm::ParameterSet>("muonIdLoose") ),
    electronIdLoose_ (params.getParameter<edm::ParameterSet>("electronIdLoose") ),
-   jetIdLoose_      (params.getParameter<edm::ParameterSet>("jetIdLoose") ),
-   pfjetIdLoose_    (params.getParameter<edm::ParameterSet>("pfjetIdLoose") ),
    minJets_         (params.getParameter<int> ("minJets") ),
    muJetDR_         (params.getParameter<double>("muJetDR")),
    eleJetDR_        (params.getParameter<double>("eleJetDR")),
@@ -44,7 +42,6 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    jetPtMin_        (params.getParameter<double>("jetPtMin")), 
    jetEtaMax_       (params.getParameter<double>("jetEtaMax")), 
    jetScale_        (params.getParameter<double>("jetScale")),
-   jetUncertainty_  (params.getParameter<double>("jetUncertainty")),
    jetSmear_        (params.getParameter<double>("jetSmear")),
    metMin_          (params.getParameter<double>("metMin")),
    metMax_          (params.getParameter<double>("metMax")),
@@ -63,12 +60,9 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    useWP70Selection_(params.getParameter<bool>("useWP70Selection")),
    useData_         (params.getParameter<bool>("useData")),
    usePFIso_        (params.getParameter<bool>("usePFIso")),
-   useCone3_        (params.getParameter<bool>("useCone3")),
    useNoID_         (params.getParameter<bool>("useNoID")),
-   userhoCorr_      (params.getParameter<bool>("userhoCorr")),
-   useTTBSMPat_     (params.getParameter<bool>("useTTBSMPat")),
-   use42X_          (params.getParameter<bool>("use42X")),  
-   jecPayload_      (params.getParameter<std::string>("jecPayload"))
+   useVBTFDetIso_   (params.getParameter<bool>("useVBTFDetIso")),
+   jecPayloads_     (params.getParameter<std::vector<std::string> >("jecPayloads"))
 {
    // make the bitset
    push_back( "Inclusive"      );
@@ -78,10 +72,9 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    push_back( "== 1 Tight Lepton"    );
    push_back( "== 1 Tight Lepton, Mu Veto");
    push_back( "== 1 Lepton"    );
-   push_back( "Conversion Veto A");
-   push_back( "Conversion Veto B");
+   push_back( "Conversion Veto");
    push_back( "Dilepton Veto"  );
-   push_back( "Z Veto"         );
+   //push_back( "Z Veto"         );
    push_back( "MET Cut Min"    );
    push_back( "MET Cut Max"    );
    push_back( "Wmt Cut Max"    );
@@ -101,10 +94,9 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    set( "== 1 Tight Lepton"    );
    set( "== 1 Tight Lepton, Mu Veto");
    set( "== 1 Lepton"    );
-   set( "Conversion Veto A");
-   set( "Conversion Veto B");
+   set( "Conversion Veto");
    set( "Dilepton Veto"  );
-   set( "Z Veto"         );
+   //set( "Z Veto"         );
    set( "MET Cut Min"    );
    set( "MET Cut Max"    ); 
    set( "Wmt Cut Max"    );
@@ -123,10 +115,9 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    lep2Index_ = index_type(&bits_, std::string("== 1 Tight Lepton"    ));
    lep3Index_ = index_type(&bits_, std::string("== 1 Tight Lepton, Mu Veto"));
    lep4Index_ = index_type(&bits_, std::string("== 1 Lepton"    ));
-   conversionIndexA_ = index_type(&bits_, std::string("Conversion Veto A"));
-   conversionIndexB_ = index_type(&bits_, std::string("Conversion Veto B"));
+   conversionIndex_ = index_type(&bits_, std::string("Conversion Veto"));
    dlepvetoIndex_ = index_type(&bits_, std::string("Dilepton Veto"));
-   zvetoIndex_ = index_type(&bits_, std::string("Z Veto"));
+   //zvetoIndex_ = index_type(&bits_, std::string("Z Veto"));
    metLowIndex_ = index_type(&bits_, std::string("MET Cut Min"));
    metHighIndex_ = index_type(&bits_, std::string("MET Cut Max"));
    wmtIndex_ = index_type(&bits_, std::string( "Wmt Cut Max" ));
@@ -140,64 +131,31 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    if ( params.exists("cutsToIgnore") )
       setIgnoredCuts( params.getParameter<std::vector<std::string> >("cutsToIgnore") );
 	
-
    retInternal_ = getBitTemplate();
+  
+   //Get the factorized jet corrector. 
+  // The payloads contain N elements, the Nth is the uncertainty, and the first N-1 elements are the
+  // actual correction levels.The N-2 element is only used for data 
+  vector<JetCorrectorParameters> vPar;
+  for ( std::vector<std::string>::const_iterator payloadBegin = jecPayloads_.begin(),
+           payloadEnd = jecPayloads_.end(), ipayload = payloadBegin; ipayload != payloadEnd - 1; ++ipayload ) {
+     JetCorrectorParameters pars(*ipayload);
 
+     if(ipayload != payloadEnd - 2){
+        std::cout << "Adding payload for mc: " << *ipayload  << std::endl;
+        vPar.push_back(pars);}  
+     else if (( ipayload == payloadEnd - 2) && ( useData_)){
+        std::cout << "Adding payload for data: " << *ipayload << std::endl;
+        vPar.push_back(pars);}   
+  }
 
-   string L1Tag, L1Tag_42X;
-   if(useTTBSMPat_){ //use with TLBSM PATs
-      L1Tag     = "Jec10_V3_AK5PFchs_L1FastJet.txt"; //for 41X
-      L1Tag_42X = "Jec11_V2_AK5PFchs_L1FastJet.txt"; //for 42X
-   }
-      
-   else{// only for old SHyFT PATs
-      L1Tag     = "Jec10_V3_AK5PFchs_L1Offset.txt"; //for 41X
-      L1Tag_42X = "Jec11_V2_AK5PFchs_L1Offset.txt"; //Dummy as SHyFT PATs were not done in 42X
-   }
-   string L2Tag   = "Jec10_V3_AK5PFchs_L2Relative.txt";
-   string L3Tag   = "Jec10_V3_AK5PFchs_L3Absolute.txt";
-   string L2L3Tag = "Jec10_V3_AK5PFchs_L2L3Residual.txt"; 
-
-   string L2Tag_42X = "Jec11_V2_AK5PFchs_L2Relative.txt";
-   string L3Tag_42X = "Jec11_V2_AK5PFchs_L3Absolute.txt"; 
-   string L2L3Tag_42X = "Jec11_V2_AK5PFchs_L2L3Residual.txt";
-   
-   JetCorrectorParameters L1JetPar_42X(L1Tag_42X);
-   JetCorrectorParameters L3JetPar_42X(L3Tag_42X);
-   JetCorrectorParameters L2JetPar_42X(L2Tag_42X);
-   JetCorrectorParameters L2L3JetPar_42X(L2L3Tag_42X);
-     
-   JetCorrectorParameters L1JetPar(L1Tag);
-   JetCorrectorParameters L3JetPar(L3Tag);
-   JetCorrectorParameters L2JetPar(L2Tag);
-   JetCorrectorParameters L2L3JetPar(L2L3Tag);
-
-   //JetCorrectorParameters 
-
-   vector<JetCorrectorParameters> vPar;
-   if (use42X_){
-      vPar.push_back(L1JetPar_42X);
-      vPar.push_back(L2JetPar_42X);
-      vPar.push_back(L3JetPar_42X);
-      if (useData_)  vPar.push_back(L2L3JetPar_42X);
-   }
-   else{
-      vPar.push_back(L1JetPar);
-      vPar.push_back(L2JetPar);
-      vPar.push_back(L3JetPar);
-      if (useData_)  vPar.push_back(L2L3JetPar); //if running on prompt Reco 41X for any reason
-   }
-   
    jec_ = boost::shared_ptr<FactorizedJetCorrector> ( new FactorizedJetCorrector(vPar) );
-
-   jecUnc_ = boost::shared_ptr<JetCorrectionUncertainty>( new JetCorrectionUncertainty(jecPayload_));
+   jecUnc_ = boost::shared_ptr<JetCorrectionUncertainty>( new JetCorrectionUncertainty(jecPayloads_.back()));
 
 }
 
 bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & ret)
 {
-   // std::cout << "" << std::endl;
-
    ret.set(false);
 
    allJets_.clear();
@@ -211,8 +169,8 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
    selectedMETs_.clear();
    met_=reco::ShallowClonePtrCandidate();
    allElectrons_.clear();
-   selectedElectrons_.clear();//to select ==1 tight electron or anti-electron depends on the switch
-   selectedLooseElectrons_.clear();//to apply ZVeto  
+   selectedElectrons_.clear();//to select ==1 tight electron
+   selectedLooseElectrons_.clear();//to apply Dilepton Veto 
    selectedLooseMuons_.clear();
    passCut( ret, inclusiveIndex_);
 
@@ -235,12 +193,10 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             lepPath = trig->path(eleTrig_);
          if ( lepPath != 0 && lepPath->wasAccept() ) {
             passTrig = true;    
-         }  
-         
+         }          
       }
-     
    }
-  
+   
    if ( ignoreCut(triggerIndex_) || 
         passTrig ) {
       passCut(ret, triggerIndex_);
@@ -276,130 +232,81 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
          event.getByLabel (metTag_, metHandle);
 
          reco::Candidate::LorentzVector metP4 = metHandle->at(0).p4();
-         
-         double rho = 0;//default if running on SHyfT PAT tuple (EMEEn3080)
+        
          edm::Handle<double> rhoHandle;
-         if(useTTBSMPat_){            
-            event.getByLabel(rhoTag_, rhoHandle);
-            rho = *rhoHandle;
-            //cout << "rho -->" << rho << endl;
-         }
-         double Pi = atan(1)*4;
+         event.getByLabel(rhoTag_, rhoHandle);
 
          TopElectronSelector patEle95(TopElectronSelector::wp95);
          TopElectronSelector patEle70(TopElectronSelector::wp70);
          
-         bool conversionVetoA = true;
-         bool conversionVetoB = true;
-
+         bool notConverted = true;
          int nElectrons = 0;
          for ( std::vector<pat::Electron>::const_iterator electronBegin = electronHandle->begin(),
                   electronEnd = electronHandle->end(), ielectron = electronBegin;
                ielectron != electronEnd; ++ielectron ) {
             allElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
             ++nElectrons;
-   
-            bool pass95       = patEle95(*ielectron);
-            bool pass70       = patEle70(*ielectron);
             
             double scEta   = fabs( ielectron->superCluster()->eta() );
-            double Et      = ielectron->et();
+            double eta     = fabs( ielectron->eta() );
+            double et      = ielectron->et();
             double dB      = ielectron->dB();
             double vCut    = fabs(PVz - ielectron->vertex().z());
-            double el_dist = ielectron->convDist();
-            double el_dcot = ielectron->convDcot();
-            bool   isConv  = fabs(el_dist) < elDist_ && fabs(el_dcot) < elDcot_ ;            
-            double nHits   = ielectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
-          
+            bool   isConv  = fabs(ielectron->convDist()) < elDist_ && fabs(ielectron->convDcot()) < elDcot_ ;            
+            double nHits   = ielectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits();         
             double chIso = ielectron->userIsolation(pat::PfChargedHadronIso);
             double nhIso = ielectron->userIsolation(pat::PfNeutralHadronIso);
             double gIso  = ielectron->userIsolation(pat::PfGammaIso);
             double relIso = -1000;
-            
-            //HCal sum needs to be calulated from 0->0.3 when we remove H/E cut. The default was used from 0.15->0.3 to not to double count H from H/E.
-            double HCalSum = ielectron->dr03HcalTowerSumEt() + ielectron->hadronicOverEm() * ielectron->superCluster()->energy() *fabs(sin(ielectron->superCluster()->position().theta()));
-            double AreaTracker[2] = {0., 0.}; //   barrel/endcap
-            double AreaEcal[2]    = {0.101, 0.046}; //   barrel/endcap
-            double AreaHcal[2]    = {0.021 , 0.040 }; //   barrel/endcap
-            
-            //Do some customization here:
-            reco::isodeposit::Direction Dir = Direction(ielectron->eta(),ielectron->phi());
-            reco::isodeposit::AbsVetos  vetos_ch;
-            reco::isodeposit::AbsVetos  vetos_nh;
-            vetos_nh.push_back(new ThresholdVeto( 0.5 ));
-            vetos_nh.push_back(new ConeVeto( Dir, 0.07 ));//veto neutral hadrons with DeltaR<0.07
-            reco::isodeposit::AbsVetos vetos_ph;
-            vetos_ph.push_back(new ThresholdVeto( 0.5 ));
-            
-            const double chIso03 = ielectron->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch).first;
-            const double nhIso03 = ielectron->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
-            const double gIso03 = ielectron->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph).first;
-                
+            if(usePFIso_) relIso = (chIso + nhIso + gIso )/ ielectron->p4().Pt();            
+            else relIso = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() +  ielectron->dr03HcalTowerSumEt() ) / ielectron->p4().Pt(); 
+
 //Electron Selection for e+jets
-//-----------------------------
+//-----------------------------  
             if( (scEta > 2.5 || scEta <= 1.566 )  && scEta > 1.4442 ) continue;  //Fiducial cuts 
-            if( fabs(ielectron->eta()) >= eleEtaMaxLoose_ ) continue;
+            if( eta >= eleEtaMaxLoose_ ) continue;
             
-            //apply the rho(Fastjet subtraction) corrections to isolation
-            if(usePFIso_ && useCone3_)       relIso = (chIso03 + nhIso03 + gIso03 )/ ielectron->p4().Pt();
-            else if(usePFIso_ && !useCone3_) relIso = (chIso + nhIso + gIso )/ ielectron->p4().Pt();            
-            else if(userhoCorr_ && ielectron->isEB()) {
-               double ecalIsoCorr  = max(0., ielectron->dr03EcalRecHitSumEt()-1.0 ) - rho * AreaEcal[0]; //also apply pedestal subtraction
-               double hcalIsoCorr  = HCalSum - rho * AreaHcal[0];
-               double trkIsoCorr   = ielectron->dr03TkSumPt() - rho * AreaTracker[0];
-               relIso = (ecalIsoCorr + hcalIsoCorr + trkIsoCorr ) /ielectron->p4().Pt();
+            bool pass95(0), pass70(0), moreCuts(0), firstPass(0), passLoose(0);
+
+            if(useVBTFDetIso_){
+               pass95    = patEle95(*ielectron);
+               pass70    = patEle70(*ielectron); 
+               passLoose = (pass95              && 
+                            et >20.             &&
+                            relIso < 1.0);         //loose iso
+               moreCuts  = (relIso   < eRelIso_ && //iso
+                            fabs(dB) < dxy_     && //d0 cut
+                            vCut     < vCut_    && 
+                            et       > eEt_ );
+            }  
+            else{
+               pass95    = electronIdLoose_(*ielectron,event);//loose pf iso applied
+               pass70    = electronIdTight_(*ielectron,event);//pf iso and d0 cut applied 
+               passLoose = (pass95 && et > 20.);
+               moreCuts  = (vCut     < vCut_    && 
+                            et       > eEt_ );
+          
             }
-            else if(userhoCorr_ && ielectron->isEE()){
-               double ecalIsoCorr  = ielectron->dr03EcalRecHitSumEt()- rho * AreaEcal[1];
-               double hcalIsoCorr  = HCalSum - rho * AreaHcal[1];
-               double trkIsoCorr   = ielectron->dr03TkSumPt() - rho * AreaTracker[1];
-               relIso = (ecalIsoCorr + hcalIsoCorr + trkIsoCorr ) /ielectron->p4().Pt();
-            }
-            else relIso = ( ielectron->dr03TkSumPt() + ielectron->dr03EcalRecHitSumEt() +  ielectron->dr03HcalTowerSumEt() ) / ielectron->p4().Pt();
             
-               
-            bool firstPass(0);            
             if( useWP95Selection_ && pass95 ) firstPass=1;
             else if( useWP70Selection_ && pass70 ) firstPass =1;
-            else if( useNoID_ ) firstPass=1;
-
-            if(firstPass==1           &&
-               Et       > eEt_        &&                   
-               relIso   < eRelIso_    &&
-               vCut     < vCut_       &&
-               fabs(dB) < dxy_         
-               ){
+            else if( useNoID_ && useVBTFDetIso_ ) firstPass=1;
+            else if( useNoID_ && !useVBTFDetIso_ && relIso< eRelIso_ && fabs(dB) < dxy_) firstPass=1;
+           
+            
+            if(firstPass==1  &&  moreCuts){
                selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
-               if(nHits > 0 ) conversionVetoA = false;
-               if(nHits > 0 || isConv) conversionVetoB = false; 
+               if(nHits > 0 || isConv) notConverted = false;
             }
-            else if( pass95           &&
-                     Et     >  20.    &&
-                     relIso <  1.0
-               ){
+            else if(passLoose){
                selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
             }   
             
 //Loose Electron Selection to be vetoed for mu+jets
 //-------------------------------------------------
-           //  bool tightID(false);
-//             if(useTTBSMPat_)
-//             tightID = ielectron->electronID("eidTightMC" );
-//             else 
-//              tightID = ielectron->electronID("eidRobustTight" );
-            
-//             //Tight cuts
-//             if ( ielectron->et() > eleEtMin_ && fabs(ielectron->eta()) < eleEtaMax_ && 
-//                 electronIdTight_(*ielectron) &&
-//                 tightID  > 0  ) {
-//               oldElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
-//             } else {
-               //Loose cuts
-               if ( ielectron->et() > eleEtMinLoose_ && fabs(ielectron->eta()) < eleEtaMaxLoose_ && 
-                    electronIdLoose_(*ielectron) ) {
+            if ( et > eleEtMinLoose_ && eta < eleEtaMaxLoose_ && relIso < 0.2 ){
                   looseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                }
-               //}
          } 
 
          
@@ -419,25 +326,10 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             double gIso    = imuon->userIsolation(pat::PfGammaIso);
             double pt      = imuon->pt() ;
             
-            //Do some customization here:
-            reco::isodeposit::Direction Dir = Direction(imuon->eta(),imuon->phi());
-            reco::isodeposit::AbsVetos  vetos_ch;
-            reco::isodeposit::AbsVetos  vetos_nh;
-            vetos_nh.push_back(new ThresholdVeto( 0.5 ));
-            vetos_nh.push_back(new ConeVeto( Dir, 0.07 ));//veto neutral hadrons with DeltaR<0.07
-            reco::isodeposit::AbsVetos vetos_ph;
-            vetos_ph.push_back(new ThresholdVeto( 0.5 ));
-   
-            const double chIso03 = imuon->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch).first;
-            const double nhIso03 = imuon->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
-            const double gIso03 = imuon->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph).first;
-            
-            if(usePFIso_ && useCone3_)           relIso = (chIso03 + nhIso03 + gIso03 )/ pt;
-            else if(usePFIso_ && !useCone3_)     relIso = (chIso + nhIso + gIso )/ pt;  
-            else                                 relIso  = (ecalIso + hcalIso + trkIso ) / pt;
+            if(usePFIso_)     relIso = (chIso + nhIso + gIso )/ pt;  
+            else              relIso  = (ecalIso + hcalIso + trkIso ) / pt;
 
             if ( !imuon->isGlobalMuon() ) continue;
-            //if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ &&  muonIdLoose_(*imuon,event) ) {
             if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ &&  relIso < 0.2 ) {
                selectedLooseMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
             }
@@ -465,11 +357,10 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                }
             }
          }
-	 
-         
-            
-         pat::strbitset ret1 = jetIdLoose_.getBitTemplate();
-         pat::strbitset ret2 = pfjetIdLoose_.getBitTemplate();
+
+//Jet selection
+//-------------	            
+        
          for ( std::vector<pat::Jet>::const_iterator jetBegin = jetHandle->begin(),
                   jetEnd = jetHandle->end(), ijet = jetBegin;
                ijet != jetEnd; ++ijet ) {
@@ -481,22 +372,14 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             jec_->setJetEta( uncorrJet.eta() );
             jec_->setJetPt ( uncorrJet.pt() );
             jec_->setJetE  ( uncorrJet.energy() );
-            if(useTTBSMPat_){
-               jec_->setJetA  ( ijet->jetArea() );
-               jec_->setRho   ( *(rhoHandle.product()) );
-            }
+            jec_->setJetA  ( ijet->jetArea() );
+            jec_->setRho   ( *(rhoHandle.product()) );
             jec_->setNPV   ( primVtxHandle->size() );
             double corr = jec_->getCorrection();
 
 
-
             // Here will be the working variable for all the jet energy effects
             reco::Candidate::LorentzVector scaledJetP4 = uncorrJet * corr;
-
-
-            // std::cout << "L2L3 correction = " << ijet->pt() << std::endl;
-            // std::cout << "PU Correction   = " << scaledJetP4.pt() << std::endl;
-            // std::cout << "NPV             = " << primVtxHandle->size() << std::endl;
 
             // -------
             // Jet energy scale variation
@@ -512,9 +395,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                jecUnc_->setJetEta( scaledJetP4.eta() );
                jecUnc_->setJetPt( scaledJetP4.pt() );
                double unc = fabs(jecUnc_->getUncertainty( bool(jetScale_ > 0) ));
-               // Add the "flat" flavor dependent corrections in quadrature
-               //unc = sqrt( unc*unc + jetUncertainty_*jetUncertainty_);
-	     
+              
                // Scale up or down by jetScale_
                double ijetscale = (1 + jetScale_ * unc);
                scaledJetP4 *= ijetscale;
@@ -548,20 +429,8 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                                                                                        ijet->charge(),
                                                                                        scaledJetP4 ) );
             allJets_.push_back( scaledJet );
-            bool passJetID = false;
-            
-            if(!useTTBSMPat_){
-               if ( ijet->isCaloJet() || ijet->isJPTJet() ) {
-                  passJetID = jetIdLoose_(*ijet, ret1);
-               }
-               else {
-                  passJetID = pfjetIdLoose_(*ijet, ret2);
-               }
-            }
-            else passJetID = true;
 
-            if ( scaledJet.pt() > jetPtMin_ && fabs(scaledJet.eta()) < jetEtaMax_ && passJetID ) {
-               //if ( scaledJet.pt() > jetPtMin_ && fabs(scaledJet.eta()) < jetEtaMax_ ) {  
+            if ( scaledJet.pt() > jetPtMin_ && fabs(scaledJet.eta()) < jetEtaMax_ ) {  
                selectedJets_.push_back( scaledJet );
                
                if ( muPlusJets_ ) {
@@ -741,14 +610,10 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 
                      
                      //bool cached before
-                     if ( ignoreCut(conversionIndexA_) || 
-                          conversionVetoA ) {
-                        passCut(ret,conversionIndexA_);
+                     if ( ignoreCut(conversionIndex_) || 
+                          notConverted ) {
+                        passCut(ret,conversionIndex_);
                         
-                        if ( ignoreCut(conversionIndexB_) || 
-                             conversionVetoB ) {
-                           passCut(ret,conversionIndexB_);
-                            
                            //Dilepton veto
                            if ( ignoreCut(dlepvetoIndex_) ||
                                 (ePlusJets_ && oneElectron) ||
@@ -756,7 +621,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                                 ){
                               passCut(ret, dlepvetoIndex_);
                               
-                              //ZVeto
+/*                            //ZVeto
                               bool zVeto = true;
                               
                               if(ePlusJets_ && selectedElectrons_.size() !=0 && selectedLooseElectrons_.size() !=0 ){
@@ -778,7 +643,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                               if ( ignoreCut(zvetoIndex_) ||
                                    zVeto ){
                                  passCut(ret, zvetoIndex_);
-                                 
+*/                                 
                                  //MET cuts
                                  bool metCutMin = met_.pt() > metMin_;
                                  bool metCutMax = met_.pt() < metMax_;
@@ -842,7 +707,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                                              } // end if >=5 tight jets
                                              
 
-                                          } // end if cosmic veto		
+                                           } // end if cosmic veto		
                                           
                                        }// end of wMT cut
                                        
@@ -850,12 +715,11 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                                     
                                  }// end if met cut low
                                  
-                              }//end if z veto
+                                 //}//end if z veto
                               
                            } //end if dilepton veto
                            
-                        }//end if conversion veto A
-                     } // end if conversion veto B
+                        }//end if conversion veto                       
                      
                   } // end if == 1 lepton
                   

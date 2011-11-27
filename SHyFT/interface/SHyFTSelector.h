@@ -53,10 +53,10 @@ class SHyFTSelector : public EventSelector {
          muonIdLoose_.print(out);
          out << "Electron ID Loose Selector: " << std::endl;
          electronIdLoose_.print(out);
-         out << "Calo Jet Selector: " << std::endl;
-         jetIdLoose_.print(out);
-         out << "PF Jet Selector: " << std::endl;
-         pfjetIdLoose_.print(out);
+         //out << "Calo Jet Selector: " << std::endl;
+         //jetIdLoose_.print(out);
+         //out << "PF Jet Selector: " << std::endl;
+         //pfjetIdLoose_.print(out);
       }
  
    protected: 
@@ -88,14 +88,15 @@ class SHyFTSelector : public EventSelector {
       PVSelector                           pvSelector_;
       //MuonVPlusJetsIDSelectionFunctor      muonIdTight_;
       PFMuonSelector                       muonIdTight_;
-      ElectronVPlusJetsIDSelectionFunctor  electronIdTight_;//old
+      //ElectronVPlusJetsIDSelectionFunctor  electronIdTight_;//old
+      PFElectronSelector                   electronIdTight_;//new
       //MuonVPlusJetsIDSelectionFunctor      muonIdLoose_;
       PFMuonSelector                       muonIdLoose_;
-      ElectronVPlusJetsIDSelectionFunctor  electronIdLoose_;//old
+      //ElectronVPlusJetsIDSelectionFunctor  electronIdLoose_;//old
+      PFElectronSelector                   electronIdLoose_;//new
       JetIDSelectionFunctor                jetIdLoose_;
       PFJetIDSelectionFunctor              pfjetIdLoose_;
-      TopElectronSelector                  mywp70_;
-
+      
       int minJets_;
 
       double muJetDR_;
@@ -134,8 +135,7 @@ class SHyFTSelector : public EventSelector {
       index_type   lep2Index_;      
       index_type   lep3Index_;      
       index_type   lep4Index_;  
-      index_type   conversionIndexA_;
-      index_type   conversionIndexB_;
+      index_type   conversionIndex_;
       index_type   dlepvetoIndex_;      
       index_type   zvetoIndex_;         
       index_type   metLowIndex_;  
@@ -155,23 +155,14 @@ class SHyFTSelector : public EventSelector {
       double         vCut_;
       double         dxy_;
       edm::InputTag  pvTag_;
-      //bool           useAntiSelection_;
-      bool           useWP95Selection_;
-      //bool           useWP90Selection_;
-      //bool           useWP85Selection_;
-      //bool           useWP80Selection_;
-      bool           useWP70Selection_;
-      //bool           useEleMC_;
-      bool           useData_;
-      //bool           useL1Offset_;
-      bool           usePFIso_;
-      bool           useCone3_;
-      bool           useNoID_;
-      bool           userhoCorr_;
-      bool           useTTBSMPat_;
-      bool           use42X_;
+      bool           useWP95Selection_;   
+      bool           useWP70Selection_;    
+      bool           useData_;    
+      bool           usePFIso_;      
+      bool           useNoID_;    
+      bool             useVBTFDetIso_;
       // Jet energy corrections object
-      std::string    jecPayload_;
+      std::vector<std::string> jecPayloads_;
       boost::shared_ptr<JetCorrectionUncertainty> jecUnc_;
       boost::shared_ptr<FactorizedJetCorrector> jec_;
 };

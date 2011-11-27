@@ -2,10 +2,10 @@ import FWCore.ParameterSet.Config as cms
 
 #from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector as pvSel
 from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
-from PhysicsTools.SelectorUtils.jetIDSelector_cfi import jetIDSelector
-from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
+#from PhysicsTools.SelectorUtils.jetIDSelector_cfi import jetIDSelector
+#from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
 from PhysicsTools.SelectorUtils.pfMuonSelector_cfi import pfMuonSelector
-
+from PhysicsTools.SelectorUtils.pfElectronSelector_cfi import pfElectronSelector
 
 wplusjetsAnalysis = cms.PSet(
     # Primary vertex
@@ -30,19 +30,11 @@ wplusjetsAnalysis = cms.PSet(
     eleTrig = cms.string('HLT_Ele10_LW_L1R'),
     pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
     rhoSrc  = cms.InputTag('kt6PFJetsPFlow', 'rho'),
-    #useAntiSelection = cms.bool(False),
     useWP95Selection = cms.bool(False),
-    #useWP90Selection = cms.bool(False),
-    #useWP85Selection = cms.bool(False),
-    #useWP80Selection = cms.bool(False),
     useWP70Selection = cms.bool(True),
-    #useEleMC = cms.bool(False),
-    usePFIso = cms.bool(False),
-    useCone3 = cms.bool(False),
+    usePFIso = cms.bool(True),
     useNoID  = cms.bool(False),
-    userhoCorr = cms.bool(False),
-    useTTBSMPat = cms.bool(True),
-    use42X   = cms.bool(False),
+    useVBTFDetIso  = cms.bool(False),
     # tight muons
     muonIdTight = pfMuonSelector.clone(
     version = cms.string('SPRING11'),
@@ -55,34 +47,28 @@ wplusjetsAnalysis = cms.PSet(
     nMatchedStations=cms.int32(1),
     cutsToIgnore=cms.vstring()
     ),
-    ## muonIdTight = cms.PSet(
-##         version = cms.string('FALL10'),
-##         Chi2 = cms.double(10.0),
-##         D0 = cms.double(0.02),
-##         ED0 = cms.double(999.0),
-##         SD0 = cms.double(999.0),
-##         NHits = cms.int32(11),
-##         NValMuHits = cms.int32(0),
-##         ECalVeto = cms.double(999.0),
-##         HCalVeto = cms.double(999.0),
-##         RelIso = cms.double(0.05),
-##         LepZ = cms.double(1.0),
-##         nPixelHits = cms.int32(1),
-##         nMatchedStations=cms.int32(1),
-##         cutsToIgnore = cms.vstring('ED0', 'SD0', 'ECalVeto', 'HCalVeto'),
-##         RecalcFromBeamSpot = cms.bool(False),
-##         beamLineSrc = cms.InputTag("offlineBeamSpot"),
-##         pvSrc = cms.InputTag("offlinePrimaryVertices"),
-##         ),
     # tight electrons
-    electronIdTight = cms.PSet(
-        version = cms.string('FIRSTDATA'),
-        D0 = cms.double(999.0),
-        ED0 = cms.double(999.0),
-        SD0 = cms.double(3.0),
-        RelIso = cms.double( 0.1 ),
-        cutsToIgnore = cms.vstring('D0', 'ED0')
-        ),
+    electronIdTight = pfElectronSelector.clone(
+    version = cms.string('SPRING11'),
+    MVA = cms.double(-0.01),
+    MaxMissingHits = cms.int32(1),
+    D0 = cms.double(0.02),
+    electronIDused = cms.string('eidSuperTightMC'),
+    ConversionRejection = cms.bool(False),
+    PFIso = cms.double(0.1),
+    cutsToIgnore = cms.vstring('MVA', 'ConversionRejection', 'MaxMissingHits')
+    ),
+    # loose electrons
+    electronIdLoose = pfElectronSelector.clone(
+    version = cms.string('SPRING11'),
+    MVA = cms.double(-0.01),
+    MaxMissingHits = cms.int32(1),
+    D0 = cms.double(999.0),
+    electronIDused = cms.string('eidLooseMC'),
+    ConversionRejection = cms.bool(False),
+    PFIso = cms.double(0.2),
+    cutsToIgnore = cms.vstring('MVA', 'D0', 'MaxMissingHits', 'ConversionRejection')
+    ),
     # loose muons
     muonIdLoose = pfMuonSelector.clone(
     version = cms.string('SPRING11'),
@@ -95,42 +81,9 @@ wplusjetsAnalysis = cms.PSet(
     nMatchedStations=cms.int32(1),
     cutsToIgnore=cms.vstring('Chi2','D0','NHits','NValMuHits','nPixelHits','nMatchedStations')
     ),
-   ##  muonIdLoose = cms.PSet(
-##         version = cms.string('FALL10'),
-##         Chi2 = cms.double(999.0),
-##         D0 = cms.double(999.0),
-##         ED0 = cms.double(999.0),
-##         SD0 = cms.double(999.0),
-##         NHits = cms.int32(-1),
-##         NValMuHits = cms.int32(-1),
-##         ECalVeto = cms.double(999.0),
-##         HCalVeto = cms.double(999.0),
-##         RelIso = cms.double(0.2),
-##         LepZ = cms.double(1.0),
-##         nPixelHits = cms.int32(1),
-##         nMatchedStations=cms.int32(1),        
-##         cutsToIgnore = cms.vstring('Chi2', 'D0', 'ED0', 'SD0', 'NHits','NValMuHits','ECalVeto','HCalVeto','LepZ','nPixelHits','nMatchedStations'),
-##         RecalcFromBeamSpot = cms.bool(False),
-##         beamLineSrc = cms.InputTag("offlineBeamSpot"),
-##         pvSrc = cms.InputTag("offlinePrimaryVertices")
-##         ),
-    # loose electrons
-    electronIdLoose = cms.PSet(
-        version = cms.string('FIRSTDATA'),
-        D0 = cms.double(999.0),
-        ED0 = cms.double(999.0),
-        SD0 = cms.double(999.0),
-        RelIso = cms.double( 0.2 ),
-        cutsToIgnore = cms.vstring( 'D0', 'ED0', 'SD0')
-        ),
-	# my electrons
-	mywp70 = cms.PSet(
-	
-
-	),
     # loose jets
-    jetIdLoose = jetIDSelector.clone(),
-    pfjetIdLoose = pfJetIDSelector.clone(),
+    #jetIdLoose = jetIDSelector.clone(),
+    #pfjetIdLoose = pfJetIDSelector.clone(),
     # kinematic cuts
     minJets        = cms.int32( 1 ),
     muPlusJets     = cms.bool( True ),
@@ -165,6 +118,12 @@ wplusjetsAnalysis = cms.PSet(
     eleJetDR       = cms.double( 0.3 ),
     rawJetPtCut    = cms.double( 0.0 ),
     useData        = cms.bool(False),
+    jecPayloads    = cms.vstring([
+    'Jec11_V2_AK5PFchs_L1FastJet.txt', 
+    'Jec11_V2_AK5PFchs_L2Relative.txt',
+    'Jec11_V2_AK5PFchs_L3Absolute.txt',
+    'Jec11_V2_AK5PFchs_L2L3Residual.txt',
+    'Jec11_V2_AK5PFchs_Uncertainty.txt'])
     #useL1Offset    = cms.bool(True),#Dummy variable: will remove it next time
-    jecPayload     = cms.string('Jec11_V2_AK5PFchs_Uncertainty.txt')
+    #jecPayload     = cms.string('Jec11_V2_AK5PFchs_Uncertainty.txt')
 )

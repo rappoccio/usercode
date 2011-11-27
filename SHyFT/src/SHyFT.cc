@@ -8,7 +8,6 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" 
 #include <DataFormats/Common/interface/Handle.h>
 
-
 using namespace std;
 
 
@@ -28,7 +27,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
  
   muPlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("muPlusJets")),
   ePlusJets_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("ePlusJets")),
-  use42X_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("use42X")),  
+  //use42X_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("use42X")),  
   //useHFcat will no longer do anything
   useHFcat_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("heavyFlavour")),
   nJetsCut_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<int>("minJets")),  
@@ -320,7 +319,6 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
 
    allNumTags_ = 0;
    allNumJets_ = 0;
-
   
    // for closure test
    nExpectedTaggedJets_ = 0.;
@@ -1121,9 +1119,8 @@ bool SHyFT::analyze_met(const reco::ShallowClonePtrCandidate & met)
 void SHyFT::analyze(const edm::EventBase& iEvent)
 {
   globalWeight_ = 1.0;
-
   pat::strbitset ret = wPlusJets.getBitTemplate();
-  
+ 
   wPlusJets(iEvent, ret);
   std::vector<reco::ShallowClonePtrCandidate> const & electrons = wPlusJets.selectedElectrons();
   std::vector<reco::ShallowClonePtrCandidate> const & muons     = wPlusJets.selectedMuons();
@@ -1151,10 +1148,9 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   bool passPre = ret[bit_];
   //cout << passPre << endl;
   // bool anyJets = jet1 || jet2 || jet3 || jet4 || jet5;
-  
   // if not passed trigger, next event
   if ( !passTrigger )  return;
-    
+
   if ( doMC_ && reweightPU_) { 
      weightPU( iEvent );  
   } 
@@ -1314,11 +1310,11 @@ void SHyFT::initializeMCPUWeight()
      poissonIntDist.push_back(poissonIntDist_d[i]);
    }
    //now do what ever initialization is needed
-   if(use42X_){
-      lumiWeights_ = edm::LumiReWeighting( poissonIntDist, TrueDist2011);
-   }
-   else
-      lumiWeights_ = edm::LumiReWeighting( probdistFlat10, TrueDist2011);
+   //if(use42X_){
+   lumiWeights_ = edm::LumiReWeighting( poissonIntDist, TrueDist2011);
+      //}
+   //else
+   // lumiWeights_ = edm::LumiReWeighting( probdistFlat10, TrueDist2011);
    
    // will need it for systematics
    PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
@@ -1336,34 +1332,33 @@ void SHyFT::weightPU( edm::EventBase const & iEvent) {
      
      int BX = PVI->getBunchCrossing();
 
-     if(BX == 0 && !use42X_) { //skip the OOT PU for Spring11
-        npv = PVI->getPU_NumInteractions();
-        continue;
-     }
-     else {
+    //  if(BX == 0 && !use42X_) { //skip the OOT PU for Spring11
+//         npv = PVI->getPU_NumInteractions();
+//         continue;
+//      }
+//      else {
         npv = PVI->getPU_NumInteractions();
         //cout << npv << endl;
         sum_nvtx += float(npv);
-     }
+        //}
          
   }
   float ave_nvtx = sum_nvtx/3.;
   //cout << "sum_nvtx = " << sum_nvtx << "ave_nvtx = "<< ave_nvtx << endl;
   theDir.getObject<TH1>("npuTruth")->Fill(npv, 1.0);
   if(reweightPU_){
-     if(use42X_){
-        puweight = lumiWeights_.weight( ave_nvtx);//default for 42X
-        if(puUp_) puweightShift = puweight * PShiftUp_.ShiftWeight( ave_nvtx );  
-        else if(puDn_) puweightShift = puweight * PShiftDown_.ShiftWeight( ave_nvtx );
-     }  
-     else{  
-        puweight = lumiWeights_.weight( npv ); 
-        if(puUp_) puweightShift = puweight * PShiftUp_.ShiftWeight( npv );
-        else if(puDn_) puweightShift = puweight * PShiftDown_.ShiftWeight( npv );
-     }
+     //if(use42X_){
+     puweight = lumiWeights_.weight( ave_nvtx);//default for 42X
+     if(puUp_) puweightShift = puweight * PShiftUp_.ShiftWeight( ave_nvtx );
+     else if(puDn_) puweightShift = puweight * PShiftDown_.ShiftWeight( ave_nvtx );
+        //}  
+     // else{  
+//         puweight = lumiWeights_.weight( npv ); 
+//         if(puUp_) puweightShift = puweight * PShiftUp_.ShiftWeight( npv );
+//         else if(puDn_) puweightShift = puweight * PShiftDown_.ShiftWeight( npv );
+//      }
      if( puUp_ || puDn_ ) globalWeight_ *= puweightShift; 
      else               globalWeight_ *= puweight;
      theDir.getObject<TH1>("npuReweight")->Fill(npv, puweight );
   }
 }
-
