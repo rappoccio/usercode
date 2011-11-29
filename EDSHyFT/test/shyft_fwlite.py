@@ -122,6 +122,11 @@ nJets = ROOT.TH1F("nJets",         "Number of Jets, p_{T} > 30 GeV;N_{Jets};Numb
 nMuons = ROOT.TH1F("nMuons",         "Number of Muons, p_{T} > 35 GeV;N_{Muons};Number",               5, -0.5, 4.5 )
 nElectrons = ROOT.TH1F("nElectrons",         "Number of Electrons, p_{T} > 45 GeV;N_{Jets};Number",               5, -0.5, 4.5 )
 
+if not options.useData:
+    bmass = ROOT.TH1F("bmass", "B Sec Vtx Mass", 40, 0, 10)
+    cmass = ROOT.TH1F("cmass", "C Sec Vtx Mass", 40, 0, 10)
+    lfmass = ROOT.TH1F("lfmass", "LF Sec Vtx Mass", 40, 0, 10)
+
 ptMu = ROOT.TH1F("ptMu", "p_{T} of Muon", 100, 0., 200.)
 ptEle= ROOT.TH1F("ptEle", "p_{T} of Electron", 100, 0., 200.)
 ptJet0 = ROOT.TH1F("ptJet0", "p_{T} Of Leading Jet", 300, 0., 600.)
@@ -617,7 +622,10 @@ for event in events:
     else :
         flavorIndex = 2
 
-
+    if not options.useData and secvtxMass > 0.0001:
+        if   numB > 0: bmass.Fill(secvtxMass, PUweight)
+        elif numC > 0: cmass.Fill(secvtxMass, PUweight)
+        elif numQ > 0: lfmass.Fill(secvtxMass, PUweight)
 
     nJets.Fill( njets, PUweight )
 
