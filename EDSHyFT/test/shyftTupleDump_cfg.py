@@ -180,6 +180,10 @@ process.pfShyftTupleJetsEle = process.pfShyftTupleJetsMu.clone(
     src = cms.InputTag("pfShyftProducerEle", "jets"),
     )
 
+process.pfShyftTupleJetsEleLoose = process.pfShyftTupleJetsMu.clone(
+    src = cms.InputTag("pfShyftProducerEleLoose", "jets"),
+    )
+
 process.pfShyftTupleMuons = cms.EDProducer(
     "CandViewNtpProducer", 
     src = cms.InputTag("pfShyftProducerMu", "muons"),
@@ -299,7 +303,8 @@ if options.usePDFs :
 process.p3 = cms.Path()
 if options.useLooseElectrons:
     process.p3 = cms.Path(
-        process.pfShyftProducerEleLoose*  
+        process.pfShyftProducerEleLoose*
+        process.pfShyftTupleJetsEleLoose*
         process.pfShyftTupleElectronsLoose*
         process.pfShyftTupleMETEleLoose
         )
