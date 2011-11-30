@@ -19,14 +19,17 @@ options.register('usePDFs',
                   VarParsing.varType.int,
                   "Ignore trigger in selection")
 
-
-
 options.register('useData',
                  0,
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.int,
                  "Use data (1) or MC (0)")
 
+options.register('useLooseElectrons',
+                 0,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
+                 "Add loose electron collection (1) or not (0)")
 
 
 options.parseArguments()
@@ -101,7 +104,7 @@ process.pfShyftProducerEle = cms.EDFilter('EDSHyFTSelector',
         ePlusJets = cms.bool( True ),
         muPlusJets = cms.bool( False ),
         jetPtMin = cms.double(10.0),##
-        eEtCut = cms.double(45.0),
+        eEtCut = cms.double(35.0),
         use42X  = cms.bool(True),
         minJets = cms.int32(1),
         metMin = cms.double(0.0),
@@ -114,6 +117,12 @@ process.pfShyftProducerEle = cms.EDFilter('EDSHyFTSelector',
         )
         )
 
+process.pfShyftProducerEleLoose = process.pfShyftProducerEle.clone(
+    shyftSelection = process.pfShyftProducerEle.shyftSelection.clone(
+    useWP95Selection = cms.bool(True),# if CiC ID loose, then pf reliso<0.2 is applied
+    useWP70Selection = cms.bool(False),
+    )
+    )
 
 process.pfShyftTupleJetsMu = cms.EDProducer(
     "CandViewNtpProducer", 
@@ -221,6 +230,10 @@ process.pfShyftTupleMETEle = process.pfShyftTupleMETMu.clone(
     src = cms.InputTag("pfShyftProducerEle", "MET"),
     )
 
+process.pfShyftTupleMETEleLoose = process.pfShyftTupleMETEle.clone(
+    src = cms.InputTag("pfShyftProducerEleLoose", "MET"),
+    )
+
 process.pfShyftTupleElectrons = cms.EDProducer(
     "CandViewNtpProducer", 
     src = cms.InputTag("pfShyftProducerEle", "electrons"),
@@ -245,6 +258,11 @@ process.pfShyftTupleElectrons = cms.EDProducer(
             ),
         )  
     )
+
+process.pfShyftTupleElectronsLoose = process.pfShyftTupleElectrons.clone(
+    src = cms.InputTag("pfShyftProducerEleLoose", "electrons"),
+    )
+
 
 process.PUNtupleDumper = cms.EDProducer(
     "PUNtupleDumper",
@@ -278,15 +296,22 @@ if options.usePDFs :
     process.p1 += process.pdfWeightProducer
     process.p2 += process.pdfWeightProducer
 
+process.p3 = cms.Path()
+if options.useLooseElectrons:
+    process.p3 = cms.Path(
+        process.pfShyftProducerEleLoose*  
+        process.pfShyftTupleElectronsLoose*
+        process.pfShyftTupleMETEleLoose
+        )
+        
+
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
-
-
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string("TTJets_TuneZ2_7TeV_madgraphTauola_Summer11_PU_S4_START42_V11_v1_shyftDump.root"),
-                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p1','p2') ),
+                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p1','p2','p3') ),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       #'keep *_pfShyftProducer_*_*',
                                                                       'keep *_PUNtupleDumper_*_*',
