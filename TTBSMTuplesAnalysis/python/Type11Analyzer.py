@@ -148,10 +148,12 @@ class Type11Analyzer :
         ROOT.SetOwnership( self.mttPredDistModMassQCDdistSubtract, False )
 
         self.jetEta               = ROOT.TH1D("jetEta",               "jetEta",            100, -4,    4)
+        self.jetRap               = ROOT.TH1D("jetRap",               "jetRap",            100, -4,    4)
         self.jetMass              = ROOT.TH1D("jetMass",              "jetMass",        100,  0,  500 )
         self.jetMassOneTag        = ROOT.TH1D("jetMassOneTag",        "jetMassOneTag",        100,  0,  500 )
         self.jetPt                = ROOT.TH1D("jetPt",                "jetPt",          400,  0,  2000 )    
         self.jetPtOneTag          = ROOT.TH1D("jetPtOneTag",          "jetPtOneTag",    400,  0,  2000 )
+        self.jetRapOneTag         = ROOT.TH1D("jetRapOneTag",         "jetRapOneTag",    100, -4, 4 )
         self.jetMinMass           = ROOT.TH1D("jetMinMass",           "jetMinMass",          400,  0,  200 )
         self.topTagMass           = ROOT.TH1D("topTagMass",           "Top Tag Mass",             100,  0,  500 )
         self.topTagMinMass        = ROOT.TH1D("topTagMinMass",               "Top Tag MinMass",             100,  0,  200 )
@@ -227,12 +229,12 @@ class Type11Analyzer :
             pdfs = self.pdfHandle.product()
             if self.pdfWeight == "up" :
                 for pdf in pdfs[0::2] :
-                    iweight = iweight + pdf*pdf
+                    iweight = iweight + pdf
             else :
                 for pdf in pdfs[1::2] :
-                    iweight = iweight + pdf*pdf
-            iweight = iweight / len(pdfs) * 0.5
-            weight = sqrt(weight*weight + iweight*iweight)
+                    iweight = iweight + pdf
+            iweight = iweight / len(pdfs) * 2.0
+            weight = iweight
 
         ttMass = 0.0
         deltaPhi = topJets[0].phi() - topJets[1].phi()
@@ -318,6 +320,8 @@ class Type11Analyzer :
             self.jetPt.Fill( topJets[1].pt(), weight )
             self.jetEta.Fill( topJets[0].eta(), weight )
             self.jetEta.Fill( topJets[1].eta(), weight )
+            self.jetRap.Fill( topJets[0].Rapidity(), weight )
+            self.jetRap.Fill( topJets[1].Rapidity(), weight )
             self.jetMinMass.Fill( topJetMinMass[0], weight )
             self.jetMinMass.Fill( topJetMinMass[1], weight )
             self.mttCandMass.Fill( ttMass, weight )
@@ -343,6 +347,7 @@ class Type11Analyzer :
             if x < 0.5 :
                 if topTag0 :
                     self.jetPtOneTag.Fill( topJets[1].pt(), weight )
+                    self.jetRapOneTag.Fill( topJets[1].Rapidity(), weight )
                     self.jetMassOneTag.Fill( topJets[1].mass(), weight )
                     self.mttPredDist.             Accumulate( ttMass,             topJets[1].pt(), topTag1, weight )
                     self.mttPredDistMassCut.      Accumulate( ttMass,             topJets[1].pt(), topTag1, weight )
@@ -353,6 +358,7 @@ class Type11Analyzer :
             if x >= 0.5 :
                 if topTag1 :
                     self.jetPtOneTag.Fill( topJets[0].pt(), weight )
+                    self.jetRapOneTag.Fill( topJets[0].Rapidity(), weight )
                     self.jetMassOneTag.Fill( topJets[0].mass(), weight )
                     self.mttPredDist.             Accumulate( ttMass,             topJets[0].pt(), topTag0, weight )
                     self.mttPredDistMassCut.      Accumulate( ttMass,             topJets[0].pt(), topTag0, weight )

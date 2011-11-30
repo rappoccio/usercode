@@ -383,12 +383,12 @@ class Type12Analyzer :
             pdfs = self.pdfHandle.product()
             if self.pdfWeight == "up" :
                 for pdf in pdfs[0::2] :
-                    iweight = iweight + pdf*pdf
+                    iweight = iweight + pdf
             else :
                 for pdf in pdfs[1::2] :
-                    iweight = iweight + pdf*pdf
-            iweight = iweight / len(pdfs) * 0.5
-            weight = sqrt(weight*weight + iweight*iweight)
+                    iweight = iweight + pdf
+            iweight = iweight / len(pdfs) * 2.0
+            weight = iweight
 
         if self.triggerWeight != "noWeight" :
             jetTriggerWeight = 1.0
