@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: TTBSMProducer.cc,v 1.8 2011/07/01 17:53:07 srappocc Exp $
+// $Id: TTBSMProducer.cc,v 1.9 2011/08/04 14:15:52 guofan Exp $
 //
 //
 
@@ -162,6 +162,7 @@ TTBSMProducer::TTBSMProducer(const edm::ParameterSet& iConfig) :
   produces<double> ("weight");
   produces<unsigned int>    ("npv");
   produces<int>    ("npvTrue");
+  produces<double>   ("mttgen");
 
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4Hemis0");
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4Hemis1");
@@ -227,6 +228,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<std::string> >    trigNames ( new std::vector<std::string>() );
   std::auto_ptr<double>               rho( new double(-1.0) );
   std::auto_ptr<double>               weight( new double(1.0) );
+  std::auto_ptr<double>               mttgen( new double(1.0) );
 
   //The duplicate quantities by hemisphere
   std::auto_ptr<p4_vector> topTagP4Hemis0 ( new p4_vector() );
@@ -272,6 +274,19 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }
 
+  edm::Handle<std::vector<reco::GenParticle> >   h_gen;
+  iEvent.getByLabel( "prunedGenParticles", h_gen );
+  if(h_gen.isValid())  {
+    std::vector<const reco::GenParticle *>  genTop;
+    for ( std::vector<reco::GenParticle>::const_iterator  igen = h_gen->begin(),
+          genEnd = h_gen->end(); igen != genEnd; ++igen ) {
+        if (fabs(igen->pdgId()) == 6)
+          genTop.push_back( &(*igen) );
+    }
+    if (genTop.size() == 2) {
+        *mttgen = (genTop[0]->p4() + genTop[1]->p4()).M();
+    }
+  }
 
 
   edm::Handle<std::vector<pat::Jet> > h_wTag;
@@ -625,6 +640,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put( npv,     "npv");
   iEvent.put( npvTrue, "npvTrue");
   iEvent.put( pdf_weights, "pdfWeights");
+  iEvent.put( mttgen, "mttgen" );
 
   return true;
 }
