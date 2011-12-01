@@ -9,14 +9,15 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
   reco::ShallowClonePtrCandidate const & imet = filter_->selectedMET();
   std::vector<reco::ShallowClonePtrCandidate> const & imuons = filter_->selectedMuons();
   std::vector<reco::ShallowClonePtrCandidate> const & ielectrons = filter_->selectedElectrons();
-
+  
   std::auto_ptr< std::vector<pat::Jet> > jets ( new std::vector<pat::Jet> );
   std::auto_ptr< std::vector<pat::MET> > mets ( new std::vector<pat::MET> );
   std::auto_ptr< std::vector<pat::Muon> > muons ( new std::vector<pat::Muon> );
   std::auto_ptr< std::vector<pat::Electron> > electrons ( new std::vector<pat::Electron> );
-
-  mets->push_back( *(dynamic_cast<pat::MET const *>( imet.masterClonePtr().get() )) );
-  if ( imet.masterClonePtr().get() != 0 ){
+ 
+  pat::MET const * patmet = dynamic_cast<pat::MET const *>( imet.masterClonePtr().get() ); 
+  if ( patmet != 0 ){  
+    mets->push_back( *patmet );
     mets->back().setP4( imet.p4() );//set back the P4 to the clonned met
   }
 
