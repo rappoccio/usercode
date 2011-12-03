@@ -44,8 +44,7 @@ import sys
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/cjenkins/TTJets_TuneZ2_7TeV-madgraph-tauola/TTJets_TuneZ2_7TeV_madgraphTauola_Summer11_PU_S4_START42_V11_v1/b2fdf3a86ce2d334c5e8a1bb8085ae3f/ttbsm_42x_mc_204_1_4PV.root'
-
+'dcap:///pnfs/cms/WAX/11//store/user/lpctlbsm/srappocc/TTJets_TuneZ2_7TeV-madgraph-tauola/ttbsm_v9_Summer11-PU_S4_START42_V11-v1/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_9_1_7Fg.root'
 )
 )
 
@@ -58,7 +57,8 @@ payloads = [
     'Jec11_V3_L1FastJet_AK5PFchs.txt',
     'Jec11_V3_L2Relative_AK5PFchs.txt',
     'Jec11_V3_L3Absolute_AK5PFchs.txt',
-    'Jec11_V3_Uncertainty_AK5PFchs.txt'
+    'Jec11_V3_L2L3Residual_AK5PFchs.txt',
+    'Jec11_V3_Uncertainty_AK5PFchs.txt',    
 ]
 
 
