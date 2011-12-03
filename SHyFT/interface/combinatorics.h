@@ -59,10 +59,6 @@ inline bool next_combination(const Iterator first, Iterator k, const Iterator la
 }
 
 
-
-
-
-
 // Helper function to compute prod_i (1-a_i)
 template <class T> struct oneminusmultiplies : std::binary_function <T,T,T> {
   T operator() (const T& x, const T& y) const
@@ -80,12 +76,6 @@ template <class T> struct oneminusmultiplies : std::binary_function <T,T,T> {
 // to generate the combinations, and adds the actual value as "eff".
 // There's also an optional flavor "f" for later use. 
 struct EffInfo {
-
-  EffInfo() {
-    index=0;
-    eff=0.5;
-    flavor=0;
-  }
 
   EffInfo( int i, double e, int f) :
     index(i), eff(e), flavor(f)
@@ -132,19 +122,8 @@ struct EffInfo {
   int flavor;
 };
 
-
- struct EffInfoCombs {
-   typedef std::vector<EffInfo> EffInfoColl;
-   typedef EffInfoColl::const_iterator const_iterator;
-   typedef EffInfoColl::iterator iterator;
-   virtual bool next_combination(const iterator first, iterator k, const iterator last) {
-     return shyft::helper::next_combination<iterator>(first,k,last);
-   }
- };
-
   }
 
 }
-
 
 #endif

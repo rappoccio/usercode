@@ -20,6 +20,4 @@
   </bin>
   <bin   file="pileUpInfo_ana.C">
   </bin>
-  <bin   file="combinatorics.C">
-  </bin>
 </environment>
