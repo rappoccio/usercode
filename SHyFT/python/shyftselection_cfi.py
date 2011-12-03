@@ -20,11 +20,11 @@ wplusjetsAnalysis = cms.PSet(
     maxRho = cms.double(2.0),
     ),    
     # input parameter sets
-    muonSrc = cms.InputTag('selectedPatMuons'),
-    electronSrc = cms.InputTag('selectedPatElectrons'),
-    jetSrc = cms.InputTag('selectedPatJets'),
+    muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
+    electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
+    jetSrc = cms.InputTag('selectedPatJetsPFlow'),
     jetClonesSrc = cms.InputTag('myClones'),
-    metSrc = cms.InputTag('patMETs'),
+    metSrc = cms.InputTag('patMETsPFlow'),
     trigSrc = cms.InputTag('patTriggerEvent'),
     muTrig = cms.string('HLT_Mu9'),
     eleTrig = cms.string('HLT_Ele10_LW_L1R'),
@@ -119,11 +119,11 @@ wplusjetsAnalysis = cms.PSet(
     rawJetPtCut    = cms.double( 0.0 ),
     useData        = cms.bool(False),
     jecPayloads    = cms.vstring([
-    'Jec11_V2_AK5PFchs_L1FastJet.txt', 
-    'Jec11_V2_AK5PFchs_L2Relative.txt',
-    'Jec11_V2_AK5PFchs_L3Absolute.txt',
-    'Jec11_V2_AK5PFchs_L2L3Residual.txt',
-    'Jec11_V2_AK5PFchs_Uncertainty.txt'])
+    'Jec11_V3_L1FastJet_AK5PFchs.txt',
+    'Jec11_V3_L2Relative_AK5PFchs.txt',
+    'Jec11_V3_L3Absolute_AK5PFchs.txt',
+    'Jec11_V3_L2L3Residual_AK5PFchs.txt',
+    'Jec11_V3_Uncertainty_AK5PFchs.txt', ])
     #useL1Offset    = cms.bool(True),#Dummy variable: will remove it next time
     #jecPayload     = cms.string('Jec11_V2_AK5PFchs_Uncertainty.txt')
 )
