@@ -83,6 +83,13 @@ if len(options.inputFiles) == 0 :
         )
                                 )                           
 
+payloads = [
+    'Jec11_V3_L1FastJet_AK5PFchs.txt',
+    'Jec11_V3_L2Relative_AK5PFchs.txt',
+    'Jec11_V3_L3Absolute_AK5PFchs.txt',
+    'Jec11_V3_L2L3Residual_AK5PFchs.txt',
+    'Jec11_V3_Uncertainty_AK5PFchs.txt',    
+]
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -110,6 +117,7 @@ process.pfShyftSkim = cms.EDFilter('EDWPlusJetsSelector',
     sampleName = cms.string(inputSampleName),
     jetAlgo = cms.string("pf"),
     jetSmear = cms.double(0.1),
+    jecPayloads = cms.vstring( payloads ),
     cutsToIgnore=cms.vstring(inputCutsToIgnore),
     identifier = cms.string('PF'),  
     )
@@ -207,6 +215,8 @@ process.pileupReweightingProducer = cms.EDProducer("PileupReweightingPoducer",
 )
 
 process.tprimeNtupleDumperTCHEM = cms.EDProducer("TprimeNtupleDumper",
+    do_MC = cms.bool(False),
+    resonanceId = cms.int32(6), 
     kinFitterLabel = cms.string("kinFitTtSemiLepEventTCHEM"),
     selectorLabel  = cms.string("pfShyftSkim"),
                                             )

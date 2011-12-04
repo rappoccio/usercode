@@ -73,11 +73,6 @@ print options
 
 import sys
 
-## if options.useFlavorHistory > 0 :
-##     useFlavorHistory = True
-## else :
-##     useFlavorHistory = False
-
 if options.doMC > 0 :
     inputDoMC = True
 else :
@@ -96,7 +91,13 @@ if len(options.inputFiles) == 0 :
         '/store/user/lpctlbsm/skhalil/SingleElectron/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_9_1_Zhd.root'
         )
                                 )
-    
+payloads = [
+    'Jec11_V3_L1FastJet_AK5PFchs.txt',
+    'Jec11_V3_L2Relative_AK5PFchs.txt',
+    'Jec11_V3_L3Absolute_AK5PFchs.txt',
+    'Jec11_V3_L2L3Residual_AK5PFchs.txt',
+    'Jec11_V3_Uncertainty_AK5PFchs.txt',    
+]    
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -131,8 +132,8 @@ process.pfShyftSkim =  cms.EDFilter('EDWPlusJetsSelector',
     metMin = cms.double(0.0),
     reweightPU = cms.bool(False),
     useData = cms.bool( not inputDoMC ),
-    #heavyFlavour = cms.bool( useFlavorHistory ),#dummy
     doMC = cms.bool( inputDoMC),
+    jecPayloads = cms.vstring( payloads ),
     sampleName = cms.string(inputSampleName),
     cutsToIgnore=cms.vstring(inputCutsToIgnore),
     identifier = cms.string('PF'),
@@ -218,6 +219,8 @@ process.kinFitTtSemiLepEventTCHEM = cms.EDProducer("TtSemiLepKinFitProducerElect
                                                    )
 
 process.tprimeNtupleDumperTCHEM = cms.EDProducer("TprimeNtupleDumper",
+    do_MC = cms.bool(False),
+    resonanceId = cms.int32(6),                                              
     kinFitterLabel = cms.string("kinFitTtSemiLepEventTCHEM"),
     selectorLabel  = cms.string("pfShyftSkim"),
                                             )
