@@ -120,7 +120,7 @@ print "Creating histograms"
 
 nJets = ROOT.TH1F("nJets",         "Number of Jets, p_{T} > 30 GeV;N_{Jets};Number",               20, -0.5, 19.5 )
 nMuons = ROOT.TH1F("nMuons",         "Number of Muons, p_{T} > 35 GeV;N_{Muons};Number",               5, -0.5, 4.5 )
-nElectrons = ROOT.TH1F("nElectrons",         "Number of Electrons, p_{T} > 45 GeV;N_{Jets};Number",               5, -0.5, 4.5 )
+nElectrons = ROOT.TH1F("nElectrons",         "Number of Electrons, p_{T} > 35 GeV;N_{Jets};Number",               5, -0.5, 4.5 )
 
 if not options.useData:
     bmass = ROOT.TH1F("bmass", "B Sec Vtx Mass", 40, 0, 10)
@@ -216,7 +216,7 @@ if options.lepType == 0 :
     lepStr = 'Mu'
 else:
     muonPtMin = 35.0
-    electronPtMin = 45.0
+    electronPtMin = 35.0
     metMin = 20.0
     lepStr = 'Ele'
 
@@ -430,10 +430,12 @@ for event in events:
 
     # Now get the MET
     event.getByLabel( metLabel, metHandle )
-    metRaw = metHandle.product()[0]
-    event.getByLabel( metPhiLabel, metPhiHandle )
-    metPhiRaw = metPhiHandle.product()[0]
-
+    if metHandle.isValid():
+        metRaw = metHandle.product()[0]
+        event.getByLabel( metPhiLabel, metPhiHandle )
+        metPhiRaw = metPhiHandle.product()[0]
+    else:
+        continue  # if MET reconstruction failed
     jets = []
     taggedJets = []
     met_px = metRaw * math.cos( metPhiRaw )
@@ -455,12 +457,13 @@ for event in events:
 
     event.getByLabel( jetPtLabel, jetPtHandle )
     jetPts = jetPtHandle.product()
-    event.getByLabel( genJetPtLabel, genJetPtHandle )
-    if genJetPtHandle.isValid(): 
-        genJetPts = genJetPtHandle.product()
-    elif abs(options.jetSmear)>0.0001:
-        print "You want to use jetSmear but there is no genJetPt collection!!"
-        exit()
+    if not options.useData:
+        event.getByLabel( genJetPtLabel, genJetPtHandle )
+        if genJetPtHandle.isValid(): 
+            genJetPts = genJetPtHandle.product()
+        elif abs(options.jetSmear)>0.0001:
+            print "You want to use jetSmear but there is no genJetPt collection!!"
+            exit()
     event.getByLabel( jetEtaLabel, jetEtaHandle )
     jetEtas = jetEtaHandle.product()
     event.getByLabel( jetPhiLabel, jetPhiHandle )
@@ -493,7 +496,7 @@ for event in events:
 
         ## also do Jet energy resolution variation here
         ## and correct MET
-        if abs(options.jetSmear)>0.0001 and genJetPts[ijet]>15.0:
+        if not options.useData and abs(options.jetSmear)>0.0001 and genJetPts[ijet]>15.0:
             scale = options.jetSmear
             recopt = jetPts[ijet]
             genpt = genJetPts[ijet]
@@ -655,16 +658,17 @@ for event in events:
         dRbb[njets].Fill( idR, PUweight )
 
     if options.useData :
-        # always fill the "total" 
-        secvtxMassPlots[njets][ntags][3].Fill( secvtxMass, PUweight ) 
+        # always fill the "total"
+        if ntags > 0:
+            secvtxMassPlots[njets][ntags][3].Fill( secvtxMass, PUweight ) 
         lepEtaPlots[njets][ntags][3].Fill( lepEta, PUweight )
         centralityPlots[njets][ntags][3].Fill( sumEt / sumE, PUweight )
         sumPtPlots[njets][ntags][3].Fill( sumPt, PUweight )
         jet1PtPlots[njets][ntags][3].Fill( jet1Pt, PUweight )
 
         if flavorIndex >= 0 :
-            print "we should not be here!"
-            secvtxMassPlots[njets][ntags][flavorIndex].Fill( secvtxMass, PUweight ) # Fill each jet flavor individually
+            if ntags > 0:
+                secvtxMassPlots[njets][ntags][flavorIndex].Fill( secvtxMass, PUweight ) # Fill each jet flavor individually
             lepEtaPlots[njets][ntags][flavorIndex].Fill( lepEta, PUweight )
             centralityPlots[njets][ntags][flavorIndex].Fill( sumEt / sumE, PUweight )
             sumPtPlots[njets][ntags][flavorIndex].Fill( sumPt, PUweight )
