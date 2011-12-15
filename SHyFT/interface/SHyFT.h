@@ -10,6 +10,7 @@
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/FWLite/interface/Record.h"
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
+#include "PhysicsTools/Utilities/interface/Lumi3DReWeighting.h"
 /* #include "DataFormats/FWLite/interface/EventSetup.h" */
 /* #include "DataFormats/FWLite/interface/ESHandle.h" */
 /* #include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h" */
@@ -93,6 +94,8 @@ class SHyFT : public edm::BasicAnalyzer {
     bool analyze_met( const reco::ShallowClonePtrCandidate & met );
     //std::string calcSampleName (const edm::EventBase& iEvent);
     void initializeMCPUWeight();
+	void initializePU3DWeight();
+	void weight3DPU( edm::EventBase const & iEvent);
 
     bool make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
 			const reco::ShallowClonePtrCandidate & met,
@@ -114,6 +117,7 @@ class SHyFT : public edm::BasicAnalyzer {
 
     // used for reweighting
     edm::LumiReWeighting lumiWeights_;
+	edm::Lumi3DReWeighting Lumi3DWeights_;
     reweight::PoissonMeanShifter PShiftDown_;
     reweight::PoissonMeanShifter PShiftUp_;
     //void plotNPV(const edm::EventBase &, const char*, double);
@@ -141,6 +145,9 @@ class SHyFT : public edm::BasicAnalyzer {
     bool reweightPDF_;
     bool reweightBTagEff_;
     bool reweightPU_;
+	bool reweightPU3D_;
+	std::string pileupMC_;
+	std::string pileupData_;
     bool puUp_;
     bool puDn_;
     edm::InputTag pdfInputTag_; 

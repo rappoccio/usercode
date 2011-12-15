@@ -37,6 +37,9 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
   reweightPDF_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPDF")),
   reweightBTagEff_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightBTagEff")),
   reweightPU_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPU")),
+  reweightPU3D_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("reweightPU3D")),
+  pileupMC_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("pileupMC")),
+  pileupData_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<std::string>("pileupData")),
   puUp_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("puUp")),
   puDn_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<bool>("puDn")),
   pdfInputTag_(iConfig.getParameter<edm::ParameterSet>("shyftAnalysis").getParameter<edm::InputTag>("pdfSrc")),
@@ -80,6 +83,8 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
       initializeMCPUWeight();
       std::cout << "Initializing pu weights, identifier = " << identifier_ << std::endl;
    }
+   if( reweightPU3D_ )
+	initializePU3DWeight();
   
    //cout <<"let book the histo " << endl;
    //book all the histograms for leptons
@@ -1154,6 +1159,9 @@ void SHyFT::analyze(const edm::EventBase& iEvent)
   if ( doMC_ && reweightPU_) { 
      weightPU( iEvent );  
   } 
+	if ( reweightPU3D_) {
+		weight3DPU( iEvent );
+	}
 
   if(useHFcat_) {
     edm::Handle< unsigned int > heavyFlavorCategory;
@@ -1311,7 +1319,7 @@ void SHyFT::initializeMCPUWeight()
    }
    //now do what ever initialization is needed
    //if(use42X_){
-   lumiWeights_ = edm::LumiReWeighting( poissonIntDist, TrueDist2011);
+	lumiWeights_ = edm::LumiReWeighting( poissonIntDist, TrueDist2011);
       //}
    //else
    // lumiWeights_ = edm::LumiReWeighting( probdistFlat10, TrueDist2011);
@@ -1361,4 +1369,15 @@ void SHyFT::weightPU( edm::EventBase const & iEvent) {
      else               globalWeight_ *= puweight;
      theDir.getObject<TH1>("npuReweight")->Fill(npv, puweight );
   }
+}
+void SHyFT::initializePU3DWeight() {
+	std::cout << "PileupMCFile: " << pileupMC_ << std::endl;
+	std::cout << "PileupDataFile: " << pileupData_ << std::endl;
+	
+	Lumi3DWeights_ = edm::Lumi3DReWeighting( pileupMC_ , pileupData_ , "pileup", "pileup");
+	Lumi3DWeights_.weight3D_init( 1. );
+}
+void SHyFT::weight3DPU( edm::EventBase const & iEvent) {
+	double MyWeight3D = Lumi3DWeights_.weight3D( (iEvent) );
+	globalWeight_ *= MyWeight3D;
 }
