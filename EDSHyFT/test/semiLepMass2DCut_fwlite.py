@@ -28,17 +28,10 @@ parser.add_option('--muOnly', metavar='F', action='store_true',
                   dest='muOnly',
                   help='use only muons')
 
-parser.add_option('--useLoose', metavar='F', action='store_true',
+parser.add_option('--sideband', metavar='F', action='store_true',
                   default=False,
-                  dest='useLoose',
+                  dest='sideband',
                   help='use loose leptons (exclusive from tight)')
-
-parser.add_option('--use2DCut', action='store_true',
-                  default=False,
-                  dest='use2DCut',
-                  help='use 2d cut instead of iso cut')
-
-
 
 (options, args) = parser.parse_args()
 
@@ -93,9 +86,7 @@ ptRelVsDRMin = ROOT.TH2F("ptRelVsDRMin", "Mass of W candidate versus #mu cut", 4
 
 events = Events (files)
 
-postfix = ""
-if options.useLoose or options.use2DCut :
-    postfix = "Loose"
+postfix = "Loose"
 
 jetPtHandle         = Handle( "std::vector<float>" )
 jetPtLabel    = ( "pfShyftTupleJets" + postfix,   "pt" )
@@ -140,9 +131,6 @@ for event in events:
     count = count + 1
     if count % 10000 == 0 :
       print  '--------- Processing Event ' + str(count)
-
-
-
 
     #Require exactly one lepton (e or mu)
 
@@ -275,7 +263,7 @@ for event in events:
     # require the 2d cut to continue.
     # Otherwise, you're using the loose selection,
     # so require failure of the 2d cut for a sideband
-    if not options.useLoose :
+    if not options.sideband :
         if not pass2D :
             continue
     else :

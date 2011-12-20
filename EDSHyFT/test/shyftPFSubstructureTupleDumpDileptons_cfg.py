@@ -129,6 +129,8 @@ from Analysis.SHyFT.shyftPFSelection_cfi import shyftPFSelection as shyftPFSelec
 process.pfShyftProducer = cms.EDFilter('EDSHyFTPFSelector',
                                     shyftPFSelection = shyftPFSelectionInput.clone(
                                            jetSrc = cms.InputTag('goodPatJetsPFlow'),
+                                           muonSrc = cms.InputTag('selectedPatMuonsLoosePFlow'),
+                                           removeLooseLep = cms.bool(True),
                                            jecPayloads = cms.vstring( payloads )
                                         )
                                     )

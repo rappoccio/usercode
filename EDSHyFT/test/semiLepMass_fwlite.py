@@ -7,9 +7,9 @@ from optparse import OptionParser
 
 parser = OptionParser()
 
-parser.add_option('--fileDir', metavar='F', type='string', action='store',
-                  dest='fileDir',
-                  help='Input file')
+parser.add_option('--files', metavar='F', type='string', action='store',
+                  dest='files',
+                  help='Input files')
 
 
 parser.add_option('--outname', metavar='F', type='string', action='store',
@@ -28,6 +28,13 @@ parser.add_option('--useLoose', metavar='F', action='store_true',
                   dest='useLoose',
                   help='use loose leptons (exclusive from tight)')
 
+
+
+parser.add_option('--bDiscCut', metavar='F', type='float', action='store',
+                  default=2.74,
+                  dest='bDiscCut',
+                  help='B discriminator cut')
+
 (options, args) = parser.parse_args()
 
 argv = []
@@ -40,9 +47,9 @@ ROOT.gROOT.Macro("rootlogon.C")
 import sys
 from DataFormats.FWLite import Events, Handle
 
-print 'Getting files from this dir: ' + options.fileDir
+print 'Getting these files : ' + options.files
 
-files = glob.glob( options.fileDir + '/res/*.root' )
+files = glob.glob( options.files )
 print files
 
 
@@ -268,7 +275,7 @@ for event in events:
 
     ntags = 0
     for ssvhe in jetSSVHEs :
-        if ssvhe > 2.74 :
+        if ssvhe > options.bDiscCut :
             ntags += 1
 
     if ntags < 1 :
@@ -315,15 +322,15 @@ for event in events:
     highestJetMass = -1.0
     bJetCandIndex = -1
     for ijet in range(0,len(hadJets)):
-        if hadJets[ijet].M() > highestJetMass  and hadJetsBDisc[ijet] < 2.74 :
+        if hadJets[ijet].M() > highestJetMass  and hadJetsBDisc[ijet] < options.bDiscCut :
             highestJetMass = hadJets[ijet].M()
             highestMassJetIndex = ijet
-        if hadJetsBDisc[ijet] > 2.74 and bJetCandIndex == -1 :
+        if hadJetsBDisc[ijet] > options.bDiscCut and bJetCandIndex == -1 :
             bJetCandIndex = ijet
 
 
 
-    if highestJetMass >= 0 and hadJets[highestMassJetIndex].Perp() > 200.0 :
+    if highestJetMass >= 0 : # and hadJets[highestMassJetIndex].Perp() > 200.0 :
         muHist.Fill( hadJetsMu[highestMassJetIndex] )
         mWCandVsMuCut.Fill( highestJetMass, hadJetsMu[highestMassJetIndex] )
         mWCandVsPtWCand.Fill( hadJets[highestMassJetIndex].Perp(), highestJetMass )

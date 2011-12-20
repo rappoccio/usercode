@@ -95,7 +95,13 @@ else :
     process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = ['HLT_Mu30_v1',
                                                                                                        'HLT_Mu30_v2',
                                                                                                        'HLT_Mu30_v3',
-                                                                                                       'HLT_Mu40_v*'])
+                                                                                                       'HLT_Mu30_v4',
+                                                                                                       'HLT_Mu30_v5',
+                                                                                                       'HLT_Mu30_v7',
+                                                                                                       'HLT_Mu40_eta2p1_v1',
+                                                                                                       'HLT_Mu40_eta2p1_v4',
+                                                                                                       'HLT_Mu40_eta2p1_v5',
+                                                                                                       ])
     process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths =  ['HLT_Ele45_CaloIdVT_TrkIdT_v1',
                                                                                                          'HLT_Ele45_CaloIdVT_TrkIdT_v2',
                                                                                                          'HLT_Ele45_CaloIdVT_TrkIdT_v3',
@@ -141,6 +147,7 @@ process.pfShyftProducerLoose.shyftPFSelection.cutsToIgnore.append('0 other lepto
 process.pfShyftProducerLoose.shyftPFSelection.cutsToIgnore.append('>=1 Jets')
 process.pfShyftProducerLoose.shyftPFSelection.muonIdPFTight.cutsToIgnore.append('PFIso')
 process.pfShyftProducerLoose.shyftPFSelection.electronIdPFTight.cutsToIgnore.append('PFIso')
+
 
 ## std sequence to produce the kinematic fit for semi-leptonic events
 process.load('TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Muons_cfi')
@@ -220,6 +227,53 @@ process.pfShyftTupleJets = cms.EDProducer(
 
 process.pfShyftTupleJetsLoose = process.pfShyftTupleJets.clone(
     src = cms.InputTag("pfShyftProducerLoose", "jets"),
+    )
+
+
+
+process.pfShyftTupleJetsLooseTopTag = cms.EDProducer(
+    "CandViewNtpProducer", 
+    src = cms.InputTag("goodPatJetsCATopTagPF"),
+    lazyParser = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
+    variables = cms.VPSet(
+        cms.PSet(
+            tag = cms.untracked.string("mass"),
+            quantity = cms.untracked.string("mass")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pt"),
+            quantity = cms.untracked.string("pt")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("eta"),
+            quantity = cms.untracked.string("eta")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("phi"),
+            quantity = cms.untracked.string("phi")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("jetArea"),
+            quantity = cms.untracked.string("jetArea")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("nSubjets"),
+            quantity = cms.untracked.string("numberOfDaughters()")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("minMass"),
+            quantity = cms.untracked.string("? hasTagInfo('CATop') ? tagInfo('CATop').properties().minMass : 0.0")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("topMass"),
+            quantity = cms.untracked.string("? hasTagInfo('CATop') ? tagInfo('CATop').properties().topMass : 0.0")
+            ),
+	cms.PSet(
+	    tag = cms.untracked.string("ssvhe"),
+	    quantity = cms.untracked.string("bDiscriminator('simpleSecondaryVertexHighEffBJetTags')")
+            ),
+        )
     )
 
 
@@ -367,7 +421,8 @@ process.pfShyftTupleElectronsLoose = cms.EDProducer(
 process.p1 = cms.Path(
     process.hltSelection*
     process.pfShyftProducerLoose *
-    process.pfShyftTupleJetsLoose*    
+    process.pfShyftTupleJetsLoose*
+    process.pfShyftTupleJetsLooseTopTag*
     process.pfShyftTupleMuonsLoose*
     process.pfShyftTupleElectronsLoose*
     process.pfShyftTupleMETLoose
