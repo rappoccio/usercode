@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: TTBSMProducer.cc,v 1.10 2011/12/01 15:54:57 guofan Exp $
+// $Id: TTBSMProducer.cc,v 1.11 2011/12/21 20:36:12 guofan Exp $
 //
 //
 
@@ -260,6 +260,13 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<int> npvTrue( new int() );
   std::auto_ptr<std::vector<double> > pdf_weights( new std::vector<double>() );
 
+  std::auto_ptr<std::vector<int> > topTagPartonFlavour ( new std::vector<int>() );
+  std::auto_ptr<std::vector<int> > wTagPartonFlavour ( new std::vector<int>() );
+  std::auto_ptr<std::vector<int> > topTagPartonFlavour0 ( new std::vector<int>() );
+  std::auto_ptr<std::vector<int> > topTagPartonFlavour1 ( new std::vector<int>() );
+  std::auto_ptr<std::vector<int> > wTagPartonFlavour0 ( new std::vector<int>() );
+  std::auto_ptr<std::vector<int> > wTagPartonFlavour1 ( new std::vector<int>() );
+
   // Number of reconstructed PV's
   *npv = h_pv->size();
 
@@ -399,6 +406,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     wTagMu->push_back( mu );
     wTagPass->push_back( passedWTag );
     wTagBDisc->push_back( ijet->bDiscriminator("trackCountingHighEffBJetTags") );
+    wTagPartonFlavour->push_back( ijet->partonFlavour() );
   }
 
   for ( std::vector<pat::Jet>::const_iterator jetBegin = h_topTag->begin(),
@@ -484,6 +492,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     topTagTopMass->push_back( catopTag->properties().topMass * (corr * ptSmear_) );
     topTagNSubjets->push_back( ijet->numberOfDaughters() );
     topTagBDisc->push_back( ijet->bDiscriminator("trackCountingHighEffBJetTags") );
+    topTagPartonFlavour->push_back( ijet->partonFlavour() );
 
   }
 
@@ -519,6 +528,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
         topTagTopMassHemis0->push_back( topTagTopMass->at(i) );
         topTagNSubjetsHemis0->push_back( topTagNSubjets->at(i) );
         topTagPassHemis0->push_back( topTagPass->at(i) );
+        topTagPartonFlavour0->push_back( topTagPartonFlavour->at(i) );
       }
       else  {
         topTagP4Hemis1->push_back( topTagP4->at(i) );
@@ -526,6 +536,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
         topTagTopMassHemis1->push_back( topTagTopMass->at(i) );
         topTagNSubjetsHemis1->push_back( topTagNSubjets->at(i) );
         topTagPassHemis1->push_back( topTagPass->at(i) );
+        topTagPartonFlavour1->push_back( topTagPartonFlavour->at(i) );
       }
     }
     for( size_t i=0; i<wTagP4->size(); i++ )  {
@@ -534,11 +545,13 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
         wTagP4Hemis0->push_back( wTagP4->at(i) );
         wTagBDiscHemis0->push_back( wTagBDisc->at(i) );
         wTagMuHemis0->push_back( wTagMu->at(i) );
+        wTagPartonFlavour0->push_back( wTagPartonFlavour->at(i) );
       }
       else  {
         wTagP4Hemis1->push_back( wTagP4->at(i) );
         wTagBDiscHemis1->push_back( wTagBDisc->at(i) );
         wTagMuHemis1->push_back( wTagMu->at(i) );
+        wTagPartonFlavour1->push_back( wTagPartonFlavour->at(i) );
       }
     }
   }
@@ -647,6 +660,13 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put( npvTrue, "npvTrue");
   iEvent.put( pdf_weights, "pdfWeights");
   iEvent.put( mttgen, "mttgen" );
+
+  iEvent.put( topTagPartonFlavour, "topTagPartonFlavour");
+  iEvent.put( topTagPartonFlavour0, "topTagPartonFlavour0");
+  iEvent.put( topTagPartonFlavour1, "topTagPartonFlavour1");
+  iEvent.put( wTagPartonFlavour, "wTagPartonFlavour");
+  iEvent.put( wTagPartonFlavour0, "wTagPartonFlavour0");
+  iEvent.put( wTagPartonFlavour1, "wTagPartonFlavour1");
 
   return true;
 }
