@@ -1,9 +1,0 @@
-<use   name="FWCore/Utilities"/>
-<use   name="DataFormats/Common"/>
-<use   name="DataFormats/PatCandidates"/>
-<use   name="CommonTools/CandUtils"/>
-
-<use   name="root"/>
-<export>
-  <lib   name="1"/>
-</export>
