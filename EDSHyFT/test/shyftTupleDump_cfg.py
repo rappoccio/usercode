@@ -43,6 +43,11 @@ options.register('useLooseElectrons',
                  VarParsing.varType.int,
                  "Add loose electron collection (1) or not (0)")
 
+options.register('useLooseMuons',
+                 0,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
+                 "Add loose muon collection (1) or not (0)")
 
 options.parseArguments()
 
@@ -156,6 +161,26 @@ process.pfShyftProducerMu = cms.EDFilter('EDSHyFTSelector',
         jecPayloads = cms.vstring( payloads )
         )
         )
+process.pfShyftProducerMuLoose = cms.EDFilter('EDSHyFTSelector',
+                                              shyftSelection = shyftSelectionInput.clone(
+                                                jetSrc = cms.InputTag('goodPatJetsPFlow'),
+                                                muonSrc = cms.InputTag('selectedPatMuonsLoosePFlow'),
+                                                electronSrc = cms.InputTag('selectedPatElectronsLoosePFlow'),
+                                                ePlusJets = cms.bool( False ),
+                                                muPlusJets = cms.bool( True ),
+                                                jetPtMin = cms.double(10.0),##
+                                                minJets = cms.int32(1),
+                                                metMin = cms.double(0.0),
+                                                muPtMin = cms.double(35.0),
+                                                identifier = cms.string('PFMuLoose'),
+                                                cutsToIgnore=cms.vstring( ['Trigger','== 1 Tight Lepton','== 1 Tight Lepton, Mu Veto','== 1 Lepton'] ),
+                                                useData = cms.bool(useData),
+                                                jetSmear = cms.double(jetSmear),
+                                                jecPayloads = cms.vstring( payloads ),
+                                                removeLooseLep = cms.bool(True)
+                                                )
+                                            )
+process.pfShyftProducerMuLoose.shyftSelection.muonIdTight.cutsToIgnore.append('PFIso')
 
 process.pfShyftProducerEle = cms.EDFilter('EDSHyFTSelector',
                                     shyftSelection = shyftSelectionInput.clone(
@@ -227,6 +252,8 @@ process.pfShyftTupleJetsMu = cms.EDProducer(
         )  
     )
 
+
+
 if not options.useData :
     process.pfShyftTupleJetsMu.variables.append(
         cms.PSet(
@@ -241,6 +268,9 @@ if not options.useData :
             )
     )
 
+process.pfShyftTupleJetsMuLoose = process.pfShyftTupleJetsMu.clone(
+    src = cms.InputTag("pfShyftProducerMuLoose", "jets"),
+    )
 
 process.pfShyftTupleJetsEle = process.pfShyftTupleJetsMu.clone(
     src = cms.InputTag("pfShyftProducerEle", "jets"),
@@ -278,6 +308,10 @@ process.pfShyftTupleMuons = cms.EDProducer(
         )  
     )
 
+process.pfShyftTupleMuonsLoose = process.pfShyftTupleMuons.clone(
+    src = cms.InputTag("pfShyftProducerMuLoose", "muons")
+    )
+
 
 process.pfShyftTupleMETMu = cms.EDProducer(
     "CandViewNtpProducer", 
@@ -294,6 +328,10 @@ process.pfShyftTupleMETMu = cms.EDProducer(
             quantity = cms.untracked.string("phi")
             )
         )  
+    )
+
+process.pfShyftTupleMETMuLoose = process.pfShyftTupleMETMu.clone(
+    src = cms.InputTag("pfShyftProducerMuLoose", "MET")
     )
 
 process.pfShyftTupleMETEle = process.pfShyftTupleMETMu.clone(
@@ -369,6 +407,7 @@ if options.usePDFs :
     process.p2 += process.pdfWeightProducer
 
 process.p3 = cms.Path()
+process.p4 = cms.Path() 
 if options.useLooseElectrons:
     process.p3 = cms.Path(
         process.hltSelection*
@@ -376,6 +415,14 @@ if options.useLooseElectrons:
         process.pfShyftTupleJetsEleLoose*
         process.pfShyftTupleElectronsLoose*
         process.pfShyftTupleMETEleLoose
+        )
+if options.useLooseMuons :
+    process.p4 = cms.Path(
+        process.hltSelection*
+        process.pfShyftProducerMuLoose*
+        process.pfShyftTupleJetsMuLoose*
+        process.pfShyftTupleMuonsLoose*
+        process.pfShyftTupleMETMuLoose
         )
         
 
@@ -385,7 +432,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string("shyftDump.root"),
-                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p1','p2','p3') ),
+                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p1','p2','p3','p4') ),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       #'keep *_pfShyftProducer_*_*',
                                                                       'keep *_PUNtupleDumper_*_*',
