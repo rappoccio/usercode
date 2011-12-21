@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: TTBSMProducer.cc,v 1.9 2011/08/04 14:15:52 guofan Exp $
+// $Id: TTBSMProducer.cc,v 1.10 2011/12/01 15:54:57 guofan Exp $
 //
 //
 
@@ -147,7 +147,9 @@ TTBSMProducer::TTBSMProducer(const edm::ParameterSet& iConfig) :
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4");
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("topTagP4");  
   produces<std::vector<double> > ("topTagBDisc");
+  produces<std::vector<int> >    ("topTagPartonFlavour");
   produces<std::vector<double> > ("wTagBDisc");
+  produces<std::vector<int> >    ("wTagPartonFlavour");
   produces<std::vector<double> > ("wTagMu");
   produces<std::vector<int> >    ("wTagPass");
   produces<std::vector<double> > ("topTagMinMass");
@@ -169,14 +171,18 @@ TTBSMProducer::TTBSMProducer(const edm::ParameterSet& iConfig) :
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("topTagP4Hemis0");
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("topTagP4Hemis1");
   produces<std::vector<double> > ("wTagBDiscHemis0");
+  produces<std::vector<int> >    ("wTagPartonFlavour0");
   produces<std::vector<double> > ("wTagMuHemis0");
   produces<std::vector<double> > ("topTagMinMassHemis0");
+  produces<std::vector<int> >    ("topTagPartonFlavour0");
   produces<std::vector<double> > ("topTagTopMassHemis0");
   produces<std::vector<double> > ("topTagNSubjetsHemis0");
   produces<std::vector<int> >    ("topTagPassHemis0");
   produces<std::vector<double> > ("wTagBDiscHemis1");
+  produces<std::vector<int> >    ("wTagPartonFlavour1");
   produces<std::vector<double> > ("wTagMuHemis1");
   produces<std::vector<double> > ("topTagMinMassHemis1");
+  produces<std::vector<int> >    ("topTagPartonFlavour1");
   produces<std::vector<double> > ("topTagTopMassHemis1");
   produces<std::vector<double> > ("topTagNSubjetsHemis1");
   produces<std::vector<int> >    ("topTagPassHemis1");
