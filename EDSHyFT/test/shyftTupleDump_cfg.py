@@ -60,7 +60,7 @@ if options.useData == 0 :
 import sys
 
 
-payloadsData = [
+payloads = [
     'Jec11_V3_L1FastJet_AK5PFchs.txt',
     'Jec11_V3_L2Relative_AK5PFchs.txt',
     'Jec11_V3_L3Absolute_AK5PFchs.txt',
@@ -68,23 +68,14 @@ payloadsData = [
     'Jec11_V3_Uncertainty_AK5PFchs.txt',    
 ]
 
-payloadsMC = [
-    'Jec11_V3_L1FastJet_AK5PFchs.txt',
-    'Jec11_V3_L2Relative_AK5PFchs.txt',
-    'Jec11_V3_L3Absolute_AK5PFchs.txt',
-    'Jec11_V3_Uncertainty_AK5PFchs.txt',    
-]
-
 if useData :
     jetSmear = 0.0
-    payloads = payloadsData
     inputFiles = [
         'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/SingleMu/ttbsm_v9_Run2011A-PromptReco-v4/f8e845a0332c56398831da6c30999af1/ttbsm_42x_data_326_1_ZF4.root'
         ]
 
 else :
     jetSmear = 0.1
-    payloads = payloadsMC
     inputFiles = [
         'dcap:///pnfs/cms/WAX/11//store/user/lpctlbsm/srappocc/TTJets_TuneZ2_7TeV-madgraph-tauola/ttbsm_v9_Summer11-PU_S4_START42_V11-v1/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_9_1_7Fg.root'
         ]
