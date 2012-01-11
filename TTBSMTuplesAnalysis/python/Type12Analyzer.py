@@ -217,6 +217,8 @@ class Type12Analyzer :
         self.mttMassTriggerWeighted      = ROOT.TH1F("mttMassTriggerWeighted",        "mTT Mass",                 1000, 0,  5000 )
         self.mttMassFlatTriggerWeighted  = ROOT.TH1F("mttMassFlatTriggerWeighted",        "mTT Mass",                 1000, 0,  5000 )
         self.mttMassVeto11               = ROOT.TH1F("mttMassVeto11",               "mTT Mass",                 1000, 0,  5000 )
+        self.mtt_gen                     = ROOT.TH1F("mtt_gen",                     "mtt gen",                  1000, 0,  5000 )
+        self.mtt_gen_vs_reco      = ROOT.TH2D("mtt_gen_vs_reco",      "mtt gen vs reco",    1000, 0,  5000, 1000, 0,  5000)
         self.mttMassTriggerWeightedVeto11  = ROOT.TH1F("mttMassTriggerWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
         self.mttMassFlatTriggerWeightedVeto11  = ROOT.TH1F("mttMassFlatTriggerWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
         self.mttMassJet1MassDown         = ROOT.TH1F("mttMassJet1MassDown",         "mTT Mass",                 1000, 0,  5000 )
@@ -689,6 +691,12 @@ class Type12Analyzer :
             self.mttMassVeto11.Fill( ttMass, weight  )
             self.mttMassTriggerWeightedVeto11.Fill( ttMass, weight  )
             self.mttMassFlatTriggerWeightedVeto11.Fill( ttMass, weight*flatTriggerWeight  )
+            h_mtt = Handle("double")
+            event.getByLabel( ("ttbsmAna", "mttgen"), h_mtt)
+            if h_mtt.isValid():
+                mtt = h_mtt.product()
+                self.mtt_gen.Fill(mtt[0])
+                self.mtt_gen_vs_reco.Fill(mtt[0], ttMass)
 
           if not passType11 and hasType2Top :
               self.mttPredDist.        Accumulate( ttMass,      jet1Pt, isJetTagged, weight  )

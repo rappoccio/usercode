@@ -162,6 +162,8 @@ class Type11Analyzer :
         self.mttMass              = ROOT.TH1D("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
         self.mttMassTriggerWeighted   = ROOT.TH1D("mttMassTriggerWeighted",                     "mTT Mass",                 1000, 0,  5000 )
         self.cutflow              = ROOT.TH1D("cutflow",                     "cutflow",                 7, 0,  7 ) 
+        self.mtt_gen              = ROOT.TH1D("mtt_gen",              "mtt gen",                    1000,   0,    5000)
+        self.mtt_gen_vs_reco      = ROOT.TH2D("mtt_gen_vs_reco",      "mtt gen vs reco",    1000, 0,  5000, 1000, 0,  5000)
         
         self.mttMass.Sumw2()
         self.runPairs = []
@@ -335,6 +337,13 @@ class Type11Analyzer :
                 self.topTagMinMass.Fill( topJetMinMass[0], weight )
                 self.topTagMinMass.Fill( topJetMinMass[1], weight )
                 self.mttMass.Fill( ttMass, weight )
+                h_mtt = Handle("double")
+                event.getByLabel( ("ttbsmAna", "mttgen"), h_mtt)
+                if h_mtt.isValid():
+                    mtt = h_mtt.product()
+                    self.mtt_gen.Fill(mtt[0])
+                    self.mtt_gen_vs_reco.Fill(mtt[0], ttMass)
+
                 if not self.useMC :
                     self.runPairs.append( [event.object().id().run(),
                                            event.object().id().event(),
