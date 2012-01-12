@@ -15,7 +15,7 @@
 #include "DataFormats/Common/interface/ValueMap.h"
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#include "Analysis/EDSHyFT/plugins/BTagSFUtil-tprime.h"
+#include "Analysis/EDSHyFT/plugins/BTagSFUtil_tprime.h"
 #include "RecoBTag/Records/interface/BTagPerformanceRecord.h"
 #include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h"
 #include "RecoBTag/PerformanceDB/interface/BtagPerformance.h"
@@ -126,6 +126,8 @@ BTaggingSFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	
 	//	std::cout<< " runNumber: " << runNumber << " eventNumber: " << eventNumber << std::endl;
 
+	//	std::cout<<" Events " << std::endl;
+
 	BTagSFUtil btaggingUtility( runNumber+eventNumber);
 	//	iSetup.get<BTagPerformanceRecord>().get( 
 	
@@ -137,6 +139,8 @@ BTaggingSFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
             // GET The mistag efficiency and the light and heavy flavour tagging scale factors                                                                
 	    double ScaleFactor_heavy;
+	    double ScaleFactor_heavy_unc;
+	    double tagEfficiency;
 	    double ScaleFactor_light;
 	    double ScaleFactor_light_unc;
 	    double mistagEfficiency;
@@ -153,9 +157,27 @@ BTaggingSFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             measurePoint.insert( BinningVariables::JetAbsEta, fabs( jet.eta() ));
 
 	    ScaleFactor_heavy = (double) perf_Btag.getResult(measureMap["BTAGBEFFCORR"], measurePoint);
+	    ScaleFactor_heavy_unc = (double) perf_Btag.getResult(measureMap["BTAGBERRCORR"], measurePoint);
+	    tagEfficiency = 0.7;
 	    ScaleFactor_light = (double) perf_Mistag.getResult(measureMap["BTAGLEFFCORR"], measurePoint);
 	    ScaleFactor_light_unc = (double) perf_Mistag.getResult(measureMap["BTAGLERRCORR"], measurePoint) ;
 	    mistagEfficiency  = (double) perf_Mistag.getResult(measureMap["BTAGLEFF"], measurePoint );
+
+	    //	    if ( fabs( jet.eta() ) > 2.4)
+	    // {
+	    //	std::cout << " jet et: " << jet.et() << " eta: " << jet.eta() << " flavor: " << jet.partonFlavour() << std::endl;
+		
+	    //	if ( ( abs(jet.partonFlavour()) == 4 ) || ( abs(jet.partonFlavour()) == 5) )
+	    //	  {
+	    //	    std::cout<< " ScaleFactor_heavy: " << ScaleFactor_heavy << " ScaleFactor_heavy_unc: " << ScaleFactor_heavy_unc
+	    //		     << " tagEfficiency: " << tagEfficiency << std::endl;
+	    //	  }
+	    //	else
+	    //	  {
+	    //	    std::cout<< " ScaleFactor_light: " << ScaleFactor_light << " ScaleFactor_light_unc: " << ScaleFactor_light_unc
+	    //		     << " mistagEfficiency: " << mistagEfficiency << std::endl;
+	    //	  }
+	    // }
 
 	    bool btag = false;
 	    bool btagNominal = false;
@@ -182,38 +204,59 @@ BTaggingSFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	    if ( abs(parton) == 5 )
 	      {
-		ScaleFactor_heavy_up = 1.0;
-
 		if ( jet.pt() > 240.0)
-		  ScaleFactor_heavy_down = 0.81;
+		  {
+		    ScaleFactor_heavy_up = ScaleFactor_heavy + 0.15*ScaleFactor_heavy;
+		    ScaleFactor_heavy_down = ScaleFactor_heavy - 0.15*ScaleFactor_heavy;
+		  }
 		else 
-		  ScaleFactor_heavy_down = 0.91;
+		  {
+		    ScaleFactor_heavy_up = ScaleFactor_heavy + ScaleFactor_heavy_unc;
+		    ScaleFactor_heavy_down = ScaleFactor_heavy - ScaleFactor_heavy_unc;
+		  }
 	      }
 	    else if ( abs(parton) == 4 )
 	      {
-		ScaleFactor_heavy_up = 1.0;
-		
 		if ( jet.pt() > 240.0)
-		  ScaleFactor_heavy_down = 0.81;
-		else 
-		  ScaleFactor_heavy_down = 0.86;
+                  {
+                    ScaleFactor_heavy_up = ScaleFactor_heavy + 0.2*ScaleFactor_heavy;
+                    ScaleFactor_heavy_down = ScaleFactor_heavy - 0.2*ScaleFactor_heavy;
+                  }
+                else
+                  {
+                    ScaleFactor_heavy_up = ScaleFactor_heavy + 2.0*ScaleFactor_heavy_unc;
+                    ScaleFactor_heavy_down = ScaleFactor_heavy - 2.0*ScaleFactor_heavy_unc;
+                  }		
 	      }
 	    else
 	      {
-		ScaleFactor_light_down = 1.0;		
+		ScaleFactor_light_down = ScaleFactor_light - ScaleFactor_light_unc;		
 		ScaleFactor_light_up = ScaleFactor_light + ScaleFactor_light_unc;
 	      }
 
-	      
-
+	    //	    if ( fabs( jet.eta() ) > 2.4)
+	    // {
+	    //	if ( ( abs(parton) == 4 ) || ( abs(parton) == 5) )
+	    //	  std::cout << " ScaleFactor_heavy_up: " << ScaleFactor_heavy_up << " ScaleFactor_heavy_down: " << ScaleFactor_heavy_down << std::endl;
+	    //	else
+	    //	  std::cout << " ScaleFactor_light_up: " << ScaleFactor_light_up << " ScaleFactor_light_down: " << ScaleFactor_light_down << std::endl;
+	    // }
+	    
 	    if ( fabs( ScaleFactor_heavy ) < 2.0)
 	      {
-		btaggingUtility.modifyBTagsWithSF( btagNominal, parton, ScaleFactor_heavy, ScaleFactor_light, mistagEfficiency);
-		btaggingUtility.modifyBTagsWithSF( btagUp, parton, ScaleFactor_heavy_up, ScaleFactor_light_up, mistagEfficiency);
-		btaggingUtility.modifyBTagsWithSF( btagDown, parton, ScaleFactor_heavy_down, ScaleFactor_light_down, mistagEfficiency);
+		btaggingUtility.modifyBTagsWithSF( btagNominal, parton, ScaleFactor_heavy, tagEfficiency, ScaleFactor_light, mistagEfficiency);
+		btaggingUtility.modifyBTagsWithSF( btagUp, parton, ScaleFactor_heavy_up, tagEfficiency, ScaleFactor_light_up, mistagEfficiency);
+		btaggingUtility.modifyBTagsWithSF( btagDown, parton, ScaleFactor_heavy_down, tagEfficiency, ScaleFactor_light_down, mistagEfficiency);
 	      }
 
 	    int btaggingSummary = 1*btag + 2*btagNominal + 4*btagUp + 8*btagDown;
+	    
+	    //if ( (btaggingSummary != 0) && ( btaggingSummary != 15 ) )
+	    //	    if( ( fabs( jet.eta() ) > 2.4) && (btaggingSummary != 0) && ( btaggingSummary != 15) )
+	    // {
+	    //	std::cout<< " btag: " << btag << " Nominal: " << btagNominal << " btagUp: " << btagUp << " btagDown: " << btagDown << std::endl;
+	    //	std::cout<< "#####################################" << std::endl;
+	    //  }
 
 	    jet.addUserInt("btagRegular", btaggingSummary);
 	    
@@ -236,18 +279,18 @@ BTaggingSFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  count_NObsModTag++;	 
 	      }
 
-	    if  ( (btaggingSummary != 0) && ( btaggingSummary != 15) )
-              {
-		std::cout << std::endl << " jet : " << i << " et: " << jet.et() << " fabs(eta): "<< fabs( jet.eta() )
-                          << " jet.partonFlavour(): " <<  jet.partonFlavour() << std::endl;
-		std::cout << " jet : " << i << " SF_H: " << ScaleFactor_heavy << " SF_L: " << ScaleFactor_light << " +/- " << ScaleFactor_light_unc
-                          << " mistag Efficiency: " << mistagEfficiency <<  std::endl;
-		std::cout << " ScaleFactor_heavy_up: " << ScaleFactor_heavy_up << " ScaleFactor_light_up: " << ScaleFactor_light_up 
-			  << " ScaleFactor_heavy_down: " << ScaleFactor_heavy_down << " ScaleFactor_light_down: " << ScaleFactor_light_down << std::endl;
-		std::cout<< " jet : " << i << " partonFlavour: " << parton <<  " discriminant: " << btag << " Modified: " << btagNominal 
-			 << " modified up: " << btagUp << " modified down: " << btagDown << " total: " << btaggingSummary << std::endl;   
-	      }
-	    //	    std::cout<<" modified btagging: " << btag << std::endl;
+	    //if  ( (btaggingSummary != 0) && ( btaggingSummary != 15) )
+            // {
+	    //  std::cout << std::endl << " jet : " << i << " et: " << jet.et() << " fabs(eta): "<< fabs( jet.eta() )
+            //              << " jet.partonFlavour(): " <<  jet.partonFlavour() << std::endl;
+	    //	std::cout << " jet : " << i << " SF_H: " << ScaleFactor_heavy << " SF_L: " << ScaleFactor_light << " +/- " << ScaleFactor_light_unc
+	    //             << " mistag Efficiency: " << mistagEfficiency <<  std::endl;
+	    //	std::cout << " ScaleFactor_heavy_up: " << ScaleFactor_heavy_up << " ScaleFactor_light_up: " << ScaleFactor_light_up 
+	    //		  << " ScaleFactor_heavy_down: " << ScaleFactor_heavy_down << " ScaleFactor_light_down: " << ScaleFactor_light_down << std::endl;
+	    //	std::cout<< " jet : " << i << " partonFlavour: " << parton <<  " discriminant: " << btag << " Modified: " << btagNominal 
+	    //		 << " modified up: " << btagUp << " modified down: " << btagDown << " total: " << btaggingSummary << std::endl;   
+	    // }
+	    //	    std::cout<<" modified btagging: " << btaggingSummary << std::endl;
 	  }
 
 	// put value map into event
@@ -264,11 +307,7 @@ BTaggingSFProducer::beginJob()
 void
 BTaggingSFProducer::endJob() {
   
-  std::cout<< " bs: " << countbs << " tagged: " << countbs_tagged << " mod tags: " << countbs_modtag << std::endl;
-  
-  
-  std::cout << " efficiency: " << double(countbs_tagged)/countbs << " mod Efficiency: " << double(countbs_modtag)/countbs << std::endl;
-  std::cout << " mistagrate: " << double(count_NObsTagged)/countNObs << " mod mistagrate: " << double(count_NObsModTag)/countNObs << std::endl;
+
 }
 
 //define this as a plug-in
