@@ -72,13 +72,12 @@ if len(options.inputFiles) == 0 :
         '/store/user/lpctlbsm/skhalil/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/ttbsm_v8_Summer11-PU_S4_START42_V11-v1/87037ef7c828ea57e128f1ace23a632e/ttbsm_42x_mc_9_1_qHp.root',
         )
                                 )                           
-
 payloads = [
-    'Jec11_V3_L1FastJet_AK5PFchs.txt',
-    'Jec11_V3_L2Relative_AK5PFchs.txt',
-    'Jec11_V3_L3Absolute_AK5PFchs.txt',
-    'Jec11_V3_L2L3Residual_AK5PFchs.txt',
-    'Jec11_V3_Uncertainty_AK5PFchs.txt',    
+    'Jec12_V1_L1FastJet_AK5PFchs.txt',
+    'Jec12_V1_L2Relative_AK5PFchs.txt',
+    'Jec12_V1_L3Absolute_AK5PFchs.txt',
+    'Jec12_V1_L2L3Residual_AK5PFchs.txt',
+    'Jec12_V1_Uncertainty_AK5PFchs.txt',    
 ]
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
@@ -100,7 +99,7 @@ process.pfShyftSkim = cms.EDFilter('EDWPlusJetsSelector',
     usePFIso = cms.bool(True),
     eEtCut = cms.double(options.eleEt),
     useVBTFDetIso  = cms.bool(False),
-    jetPtMin = cms.double(30.0),##
+    jetPtMin = cms.double(35.0),##
     minJets = cms.int32(4),
     metMin = cms.double(0.0), 
     doMC = cms.bool( inputDoMC),
@@ -109,7 +108,8 @@ process.pfShyftSkim = cms.EDFilter('EDWPlusJetsSelector',
     jetSmear = cms.double(0.1),
     jecPayloads = cms.vstring( payloads ),
     cutsToIgnore=cms.vstring(inputCutsToIgnore),
-    identifier = cms.string('PF'),  
+    identifier = cms.string('PF'),
+    jecPayloads = cms.vstring( payloads )
     )
                                        )
 

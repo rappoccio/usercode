@@ -145,6 +145,7 @@ else :
 if inputDoMC == False :
     process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( myList )
 
+
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -154,6 +155,13 @@ process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("shyftStudies.root")
                                    )
 
+payloads = [
+    'Jec12_V1_L1FastJet_AK5PFchs.txt',
+    'Jec12_V1_L2Relative_AK5PFchs.txt',
+    'Jec12_V1_L3Absolute_AK5PFchs.txt',
+    'Jec12_V1_L2L3Residual_AK5PFchs.txt',
+    'Jec12_V1_Uncertainty_AK5PFchs.txt'
+]
 #_____________________________________PF__________________________________________________
 
 if options.ttbsmPAT > 0:
@@ -190,7 +198,7 @@ if options.ttbsmPAT > 0:
 		reweightPU3D = cms.bool(True),
 		pileupData = cms.string( pileupDataFile ),
 		pileupMC = cms.string( pileupMCFile ),
-        
+        jecPayloads = cms.vstring( payloads )
 
         
         )                                    

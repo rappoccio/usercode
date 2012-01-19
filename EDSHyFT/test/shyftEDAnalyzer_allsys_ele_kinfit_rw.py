@@ -84,11 +84,12 @@ if len(options.inputFiles) == 0 :
                                 )                           
 
 payloads = [
-    'Jec11_V3_L1FastJet_AK5PFchs.txt',
-    'Jec11_V3_L2Relative_AK5PFchs.txt',
-    'Jec11_V3_L3Absolute_AK5PFchs.txt',
-    'Jec11_V3_L2L3Residual_AK5PFchs.txt',
-    'Jec11_V3_Uncertainty_AK5PFchs.txt',    
+  
+    'Jec12_V1_L1FastJet_AK5PFchs.txt',
+    'Jec12_V1_L2Relative_AK5PFchs.txt',
+    'Jec12_V1_L3Absolute_AK5PFchs.txt',
+    'Jec12_V1_L2L3Residual_AK5PFchs.txt',
+    'Jec12_V1_Uncertainty_AK5PFchs.txt',    
 ]
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
@@ -110,7 +111,7 @@ process.pfShyftSkim = cms.EDFilter('EDWPlusJetsSelector',
     usePFIso = cms.bool(True),
     eEtCut = cms.double(options.eleEt),
     useVBTFDetIso  = cms.bool(False),
-    jetPtMin = cms.double(30.0),##
+    jetPtMin = cms.double(35.0),##
     minJets = cms.int32(4),
     metMin = cms.double(0.0), 
     doMC = cms.bool( inputDoMC),
@@ -208,7 +209,7 @@ process.kinFitTtSemiLepEventTCHEM = cms.EDProducer("TtSemiLepKinFitProducerElect
     metResolutions              = metResolutionPF.functions,
                                         )
 
-process.pileupReweightingProducer = cms.EDProducer("PileupReweightingPoducer",
+process.myProducerLabel = cms.EDProducer("PileupReweightingPoducer",
                                          FirstTime = cms.untracked.bool(False),
                                          PileupMCFile = cms.untracked.string('PUMC_dist_flat10.root'),
                                          PileupDataFile = cms.untracked.string('PUData_finebin_dist.root')
@@ -365,7 +366,7 @@ process.pfShyftSkimJES105.jetScale = cms.double(1.0)
 process.pfShyftSkimJES105.jetUncertainty = cms.double(0.0)
 process.pfShyftSkimJES105.identifier = cms.string('PFJES105')
 
-process.p0 = cms.Path( process.pileupReweightingProducer )
+process.p0 = cms.Path( process.myProducerLabel )
 
 process.p1 = cms.Path( process.pfShyftSkim * (process.kinFitTtSemiLepEventCHI2 * process.tprimeNtupleDumperCHI2 +
                                               process.kinFitTtSemiLepEventTCHEM * process.tprimeNtupleDumperTCHEM +

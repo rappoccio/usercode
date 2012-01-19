@@ -50,7 +50,7 @@ options.register('ignoreTrigger',
                   "Ignore trigger in selection")
 
 options.register('triggerName',
-                 'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3',
+                 'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1',
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.string,
                  "Electron trigger to run")
@@ -88,15 +88,15 @@ if options.ignoreTrigger == 1 :
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-        '/store/user/lpctlbsm/skhalil/SingleElectron/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_9_1_Zhd.root'
+        '/store/user/lpctlbsm/vasquez/SingleElectron/ttbsm_v9_Run2011A-May10ReReco/f8e845a0332c56398831da6c30999af1/ttbsm_42x_data_1_1_wlr.root'
         )
                                 )
 payloads = [
-    'Jec11_V3_L1FastJet_AK5PFchs.txt',
-    'Jec11_V3_L2Relative_AK5PFchs.txt',
-    'Jec11_V3_L3Absolute_AK5PFchs.txt',
-    'Jec11_V3_L2L3Residual_AK5PFchs.txt',
-    'Jec11_V3_Uncertainty_AK5PFchs.txt',    
+    'Jec12_V1_L1FastJet_AK5PFchs.txt',
+    'Jec12_V1_L2Relative_AK5PFchs.txt',
+    'Jec12_V1_L3Absolute_AK5PFchs.txt',
+    'Jec12_V1_L2L3Residual_AK5PFchs.txt',
+    'Jec12_V1_Uncertainty_AK5PFchs.txt',    
 ]    
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
@@ -127,7 +127,7 @@ process.pfShyftSkim =  cms.EDFilter('EDWPlusJetsSelector',
     usePFIso = cms.bool(True),
     useVBTFDetIso  = cms.bool(False),
     eEtCut = cms.double(options.eleEt),
-    jetPtMin = cms.double(30.0),##
+    jetPtMin = cms.double(35.0),##
     minJets = cms.int32(4),
     metMin = cms.double(0.0),
     reweightPU = cms.bool(False),
@@ -137,6 +137,7 @@ process.pfShyftSkim =  cms.EDFilter('EDWPlusJetsSelector',
     sampleName = cms.string(inputSampleName),
     cutsToIgnore=cms.vstring(inputCutsToIgnore),
     identifier = cms.string('PF'),
+    jecPayloads = cms.vstring( payloads )
     )
                                     )
 

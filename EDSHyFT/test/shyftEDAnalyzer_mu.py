@@ -164,6 +164,13 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 # run the trigger on the fly
 process.load('PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff')
 
+payloads = [
+    'Jec12_V1_L1FastJet_AK5PFchs.txt',
+    'Jec12_V1_L2Relative_AK5PFchs.txt',
+    'Jec12_V1_L3Absolute_AK5PFchs.txt',
+    'Jec12_V1_L2L3Residual_AK5PFchs.txt',
+    'Jec12_V1_Uncertainty_AK5PFchs.txt'
+]
 
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 
@@ -193,7 +200,7 @@ if options.ttbsmPAT > 0 and options.use42X > 0:
         sampleName = cms.string(inputSampleName),
         identifier = cms.string('PF'),
         cutsToIgnore=cms.vstring(inputCutsToIgnore),
-        
+        jecPayloads = cms.vstring( payloads )
         
         )
                                         )
@@ -229,7 +236,7 @@ elif options.ttbsmPAT == 0 and options.use42X == 0:
         useTTBSMPat = cms.bool(False),
         sampleName = cms.string(inputSampleName),
         identifier = cms.string('PF'),
-        cutsToIgnore=cms.vstring(inputCutsToIgnore)
+        cutsToIgnore=cms.vstring(inputCutsToIgnore),
         )                                    
                                         )
     

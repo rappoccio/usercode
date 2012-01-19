@@ -92,7 +92,8 @@ if options.ignoreTrigger == 1 :
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-        '/store/user/lpctlbsm/skhalil/SingleElectron/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_9_1_Zhd.root', 
+        'file:///uscms_data/d2/skhalil/SHyFT_backup/CMSSW_4_2_4/src/PhysicsTools/TagAndProbe/test/utilities/mySkim2.root',
+        #'/store/user/lpctlbsm/skhalil/SingleElectron/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_9_1_Zhd.root', 
         )
                                 )
 else :
@@ -125,6 +126,13 @@ from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string(options.outputRootFile)
                                    )
+payloads = [
+    'Jec12_V1_L1FastJet_AK5PFchs.txt',
+    'Jec12_V1_L2Relative_AK5PFchs.txt',
+    'Jec12_V1_L3Absolute_AK5PFchs.txt',
+    'Jec12_V1_L2L3Residual_AK5PFchs.txt',
+    'Jec12_V1_Uncertainty_AK5PFchs.txt'
+]
 
 process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                     shyftAnalysis = inputShyftAnalysis.clone(
@@ -148,7 +156,8 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
     doMC = cms.bool( inputDoMC),
     sampleName = cms.string(inputSampleName),
     identifier = cms.string('PF'),
-    cutsToIgnore=cms.vstring(inputCutsToIgnore),        
+    cutsToIgnore=cms.vstring(inputCutsToIgnore),
+    jecPayloads = cms.vstring( payloads )
     )
                                     )
     
