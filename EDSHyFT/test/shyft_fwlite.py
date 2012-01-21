@@ -2,7 +2,7 @@
 import os
 import glob
 import math
-
+from ROOT import TMath
 from optparse import OptionParser
 
 parser = OptionParser()
@@ -145,8 +145,11 @@ if not options.useData:
     cmass = ROOT.TH1F("cmass", "C Sec Vtx Mass", 40, 0, 10)
     lfmass = ROOT.TH1F("lfmass", "LF Sec Vtx Mass", 40, 0, 10)
 
-ptMu = ROOT.TH1F("ptMu", "p_{T} of Muon", 100, 0., 200.)
-ptEle= ROOT.TH1F("ptEle", "p_{T} of Electron", 100, 0., 200.)
+elePt  = ROOT.TH1F("elePt", "lepton p_{T} (GeV)", 100, 0., 200.)
+eleEta = ROOT.TH1F("eleEta",  "lepton #eta ", 60,-2.5,2.5)
+elePhi = ROOT.TH1F("elePhi", "lepton #phi", 50, -3.2, 3.2)
+elePFIso = ROOT.TH1F("elePFIso", "lepton relative PF isolation", 50, 0.0, 0.2)
+lepJetdR = ROOT.TH1F("lepJetdR", "dR b/w jet and lepton",    32,    0,  3.2)
 ptJet0 = ROOT.TH1F("ptJet0", "p_{T} Of Leading Jet", 40, 0., 600.)
 ptJet1 = ROOT.TH1F("ptJet1", "p_{T} Of 2nd Leading Jet", 40, 0., 400.)
 ptJet2 = ROOT.TH1F("ptJet2", "p_{T} Of 3rd Leading Jet", 30, 0., 300.)
@@ -156,11 +159,13 @@ m3     = ROOT.TH1F("m3", "m3",  60, 0., 600.)
 
 #Special
 nVertices3j1t  = ROOT.TH1F("nVertices3j1t",    "Number of Primmary Vertices, #geq 3jets, #geq 1tag",       25, -0.5, 24.5)
-m3j1t  = ROOT.TH1F("m3j1t", "m3, #geq 3jets, #geq 1tag",  60, 0., 600.)
+elePt3j1t = ROOT.TH1F("elePt3j1t", "lepton P_{T} (GeV), #geq 3jets, #geq 1tag", 40,0.,200.)
+eleEta3j1t = ROOT.TH1F("eleEta3j1t", "lepton #eta (GeV), #geq 3jets, #geq 1tag", 60,-2.5,2.5)
+elePhi3j1t = ROOT.TH1F("elePhi3j1t", "lepton #phi,  #geq 3jets, #geq 1tag", 50, -3.2, 3.2)
+elePFIso3j1t = ROOT.TH1F("elePFIso3j1t", "lepton PF relIso,  #geq 3jets, #geq 1tag", 50, 0.0, 0.2)
 wMT3j1t= ROOT.TH1F("wMT3j1t", "wMT, #geq 3jets, #geq 1tag",  120, 0., 300.)
 hT3j1t = ROOT.TH1F("hT3j1t", "hT, #geq 3jets, #geq 1tag", 120, 0., 1200.)
-elePt3j1t = ROOT.TH1F("elePt3j1t", "electron P_{T} (GeV), #geq 1tag", 40,0.,200.)
-eleEta3j1t = ROOT.TH1F("eleEta3j1t", "electron #eta (GeV), #geq 1tag", 40,0.,2.5)
+m3j1t  = ROOT.TH1F("m3j1t", "m3, #geq 3jets, #geq 1tag",  60, 0., 600.)
 met3j1t = ROOT.TH1F("met3j1t", "MET (GeV), #geq 1tag", 60,0.,300.0)
 
 secvtxMassPlots = []
@@ -231,7 +236,7 @@ for iplot in range(0,len(allVarPlots)) :
 #     Jet energy scale uncertainties       #
 ############################################
 
-jecParStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
+jecParStr = ROOT.std.string('Jec12_V1_Uncertainty_AK5PFchs.txt')
 jecUnc = ROOT.JetCorrectionUncertainty( jecParStr )
 
 
@@ -405,18 +410,18 @@ for event in events:
         electronPts = electronPtHandle.product()
 
     # Get the isolation values if needed
-    if options.useLoose :
-        if muonPts is not None:
-            event.getByLabel (muonPfisoLabel, muonPfisoHandle)
-            if not muonPfisoHandle.isValid():
-                continue
-            muonPfisos = muonPfisoHandle.product()
-        if electronPts is not None:
-            event.getByLabel (electronPfisoLabel, electronPfisoHandle)
-            if not electronPfisoHandle.isValid():
-                print 'here'
-                continue
-            electronPfisos = electronPfisoHandle.product()
+    #if options.useLoose :
+    if muonPts is not None:
+        event.getByLabel (muonPfisoLabel, muonPfisoHandle)
+        if not muonPfisoHandle.isValid():
+            continue
+        muonPfisos = muonPfisoHandle.product()
+    if electronPts is not None:
+        event.getByLabel (electronPfisoLabel, electronPfisoHandle)
+        if not electronPfisoHandle.isValid():
+            print 'here'
+            continue
+        electronPfisos = electronPfisoHandle.product()
 
     # get the PU weight before filling any histogram
     if not options.useData and options.pileupReweight!='unity':
@@ -499,7 +504,7 @@ for event in events:
     taggedJets = []
     met_px = metRaw * math.cos( metPhiRaw )
     met_py = metRaw * math.sin( metPhiRaw )
-    
+
     # Now get the Jets
     event.getByLabel( jetPtLabel, jetPtHandle )
     jetPts = jetPtHandle.product()
@@ -556,7 +561,6 @@ for event in events:
         met_py = met_py - thisJet.Py()
         jets.append( thisJet )#before I append
 
-
     met = math.sqrt(met_px*met_px + met_py*met_py)
     
     #print 'nJets: ', len(jets), 'minJets required : ', minJets
@@ -572,14 +576,14 @@ for event in events:
         muonEtas = muonEtaHandle.product()
         event.getByLabel (muonPhiLabel, muonPhiHandle)
         muonPhis = muonPhiHandle.product()
-        ptMu.Fill( muonPts[0], PUweight )
+        #ptMu.Fill( muonPts[0], PUweight )
        
     if electronPts is not None:
         event.getByLabel (electronEtaLabel, electronEtaHandle)
         electronEtas = electronEtaHandle.product()
         event.getByLabel (electronPhiLabel, electronPhiHandle)
         electronPhis = electronPhiHandle.product()
-        ptEle.Fill( electronPts[0], PUweight )
+        #ptEle.Fill( electronPts[0], PUweight )
          
     # cutting on met after scaling
     if met < metMin :
@@ -609,25 +613,39 @@ for event in events:
     nVertices.Fill(vertices.size(), PUweight)
     
     lepEta = -999.0
-    lepPt  = -999.0
+    lepPt  = -999.0   
+    lepPhi = -999.0
+    lepPFIso = -999.0
+    
     if options.lepType == 0 :
         lepEta = muonEtas[0]
         lepPt  = muonPts[0]
+        lepPhi = muonsPhis[0]
+        lepPFIso = muonPfisos[0]/lepPt
     else :
         lepEta = electronEtas[0]
         lepPt  = electronPts[0]
+        lepPhi = electronPhis[0]
+        
+        lepPFIso = electronPfisos[0]/lepPt
+        #print 'lepPFIso = ', lepPFIso, 'lep Pt = ', lepPt, 'iso = ', electronPfisos[0]
+
+    elePt.Fill( lepPt, PUweight )
+    eleEta.Fill( lepEta, PUweight )
+    elePhi.Fill( lepPhi, PUweight )
+    elePFIso.Fill( lepPFIso, PUweight)
     
     hT = lepPt + met
     #print 'hT after met ', hT
-      
-    lep_px = lepPt * math.cos( lepEta )
-    lep_py = lepPt * math.sin( lepEta )
+    
+    lep_px = lepPt * math.cos( lepPhi )
+    lep_py = lepPt * math.sin( lepPhi )
     wPt = lepPt + met
     wPx = lep_px + met_px
     wPy = lep_py + met_py
     wMT = math.sqrt(wPt*wPt-wPx*wPx-wPy*wPy)
-    #print 'wMT = ', wMT 
-    
+    #print 'wMT = ', wMT
+
     ptJet0.Fill(jets[0].Pt(), PUweight )
     if njets>1:
         ptJet1.Fill(jets[1].Pt(), PUweight ) 
@@ -638,28 +656,21 @@ for event in events:
     if njets>4:
         for j in range(4, njets):
             ptJet4.Fill(jets[j].Pt(), PUweight )# loop over 5th to njets
-    
+
     #M3 for >=3 jets
     M3 = 0.0
     highestPt = 0.0
-    jets_P4 = []
     if njets >= 3:
-        for ijet in range(0, njets) :
-            jets_P4.append(ROOT.TLorentzVector())
-            x = jets_P4[-1]
-            x.SetPtEtaPhiM(jetPts[ijet],
-                           jetEtas[ijet],
-                           jetPhis[ijet],
-                           jetMasses[ijet])
         for j in range(0, njets-2):
             for k in range(j+1, njets-1):
                 for l in range(k+1, njets):
-                    threeJets = jets_P4[j] + jets_P4[k] + jets_P4[l]
+                    threeJets = jets[j] + jets[k] + jets[l]
                     if highestPt < threeJets.Perp():
                         M3 = threeJets.M()
                         highestPt=threeJets.Perp()
-    m3.Fill(M3)
+    m3.Fill(M3, PUweight)
     #print 'M3 = ', M3
+    
     # Now get the number of SSVHEM tags and vertex mass.
     # If using MC, get the jet flavor also
     event.getByLabel (jetSSVHELabel, jetSSVHEHandle)
@@ -681,6 +692,7 @@ for event in events:
     sumEt = 0.
     sumPt = 0.
     sumE = 0.
+    deltaR = 5.0
     jet1Pt = -1.0
     effs = []
     # The vertex mass for the event is the vertex mass
@@ -692,8 +704,14 @@ for event in events:
         # all jets above certain threshold
         if jetP4.Pt() < jetPtMin :
             continue
-        if jet1Pt < 0.0 :
-            jet1Pt = jetP4.Pt()
+        #if jet1Pt < 0.0 :
+        #    jet1Pt = jetP4.Pt()
+        deta = jetP4.Eta() - lepEta
+        dphi = jetP4.Phi() - lepPhi
+        if dphi >= math.pi: dphi -= 2*math.pi
+        elif dphi < -math.pi: dphi += 2*math.pi    
+        deltaR = TMath.Min ( math.sqrt(deta*deta + dphi*dphi), deltaR)
+        
         hT    = hT + jetP4.Et()    
         sumEt = sumEt + jetP4.Et()
         sumPt = sumPt + jetP4.Pt()
@@ -750,7 +768,8 @@ for event in events:
 
     nJets.Fill( njets, PUweight )
     nTags.Fill( ntags, PUweight )
-         
+    lepJetdR.Fill( deltaR, PUweight)
+    
     if njets > maxJets :
         njets = maxJets
         
@@ -778,11 +797,13 @@ for event in events:
 
     if njets >= 3 and ntags >= 1 :
         nVertices3j1t.Fill(vertices.size(), PUweight)
-        m3j1t.Fill(M3, PUweight)
-        wMT3j1t.Fill(wMT, PUweight)
-        hT3j1t.Fill(hT, PUweight)
         elePt3j1t.Fill(lepPt, PUweight)
         eleEta3j1t.Fill(lepEta, PUweight)
+        elePhi3j1t.Fill(lepPhi, PUweight)
+        elePFIso3j1t.Fill(lepPFIso, PUweight)
+        wMT3j1t.Fill(wMT, PUweight)
+        hT3j1t.Fill(hT, PUweight)
+        m3j1t.Fill(M3, PUweight)        
         met3j1t.Fill(met, PUweight)
         
     if options.useData :
