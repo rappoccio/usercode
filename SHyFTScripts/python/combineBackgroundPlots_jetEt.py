@@ -92,8 +92,8 @@ parser.add_option('--wjetsQ2Var', metavar='V', type='string', action='store',
 
 
 
-parser.add_option('--lum', metavar='L', action='store',
-                  default=1087,
+parser.add_option('--lum', metavar='L', type='float', action='store',
+                  default=2107,
                   dest='lum',
                   help='Luminosity of the data')
 
@@ -128,7 +128,10 @@ from addSimple import *
 # ---------------------------------------------
 # Get the files from whatever samples you want to stitch
 # ---------------------------------------------
-f_ttbar = TFile('TTJets_TuneZ2_7TeV-madgraph-tauola_'+inFileEnd+'.root')
+f_ttbar = TFile('TTJets_TuneZ2_7TeV-madgraph-tauola_'+inFileEnd+'.root')	## Summer11
+#f_ttbar = TFile('TTJets_TuneD6T_7TeV-madgraph-tauola_ttbsm_415_v7.root')	## Spring11 central
+#f_ttbar = TFile('TTJets_TuneD6T_mass166_5_7TeV-madgraph-tauola_ttbsm_415_v7.root')	## Spring11 mass166
+#f_ttbar = TFile('TTJets_TuneD6T_mass178_5_7TeV-madgraph-tauola_ttbsm_415_v7.root')	## Spring11 mass178
 for item in f_ttbar.GetListOfKeys() :
     print item.GetName()
 
@@ -144,9 +147,11 @@ f_stbar_tW = TFile('Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_'+inFileEnd+'.r
 
 if options.wjetsQ2Var is None :
     f_wjets = TFile('WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_'+inFileEnd+'.root')
+    #f_wjets = TFile('WJets_TuneD6T_7TeV-madgraph-tauola_shyft_387_v1.root')	## Fall10
 #f_vqq   = TFile('VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola_'+inFileEnd+'.root')
 else :
-    f_wjets = TFile('WJets_TuneD6T_' + options.wjetsQ2Var + '_7TeV-madgraph-tauola_'+inFileEnd+'.root')
+    #f_wjets = TFile('WJets_TuneD6T_' + options.wjetsQ2Var + '_7TeV-madgraph-tauola_'+inFileEnd+'.root')
+	f_wjets = TFile('WJetsToLNu_TuneZ2_' + options.wjetsQ2Var + '_7TeV-madgraph-tauola_'+inFileEnd+'.root')
 #f_vqq   = TFile('VQQJetsToLL_TuneD6T_' + options.wjetsQ2Var + '_7TeV-madgraph-tauola_'+inFileEnd+'.root')
 
 
@@ -208,20 +213,27 @@ n_st_s  =  259971
 n_st_t  =  3900171
 n_st_tW =  814390
 n_stbar_s  =  137980
-n_stbar_t  =  1896207	# 1944826
+n_stbar_t  =  1944826	# 1944826
 n_stbar_tW =  809984
-n_zjets =  32512091 ##Summer11
-n_ttbar =  3688248  ##Summer11
+n_zjets =  36277961 ##Summer11
+n_ttbar =  3701947  ##Summer11
+#n_ttbar =  1286491  ##Spring11 central
+#n_ttbar =  526978   ##Spring11 mass166
+#n_ttbar =  483103   ##Spring11 mass178
 
 if options.wjetsQ2Var is None :
-    n_wjets =  49484941 ##Summer11
-    n_vqq   =   720613
+	n_wjets = 77105816
+	#n_wjets =  49484941 ##Summer11
+	#n_wjets = 14805546 ##Fall10
+	n_vqq   =   720613
 elif options.wjetsQ2Var == 'scaledown' :
-    n_wjets =  4912028
-    n_vqq   =   800375
+	n_wjets = 10022324
+    #n_wjets =  5084953 ##Fall10
+	n_vqq   =   800375
 elif options.wjetsQ2Var == 'scaleup' :
-    n_wjets =  6218255
-    n_vqq   =   742953
+	n_wjets = 9784907 
+	#n_wjets =  6218255 ##Fall10
+	n_vqq   =   742953
 else :
     print 'ERROR! Cannot understand ' + options.wjetsQ2Var
     exit()
@@ -425,7 +437,7 @@ for ijet in range(1,maxJets) :
         if itag > ijet :
             continue
         tagDist = tagDists[itag]
-        hist = addSingleTops( singleTopLabel, lum, histdir, templatedir, tagDist+'_'+str(ijet)+'j_'+str(itag)+'t', 1.0,
+        hist = addSingleTops( singleTopLabel, lum, histdir, histdir, tagDist+'_'+str(ijet)+'j_'+str(itag)+'t', 1.0,
                               singleTopSamples)
         singleTopHists.append(hist)
 
@@ -521,7 +533,7 @@ for isample in range(0,len(quicksamples)) :
             if itag > ijet :
                 continue
             if quicksamples[isample][0] is not 'Data_' :
-                hist = addSimple( lum, histdir, templatedir, tagDists[itag]+'_'+str(ijet)+'j_'+str(itag)+'t', 1.0,
+                hist = addSimple( lum, histdir, histdir, tagDists[itag]+'_'+str(ijet)+'j_'+str(itag)+'t', 1.0,
                                   quicksamples[isample])
             else :
                 hist = addSimple( lum, histdirData, None, tagDists[itag]+'_'+str(ijet)+'j_'+str(itag)+'t', 1.0,
