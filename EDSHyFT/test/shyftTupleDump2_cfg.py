@@ -296,7 +296,11 @@ process.pfShyftTupleElectrons = cms.EDProducer(
             ),
         cms.PSet(
             tag = cms.untracked.string("pfiso"),
-            quantity = cms.untracked.string("userIsolation('PfAllParticleIso')")
+            quantity = cms.untracked.string("userIsolation('pat::PfChargedHadronIso') + " +
+                                            "userIsolation('pat::PfNeutralHadronIso') + " +
+                                            "userIsolation('pat::PfGammaIso')"
+                                            )
+            #quantity = cms.untracked.string("userIsolation('PfAllParticleIso')")
             ),
         )  
     )
