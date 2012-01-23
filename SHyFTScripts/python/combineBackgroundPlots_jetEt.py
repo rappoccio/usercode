@@ -170,7 +170,7 @@ if  (options.dataFile.find('pf') >= 0 and options.dataQCDFile.find('pf') == -1) 
 # ---------------------------------------------
 lum = options.lum
 
-globalSF = 0.934 # From muon trigger efficiency
+globalSF = 0.914 # From muon trigger efficiency
 
 # ---------------------------------------------
 # Leading order cross sections (pb)
