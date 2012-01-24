@@ -69,6 +69,7 @@ SHyFT::SHyFT(const edm::ParameterSet& iConfig, TFileDirectory& iDir) :
    // How about whatever we create and fill separately for +/- charge we also fill for the combined charges 
   TFileDirectory *forBookingDir[7]={&subdirEB_plus,&subdirEB_minus,&subdirEE_plus,&subdirEE_minus,&theDir,&subdirMU_plus,&subdirMU_minus};
   
+	if ( reweightPU3D_ ) reweightPU_ = false;
 
   if ( simpleSFCalc_) 
      gRandom->SetSeed( 960622508 );
@@ -1373,9 +1374,10 @@ void SHyFT::weightPU( edm::EventBase const & iEvent) {
 void SHyFT::initializePU3DWeight() {
 	std::cout << "PileupMCFile: " << pileupMC_ << std::endl;
 	std::cout << "PileupDataFile: " << pileupData_ << std::endl;
-	
-	Lumi3DWeights_ = edm::Lumi3DReWeighting( pileupMC_ , pileupData_ , "pileup", "pileup");
-	Lumi3DWeights_.weight3D_init( 1. );
+	Lumi3DWeights_ = edm::Lumi3DReWeighting( pileupMC_ , pileupData_ , "pileup", "pileup", "");
+	if (!puUp_ && !puDn_) Lumi3DWeights_.weight3D_init( 1.044 );
+	if (puUp_) Lumi3DWeights_.weight3D_init( 1.080 );
+	if (puDn_) Lumi3DWeights_.weight3D_init( 0.961 );
 }
 void SHyFT::weight3DPU( edm::EventBase const & iEvent) {
 	double MyWeight3D = Lumi3DWeights_.weight3D( (iEvent) );
