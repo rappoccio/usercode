@@ -1374,8 +1374,7 @@ void SHyFT::weightPU( edm::EventBase const & iEvent) {
 void SHyFT::initializePU3DWeight() {
 	std::cout << "PileupMCFile: " << pileupMC_ << std::endl;
 	std::cout << "PileupDataFile: " << pileupData_ << std::endl;
-	
-	Lumi3DWeights_ = edm::Lumi3DReWeighting( pileupMC_ , pileupData_ , "pileup", "pileup");
+	Lumi3DWeights_ = edm::Lumi3DReWeighting( pileupMC_ , pileupData_ , "pileup", "pileup", "");
 	if (!puUp_ && !puDn_) Lumi3DWeights_.weight3D_init( 1.044 );
 	if (puUp_) Lumi3DWeights_.weight3D_init( 1.080 );
 	if (puDn_) Lumi3DWeights_.weight3D_init( 0.961 );
