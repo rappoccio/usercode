@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Mon Jan 17 21:44:07 CST 2011
-// $Id: TTBSMProducer.cc,v 1.11 2011/12/21 20:36:12 guofan Exp $
+// $Id: TTBSMProducer.cc,v 1.12 2011/12/21 20:46:42 guofan Exp $
 //
 //
 
@@ -42,6 +42,7 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 
 
 namespace LHAPDF {
@@ -165,6 +166,7 @@ TTBSMProducer::TTBSMProducer(const edm::ParameterSet& iConfig) :
   produces<unsigned int>    ("npv");
   produces<int>    ("npvTrue");
   produces<double>   ("mttgen");
+  produces<std::vector<reco::Candidate::PolarLorentzVector> > ("pfMET");
 
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4Hemis0");
   produces<std::vector<reco::Candidate::PolarLorentzVector> > ("wTagP4Hemis1");
@@ -235,6 +237,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<double>               rho( new double(-1.0) );
   std::auto_ptr<double>               weight( new double(1.0) );
   std::auto_ptr<double>               mttgen( new double(1.0) );
+  std::auto_ptr<p4_vector>    pfMET( new p4_vector() );
 
   //The duplicate quantities by hemisphere
   std::auto_ptr<p4_vector> topTagP4Hemis0 ( new p4_vector() );
@@ -305,6 +308,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<std::vector<pat::Jet> > h_wTag;
   edm::Handle<std::vector<pat::Jet> > h_topTag;
   edm::Handle<pat::TriggerEvent>      h_trig;
+  edm::Handle<std::vector<pat::MET> > h_met;
   edm::Handle<double> h_rho;
 
   iEvent.getByLabel( rhoSrc_, h_rho );
@@ -313,9 +317,17 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   iEvent.getByLabel( wTagSrc_, h_wTag );
   iEvent.getByLabel( topTagSrc_, h_topTag );
+  iEvent.getByLabel( "patMETsPFlow", h_met );
 
   pat::strbitset wTagRet = wTagFunctor_.getBitTemplate();
   pat::strbitset topTagRet = topTagFunctor_.getBitTemplate();
+  for ( std::vector<pat::MET>::const_iterator metBegin = h_met->begin(),
+          metEnd = h_met->end(), imet = metBegin; imet != metEnd; ++imet )
+  {
+    pfMET->push_back(imet->polarP4());
+
+  }
+
   for ( std::vector<pat::Jet>::const_iterator jetBegin = h_wTag->begin(),
 	  jetEnd = h_wTag->end(), ijet = jetBegin; ijet != jetEnd; ++ijet ) {
 
@@ -660,6 +672,7 @@ TTBSMProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put( npvTrue, "npvTrue");
   iEvent.put( pdf_weights, "pdfWeights");
   iEvent.put( mttgen, "mttgen" );
+  iEvent.put( pfMET, "pfMET" );
 
   iEvent.put( topTagPartonFlavour, "topTagPartonFlavour");
   iEvent.put( topTagPartonFlavour0, "topTagPartonFlavour0");
