@@ -177,7 +177,7 @@ if options.ttbsmPAT > 0:
         muPlusJets = cms.bool( True ),        
         jetPtMin = cms.double(30.0),##
         minJets = cms.int32(5),
-        metMin = cms.double(20.0),
+        metMin = cms.double(30.0),
 	muPtMin = cms.double(35.0),
 #        eEtCut = cms.double(options.eleEt),
         use42X  = cms.bool(use42XMC),
@@ -216,7 +216,7 @@ elif options.ttbsmPAT == 0 :
         muPlusJets = cms.bool(True),
         jetPtMin = cms.double(30.0),##
         minJets = cms.int32(5),
-        metMin = cms.double(20.0),
+        metMin = cms.double(30.0),
         eEtCut = cms.double(options.eleEt),
         heavyFlavour = cms.bool( useFlavorHistory ),
         doMC = cms.bool( inputDoMC),

@@ -190,7 +190,7 @@ if options.ttbsmPAT > 0 and options.use42X > 0:
         pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
         jetPtMin = cms.double(30.0),##
         minJets = cms.int32(5),
-        metMin = cms.double(20.0),
+        metMin = cms.double(30.0),
 	muPtMin = cms.double(35.0),
 	muTrig = cms.string(options.triggerName),
         use42X  = cms.bool(True),
@@ -229,7 +229,7 @@ elif options.ttbsmPAT == 0 and options.use42X == 0:
         useAntiSelection = cms.bool(False),
         jetPtMin = cms.double(30.0),##
         minJets = cms.int32(5),
-        metMin = cms.double(20.0),
+        metMin = cms.double(30.0),
         useData = cms.bool( not inputDoMC ),
         heavyFlavour = cms.bool( useFlavorHistory ),
         doMC = cms.bool( inputDoMC),
