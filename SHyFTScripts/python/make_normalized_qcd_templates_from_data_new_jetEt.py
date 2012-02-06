@@ -166,9 +166,9 @@ else :
     for ijet in range(1,6) :
         for itag in [0,1] :
             n_a = histsBkg[itag][ijet-1].Integral(1,    8, 9, 41)
-            n_b = histsBkg[itag][ijet-1].Integral(9,121, 9, 41)
+            n_b = histsBkg[itag][ijet-1].Integral(13,121, 9, 41)
             n_c = histsSig[itag][ijet-1].Integral( 1,    8, 1, 5)
-            n_d = histsSig[itag][ijet-1].Integral( 9,121, 1, 5)
+            n_d = histsSig[itag][ijet-1].Integral( 13,121, 1, 5)
             if n_a > 0 and n_b > 0 and n_c > 0 :
                 n_pred = float( n_b ) * float( n_c ) / float( n_a )            
                 dn_pred = n_pred * sqrt( 1/n_a + 1/n_b + 1/n_c)
