@@ -1,5 +1,36 @@
 import FWCore.ParameterSet.Config as cms
-import sys
+import sys, os
+import FWCore.ParameterSet.VarParsing as VarParsing
+options = VarParsing.VarParsing()
+
+allowedOptions = {}
+
+options.register('spectra',
+	         '',
+		 VarParsing.VarParsing.multiplicity.singleton,
+	         VarParsing.VarParsing.varType.string,
+		 "Pt-spectra as add-on in the OutName"
+	        )
+		
+allowedOptions['spectra'] = ['15to30','30to50','50to80','80to120','120to170','170to300','300to470','470to600','600to800','800to1000','15to3000_Flat']
+
+options.register('datasample',
+	         '',
+		 VarParsing.VarParsing.multiplicity.singleton,
+	         VarParsing.VarParsing.varType.string,
+		 "Type of the datasample"
+	        )
+		
+allowedOptions['datasample'] = ['QCD','DYToMuMu']
+
+options.register('tightSel',
+	         True,
+		 VarParsing.VarParsing.multiplicity.singleton,
+	         VarParsing.VarParsing.varType.bool,
+		 "Tracking Particles tight selection"
+	        ) 
+		
+options.parseArguments()
 
 process = cms.Process("JetAnlzr")
 
@@ -10,20 +41,30 @@ process.source = cms.Source("PoolSource",
 )
 		
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(5)
+    input = cms.untracked.int32(0)
 )
 		
-Outfile = ""
-if len(sys.argv)>2:
-    Outfile= "JetAnlzr_" + str(sys.argv[2]) + ".root"
-else:
-    Outfile= "JetAnlzr.root"
+Outfile = "JetAnlzr"
 
+if options.datasample:
+    if not str(options.datasample) in allowedOptions['datasample']:
+        print " " + str(options.datasample) + " cant be found in the allowed values for datasample"
+    else:
+	Outfile += "_" + str(options.datasample)
+        				
+if options.spectra:
+    if not str(options.spectra) in allowedOptions['spectra']:
+        print " " + str(options.spectra) + " cant be found in the allowed values for spectra"
+    else:
+	Outfile += "_Pt-" + str(options.spectra)
+	    
+Outfile += ".root"
+ 	
 process.TFileService = cms.Service('TFileService',
     fileName = cms.string(Outfile),
     closeFileFast = cms.untracked.bool(True),
 )
-    
+
 print " Outfile set to " + Outfile
 		
 ### conditions
@@ -47,8 +88,9 @@ from MGeisler.TrackValidator.TrackingParticleSelection_cfi import *
 ########### track selection configuration ########
 process.cutsRecoTracks.minRapidity = cms.double(-2.5)
 process.cutsRecoTracks.maxRapidity = cms.double(2.5)
-		
-TightSelection=False
+
+TightSelection = options.tightSel
+	
 
 if TightSelection:
     print " Tight Track selection is used"
