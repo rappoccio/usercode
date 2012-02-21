@@ -44,6 +44,12 @@ parser.add_option('--noMET', metavar='F', action='store_true',
                   dest='noMET',
                   help='no MET cut')
 
+# invert MET cut
+parser.add_option('--invMET', metavar='F', action='store_true',
+                  default=False,
+                  dest='invMET',
+                  help='invert MET cut')
+
 # Using data or not. For MC, truth information is accessed.
 parser.add_option('--useData', metavar='F', action='store_true',
                   default=False,
@@ -134,7 +140,7 @@ print "Creating histograms"
 nEvents    = ROOT.TH1F("nEvents",      "Number of Events;N_{events};Number",                          5, -0.5,  4.5 )
 nMuons     = ROOT.TH1F("nMuons",       "Number of Muons, p_{T} > 35 GeV;N_{Muons};Number",            5, -0.5,  4.5 )
 nElectrons = ROOT.TH1F("nElectrons",   "Number of Electrons, p_{T} > 35 GeV;N_{Electrons};Number",    5, -0.5,  4.5 )
-nMETs      = ROOT.TH1F("nMET",         "MET > 20 GeV;MET;Events/5 GeV",                               60, 0,    300 )
+nMETs      = ROOT.TH1F("nMET",         "MET > 20 GeV;MET;Events/5 GeV",                               120, 0,    300 )
 nJets      = ROOT.TH1F("nJets",        "Number of Jets, p_{T} > 35 GeV;N_{Jets};Number",              20, -0.5, 19.5 )
 nJets3     = ROOT.TH1F("nJets3",       "Number of #geq 3 Jets, p_{T} > 35 GeV;N_{Jets};Number",       20, -0.5, 19.5 )
 nTags      = ROOT.TH1F("nTags",        "Number of Tags",                                              3,     0,  3   )  
@@ -159,14 +165,14 @@ m3     = ROOT.TH1F("m3", "m3",  60, 0., 600.)
 
 #Special
 nVertices3j1t  = ROOT.TH1F("nVertices3j1t",    "Number of Primmary Vertices, #geq 3jets, #geq 1tag",       25, -0.5, 24.5)
-elePt3j1t = ROOT.TH1F("elePt3j1t", "lepton P_{T} (GeV), #geq 3jets, #geq 1tag", 40,0.,200.)
-eleEta3j1t = ROOT.TH1F("eleEta3j1t", "lepton #eta (GeV), #geq 3jets, #geq 1tag", 60,-2.5,2.5)
+elePt3j1t = ROOT.TH1F("elePt3j1t", "lepton P_{T} (GeV), #geq 3jets, #geq 1tag", 100,0.,200.)
+eleEta3j1t = ROOT.TH1F("eleEta3j1t", "lepton #eta (GeV), #geq 3jets, #geq 1tag", 60,-3.0,3.0)
 elePhi3j1t = ROOT.TH1F("elePhi3j1t", "lepton #phi,  #geq 3jets, #geq 1tag", 50, -3.2, 3.2)
 elePFIso3j1t = ROOT.TH1F("elePFIso3j1t", "lepton PF relIso,  #geq 3jets, #geq 1tag", 50, 0.0, 0.2)
 wMT3j1t= ROOT.TH1F("wMT3j1t", "wMT, #geq 3jets, #geq 1tag",  120, 0., 300.)
 hT3j1t = ROOT.TH1F("hT3j1t", "hT, #geq 3jets, #geq 1tag", 120, 0., 1200.)
 m3j1t  = ROOT.TH1F("m3j1t", "m3, #geq 3jets, #geq 1tag",  60, 0., 600.)
-met3j1t = ROOT.TH1F("met3j1t", "MET (GeV), #geq 1tag", 60,0.,300.0)
+met3j1t = ROOT.TH1F("met3j1t", "MET (GeV), #geq 1tag", 120,0.,300.0)
 
 secvtxMassPlots = []
 lepEtaPlots = []
@@ -196,12 +202,11 @@ allVarPlots = [
 names = ['secvtxMass','lepEta','lepPt', 'centrality','sumEt', 'MET', 'wMT', 'hT']
 titles = ['SecVtx Mass','Lepton #eta', 'Lepton pt', 'Centrality','#sum E_{T}','MET', 'M_{WT}', 'hT']
 bounds = [ [40,0.,10.],
-           [40,0.,2.5],
-           [40,0.,200],
-           [40,0.,1.0],
-           [50,0.,500.],
-           #[50,0.,500.],
-           [60,0.,300.],
+           [30,0.,3.0],
+           [100,0.,200],
+           [120,0.,1.2],
+           [100,0.,1000.],
+           [120,0.,300.],
            [120,0.,300.],
            [120,0.,1200.]
            ]
@@ -246,7 +251,6 @@ jecUnc = ROOT.JetCorrectionUncertainty( jecParStr )
 ############################################
 
 # Kinematic cuts:
-#jetPtMin = 30.0
 looseMuonIsoMax = 0.2
 looseElectronIsoMax = 0.2
 ssvheCut = 1.74
@@ -255,7 +259,7 @@ ssvheCut = 1.74
 if options.lepType == 0 :
     muonPtMin = 35.0
     electronPtMin = 20.0
-    jetPtMin = option.jetPt
+    jetPtMin = options.jetPt
     metMin = 20.0
     lepStr = 'Mu'
 else:
@@ -586,8 +590,12 @@ for event in events:
         #ptEle.Fill( electronPts[0], PUweight )
          
     # cutting on met after scaling
-    if met < metMin :
+    if not options.invMET and met < metMin :
         continue
+    elif options.invMET and met >= metMin:
+        #print 'met = ', met, 'minMin = ',metMin 
+        continue
+    
     cutFlow[3][0] += 1
     nMETs.Fill(met, PUweight)
     
