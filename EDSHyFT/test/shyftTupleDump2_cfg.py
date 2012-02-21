@@ -31,6 +31,12 @@ options.register('useLooseElectrons',
                  VarParsing.varType.int,
                  "Add loose electron collection (1) or not (0)")
 
+options.register('useLooseMuons',
+                 0,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
+                 "Add loose muon collection (1) or not (0)")
+
 options.register('triggerName',
                  'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1',
                  VarParsing.multiplicity.singleton,
@@ -59,17 +65,23 @@ else:
 
 import sys
 
-process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring(
-    'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/TTJets_TuneZ2_7TeV-madgraph-tauola/ttbsm_v9_Summer11-PU_S4_START42_V11-v1/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_9_1_7Fg.root'
-    #'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/dstrom/SingleElectron/SingleElectron_Run2011A-PromptReco/f8e845a0332c56398831da6c30999af1/ttbsm_42x_data_9_1_PZg.root'
+if useData:
+    inputFiles = [
+        'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/dstrom/SingleElectron/SingleElectron_Run2011A-PromptReco/f8e845a0332c56398831da6c30999af1/ttbsm_42x_data_9_1_PZg.root'
+        #'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/SingleMu/ttbsm_v9_Run2011A-PromptReco-v4/f8e845a0332c56398831da6c30999af1/ttbsm_42x_data_326_1_ZF4.root'
+        ]
 
-)
+else :
+    inputFiles = [
+        'dcap:///pnfs/cms/WAX/11//store/user/lpctlbsm/srappocc/TTJets_TuneZ2_7TeV-madgraph-tauola/ttbsm_v9_Summer11-PU_S4_START42_V11-v1/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_9_1_7Fg.root'
+        ]
+
+process.source = cms.Source("PoolSource",
+                                fileNames = cms.untracked.vstring( inputFiles )
 )
 
 if len(options.inputFiles) > 0 :
     process.source.fileNames = options.inputFiles
-
 
 
 payloads = [
@@ -79,7 +91,6 @@ payloads = [
     'Jec12_V1_L2L3Residual_AK5PFchs.txt',
     'Jec12_V1_Uncertainty_AK5PFchs.txt'
 ]
-
 
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
@@ -113,6 +124,26 @@ process.pfShyftProducerMu = cms.EDFilter('EDSHyFTSelector',
         jecPayloads = cms.vstring( payloads )
         )
         )
+process.pfShyftProducerMuLoose = cms.EDFilter('EDSHyFTSelector',
+                                              shyftSelection = shyftSelectionInput.clone(
+                                                jetSrc = cms.InputTag('goodPatJetsPFlow'),
+                                                muonSrc = cms.InputTag('selectedPatMuonsLoosePFlow'),
+                                                electronSrc = cms.InputTag('selectedPatElectronsLoosePFlow'),
+                                                ePlusJets = cms.bool( False ),
+                                                muPlusJets = cms.bool( True ),
+                                                jetPtMin = cms.double(30.0),##
+                                                minJets = cms.int32(1),
+                                                metMin = cms.double(0.0),
+                                                muPtMin = cms.double(35.0),
+                                                identifier = cms.string('PFMuLoose'),
+                                                cutsToIgnore=cms.vstring( ['Trigger','== 1 Tight Lepton','== 1 Tight Lepton, Mu Veto','== 1 Lepton'] ),
+                                                useData = cms.bool(useData),
+                                                jetSmear = cms.double(0.0),
+                                                jecPayloads = cms.vstring( payloads ),
+                                                removeLooseLep = cms.bool(True)
+                                                )
+                                            )
+process.pfShyftProducerMuLoose.shyftSelection.muonIdTight.cutsToIgnore.append('PFIso')
 
 process.pfShyftProducerEle = cms.EDFilter('EDSHyFTSelector',
                                     shyftSelection = shyftSelectionInput.clone(
@@ -213,6 +244,9 @@ if not options.useData :
             )
     )
 
+process.pfShyftTupleJetsMuLoose = process.pfShyftTupleJetsMu.clone(
+    src = cms.InputTag("pfShyftProducerMuLoose", "jets"),
+    )
 
 process.pfShyftTupleJetsEle = process.pfShyftTupleJetsMu.clone(
     src = cms.InputTag("pfShyftProducerEle", "jets"),
@@ -250,6 +284,9 @@ process.pfShyftTupleMuons = cms.EDProducer(
         )  
     )
 
+process.pfShyftTupleMuonsLoose = process.pfShyftTupleMuons.clone(
+    src = cms.InputTag("pfShyftProducerMuLoose", "muons")
+    )
 
 process.pfShyftTupleMETMu = cms.EDProducer(
     "CandViewNtpProducer", 
@@ -266,6 +303,10 @@ process.pfShyftTupleMETMu = cms.EDProducer(
             quantity = cms.untracked.string("phi")
             )
         )  
+    )
+
+process.pfShyftTupleMETMuLoose = process.pfShyftTupleMETMu.clone(
+    src = cms.InputTag("pfShyftProducerMuLoose", "MET")
     )
 
 process.pfShyftTupleMETEle = process.pfShyftTupleMETMu.clone(
@@ -300,7 +341,6 @@ process.pfShyftTupleElectrons = cms.EDProducer(
                                             "userIsolation('pat::PfNeutralHadronIso') + " +
                                             "userIsolation('pat::PfGammaIso')"
                                             )
-            #quantity = cms.untracked.string("userIsolation('PfAllParticleIso')")
             ),
         )  
     )
@@ -310,21 +350,11 @@ process.pfShyftTupleElectronsLoose = process.pfShyftTupleElectrons.clone(
     )
 
 
-## process.PUNtupleDumper = cms.EDProducer(
-##     "PUNtupleDumper",
-##     PUscenario = cms.string("42X")
-##     )
-
 process.PUNtupleDumper = cms.EDProducer("PileupReweightingPoducer",
                                          FirstTime = cms.untracked.bool(True),
                                          PileupMCFile = cms.untracked.string('PUMC_dist_flat10.root'),
                                          PileupDataFile = cms.untracked.string('Cert_160404-173692_Run2011A_pileupTruth_v2_finebin.root')
 )
-
-## if not options.useData:
-##     process.p0 = cms.Path(
-##         process.PUNtupleDumper
-##         )
 
 if not options.useData:
     process.p0 = cms.Path( process.PUNtupleDumper )
@@ -351,6 +381,8 @@ if options.usePDFs :
     process.p2 += process.pdfWeightProducer
 
 process.p3 = cms.Path()
+process.p4 = cms.Path()
+
 if options.useLooseElectrons:
     process.p3 = cms.Path(
         process.pfShyftProducerEleLoose*
@@ -358,7 +390,13 @@ if options.useLooseElectrons:
         process.pfShyftTupleElectronsLoose*
         process.pfShyftTupleMETEleLoose
         )
-        
+if options.useLooseMuons :
+    process.p4 = cms.Path(
+        process.pfShyftProducerMuLoose*
+        process.pfShyftTupleJetsMuLoose*
+        process.pfShyftTupleMuonsLoose*
+        process.pfShyftTupleMETMuLoose
+        )        
 
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
@@ -366,16 +404,13 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string("shyftDump.root"),
-                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p1','p2','p3') ),
+                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p1','p2','p3','p4') ),
                                outputCommands = cms.untracked.vstring('drop *',
-                                                                      #'keep *_pfShyftProducer_*_*',
-                                                                      #'keep *_PUNtupleDumper_*_*', ##old code
                                                                       'keep *_*_pileupWeights_*',
                                                                       'keep *_pfShyftTuple*_*_*',
                                                                       'keep *_pdfWeightProducer_*_*',
                                                                       'keep PileupSummaryInfos_*_*_*',
-                                                                      'keep *_goodOfflinePrimaryVertices_*_*',
-                                                                      #'keep *_kinFitTtSemiLepEvent_*_*'
+                                                                      'keep *_goodOfflinePrimaryVertices_*_*'
                                                                       ) 
                                )
 process.outpath = cms.EndPath(process.out)
