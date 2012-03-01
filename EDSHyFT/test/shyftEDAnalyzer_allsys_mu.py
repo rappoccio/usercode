@@ -179,6 +179,8 @@ if options.ttbsmPAT > 0:
         lfEffScale = cms.double(1.00),
         jetSmear = cms.double(0.1),
         cutsToIgnore=cms.vstring(inputCutsToIgnore),
+        reweightPU = cms.bool(True),
+	reweightPU3D = cms.bool(False),
         jecPayloads = cms.vstring( payloads )
         
 
@@ -475,7 +477,7 @@ process.pfShyftAnaPUdown = process.pfShyftAna.clone(
 
 process.pfShyftAnaNoPUReweight = process.pfShyftAna.clone(
 	shyftAnalysis = process.pfShyftAna.shyftAnalysis.clone(
-		reweightPU_ = cms.bool(False),
+		reweightPU = cms.bool(False),
 		identifier = cms.string('PFNoPUReweighting')
 		)
 	)
