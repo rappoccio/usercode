@@ -174,6 +174,7 @@ hT3j1t = ROOT.TH1F("hT3j1t", "hT, #geq 3jets, #geq 1tag", 120, 0., 1200.)
 m3j1t  = ROOT.TH1F("m3j1t", "m3, #geq 3jets, #geq 1tag",  60, 0., 600.)
 met3j1t = ROOT.TH1F("met3j1t", "MET (GeV), #geq 1tag", 120,0.,300.0)
 
+nPVPlots = []
 secvtxMassPlots = []
 lepEtaPlots = []
 lepPtPlots = []
@@ -189,6 +190,7 @@ maxTags = 2
 flavors = ['_b','_c','_q','']
 
 allVarPlots = [
+    nPVPlots,
     secvtxMassPlots,
     lepEtaPlots,
     lepPtPlots,
@@ -199,9 +201,10 @@ allVarPlots = [
     wMTPlots,
     hTPlots,
     ]
-names = ['secvtxMass','lepEta','lepPt', 'centrality','sumEt', 'MET', 'wMT', 'hT']
-titles = ['SecVtx Mass','Lepton #eta', 'Lepton pt', 'Centrality','#sum E_{T}','MET', 'M_{WT}', 'hT']
-bounds = [ [40,0.,10.],
+names = ['nPV', 'secvtxMass','lepEta','lepPt', 'centrality','sumEt', 'MET', 'wMT', 'hT']
+titles = ['number of Primary Vertices','SecVtx Mass','Lepton #eta', 'Lepton pt', 'Centrality','#sum E_{T}','MET', 'M_{WT}', 'hT']
+bounds = [ [25, -0.5, 24.5],
+           [40,0.,10.],
            [30,0.,3.0],
            [100,0.,200],
            [120,0.,1.2],
@@ -817,7 +820,8 @@ for event in events:
     if options.useData :
         # always fill the "total"
         if ntags > 0:
-            secvtxMassPlots[njets][ntags][3].Fill( secvtxMass, PUweight ) 
+            secvtxMassPlots[njets][ntags][3].Fill( secvtxMass, PUweight )
+        nPVPlots[njets][ntags][3].Fill( vertices.size(), PUweight )    
         lepEtaPlots[njets][ntags][3].Fill( lepEta, PUweight )
         lepPtPlots[njets][ntags][3].Fill( lepPt, PUweight )
         centralityPlots[njets][ntags][3].Fill( sumEt / sumE, PUweight )
@@ -830,6 +834,7 @@ for event in events:
         if flavorIndex >= 0 :
             if ntags > 0:
                 secvtxMassPlots[njets][ntags][flavorIndex].Fill( secvtxMass, PUweight ) # Fill each jet flavor individually
+            nPVPlots[njets][ntags][flavorIndex].Fill( vertices.size(), PUweight )    
             lepEtaPlots[njets][ntags][flavorIndex].Fill( lepEta, PUweight )
             lepPtPlots[njets][ntags][flavorIndex].Fill( lepPt, PUweight )
             centralityPlots[njets][ntags][flavorIndex].Fill( sumEt / sumE, PUweight )
@@ -853,7 +858,8 @@ for event in events:
             pTag*=PUweight
             # always fill the "total"
             if jtag > 0 :
-                secvtxMassPlots[njets][jtag][3].Fill( secvtxMass, pTag ) 
+                secvtxMassPlots[njets][jtag][3].Fill( secvtxMass, pTag )
+            nPVPlots[njets][ntags][3].Fill( vertices.size(), pTag)    
             lepEtaPlots[njets][jtag][3].Fill( lepEta, pTag )
             lepPtPlots[njets][ntags][3].Fill( lepPt, pTag )
             centralityPlots[njets][jtag][3].Fill( sumEt / sumE, pTag )
@@ -865,6 +871,7 @@ for event in events:
             if flavorIndex >= 0 :
                 if jtag > 0 :
                     secvtxMassPlots[njets][jtag][flavorIndex].Fill( secvtxMass, pTag ) # Fill each jet flavor individually
+                nPVPlots[njets][ntags][flavorIndex].Fill( vertices.size(), pTag)    
                 lepEtaPlots[njets][jtag][flavorIndex].Fill( lepEta, pTag )
                 lepPtPlots[njets][ntags][flavorIndex].Fill( lepPt, pTag )
                 centralityPlots[njets][jtag][flavorIndex].Fill( sumEt / sumE, pTag )
