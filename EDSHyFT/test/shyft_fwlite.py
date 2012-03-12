@@ -103,6 +103,12 @@ parser.add_option('--lepType', metavar='F', type='int', action='store',
                   dest='lepType',
                   help='Lepton type. Options are 0 = muons, 1 = electrons')
 
+# old PU 1D weigths or 3D weights
+parser.add_option('--OneDWeights', metavar='F', type='int', action='store',
+                  default=1,
+                  dest='OneDWeights',
+                  help='PU weights type. Options are 0 = 3D, 1 = 1D')
+
 (options, args) = parser.parse_args()
 
 minJets = options.minJets
@@ -144,7 +150,9 @@ nMETs      = ROOT.TH1F("nMET",         "MET > 20 GeV;MET;Events/5 GeV",         
 nJets      = ROOT.TH1F("nJets",        "Number of Jets, p_{T} > 35 GeV;N_{Jets};Number",              20, -0.5, 19.5 )
 nJets3     = ROOT.TH1F("nJets3",       "Number of #geq 3 Jets, p_{T} > 35 GeV;N_{Jets};Number",       20, -0.5, 19.5 )
 nTags      = ROOT.TH1F("nTags",        "Number of Tags",                                              3,     0,  3   )  
-nVertices  = ROOT.TH1F("nVertices",    "Number of Primmary Vertices",                                 25, -0.5, 24.5)
+nVertices  = ROOT.TH1F("nVertices",    "Number of Primary Vertices",                                  25, -0.5, 24.5)
+npuTruth   = ROOT.TH1F("npuTruth",     "Number of Primary Interactions MCTrue",                       25, -0.5, 24.5)
+npuReweight  = ROOT.TH1F("npuReweight",  "Number of Primary Interactions reweighted",                   25, -0.5, 24.5)
 
 if not options.useData:
     bmass = ROOT.TH1F("bmass", "B Sec Vtx Mass", 40, 0, 10)
@@ -164,7 +172,9 @@ ptJet4 = ROOT.TH1F("ptJet4", "p_{T} Of #geq 5th Leading Jet", 40, 0., 200.)
 m3     = ROOT.TH1F("m3", "m3",  60, 0., 600.)
 
 #Special
-nVertices3j1t  = ROOT.TH1F("nVertices3j1t",    "Number of Primmary Vertices, #geq 3jets, #geq 1tag",       25, -0.5, 24.5)
+nVertices3j1t = ROOT.TH1F("nVertices3j1t",    "Number of Primary Vertices, #geq 3jets, #geq 1tag", 25, -0.5, 24.5)
+npuTruth3j1t = ROOT.TH1F("npuTruth3j1t",    "Number of Primary Interactions, #geq 3jets, #geq 1tag", 25, -0.5, 24.5)
+npuReweight3j1t = ROOT.TH1F("npuReweight3j1t", "Number of Primary Interactions reweighted, #geq 1jets, #geq 1tag", 25, -0.5, 24.5)
 elePt3j1t = ROOT.TH1F("elePt3j1t", "lepton P_{T} (GeV), #geq 3jets, #geq 1tag", 100,0.,200.)
 eleEta3j1t = ROOT.TH1F("eleEta3j1t", "lepton #eta (GeV), #geq 3jets, #geq 1tag", 60,-3.0,3.0)
 elePhi3j1t = ROOT.TH1F("elePhi3j1t", "lepton #phi,  #geq 3jets, #geq 1tag", 50, -3.2, 3.2)
@@ -377,10 +387,16 @@ metPhiHandle = Handle( "std::vector<float>" )
 metPhiLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "phi" )
 
 pileupHandle = Handle( "std::vector<float>" )
-pileupLabel = ("PUNtupleDumper",   "pileupWeights" )
+if options.OneDWeights == 0:
+    pileupLabel = ("PUNtupleDumperOld",   "PUweightNominalUpDown" )
+else:    
+    pileupLabel = ("PUNtupleDumper",   "pileupWeights" )
 
 vertH  = Handle ("std::vector<reco::Vertex>")
 vertLabel = ("goodOfflinePrimaryVertices")
+
+puInfoHandle = Handle("std::vector<PileupSummaryInfo>")
+puInfoLabel = ("addPileupInfo")
 
 PUweight = 1.0
 
@@ -447,11 +463,23 @@ for event in events:
                 print 'unknown option in --pileupReweight, use unity'
                 PUweight=1.0
     
-    # number of primmary vertices
+    # number of primary vertices
     event.getByLabel(vertLabel,  vertH)
     if vertH.isValid():
         vertices = vertH.product()
+        
+    #num of true interations
+    if not options.useData:
+        event.getByLabel(puInfoLabel, puInfoHandle)
+        if puInfoHandle.isValid():
+            nPV = puInfoHandle.product()
+        sumNvtx = 0.0    
+        for iPV in nPV:
+            npv = iPV.getPU_NumInteractions()
+            sumNvtx += float(npv)
 
+        aveNvtx = sumNvtx/3.    
+        #print 'outside nPV', npv , 'Ave', aveNvtx    
     # number of leptons
     nMuonsVal = 0
     if muonPts is not None:
@@ -622,7 +650,10 @@ for event in events:
     ##variables to be filled:
     ##_____________________    
     nVertices.Fill(vertices.size(), PUweight)
-    
+    if not options.useData:
+            npuTruth.Fill(aveNvtx, 1)
+            npuReweight.Fill(aveNvtx, PUweight)
+            
     lepEta = -999.0
     lepPt  = -999.0   
     lepPhi = -999.0
@@ -808,6 +839,9 @@ for event in events:
 
     if njets >= 3 and ntags >= 1 :
         nVertices3j1t.Fill(vertices.size(), PUweight)
+        if not options.useData:
+            npuTruth3j1t.Fill(aveNvtx, 1)
+            npuReweight3j1t.Fill(aveNvtx, PUweight)
         elePt3j1t.Fill(lepPt, PUweight)
         eleEta3j1t.Fill(lepEta, PUweight)
         elePhi3j1t.Fill(lepPhi, PUweight)
@@ -821,7 +855,7 @@ for event in events:
         # always fill the "total"
         if ntags > 0:
             secvtxMassPlots[njets][ntags][3].Fill( secvtxMass, PUweight )
-        nPVPlots[njets][ntags][3].Fill( vertices.size(), PUweight )    
+        nPVPlots[njets][ntags][3].Fill( vertices.size(), PUweight )
         lepEtaPlots[njets][ntags][3].Fill( lepEta, PUweight )
         lepPtPlots[njets][ntags][3].Fill( lepPt, PUweight )
         centralityPlots[njets][ntags][3].Fill( sumEt / sumE, PUweight )
