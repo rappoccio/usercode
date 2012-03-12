@@ -387,10 +387,12 @@ metPhiHandle = Handle( "std::vector<float>" )
 metPhiLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "phi" )
 
 pileupHandle = Handle( "std::vector<float>" )
-if options.OneDWeights == 0:
+if options.OneDWeights == 1:
     pileupLabel = ("PUNtupleDumperOld",   "PUweightNominalUpDown" )
+    print 'running old PU weights'
 else:    
     pileupLabel = ("PUNtupleDumper",   "pileupWeights" )
+    print 'running 3D PU weights'
 
 vertH  = Handle ("std::vector<reco::Vertex>")
 vertLabel = ("goodOfflinePrimaryVertices")
