@@ -1,5 +1,4 @@
 
-
 # SHyFT configuration
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
@@ -24,12 +23,6 @@ options.register ('hltProcess',
                   VarParsing.varType.string,
                   "HLT process name to use.")
 
-options.register ('useMuon',
-                  1,
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "Use muons (1) or electrons (0)")
-
 options.register ('slimOutput',
                   0,
                   VarParsing.multiplicity.singleton,
@@ -44,17 +37,15 @@ import sys
 
 # Set to true for running on data
 useData = options.useData
-# muons
-useMuon = options.useMuon
 
 if options.useData == False :
     # Make sure to NOT apply L2L3Residual to MC
-    corrections = ['L1Offset', 'L2Relative', 'L3Absolute']
+    corrections = ['L2Relative', 'L3Absolute']
     # global tag for 384 MC
     process.GlobalTag.globaltag = cms.string('START311_V2::All')
 else :
     # Make sure to apply L2L3Residual to data
-    corrections = ['L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual']
+    corrections = ['L2Relative', 'L3Absolute', 'L2L3Residual']
     # global tag for 386 data
     process.GlobalTag.globaltag = cms.string('GR_R_311_V2::All')
 
@@ -112,6 +103,13 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC= not useData, postfix=p
 postfixLoose = "PFlowLoose"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC= not useData, postfix=postfixLoose)
 
+
+# turn to false when running on data
+if useData :
+    removeMCMatching(process, ['All'])
+
+
+
 # We'll be using a lot of AOD so re-run b-tagging to get the
 # tag infos which are dropped in AOD
 switchJetCollection(process,cms.InputTag('ak5PFJets'),
@@ -151,7 +149,7 @@ process.patJetsPFlowLoose.tagInfoSources = cms.VInputTag(
     )
 
 
-#remove isolation from the PFlow
+
 process.patMuonsPFlowLoose.pfMuonSource = 'pfAllMuonsPFlowLoose'
 process.patMuonsPFlowLoose.isoDeposits = cms.PSet()
 process.patMuonsPFlowLoose.isolationValues = cms.PSet()
@@ -159,7 +157,6 @@ process.patElectronsPFlowLoose.pfElectronSource = 'pfAllElectronsPFlowLoose'
 process.patElectronsPFlowLoose.isoDeposits = cms.PSet()
 process.patElectronsPFlowLoose.isolationValues = cms.PSet()
 
-#Muons
 process.selectedPatMuons.cut = cms.string("pt > 10")
 process.selectedPatMuonsPFlow.cut = cms.string("pt > 10")
 process.selectedPatMuonsPFlowLoose.cut = cms.string("pt > 10")
@@ -171,10 +168,9 @@ process.patMuons.embedTrack = True
 process.patMuonsPFlow.embedTrack = True
 process.patMuonsPFlowLoose.embedTrack = True
 
-#Electrons
-#process.selectedPatElectrons.cut = cms.string("pt > 10")
-#process.selectedPatElectronsPFlow.cut = cms.string("pt > 10")
-#process.selectedPatElectronsPFlowLoose.cut = cms.string("pt > 10")
+process.selectedPatElectrons.cut = cms.string("pt > 10")
+process.selectedPatElectronsPFlow.cut = cms.string("pt > 10")
+process.selectedPatElectronsPFlowLoose.cut = cms.string("pt > 10")
 process.patElectrons.usePV = False
 process.patElectronsPFlow.usePV = False
 process.patElectronsPFlowLoose.usePV = False
@@ -183,45 +179,8 @@ process.patElectrons.embedTrack = True
 process.patElectronsPFlow.embedTrack = True
 process.patElectronsPFlowLoose.embedTrack = True
 
-#turn to false when running on data
-if useData :
-    removeMCMatching(process, ['All'])
-    removeMCMatching(process, ['METs'], postfix='PF')    
-
-#insert partner track info, dist and dcot for conversion rejection
-process.patElectronsUserData = cms.EDProducer(
-    "PATElectronUserData",
-    src = cms.InputTag("patElectrons"),
-	useData = cms.bool(useData==1)
-)	
-
-process.patElectronsPFlowUserData = cms.EDProducer(
-    "PATElectronUserData",
-    src = cms.InputTag("patElectronsPFlow"),
-	useData = cms.bool(useData==1)
-)
-
-process.patElectronsPFlowLooseUserData = cms.EDProducer(
-    "PATElectronUserData",
-    src = cms.InputTag("patElectronsPFlowLoose"),
-	useData = cms.bool(useData==1)
-)
-
-#Embed the user data process into the PAT sequence and tell selectedPatElectrons(PFlow) to use the new user collection as input
-process.patDefaultSequence.replace(getattr(process,"patElectrons"),getattr(process,"patElectrons")*process.patElectronsUserData)
-process.selectedPatElectrons.src = "patElectronsUserData"
-process.selectedPatElectrons.cut = cms.string("et > 20 & abs(eta)<3")
-
-process.patDefaultSequencePFlow.replace(getattr(process,"patElectronsPFlow"),getattr(process,"patElectronsPFlow")*process.patElectronsPFlowUserData)
-process.selectedPatElectronsPFlow.src = "patElectronsPFlowUserData"
-process.selectedPatElectronsPFlow.cut = cms.string("et > 20 & abs(eta)<3")
-
-process.patDefaultSequencePFlowLoose.replace(getattr(process,"patElectronsPFlowLoose"),getattr(process,"patElectronsPFlowLoose")*process.patElectronsPFlowLooseUserData)
-process.selectedPatElectronsPFlowLoose.src = "patElectronsPFlowLooseUserData"
-process.selectedPatElectronsPFlowLoose.cut = cms.string("et > 20 & abs(eta)<3")
 
 
-#secvtxMass as user data
 process.patJets.userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
                                                       "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
 process.patJets.userData.userFunctionLabels = cms.vstring('secvtxMass')
@@ -270,55 +229,37 @@ readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 
 if useData :
-
-    if useMuon:
-        readFiles.extend( [
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/329/C6BB9308-2F4E-E011-BDB2-0030487A17B8.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/377/FA349E81-0C4F-E011-918A-0030487CD6B4.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/379/508FB370-0C4F-E011-93DC-0030487CD7B4.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/383/DC057254-0D4F-E011-B6D7-0030487CD77E.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/384/02891170-084F-E011-AFA5-0030487C6090.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/386/486860D1-0A4F-E011-B826-0030487CD6DA.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/403/48410433-364F-E011-8F0C-001D09F23D1D.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/404/823DE1A5-374F-E011-A5C0-0030487CD906.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/405/4642D954-D64F-E011-8280-003048F024DE.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/406/50A4D30B-5A4F-E011-AAD8-0030487CD906.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/406/CC18CBF0-5F4F-E011-915F-0030487C6A66.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/406/CEDF54F6-574F-E011-BF5D-0030487CD6E8.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/410/46231D2E-604F-E011-8355-0030487C2B86.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/048A81DD-EA4F-E011-B73D-0030487CD6D2.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/2CCB00F3-924F-E011-85E7-0030487A1884.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/32E839DD-974F-E011-A15D-0030487CD76A.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/58B9EE73-964F-E011-A1A3-0030487A1884.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/740EDDCC-9C4F-E011-AF2B-0030487CD14E.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/A4AC1A65-944F-E011-A96B-003048F024FA.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/BC6DCF3D-924F-E011-BE4A-0030487CD180.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/C23AB560-A24F-E011-A764-0030487CD7EE.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/D0F29DA7-934F-E011-98CB-003048F1183E.root',
-            '/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/D6401F96-984F-E011-BCBE-0030487CD7EE.root',
-            ] );
-    else:    
-        readFiles.extend( [
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/08AE9834-1B57-E011-981D-003048F11C28.root',
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/1296A997-0557-E011-8B99-0030487A18A4.root',
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/32726183-ED56-E011-9633-001617E30CC8.root',
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/7C68821E-F156-E011-9B0C-000423D94494.root',
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/82073D07-1C57-E011-B045-003048F110BE.root',
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/AEE73320-1957-E011-A4B1-003048F1BF68.root',
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/B241F3D0-FF56-E011-8214-003048F1BF68.root',
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/BA2F0A7E-EB56-E011-ACD9-000423D94908.root',
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/C6FD8EAE-1057-E011-8E6F-000423D94908.root',
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/D69EE709-0B57-E011-996D-000423D9A212.root',
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/E6D98922-1957-E011-A491-003048F11C5C.root',
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/F4729787-0E57-E011-A5C9-003048F118AC.root',
-            '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v1/000/161/217/F823151E-0B5A-E011-B1FA-003048F117EC.root',
-            ] );
+    readFiles.extend( [
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/329/C6BB9308-2F4E-E011-BDB2-0030487A17B8.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/377/FA349E81-0C4F-E011-918A-0030487CD6B4.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/379/508FB370-0C4F-E011-93DC-0030487CD7B4.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/383/DC057254-0D4F-E011-B6D7-0030487CD77E.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/384/02891170-084F-E011-AFA5-0030487C6090.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/386/486860D1-0A4F-E011-B826-0030487CD6DA.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/403/48410433-364F-E011-8F0C-001D09F23D1D.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/404/823DE1A5-374F-E011-A5C0-0030487CD906.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/405/4642D954-D64F-E011-8280-003048F024DE.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/406/50A4D30B-5A4F-E011-AAD8-0030487CD906.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/406/CC18CBF0-5F4F-E011-915F-0030487C6A66.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/406/CEDF54F6-574F-E011-BF5D-0030487CD6E8.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/410/46231D2E-604F-E011-8355-0030487C2B86.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/048A81DD-EA4F-E011-B73D-0030487CD6D2.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/2CCB00F3-924F-E011-85E7-0030487A1884.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/32E839DD-974F-E011-A15D-0030487CD76A.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/58B9EE73-964F-E011-A1A3-0030487A1884.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/740EDDCC-9C4F-E011-AF2B-0030487CD14E.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/A4AC1A65-944F-E011-A96B-003048F024FA.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/BC6DCF3D-924F-E011-BE4A-0030487CD180.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/C23AB560-A24F-E011-A764-0030487CD7EE.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/D0F29DA7-934F-E011-98CB-003048F1183E.root',
+'/store/data/Run2011A/SingleMu/AOD/PromptReco-v1/000/160/413/D6401F96-984F-E011-BCBE-0030487CD7EE.root',
+        ] );
 else : 
     readFiles.extend( [
-        '/store/relval/CMSSW_4_1_3/RelValTTbar/GEN-SIM-RECO/START311_V2-v1/0037/648B6AA5-C751-E011-8208-001A928116C6.root',
-        '/store/relval/CMSSW_4_1_3/RelValTTbar/GEN-SIM-RECO/START311_V2-v1/0038/12763BEE-5A52-E011-8988-003048679048.root'
+'/store/relval/CMSSW_4_1_3/RelValTTbar/GEN-SIM-RECO/START311_V2-v1/0037/648B6AA5-C751-E011-8208-001A928116C6.root',
+'/store/relval/CMSSW_4_1_3/RelValTTbar/GEN-SIM-RECO/START311_V2-v1/0038/12763BEE-5A52-E011-8988-003048679048.root'
         ] );
-    
+
     
 process.source.fileNames = readFiles
 
@@ -361,18 +302,15 @@ process.out.SelectEvents.SelectEvents = cms.vstring('p1')
 
 # rename output file
 if useData :
-    if useMuon:
-        process.out.fileName = cms.untracked.string('shyft_414patch1_mu.root')
-    else:
-        process.out.fileName = cms.untracked.string('shyft_414patch1_ele.root')
+    process.out.fileName = cms.untracked.string('shyft_413patch1.root')
 else :
-    process.out.fileName = cms.untracked.string('shyft_414patch1_mc.root')
+    process.out.fileName = cms.untracked.string('shyft_413patch1_mc.root')
 
 # reduce verbosity
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 
 # process all the events
-process.maxEvents.input = options.maxEvents
+process.maxEvents.input = -1
 process.options.wantSummary = True
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 
