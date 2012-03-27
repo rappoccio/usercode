@@ -19,6 +19,11 @@ options.register ('sample',
                   "Sample to use.")
 
 
+options.register ('writeLiteJets',
+                  0,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Write out edm-tuple dumps of 4-vectors of jets.")
 
 
 options.parseArguments()
@@ -124,9 +129,7 @@ myAnaTrigs = [
     'HLT_Jet370_v4',
     'HLT_Jet370_v5',
     'HLT_Jet370_v6',
-    'HLT_Jet370_v7',
-    'HLT_Jet370_v10',
-    'HLT_Jet300_v9'
+    'HLT_Jet370_v7'
     ]
 process.ttbsmAna = cms.EDFilter('TTBSMProducer',
                                 wTagSrc = cms.InputTag('goodPatJetsCA8PrunedPF'),
@@ -159,7 +162,50 @@ process.ttbsmAna = cms.EDFilter('TTBSMProducer',
 
 
 
+process.ak5PFJetsLite = cms.EDProducer(
+    "CandViewNtpProducer", 
+    src = cms.InputTag("goodPatJetsPFlow"),
+    lazyParser = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
+    variables = cms.VPSet(
+        cms.PSet(
+            tag = cms.untracked.string("mass"),
+            quantity = cms.untracked.string("mass")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pt"),
+            quantity = cms.untracked.string("pt")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("eta"),
+            quantity = cms.untracked.string("eta")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("phi"),
+            quantity = cms.untracked.string("phi")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("ssvhe"),
+            quantity = cms.untracked.string("bDiscriminator('simpleSecondaryVertexHighEffBJetTags')")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("tche"),
+            quantity = cms.untracked.string("bDiscriminator('trackCountingHighEffBJetTags')")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("tchp"),
+            quantity = cms.untracked.string("bDiscriminator('trackCountingHighPurBJetTags')")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("jetArea"),
+            quantity = cms.untracked.string("jetArea")
+            ),
+        )  
+    )
 
+process.ca8PFJetsPrunedLite = process.ak5PFJetsLite.clone(
+    src = cms.InputTag("goodPatJetsCA8PrunedPF")
+    )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
@@ -171,12 +217,15 @@ process.p = cms.Path(
     process.ttbsmAna
     )
 
+if options.writeLiteJets == 1 :
+    process.p *= cms.Sequence(process.ak5PFJetsLite*process.ca8PFJetsPrunedLite)
 
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string("ttbsm_ultraslim2.root"),
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
                                outputCommands = cms.untracked.vstring('drop *',
-                                                                      'keep *_ttbsmAna_*_*'
+                                                                      'keep *_ttbsmAna_*_*',
+                                                                      'keep *_*Lite*_*_*'
                                                                       #, 'keep *_goodPatJetsCA8PrunedPF_*_*'
                                                                       #, 'keep *_goodPatJetsCATopTagPF_*_*'
                                                                       #, 'keep recoPFJets_*_*_*'
