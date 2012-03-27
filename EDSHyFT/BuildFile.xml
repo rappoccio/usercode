@@ -11,8 +11,5 @@
 <use   name="RecoEgamma/EgammaTools"/>
 <use   name="TopQuarkAnalysis/TopKinFitter"/>
 <use   name="Analysis/PdfWeights"/>
-<use   name="RecoBTag/PerformanceDB"/>
-<use   name="CondFormats/PhysicsToolsObjects"/>
-<use   name="RecoBTag/Records"/>
 <export>
 </export>
