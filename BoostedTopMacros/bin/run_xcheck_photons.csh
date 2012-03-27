@@ -1,7 +1,0 @@
-run_xchecks_photons photonjet_300_v6
-run_xchecks_photons photonjet_470_v6
-run_xchecks_photons photonjet_800_v6
-run_xchecks_photons photonjet_1400_v6
-run_xchecks_photons photonjet_2200_v6
-run_xchecks_photons photonjet_3000_v6
-
