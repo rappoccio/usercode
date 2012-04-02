@@ -652,7 +652,7 @@ for event in events:
     for jet in jets :
         #print jet.Pt()
         if jet.Pt() > jetPtMin :
-        njets += 1
+            njets += 1
     
     #very important, fill only the properties after right amount of jets
     #print 'minJets =', minJets, 'njets =' , njets, 'jetPt =' , jetPtMin
