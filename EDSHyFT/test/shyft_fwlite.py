@@ -103,11 +103,17 @@ parser.add_option('--lepType', metavar='F', type='int', action='store',
                   dest='lepType',
                   help='Lepton type. Options are 0 = muons, 1 = electrons')
 
-# old PU 1D weigths or 3D weights
-parser.add_option('--OneDWeights', metavar='F', type='int', action='store',
-                  default=1,
-                  dest='OneDWeights',
-                  help='PU weights type. Options are 0 = 3D, 1 = 1D')
+# PU weigths 1D or 3D
+parser.add_option('--PUWeights', metavar='P', type='string', action='store',
+                  default='3DSinEle',
+                  dest='PUWeights',
+                  help='PU weights type. Options are "1D, 3DSinEle, 3DEleHad" ')
+
+# barrel only
+parser.add_option('--barrel', metavar='F', action='store_true',
+                  default=True,
+                  dest='barrel',
+                  help='barrel region only')
 
 (options, args) = parser.parse_args()
 
@@ -268,22 +274,22 @@ looseMuonIsoMax = 0.2
 looseElectronIsoMax = 0.2
 ssvheCut = 1.74
 
-
+if options.noMET:
+        metMin = 0.0
+else:
+    metMin = 20.0
+    
 if options.lepType == 0 :
     muonPtMin = 35.0
     electronPtMin = 20.0
     jetPtMin = options.jetPt
-    metMin = 20.0
     lepStr = 'Mu'
 else:
     muonPtMin = 35.0
     electronPtMin = 35.0
     jetPtMin = options.jetPt
-    metMin = 20.0
     lepStr = 'Ele'
-    if options.noMET:
-        metMin = 0.0
-
+    
 # Per-jet scale factors:
 sfB = 1.00
 sfC = 1.00
@@ -387,12 +393,15 @@ metPhiHandle = Handle( "std::vector<float>" )
 metPhiLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "phi" )
 
 pileupHandle = Handle( "std::vector<float>" )
-if options.OneDWeights == 1:
+if options.PUWeights == '1D':
     pileupLabel = ("PUNtupleDumperOld",   "PUweightNominalUpDown" )
     print 'running old PU weights'
-else:    
-    pileupLabel = ("PUNtupleDumper",   "pileupWeights" )
-    print 'running 3D PU weights'
+elif options.PUWeights == '3DSinEle':    
+    pileupLabel = ("PUNtupleDumperSingleEle",   "pileupWeights" )
+    print 'running 3D PU weights for SingleEle data'
+elif options.PUWeights == '3DEleHad':    
+    pileupLabel = ("PUNtupleDumperEleHad",   "pileupWeights" )
+    print 'running 3D PU weights for EleHad data'
 
 vertH  = Handle ("std::vector<reco::Vertex>")
 vertLabel = ("goodOfflinePrimaryVertices")
@@ -512,6 +521,26 @@ for event in events:
     if nElectronsVal+nMuonsVal != 1 :
         continue
 
+
+     # Now get the rest of the lepton 4-vector
+    if muonPts is not None:
+        event.getByLabel (muonEtaLabel, muonEtaHandle)
+        muonEtas = muonEtaHandle.product()
+        event.getByLabel (muonPhiLabel, muonPhiHandle)
+        muonPhis = muonPhiHandle.product()
+        #ptMu.Fill( muonPts[0], PUweight )
+       
+    if electronPts is not None:
+        event.getByLabel (electronEtaLabel, electronEtaHandle)
+        electronEtas = electronEtaHandle.product()
+        event.getByLabel (electronPhiLabel, electronPhiHandle)
+        electronPhis = electronPhiHandle.product()
+        #ptEle.Fill( electronPts[0], PUweight )
+        
+        if options.barrel and abs(electronEtas[0]) > 1.5: continue
+
+       
+    
     #number of 1 lepton
     cutFlow[1][0] += 1
 
@@ -524,7 +553,8 @@ for event in events:
         continue
     if options.lepType == 1 and nElectronsVal!=1 :
         continue
-    
+
+        
     ##number of 1 lepton and no other lepton
     cutFlow[2][0] += 1
     
@@ -596,6 +626,7 @@ for event in events:
         thisJet = thisJet * jetScale
         met_px = met_px - thisJet.Px()
         met_py = met_py - thisJet.Py()
+        #if thisJet.Pt() > jetPtMin :
         jets.append( thisJet )#before I append
 
     met = math.sqrt(met_px*met_px + met_py*met_py)
@@ -605,22 +636,6 @@ for event in events:
     #throw the event to mimick the final jets of pt >30 GeV(edmNtuple cut) for data(TriCentralJet30)
     if len(jets) < minJets:
         continue
-    
-    
-    # Now get the rest of the lepton 4-vector
-    if muonPts is not None:
-        event.getByLabel (muonEtaLabel, muonEtaHandle)
-        muonEtas = muonEtaHandle.product()
-        event.getByLabel (muonPhiLabel, muonPhiHandle)
-        muonPhis = muonPhiHandle.product()
-        #ptMu.Fill( muonPts[0], PUweight )
-       
-    if electronPts is not None:
-        event.getByLabel (electronEtaLabel, electronEtaHandle)
-        electronEtas = electronEtaHandle.product()
-        event.getByLabel (electronPhiLabel, electronPhiHandle)
-        electronPhis = electronPhiHandle.product()
-        #ptEle.Fill( electronPts[0], PUweight )
          
     # cutting on met after scaling
     if not options.invMET and met < metMin :
@@ -635,8 +650,9 @@ for event in events:
     # cut on jet pt
     njets = 0
     for jet in jets :
+        #print jet.Pt()
         if jet.Pt() > jetPtMin :
-            njets += 1
+        njets += 1
     
     #very important, fill only the properties after right amount of jets
     #print 'minJets =', minJets, 'njets =' , njets, 'jetPt =' , jetPtMin
@@ -664,13 +680,12 @@ for event in events:
     if options.lepType == 0 :
         lepEta = muonEtas[0]
         lepPt  = muonPts[0]
-        lepPhi = muonsPhis[0]
+        lepPhi = muonPhis[0]
         lepPFIso = muonPfisos[0]/lepPt
     else :
         lepEta = electronEtas[0]
         lepPt  = electronPts[0]
-        lepPhi = electronPhis[0]
-        
+        lepPhi = electronPhis[0]        
         lepPFIso = electronPfisos[0]/lepPt
         #print 'lepPFIso = ', lepPFIso, 'lep Pt = ', lepPt, 'iso = ', electronPfisos[0]
 
