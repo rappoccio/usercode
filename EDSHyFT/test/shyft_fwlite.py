@@ -56,6 +56,12 @@ parser.add_option('--useData', metavar='F', action='store_true',
                   dest='useData',
                   help='use data')
 
+# MET Unclustered energy systematics
+parser.add_option('--metSys', metavar='F', type='string', action='store',
+                  default='nominal',
+                  dest='metSys',
+                  help='MET Systematic variation. Options are "nominal, up, down"')
+
 # JEC systematics
 parser.add_option('--jecSys', metavar='F', type='string', action='store',
                   default='nominal',
@@ -115,6 +121,7 @@ parser.add_option('--barrel', metavar='F', action='store_true',
                   dest='barrel',
                   help='barrel region only')
 
+# adding dirs
 parser.add_option('--addDirs', metavar='F', action='store_true',
                   default=False,
                   dest='addDirs',
@@ -388,6 +395,13 @@ elif options.lftagSys == 'up2' :
 elif options.lftagSys == 'down2' :
     sfQ = 0.80
 
+#MET Scales
+metScale = 0.0
+if options.metSys == 'up' :
+    metScale = 1.0
+if options.metSys == 'down' :
+    metScale = -1.0
+    
 # JEC scales
 jecScale = 0.0
 if options.jecSys == 'up' :
@@ -396,7 +410,6 @@ elif options.jecSys == 'down' :
     jecScale = -1.0
 flatJecUnc = 0.0
 #flatJecUnc = 0.05
-
 
 cutFlow = [
     [0,'Inclusive'],
@@ -562,10 +575,21 @@ for event in events:
             sumNvtx += float(npv)
 
         aveNvtx = sumNvtx/3.    
-        #print 'outside nPV', npv , 'Ave', aveNvtx    
+        #print 'outside nPV', npv , 'Ave', aveNvtx
+
+    # use this if we want to fill barrel/endcap histograms
+    dirindex=0
+    dirlist=[0]
+    
     # number of leptons
     nMuonsVal = 0
     if muonPts is not None:
+        # Now get the rest of the lepton 4-vector 
+        event.getByLabel (muonEtaLabel, muonEtaHandle)
+        muonEtas = muonEtaHandle.product()
+        event.getByLabel (muonPhiLabel, muonPhiHandle)
+        muonPhis = muonPhiHandle.product()
+        
         for imuonPt in range(0,len(muonPts)):
             muonPt = muonPts[imuonPt]
             if muonPt > muonPtMin :
@@ -577,57 +601,45 @@ for event in events:
                 else :
                     nMuonsVal += 1
             nMuons[0].Fill( nMuonsVal, PUweight )
-      
-    nElectronsVal = 0
+            if options.addDirs:
+                if abs(muonEtas[0]) > 1.5:
+                    dirindex=2
+                else:
+                    dirindex=1
+                nMuons[dirindex].Fill( nMuonsVal, PUweight )
+                
+    nElectronsVal = 0   
     if electronPts is not None:
+        # Now get the rest of the lepton 4-vector
+        event.getByLabel (electronEtaLabel, electronEtaHandle)
+        electronEtas = electronEtaHandle.product()
+        event.getByLabel (electronPhiLabel, electronPhiHandle)
+        electronPhis = electronPhiHandle.product()
+        
+        if options.barrel and abs(electronEtas[0]) > 1.5: continue
+        
         for ielectronPt in range(0,len(electronPts)):
             electronPt = electronPts[ielectronPt]
             if electronPt > electronPtMin :
                 nElectronsVal += 1
-            nElectrons[0].Fill( nElectronsVal, PUweight )
-                
-    # Require exactly one lepton
+            nElectrons[0].Fill( nElectronsVal, PUweight )    
+            if options.addDirs:
+                if abs(electronEtas[0]) > 1.5:
+                    dirindex=2
+                else:
+                    dirindex=1   
+                nElectrons[dirindex].Fill( nElectronsVal, PUweight )
+            
+    if dirindex>0:
+        nEvents[dirindex].Fill(count, PUweight)
+        dirlist.append(dirindex)
+
+    #Require exactly one lepton
     if muonPts is None and electronPts is None :
         continue
     # to be sure...
     if nElectronsVal+nMuonsVal != 1 :
         continue
-
-    # use this if we want to fill barrel/endcap histograms
-    dirindex=0
-    dirlist=[0]
-    # Now get the rest of the lepton 4-vector
-    if muonPts is not None:
-        event.getByLabel (muonEtaLabel, muonEtaHandle)
-        muonEtas = muonEtaHandle.product()
-        event.getByLabel (muonPhiLabel, muonPhiHandle)
-        muonPhis = muonPhiHandle.product()
-        if options.addDirs:
-            if abs(muonEtas[0]) > 1.5:
-                dirindex=2
-            else:
-                dirindex=1
-            nMuons[dirindex].Fill( nMuonsVal, PUweight )
-    
-        #ptMu.Fill( muonPts[0], PUweight )
-       
-    if electronPts is not None:
-        event.getByLabel (electronEtaLabel, electronEtaHandle)
-        electronEtas = electronEtaHandle.product()
-        event.getByLabel (electronPhiLabel, electronPhiHandle)
-        electronPhis = electronPhiHandle.product()
-        #ptEle.Fill( electronPts[0], PUweight )
-        if options.barrel and abs(electronEtas[0]) > 1.5: continue
-        if options.addDirs:
-            if abs(electronEtas[0]) > 1.5:
-                dirindex=2
-            else:
-                dirindex=1
-            nElectrons[dirindex].Fill( nElectronsVal, PUweight )
-    
-    if dirindex>0:
-        nEvents[dirindex].Fill(count, PUweight)
-        dirlist.append(dirindex)
     
     #number of 1 lepton
     cutFlow[1][0] += 1
@@ -645,7 +657,7 @@ for event in events:
         
     ##number of 1 lepton and no other lepton
     cutFlow[2][0] += 1
-    
+        
     # Now get the MET
     event.getByLabel( metLabel, metHandle )
     if metHandle.isValid():
@@ -680,7 +692,7 @@ for event in events:
     #JES and JER
     for ijet in range(0,len(jetPts) ):
         jetScale = 1.0
-        if abs(jecScale) > 0.0001 :
+        if not options.useData and abs(jecScale) > 0.0001 :
             #print 'Modifying jet pts according to jecScale = ' + str(jecScale)
             jecUnc.setJetEta( jetEtas[ijet] )
             jecUnc.setJetPt( jetPts[ijet] )
@@ -693,8 +705,7 @@ for event in events:
             #print 'Correction = ' + str( 1 + unc * jecScale)
             jetScale = 1 + unc * jecScale
 
-        ## also do Jet energy resolution variation here
-        ## and correct MET
+        ## also do Jet energy resolution variation 
         if not options.useData and abs(options.jetSmear)>0.0001 and genJetPts[ijet]>15.0:
             scale = options.jetSmear
             recopt = jetPts[ijet]
@@ -702,26 +713,74 @@ for event in events:
             deltapt = (recopt-genpt)*scale
             ptscale = max(0.0, (recopt+deltapt)/recopt)
             jetScale*=ptscale
-        
+
+        ## get the uncorrected jets
         thisJet = ROOT.TLorentzVector()
         thisJet.SetPtEtaPhiM(jetPts[ijet],
                              jetEtas[ijet],
                              jetPhis[ijet],
                              jetMasses[ijet])
-
+        
+        #remove the uncorrected jets
         met_px = met_px + thisJet.Px()
         met_py = met_py + thisJet.Py()
+ 
+        #unclustered MET resolution
+        unclMETScale = 1.0
+        if not options.useData and abs(metScale)> 0.0:            
+            #remove the electron and muon
+            if muonPts is not None:
+                for imuonPt in range(0,len(muonPts)):
+                    muonPt = muonPts[imuonPt]
+                    muonPhi = muonsPhis[imuonPt]
+                    mu_px = muonPts[imuonPt]*math.cos(muonPhis[imuonPt])
+                    mu_py = muonPts[imuonPt]*math.sin(muonPhis[imuonPt])
+                    met_px = met_px + mu_px 
+                    met_py = met_py + mu_py 
+            if electronPts is not None:
+                for ielectronPt in range(0,len(electronPts)):
+                    electronPt = electronPts[ielectronPt]
+                    electronPhi = electronPhis[ielectronPt]
+                    el_px = electronPts[ielectronPt]*math.cos(electronPhis[ielectronPt])
+                    el_py = electronPts[ielectronPt]*math.sin(electronPhis[ielectronPt])
+                    met_px = met_px + el_px
+                    met_py = met_py + el_py
+                    
+            #apply the 10% variation of 0.9 or 1.1
+            unclMETScale = 1 +  0.1*metScale
+            met_px = met_px*unclMETScale
+            met_py = met_py*unclMETScale
+            
+            #add back the electron and muon
+            if muonPts is not None:
+                for imuonPt in range(0,len(muonPts)):
+                    muonPt = muonPts[imuonPt]
+                    muonPhi = muonsPhis[imuonPt]
+                    mu_px = muonPts[imuonPt]*math.cos(muonPhis[imuonPt])
+                    mu_py = muonPts[imuonPt]*math.sin(muonPhis[imuonPt])
+                    met_px = met_px - mu_px 
+                    met_py = met_py - mu_py 
+            if electronPts is not None:
+                for ielectronPt in range(0,len(electronPts)):
+                    electronPt = electronPts[ielectronPt]
+                    electronPhi = electronPhis[ielectronPt]
+                    el_px = electronPts[ielectronPt]*math.cos(electronPhis[ielectronPt])
+                    el_py = electronPts[ielectronPt]*math.sin(electronPhis[ielectronPt])
+                    met_px = met_px - el_px
+                    met_py = met_py - el_py  
+
+        #apply the SF and add back the jets and also correct the MET
         thisJet = thisJet * jetScale
         met_px = met_px - thisJet.Px()
         met_py = met_py - thisJet.Py()
         #if thisJet.Pt() > jetPtMin :
-        jets.append( thisJet )#before I append
+        jets.append( thisJet )
 
     met = math.sqrt(met_px*met_px + met_py*met_py)
-    
+    #print 'met = ', met
     #print 'nJets: ', len(jets), 'minJets required : ', minJets
-    
-    #throw the event to mimick the final jets of pt >30 GeV(edmNtuple cut) for data(TriCentralJet30)
+   
+    #throw the event to mimick the final jets of pt >30 GeV(edmNtuple cut) for data(TriCentralJet30)  
     if len(jets) < minJets:
         continue
          
