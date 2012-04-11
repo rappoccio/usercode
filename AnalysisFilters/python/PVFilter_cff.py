@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 
-from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector as pvSelectorInput
-
 pvFilter = cms.EDFilter("PVFilter",
-                        pvSelector = cms.PSet( pvSelectorInput )
-                        )
+                          pvSrc = cms.InputTag('offlinePrimaryVertices'),
+                          minPVTracks = cms.int32(4),
+                          maxPVZ = cms.double(15.0)
+                                    )

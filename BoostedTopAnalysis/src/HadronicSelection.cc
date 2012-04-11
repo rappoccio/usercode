@@ -5,59 +5,88 @@
 
 using namespace std;
 
-HadronicSelection::HadronicSelection( edm::ParameterSet const & params ) :
-  dijetSelector_         (params.getParameter<edm::ParameterSet>("jetIDParams"), 
-			  params.getParameter<edm::ParameterSet>("pfJetIDParams"),
-			  params.getParameter<edm::ParameterSet>("dijetSelectorParams")),
-  caTopTagFunctor_       (params.getParameter<edm::ParameterSet>("caTopTagParams") ),
-  boostedTopWTagFunctor_ (params.getParameter<edm::ParameterSet>("boostedTopWTagParams") ),
-  trigSrc_               (params.getParameter<edm::InputTag>("trigSrc") ),
-  trig_                  (params.getParameter<std::string>("trig") ),
-  minTags_               (params.getParameter<unsigned int>("minTags") ),
-  usePF_                 (params.getParameter<bool>("usePF")),
-  useWTag_               (params.getParameter<bool>("useWTag"))
+HadronicSelection::HadronicSelection( 
+    edm::InputTag const & jetTag,
+    edm::InputTag const & trigTag,
+    boost::shared_ptr<JetIDSelectionFunctor> & jetIdTight,
+    boost::shared_ptr<CATopTagFunctor>       & caTopTagFunctor,
+    int minJets, int minTags,
+    double jetPtMin      , double jetEtaMax,
+    double topMassMin    , double topMassMax,
+    double minMass       ,
+    double wMassMin      , double wMassMax
+    ) :
+  jetTag_(jetTag),
+  trigTag_(trigTag),
+  jetIdTight_(jetIdTight),
+  caTopTagFunctor_(caTopTagFunctor),
+  minJets_(minJets),
+  minTags_(minTags),
+  jetPtMin_(jetPtMin), jetEtaMax_(jetEtaMax),
+  topMassMin_(topMassMin), topMassMax_(topMassMax),
+  minMass_(minMass),
+  wMassMin_(wMassMin), wMassMax_(wMassMax)
 {
-  std::cout << "Instantiated HadronicSelection" << std::endl;
   // make the bitset
-  push_back( "Inclusive"       );
-  push_back( "Trigger"         );
-  push_back( "Jet Preselection");
-  push_back( ">= 1 Tag"        );
-  push_back( ">= N Tags"       );
+  push_back( "Inclusive"      );
+  push_back( "Trigger"        );
+  push_back( ">= 1 Jet"       );
+  push_back( ">= 1 Tight Jet" );
+  push_back( ">= N Tight Jets", minJets_);
+  push_back( ">= 1 Tag"       );
+  push_back( ">= N Tags"      , minTags_);
 
   // all on by default
-  set( "Inclusive"        );
-  set( "Trigger"          );
-  set( "Jet Preselection" );
-  set( ">= 1 Tag"         );
-  set( ">= N Tags",  minTags_ );
+  set( "Inclusive"      );
+  set( "Trigger"        );
+  set( ">= 1 Jet"       );
+  set( ">= 1 Tight Jet" );
+  set( ">= N Tight Jets");
+  set( ">= 1 Tag"       );
+  set( ">= N Tags"      );
 
-  
-  if ( params.exists("cutsToIgnore") )
-    setIgnoredCuts( params.getParameter<std::vector<std::string> >("cutsToIgnore") );
 
-  retInternal_ = getBitTemplate();
 }
 
-bool HadronicSelection::operator() ( edm::EventBase const & event, pat::strbitset & ret)
+bool HadronicSelection::operator() ( edm::EventBase const & event, std::strbitset & ret)
 {
+  selectedJets_.clear();
   taggedJets_.clear();
 
   passCut( ret, "Inclusive");
 
+  // Get all the jets
+  edm::Handle< vector< pat::Jet > > jetHandle;
+  event.getByLabel (jetTag_, jetHandle);
+  if ( !jetHandle.isValid() ) return (bool)ret;
 
   // Get the trigger
   edm::Handle<pat::TriggerEvent> triggerEvent;
-  event.getByLabel( trigSrc_, triggerEvent);
+  event.getByLabel(edm::InputTag("patTriggerEvent"), triggerEvent);
   if (!triggerEvent.isValid() ) return (bool)ret;  
 
+
+  // Get a list of the jets that pass our tight event selection
+  for ( std::vector<pat::Jet>::const_iterator jetBegin = jetHandle->begin(),
+	  jetEnd = jetHandle->end(), ijet = jetBegin;
+	ijet != jetEnd; ++ijet ) {
+    std::strbitset iret = jetIdTight_->getBitTemplate();
+    if ( ijet->pt() > jetPtMin_ && 
+	 fabs(ijet->eta()) < jetEtaMax_  ) {
+      selectedJets_.push_back( *ijet );
+      std::strbitset ret = (*caTopTagFunctor_).getBitTemplate();
+      if ( (*caTopTagFunctor_)(*ijet, ret ) ) {
+	taggedJets_.push_back( *ijet );
+      }
+    }
+  }
 
   // Check the trigger requirement
   pat::TriggerEvent const * trig = &*triggerEvent;
 
   bool passTrig = false;
   if ( trig->wasRun() && trig->wasAccept() ) {
-    pat::TriggerPath const * jetPath = trig->path(trig_);
+    pat::TriggerPath const * jetPath = trig->path("HLT_Jet110");
     if ( jetPath != 0 && jetPath->wasAccept() ) {
       passTrig = true;    
     }
@@ -67,56 +96,43 @@ bool HadronicSelection::operator() ( edm::EventBase const & event, pat::strbitse
   if ( ignoreCut("Trigger") || 
        passTrig ) {
     passCut(ret, "Trigger");
-    
-    // Get the good inclusive jets
-    pat::strbitset jetRet = dijetSelector_.getBitTemplate();
-    bool passDijet = dijetSelector_( event, jetRet );
-    std::vector<edm::Ptr<pat::Jet> > const & inclusiveJets = (!usePF_) ? dijetSelector_.caloJets() : dijetSelector_.pfJets();
 
-    // Get a list of the jets that pass our tag requirements
-    for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin = inclusiveJets.begin(),
-	    jetEnd = inclusiveJets.end(), ijet = jetBegin;
-	  ijet != jetEnd; ++ijet ) {
-      if ( !useWTag_ ) {
-	pat::strbitset ret = caTopTagFunctor_.getBitTemplate();
-	if ( caTopTagFunctor_(**ijet, ret ) ) {
-	  taggedJets_.push_back( *ijet );
-	}
-      } else {
-	pat::strbitset ret = boostedTopWTagFunctor_.getBitTemplate();
-	if ( boostedTopWTagFunctor_(**ijet, ret ) ) {
-	  taggedJets_.push_back( *ijet );
-	}
-      }
-      
-    }
-    
-    
     // Now check if there is at least one jet with pt,Y cuts
-    if ( ignoreCut("Jet Preselection") ||
-	 inclusiveJets.size() >= 1 ){
-      passCut(ret,"Jet Preselection");
+    if ( ignoreCut(">= 1 Jet") ||
+	 static_cast<int>(jetHandle->size()) > 0 ){
+      passCut(ret,">= 1 Jet");
 
-
-      // Now look for >= 1 tags
-      if ( ignoreCut(">= 1 Tag") ||
-	   static_cast<int>(taggedJets_.size()) > 0 ){
-	passCut(ret,">= 1 Tag");
-
-	// Next require at least N (configurable) tags
-	if ( ignoreCut(">= N Tags") ||
-	     static_cast<int>(taggedJets_.size()) >=  this->cut(">= N Tags", int()) ){
-	  passCut(ret,">= N Tags");
-	}// end if >= N Tags
-	
-      }// end if >= 1 Tag
+      // Now check if there is at least one jet that passes the jet ID cuts
+      if ( ignoreCut(">= 1 Tight Jet") ||
+	   static_cast<int>(selectedJets_.size()) > 0 ){
+	passCut(ret,">= 1 Tight Jet");
       
-    }// End if jet preselection
+	// Next require at least N (configurable) jets that pass the jet ID cuts. 
+	if ( ignoreCut(">= N Tight Jets") ||
+	     static_cast<int>(selectedJets_.size()) >=  this->cut(">= N Tight Jets", int()) ){
+	  passCut(ret,">= N Tight Jets");
+
+	  // Now look for >= 1 tags
+	  if ( ignoreCut(">= 1 Tag") ||
+	       static_cast<int>(taggedJets_.size()) > 0 ){
+	    passCut(ret,">= 1 Tag");
+
+	    // Next require at least N (configurable) tags
+	    if ( ignoreCut(">= N Tags") ||
+		 static_cast<int>(taggedJets_.size()) >=  this->cut(">= N Tags", int()) ){
+	      passCut(ret,">= N Tags");
+	    }// end if >= N Tags
+
+	  }// end if >= 1 Tag
+
+	}// end if >= N Tight Jets
+
+      }// End if >= 1 Tight Jet
+
+    }// End if >= 1 Jet	  
     
   } // end if trigger
   
-
-  setIgnored(ret);
   
   return (bool)ret;
 }
