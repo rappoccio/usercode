@@ -107,10 +107,6 @@ jetPtMin = 30.0
 jetEtaMax = 2.5
 
 
-print 'Creating events...',
-events = Events (files)
-print 'Done'
-
 
 ak7DefPxHandle         = Handle( "std::vector<float>" )
 ak7DefPxLabel          = ( "ak7Lite",   "px" )
@@ -215,218 +211,206 @@ trigThresholds = [
     ]
 
 
-# loop over events
 count = 0
-ntotal = events.size()
-if options.max > 0 :
-    ntotal = options.max
-percentDone = 0.0
-ipercentDone = 0
-ipercentDoneLast = -1
-print "Start looping"
-for event in events:
-    weight = 1.0
-    ipercentDone = int(percentDone)
-    if ipercentDone != ipercentDoneLast :
-        ipercentDoneLast = ipercentDone
-        print 'Processing {0:10.0f}/{1:10.0f} : {2:5.0f}%'.format(
-            count, ntotal, ipercentDone )
-    count = count + 1
-    percentDone = float(count) / float(ntotal) * 100.0
+for ifile in files :
+
+    ifiles = [ ifile ]
+
+    events = Events (ifiles)
+
+    print "Start looping"
+    for event in events:
+        weight = 1.0
+
+        if count % 10000 == 0 :
+            print 'Processing event ' + str(count)
+
+        count += 1
+
+        # Event-level variables:
+        npv = -1         # Number of Primary Vertices observed
+        npu = -1         # Number of pileup interactions simulated
+        mjjReco = None   # reconstructed dijet mass
+        mjjGen = None    # particle-level dijet mass
+        mjetReco = None  # reconstructed average jet mass
+        mjetGen = None   # generated average jet mass
+        etaMax = None    # maximum eta of the dijet system
 
 
-    if options.max > 0 and count > options.max :
-        break
+        # First get the jets.
+        # For data, only reco (obviously).
+        # For MC, both reco and gen.
+        event.getByLabel( ak7DefPxLabel, ak7DefPxHandle )
+        ak7DefPxs = ak7DefPxHandle.product()
+        event.getByLabel( ak7DefPyLabel, ak7DefPyHandle )
+        ak7DefPys = ak7DefPyHandle.product()
+        event.getByLabel( ak7DefPzLabel, ak7DefPzHandle )
+        ak7DefPzs = ak7DefPzHandle.product()
+        event.getByLabel( ak7DefEnergyLabel, ak7DefEnergyHandle )
+        ak7DefEnergys = ak7DefEnergyHandle.product()
 
 
-    # Event-level variables:
-    npv = -1         # Number of Primary Vertices observed
-    npu = -1         # Number of pileup interactions simulated
-    mjjReco = None   # reconstructed dijet mass
-    mjjGen = None    # particle-level dijet mass
-    mjetReco = None  # reconstructed average jet mass
-    mjetGen = None   # generated average jet mass
-    etaMax = None    # maximum eta of the dijet system
+        if options.useMC :
+            event.getByLabel( ak7GenPxLabel, ak7GenPxHandle )
+            ak7GenPxs = ak7GenPxHandle.product()
+            event.getByLabel( ak7GenPyLabel, ak7GenPyHandle )
+            ak7GenPys = ak7GenPyHandle.product()
+            event.getByLabel( ak7GenPzLabel, ak7GenPzHandle )
+            ak7GenPzs = ak7GenPzHandle.product()
+            event.getByLabel( ak7GenEnergyLabel, ak7GenEnergyHandle )
+            ak7GenEnergys = ak7GenEnergyHandle.product()
+
+            ak7Gen = []
+            for igen in range(0,len(ak7GenPxs)):
+                jgen = ROOT.TLorentzVector(
+                    ak7GenPxs[igen],
+                    ak7GenPys[igen],
+                    ak7GenPzs[igen],
+                    ak7GenEnergys[igen]
+                    )
+                ak7Gen.append( jgen )
 
 
-
-    if options.verbose :
-        print '------------ Event ' + str(count) + ', NPU = ' + str(npu) + ', Weight = ' + str(weight)
-
-    # First get the jets.
-    # For data, only reco (obviously).
-    # For MC, both reco and gen.
-    event.getByLabel( ak7DefPxLabel, ak7DefPxHandle )
-    ak7DefPxs = ak7DefPxHandle.product()
-    event.getByLabel( ak7DefPyLabel, ak7DefPyHandle )
-    ak7DefPys = ak7DefPyHandle.product()
-    event.getByLabel( ak7DefPzLabel, ak7DefPzHandle )
-    ak7DefPzs = ak7DefPzHandle.product()
-    event.getByLabel( ak7DefEnergyLabel, ak7DefEnergyHandle )
-    ak7DefEnergys = ak7DefEnergyHandle.product()
-
-
-    if options.useMC :
-        event.getByLabel( ak7GenPxLabel, ak7GenPxHandle )
-        ak7GenPxs = ak7GenPxHandle.product()
-        event.getByLabel( ak7GenPyLabel, ak7GenPyHandle )
-        ak7GenPys = ak7GenPyHandle.product()
-        event.getByLabel( ak7GenPzLabel, ak7GenPzHandle )
-        ak7GenPzs = ak7GenPzHandle.product()
-        event.getByLabel( ak7GenEnergyLabel, ak7GenEnergyHandle )
-        ak7GenEnergys = ak7GenEnergyHandle.product()
-
-        ak7Gen = []
-        for igen in range(0,len(ak7GenPxs)):
-            jgen = ROOT.TLorentzVector(
-                ak7GenPxs[igen],
-                ak7GenPys[igen],
-                ak7GenPzs[igen],
-                ak7GenEnergys[igen]
+        ak7Def = []
+        ak7GenMatched = []
+        found = True
+        for idef in range(0,len(ak7DefPxs)):
+            jdef = ROOT.TLorentzVector(
+                ak7DefPxs[idef],
+                ak7DefPys[idef],
+                ak7DefPzs[idef],
+                ak7DefEnergys[idef]
                 )
-            ak7Gen.append( jgen )
+            if jdef.Perp() > jetPtMin and abs(jdef.Eta()) < jetEtaMax:
+                ak7Def.append( jdef )
+                if options.useMC :
+                    jgen = findGenJet( jdef, ak7Gen )
+                    if jgen is None :
+                        found = False
+                    else :
+                        ak7GenMatched.append( jgen )
+
+        if found == False :
+            continue
+
+        if len(ak7Def) < 2 :
+            continue
+
+        dijetCandReco = ak7Def[0] + ak7Def[1]
 
 
-    ak7Def = []
-    ak7GenMatched = []
-    found = True
-    for idef in range(0,len(ak7DefPxs)):
-        jdef = ROOT.TLorentzVector(
-            ak7DefPxs[idef],
-            ak7DefPys[idef],
-            ak7DefPzs[idef],
-            ak7DefEnergys[idef]
-            )
-        if jdef.Perp() > jetPtMin and abs(jdef.Eta()) < jetEtaMax:
-            ak7Def.append( jdef )
-            if options.useMC :
-                jgen = findGenJet( jdef, ak7Gen )
-                if jgen is None :
-                    found = False
-                else :
-                    ak7GenMatched.append( jgen )
-                
-    if found == False :
-        continue
+        mjetReco = (ak7Def[0].M() + ak7Def[1].M()) * 0.5
 
-    if len(ak7Def) < 2 :
-        continue
+        mjjReco = dijetCandReco.M()
+        etaMax = abs(ak7Def[0].Eta())
+        if abs(ak7Def[0].Eta()) < abs(ak7Def[1].Eta()) :
+            etaMax = abs(ak7Def[1].Eta())
 
-    dijetCandReco = ak7Def[0] + ak7Def[1]
+        trigEtaBin = -1
+        for ibin in range(0, len(trigThresholds)) :
+            if etaMax >= trigThresholds[ibin][0][0] and etaMax < trigThresholds[ibin][0][1] :
+                trigEtaBin = ibin
+                break
 
-
-    mjetReco = (ak7Def[0].M() + ak7Def[1].M()) * 0.5
-
-    mjjReco = dijetCandReco.M()
-    etaMax = abs(ak7Def[0].Eta())
-    if abs(ak7Def[0].Eta()) < abs(ak7Def[1].Eta()) :
-        etaMax = abs(ak7Def[1].Eta())
-
-    trigEtaBin = -1
-    for ibin in range(0, len(trigThresholds)) :
-        if etaMax >= trigThresholds[ibin][0][0] and etaMax < trigThresholds[ibin][0][1] :
-            trigEtaBin = ibin
-            break
-
-    mjjThresholds = trigThresholds[ibin][1]
-    if options.verbose :
-        print 'mjjReco = ' + str(mjjReco) + ', etaMax = ' + str(etaMax) + ', trig eta bin = ' + str(trigEtaBin)
-        print 'mjj thresholds : '
-        print mjjThresholds
-
-
-    dijetCandGen  = None
-    mjjGen = None
-    mjetGen = None
-
-    if options.useMC :
-        dijetCandGen  = ak7GenMatched[0] + ak7GenMatched[1]
-        mjjGen = dijetCandGen.M()
-        mjetGen = (ak7Def[0].M() + ak7Def[1].M()) * 0.5
-
-
-    #------------------------------------------
-    # Now get the event weight.
-    #
-    # For MC:
-    #   - Weight by the generator weight (cross section for this event)
-    # For Data:
-    #   - Weight by trigger prescale of *highest* pt-threshold jet trigger that passed
-    #------------------------------------------
-    passEvent = False
-    if options.useMC :
-        # Get the generator product
-        event.getByLabel( generatorLabel, generatorHandle )
-        if generatorHandle.isValid() :
-            generatorInfo = generatorHandle.product()
-            # weight is the generator weight
-            weight *= generatorInfo.weight()
-            if options.verbose :
-                print 'generator info weight = ' + str(weight)
-            passEvent = True
-
-        # Also get the number of simulated pileup interactions
-        event.getByLabel( puLabel, puHandle )
-        puInfos = puHandle.product()
-
-        npu = puInfos[0].getPU_NumInteractions()
-
-
-    else :
-        # Get the pat::TriggerEvent
-        event.getByLabel( trigLabel, trigHandle )
-        acceptedPaths = []
-        trigPassedName = None
-        passMjjTrig = False
-        if trigHandle.isValid() :
-            trig = trigHandle.product()
-            # IF any triggers were run and were accepted, loop over the paths and get HLT_Jet* (ignoring the one without jet ID)
-            if trig.wasRun() and trig.wasAccept() :
-                paths = trig.paths()
-                for path in paths :
-                    if path.wasRun() and path.wasAccept() and path.name().find('HLT_Jet') >= 0 and path.name().find('NoJetID') < 0 :
-                        acceptedPaths.append( path )
-        # If there are any accepted paths, cache them. Then match to the lookup table "trigThresholds" to see if
-        # the event is in the correct mjj bin for the trigger in question.
-        if len( acceptedPaths) > 0 :
-            for ipath in xrange( len(acceptedPaths)-1, -1, -1) :
-                path = acceptedPaths[ipath]
-                if options.verbose:
-                    print '  --- considering path : ' + str(path.index()) + ', name = ' + str(path.name()) + ', prescale = ' + str(path.prescale() )
-                for ikeep in xrange(len(trigsToKeep)-1, -1, -1) :
-                    if options.verbose :
-                        print '   ----- checking trigger ' + trigsToKeep[ikeep] + ' : mjjThreshold = ' + str(mjjThresholds[ikeep])
-                    if path.name().find( trigsToKeep[ikeep] ) >= 0 and mjjReco > mjjThresholds[ikeep] :
-                        weight = path.prescale()
-                        trigPassedName = path.name()
-                        passMjjTrig = True
-                        if options.verbose :
-                            print '    -----------> Joy and elation, it worked!'
-                        break
-                if passMjjTrig == True :
-                    break
-
-        passEvent = passMjjTrig
-
-    if passEvent :
+        mjjThresholds = trigThresholds[ibin][1]
         if options.verbose :
-            print 'event passed! OH happy day!'
-        histAK7MjjVsEtaMax.Fill( mjjReco, etaMax, weight )
-        histAK7MjetVsEtaMax.Fill( mjetReco, etaMax, weight )
+            print 'mjjReco = ' + str(mjjReco) + ', etaMax = ' + str(etaMax) + ', trig eta bin = ' + str(trigEtaBin)
+            print 'mjj thresholds : '
+            print mjjThresholds
+
+
+        dijetCandGen  = None
+        mjjGen = None
+        mjetGen = None
+
+        if options.useMC :
+            dijetCandGen  = ak7GenMatched[0] + ak7GenMatched[1]
+            mjjGen = dijetCandGen.M()
+            mjetGen = (ak7Def[0].M() + ak7Def[1].M()) * 0.5
+
+
+        #------------------------------------------
+        # Now get the event weight.
+        #
+        # For MC:
+        #   - Weight by the generator weight (cross section for this event)
+        # For Data:
+        #   - Weight by trigger prescale of *highest* pt-threshold jet trigger that passed
+        #------------------------------------------
+        passEvent = False
+        if options.useMC :
+            # Get the generator product
+            event.getByLabel( generatorLabel, generatorHandle )
+            if generatorHandle.isValid() :
+                generatorInfo = generatorHandle.product()
+                # weight is the generator weight
+                weight *= generatorInfo.weight()
+                if options.verbose :
+                    print 'generator info weight = ' + str(weight)
+                passEvent = True
+
+            # Also get the number of simulated pileup interactions
+            event.getByLabel( puLabel, puHandle )
+            puInfos = puHandle.product()
+
+            npu = puInfos[0].getPU_NumInteractions()
+
+
+        else :
+            # Get the pat::TriggerEvent
+            event.getByLabel( trigLabel, trigHandle )
+            acceptedPaths = []
+            trigPassedName = None
+            passMjjTrig = False
+            if trigHandle.isValid() :
+                trig = trigHandle.product()
+                # IF any triggers were run and were accepted, loop over the paths and get HLT_Jet* (ignoring the one without jet ID)
+                if trig.wasRun() and trig.wasAccept() :
+                    paths = trig.paths()
+                    for path in paths :
+                        if path.wasRun() and path.wasAccept() and path.name().find('HLT_Jet') >= 0 and path.name().find('NoJetID') < 0 :
+                            acceptedPaths.append( path )
+            # If there are any accepted paths, cache them. Then match to the lookup table "trigThresholds" to see if
+            # the event is in the correct mjj bin for the trigger in question.
+            if len( acceptedPaths) > 0 :
+                for ipath in xrange( len(acceptedPaths)-1, -1, -1) :
+                    path = acceptedPaths[ipath]
+                    if options.verbose:
+                        print '  --- considering path : ' + str(path.index()) + ', name = ' + str(path.name()) + ', prescale = ' + str(path.prescale() )
+                    for ikeep in xrange(len(trigsToKeep)-1, -1, -1) :
+                        if options.verbose :
+                            print '   ----- checking trigger ' + trigsToKeep[ikeep] + ' : mjjThreshold = ' + str(mjjThresholds[ikeep])
+                        if path.name().find( trigsToKeep[ikeep] ) >= 0 and mjjReco > mjjThresholds[ikeep] :
+                            weight = path.prescale()
+                            trigPassedName = path.name()
+                            passMjjTrig = True
+                            if options.verbose :
+                                print '    -----------> Joy and elation, it worked!'
+                            break
+                    if passMjjTrig == True :
+                        break
+
+            passEvent = passMjjTrig
+
+        if passEvent :
+            if options.verbose :
+                print 'event passed! OH happy day!'
+            histAK7MjjVsEtaMax.Fill( mjjReco, etaMax, weight )
+            histAK7MjetVsEtaMax.Fill( mjetReco, etaMax, weight )
 
 
 
 
 
-#        histAK7DefPt.Fill( jdef.Perp(), weight )
-        #print 'getting gen jet matched'
-#        igen = findGenJet( jdef,
-#                           ak7Gen )
-#        if igen is not None :
-#            ptResponse = jdef.Perp() / igen.Perp()
-#            print 'jet {0:6.0f} : pt(def) / pt(gen) = {1:6.2f} / {2:6.2f} = {3:6.2f}'.format(
-#                idef, jdef.Perp(), igen.Perp(), ptResponse
-#                )
+    #        histAK7DefPt.Fill( jdef.Perp(), weight )
+            #print 'getting gen jet matched'
+    #        igen = findGenJet( jdef,
+    #                           ak7Gen )
+    #        if igen is not None :
+    #            ptResponse = jdef.Perp() / igen.Perp()
+    #            print 'jet {0:6.0f} : pt(def) / pt(gen) = {1:6.2f} / {2:6.2f} = {3:6.2f}'.format(
+    #                idef, jdef.Perp(), igen.Perp(), ptResponse
+    #                )
 
 
 
