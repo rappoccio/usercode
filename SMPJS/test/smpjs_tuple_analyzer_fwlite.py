@@ -191,7 +191,7 @@ trigHandle = Handle("pat::TriggerEvent")
 trigLabel = ( "patTriggerEvent", '')
 
 histAK7MjjVsEtaMax = ROOT.TH2F('histAK7MjjVsEtaMax', 'AK7 m_{jj} Versus #eta_{max};m_{jj} (GeV);#eta_{max}(radians)', 300, 0., 3000., 5, 0.0, 2.5)
-
+histAK7MjetVsEtaMax = ROOT.TH2F('histAK7MjetVsEtaMax', 'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV);#eta_{max}(radians)', 300, 0., 300., 5, 0.0, 2.5)
 
 
 # Use the same trigger thresholds as QCD-11-004 in AN-364-v4 Table 8
@@ -244,6 +244,8 @@ for event in events:
     npu = -1         # Number of pileup interactions simulated
     mjjReco = None   # reconstructed dijet mass
     mjjGen = None    # particle-level dijet mass
+    mjetReco = None  # reconstructed average jet mass
+    mjetGen = None   # generated average jet mass
     etaMax = None    # maximum eta of the dijet system
 
 
@@ -312,6 +314,9 @@ for event in events:
 
     dijetCandReco = ak7Def[0] + ak7Def[1]
 
+
+    mjetReco = (ak7Def[0].M() + ak7Def[1].M()) * 0.5
+
     mjjReco = dijetCandReco.M()
     etaMax = abs(ak7Def[0].Eta())
     if abs(ak7Def[0].Eta()) < abs(ak7Def[1].Eta()) :
@@ -332,10 +337,12 @@ for event in events:
 
     dijetCandGen  = None
     mjjGen = None
+    mjetGen = None
 
     if options.useMC :
         dijetCandGen  = ak7GenMatched[0] + ak7GenMatched[1]
         mjjGen = dijetCandGen.M()
+        mjetGen = (ak7Def[0].M() + ak7Def[1].M()) * 0.5
 
 
     #------------------------------------------
@@ -346,16 +353,18 @@ for event in events:
     # For Data:
     #   - Weight by trigger prescale of *highest* pt-threshold jet trigger that passed
     #------------------------------------------
-
+    passEvent = False
     if options.useMC :
         # Get the generator product
         event.getByLabel( generatorLabel, generatorHandle )
         if generatorHandle.isValid() :
             generatorInfo = generatorHandle.product()
             # weight is the generator weight
-            weight *= generatorInfo.weight() 
+            weight *= generatorInfo.weight()
+            if options.verbose :
+                print 'generator info weight = ' + str(weight)
+            passEvent = True
 
-    
         # Also get the number of simulated pileup interactions
         event.getByLabel( puLabel, puHandle )
         puInfos = puHandle.product()
@@ -396,16 +405,14 @@ for event in events:
                         break
                 if passMjjTrig == True :
                     break
-        # If there are no accepted paths, continue.
-        else :
-            continue
 
+        passEvent = passMjjTrig
 
-        if passMjjTrig :
-            if options.verbose:
-                print '------> Event passed trigger ' + trigPassedName + ' : mjj = ' + str(mjjReco) + ', eta = ' + str(etaMax)
-
-            histAK7MjjVsEtaMax.Fill( mjjReco, etaMax, weight )
+    if passEvent :
+        if options.verbose :
+            print 'event passed! OH happy day!'
+        histAK7MjjVsEtaMax.Fill( mjjReco, etaMax, weight )
+        histAK7MjetVsEtaMax.Fill( mjetReco, etaMax, weight )
 
 
 
