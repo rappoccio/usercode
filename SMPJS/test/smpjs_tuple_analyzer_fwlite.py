@@ -309,10 +309,10 @@ for ifile in files :
         found = True
         for idef in range(0,len(ak7DefPxs)):
             jdefRaw = ROOT.TLorentzVector(
-                ak7DefPxs[idef] / ak7DefJecFactors[idef],
-                ak7DefPys[idef] / ak7DefJecFactors[idef],
-                ak7DefPzs[idef] / ak7DefJecFactors[idef],
-                ak7DefEnergys[idef] / ak7DefJecFactors[idef]
+                ak7DefPxs[idef] * ak7DefJecFactors[idef],
+                ak7DefPys[idef] * ak7DefJecFactors[idef],
+                ak7DefPzs[idef] * ak7DefJecFactors[idef],
+                ak7DefEnergys[idef] * ak7DefJecFactors[idef]
                 )
 
             jec.setJetEta(jdefRaw.Eta())
@@ -337,6 +337,11 @@ for ifile in files :
                         found = False
                     else :
                         ak7GenMatched.append( jgen )
+                if options.verbose :
+                    print ' raw jet {0:4.0f}, (pt,eta,phi,m) = ({1:6.2f},{2:6.2f},{3:6.2f},{4:6.2f})'.format( idef, jdefRaw.Perp(), jdefRaw.Eta(), jdefRaw.Phi(), jdefRaw.M() )
+                    print ' corrjet {0:4.0f}, (pt,eta,phi,m) = ({1:6.2f},{2:6.2f},{3:6.2f},{4:6.2f})'.format( idef, jdef.Perp(), jdef.Eta(), jdef.Phi(), jdef.M() )
+                    if options.useMC and jgen is not None :
+                        print ' gen jet {0:4.0f}, (pt,eta,phi,m) = ({1:6.2f},{2:6.2f},{3:6.2f},{4:6.2f})'.format( idef, jgen.Perp(), jgen.Eta(), jgen.Phi(), jgen.M() )
 
         if found == False :
             continue
