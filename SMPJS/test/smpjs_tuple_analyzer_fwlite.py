@@ -31,19 +31,21 @@ parser.add_option('--useMC', action='store_true',
                   dest='useMC',
                   help='Use MC Weight (True) or weight by trigger prescale (False)')
 
-# Output name to use. 
-parser.add_option('--max', metavar='M', type='int', action='store',
-                  default=-1,
-                  dest='max',
-                  help='Maximum number of events to process, default = all')
-
-
-
 # Print verbose information
 parser.add_option('--verbose', action='store_true',
                   default=False,
                   dest='verbose',
                   help='Print verbose information')
+
+# job splitting
+parser.add_option('--nsplit', type='int', action='store',
+                  default=None,
+                  dest='nsplit',
+                  help='Number of split jobs')
+parser.add_option('--isplit', type='int', action='store',
+                  default=None,
+                  dest='isplit',
+                  help='Index of job (0...nsplit)')
 
 (options, args) = parser.parse_args()
 
@@ -72,10 +74,43 @@ def findGenJet( recoJet0, genJets ) :
 
 print 'Getting files from this dir: ' + options.files
 
-# Get the file list. 
-files = glob.glob( options.files )
-print files
+files = []
+# Get the file list.
+if options.files.find('.txt') >= 0 :
+    infile = open( options.files, 'r')
+    tmpfiles = infile.readlines()
+    for ifile in tmpfiles :
+        s = ifile.rstrip()
+        print s
+        files.append( s )
 
+elif options.nsplit is None :
+    files = glob.glob( options.files )
+    for ifile in files:
+        print ifile
+elif options.nsplit is not None :
+
+
+    tmpfiles = glob.glob( options.files )
+    print 'All files : '  + str(len(tmpfiles))
+    for ifile in tmpfiles :
+        print ifile
+
+    tot = len(tmpfiles)
+    nsplit = options.nsplit
+    isplit = options.isplit
+    msplit = tot / nsplit
+    print 'Splitting into ' + str(nsplit) + ' jobs with ' + str(msplit) + ' elements each, this job is index ' + str(isplit)
+    end = min( tot, (isplit + 1) * msplit )
+    for i in range( isplit * msplit, end ) :
+        files.append( tmpfiles[i] )
+    print 'Selected files : '
+    for ifile in files :
+        print ifile
+
+if len(files) == 0 :
+    print 'No files, exiting'
+    exit(0)
 
 # Create the output file. 
 f = ROOT.TFile(options.outname + ".root", "recreate")
@@ -93,7 +128,30 @@ nJets = ROOT.TH1F("nJets",         "Number of Jets, p_{T} > 30 GeV;N_{Jets};Numb
 ############################################
 
 
-jecUncStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
+if options.useMC :
+    jecStr = [
+        'GR_R_42_V23_L1FastJet_AK7PFchs.txt',
+        'GR_R_42_V23_L2Relative_AK7PFchs.txt',
+        'GR_R_42_V23_L3Absolute_AK7PFchs.txt',
+    ]
+else :
+    jecStr = [
+        'GR_R_42_V23_L1FastJet_AK7PFchs.txt',
+        'GR_R_42_V23_L2Relative_AK7PFchs.txt',
+        'GR_R_42_V23_L3Absolute_AK7PFchs.txt',
+        'GR_R_42_V23_L2L3Residual_AK7PFchs.txt',
+    ]
+
+jecPars = ROOT.std.vector(ROOT.JetCorrectorParameters)()
+
+for ijecStr in jecStr :
+    ijec = ROOT.JetCorrectorParameters( ijecStr )
+    jecPars.push_back( ijec )
+    
+
+jec = ROOT.FactorizedJetCorrector(jecPars)
+
+jecUncStr = ROOT.std.string('GR_R_42_V23_Uncertainty_AK7PFchs.txt')
 jecUnc = ROOT.JetCorrectionUncertainty( jecUncStr )
 
 
@@ -116,45 +174,10 @@ ak7DefPzHandle         = Handle( "std::vector<float>" )
 ak7DefPzLabel          = ( "ak7Lite",   "pz" )
 ak7DefEnergyHandle     = Handle( "std::vector<float>" )
 ak7DefEnergyLabel      = ( "ak7Lite",   "energy" )
-
-
-ak5DefPxHandle         = Handle( "std::vector<float>" )
-ak5DefPxLabel          = ( "ak5Lite",   "px" )
-ak5DefPyHandle         = Handle( "std::vector<float>" )
-ak5DefPyLabel          = ( "ak5Lite",   "py" )
-ak5DefPzHandle         = Handle( "std::vector<float>" )
-ak5DefPzLabel          = ( "ak5Lite",   "pz" )
-ak5DefEnergyHandle     = Handle( "std::vector<float>" )
-ak5DefEnergyLabel      = ( "ak5Lite",   "energy" )
-
-ak5FilteredPxHandle         = Handle( "std::vector<float>" )
-ak5FilteredPxLabel          = ( "ak5FilteredLite",   "px" )
-ak5FilteredPyHandle         = Handle( "std::vector<float>" )
-ak5FilteredPyLabel          = ( "ak5FilteredLite",   "py" )
-ak5FilteredPzHandle         = Handle( "std::vector<float>" )
-ak5FilteredPzLabel          = ( "ak5FilteredLite",   "pz" )
-ak5FilteredEnergyHandle     = Handle( "std::vector<float>" )
-ak5FilteredEnergyLabel      = ( "ak5FilteredLite",   "energy" )
-
-ak5PrunedPxHandle         = Handle( "std::vector<float>" )
-ak5PrunedPxLabel          = ( "ak5PrunedLite",   "px" )
-ak5PrunedPyHandle         = Handle( "std::vector<float>" )
-ak5PrunedPyLabel          = ( "ak5PrunedLite",   "py" )
-ak5PrunedPzHandle         = Handle( "std::vector<float>" )
-ak5PrunedPzLabel          = ( "ak5PrunedLite",   "pz" )
-ak5PrunedEnergyHandle     = Handle( "std::vector<float>" )
-ak5PrunedEnergyLabel      = ( "ak5PrunedLite",   "energy" )
-
-ak5TrimmedPxHandle         = Handle( "std::vector<float>" )
-ak5TrimmedPxLabel          = ( "ak5TrimmedLite",   "px" )
-ak5TrimmedPyHandle         = Handle( "std::vector<float>" )
-ak5TrimmedPyLabel          = ( "ak5TrimmedLite",   "py" )
-ak5TrimmedPzHandle         = Handle( "std::vector<float>" )
-ak5TrimmedPzLabel          = ( "ak5TrimmedLite",   "pz" )
-ak5TrimmedEnergyHandle     = Handle( "std::vector<float>" )
-ak5TrimmedEnergyLabel      = ( "ak5TrimmedLite",   "energy" )
-
-
+ak7DefJetAreaHandle    = Handle( "std::vector<float>" )
+ak7DefJetAreaLabel     = ( "ak7Lite",   "jetArea" )
+ak7DefJecFactorHandle  = Handle( "std::vector<float>" )
+ak7DefJecFactorLabel   = ( "ak7Lite",   "jecFactor" )
 
 
 ak7GenPxHandle         = Handle( "std::vector<float>" )
@@ -166,14 +189,10 @@ ak7GenPzLabel          = ( "ak7Gen",   "pz" )
 ak7GenEnergyHandle     = Handle( "std::vector<float>" )
 ak7GenEnergyLabel      = ( "ak7Gen",   "energy" )
 
-ak5GenPxHandle         = Handle( "std::vector<float>" )
-ak5GenPxLabel          = ( "ak5Gen",   "px" )
-ak5GenPyHandle         = Handle( "std::vector<float>" )
-ak5GenPyLabel          = ( "ak5Gen",   "py" )
-ak5GenPzHandle         = Handle( "std::vector<float>" )
-ak5GenPzLabel          = ( "ak5Gen",   "pz" )
-ak5GenEnergyHandle     = Handle( "std::vector<float>" )
-ak5GenEnergyLabel      = ( "ak5Gen",   "energy" )
+
+rhoHandle = Handle("double")
+rhoLabel = ( "kt6PFJets", "rho")
+
 
 puHandle = Handle("std::vector<PileupSummaryInfo>")
 puLabel = ( "addPileupInfo", "")
@@ -189,6 +208,14 @@ trigLabel = ( "patTriggerEvent", '')
 histAK7MjjVsEtaMax = ROOT.TH2F('histAK7MjjVsEtaMax', 'AK7 m_{jj} Versus #eta_{max};m_{jj} (GeV);#eta_{max}(radians)', 300, 0., 3000., 5, 0.0, 2.5)
 histAK7MjetVsEtaMax = ROOT.TH2F('histAK7MjetVsEtaMax', 'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV);#eta_{max}(radians)', 300, 0., 300., 5, 0.0, 2.5)
 
+histAK7MjjResponseVsEtaMax = ROOT.TH3F('histAK7MjjResponseVsEtaMax', 'AK7 m_{jj} Response;m_{jj} (GeV);#eta_{max}(radians)',
+                                       30, 0., 3000., 20, 0.0, 2.0, 5, 0.0, 2.5)
+histAK7MjetResponseVsEtaMax = ROOT.TH3F('histAK7MjetResponseVsEtaMax', 'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV);#eta_{max}(radians)',
+                                        30, 0., 300., 20, 0.0, 2.0, 5, 0.0, 2.5)
+
+
+histAK7PtResponse  = ROOT.TH2F('histAK7PtResponse',  ';p_{T}^{GEN} (GeV);p_{T}^{RECO} / p_{T}^{GEN}', 50, 0., 500., 20, 0., 2.)
+histAK7EtaResponse = ROOT.TH2F('histAK7EtaResponse', ';#eta^{GEN} (GeV);p_{T}^{RECO} / p_{T}^{GEN}', 50, -5.0, 5.0, 20, 0., 2.)
 
 # Use the same trigger thresholds as QCD-11-004 in AN-364-v4 Table 8
 trigsToKeep = [
@@ -210,7 +237,6 @@ trigThresholds = [
 [[2.0, 2.5], [ 913., 1549., 2665., 3700., 4000.] ]
     ]
 
-
 count = 0
 for ifile in files :
 
@@ -218,7 +244,7 @@ for ifile in files :
 
     events = Events (ifiles)
 
-    print "Start looping"
+    print "Start looping on file " + ifiles[0]
     for event in events:
         weight = 1.0
 
@@ -248,6 +274,10 @@ for ifile in files :
         ak7DefPzs = ak7DefPzHandle.product()
         event.getByLabel( ak7DefEnergyLabel, ak7DefEnergyHandle )
         ak7DefEnergys = ak7DefEnergyHandle.product()
+        event.getByLabel( ak7DefJetAreaLabel, ak7DefJetAreaHandle )
+        ak7DefJetAreas = ak7DefJetAreaHandle.product()
+        event.getByLabel( ak7DefJecFactorLabel, ak7DefJecFactorHandle )
+        ak7DefJecFactors = ak7DefJecFactorHandle.product()
 
 
         if options.useMC :
@@ -271,16 +301,34 @@ for ifile in files :
                 ak7Gen.append( jgen )
 
 
+        event.getByLabel( rhoLabel, rhoHandle )
+        rho = rhoHandle.product()[0]
+
         ak7Def = []
         ak7GenMatched = []
         found = True
         for idef in range(0,len(ak7DefPxs)):
-            jdef = ROOT.TLorentzVector(
-                ak7DefPxs[idef],
-                ak7DefPys[idef],
-                ak7DefPzs[idef],
-                ak7DefEnergys[idef]
+            jdefRaw = ROOT.TLorentzVector(
+                ak7DefPxs[idef] / ak7DefJecFactors[idef],
+                ak7DefPys[idef] / ak7DefJecFactors[idef],
+                ak7DefPzs[idef] / ak7DefJecFactors[idef],
+                ak7DefEnergys[idef] / ak7DefJecFactors[idef]
                 )
+
+            jec.setJetEta(jdefRaw.Eta())
+            jec.setJetPt(jdefRaw.Perp())
+            jec.setJetA(ak7DefJetAreas[idef])
+            jec.setRho(rho)
+            factor = jec.getCorrection()
+
+
+            jdef = ROOT.TLorentzVector(
+                jdefRaw.Px() * factor,
+                jdefRaw.Py() * factor,
+                jdefRaw.Pz() * factor,
+                jdefRaw.Energy() * factor
+                )
+            
             if jdef.Perp() > jetPtMin and abs(jdef.Eta()) < jetEtaMax:
                 ak7Def.append( jdef )
                 if options.useMC :
@@ -399,7 +447,16 @@ for ifile in files :
             histAK7MjetVsEtaMax.Fill( mjetReco, etaMax, weight )
 
 
-
+            if options.useMC :
+                response0 = ak7Def[0].Perp() / ak7GenMatched[0].Perp()
+                mjjResponse = mjjReco / mjjGen
+                mjetResponse = mjetReco / mjetGen
+                ptGen0 = ak7GenMatched[0].Perp()
+                etaGen0 = ak7GenMatched[0].Eta()
+                histAK7PtResponse.Fill( ptGen0, response0 )
+                histAK7EtaResponse.Fill( etaGen0, response0 )
+                histAK7MjjResponseVsEtaMax.Fill( mjjGen, mjjResponse, etaMax )
+                histAK7MjetResponseVsEtaMax.Fill( mjetGen, mjetResponse, etaMax )
 
 
     #        histAK7DefPt.Fill( jdef.Perp(), weight )
