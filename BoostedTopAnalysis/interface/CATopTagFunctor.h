@@ -10,7 +10,7 @@
   the CATopTag algorithm
 
   \author Salvatore Rappoccio
-  \version  $Id: CATopTagFunctor.h,v 1.2 2010/02/20 14:43:30 hegner Exp $
+  \version  $Id: CATopTagFunctor.h,v 1.6 2009/10/12 01:07:00 srappocc Exp $
 */
 
 
@@ -20,7 +20,7 @@
 #include "AnalysisDataFormats/TopObjects/interface/CATopJetTagInfo.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "PhysicsTools/SelectorUtils/interface/Selector.h"
+#include "PhysicsTools/Utilities/interface/Selector.h"
 
 #include <TMath.h>
 class CATopTagFunctor : public Selector<pat::Jet>  {
@@ -31,42 +31,31 @@ class CATopTagFunctor : public Selector<pat::Jet>  {
   enum Quality_t { LOOSE, TIGHT, N_QUALITY};
   
 
- CATopTagFunctor( edm::ParameterSet const & params )
-   {
-     std::cout << "Instantiated CATopTagFunctor" << std::endl;
-     std::string inputVersion = params.getParameter<std::string>("version");
-     
-     tagName_ = params.getParameter<std::string>("tagName");
+  CATopTagFunctor( Version_t version, Quality_t quality, std::string tagName ) :
+   version_(version), quality_(quality), tagName_(tagName)
+  {
 
-     if ( inputVersion == "PF" ) version_ = PF;
-     else version_ = CALO;
-   
-     push_back("Top Mass");
-     push_back("Top Mass Min");
-     push_back("Top Mass Max" );
-     push_back("Min Mass");
-     push_back("W Mass");
-     push_back("W Mass Min" );
-     push_back("W Mass Max"   );
+    push_back("Top Mass"             );
+    push_back("Top Mass Min", 100.0  );
+    push_back("Top Mass Max", 250.0  );
+    push_back("Min Mass",     50.0   );
+    push_back("W Mass"               );
+    push_back("W Mass Min",   0.0    );
+    push_back("W Mass Max",   99999.0);
 
 
-     set("Top Mass",     params.getParameter<bool>  ("useTopMassCuts") );
-     set("Top Mass Min", params.getParameter<double>("topMassMin")     );
-     set("Top Mass Max", params.getParameter<double>("topMassMax")     );
-     set("Min Mass",     params.getParameter<double>("minMass")        );
-     set("W Mass",       params.getParameter<bool>  ("useWMassCuts")   );
-     set("W Mass Min",   params.getParameter<double>("wMassMin")       );
-     set("W Mass Max",   params.getParameter<double>("wMassMax")       );
+    set("Top Mass"    );
+    set("Top Mass Min");
+    set("Top Mass Max");
+    set("Min Mass"    );
+    set("W Mass",       false  );
+    set("W Mass Min",   false  );
+    set("W Mass Max",   false  );
 
-
-     if ( params.exists("cutsToIgnore") )
-       setIgnoredCuts( params.getParameter<std::vector<std::string> >("cutsToIgnore") );
-      
-     retInternal_ = getBitTemplate();
   }
 
   // Allow for multiple definitions of the cuts. 
-  bool operator()( const pat::Jet & jet, pat::strbitset & ret )  
+  bool operator()( const pat::Jet & jet, std::strbitset & ret )  
   {
     if ( version_ == CALO || version_ == PF ) 
       return caloTag( jet, ret );
@@ -76,11 +65,16 @@ class CATopTagFunctor : public Selector<pat::Jet>  {
   }
 
   // cuts based on craft 08 analysis. 
-  bool caloTag( const pat::Jet & jet, pat::strbitset & ret) 
+  bool caloTag( const pat::Jet & jet, std::strbitset & ret) 
   {
     
     const reco::CATopJetTagInfo * catopTag = 
       dynamic_cast<reco::CATopJetTagInfo const *>(jet.tagInfo(tagName_));
+
+/*     std::cout << "---------" << std::endl; */
+/*     std::cout << "top Mass = " << catopTag->properties().topMass << std::endl; */
+/*     std::cout << "min Mass = " << catopTag->properties().minMass << std::endl; */
+/*     std::cout << "w Mass   = " << catopTag->properties().wMass << std::endl; */
 
     // First check top mass cut
     if ( considerCut("Top Mass") ) {
@@ -127,10 +121,8 @@ class CATopTagFunctor : public Selector<pat::Jet>  {
       passCut( ret, "W Mass Min");
     }
     
-
     
-    setIgnored( ret );
-
+/*     ret.print(std::cout); */
     // We're done, return
     return (bool)ret;
   }

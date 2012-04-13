@@ -15,7 +15,7 @@ def SetHistStyle( hist, x ) :
 
 if __name__   ==  "__main__"  :
     
-    f = TFile("Mistag_Jet_PD_May10ReReco_PromptReco_range1_range2_v4_mistag.root")
+    f = TFile("TTHadronicAnalyzerCombined_Jet_PD_May10ReReco_PromptReco_range1_range2_v4_mistag.root")
 
     pretagHists = [
       "topJetCandPtAll",  "topJetCandMassAll",  "topJetNsubsAll", "topJetMinMassAll" ]
@@ -81,7 +81,7 @@ if __name__   ==  "__main__"  :
                 [350, 360,  370,  380,  390,  400, 410,  420, 430,  440,  460,  480,  500,  
                 540,  580,  620,  640,  680,  720,  800, 1000, 1200  ] )
     
-    outfile = TFile("MISTAG_TYPE12_NEW.root", "RECREATE")
+    outfile = TFile("MISTAG.root", "RECREATE")
     outfile.cd()
     for i in range(0,len(numer) ) :
         tagHist = (f.Get( numer[i] )).Rebin( len(xbins)-1, hisTitles[i], xbins )

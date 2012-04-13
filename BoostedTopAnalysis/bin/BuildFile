@@ -2,15 +2,15 @@
 <use name=DataFormats/FWLite>
 <use name=FWCore/Framework>
 <use name=FWCore/FWLite>
-<use name=rootcintex>
-<use name=root> 
-<use name=boost>
-<use name=CommonTools/Utils>
-<use name=PhysicsTools/Utilities>
 <use name=PhysicsTools/PatUtils>
+<use name=PhysicsTools/Utilities>
 <use name=PhysicsTools/PatExamples>
 <use name=PhysicsTools/FWLite>
+<use name=Analysis/BoostedTopAnalysis>
+<use name=rootcintex>
+<use name=root> 
 
 <environment>
- <bin file="jetIDStudies.C"> </bin>
+ <bin file="hadronic_analysis.C"> </bin>
+ <bin file="testSelection_boostedtop.C"> </bin>
 </environment>
