@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Sun Jan 24 22:48:12 CST 2010
-// $Id: PVFilter.cc,v 1.4 2010/03/24 18:54:59 srappocc Exp $
+// $Id: PVFilter.cc,v 1.1 2010/01/25 18:46:00 srappocc Exp $
 //
 //
 
@@ -30,7 +30,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "PhysicsTools/SelectorUtils/interface/PVSelector.h"
+#include "Analysis/AnalysisFilters/interface/PVSelector.h"
 
 //
 // class declaration
@@ -67,7 +67,11 @@ PVFilter::PVFilter(const edm::ParameterSet& iConfig)
    //now do what ever initialization is needed
 
   pvSelector_ = 
-    boost::shared_ptr<PVSelector> ( new PVSelector (iConfig.getParameter<edm::ParameterSet>("pvSelector") ) );
+    boost::shared_ptr<PVSelector> ( new PVSelector (  
+      iConfig.getParameter<edm::InputTag>("pvSrc"), 
+      iConfig.getParameter<double>("minPVNdof"), 
+      iConfig.getParameter<double>("maxPVZ") 
+    ) );
 
 }
 
