@@ -155,6 +155,29 @@ jecUncStr = ROOT.std.string('GR_R_42_V23_Uncertainty_AK7PFchs.txt')
 jecUnc = ROOT.JetCorrectionUncertainty( jecUncStr )
 
 
+############################################
+#     Trigger information                  #
+############################################
+# Use the same trigger thresholds as QCD-11-004 in AN-364-v4 Table 8
+trigsToKeep = [
+    'HLT_Jet60',
+    'HLT_Jet110',
+    'HLT_Jet190',
+    'HLT_Jet240',
+    'HLT_Jet370',
+    ]
+# Here are the trigger thresholds for the various eta bins.
+# In the following, each entry is an eta bin. The
+# two fields are then [etamin,etamax], and the
+# list of mjj thresholds for HLT_Jet60,110,190,240,370.
+trigThresholds = [
+[[0.0, 0.5], [ 178.,  324.,  533.,  663.,  970., 7000.] ],
+[[0.5, 1.0], [ 240.,  390.,  645.,  820., 1218., 7000.] ],
+[[1.0, 1.5], [ 369.,  615.,  998., 1261., 1904., 7000.] ],
+[[1.5, 2.0], [ 530.,  920., 1590., 1985., 3107., 7000.] ],
+[[2.0, 2.5], [ 913., 1549., 2665., 3700., 4000., 7000.] ]
+    ]
+
 
 ############################################
 # Physics level parameters for systematics #
@@ -208,34 +231,27 @@ trigLabel = ( "patTriggerEvent", '')
 histAK7MjjVsEtaMax = ROOT.TH2F('histAK7MjjVsEtaMax', 'AK7 m_{jj} Versus #eta_{max};m_{jj} (GeV);#eta_{max}(radians)', 300, 0., 3000., 5, 0.0, 2.5)
 histAK7MjetVsEtaMax = ROOT.TH2F('histAK7MjetVsEtaMax', 'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV);#eta_{max}(radians)', 300, 0., 300., 5, 0.0, 2.5)
 
+# TO DO:::: DO this for each trigger!
+histAK7MjjVsEtaMaxTrigs = []
+histAK7MjetVsEtaMaxTrigs = []
+
+for trig in trigsToKeep :
+    histAK7MjjVsEtaMaxTrigs.append(  ROOT.TH2F('histAK7MjjVsEtaMax_' + trig,
+                                                'AK7 m_{jj} Versus #eta_{max}' + trig +';m_{jj} (GeV);#eta_{max}(radians)',
+                                                300, 0., 3000., 5, 0.0, 2.5) )
+    histAK7MjetVsEtaMaxTrigs.append( ROOT.TH2F('histAK7MjetVsEtaMax_' + trig,
+                                                'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV)' + trig + ';#eta_{max}(radians)',
+                                                300, 0., 300., 5, 0.0, 2.5) )
+
+
 histAK7MjjResponseVsEtaMax = ROOT.TH3F('histAK7MjjResponseVsEtaMax', 'AK7 m_{jj} Response;m_{jj} (GeV);#eta_{max}(radians)',
-                                       30, 0., 3000., 20, 0.0, 2.0, 5, 0.0, 2.5)
+                                       30, 0., 3000., 20, 0.5, 1.5, 5, 0.0, 2.5)
 histAK7MjetResponseVsEtaMax = ROOT.TH3F('histAK7MjetResponseVsEtaMax', 'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV);#eta_{max}(radians)',
-                                        30, 0., 300., 20, 0.0, 2.0, 5, 0.0, 2.5)
+                                        30, 0., 300., 20, 0.5, 1.5, 5, 0.0, 2.5)
 
 
-histAK7PtResponse  = ROOT.TH2F('histAK7PtResponse',  ';p_{T}^{GEN} (GeV);p_{T}^{RECO} / p_{T}^{GEN}', 50, 0., 500., 20, 0., 2.)
-histAK7EtaResponse = ROOT.TH2F('histAK7EtaResponse', ';#eta^{GEN} (GeV);p_{T}^{RECO} / p_{T}^{GEN}', 50, -5.0, 5.0, 20, 0., 2.)
-
-# Use the same trigger thresholds as QCD-11-004 in AN-364-v4 Table 8
-trigsToKeep = [
-    'HLT_Jet60',
-    'HLT_Jet110',
-    'HLT_Jet190',
-    'HLT_Jet240',
-    'HLT_Jet370',
-    ]
-# Here are the trigger thresholds for the various eta bins.
-# In the following, each entry is an eta bin. The
-# two fields are then [etamin,etamax], and the
-# list of mjj thresholds for HLT_Jet60,110,190,240,370.
-trigThresholds = [
-[[0.0, 0.5], [ 178.,  324.,  533.,  663.,  970.] ],
-[[0.5, 1.0], [ 240.,  390.,  645.,  820., 1218.] ],
-[[1.0, 1.5], [ 369.,  615.,  998., 1261., 1904.] ],
-[[1.5, 2.0], [ 530.,  920., 1590., 1985., 3107.] ],
-[[2.0, 2.5], [ 913., 1549., 2665., 3700., 4000.] ]
-    ]
+histAK7PtResponse  = ROOT.TH2F('histAK7PtResponse',  ';p_{T}^{GEN} (GeV);p_{T}^{RECO} / p_{T}^{GEN}', 50, 0., 500., 20, 0.5, 1.5)
+histAK7EtaResponse = ROOT.TH2F('histAK7EtaResponse', ';#eta^{GEN} (GeV);p_{T}^{RECO} / p_{T}^{GEN}', 50, -5.0, 5.0, 20, 0.5, 1.5)
 
 count = 0
 for ifile in files :
@@ -246,7 +262,12 @@ for ifile in files :
 
     print "Start looping on file " + ifiles[0]
     for event in events:
+
+        # Histogram filling weight
         weight = 1.0
+
+        # Histogram index for data (Jet60,110,190,240,370)
+        iTrigHist = None
 
         if count % 10000 == 0 :
             print 'Processing event ' + str(count)
@@ -433,12 +454,12 @@ for ifile in files :
                     for ikeep in xrange(len(trigsToKeep)-1, -1, -1) :
                         if options.verbose :
                             print '   ----- checking trigger ' + trigsToKeep[ikeep] + ' : mjjThreshold = ' + str(mjjThresholds[ikeep])
-                        if path.name().find( trigsToKeep[ikeep] ) >= 0 and mjjReco > mjjThresholds[ikeep] :
-                            weight = path.prescale()
+                        if path.name().find( trigsToKeep[ikeep] ) >= 0 and mjjReco >= mjjThresholds[ikeep] and mjjReco < mjjThresholds[ikeep + 1]:
                             trigPassedName = path.name()
+                            iTrigHist = ikeep
                             passMjjTrig = True
                             if options.verbose :
-                                print '    -----------> Joy and elation, it worked!'
+                                print '    -----------> Joy and elation, it worked! trigger = ' + trigsToKeep[iTrigHist]
                             break
                     if passMjjTrig == True :
                         break
@@ -448,9 +469,18 @@ for ifile in files :
         if passEvent :
             if options.verbose :
                 print 'event passed! OH happy day!'
-            histAK7MjjVsEtaMax.Fill( mjjReco, etaMax, weight )
-            histAK7MjetVsEtaMax.Fill( mjetReco, etaMax, weight )
 
+            if options.useMC :
+                histAK7MjjVsEtaMax.Fill( mjjReco, etaMax, weight )
+                histAK7MjetVsEtaMax.Fill( mjetReco, etaMax, weight )
+            elif iTrigHist is not None :
+                if options.verbose :
+                    print ' Filling histogram ' + str(iTrigHist) + ' which corresponds to trigger ' + trigsToKeep[iTrigHist]
+                histAK7MjjVsEtaMaxTrigs[iTrigHist].Fill( mjjReco, etaMax, weight )
+                histAK7MjetVsEtaMaxTrigs[iTrigHist].Fill( mjetReco, etaMax, weight )                
+            else :
+                print 'Error in trigger assignment!'
+                continue
 
             if options.useMC :
                 response0 = ak7Def[0].Perp() / ak7GenMatched[0].Perp()

@@ -54,10 +54,24 @@ process.pvCount = cms.EDFilter(
     src=cms.InputTag('goodOfflinePrimaryVertices')
     )
 
+# Select only triggers we want, write them out, and their prescales
+process.dijetTriggerFilter = cms.EDFilter(
+    "EDDijetTriggerFilter",
+    src = cms.InputTag("patTriggerEvent"),
+    trigs = cms.vstring( [
+        'HLT_Jet60',
+        'HLT_Jet110',
+        'HLT_Jet190',
+        'HLT_Jet240',
+        'HLT_Jet370'
+        ])
+    )
+
 process.patseq = cms.Sequence(
     process.pvCount *
     process.hltSelection *
-    process.patTriggerDefaultSequence
+    process.patTriggerDefaultSequence*
+    process.dijetTriggerFilter
     )
 
 
@@ -74,7 +88,8 @@ process.out = cms.OutputModule("PoolOutputModule",
                                    'keep *_*Lite*_*_*',
                                    'keep *_pvCount_*_*',
                                    'keep double_kt6PFJets_*_*',
-                                   'keep *_patTrigger*_*_*'
+                                   'keep *_dijetTriggerFilter_*_*'
+                                   #'keep *_patTrigger*_*_*'
                                    ),
                                dropMetaData = cms.untracked.string("DROPPED")
                                )
