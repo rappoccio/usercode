@@ -6,11 +6,11 @@
 <use name=root> 
 <use name=boost>
 <use name=CommonTools/Utils>
-<use name=PhysicsTools/Utilities>
-<use name=PhysicsTools/PatUtils>
+<use name=PhysicsTools/SelectorUtils>
 <use name=PhysicsTools/PatExamples>
 <use name=PhysicsTools/FWLite>
 
 <environment>
- <bin file="jetIDStudies.C"> </bin>
+ <bin file="jetStudies.C"> </bin>
+ <bin file="multijetStudies.C"> </bin>
 </environment>

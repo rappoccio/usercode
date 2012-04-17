@@ -14,8 +14,6 @@
 #include <cmath>      //necessary for absolute function fabs()
 #include <boost/shared_ptr.hpp>
 
-#include "PhysicsTools/FWLite/interface/TFileService.h"
-
 // Root includes
 #include "TROOT.h"
 
@@ -68,30 +66,26 @@ int main (int argc, char* argv[])
    // Setup a style
    gROOT->SetStyle ("Plain");
 
-   // create the TFileService instance and a map for the histograms
-   boost::shared_ptr<fwlite::TFileService> fs( new fwlite::TFileService("eff_catoptag.root") );
-   std::map<std::string, TH1*> hist;
-
    // Book those histograms!
 
-   hist["genJetPt"] = fs->make<TH1F>( "genJetPt", "Gen Jet p_{T};Gen Jet p_{T} (GeV/c)", 60, 0, 3000 );
-   hist["genJetY"]  = fs->make<TH1F>("genJetY", "Gen Jet Rapidity;Gen Jet Y", 60, -3.0, 3.0);
- 
-   hist["genJetPtReco"] = fs->make<TH1F>("genJetPtReco", "Gen Jet p_{T}, Matched to RECO Jet;Gen Jet p_{T} (GeV/c)", 60, 0, 3000);
-   hist["genJetYReco"]  = fs->make<TH1F>("genJetYReco", "Gen Jet Rapidity, Matched to RECO Jet;Gen Jet Y", 60, -3.0, 3.0);
+   eventCont.add( new TH1F( "genJetPt", "Gen Jet p_{T};Gen Jet p_{T} (GeV/c)", 60, 0, 3000) );
+   eventCont.add( new TH1F( "genJetY", "Gen Jet Rapidity;Gen Jet Y", 60, -3.0, 3.0) );
 
-   hist["genJetPtTag"] = fs->make<TH1F>("genJetPtTag", "Gen Jet p_{T}, Matched to Tagged Jet;Gen Jet p_{T} (GeV/c)", 60, 0, 3000);
-   hist["genJetYTag"]  = fs->make<TH1F>("genJetYTag", "Gen Jet Rapidity, Matched to Tagged Jet;Gen Jet Y", 60, -3.0, 3.0);
+   eventCont.add( new TH1F( "genJetPtReco", "Gen Jet p_{T}, Matched to RECO Jet;Gen Jet p_{T} (GeV/c)", 60, 0, 3000) );
+   eventCont.add( new TH1F( "genJetYReco", "Gen Jet Rapidity, Matched to RECO Jet;Gen Jet Y", 60, -3.0, 3.0) );
 
-   hist["jetPtReco"] = fs->make<TH1F>("jetPtReco", "Jet p_{T};Jet p_{T} (GeV/c)", 60, 0, 3000);
-   hist["jetYReco"]  = fs->make<TH1F>("jetYReco", "Jet Rapidity;Jet Y", 60, -3.0, 3.0);
+   eventCont.add( new TH1F( "genJetPtTag", "Gen Jet p_{T}, Matched to Tagged Jet;Gen Jet p_{T} (GeV/c)", 60, 0, 3000) );
+   eventCont.add( new TH1F( "genJetYTag", "Gen Jet Rapidity, Matched to Tagged Jet;Gen Jet Y", 60, -3.0, 3.0) );
 
-   hist["jetPtTag"] = fs->make<TH1F>("jetPtTag", "Tagged Jet p_{T};Jet p_{T} (GeV/c)", 60, 0, 3000);
-   hist["jetYTag"]  = fs->make<TH1F>("jetYTag", "Tagged Jet Rapidity;Jet Y", 60, -3.0, 3.0);
+   eventCont.add( new TH1F( "jetPtReco", "Jet p_{T};Jet p_{T} (GeV/c)", 60, 0, 3000) );
+   eventCont.add( new TH1F( "jetYReco", "Jet Rapidity;Jet Y", 60, -3.0, 3.0) );
 
-   hist["topMass"] = fs->make<TH1F>("topMass", "Top Mass;Top Mass (GeV/c^{2}", 100, 0, 500 );
-   hist["minMass"] = fs->make<TH1F>("minMass", "Jet Min Mass;Min Mass (GeV/c^{2})", 100, 0, 200 );
-   hist["wMass"]   = fs->make<TH1F>("wMass",   "W Mass;W Mass (GeV/c^{2})", 100, 0, 200 ); 
+   eventCont.add( new TH1F( "jetPtTag", "Tagged Jet p_{T};Jet p_{T} (GeV/c)", 60, 0, 3000) );
+   eventCont.add( new TH1F( "jetYTag", "Tagged Jet Rapidity;Jet Y", 60, -3.0, 3.0) );
+
+   eventCont.add( new TH1F( "topMass", "Top Mass;Top Mass (GeV/c^{2}", 100, 0, 500 ) );
+   eventCont.add( new TH1F( "minMass", "Jet Min Mass;Min Mass (GeV/c^{2})", 100, 0, 200 ) );
+   eventCont.add( new TH1F( "wMass",   "W Mass;W Mass (GeV/c^{2})", 100, 0, 200 ) );
 
    //////////////////////
    // //////////////// //
@@ -121,8 +115,8 @@ int main (int argc, char* argv[])
        // Make sure we have a jet with pt > 30
        if ( igen->pt() > 100 ) {
 	 
-	 hist["genJetPt"]->Fill( igen->pt() );
-	 hist["genJetY"]->Fill( igen->rapidity() );
+	 eventCont.hist("genJetPt")->Fill( igen->pt() );
+	 eventCont.hist("genJetY")->Fill( igen->rapidity() );
 
 
 
@@ -143,28 +137,28 @@ int main (int argc, char* argv[])
 	 // IF we've found a matched reco jet
 	 if ( found != allJets->end() ) {
 
-	   hist["genJetPtReco"]->Fill( igen->pt() );
-	   hist["genJetYReco"]->Fill( igen->rapidity() );
+	   eventCont.hist("genJetPtReco")->Fill( igen->pt() );
+	   eventCont.hist("genJetYReco")->Fill( igen->rapidity() );
 
-	   hist["jetPtReco"]->Fill( found->pt() );
-	   hist["jetYReco"]->Fill( found->rapidity() );
+	   eventCont.hist("jetPtReco")->Fill( found->pt() );
+	   eventCont.hist("jetYReco")->Fill( found->rapidity() );
 	   
 	   const reco::CATopJetTagInfo * catopTag = dynamic_cast<reco::CATopJetTagInfo const *>(found->tagInfo("CATopCaloJet"));
 	   
 	   if ( catopTag !=0 && catopTag->properties().minMass != 999999.0 ) {
 	     
-	     hist["topMass"]->Fill( catopTag->properties().topMass );
-	     hist["minMass"]->Fill( catopTag->properties().minMass );
-	     hist["wMass"]->Fill( catopTag->properties().wMass );
+	     eventCont.hist("topMass")->Fill( catopTag->properties().topMass );
+	     eventCont.hist("minMass")->Fill( catopTag->properties().minMass );
+	     eventCont.hist("wMass")->Fill( catopTag->properties().wMass );
 
 	     // If we've found a tagged jet
 	     if ( catopTag->properties().topMass >= 100. && catopTag->properties().topMass <= 250. &&
 		  catopTag->properties().minMass >= 50.) {
-	       hist["genJetPtTag"]->Fill( igen->pt() );
-	       hist["genJetYTag"]->Fill( igen->rapidity() );
+	       eventCont.hist("genJetPtTag")->Fill( igen->pt() );
+	       eventCont.hist("genJetYTag")->Fill( igen->rapidity() );
 
-	       hist["jetPtTag"]->Fill( found->pt() );
-	       hist["jetYTag"]->Fill( found->rapidity() );
+	       eventCont.hist("jetPtTag")->Fill( found->pt() );
+	       eventCont.hist("jetYTag")->Fill( found->rapidity() );
 	       
 	     }// end if tagged the jet	     
 	   }// end if reconstructed tag

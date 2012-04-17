@@ -89,7 +89,7 @@ using namespace std;
     /////////////////////////////////////////////////////////////////////////////////////////
 		TCanvas *c1000 = new TCanvas("c1000","",10,10,700,550);
 
-		TFile *ROOT 			= new TFile("TTHadronicAnalyzerCombined_Jet_PD_May10ReReco_PromptReco_range1_range2_v4_fixedRand_mistag1.root");
+	TFile *ROOT 			= new TFile("TTHadronicAnalyzerCombined_Jet_PD_May10ReReco_PromptReco_range1_range2_v4_mistag1.root");			
     TH1D * topTagPt			=  ROOT	-> Get("topTagPt");
 	TH1D * topProbePt		=  ROOT -> Get("topProbePt");
 	TH1D * massCutTagPt		=  ROOT -> Get("testTagPt");
