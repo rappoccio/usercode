@@ -37,7 +37,11 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 
 mytrigs = [
-    'HLT_Jet*_v*',
+        'HLT_Jet60_v*',
+        'HLT_Jet110_v*',
+        'HLT_Jet190_v*',
+        'HLT_Jet240_v*',
+        'HLT_Jet370_v*'
     ]
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 process.hltSelection1 = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = mytrigs)
@@ -59,11 +63,11 @@ process.dijetTriggerFilter = cms.EDFilter(
     "EDDijetTriggerFilter",
     src = cms.InputTag("patTriggerEvent"),
     trigs = cms.vstring( [
-        'HLT_Jet60',
-        'HLT_Jet110',
-        'HLT_Jet190',
-        'HLT_Jet240',
-        'HLT_Jet370'
+        'HLT_Jet60_v',
+        'HLT_Jet110_v',
+        'HLT_Jet190_v',
+        'HLT_Jet240_v',
+        'HLT_Jet370_v'
         ])
     )
 
