@@ -13,16 +13,16 @@ This example creates a histogram of Jet Pt, using Jets with Pt above 30 and ETA 
 #include "TSystem.h"
 #include "TLorentzVector.h"
 
-#include "PhysicsTools/SelectorUtils/interface/strbitset.h"
+#include "PhysicsTools/Utilities/interface/strbitset.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Photon.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
-#include "PhysicsTools/SelectorUtils/interface/Selector.h"
-#include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
-#include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
+#include "PhysicsTools/Utilities/interface/Selector.h"
+#include "PhysicsTools/PatUtils/interface/JetIDSelectionFunctor.h"
+#include "PhysicsTools/PatUtils/interface/PFJetIDSelectionFunctor.h"
 #include "Analysis/AnalysisFilters/interface/PVSelector.h"
 
 #include <iostream>
@@ -41,7 +41,7 @@ using namespace std;
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/Ptr.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#include "PhysicsTools/SelectorUtils/interface/EventSelector.h"
+#include "PhysicsTools/Utilities/interface/EventSelector.h"
 
 #include "PhysicsTools/FWLite/interface/EventContainer.h"
 #include "PhysicsTools/FWLite/interface/CommandLineParser.h" 
@@ -227,11 +227,11 @@ int main (int argc, char* argv[])
 
    parser.addOption( "jetSrc", optutl::CommandLineParser::kString, 
 		     "Jet source",
-		     "selectedPatJets" );
+		     "selectedLayer1Jets" );
 
    parser.addOption( "pfjetSrc", optutl::CommandLineParser::kString, 
 		     "PFJet source",
-		     "selectedPatJetsAK5PF" );
+		     "selectedLayer1JetsPF" );
 
    parser.addOption( "doGen", optutl::CommandLineParser::kBool, 
 		     "Match generator level stuff",
@@ -240,9 +240,6 @@ int main (int argc, char* argv[])
    parser.addOption( "isData", optutl::CommandLineParser::kBool,
 		     "Is this data?",
 		     true );
-
-   parser.addOption( "runs", optutl::CommandLineParser::kIntegerVector,
-		     "List of runs" );
 
    // Parse the command line arguments
    parser.parseArguments (argc, argv);
@@ -434,17 +431,12 @@ int main (int argc, char* argv[])
 				    false
 				    );
 
-   vector<int> const & runs = parser.integerVector("runs");
-
   int nev = 0;
   //loop through each event
   for (eventCont.toBegin(); ! eventCont.atEnd(); ++eventCont) {
 
 
     edm::EventBase const & event = eventCont;
-
-    int run = event.id().run();
-    if ( runs.size() > 0 && find( runs.begin(), runs.end(), run ) == runs.end() ) continue;
 
     std::strbitset retCalo = caloSelector.getBitTemplate();
     bool passedCalo = caloSelector( event, retCalo );

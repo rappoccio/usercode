@@ -6,6 +6,6 @@ do
 	do
 		echo $LABEL $DIR
 		echo "/uscms_data/d2/jdolen/BoostedTop424Ntuple/CMSSW_4_2_4/src/Analysis/TTBSMPatTuples/test/retry/${DIR}/res/"
-		python TTHadronicAnalyzerCombined.py --dirs=/uscms_data/d2/jdolen/BoostedTop424Ntuple/CMSSW_4_2_4/src/Analysis/TTBSMPatTuples/test/retry/${DIR}/res/ --outfile=TTHadronicAnalyzerCombined_${DIR} --analyzer=Type11Analyzer --mistagFile=MISTAG_RATE_TYPE1_SUBTRACT --useMC --collectionLabelSuffix=$LABEL
+		python TTHadronicAnalyzerCombined.py --dirs=/uscms_data/d2/jdolen/BoostedTop424Ntuple/CMSSW_4_2_4/src/Analysis/TTBSMPatTuples/test/retry/${DIR}/res/ --outfile=TTHadronicAnalyzerCombined_${DIR} --analyzer=Type11Analyzer --mistagFile=MISTAG_RATE_TYPE1 --useMC --collectionLabelSuffix=$LABEL
 	done
 done	
