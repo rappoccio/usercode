@@ -75,7 +75,7 @@ int main (int argc, char* argv[])
 
   cout << "Getting parameters" << endl;
   // Get the python configuration
-  PythonProcessDesc builder(argv[1], argc, argv);
+  PythonProcessDesc builder(argv[1]);
   boost::shared_ptr<edm::ProcessDesc> b = builder.processDesc();
   boost::shared_ptr<edm::ParameterSet> parameters = b->getProcessPSet();
   parameters->registerIt(); 
@@ -212,11 +212,100 @@ int main (int argc, char* argv[])
     
     if ( nev % 10000 == 0 ) cout << "Entry " << nev << ", Processing run " << event.id().run() << ", event " << event.id().event() << endl;
 
-    pat::strbitset retCalo = caloSelector.getBitTemplate();
+    std::strbitset retCalo = caloSelector.getBitTemplate();
     bool passedCalo = caloSelector( event, retCalo );
 
-    pat::strbitset retPF = pfSelector.getBitTemplate();
+    std::strbitset retPF = pfSelector.getBitTemplate();
     bool passedPF = pfSelector( event, retPF );
+
+    ///------------------
+    /// CALO JETS
+    ///------------------
+    if ( retCalo.test("Calo Kin Cuts") ) {
+
+
+      for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetBegin = caloSelector.allCaloJets().begin(),
+	      jetEnd = caloSelector.allCaloJets().end(), ijet = jetBegin;
+	    ijet != jetEnd; ++ijet ) {
+
+	
+	const pat::Jet & jet = **ijet;
+
+	double pt = jet.pt();
+
+	const reco::TrackRefVector & jetTracks = jet.associatedTracks();
+
+	hists["hist_jetPt"]->Fill( pt );
+	hists["hist_jetEtaVsPhi"]->Fill( jet.eta(), jet.phi() );
+	hists["hist_jetNTracks"]->Fill( jetTracks.size() );
+	hists["hist_jetNTracksVsPt"]->Fill( pt, jetTracks.size() );
+	hists["hist_jetEMF"]->Fill( jet.emEnergyFraction() );	
+	hists["hist_jetCorr"]->Fill( jet.corrFactor("raw") );
+	hists["hist_n90Hits"]->Fill( static_cast<int>(jet.jetID().n90Hits) );
+	hists["hist_fHPD"]->Fill( jet.jetID().fHPD );
+	hists["hist_nConstituents"]->Fill( jet.nConstituents() );
+
+	if ( useMC && jet.genJet() != 0 ) {
+	  hists["hist_jetGenEmE"]->Fill( jet.genJet()->emEnergy() );
+	  hists["hist_jetGenHadE"]->Fill( jet.genJet()->hadEnergy() );
+	  hists["hist_jetEoverGenE"]->Fill( jet.energy() / jet.genJet()->energy() );
+	  hists["hist_jetGenEMF"]->Fill( jet.genJet()->emEnergy() / jet.genJet()->energy() );
+	}
+	if ( doTracks ) {
+	  TLorentzVector p4_tracks(0,0,0,0);
+	  for ( reco::TrackRefVector::const_iterator itrk = jetTracks.begin(),
+		  itrkBegin = jetTracks.begin(), itrkEnd = jetTracks.end();
+		itrk != itrkEnd; ++itrk ) {
+	    TLorentzVector p4_trk;
+	    double M_PION = 0.140;
+	    p4_trk.SetPtEtaPhiM( (*itrk)->pt(), (*itrk)->eta(), (*itrk)->phi(), M_PION );
+	    p4_tracks += p4_trk;
+	  }
+	  hists["hist_jetCHF"]->Fill( p4_tracks.Energy() / jet.energy() );
+	}
+
+      
+      } // end loop over jets
+
+    
+
+      if ( retCalo.test("Calo Jet ID") ) {
+	hists["hist_nJet"]->Fill( caloSelector.caloJets().size() );
+	for ( std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsBegin = caloSelector.caloJets().begin(),
+		jetsEnd = caloSelector.caloJets().end(),
+		ijet = jetsBegin;
+	      ijet != jetsEnd; ++ijet ) {
+
+	  pat::Jet const & jet0 = **ijet;
+	  hists["hist_good_jetPt"]->Fill( jet0.pt() );
+	  hists["hist_good_jetEtaVsPhi"]->Fill( jet0.eta(), jet0.phi() );
+	  hists["hist_good_jetNTracks"]->Fill( jet0.associatedTracks().size() );
+	  hists["hist_good_jetNTracksVsPt"]->Fill( jet0.pt(), jet0.associatedTracks().size() );
+	  hists["hist_good_jetEMF"]->Fill( jet0.emEnergyFraction() );	
+	  hists["hist_good_jetCorr"]->Fill( jet0.corrFactor("raw") );
+	  hists["hist_good_n90Hits"]->Fill( static_cast<int>(jet0.jetID().n90Hits) );
+	  hists["hist_good_fHPD"]->Fill( jet0.jetID().fHPD );
+	  hists["hist_good_nConstituents"]->Fill( jet0.nConstituents() );
+	}// end loop over good calo jets
+
+	pat::Jet const & jet0 = **(caloSelector.caloJets().begin());
+	pat::Jet const & jet1 = **(caloSelector.caloJets().begin() + 1);
+
+	TLorentzVector p4_j0( jet0.px(), jet0.py(), jet0.pz(), jet0.energy() );
+	TLorentzVector p4_j1( jet1.px(), jet1.py(), jet1.pz(), jet1.energy() );
+
+	TLorentzVector p4_jj = p4_j0 + p4_j1;
+
+	hists["hist_mjj"]->Fill( p4_jj.M() );
+	hists["hist_dR_jj"]->Fill( p4_j0.DeltaR( p4_j1 ) );
+	hists["hist_imbalance_jj"]->Fill( (p4_j0.Perp() - p4_j1.Perp() ) /
+					  (p4_j0.Perp() + p4_j1.Perp() ) );
+
+
+      }// end if passed calo jet id
+
+    }// end if passed kin cuts
+
 
     ///------------------
     /// PF JETS

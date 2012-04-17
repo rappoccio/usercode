@@ -26,10 +26,6 @@ class MistagMakerType1 :
         self.allTopTagPassHandle  = Handle( "std::vector<int>" )
         self.allTopTagPassLabel   = ( "ttbsmAna",   "topTagPass" )
         
-        self.weightsHandle = Handle( "double" )
-        self.weightsLabel = ( "ttbsmAna", "weight" )
-
-
         self.__book__()
 
 
@@ -58,13 +54,10 @@ class MistagMakerType1 :
         self.testTagPt            = ROOT.TH1D("testTagPt",            "Top Tag Pt",               400,  0,  2000 )
         self.testProbePt          = ROOT.TH1D("testProbePt",          "Top Probe Pt",             400,  0,  2000 )
         
-        self.topTagPt.Sumw2()
-        self.topProbePt.Sumw2()
-        self.testTagPt.Sumw2()
-        self.testProbePt.Sumw2()
-        
+
     def analyze(self, event) :
         """Analyzes event"""
+        
         event.getByLabel (self.allTopTagLabel, self.allTopTagHandle)
         topJets = self.allTopTagHandle.product()
 
@@ -99,7 +92,7 @@ class MistagMakerType1 :
             deltaPhi = deltaPhi + 2*ROOT.TMath.Pi()
 
         ptCuts = topJets[0].pt() > 350 and topJets[1].pt() > 350
-        etaCuts = abs(topJets[0].Rapidity()) < 2.4 and abs(topJets[1].Rapidity()) < 2.4
+        etaCuts = abs(topJets[0].eta()) < 2.4 and abs(topJets[1].eta()) < 2.4
         deltaPhiCut = abs(deltaPhi)>2.1
         passType11KinCuts   = ptCuts and etaCuts and deltaPhiCut
     
