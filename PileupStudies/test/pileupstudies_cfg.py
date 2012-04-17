@@ -40,7 +40,7 @@ if not options.useData :
        #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/9C7AD216-ACE5-DF11-BE50-001517255D36.root',
        #'/store/mc/Fall10/TTJets_TuneZ2_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0008/788BCB6C-ACE5-DF11-A13C-90E6BA442F1F.root',
        #'dcap:///pnfs/cms/WAX/11/store/mc/Fall10/QCD_Pt_15to3000_TuneZ2_Flat_7TeV_pythia6/GEN-SIM-RECO/START38_V12-v1/0005/F24E17D7-F3CD-DF11-89A4-00215E221938.root'
-       '/store/mc/Fall10/QCD_Pt_15to3000_TuneZ2_Flat_7TeV_pythia6/AODSIM/E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/0000/A860E048-30E4-DF11-8572-00215E21DD98.root'
+       'dcap://cmsdca1.fnal.gov:24140/pnfs/fnal.gov/usr/cms/WAX/11/store/mc/Fall10/QCD_Pt-30to50_TuneD6T_7TeV-pythia6/GEN-SIM-RECO/START38_V12-v1/0004/A68627E6-1ECF-DF11-8EE8-0023AEFDE6B8.root'
         ]
 else :
     mytrigs = ['HLT_Jet*']
@@ -117,14 +117,6 @@ process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                            )
 
 
-from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
-
-process.goodOfflinePrimaryVertices = cms.EDFilter(
-    "PrimaryVertexObjectFilter",
-    filterParams = pvSelector.clone( maxZ = cms.double(24.0) ),
-    src=cms.InputTag('offlinePrimaryVertices')    
-    )
-
 
 
 ###############################
@@ -149,16 +141,15 @@ from PhysicsTools.PatAlgos.tools.coreTools import *
 postfixAK5 = "PFlowAK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixAK5)
 process.pfPileUpPFlowAK5.Enable = False
-process.pfPileUpPFlowAK5.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
 process.pfJetsPFlowAK5.doAreaFastjet = True
 process.pfJetsPFlowAK5.doRhoFastjet = False
 process.pfJetsPFlowAK5.Ghost_EtaMax = 6.5
+
 
 # PF2PAT with only charged hadrons from first PV
 postfixPUSubAK5 = "PFlowPUSubAK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=not options.useData, postfix=postfixPUSubAK5)
 process.pfPileUpPFlowPUSubAK5.Enable = True
-process.pfPileUpPFlowPUSubAK5.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
 process.pfJetsPFlowPUSubAK5.doAreaFastjet = True
 process.pfJetsPFlowPUSubAK5.doRhoFastjet = False
 process.pfJetsPFlowPUSubAK5.Ghost_EtaMax = 6.5
@@ -246,9 +237,8 @@ process.jetFilter = cms.EDFilter("CandViewCountFilter",
 process.patseq = cms.Sequence(
     process.hltSelection*
     process.scrapingVeto*
-    process.primaryVertexFilter*    
+    process.primaryVertexFilter*
     process.HBHENoiseFilter*
-    process.goodOfflinePrimaryVertices*
     getattr(process,"patPF2PATSequence"+postfixPUSubAK5)*
     process.goodPatJetsPFlowPUSubAK5*
     process.jetFilter*
@@ -289,12 +279,10 @@ process.out.outputCommands = [
     'keep *_selectedPat*_*_*',
     'keep *_goodPat*_*_*',    
     'keep *_patMETs*_*_*',
-    'drop patJets_selectedPatJets*__PAT',
 #    'keep recoPFCandidates_particleFlow_*_*',
     'drop recoPFCandidates_selected*_pfCandidates_PAT',
     'keep *_offlineBeamSpot_*_*',
     'keep *_offlinePrimaryVertices*_*_*',
-    'keep *_goodOfflinePrimaryVertices*_*_*',    
     'drop patPFParticles_*_*_*',
     'keep patTriggerPaths_patTrigger*_*_*',
     'keep patTriggerEvent_patTriggerEvent*_*_*',
@@ -306,10 +294,8 @@ process.out.outputCommands = [
     'keep *_ak5GenJets_*_*',
     'drop patTaus_*_*_*',
     'drop recoBaseTagInfosOwned_selected*_tagInfos_PAT',
-    'keep recoGenJets_selected*_*_PAT',
-    'drop CaloTowers_selected*_caloTowers_PAT',
-    'keep recoPileUpPFCandidate*_*_*_*',
-    'keep recoTracks_generalTracks_*_*'
+    'drop recoGenJets_selected*_*_PAT',
+    'drop CaloTowers_selected*_caloTowers_PAT'
     ]
 
 if options.useData :

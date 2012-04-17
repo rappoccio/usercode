@@ -9,9 +9,8 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class MistagMakerType1 :
     """Run 1 + 1 Mistag Rate"""
-    def __init__(self, outfile, useGenWeight=False):
+    def __init__(self, outfile):
         self.outfile = outfile
-        self.useGenWeight=useGenWeight
         
         self.allTopTagHandle = Handle (  "vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >"  )
         self.allTopTagLabel  = ( "ttbsmAna",   "topTagP4")
@@ -26,10 +25,6 @@ class MistagMakerType1 :
         self.allTopTagPassHandle  = Handle( "std::vector<int>" )
         self.allTopTagPassLabel   = ( "ttbsmAna",   "topTagPass" )
         
-        self.weightsHandle = Handle( "double" )
-        self.weightsLabel = ( "ttbsmAna", "weight" )
-
-
         self.__book__()
 
 
@@ -58,13 +53,10 @@ class MistagMakerType1 :
         self.testTagPt            = ROOT.TH1D("testTagPt",            "Top Tag Pt",               400,  0,  2000 )
         self.testProbePt          = ROOT.TH1D("testProbePt",          "Top Probe Pt",             400,  0,  2000 )
         
-        self.topTagPt.Sumw2()
-        self.topProbePt.Sumw2()
-        self.testTagPt.Sumw2()
-        self.testProbePt.Sumw2()
-        
+
     def analyze(self, event) :
         """Analyzes event"""
+        
         event.getByLabel (self.allTopTagLabel, self.allTopTagHandle)
         topJets = self.allTopTagHandle.product()
 
@@ -85,13 +77,6 @@ class MistagMakerType1 :
         event.getByLabel (self.allTopTagPassLabel, self.allTopTagPassHandle )
         topJetPass= self.allTopTagPassHandle.product()
 
-
-        weight = 1.0
-        if self.useGenWeight :
-            event.getByLabel( self.weightsLabel, self.weightsHandle )
-            weight = self.weightsHandle.product()[0]
-
-
         deltaPhi = topJets[0].phi() - topJets[1].phi()
         if deltaPhi > ROOT.TMath.Pi():
             deltaPhi = deltaPhi - 2*ROOT.TMath.Pi()
@@ -99,7 +84,7 @@ class MistagMakerType1 :
             deltaPhi = deltaPhi + 2*ROOT.TMath.Pi()
 
         ptCuts = topJets[0].pt() > 350 and topJets[1].pt() > 350
-        etaCuts = abs(topJets[0].Rapidity()) < 2.4 and abs(topJets[1].Rapidity()) < 2.4
+        etaCuts = abs(topJets[0].eta()) < 2.4 and abs(topJets[1].eta()) < 2.4
         deltaPhiCut = abs(deltaPhi)>2.1
         passType11KinCuts   = ptCuts and etaCuts and deltaPhiCut
     
@@ -109,22 +94,22 @@ class MistagMakerType1 :
         failMinMass1   = topJetMass[1] > 140 and topJetMass[1] < 250 and topJetMinMass[1] < 50
  
         if passType11KinCuts :
-            x = ROOT.gRandom.Uniform(1.0)        
+            x = ROOT.gRandom.Uniform(59298)        
             if x < 0.5 :
                 if not topTag0 :
-                    self.topProbePt.Fill( topJets[1].pt(), weight )    
+                    self.topProbePt.Fill( topJets[1].pt() )    
                     if topTag1 :
-                        self.topTagPt.Fill( topJets[1].pt(), weight )
+                        self.topTagPt.Fill( topJets[1].pt() )
                 if failMinMass0 :
-                    self.testProbePt.Fill( topJets[1].pt(), weight )
+                    self.testProbePt.Fill( topJets[1].pt() )
                     if topTag1 :
-                        self.testTagPt.Fill( topJets[1].pt(), weight )
+                        self.testTagPt.Fill( topJets[1].pt() )
             if x >= 0.5 :
                 if not topTag1 :
-                    self.topProbePt.Fill( topJets[0].pt(), weight )
+                    self.topProbePt.Fill( topJets[0].pt() )
                     if topTag0 :
-                        self.topTagPt.Fill( topJets[0].pt(), weight )
+                        self.topTagPt.Fill( topJets[0].pt() )
                 if failMinMass1 :
-                    self.testProbePt.Fill( topJets[0].pt(), weight )
+                    self.testProbePt.Fill( topJets[0].pt() )
                     if topTag0 :
-                        self.testTagPt.Fill( topJets[0].pt(), weight )
+                        self.testTagPt.Fill( topJets[0].pt() )

@@ -1,6 +1,0 @@
-module BTagFilter = BTagFilter{
-   InputTag source = selectedPatLayer1Jets
-   string   disc   = 'trackCountingHighEffJetTags'
-   double   discCut= 5.0
-   int      minSize= 1
-}
