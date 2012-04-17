@@ -225,8 +225,9 @@ generatorHandle = Handle("GenEventInfoProduct")
 generatorLabel = ( "generator", "")
 
 
-trigHandle = Handle("pat::TriggerEvent")
-trigLabel = ( "patTriggerEvent", '')
+trigHandle = Handle("std::vector<std::string>")
+trigLabel = ( "dijetTriggerFilter", 'jetPaths')
+
 
 histAK7MjjVsEtaMax = ROOT.TH2F('histAK7MjjVsEtaMax', 'AK7 m_{jj} Versus #eta_{max};m_{jj} (GeV);#eta_{max}(radians)', 300, 0., 3000., 5, 0.0, 2.5)
 histAK7MjetVsEtaMax = ROOT.TH2F('histAK7MjetVsEtaMax', 'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV);#eta_{max}(radians)', 300, 0., 300., 5, 0.0, 2.5)
@@ -433,29 +434,21 @@ for ifile in files :
         else :
             # Get the pat::TriggerEvent
             event.getByLabel( trigLabel, trigHandle )
+            trigs = trigHandle.product()
             acceptedPaths = []
             trigPassedName = None
             passMjjTrig = False
-            if trigHandle.isValid() :
-                trig = trigHandle.product()
-                # IF any triggers were run and were accepted, loop over the paths and get HLT_Jet* (ignoring the one without jet ID)
-                if trig.wasRun() and trig.wasAccept() :
-                    paths = trig.paths()
-                    for path in paths :
-                        if path.wasRun() and path.wasAccept() and path.name().find('HLT_Jet') >= 0 and path.name().find('NoJetID') < 0 :
-                            acceptedPaths.append( path )
+
             # If there are any accepted paths, cache them. Then match to the lookup table "trigThresholds" to see if
             # the event is in the correct mjj bin for the trigger in question.
-            if len( acceptedPaths) > 0 :
-                for ipath in xrange( len(acceptedPaths)-1, -1, -1) :
-                    path = acceptedPaths[ipath]
-                    if options.verbose:
-                        print '  --- considering path : ' + str(path.index()) + ', name = ' + str(path.name()) + ', prescale = ' + str(path.prescale() )
+            if len( trigs ) > 0 :
+                for ipath in xrange( len(trigs)-1, -1, -1) :
+                    path = trigs[ipath]
                     for ikeep in xrange(len(trigsToKeep)-1, -1, -1) :
                         if options.verbose :
                             print '   ----- checking trigger ' + trigsToKeep[ikeep] + ' : mjjThreshold = ' + str(mjjThresholds[ikeep])
-                        if path.name().find( trigsToKeep[ikeep] ) >= 0 and mjjReco >= mjjThresholds[ikeep] and mjjReco < mjjThresholds[ikeep + 1]:
-                            trigPassedName = path.name()
+                        if path.find( trigsToKeep[ikeep] ) >= 0 and mjjReco >= mjjThresholds[ikeep] and mjjReco < mjjThresholds[ikeep + 1]:
+                            trigPassedName = path
                             iTrigHist = ikeep
                             passMjjTrig = True
                             if options.verbose :
