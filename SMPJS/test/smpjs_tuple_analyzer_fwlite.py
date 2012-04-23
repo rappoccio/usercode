@@ -229,7 +229,7 @@ trigHandle = Handle("std::vector<std::string>")
 trigLabel = ( "dijetTriggerFilter", 'jetPaths')
 
 
-histAK7MjjVsEtaMax = ROOT.TH2F('histAK7MjjVsEtaMax', 'AK7 m_{jj} Versus #eta_{max};m_{jj} (GeV);#eta_{max}(radians)', 300, 0., 3000., 5, 0.0, 2.5)
+histAK7MjjVsEtaMax = ROOT.TH2F('histAK7MjjVsEtaMax', 'AK7 m_{jj} Versus #eta_{max};m_{jj} (GeV);#eta_{max}(radians)', 700, 0., 7000., 5, 0.0, 2.5)
 histAK7MjetVsEtaMax = ROOT.TH2F('histAK7MjetVsEtaMax', 'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV);#eta_{max}(radians)', 300, 0., 300., 5, 0.0, 2.5)
 
 # TO DO:::: DO this for each trigger!
@@ -239,14 +239,14 @@ histAK7MjetVsEtaMaxTrigs = []
 for trig in trigsToKeep :
     histAK7MjjVsEtaMaxTrigs.append(  ROOT.TH2F('histAK7MjjVsEtaMax_' + trig,
                                                 'AK7 m_{jj} Versus #eta_{max}' + trig +';m_{jj} (GeV);#eta_{max}(radians)',
-                                                300, 0., 3000., 5, 0.0, 2.5) )
+                                                700, 0., 7000., 5, 0.0, 2.5) )
     histAK7MjetVsEtaMaxTrigs.append( ROOT.TH2F('histAK7MjetVsEtaMax_' + trig,
                                                 'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV)' + trig + ';#eta_{max}(radians)',
                                                 300, 0., 300., 5, 0.0, 2.5) )
 
 
 histAK7MjjResponseVsEtaMax = ROOT.TH3F('histAK7MjjResponseVsEtaMax', 'AK7 m_{jj} Response;m_{jj} (GeV);#eta_{max}(radians)',
-                                       30, 0., 3000., 20, 0.5, 1.5, 5, 0.0, 2.5)
+                                       70, 0., 7000., 20, 0.5, 1.5, 5, 0.0, 2.5)
 histAK7MjetResponseVsEtaMax = ROOT.TH3F('histAK7MjetResponseVsEtaMax', 'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV);#eta_{max}(radians)',
                                         30, 0., 300., 20, 0.5, 1.5, 5, 0.0, 2.5)
 
