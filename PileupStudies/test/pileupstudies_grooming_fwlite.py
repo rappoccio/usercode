@@ -26,17 +26,19 @@ parser.add_option('--outname', metavar='F', type='string', action='store',
                   help='output name')
 
 
-# RECO collection
-parser.add_option('--recoColl', metavar='F', type='string', action='store',
-                  default='ak5Lite',
-                  dest='recoColl',
-                  help='reco collection')
+# Jet Algorithm
+parser.add_option('--algo', metavar='F', type='string', action='store',
+                  default='ak5',
+                  dest='algo',
+                  help='algorithm... ak5, ak7, ak8, ca8')
 
-# GEN collection
-parser.add_option('--genColl', metavar='F', type='string', action='store',
-                  default='ak5Gen',
-                  dest='genColl',
-                  help='gen collection')
+
+# Jet Algorithm
+parser.add_option('--groomings', metavar='F', type='string', action='append',
+                  default=['Lite', 'FilteredLite', 'TrimmedLite', 'PrunedLite'],
+                  dest='groomings',
+                  help='groomings to use')
+
 
 # "Undo" JEC?
 parser.add_option('--uncorrInput', action='store_true',
@@ -55,8 +57,6 @@ parser.add_option('--verbose', action='store_true',
                   default=False,
                   dest='verbose',
                   help='Verbose switch')
-
-
 
 # job splitting
 parser.add_option('--nsplit', type='int', action='store',
@@ -159,12 +159,18 @@ nJets = ROOT.TH1F("nJets",         "Number of Jets, p_{T} > 30 GeV;N_{Jets};Numb
 ############################################
 
 
-
-jecStr = [
-    'Jec11_V3_L1FastJet_AK5PFchs.txt',
-    'Jec11_V3_L2Relative_AK5PFchs.txt',
-    'Jec11_V3_L3Absolute_AK5PFchs.txt',
-    ]
+if options.algo.find('ak5') >= 0 :
+    jecStr = [
+        'Jec11_V3_L1FastJet_AK5PFchs.txt',
+        'Jec11_V3_L2Relative_AK5PFchs.txt',
+        'Jec11_V3_L3Absolute_AK5PFchs.txt',
+        ]
+else :
+    jecStr = [
+        'GR_R_42_V23_L1FastJet_AK7PFchs.txt',
+        'GR_R_42_V23_L2Relative_AK7PFchs.txt',
+        'GR_R_42_V23_L3Absolute_AK7PFchs.txt',
+        ]
 
 jecPars = ROOT.std.vector(ROOT.JetCorrectorParameters)()
 
@@ -175,7 +181,11 @@ for ijecStr in jecStr :
 
 jec = ROOT.FactorizedJetCorrector(jecPars)
 
-jecUncStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
+if options.algo.find('ak5') >= 0 :
+    jecUncStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
+else:
+    jecUncStr = ROOT.std.string('GR_R_42_V23_Uncertainty_AK7PFchs.txt')
+
 jecUnc = ROOT.JetCorrectionUncertainty( jecUncStr )
 
 
@@ -193,27 +203,40 @@ events = Events (files)
 print 'Done'
 
 jetPxHandle          = Handle( "std::vector<float>" )
-jetPxLabel           = ( options.recoColl,   "px" )
 jetPyHandle          = Handle( "std::vector<float>" )
-jetPyLabel           = ( options.recoColl,   "py" )
 jetPzHandle          = Handle( "std::vector<float>" )
-jetPzLabel           = ( options.recoColl,   "pz" )
 jetEnergyHandle      = Handle( "std::vector<float>" )
-jetEnergyLabel       = ( options.recoColl,   "energy" )
 jetJecFactorHandle   = Handle( "std::vector<float>" )
-jetJecFactorLabel    = ( options.recoColl,   "jecFactor" )
 jetAreaHandle        = Handle( "std::vector<float>" )
-jetAreaLabel         = ( options.recoColl,   "jetArea" )
-
 
 genJetPxHandle       = Handle( "std::vector<float>" )
-genJetPxLabel        = ( options.genColl,   "px" )
 genJetPyHandle       = Handle( "std::vector<float>" )
-genJetPyLabel        = ( options.genColl,   "py" )
 genJetPzHandle       = Handle( "std::vector<float>" )
-genJetPzLabel        = ( options.genColl,   "pz" )
 genJetEnergyHandle   = Handle( "std::vector<float>" )
-genJetEnergyLabel    = ( options.genColl,   "energy" )
+
+
+
+jetPxLabels            = []
+jetPyLabels            = []
+jetPzLabels            = []
+jetEnergyLabels        = []
+jetJecFactorLabels     = []
+jetAreaLabels          = []
+
+for groom in options.groomings :
+
+    jetPxLabels           .append( ( options.algo + groom,   "px" ) )
+    jetPyLabels           .append( ( options.algo + groom,   "py" ) )
+    jetPzLabels           .append( ( options.algo + groom,   "pz" ) )
+    jetEnergyLabels       .append( ( options.algo + groom,   "energy" ) )
+    jetJecFactorLabels    .append( ( options.algo + groom,   "jecFactor" ) )
+    jetAreaLabels         .append( ( options.algo + groom,   "jetArea" ) )
+
+
+genJetPxLabel        = ( options.algo + 'Gen',   "px" )
+genJetPyLabel        = ( options.algo + 'Gen',   "py" )
+genJetPzLabel        = ( options.algo + 'Gen',   "pz" )
+genJetEnergyLabel    = ( options.algo + 'Gen',   "energy" )
 
 
 
@@ -224,8 +247,13 @@ puLabel = ( "addPileupInfo", "")
 rhoHandle         = Handle( "double" )
 rhoLabel = ( "kt6PFJets",   "rho" )
 
-etaRatioHist = ROOT.TH3F('etaRatio', 'etaRecoRatio', 50, -5.0, 5.0, 200, 0., 2.0, 25, 0, 25)
-ptRatioHist = ROOT.TH3F('ptRatio', 'ptRecoRatio', 50, 0., 500., 200, 0., 2.0, 25, 0, 25)
+etaRatioHists = []
+ptRatioHists = []
+
+
+for groom in options.groomings: 
+    etaRatioHists.append( ROOT.TH3F('etaRatio' + groom, 'etaRecoRatio' + groom, 50, -5.0, 5.0, 200, 0., 2.0, 25, 0, 25) )
+    ptRatioHists.append( ROOT.TH3F('ptRatio' + groom, 'ptRecoRatio' + groom, 50, 0., 500., 200, 0., 2.0, 25, 0, 25) )
 
 
 
@@ -283,85 +311,95 @@ for event in events:
         continue
 
 
-    event.getByLabel( jetPxLabel, jetPxHandle )
-    jetPxs = jetPxHandle.product()
-    event.getByLabel( jetPyLabel, jetPyHandle )
-    jetPys = jetPyHandle.product()
-    event.getByLabel( jetPzLabel, jetPzHandle )
-    jetPzs = jetPzHandle.product()
-    event.getByLabel( jetEnergyLabel, jetEnergyHandle )
-    jetEnergys = jetEnergyHandle.product()
-    event.getByLabel( jetAreaLabel, jetAreaHandle )
-    jetAreas = jetAreaHandle.product()
-    if not options.uncorrInput :
-        event.getByLabel( jetJecFactorLabel, jetJecFactorHandle )
-        jetJecFactors = jetJecFactorHandle.product()
-        
     event.getByLabel( rhoLabel, rhoHandle )
     rho = rhoHandle.product()[0]
 
-
-    njet = 0
-    recoJets = []
-    matchedGenJets = []
-    for ijet in range(0,len(jetPxs)) :
-        if not options.uncorrInput :
-            vRaw = ROOT.TLorentzVector(jetPxs[ijet] * jetJecFactors[ijet],
-                                       jetPys[ijet] * jetJecFactors[ijet],
-                                       jetPzs[ijet] * jetJecFactors[ijet],
-                                       jetEnergys[ijet] * jetJecFactors[ijet])
-        else :
-            vRaw = ROOT.TLorentzVector(jetPxs[ijet],
-                                       jetPys[ijet],
-                                       jetPzs[ijet],
-                                       jetEnergys[ijet])
-        
-
-        jec.setJetEta(vRaw.Eta())
-        jec.setJetPt(vRaw.Perp())
-        jec.setJetA(jetAreas[ijet])
-        jec.setRho(rho)
-        factor = jec.getCorrection()
-
-        v = vRaw * factor
-
-        if v.Perp() > 30.0 :
-            recoJets.append(v)
-            genJet = findGenJet( v, genJets )
-            if genJet is not None :
-                matchedGenJets.append( genJet )
-            else :
-                break
-            njet += 1
-    if len(recoJets) < 2 or len(matchedGenJets) < len(recoJets) :
-        if options.verbose :
-            print 'njets < 2, exiting'
-        continue
-
-    if options.verbose :
-        for ijet in range(0,len(recoJets)) :
-            v = recoJets[ijet]
-            genJet = matchedGenJets[ijet]
-            print 'ijet = {0:4.0f}, raw pt = {1:6.2f}, corr pt = {2:6.2f}, eta = {3:6.2f}, phi = {4:6.2f}, gen pt = {5:6.2f}, gen eta = {6:6.2f}, gen phi = {7:6.2f}'.format(
-                ijet, vRaw.Perp(), v.Perp(), v.Eta(), v.Phi(), genJet.Perp(), genJet.Eta(), genJet.Phi()
-                )
-
-
-
     event.getByLabel( puLabel, puHandle )
     puInfos = puHandle.product()
-
     npu = puInfos[0].getPU_NumInteractions()
 
+    for igroom in range(0,len(options.groomings)):
+
+        groom = options.groomings[igroom]
+        jetPxLabel = jetPxLabels[igroom]
+        jetPyLabel = jetPyLabels[igroom]
+        jetPzLabel = jetPzLabels[igroom]
+        jetEnergyLabel = jetEnergyLabels[igroom]
+        jetJecFactorLabel = jetJecFactorLabels[igroom]
+        jetAreaLabel = jetAreaLabels[igroom]
+        ptRatioHist = ptRatioHists[igroom]
+        etaRatioHist = etaRatioHists[igroom]
+
+        event.getByLabel( jetPxLabel, jetPxHandle )
+        jetPxs = jetPxHandle.product()
+        event.getByLabel( jetPyLabel, jetPyHandle )
+        jetPys = jetPyHandle.product()
+        event.getByLabel( jetPzLabel, jetPzHandle )
+        jetPzs = jetPzHandle.product()
+        event.getByLabel( jetEnergyLabel, jetEnergyHandle )
+        jetEnergys = jetEnergyHandle.product()
+        event.getByLabel( jetAreaLabel, jetAreaHandle )
+        jetAreas = jetAreaHandle.product()
+        if not options.uncorrInput :
+            event.getByLabel( jetJecFactorLabel, jetJecFactorHandle )
+            jetJecFactors = jetJecFactorHandle.product()
 
 
-    for ijet in range(0,2):
+        njet = 0
+        recoJets = []
+        matchedGenJets = []
+        for ijet in range(0,len(jetPxs)) :
+            if not options.uncorrInput :
+                vRaw = ROOT.TLorentzVector(jetPxs[ijet] * jetJecFactors[ijet],
+                                           jetPys[ijet] * jetJecFactors[ijet],
+                                           jetPzs[ijet] * jetJecFactors[ijet],
+                                           jetEnergys[ijet] * jetJecFactors[ijet])
+            else :
+                vRaw = ROOT.TLorentzVector(jetPxs[ijet],
+                                           jetPys[ijet],
+                                           jetPzs[ijet],
+                                           jetEnergys[ijet])
+
+
+            jec.setJetEta(vRaw.Eta())
+            jec.setJetPt(vRaw.Perp())
+            jec.setJetA(jetAreas[ijet])
+            jec.setRho(rho)
+            factor = jec.getCorrection()
+
+            v = vRaw * factor
+
+            if v.Perp() > 30.0 :
+                recoJets.append(v)
+                genJet = findGenJet( v, genJets )
+                if genJet is not None :
+                    matchedGenJets.append( genJet )
+                else :
+                    break
+                njet += 1
+        if len(recoJets) < 2 or len(matchedGenJets) < len(recoJets) :
+            if options.verbose :
+                print 'njets < 2, exiting'
+            continue
+
         if options.verbose :
-             print 'filling histograms for ijet = ' + str(ijet)
-        recoJet = recoJets[ijet]
-        genJet = matchedGenJets[ijet]
-        ptRatioHist .Fill( genJet.Pt(),  recoJet.Pt() /genJet.Pt(),  npu )
-        etaRatioHist.Fill( genJet.Eta(), recoJet.Pt() /genJet.Pt(),  npu )
+            for ijet in range(0,len(recoJets)) :
+                v = recoJets[ijet]
+                genJet = matchedGenJets[ijet]
+                print 'ijet = {0:4.0f}, raw pt = {1:6.2f}, corr pt = {2:6.2f}, eta = {3:6.2f}, phi = {4:6.2f}, gen pt = {5:6.2f}, gen eta = {6:6.2f}, gen phi = {7:6.2f}'.format(
+                    ijet, vRaw.Perp(), v.Perp(), v.Eta(), v.Phi(), genJet.Perp(), genJet.Eta(), genJet.Phi()
+                    )
+
+
+
+
+        for ijet in range(0,2):
+            if options.verbose :
+                 print 'filling histograms for ijet = ' + str(ijet)
+            recoJet = recoJets[ijet]
+            genJet = matchedGenJets[ijet]
+            ptRatioHist .Fill( genJet.Pt(),  recoJet.Pt() /genJet.Pt(),  npu )
+            etaRatioHist.Fill( genJet.Eta(), recoJet.Pt() /genJet.Pt(),  npu )
 
 
 f.cd()
