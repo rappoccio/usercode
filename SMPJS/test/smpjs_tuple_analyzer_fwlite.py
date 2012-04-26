@@ -270,7 +270,7 @@ for ifile in files :
         # Histogram index for data (Jet60,110,190,240,370)
         iTrigHist = None
 
-        if count % 10000 == 0 :
+        if count % 10000 == 0 or options.verbose :
             print 'Processing event ' + str(count)
 
         count += 1
@@ -414,6 +414,7 @@ for ifile in files :
         #------------------------------------------
         passEvent = False
         if options.useMC :
+            passGen = False
             # Get the generator product
             event.getByLabel( generatorLabel, generatorHandle )
             if generatorHandle.isValid() :
@@ -422,14 +423,17 @@ for ifile in files :
                 weight *= generatorInfo.weight()
                 if options.verbose :
                     print 'generator info weight = ' + str(weight)
-                passEvent = True
+                passGen = True
 
-            # Also get the number of simulated pileup interactions
-            event.getByLabel( puLabel, puHandle )
-            puInfos = puHandle.product()
+            passMjjTrig = False
+            if options.verbose :
+                print 'testing MC mjjReco = ' + str(mjjReco) + ', etamax = ' + str(etaMax) + ', threshold = ' + str(mjjThresholds[0])
+            if mjjReco >= mjjThresholds[0] :
+                if options.verbose :
+                    print '  ----> passed!'
+                passMjjTrig = True
 
-            npu = puInfos[0].getPU_NumInteractions()
-
+            passEvent = passMjjTrig and passGen
 
         else :
             # Get the pat::TriggerEvent
@@ -462,6 +466,7 @@ for ifile in files :
         if passEvent :
             if options.verbose :
                 print 'event passed! OH happy day!'
+                print 'Filling mjjReco = ' + str(mjjReco) + ', mjetReco = ' + str(mjetReco) + ', etaMax = ' + str(etaMax) + ', weight = ' + str(weight)
 
             if options.useMC :
                 histAK7MjjVsEtaMax.Fill( mjjReco, etaMax, weight )
@@ -476,6 +481,12 @@ for ifile in files :
                 continue
 
             if options.useMC :
+
+                # Also get the number of simulated pileup interactions
+                #event.getByLabel( puLabel, puHandle )
+                #puInfos = puHandle.product()
+                #npu = puInfos[0].getPU_NumInteractions()
+                
                 response0 = ak7Def[0].Perp() / ak7GenMatched[0].Perp()
                 mjjResponse = mjjReco / mjjGen
                 mjetResponse = mjetReco / mjetGen
