@@ -14,7 +14,6 @@ import FWCore.PythonUtilities.LumiList as LumiList
 ## Options and Output Report
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-
 ###############################
 ####### Parameters ############
 ###############################
@@ -84,27 +83,38 @@ if len(options.inputFiles) == 0 :
                                 )                           
 
 payloads = [
-  
     'Jec12_V1_L1FastJet_AK5PFchs.txt',
-    'Jec12_V1_L2Relative_AK5PFchs.txt',
+    'Jec12_V1_L2Relative_AK5PFchs.txt', 
     'Jec12_V1_L3Absolute_AK5PFchs.txt',
     'Jec12_V1_L2L3Residual_AK5PFchs.txt',
-    'Jec12_V1_Uncertainty_AK5PFchs.txt',    
+    'Jec12_V1_Uncertainty_AK5PFchs.txt',   
 ]
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
+#_______________________________BTagging SF______________________________________________
+
+process.load("CondCore.DBCommon.CondDBCommon_cfi")
+
+#Data measurements from Summer11
+process.load ("RecoBTag.PerformanceDB.BTagPerformanceDB1107")
+process.load ("RecoBTag.PerformanceDB.PoolBTagPerformanceDB1107")
+
+process.goodPatJetsPFlowSF = cms.EDProducer("BTaggingSFProducer",
+                                            jetSource = cms.InputTag('goodPatJetsPFlow'),
+                                            Tagger = cms.string('combinedSecondaryVertexBJetTags'),
+                                            DiscriminantValue = cms.double(0.679)
+                                            )
 
 #_____________________________________PF__________________________________________________
-
 
 process.pfShyftSkim = cms.EDFilter('EDWPlusJetsSelector',
                                    inputShyftAnalysis.clone(
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
     electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
     metSrc = cms.InputTag('patMETsPFlow'),
-    jetSrc = cms.InputTag('goodPatJetsPFlow'),
+    jetSrc = cms.InputTag('goodPatJetsPFlowSF'),
     pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
     ePlusJets = cms.bool( True ),
     muPlusJets = cms.bool(False),
@@ -113,7 +123,8 @@ process.pfShyftSkim = cms.EDFilter('EDWPlusJetsSelector',
     useVBTFDetIso  = cms.bool(False),
     jetPtMin = cms.double(35.0),##
     minJets = cms.int32(4),
-    metMin = cms.double(0.0), 
+    metMin = cms.double(0.0),
+    reweightPU = cms.bool(False),
     doMC = cms.bool( inputDoMC),
     sampleName = cms.string(inputSampleName),
     jetAlgo = cms.string("pf"),
@@ -128,7 +139,19 @@ process.pfShyftSkimLoose = process.pfShyftSkim.clone()
 process.pfShyftSkimLoose.useWP95Selection = cms.bool(True)
 process.pfShyftSkimLoose.useWP70Selection = cms.bool(False)
 process.pfShyftSkimLoose.identifier = cms.string('PF, relIso<0.2, WP95')
-                                     
+
+#----------------------------- JER -------------------------
+
+process.pfShyftSkimJER000 = process.pfShyftSkim.clone(
+    jetSmear = cms.double(0.00),
+    identifier = cms.string('PFJER000')
+    )
+    
+
+process.pfShyftSkimJER020 = process.pfShyftSkim.clone(
+    jetSmear = cms.double(0.20),
+    identifier = cms.string('PFJER020')
+    )
 
 ############################
 ## adding KinFitter stuff
@@ -137,8 +160,8 @@ process.pfShyftSkimLoose.identifier = cms.string('PF, relIso<0.2, WP95')
 from TopQuarkAnalysis.TopObjectResolutions.stringResolutions_etEtaPhi_cff import *
 
 # original version /TopQuarkAnalysis/TopKinFitter/python/TtSemiLepKinFitProducer_Electrons_cfi.py
-# using TCHEM b-tagger
-process.kinFitTtSemiLepEventTCHEM = cms.EDProducer("TtSemiLepKinFitProducerElectron",
+# using CSVMnoSF b-tagger
+process.kinFitTtSemiLepEventCSVMnoSF = cms.EDProducer("TtSemiLepKinFitProducerElectron",
     jets = cms.InputTag("pfShyftSkim:jets"),
     leps = cms.InputTag("pfShyftSkim:electrons"),
     mets = cms.InputTag("pfShyftSkim:met"),
@@ -168,11 +191,16 @@ process.kinFitTtSemiLepEventTCHEM = cms.EDProducer("TtSemiLepKinFitProducerElect
     # ------------------------------------------------
     # option to use b-tagging
     # ------------------------------------------------
-    bTagAlgo          = cms.string("trackCountingHighEffBJetTags"),
-    minBDiscBJets     = cms.double(3.3),
-    maxBDiscLightJets = cms.double(3.3),
+    bTagAlgo          = cms.string("combinedSecondaryVertexBJetTags"),
+    minBDiscBJets     = cms.double(0.679),
+    maxBDiscLightJets = cms.double(0.679),
     useBTagging       = cms.bool(True),
 
+    # ------------------------------------------------
+    # option to use the btagger of choice: -1 -- ignore, 1 -- right out of the box,
+    # 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.
+    # ------------------------------------------------                                                                                                    
+    btaggingIncludingSF = cms.int32(-1),
     # ------------------------------------------------
     # settings for the KinFitter
     # ------------------------------------------------    
@@ -209,43 +237,103 @@ process.kinFitTtSemiLepEventTCHEM = cms.EDProducer("TtSemiLepKinFitProducerElect
     metResolutions              = metResolutionPF.functions,
                                         )
 
-process.myProducerLabel = cms.EDProducer("PileupReweightingPoducer",
+process.pileupReweightingProducer = cms.EDProducer("PileupReweightingPoducer",
                                          FirstTime = cms.untracked.bool(False),
                                          PileupMCFile = cms.untracked.string('PUMC_dist_flat10.root'),
                                          PileupDataFile = cms.untracked.string('PUData_finebin_dist.root')
 )
 
-process.tprimeNtupleDumperTCHEM = cms.EDProducer("TprimeNtupleDumper",
-    do_MC = cms.bool(False),
-    resonanceId = cms.int32(6), 
-    kinFitterLabel = cms.string("kinFitTtSemiLepEventTCHEM"),
-    selectorLabel  = cms.string("pfShyftSkim"),
-                                            )
-# add pure min Chi2 and TCHE b-taggers for comparison
-process.kinFitTtSemiLepEventCHI2 = process.kinFitTtSemiLepEventTCHEM.clone()
+process.tprimeNtupleDumperCSVMnoSF = cms.EDProducer("TprimeNtupleDumper",
+                                                    do_MC = cms.bool(False),
+                                                    resonanceId = cms.int32(6), 
+                                                    kinFitterLabel = cms.string("kinFitTtSemiLepEventCSVMnoSF"),
+                                                    selectorLabel  = cms.string("pfShyftSkim"),
+                                                    )
+# add pure min Chi2 with CSVM for comparison
+process.kinFitTtSemiLepEventCHI2 = process.kinFitTtSemiLepEventCSVMnoSF.clone()
 process.kinFitTtSemiLepEventCHI2.useBTagging = False
 
-process.tprimeNtupleDumperCHI2 = process.tprimeNtupleDumperTCHEM.clone()
+process.tprimeNtupleDumperCHI2 = process.tprimeNtupleDumperCSVMnoSF.clone()
 process.tprimeNtupleDumperCHI2.kinFitterLabel = cms.string("kinFitTtSemiLepEventCHI2")
 
-## process.kinFitTtSemiLepEventSSVHEM = process.kinFitTtSemiLepEventTCHEM.clone()
-## process.kinFitTtSemiLepEventSSVHEM.useBTagging = True
-## process.kinFitTtSemiLepEventSSVHEM.bTagAlgo = "simpleSecondaryVertexHighEffBJetTags"
-## process.kinFitTtSemiLepEventSSVHEM.minBDiscBJets = 1.74
-## process.kinFitTtSemiLepEventSSVHEM.maxBDiscLightJets = 1.74
-
-## process.tprimeNtupleDumperSSVHEM = process.tprimeNtupleDumperTCHEM.clone()
-## process.tprimeNtupleDumperSSVHEM.kinFitterLabel = cms.string("kinFitTtSemiLepEventSSVHEM")
-
-process.kinFitTtSemiLepEventCSVM = process.kinFitTtSemiLepEventTCHEM.clone()
+# add the use of CSVM tagger with SF included
+process.kinFitTtSemiLepEventCSVM = process.kinFitTtSemiLepEventCSVMnoSF.clone()
 process.kinFitTtSemiLepEventCSVM.useBTagging = True
-process.kinFitTtSemiLepEventCSVM.bTagAlgo = "combinedSecondaryVertexBJetTags"
-process.kinFitTtSemiLepEventCSVM.minBDiscBJets =  0.679
-process.kinFitTtSemiLepEventCSVM.maxBDiscLightJets =  0.679
+# ------------------------------------------------
+# option to use the btagger of choice: 1 -- right out of the box,
+# 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.
+# ------------------------------------------------
+process.kinFitTtSemiLepEventCSVM.btaggingIncludingSF = 2
 
-process.tprimeNtupleDumperCSVM = process.tprimeNtupleDumperTCHEM.clone()
+process.tprimeNtupleDumperCSVM = process.tprimeNtupleDumperCSVMnoSF.clone()
 process.tprimeNtupleDumperCSVM.kinFitterLabel = cms.string("kinFitTtSemiLepEventCSVM")
 
+### jer up --------------------------------
+
+process.kinFitTtSemiLepEventCSVMJER020 = process.kinFitTtSemiLepEventCSVMnoSF.clone()
+process.kinFitTtSemiLepEventCSVMJER020.useBTagging = True
+# ------------------------------------------------
+# option to use the btagger of choice: 1 -- right out of the box,
+# 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.
+# ------------------------------------------------
+process.kinFitTtSemiLepEventCSVMJER020.btaggingIncludingSF = 2
+
+process.kinFitTtSemiLepEventCSVMJER020.jets = 'pfShyftSkimJER020:jets'
+process.kinFitTtSemiLepEventCSVMJER020.leps = 'pfShyftSkimJER020:electrons'
+process.kinFitTtSemiLepEventCSVMJER020.mets = 'pfShyftSkimJER020:met'
+
+process.tprimeNtupleDumperCSVMJER020 = process.tprimeNtupleDumperCSVMnoSF.clone()
+process.tprimeNtupleDumperCSVMJER020.kinFitterLabel = cms.string("kinFitTtSemiLepEventCSVMJER020")
+
+### jer down ------------------------------
+
+process.kinFitTtSemiLepEventCSVMJER000 = process.kinFitTtSemiLepEventCSVMnoSF.clone()
+process.kinFitTtSemiLepEventCSVMJER000.useBTagging = True
+# ------------------------------------------------
+# option to use the btagger of choice: 1 -- right out of the box,
+# 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.
+# ------------------------------------------------
+process.kinFitTtSemiLepEventCSVMJER000.btaggingIncludingSF = 2
+process.kinFitTtSemiLepEventCSVMJER000.jets = 'pfShyftSkimJER000:jets'
+process.kinFitTtSemiLepEventCSVMJER000.leps = 'pfShyftSkimJER000:electrons'
+process.kinFitTtSemiLepEventCSVMJER000.mets = 'pfShyftSkimJER000:met'
+
+process.tprimeNtupleDumperCSVMJER000 = process.tprimeNtupleDumperCSVMnoSF.clone()
+process.tprimeNtupleDumperCSVMJER000.kinFitterLabel = cms.string("kinFitTtSemiLepEventCSVMJER000")
+
+###   btagging SF up
+
+process.kinFitTtSemiLepEventCSVMBTagSFup = process.kinFitTtSemiLepEventCSVMnoSF.clone()
+process.kinFitTtSemiLepEventCSVMBTagSFup.useBTagging = True
+# ------------------------------------------------
+# option to use the btagger of choice: 1 -- right out of the box,
+# 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.
+# ------------------------------------------------
+process.kinFitTtSemiLepEventCSVMBTagSFup.btaggingIncludingSF = 4
+process.kinFitTtSemiLepEventCSVMBTagSFup.bTagAlgo = "combinedSecondaryVertexBJetTags"
+process.kinFitTtSemiLepEventCSVMBTagSFup.minBDiscBJets =  0.679
+process.kinFitTtSemiLepEventCSVMBTagSFup.maxBDiscLightJets =  0.679
+
+process.tprimeNtupleDumperCSVMBTagSFup = process.tprimeNtupleDumperCSVMnoSF.clone()
+process.tprimeNtupleDumperCSVMBTagSFup.kinFitterLabel = cms.string("kinFitTtSemiLepEventCSVMBTagSFup")
+
+###   btagging SF down
+
+process.kinFitTtSemiLepEventCSVMBTagSFdown = process.kinFitTtSemiLepEventCSVMnoSF.clone()
+process.kinFitTtSemiLepEventCSVMBTagSFdown.useBTagging = True
+# ------------------------------------------------
+# option to use the btagger of choice: 1 -- right out of the box,
+# 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.
+# ------------------------------------------------
+process.kinFitTtSemiLepEventCSVMBTagSFdown.btaggingIncludingSF = 8
+process.kinFitTtSemiLepEventCSVMBTagSFdown.bTagAlgo = "combinedSecondaryVertexBJetTags"
+process.kinFitTtSemiLepEventCSVMBTagSFdown.minBDiscBJets =  0.679
+process.kinFitTtSemiLepEventCSVMBTagSFdown.maxBDiscLightJets =  0.679
+
+process.tprimeNtupleDumperCSVMBTagSFdown = process.tprimeNtupleDumperCSVMnoSF.clone()
+process.tprimeNtupleDumperCSVMBTagSFdown.kinFitterLabel = cms.string("kinFitTtSemiLepEventCSVMBTagSFdown")
+
+## ----------------------------------
 # and for systematic samples too     process.kinFitTtSemiLepEvent.clone()
 # minimum Chi2
 process.kinFitTtSemiLepEventCHI2JES095 = process.kinFitTtSemiLepEventCHI2.clone()
@@ -274,53 +362,6 @@ process.kinFitTtSemiLepEventCHI2Loose.mets = cms.InputTag("pfShyftSkimLoose:met"
 process.tprimeNtupleDumperCHI2Loose = process.tprimeNtupleDumperCHI2.clone()
 process.tprimeNtupleDumperCHI2Loose.kinFitterLabel = cms.string("kinFitTtSemiLepEventCHI2Loose")
 process.tprimeNtupleDumperCHI2Loose.selectorLabel  = cms.string("pfShyftSkimLoose")
-
-# TCHEM b-tagging
-process.kinFitTtSemiLepEventTCHEMJES095 = process.kinFitTtSemiLepEventTCHEM.clone()
-process.kinFitTtSemiLepEventTCHEMJES095.jets = cms.InputTag("pfShyftSkimJES095:jets")
-process.kinFitTtSemiLepEventTCHEMJES095.leps = cms.InputTag("pfShyftSkimJES095:electrons")
-process.kinFitTtSemiLepEventTCHEMJES095.mets = cms.InputTag("pfShyftSkimJES095:met")
-
-process.tprimeNtupleDumperTCHEMJES095 = process.tprimeNtupleDumperTCHEM.clone()
-process.tprimeNtupleDumperTCHEMJES095.kinFitterLabel = cms.string("kinFitTtSemiLepEventTCHEMJES095")
-process.tprimeNtupleDumperTCHEMJES095.selectorLabel  = cms.string("pfShyftSkimJES095")
-
-process.kinFitTtSemiLepEventTCHEMJES105 = process.kinFitTtSemiLepEventTCHEM.clone()
-process.kinFitTtSemiLepEventTCHEMJES105.jets = cms.InputTag("pfShyftSkimJES105:jets")
-process.kinFitTtSemiLepEventTCHEMJES105.leps = cms.InputTag("pfShyftSkimJES105:electrons")
-process.kinFitTtSemiLepEventTCHEMJES105.mets = cms.InputTag("pfShyftSkimJES105:met")
-
-process.tprimeNtupleDumperTCHEMJES105 = process.tprimeNtupleDumperTCHEM.clone()
-process.tprimeNtupleDumperTCHEMJES105.kinFitterLabel = cms.string("kinFitTtSemiLepEventTCHEMJES105")
-process.tprimeNtupleDumperTCHEMJES105.selectorLabel  = cms.string("pfShyftSkimJES105")
-
-process.kinFitTtSemiLepEventTCHEMLoose = process.kinFitTtSemiLepEventTCHEM.clone()
-process.kinFitTtSemiLepEventTCHEMLoose.jets = cms.InputTag("pfShyftSkimLoose:jets")
-process.kinFitTtSemiLepEventTCHEMLoose.leps = cms.InputTag("pfShyftSkimLoose:electrons")
-process.kinFitTtSemiLepEventTCHEMLoose.mets = cms.InputTag("pfShyftSkimLoose:met")
-
-process.tprimeNtupleDumperTCHEMLoose = process.tprimeNtupleDumperTCHEM.clone()
-process.tprimeNtupleDumperTCHEMLoose.kinFitterLabel = cms.string("kinFitTtSemiLepEventTCHEMLoose")
-process.tprimeNtupleDumperTCHEMLoose.selectorLabel  = cms.string("pfShyftSkimLoose")
-
-## # SSVHEM b-tagging
-## process.kinFitTtSemiLepEventSSVHEMJES095 = process.kinFitTtSemiLepEventSSVHEM.clone()
-## process.kinFitTtSemiLepEventSSVHEMJES095.jets = cms.InputTag("pfShyftSkimJES095:jets")
-## process.kinFitTtSemiLepEventSSVHEMJES095.leps = cms.InputTag("pfShyftSkimJES095:electrons")
-## process.kinFitTtSemiLepEventSSVHEMJES095.mets = cms.InputTag("pfShyftSkimJES095:met")
-
-## process.tprimeNtupleDumperSSVHEMJES095 = process.tprimeNtupleDumperSSVHEM.clone()
-## process.tprimeNtupleDumperSSVHEMJES095.kinFitterLabel = cms.string("kinFitTtSemiLepEventSSVHEMJES095")
-## process.tprimeNtupleDumperSSVHEMJES095.selectorLabel  = cms.string("pfShyftSkimJES095")
-
-## process.kinFitTtSemiLepEventSSVHEMJES105 = process.kinFitTtSemiLepEventSSVHEM.clone()
-## process.kinFitTtSemiLepEventSSVHEMJES105.jets = cms.InputTag("pfShyftSkimJES105:jets")
-## process.kinFitTtSemiLepEventSSVHEMJES105.leps = cms.InputTag("pfShyftSkimJES105:electrons")
-## process.kinFitTtSemiLepEventSSVHEMJES105.mets = cms.InputTag("pfShyftSkimJES105:met")
-
-## process.tprimeNtupleDumperSSVHEMJES105 = process.tprimeNtupleDumperSSVHEM.clone()
-## process.tprimeNtupleDumperSSVHEMJES105.kinFitterLabel = cms.string("kinFitTtSemiLepEventSSVHEMJES105")
-## process.tprimeNtupleDumperSSVHEMJES105.selectorLabel  = cms.string("pfShyftSkimJES105")
 
 # CSVM b-tagging
 process.kinFitTtSemiLepEventCSVMJES095 = process.kinFitTtSemiLepEventCSVM.clone()
@@ -366,42 +407,45 @@ process.pfShyftSkimJES105.jetScale = cms.double(1.0)
 process.pfShyftSkimJES105.jetUncertainty = cms.double(0.0)
 process.pfShyftSkimJES105.identifier = cms.string('PFJES105')
 
-process.p0 = cms.Path( process.myProducerLabel )
+process.p0 = cms.Path( process.pileupReweightingProducer * process.goodPatJetsPFlowSF )
 
 process.p1 = cms.Path( process.pfShyftSkim * (process.kinFitTtSemiLepEventCHI2 * process.tprimeNtupleDumperCHI2 +
-                                              process.kinFitTtSemiLepEventTCHEM * process.tprimeNtupleDumperTCHEM +
-                                              process.kinFitTtSemiLepEventCSVM * process.tprimeNtupleDumperCSVM                                             
+                                              process.kinFitTtSemiLepEventCSVM * process.tprimeNtupleDumperCSVM +
+                                              process.kinFitTtSemiLepEventCSVMBTagSFup * process.tprimeNtupleDumperCSVMBTagSFup +
+                                              process.kinFitTtSemiLepEventCSVMBTagSFdown * process.tprimeNtupleDumperCSVMBTagSFdown 
                                               )
                        )
-process.p2 = cms.Path( process.pfShyftSkimJES095 * (process.kinFitTtSemiLepEventCHI2JES095 * process.tprimeNtupleDumperCHI2JES095 +
-                                                    process.kinFitTtSemiLepEventTCHEMJES095 * process.tprimeNtupleDumperTCHEMJES095 +
-                                                    process.kinFitTtSemiLepEventCSVMJES095 * process.tprimeNtupleDumperCSVMJES095
-                                                    )
-                       )
-process.p3 = cms.Path( process.pfShyftSkimJES105 * (process.kinFitTtSemiLepEventCHI2JES105 * process.tprimeNtupleDumperCHI2JES105 +
-                                                    process.kinFitTtSemiLepEventTCHEMJES105 * process.tprimeNtupleDumperTCHEMJES105 +
-                                                    process.kinFitTtSemiLepEventCSVMJES105 * process.tprimeNtupleDumperCSVMJES105
+
+process.p2 = cms.Path( process.pfShyftSkimJES095 * (process.kinFitTtSemiLepEventCSVMJES095 * process.tprimeNtupleDumperCSVMJES095
                                                     )
                        )
 
+process.p3 = cms.Path( process.pfShyftSkimJES105 * (process.kinFitTtSemiLepEventCSVMJES105 * process.tprimeNtupleDumperCSVMJES105
+                                                    )
+                       )
 
+process.p4 = cms.Path( process.pfShyftSkimJER020 * (process.kinFitTtSemiLepEventCSVMJER020 * process.tprimeNtupleDumperCSVMJER020
+                                                    )
+                       )
+
+process.p5 = cms.Path( process.pfShyftSkimJER000* (process.kinFitTtSemiLepEventCSVMJER000 * process.tprimeNtupleDumperCSVMJER000
+                                                   )
+                       )
 #configure output module
 if runQCDSamples:
-    process.p4 = cms.Path( process.pfShyftSkimLoose * (process.kinFitTtSemiLepEventCHI2Loose * process.tprimeNtupleDumperCHI2Loose +
-                                                       process.kinFitTtSemiLepEventTCHEMLoose * process.tprimeNtupleDumperTCHEMLoose +
-                                                       process.kinFitTtSemiLepEventCSVMLoose * process.tprimeNtupleDumperCSVMLoose
+    process.p6 = cms.Path( process.pfShyftSkimLoose * ( process.kinFitTtSemiLepEventCHI2Loose * process.tprimeNtupleDumperCHI2Loose +
+                                                        process.kinFitTtSemiLepEventCSVMLoose * process.tprimeNtupleDumperCSVMLoose
                                                        )
                            )
+    
     process.out = cms.OutputModule("PoolOutputModule",
-                                   SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring(  'p1','p2','p3', 'p4') ),
+                                   SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring(  'p1', 'p2', 'p3', 'p4', 'p5', 'p6') ),
                                    )
     
 else:
     process.out = cms.OutputModule("PoolOutputModule",
-                                   SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p1','p2','p3') ),
+                                   SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p1', 'p2', 'p3', 'p4', 'p5') ),
                                    )
-
-
 
 process.out.fileName =  cms.untracked.string('ttTest.root')
 process.out.outputCommands = cms.untracked.vstring('drop *')
@@ -425,7 +469,7 @@ if runQCDSamples:
 process.outpath = cms.EndPath(process.out)
 
 ## process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+#process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 ## process.MessageLogger.suppressWarning.append('patTrigger')
 ## process.MessageLogger.cerr.FwkJob.limit=1
 ## process.MessageLogger.cerr.ERROR = cms.untracked.PSet( limit = cms.untracked.int32(0) )
