@@ -28,48 +28,57 @@ fout = TFile("response_full.root", "RECREATE")
 ptBins = [0., 50.,125.,200., 300., 400., 500., 600., 800., 1000., 1500., 7000.]
 
 names = [
-    ["pythia6_z2", None],
-    ["pythia6_z2", 'jecup'],
-    ["pythia6_z2", 'jecdn'],
-    ["pythia8_4c", None],
-    ["herwigpp_23", None]
+'QCD_pythia6_z2_plots_nominal',
+'QCD_pythia6_z2_plots_jecup',
+'QCD_pythia6_z2_plots_jecdn',
+'QCD_herwigpp_23_plots_nominal',
+'QCD_pythia8_4c_plots_nominal',
+'QCD_pythia6_z2_plots_jerup',
+'QCD_pythia6_z2_plots_jerdn',
+'QCD_pythia6_z2_plots_jarup',
+'QCD_pythia6_z2_plots_jardn',
+'QCD_pythia6_z2_plots_puNominal',
+'QCD_pythia6_z2_plots_puUp',
+'QCD_pythia6_z2_plots_puDn'
     ]
 
-njobs = 10
-
-grooms = ['', '_Groom0', '_Groom1', '_Groom2']
-outgrooms = ['', '_Trimmed', '_Filtered', '_Pruned']
+grooms = ['', '_Trimmed', '_Filtered', '_Pruned']
 
 for sample in range(0,len(names)) :
-    print "Processing sample " + str(sample) + " : " + names[sample][0]
+    print "Processing sample " + str(sample) + " : " + names[sample]
     igroom = 0
-    for groom in grooms :
+
+    sfiles = names[sample] + '/res/*.root'
+    files = glob.glob( sfiles )
+    print 'Files are : '
+    for sfile in files :
+        print sfile
+    njobs = len(files)
+
+
+    for groom in grooms:
+        for iptBin in range(0,len(ptBins)-1) :
+
+            iifile = 0
+            for ifile in files :
+                fin = TFile( ifile, 'r')
         
-        for ibin in range(0,len(ptBins)-1) :
-            print "   Processing bin " + str(ibin)
-            for i in range(0,njobs) : 
-                print "     Processing job " + str(i)
-                if names[sample][1] is None :
-                    s = "QCD_" + names[sample][0] + "_v10beta_plots" + str(i) + ".root"
-                else :
-                    s = "QCD_" + names[sample][0] + "_v10beta_" + names[sample][1]  + "_plots" + str(i) + ".root"
-                fin = TFile( s, "r")
-                s = "response_pt" + str(ibin) + groom
-                print "Getting RUR " + s
+                s = 'response' + groom + '_pt' + str(iptBin)
+                print 'Getting s = ' + s + ' from file ' + ifile,        
                 rur = fin.Get(s)
-                if i == 0 :
+
+                if iifile == 0 :
                     output = rur
-                    if names[sample][1] is None :
-                        s = "response_" + names[sample][0] + "_pt" + str(ibin) + outgrooms[igroom]
-                    else :
-                        s = "response_" + names[sample][0] + "_pt" + str(ibin) + '_' +  names[sample][1] + outgrooms[igroom]
+                    s = "response_" + names[sample] + groom + "_pt" + str(iptBin)
                     output.SetName(s)
-                    print "Setting RUR name to " + s
+                    print "Setting RUR, using name " + s
                 else :
+                    print '--- Adding to RUR'
                     output.Add( rur )
+                iifile += 1
 
             fout.cd()
             output.Write()
-        igroom += 1
+
 fout.Close()
 
