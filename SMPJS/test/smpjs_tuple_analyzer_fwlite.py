@@ -67,6 +67,15 @@ parser.add_option('--puWeighting', type='int', action='store',
                   dest='puWeighting',
                   help='PU Weighting. None=no weighting, 0=Nominal, -1=Down, +1=Up')
 
+parser.add_option('--puMCFile', metavar='F', type='string', action='store',
+                  default='PUMC_dist.root',
+                  dest='puMCFile',
+                  help='PU Monte Carlo file')
+
+parser.add_option('--puDataFile', metavar='F', type='string', action='store',
+                  default='PUData_dist.root',
+                  dest='puDataFile',
+                  help='PU Data file')
 
 
 # Print verbose information
@@ -721,6 +730,14 @@ for ifile in files :
         ak7Def = ak7Obj.getJets( event, rho )
 
 
+                    
+        # For MC, if using PU reweighting, get the number of simulated pileup interactions
+        if options.useMC and options.puWeighting is not None:
+            event.getByLabel( puLabel, puHandle )
+            puInfos = puHandle.product()
+            npu = puInfos[0].getPU_NumInteractions()
+            weight *= LumiWeights.weight3D( event.object() )
+
         # response pt bin
         responsePtBin = None
 
@@ -963,11 +980,6 @@ for ifile in files :
                     if options.verbose :
                         print 'recoEffNum filling ' + str(mjetGenOnly)
                         print 'genEffNum  filling ' + str(mjetReco)
-                    
-                    # Also get the number of simulated pileup interactions
-                    #event.getByLabel( puLabel, puHandle )
-                    #puInfos = puHandle.product()
-                    #npu = puInfos[0].getPU_NumInteractions()
 
                     response0 = ak7Def[0].Perp() / ak7GenMatched[0].Perp()
                     mjjResponse = mjjReco / mjjGen
