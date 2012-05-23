@@ -5,6 +5,8 @@
   gROOT->ProcessLine("namespace edm {typedef edm::Wrapper<vector<float> > Wrapper<vector<float,allocator<float> > >; }");
   gROOT->ProcessLine("namespace edm {typedef edm::Wrapper<vector<double> > Wrapper<vector<double,allocator<double> > >; }");
 
+  gSystem->Load("./libRooUnfold");
+
   TStyle *tdrStyle = new TStyle("tdrStyle","Style for P-TDR");
 
   cout << "TDR Style initialized" << endl;
