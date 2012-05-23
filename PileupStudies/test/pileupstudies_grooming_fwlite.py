@@ -35,7 +35,7 @@ parser.add_option('--algo', metavar='F', type='string', action='store',
 
 # Jet Algorithm
 parser.add_option('--groomings', metavar='F', type='string', action='append',
-                  default=['Lite', 'FilteredLite', 'TrimmedLite', 'PrunedLite'],
+                  default=None,
                   dest='groomings',
                   help='groomings to use')
 
@@ -45,6 +45,15 @@ parser.add_option('--uncorrInput', action='store_true',
                   default=False,
                   dest='uncorrInput',
                   help='Set to true if input jets are uncorrected')
+
+
+
+# Use AK5PF instead of AK5PFchs jes?
+parser.add_option('--useNoCHS', action='store_true',
+                  default=False,
+                  dest='useNoCHS',
+                  help='Set to true if input jets are not charged-hadron subtracted')
+
 
 # Output name to use. 
 parser.add_option('--max', metavar='M', type='int', action='store',
@@ -159,12 +168,20 @@ nJets = ROOT.TH1F("nJets",         "Number of Jets, p_{T} > 30 GeV;N_{Jets};Numb
 ############################################
 
 
+
 if options.algo.find('ak5') >= 0 :
-    jecStr = [
-        'Jec11_V3_L1FastJet_AK5PFchs.txt',
-        'Jec11_V3_L2Relative_AK5PFchs.txt',
-        'Jec11_V3_L3Absolute_AK5PFchs.txt',
+    if options.useNoCHS is False :
+        jecStr = [
+            'Jec11_V3_L1FastJet_AK5PFchs.txt',
+            'Jec11_V3_L2Relative_AK5PFchs.txt',
+            'Jec11_V3_L3Absolute_AK5PFchs.txt',
         ]
+    else :
+        jecStr = [
+            'GR_R_42_V23_L1FastJet_AK5PF.txt',
+            'GR_R_42_V23_L2Relative_AK5PF.txt',
+            'GR_R_42_V23_L3Absolute_AK5PF.txt',
+        ]        
 else :
     jecStr = [
         'GR_R_42_V23_L1FastJet_AK7PFchs.txt',
@@ -182,8 +199,11 @@ for ijecStr in jecStr :
 jec = ROOT.FactorizedJetCorrector(jecPars)
 
 if options.algo.find('ak5') >= 0 :
-    jecUncStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
-else:
+    if options.useNoCHS is False :
+        jecUncStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
+    else :
+        jecUncStr = ROOT.std.string('GR_R_42_V23_Uncertainty_AK5PF.txt')
+else :
     jecUncStr = ROOT.std.string('GR_R_42_V23_Uncertainty_AK7PFchs.txt')
 
 jecUnc = ROOT.JetCorrectionUncertainty( jecUncStr )
@@ -223,7 +243,12 @@ jetEnergyLabels        = []
 jetJecFactorLabels     = []
 jetAreaLabels          = []
 
-for groom in options.groomings :
+if options.groomings is None :
+    groomings = ['Lite', 'FilteredLite', 'TrimmedLite', 'PrunedLite']
+else :
+    groomings = options.groomings
+
+for groom in groomings :
 
     jetPxLabels           .append( ( options.algo + groom,   "px" ) )
     jetPyLabels           .append( ( options.algo + groom,   "py" ) )
@@ -249,12 +274,13 @@ rhoLabel = ( "kt6PFJets",   "rho" )
 
 etaRatioHists = []
 ptRatioHists = []
+massVsPtHists = []
 
-
-for groom in options.groomings: 
+for groom in groomings: 
     etaRatioHists.append( ROOT.TH3F('etaRatio' + groom, 'etaRecoRatio' + groom, 50, -5.0, 5.0, 200, 0., 2.0, 25, 0, 25) )
     ptRatioHists.append( ROOT.TH3F('ptRatio' + groom, 'ptRecoRatio' + groom, 50, 0., 500., 200, 0., 2.0, 25, 0, 25) )
-
+    massVsPtHists.append( ROOT.TH3F('massVsPt' + groom, 'Mass versus p_{T}, ' + groom + ';p_{T} (GeV);Mass (GeV)',
+                                50, 0., 500., 20, 0., 100., 25, 0, 25) )
 
 
     
@@ -318,9 +344,9 @@ for event in events:
     puInfos = puHandle.product()
     npu = puInfos[0].getPU_NumInteractions()
 
-    for igroom in range(0,len(options.groomings)):
+    for igroom in range(0,len(groomings)):
 
-        groom = options.groomings[igroom]
+        groom = groomings[igroom]
         jetPxLabel = jetPxLabels[igroom]
         jetPyLabel = jetPyLabels[igroom]
         jetPzLabel = jetPzLabels[igroom]
@@ -329,6 +355,7 @@ for event in events:
         jetAreaLabel = jetAreaLabels[igroom]
         ptRatioHist = ptRatioHists[igroom]
         etaRatioHist = etaRatioHists[igroom]
+        massVsPtHist = massVsPtHists[igroom]
 
         event.getByLabel( jetPxLabel, jetPxHandle )
         jetPxs = jetPxHandle.product()
@@ -400,7 +427,7 @@ for event in events:
             genJet = matchedGenJets[ijet]
             ptRatioHist .Fill( genJet.Pt(),  recoJet.Pt() /genJet.Pt(),  npu )
             etaRatioHist.Fill( genJet.Eta(), recoJet.Pt() /genJet.Pt(),  npu )
-
+            massVsPtHist.Fill( genJet.Pt(),  recoJet.M(), npu )
 
 f.cd()
 f.Write()
