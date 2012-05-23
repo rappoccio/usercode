@@ -6,34 +6,33 @@ import array
 import math
 from DataFormats.FWLite import Events, Handle
 
-
 files = [
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_10_1_omY.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_11_1_EoX.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_12_1_7yr.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_13_1_4pY.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_14_1_jIQ.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_15_1_uXr.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_16_1_FPf.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_17_1_DvC.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_18_1_vBV.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_19_1_JiO.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_1_1_BHn.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_20_1_Z47.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_21_1_4xp.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_22_1_qzz.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_23_1_qM4.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_24_1_a7u.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_25_1_0XM.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_26_1_fEZ.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_2_1_e0f.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_3_1_0t6.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_4_1_sD2.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_5_1_wfr.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_6_1_WS3.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_7_1_9Pp.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_8_1_xTH.root',
-'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v5/c0e35ba6e48486ab759b591ebe1227c6/shyft_382_mc_9_1_kzv.root'
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_10_1_VxQ.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_11_1_rEG.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_12_1_bNX.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_13_1_zpn.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_14_1_7Jl.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_15_1_zO3.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_16_1_Cmr.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_17_1_rCB.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_18_1_lqt.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_19_1_3p7.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_1_1_6sD.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_20_1_6AT.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_21_1_0Ea.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_22_1_gd5.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_23_1_SQA.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_24_1_FXF.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_25_1_dtq.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_26_1_25I.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_2_1_q0c.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_3_1_CPU.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_4_1_jsa.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_5_1_eho.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_6_1_Zrb.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_7_1_Hxz.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_8_1_wSc.root',
+'dcap:///pnfs/cms/WAX/11/store/user/rappocc/TTbarJets-madgraph/shyft_38xOn35x_v4/11c19408717a8a2546a9b3c7cb40b7a6/shyft_382_mc_9_1_PA5.root',
     
     ]
 events = Events (files)
@@ -51,13 +50,11 @@ pflabel = ("selectedPatJetsPFlow")
 f = ROOT.TFile("ttbarEff.root", "RECREATE")
 f.cd()
 
-binsPt = array.array( 'f', [0., 15., 20., 25., 30., 40., 50., 60., 80., 100., 140., 300.] )
-binsEta = array.array( 'f', [0., 0.4, 0.8, 1.4, 2.4] )
+binsPt = array.array( 'f', [0., 15., 20., 25., 30., 40., 60., 80., 100., 150., 300.] )
+binsEta = array.array( 'f', [0., 1.4, 2.4] )
 
 nbinsPt = len(binsPt)
 nbinsEta = len(binsEta)
-
-caloFbcp = ROOT.TH3F("caloFbcp", "Calo F_{bcp}", 3, 0, 3, 3, 0, 3, 6, 0, 6 )
 
 caloBTags  = ROOT.TH2F("caloBTags", "Calo BTags", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 caloBJets  = ROOT.TH2F("caloBJets", "Calo BJets", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
@@ -75,8 +72,6 @@ caloGTags  = ROOT.TH2F("caloGTags", "Calo GTags", nbinsPt-1, binsPt, nbinsEta-1,
 caloGJets  = ROOT.TH2F("caloGJets", "Calo GJets", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 caloGDisc  = ROOT.TH1F("caloGDisc", "Calo GDisc", 50, 0., 5.0 )
 
-pfFbcp = ROOT.TH3F("pfFbcp", "Calo F_{bcp}", 3, 0, 3, 3, 0, 3, 6, 0, 6 )
-
 
 pfBTags  = ROOT.TH2F("pfBTags", "Pf BTags", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 pfBJets  = ROOT.TH2F("pfBJets", "Pf BJets", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
@@ -93,8 +88,6 @@ pfLFDisc  = ROOT.TH1F("pfLFDisc", "Pf LFDisc", 50, 0., 5.0 )
 pfGTags  = ROOT.TH2F("pfGTags", "Pf GTags", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 pfGJets  = ROOT.TH2F("pfGJets", "Pf GJets", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 pfGDisc  = ROOT.TH1F("pfGDisc", "Pf GDisc", 50, 0., 5.0 )
-
-jptFbcp = ROOT.TH3F("jptFbcp", "Calo F_{bcp}", 3, 0, 3, 3, 0, 3, 6, 0, 6 )
 
 jptBTags  = ROOT.TH2F("jptBTags", "Jpt BTags", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
 jptBJets  = ROOT.TH2F("jptBJets", "Jpt BJets", nbinsPt-1, binsPt, nbinsEta-1, binsEta )
@@ -167,26 +160,16 @@ def fillHists( jet, discname, bhists, chists, ghists, lfhists ) :
 ### Helper class to get the jet product, and drive the helper to
 ### fill histograms
 def runJets( disc, ptCut, handle, label, hists ) :
-
-    nb = 0
-    nc = 0
-    np = 0
+    
     # use getByLabel, just like in cmsRun
     event.getByLabel (label, handle)
     # get the product
     jets = handle.product()
     for jet in jets :
-        if abs(jet.partonFlavour()) == 5:
-            nb += 1
-        elif abs(jet.partonFlavour()) == 4:
-            nc += 1
-        else :
-            np += 1
         if jet.pt() > ptCut :
             fillHists( jet,disc,
                        hists[0], hists[1], hists[2], hists[3]
-                       )
-    return [nb,nc,np]
+                       )    
 
 # loop over events
 i = 0
@@ -194,48 +177,24 @@ for event in events:
     i = i + 1
     if i % 10000 == 0:
         print 'Processing event ' + str(i)
+    runJets( 'simpleSecondaryVertexBJetTags',
+             30.,
+             calohandle,
+             calolabel,
+             calohists )
 
+    runJets( 'simpleSecondaryVertexHighEffBJetTags',
+             30.,
+             jpthandle,
+             jptlabel,
+             jpthists )
 
-    [caloNb, caloNc, caloNp] = runJets(  'simpleSecondaryVertexBJetTags',             
-                                         30.,
-                                         calohandle,
-                                         calolabel,
-                                         calohists )
-    if caloNb > 2 :
-        caloNb = 2
-    if caloNc > 2 :
-        caloNc = 2
-    if caloNp > 5 :
-        caloNp = 5
-    caloFbcp.Fill( caloNb, caloNc, caloNp )
+    runJets( 'simpleSecondaryVertexHighEffBJetTags',
+             25.,
+             pfhandle,
+             pflabel,
+             pfhists )
 
-
-    [jptNb, jptNc, jptNp] = runJets( 'simpleSecondaryVertexHighEffBJetTags',             
-                                     30.,
-                                     jpthandle,
-                                     jptlabel,
-                                     jpthists )
-    if jptNb > 2 :
-        jptNb = 2
-    if jptNc > 2 :
-        jptNc = 2
-    if jptNp > 5 :
-        jptNp = 5
-    jptFbcp.Fill( jptNb, jptNc, jptNp )
-
-
-    [pfNb, pfNc, pfNp] = runJets( 'simpleSecondaryVertexHighEffBJetTags',             
-                                  25.,
-                                  pfhandle,
-                                  pflabel,
-                                  pfhists )
-    if pfNb > 2 :
-        pfNb = 2
-    if pfNc > 2 :
-        pfNc = 2
-    if pfNp > 5 :
-        pfNp = 5
-    pfFbcp.Fill( pfNb, pfNc, pfNp )
 
 f.cd()
 for iihist in calohists :
@@ -249,10 +208,5 @@ for iihist in pfhists :
 for iihist in jpthists :
     for jjhist in iihist :
         jjhist.Write()
-
-
-caloFbcp.Write()
-jptFbcp.Write()
-pfFbcp.Write()
 f.Close()
 

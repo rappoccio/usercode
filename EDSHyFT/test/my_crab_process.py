@@ -2,34 +2,24 @@
 
 import subprocess
 import sys
-import glob
 
+command = sys.argv[1]
 
-from optparse import OptionParser
-
-
-parser = OptionParser()
-
-parser.add_option('--files', metavar='F', type='string', action='store',
-                  dest='files',
-                  help='Input files')
-
-parser.add_option('--command', metavar = 'C', type='string', action='store',
-                  dest='command',
-                  default='status',
-                  help='CRAB command to run')
-
-(options, args) = parser.parse_args()
-
-
-argv = []
-
-dirs = glob.glob( options.files )
+dirs = [
+'InclusiveMu15_shyft_38xOn35x_v2',
+'SingleTop_sChannel-madgraph_shyft_38xOn35x_v2',
+'SingleTop_tChannel-madgraph_shyft_38xOn35x_v2',
+'SingleTop_tWChannel-madgraph_shyft_38xOn35x_v2',
+'TTbarJets-madgraph_shyft_38xOn35x_v2',
+'VqqJets-madgraph_shyft_38xOn35x_v2',
+'WJets-madgraph_shyft_38xOn35x_v2',
+'ZJets-madgraph_shyft_38xOn35x_v2',
+'shyft_38xOn35x_v2_r1',
+'shyft_38xOn35x_v2_r2',
+'shyft_38xOn35x_v2_r3'
+]
 
 for idir in dirs :
-    print '--------------------------------'
-    print '--------------------------------'
-    print '--------------------------------'    
-    s = "crab -" + options.command + " -c " + idir
+    s = "crab -" + command + " -c " + idir
     print s
     subprocess.call( [s, ""], shell=True )

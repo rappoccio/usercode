@@ -33,20 +33,20 @@ options.register('sampleNameInput',
                  "Sample name to give histograms")
 
 options.register('caloMetMin',
-                 30.,
+                 0.,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.float,
                   "Min MET for calo met")
 
 options.register('jptMetMin',
-                 20.,
+                 0.,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.float,
                   "Min MET for jpt met")
 
 
 options.register('pfMetMin',
-                 20.,
+                 0.,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.float,
                   "Min MET for pf met")
@@ -109,10 +109,7 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
                                         heavyFlavour = cms.bool( useFlavorHistory ),
                                         doMC = cms.bool( inputDoMC),
                                         sampleName = cms.string(inputSampleName),
-                                        identifier = cms.string('PF'),
-                                        simpleSFCalc = cms.bool(True),                                                  
-                                        bcEffScale = cms.double(0.88),
-                                        lfEffScale = cms.double(0.87)                                        
+                                        identifier = cms.string('PF')
                                         )                                    
                                     )
 
@@ -126,10 +123,7 @@ process.jptShyftAna = cms.EDAnalyzer('EDSHyFT',
                                          heavyFlavour = cms.bool( useFlavorHistory ),
                                          doMC = cms.bool( inputDoMC),
                                          sampleName = cms.string(inputSampleName),
-                                         identifier = cms.string('JPT'),
-                                         simpleSFCalc = cms.bool(True),                                                  
-                                         bcEffScale = cms.double(0.88),
-                                         lfEffScale = cms.double(0.87),                                         
+                                         identifier = cms.string('JPT')
                                         )
                                      
                                      )
@@ -143,10 +137,7 @@ process.caloShyftAna = cms.EDAnalyzer('EDSHyFT',
                                           doMC = cms.bool( inputDoMC),
                                           sampleName = cms.string(inputSampleName),
                                           btaggerString = cms.string('simpleSecondaryVertexBJetTags'),
-                                          identifier = cms.string('CALO'),
-                                          simpleSFCalc = cms.bool(True),                                                  
-                                          bcEffScale = cms.double(0.88),
-                                          lfEffScale = cms.double(0.87),                                          
+                                          identifier = cms.string('CALO')
                                           )                                      
                                       )
 
@@ -202,4 +193,4 @@ process.p = cms.Path(
     )
 
 
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 10000
