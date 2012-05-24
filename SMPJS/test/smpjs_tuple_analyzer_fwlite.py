@@ -17,7 +17,7 @@ parser = OptionParser()
 # If you get a "cannot find file" type of error, be sure to use "\*" instead
 # of "*" to make sure you don't confuse the shell. 
 parser.add_option('--files', metavar='F', type='string', action='store',
-                  dest='files',
+		  dest='files',
                   help='Input files')
 
 # Output name to use. 
@@ -35,7 +35,7 @@ parser.add_option('--collName', metavar='F', type='string', action='append',
 
 # Use MC information, otherwise use trigger information
 parser.add_option('--useMC', action='store_true',
-                  default=False,
+                  default=True,
                   dest='useMC',
                   help='Use MC Weight (True) or weight by trigger prescale (False)')
 
@@ -63,7 +63,7 @@ parser.add_option('--jarSmearVal', type='float', action='store',
 
 # PU Weighting
 parser.add_option('--puWeighting', type='int', action='store',
-                  default=None,
+                  default=0,
                   dest='puWeighting',
                   help='PU Weighting. None=no weighting, 0=Nominal, -1=Down, +1=Up')
 
@@ -85,6 +85,10 @@ parser.add_option('--verbose', action='store_true',
                   help='Print verbose information')
 
 # job splitting
+parser.add_option('--max', type='int', action='store',
+                  default=None,
+                  dest='max',
+                  help='Max number')
 parser.add_option('--nsplit', type='int', action='store',
                   default=None,
                   dest='nsplit',
@@ -92,11 +96,16 @@ parser.add_option('--nsplit', type='int', action='store',
 parser.add_option('--isplit', type='int', action='store',
                   default=None,
                   dest='isplit',
-                  help='Index of job (0...nsplit)')
+		  help='Index of job (0...nsplit)')
 
 (options, args) = parser.parse_args()
 
 argv = []
+
+
+if not options.useMC :
+    print 'This macro is for MC only now! Please use the smpjs_tuple_analyzer_fwlite_data.py for data.'
+    exit(0)
 
 # Import everything from ROOT
 import ROOT
@@ -109,33 +118,14 @@ from DataFormats.FWLite import Events, Handle
 ROOT.gSystem.Load('libCondFormatsJetMETObjects')
 ROOT.gSystem.Load('libPhysicsToolsUtilities')
 
-#from CondFormats.JetMETObjects import *
+from PyFWLiteJetColl import PyFWLiteJetColl, printRawColl
+from HistsGroomed import HistsGroomed
+from TrigHelper import TrigHelper
 
-#############################
-# Matching one jet to another in some other collection
-# Uses DR < 0.5 matching
-#############################
-def findJetInColl( jet0, jets ) :
-    minDR = 0.5
-    for jet in jets :
-        dR = jet0.DeltaR( jet )
-        if dR < minDR :
-            return jet
-    return None
+trigHelper = TrigHelper()
 
 
-#############################
-# Utility for printing
-#############################
-def printJetColl( jets ) :
-    for ijet in xrange(len(jets)) :
-        jet = jets[ijet]
-        if jet is None :
-            print '-----> None!'
-        else :
-            print '{0:6.0f} : (pt,y,phi,m) = ({1:6.2f},{2:6.2f},{3:6.2f},{4:6.2f})'.format(
-                ijet, jet.Perp(), jet.Rapidity(), jet.Phi(), jet.M()
-            )
+
 
 #############################
 # Utility for finding bin
@@ -145,215 +135,6 @@ def findBin( x, bins ) :
         if x >= bins[ibin] and x < bins[ibin+1] :
             return ibin
     return None
-
-#############################
-# Histogramming utility to  #
-# book each hist for each   #
-# jet grooming technique    #
-#############################
-class HistsGroomed :
-    def __init__(self, outname, grooms) :
-        self.f = ROOT.TFile(outname + '.root', 'recreate')
-        self.grooms = grooms
-        self.hists = []
-
-    def get(self, name) :
-        return self.f.FindObject(name)
-
-    def write(self) :
-        self.f.cd()
-        self.f.Write()
-        self.f.Close()
-
-    def getFile(self) :
-        return self.f
-
-    def makeQuickHists(self) :
-        for hist in self.hists :
-            setattr(self,hist[0].GetName(), hist[0])
-            setattr(self,hist[0].GetName() + '_Groom', [])
-            for igroom in range(0,len(hist[1])):
-                getattr(self,hist[0].GetName() + '_Groom').append( hist[1][igroom] )
-
-    def book1F(self, *args, **kwargs) :
-        name=args[0]
-        title=args[1]
-        nx=kwargs.get('nx')
-        x1=kwargs.get('x1',None)
-        x2=kwargs.get('x2',None)
-        xbins=kwargs.get('xbins',None)
-        bookGrooms=kwargs.get('bookGrooms', True)
-        self.f.cd()
-        ihists = []
-        h1 = None
-        if xbins is None :
-            h1 = ROOT.TH1F(name,title,nx,x1,x2)
-            if bookGrooms :
-                for igroom in self.grooms :
-                    hi = ROOT.TH1F(name + '_' + igroom,title + ', ' + igroom,nx,x1,x2)
-                    ihists.append(hi)
-        else :
-            h1 = ROOT.TH1F(name,title,nx,xbins)
-            if bookGrooms :
-                for igroom in self.grooms :
-                    hi = ROOT.TH1F(name + '_' + igroom,title + ', ' + igroom,nx,xbins)
-                    ihists.append(hi)
-        self.hists.append([h1, ihists])
-
-
-    def book2F(self, *args, **kwargs) :
-        name=args[0]
-        title=args[1]
-        nx=kwargs.get('nx')
-        x1=kwargs.get('x1',None)
-        x2=kwargs.get('x2',None)
-        xbins=kwargs.get('xbins',None)
-        ny=kwargs.get('ny')
-        y1=kwargs.get('y1',None)
-        y2=kwargs.get('y2',None)
-        ybins=kwargs.get('ybins',None)
-        bookGrooms=kwargs.get('bookGrooms', True)
-        self.f.cd()
-        ihists = []
-        h1 = None
-        if x1 is not None and y1 is not None :
-            h1 = ROOT.TH2F(name,title,nx,x1,x2,ny,y1,y2)
-            if bookGrooms :
-                for igroom in self.grooms :
-                    hi = ROOT.TH2F(name + '_' + igroom,title + ', ' + igroom,nx,x1,x2,ny,y1,y2)
-                    ihists.append(hi)
-        elif x1 is not None and y1 is None :
-            h1 = ROOT.TH2F(name,title,nx,x1,x2,ny,ybins)
-            if bookGrooms :
-                for igroom in self.grooms :
-                    hi = ROOT.TH2F(name + '_' + igroom,title + ', ' + igroom,nx,x1,x2,ny,ybins)
-                    ihists.append(hi)
-        elif x1 is None and y1 is not None :
-            h1 = ROOT.TH2F(name,title,nx,xbins,ny,y1,y2)
-            if bookGrooms :
-                for igroom in self.grooms :
-                    hi = ROOT.TH2F(name + '_' + igroom,title + ', ' + igroom,nx,xbins,ny,y1,y2)
-                    ihists.append(hi)
-        else :
-            h1 = ROOT.TH2F(name,title,nx,xbins,ny,ybins)
-            if bookGrooms :
-                for igroom in self.grooms :
-                    hi = ROOT.TH2F(name + '_' + igroom,title + ', ' + igroom,nx,xbins,ny,ybins)
-                    ihists.append(hi)
-        self.hists.append([h1, ihists])
-
-    def book3F(self, *args, **kwargs) :
-        name=args[0]
-        title=args[1]
-        nx=kwargs.get('nx')
-        x1=kwargs.get('x1')
-        x2=kwargs.get('x2')
-        ny=kwargs.get('ny')
-        y1=kwargs.get('y1')
-        y2=kwargs.get('y2')
-        nz=kwargs.get('nz')
-        z1=kwargs.get('z1')
-        z2=kwargs.get('z2')
-        bookGrooms=kwargs.get('bookGrooms', True)
-        self.f.cd()
-        ihists = []
-        h1 = ROOT.TH3F(name,title,nx,x1,x2,ny,y1,y2,nz,z1,z2)
-        if bookGrooms :
-            for igroom in self.grooms :
-                hi = ROOT.TH3F(name + '_' + igroom,title + ', ' + igroom,nx,x1,x2,ny,y1,y2,nz,z1,z2)
-                ihists.append(hi)
-        self.hists.append([h1, ihists])
-
-#############################
-#  Get a collection from    #
-#  the event record, and    #
-#  correct them. Return     #
-#  list of corrected p4's   #
-#############################
-class PyFWLiteJetColl :
-    def __init__ ( self, coll, jec=None, jecUnc=None, upOrDown=True, useGen = False, jetPtMin = 20.0, jetEtaMax = 2.5):
-        self.jetCollPxHandle         = Handle( "std::vector<float>" )
-        self.jetCollPxLabel          = ( coll ,   "px" )
-        self.jetCollPyHandle         = Handle( "std::vector<float>" )
-        self.jetCollPyLabel          = ( coll ,   "py" )
-        self.jetCollPzHandle         = Handle( "std::vector<float>" )
-        self.jetCollPzLabel          = ( coll ,   "pz" )
-        self.jetCollEnergyHandle     = Handle( "std::vector<float>" )
-        self.jetCollEnergyLabel      = ( coll ,   "energy" )
-        self.jetCollJetAreaHandle    = Handle( "std::vector<float>" )
-        self.jetCollJetAreaLabel     = ( coll ,   "jetArea" )
-        self.jetCollJecFactorHandle  = Handle( "std::vector<float>" )
-        self.jetCollJecFactorLabel   = ( coll ,   "jecFactor" )
-        self.jetColl = []
-        self.jec = jec
-        self.jecUnc = jecUnc
-        self.upOrDown = upOrDown
-        self.useGen = useGen
-        self.jetPtMin = jetPtMin
-        self.jetEtaMax = jetEtaMax
-
-    def getJets( self, event, rho=None ) :
-        self.jetColl = []
-        event.getByLabel( self.jetCollPxLabel, self.jetCollPxHandle )
-        self.jetCollPxs = self.jetCollPxHandle.product()
-        event.getByLabel( self.jetCollPyLabel, self.jetCollPyHandle )
-        self.jetCollPys = self.jetCollPyHandle.product()
-        event.getByLabel( self.jetCollPzLabel, self.jetCollPzHandle )
-        self.jetCollPzs = self.jetCollPzHandle.product()
-        event.getByLabel( self.jetCollEnergyLabel, self.jetCollEnergyHandle )
-        self.jetCollEnergys = self.jetCollEnergyHandle.product()
-        if not self.useGen :
-            event.getByLabel( self.jetCollJetAreaLabel, self.jetCollJetAreaHandle )
-            self.jetCollJetAreas = self.jetCollJetAreaHandle.product()
-            event.getByLabel( self.jetCollJecFactorLabel, self.jetCollJecFactorHandle )
-            self.jetCollJecFactors = self.jetCollJecFactorHandle.product()
-
-            for idef in range(0,len(self.jetCollPxs)):
-                jdefRaw = ROOT.TLorentzVector(
-                    self.jetCollPxs[idef] * self.jetCollJecFactors[idef],
-                    self.jetCollPys[idef] * self.jetCollJecFactors[idef],
-                    self.jetCollPzs[idef] * self.jetCollJecFactors[idef],
-                    self.jetCollEnergys[idef] * self.jetCollJecFactors[idef]
-                    )
-
-                if self.jec is not None :
-                    self.jec.setJetEta(jdefRaw.Eta())
-                    self.jec.setJetPt(jdefRaw.Perp())
-                    self.jec.setJetA(self.jetCollJetAreas[idef])
-                    self.jec.setRho(rho)
-                    factor = self.jec.getCorrection()
-
-                    if self.jecUnc is not None:
-                        self.jecUnc.setJetEta( jdefRaw.Eta() )
-                        self.jecUnc.setJetPt( jdefRaw.Perp() * factor ); 
-                        unc = jecUnc.getUncertainty( self.upOrDown )
-                        factor *= (1 + unc)
-                                                  
-                else :
-                    factor = 1.0
-                    
-
-
-                jdef = ROOT.TLorentzVector(
-                    jdefRaw.Px() * factor,
-                    jdefRaw.Py() * factor,
-                    jdefRaw.Pz() * factor,
-                    jdefRaw.Energy() * factor
-                    )
-
-                if jdef.Perp() > self.jetPtMin and abs(jdef.Rapidity()) < self.jetEtaMax:
-                    self.jetColl.append( jdef )
-        else :
-            for idef in range(0,len(self.jetCollPxs)):
-                jdefRaw = ROOT.TLorentzVector(
-                    self.jetCollPxs[idef] ,
-                    self.jetCollPys[idef] ,
-                    self.jetCollPzs[idef] ,
-                    self.jetCollEnergys[idef] 
-                    )
-                self.jetColl.append(jdefRaw)
-        return self.jetColl
-
 
 #############################
 # Get the input files,
@@ -464,30 +245,7 @@ if options.puWeighting is not None:
                                                  "pileup", "pileup", "Weight_3D_down.root")
         LumiWeights.weight3D_init( 1.00 )
 
-############################################
-#     Trigger information                  #
-############################################
-# Use the same trigger thresholds as QCD-11-004 in AN-364-v4 Table 8
-trigsToKeep = [
-    'HLT_Jet60',
-    'HLT_Jet110',
-    'HLT_Jet190',
-    'HLT_Jet240',
-    'HLT_Jet370',
-    ]
-# Here are the trigger thresholds for the various eta bins.
-# In the following, each entry is an eta bin. The
-# two fields are then [etamin,etamax], and the
-# list of mjj thresholds for HLT_Jet60,110,190,240,370.
-trigThresholds = [
-[[0.0, 0.5], [ 178.,  324.,  533.,  663.,  970., 7000.] ],
-[[0.5, 1.0], [ 240.,  390.,  645.,  820., 1218., 7000.] ],
-[[1.0, 1.5], [ 369.,  615.,  998., 1261., 1904., 7000.] ],
-[[1.5, 2.0], [ 530.,  920., 1590., 1985., 3107., 7000.] ],
-[[2.0, 2.5], [ 913., 1549., 2665., 3700., 4000., 7000.] ]
-    ]
-
-
+trigsToKeep = trigHelper.trigsToKeep
 
 ############################################
 # Collection names, etc #
@@ -497,19 +255,17 @@ trigThresholds = [
 #   Used for trigger matching, and used as
 #   primary "key". GenJets and GroomedJets matched from
 #   these.
-ak7Obj = PyFWLiteJetColl( 'ak7Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown )
 
-# List of groomed jets
-ak7GroomObj = []
 
+# List of reco jets
+ak7Objs = [PyFWLiteJetColl( 'ak7Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, jerSmear=options.jerSmearVal, jarSmear=options.jarSmearVal )]
 for igroom in options.collName :
-    ak7GroomObj.append( PyFWLiteJetColl( 'ak7' + igroom + 'Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown ) )
+    ak7Objs.append( PyFWLiteJetColl( 'ak7' + igroom + 'Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, jerSmear=options.jerSmearVal, jarSmear=options.jarSmearVal) )
     
-# GenJets
-ak7GenObj = PyFWLiteJetColl( 'ak7Gen', useGen=True )
-ak7GenGroomObj = []
+# List of gen Jets
+ak7GenObjs = [PyFWLiteJetColl( 'ak7Gen', useGen=True )]
 for igroom in options.collName :
-    ak7GenGroomObj.append( PyFWLiteJetColl('ak7' + igroom + 'GenLite', useGen=True) )
+    ak7GenObjs.append( PyFWLiteJetColl('ak7' + igroom + 'GenLite', useGen=True) )
 
 
 # Mean-pt-per-unit-area
@@ -523,11 +279,6 @@ puLabel = ( "addPileupInfo", "")
 # Generator information
 generatorHandle = Handle("GenEventInfoProduct")
 generatorLabel = ( "generator", "")
-
-# Trigger information. 
-trigHandle = Handle("std::vector<std::string>")
-trigLabel = ( "dijetTriggerFilter", 'jetPaths')
-
 
 
 ############################################
@@ -555,23 +306,14 @@ hists.book2F('histAK7MjetVsEtaMax',
              nx=60, x1=0., x2=300., ny=5, y1=0.0, y2=2.5)
 
 
-# Mjj and <Mjet> versus |eta_max| for the different triggers. Only data. #
-for trig in trigsToKeep :
-    hists.book2F('histAK7MjjVsEtaMax_' + trig,
-                 'AK7 m_{jj} Versus #eta_{max}' + trig +';m_{jj} (GeV);#eta_{max}(radians)',
-                 nx=70, x1=0., x2=7000., ny=5, y1=0.0, y2=2.5)
-    hists.book2F('histAK7MjetVsEtaMax_' + trig,
-                 'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV)' + trig + ';#eta_{max}(radians)',
-                 nx=60, x1=0., x2=300., ny=5, y1=0.0, y2=2.5)
-
 
 # GENERATED Mjj and <Mjet> versus |eta_max|. only for MC.
 hists.book2F('histAK7MjjGenVsEtaMax',
              'AK7 m_{jj}^{GEN} Versus #eta_{max};m_{jj}^{GEN} (GeV);#eta_{max}(radians)',
-             nx=70, x1=0., x2=7000., ny=5, y1=0.0, y2=2.5, bookGrooms=False)
+             nx=70, x1=0., x2=7000., ny=5, y1=0.0, y2=2.5)
 hists.book2F('histAK7MjetGenVsEtaMax',
              'AK7 m_{jet}^{GEN} Versus #eta_{max};m_{jj}^{GEN} (GeV);#eta_{max}(radians)',
-             nx=60, x1=0., x2=300., ny=5, y1=0.0, y2=2.5, bookGrooms=False)
+             nx=60, x1=0., x2=300., ny=5, y1=0.0, y2=2.5)
 
 
 # Mjj and <Mjet> versus GENERATED Mjj and <Mjet>. Only for MC. 
@@ -599,15 +341,6 @@ hists.book2F('histAK7MjjVsPtAvg',
 hists.book2F('histAK7MjetVsPtAvg',
              'AK7 <m_{jet}> Versus p_{T}^{AVG} ;<m_{jet}> (GeV);p_{T}^{AVG} (GeV)',
              nx=60, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
-
-# Mjj and <Mjet> versus ptAvg for the different triggers. Only data. #
-for trig in trigsToKeep :
-    hists.book2F('histAK7MjjVsPtAvg_' + trig,
-                 'AK7 m_{jj} Versus p_{T}^{AVG} ' + trig +';m_{jj} (GeV);p_{T}^{AVG} (GeV)',
-                 nx=70, x1=0., x2=7000., ny=len(ptBins)-1, ybins=ptBins)
-    hists.book2F('histAK7MjetVsPtAvg_' + trig,
-                 'AK7 <m_{jet}> Versus p_{T}^{AVG} ;<m_{jet}> (GeV)' + trig + ';p_{T}^{AVG} (GeV)',
-                 nx=60, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
 
 
 # GENERATED Mjj and <Mjet> versus ptAvg. only for MC.
@@ -660,37 +393,30 @@ mjjEtaCut = 2.0
 ##     responses.append(resp)
 
 responses = []
-responses_Groom = []
 
 for ibin in range(0,len(ptBins)-1) :
-    response = ROOT.RooUnfoldResponse(60, 0., 300., 60, 0., 300.)
-    response.SetName('response_pt' + str(ibin))
-    response_Groom = []
-    for igroom in range(0,len(ak7GroomObj)):
+    res = ROOT.RooUnfoldResponse(60, 0., 300., 60, 0., 300.)
+    res.SetName('response_pt' + str(ibin))
+    response = [res]
+    for igroom in range(0,len(options.collName)):
         res = ROOT.RooUnfoldResponse(60, 0., 300., 60, 0., 300.)
         res.SetName('response_' + options.collName[igroom] + '_pt' + str(ibin) )
-        response_Groom.append( res )
+        response.append( res )
     responses.append(response)
-    responses_Groom.append( response_Groom )
 
 hists.makeQuickHists()
 
-############################################
-#               Event loop                 #
-#    Loop over events.                     #
-#    For each event:                       #
-#        1. Get the ungroomed reco jets    #
-#        2. if MC, get the gen jets        #
-#        3. Correct the ungroomed reco     #
-#           jets, and match to genjets.    #
-#        4. Find the mjj, etaMax bins, and #
-#           event weight.                  #
-#        5. If the event passes that,      #
-#           fill histograms for ungroomed  #
-#           jets, and get the groomed jets #
-#        6. For each groom, fill the histos#
-############################################
-
+#############################################
+#               Event loop                  #
+#    Loop over events.                      #
+#    For each event:                        #
+#        1. Get the gen jets for all types  #
+#        2. Get the reco jets for all types #
+#        3. Fill response matrix            #
+#        4. Get mjj, etaMax bin, and weight #
+#        5. Fake the trigger                #
+#        6. If it passes, fill the histos   #
+#############################################
 count = 0
 for ifile in files :
 
@@ -698,294 +424,188 @@ for ifile in files :
 
     events = Events (ifiles)
 
-    print "Start looping on file " + ifiles[0]    
-    for event in events:
+    print "Start looping on file " + ifiles[0]
+    if options.max is not None:
+        if count > options.max :
+            break
 
+    for event in events:
+        if options.max is not None:
+            if count > options.max :
+                break
         # Histogram filling weight
         weight = 1.0
 
         # Histogram index for data (Jet60,110,190,240,370)
         iTrigHist = None
-
+        
         if count % 10000 == 0 or options.verbose :
-            print 'Processing event ' + str(count)
+            print '-------------------------------------------------  Processing event ' + str(count) + '--------------------------------------'
+
 
         count += 1
 
-        # Event-level variables:
-        npv = -1         # Number of Primary Vertices observed
-        npu = -1         # Number of pileup interactions simulated
-        mjjReco = None   # reconstructed dijet mass
-        mjjGen = None    # particle-level dijet mass
-        mjetReco = None  # reconstructed average jet mass
-        mjetGen = None   # generated average jet mass
-        etaMax = None    # maximum eta of the dijet system
-        ptAvg = None     # average pt of the dijet system
-
-        event.getByLabel( rhoLabel, rhoHandle )
-        rho = rhoHandle.product()[0]
-
-        # First get the jets.
-        # For data, only reco (obviously).
-        ak7Def = ak7Obj.getJets( event, rho )
 
 
-                    
-        # For MC, if using PU reweighting, get the number of simulated pileup interactions
-        if options.useMC and options.puWeighting is not None:
-            event.getByLabel( puLabel, puHandle )
-            puInfos = puHandle.product()
-            npu = puInfos[0].getPU_NumInteractions()
+        # If using PU reweighting, get the number of simulated pileup interactions
+        if options.puWeighting is not None:
             weight *= LumiWeights.weight3D( event.object() )
-
-        # response pt bin
-        responsePtBin = None
-
-        # For MC, get the gen jets, and also the gen jets matched to reco jets.
-        # If desired, modify the jet energy resolution appropriately. 
-        ptAvgGenOnly = None
-        mjetGenOnly = None
-        mjjGenOnly = None
-        if options.useMC :
-            ak7Gen = ak7GenObj.getJets( event )
-            if len(ak7Gen) > 1 :
-                ptAvgGenOnly = (ak7Gen[0].Perp() + ak7Gen[1].Perp()) * 0.5
-                mjetGenOnly = (ak7Gen[0].M() + ak7Gen[1].M()) * 0.5
-                mjjGenOnly = (ak7Gen[0] + ak7Gen[1]).M()
-                # Denominators for reconstructed jet efficiency as a function of generated ptAvg
-                hists.recoEffDen.Fill( mjetGenOnly )
-                if options.verbose :
-                    print 'recoEffDen filled ' + str(ptAvgGenOnly)
-                for igroom in range(0,len(ak7GroomObj)) :
-                    hists.recoEffDen_Groom[igroom].Fill( mjetGenOnly )
-        ak7GenMatched = []
-        foundMatchedGen = True
-        if options.useMC :
-            for idef in range(0,len(ak7Def)):
-                jdef = ak7Def[idef]
-                jgen = findJetInColl( jdef, ak7Gen )
-                if jgen is None and idef < 2:
-                    foundMatchedGen = False
-                else :
-                    # Here we add the genjet matched to the reco jet
-                    ak7GenMatched.append( jgen )
-                    # Here we change the jet energy and angular resolution based on the
-                    # matched genjet
-                    if options.jarSmearVal is not None and jgen is not None:
-                        recoeta = jdef.Eta()
-                        geneta = jgen.Eta()
-                        deltaeta = (recoeta-geneta)*options.jarSmearVal
-                        etaSmear = max(0.0,(recoeta+deltaeta)/recoeta)
-                        recophi = jdef.Phi()
-                        genphi = jgen.Phi()
-                        deltaphi = (recophi-genphi)*options.jarSmearVal 
-                        phiSmear = max(0.0,(recophi+deltaphi)/recophi)
-
-                        jdef.SetPtEtaPhiE( jdef.Perp(), jdef.Eta()*etaSmear, jdef.Phi()*phiSmear, jdef.Energy() )
-
-                    if options.jerSmearVal is not None and jgen is not None: 
-                        recopt = jdef.Perp()
-                        genpt = jgen.Perp()
-                        deltapt = (recopt-genpt)*options.jerSmearVal
-                        ptSmear = max(0.0, (recopt+deltapt)/recopt)
-                        jdef.SetPerp( jdef.Perp() * ptSmear )
-
-                    
-                if options.verbose :
-                    print ' corrjet {0:4.0f}, (pt,eta,phi,m) = ({1:6.2f},{2:6.2f},{3:6.2f},{4:6.2f})'.format( idef, jdef.Perp(), jdef.Eta(), jdef.Phi(), jdef.M() )
-                    if options.useMC and jgen is not None :
-                        print ' gen jet {0:4.0f}, (pt,eta,phi,m) = ({1:6.2f},{2:6.2f},{3:6.2f},{4:6.2f})'.format( idef, jgen.Perp(), jgen.Eta(), jgen.Phi(), jgen.M() )
-
-        # Check to make sure we have two reconstructed jets
-        if len(ak7Def) < 2 :
-            if options.verbose :
-                print 'Less than two reconstructed jets!'
-
-            # Set the response bin to the "gen-only" bin
-            responsePtBin = findBin( ptAvgGenOnly, ptBins )
-            if responsePtBin is None :
-                continue
-            response = responses[responsePtBin]
-            response_Groom = responses_Groom[responsePtBin]
-            # Here we didn't get 2 reconstructed jets
-            if options.useMC == True and mjetGenOnly is not None :
-                # if using MC, then check to see if there are gen jets.
-                # If so, it's a response "Miss", so fill and continue.
-                # Otherwise, it's not interesting, so just continue. 
-                if ptAvgGenOnly is not None :
-                    # if there are gen jets, then it's a response "miss"
-                    if options.verbose :
-                        print 'Missed reconstructed jet!'
-                        print 'Reconstructed : ' 
-                        printJetColl( ak7Def )
-                        print 'Generated : '
-                        printJetColl( ak7Gen )
-                    response.Miss( mjetGenOnly )
-                    if options.verbose :
-                        print 'response miss mjetGenOnly = ' + str(mjetGenOnly)
-                    for igroom in range(0,len(ak7GroomObj)) :
-                        response_Groom[igroom].Miss( mjetGenOnly )
-                    
-                continue
-            else :
-                # If not using MC, just skip the event
-                continue
-
-        # Here we have two reconstructed jets. Get the
-        # average jet mass, dijet mass, etaMax, average pt,
-        # and trigger bin
-        dijetCandReco = ak7Def[0] + ak7Def[1]
-        mjetReco = (ak7Def[0].M() + ak7Def[1].M()) * 0.5
-        mjjReco = dijetCandReco.M()
-        ptAvg = (ak7Def[0].Perp() + ak7Def[1].Perp()) * 0.5
-        etaMax = abs(ak7Def[0].Rapidity())
-        responsePtBin = findBin( ptAvg, ptBins )
-        if responsePtBin is None :
-            continue
-        response = responses[responsePtBin]
-        if abs(ak7Def[0].Rapidity()) < abs(ak7Def[1].Rapidity()) :
-            etaMax = abs(ak7Def[1].Rapidity())
-        trigEtaBin = -1
-        for ibin in range(0, len(trigThresholds)) :
-            if etaMax >= trigThresholds[ibin][0][0] and etaMax < trigThresholds[ibin][0][1] :
-                trigEtaBin = ibin
-                break
-        mjjThresholds = trigThresholds[ibin][1]
-        if options.verbose :
-            print 'mjjReco = ' + str(mjjReco) + ', etaMax = ' + str(etaMax) + ', trig eta bin = ' + str(trigEtaBin)
-            print 'mjj thresholds : '
-            print mjjThresholds
-
-
-        # Now fill truth information for MC
-        dijetCandGen  = None
-        mjjGen = None
-        mjetGen = None
-        ptAvgGen = None
-
-        if options.useMC :
-            
-            # Here, we have 2 reconstructed jets but at least one is
-            # not matched to a gen jet, so this is a response fake. 
-            if foundMatchedGen is False:
-                if options.verbose :
-                    print 'Fake jet! No Gen Jet'
-                    printJetColl( ak7Def )
-                    printJetColl( ak7Gen )
-                response.Fake( mjetReco )
-                if options.verbose :
-                    print 'response fake mjetReco = ' + str(mjetReco)
-                for igroom in range(0,len(ak7GroomObj)) :
-                    response_Groom[igroom].Fake( mjetReco )
-            # Here, we have 2 reconstructed jets, both matched
-            # to a gen jet, so this is a fully-filled event
-            else :
-                dijetCandGen  = ak7GenMatched[0] + ak7GenMatched[1]
-                mjjGen = dijetCandGen.M()
-                mjetGen = (ak7GenMatched[0].M() + ak7GenMatched[1].M()) * 0.5
-                ptAvgGen = (ak7GenMatched[0].Perp() + ak7GenMatched[1].Perp()) * 0.5
-                response.Fill( mjetReco , mjetGen )
-                if options.verbose :
-                    print 'response successfully filled, mjetReco = ' + str(mjetReco) + ', mjetGen = ' + str(mjetGen)
-            #NOTE: Response "Miss"-es are filled above. 
 
         #------------------------------------------
         # Now get the event weight.
-        #
-        # For MC:
         #   - Weight by the generator weight (cross section for this event)
-        # For Data:
-        #   - Weight by trigger prescale of *highest* pt-threshold jet trigger that passed
         #------------------------------------------
-        passEvent = False
-        if options.useMC :
-            passGen = False
-            # Get the generator product
-            event.getByLabel( generatorLabel, generatorHandle )
-            if generatorHandle.isValid() :
-                generatorInfo = generatorHandle.product()
-                # weight is the generator weight
-                weight *= generatorInfo.weight()
-                if options.verbose :
-                    print 'generator info weight = ' + str(weight)
-                passGen = True
-
-            passMjjTrig = False
-            if options.verbose :
-                print 'testing MC mjjReco = ' + str(mjjReco) + ', etamax = ' + str(etaMax) + ', threshold = ' + str(mjjThresholds[0])
-            if mjjReco >= mjjThresholds[0] :
-                if options.verbose :
-                    print '  ----> passed!'
-                passMjjTrig = True
-
-            passEvent = passMjjTrig and passGen
-
-        else :
-            # Get the pat::TriggerEvent
-            event.getByLabel( trigLabel, trigHandle )
-            trigs = trigHandle.product()
-            acceptedPaths = []
-            trigPassedName = None
-            passMjjTrig = False
-
-            # If there are any accepted paths, cache them. Then match to the lookup table "trigThresholds" to see if
-            # the event is in the correct mjj bin for the trigger in question.
-            if len( trigs ) > 0 :
-                for ipath in xrange( len(trigs)-1, -1, -1) :
-                    path = trigs[ipath]
-                    for ikeep in xrange(len(trigsToKeep)-1, -1, -1) :
-                        if options.verbose :
-                            print '   ----- checking trigger ' + trigsToKeep[ikeep] + ' : mjjThreshold = ' + str(mjjThresholds[ikeep])
-                        if path.find( trigsToKeep[ikeep] ) >= 0 and mjjReco >= mjjThresholds[ikeep] and mjjReco < mjjThresholds[ikeep + 1]:
-                            trigPassedName = path
-                            iTrigHist = ikeep
-                            passMjjTrig = True
-                            if options.verbose :
-                                print '    -----------> Joy and elation, it worked! trigger = ' + trigsToKeep[iTrigHist]
-                            break
-                    if passMjjTrig == True :
-                        break
-
-            passEvent = passMjjTrig
+        passGen = False
+        # Get the generator product
+        event.getByLabel( generatorLabel, generatorHandle )
+        if generatorHandle.isValid() :
+            generatorInfo = generatorHandle.product()
+            # weight is the generator weight
+            weight *= generatorInfo.weight()
+            passGen = True
 
 
+        if options.verbose :
+            print 'event weight = ' + str(weight)
+                
 
-        if passEvent :
-            if options.verbose :
-                print 'event passed! OH happy day!'
-                print 'Filling mjjReco = ' + str(mjjReco) + ', mjetReco = ' + str(mjetReco) + ', etaMax = ' + str(etaMax) + ', weight = ' + str(weight)
+        # Get mean-pt-per-unit-area
+        event.getByLabel( rhoLabel, rhoHandle )
+        rho = rhoHandle.product()[0]
+
+        # Get the gen jets for each grooming algorithm (ungroomed is position 0)
+        ak7Gens = []
+        for igen in xrange(len(ak7GenObjs)) :
+            ak7Gens.append(ak7GenObjs[igen].getJets(event))
+            
+        # Get the reco jets for each grooming algorithm (ungroomed is position 0).
+        # Also match the reco jets to the ungroomed reco jets (at position 0). 
+        ak7Recos = [ak7Objs[0].getJets( event, rho=rho, genToMatch=ak7Gens[0] )]
+        for igroom in range(1,len(ak7Objs)) :
+            ak7Recos.append( ak7Objs[igroom].getJets(event, rho=rho,genToMatch=ak7Gens[igroom],recoToMatch=ak7Recos[0]) )
 
 
-            hists.histAK7MjjVsEtaMax.Fill( mjjReco, etaMax, weight )
-            hists.histAK7MjetVsEtaMax.Fill( mjetReco, etaMax, weight )
+        if options.verbose:
+            print 'Gen jets'
+            for igen in xrange(len(ak7GenObjs)) :
+                print 'igen = ' + str(igen)
+                ak7GenObjs[igen].printJetColl()
+            print 'Reco jets'
+            for ireco in xrange(len(ak7Objs)) :
+                print 'ireco = ' + str(ireco)
+                ak7Objs[ireco].printJetColl()
 
-            hists.histAK7MjjVsPtAvg.Fill( mjjReco, ptAvg, weight )
-            hists.histAK7MjetVsPtAvg.Fill( mjetReco, ptAvg, weight )
 
-            if options.useMC  :
+        # Now looop over the grooming algorithms,
+        # fill the response matrix, fake the trigger,
+        # and fill the histograms.
+        mjjForTrig = None
+        for igroom in range(0,len(ak7Objs)):
+            ak7GenObj = ak7GenObjs[igroom]  # object for gen
+            ak7Obj = ak7Objs[igroom]        # object for reco
+            ak7Gen = ak7Gens[igroom]        # 4-vector coll for gen
+            ak7Reco = ak7Recos[igroom]      # 4-vector coll for reco
 
-                # gen-jet efficiency as a function of reconstructed ptAvg
-                if options.verbose :
-                    print 'genEffDen filling ' + str(ptAvg)
-                hists.genEffDen.Fill( mjetReco )
+            ak7GenIndices = ak7Obj.getMatchedGenIndices()   # List of indices for matched gen jets
+            ak7GenMatched = ak7Obj.getMatchedGen()          # List of 4-vectors for matched gen jets
 
-                if mjjGen is not None:
-                    
-                    # Reconstructed efficiency as a function of generated ptAvg
-                    hists.recoEffNum.Fill( mjetGenOnly )
+            # check to see that the leading two reco jets match the leading two gen jets.
+            # If not, it's a miss (gen, no reco), or a fake (reco, no gen)
+            isMiss = False
+            isFake = False
 
-                    # Generator efficiency as a function of reconstructed ptAvg
-                    hists.genEffNum.Fill( mjetReco )
+            # Here's the ptAvg, mjj, and mjet to use. Depending on whether this is
+            # a miss, a fake, or a match, these mean slightly different things.
+            ptAvg = None
+            mjj = None
+            mjet = None
+            responsePtBin = None
 
-                    if options.verbose :
-                        print 'recoEffNum filling ' + str(mjetGenOnly)
-                        print 'genEffNum  filling ' + str(mjetReco)
+            # First check miss: values set to gen-only
+            if len(ak7Reco) < 2 and len(ak7Gen) >= 2:
+                isMiss = True
+                ptAvg = (ak7Gen[0].Perp() + ak7Gen[1].Perp()) * 0.5
+                mjj = (ak7Gen[0] + ak7Gen[1]).M()
+                mjet = (ak7Gen[0].M() + ak7Gen[1].M()) * 0.5
+                responsePtBin = findBin( ptAvg, ptBins )
+                if responsePtBin is None :
+                    continue
+                response = responses[responsePtBin][igroom]
+                response.Miss( mjet )
 
-                    response0 = ak7Def[0].Perp() / ak7GenMatched[0].Perp()
-                    mjjResponse = mjjReco / mjjGen
-                    mjetResponse = mjetReco / mjetGen
-                    ptGen0 = ak7GenMatched[0].Perp()
-                    etaGen0 = ak7GenMatched[0].Rapidity()
+            # Next check fake: values set to reco
+            # Fake condition is if the leading two reco jets do not match
+            # to the leading two gen jets
+            fake0Condition = len(ak7GenMatched) < 2
+            fake1Condition = len(ak7GenMatched) >= 2 and (ak7GenMatched[0] is None or ak7GenMatched[1] is None)
+            if len(ak7Reco) >= 2 and (fake0Condition or fake1Condition) :
+                isFake = True
+                ptAvg = (ak7Reco[0].Perp() + ak7Reco[1].Perp()) * 0.5
+                mjj = (ak7Reco[0] + ak7Reco[1]).M()
+                mjet = (ak7Reco[0].M() + ak7Reco[1].M()) * 0.5
+                responsePtBin = findBin( ptAvg, ptBins )
+                if responsePtBin is None :
+                    continue
+                response = responses[responsePtBin][igroom]
+                response.Fake( mjet )
+
+            # Skip events which have misses or fakes
+            if isMiss or isFake :
+                continue
+
+            # Finally, we have a "match" where there are two
+            # reco jets and two gen jets. We fill the response
+            # matrix, and the rest of the plots.
+            if len(ak7Reco) >= 2 and len(ak7GenMatched) >= 2 :
+                ptAvg = (ak7Reco[0].Perp() + ak7Reco[1].Perp()) * 0.5
+                mjj = (ak7Reco[0] + ak7Reco[1]).M()
+                mjet = (ak7Reco[0].M() + ak7Reco[1].M()) * 0.5
+                responsePtBin = findBin( ptAvg, ptBins )
+                if responsePtBin is None :
+                    continue
+                ptAvgGen = (ak7GenMatched[0].Perp() + ak7GenMatched[1].Perp()) * 0.5
+                mjjGen = (ak7GenMatched[0] + ak7GenMatched[1]).M()
+                mjetGen = (ak7GenMatched[0].M() + ak7GenMatched[1].M()) * 0.5
+
+                response = responses[responsePtBin][igroom]
+                response.Fill( mjet, mjetGen )
+
+                etaMax = ak7Reco[0].Rapidity()
+                if abs(ak7Reco[0].Rapidity()) < abs(ak7Reco[1].Rapidity()) :
+                    etaMax = abs(ak7Reco[1].Rapidity())
+
+
+                #------------------------------------------
+                # Now fake the trigger
+                #------------------------------------------
+                if igroom == 0 :
+                    mjjForTrig = mjj
+                passTrig = trigHelper.passEventMC( event, mjjForTrig, etaMax ) 
+
+                #------------------------------------------
+                # To pass the event, the faked trigger and the gen product
+                # must both pass.
+                #------------------------------------------
+                passEvent = passTrig and passGen
+                if not passEvent :
+                    continue
+
+
+                #------------------------------------------
+                # Finally fill histograms.
+                #------------------------------------------
+                response0 = ak7Reco[0].Perp() / ak7GenMatched[0].Perp()
+                mjjResponse = mjj / mjjGen
+                mjetResponse = mjet / mjetGen
+                ptGen0 = ak7GenMatched[0].Perp()
+                etaGen0 = ak7GenMatched[0].Rapidity()
+
+
+                if igroom == 0 :
+                    hists.histAK7MjjVsEtaMax.Fill( mjj, etaMax, weight )
+                    hists.histAK7MjetVsEtaMax.Fill( mjet, etaMax, weight )
+                    hists.histAK7MjjVsPtAvg.Fill( mjj, ptAvg, weight )
+                    hists.histAK7MjetVsPtAvg.Fill( mjet, ptAvg, weight )
                     hists.histAK7PtResponse.Fill( ptGen0, response0 )
                     hists.histAK7EtaResponse.Fill( etaGen0, response0 )
 
@@ -993,172 +613,49 @@ for ifile in files :
                     hists.histAK7MjetResponseVsEtaMax.Fill( mjetGen, mjetResponse, etaMax )
                     hists.histAK7MjjGenVsEtaMax.Fill( mjjGen, etaMax, weight )
                     hists.histAK7MjetGenVsEtaMax.Fill( mjetGen, etaMax, weight )
-                    hists.histAK7MjjGenVsRecoVsEtaMax.Fill( mjjGen, mjjReco, etaMax )
-                    hists.histAK7MjetGenVsRecoVsEtaMax.Fill( mjetGen, mjetReco, etaMax )
+                    hists.histAK7MjjGenVsRecoVsEtaMax.Fill( mjjGen, mjj, etaMax )
+                    hists.histAK7MjetGenVsRecoVsEtaMax.Fill( mjetGen, mjet, etaMax )
 
                     hists.histAK7MjjResponseVsPtAvg.Fill( mjjGen, mjjResponse, ptAvg )
                     hists.histAK7MjetResponseVsPtAvg.Fill( mjetGen, mjetResponse, ptAvg )
-                    hists.histAK7MjjGenVsRecoVsPtAvg.Fill( mjjGen, mjjReco, ptAvg )
-                    hists.histAK7MjetGenVsRecoVsPtAvg.Fill( mjetGen, mjetReco, ptAvg )
-                    hists.histAK7MjjGenVsRecoVsPtAvgHighPt.Fill( mjjGen, mjjReco, ptAvg )
-                    hists.histAK7MjetGenVsRecoVsPtAvgHighPt.Fill( mjetGen, mjetReco, ptAvg )
-
-
+                    hists.histAK7MjjGenVsRecoVsPtAvg.Fill( mjjGen, mjj, ptAvg )
+                    hists.histAK7MjetGenVsRecoVsPtAvg.Fill( mjetGen, mjet, ptAvg )
+                    hists.histAK7MjjGenVsRecoVsPtAvgHighPt.Fill( mjjGen, mjj, ptAvg )
+                    hists.histAK7MjetGenVsRecoVsPtAvgHighPt.Fill( mjetGen, mjet, ptAvg )
                     hists.histAK7MjjGenVsPtAvg.Fill( mjjGen, ptAvg, weight )
                     hists.histAK7MjetGenVsPtAvg.Fill( mjetGen, ptAvg, weight )
 
-            elif iTrigHist is not None :
-                if options.verbose :
-                    print ' Filling histogram ' + str(iTrigHist) + ' which corresponds to trigger ' + trigsToKeep[iTrigHist]
-                hists.get('histAK7MjjVsEtaMax_' + trigsToKeep[iTrigHist]).Fill( mjjReco, etaMax, weight )
-                hists.get('histAK7MjetVsEtaMax_' + trigsToKeep[iTrigHist]).Fill( mjetReco, etaMax, weight )                
-                hists.get('histAK7MjjVsPtAvg_' + trigsToKeep[iTrigHist]).Fill( mjjReco, ptAvg, weight )
-                hists.get('histAK7MjetVsPtAvg_' + trigsToKeep[iTrigHist]).Fill( mjetReco, ptAvg, weight )                
-            else :
-                print 'Error in trigger assignment!'
-                continue
-
-
-
-
-
-            for igroom in range(0,len(ak7GroomObj)):
-                igroomObj = ak7GroomObj[igroom]
-                ak7Groom = igroomObj.getJets( event, rho )
-                ak7GroomMatched = []
-                keep = True
-                if options.useMC :
-                    igroomGenObj = ak7GenGroomObj[igroom]
-                    ak7GenGroom = igroomGenObj.getJets( event )
-                    ak7GenGroomMatched = []
-                iijet = 0
-                for ijet in ak7Def :
-                    toput = findJetInColl(ijet, ak7Groom )
-                    if toput is None and ijet < 2 :
-                        keep=False
-                    ak7GroomMatched.append( toput )
-                    if options.useMC :
-                        toputgen = findJetInColl( ijet, ak7GenGroom )
-                        if toputgen is None and iijet < 2 :
-                            keep = False
-                        ak7GenGroomMatched.append( toputgen )
-                    iijet += 1
-
-                if len(ak7GroomMatched) < 2 or keep == False :
-                    continue
-
-                
-
-                ptAvgGroom = (ak7GroomMatched[0].Perp() + ak7GroomMatched[1].Perp()) * 0.5
-                dijetCandRecoGroom = ak7GroomMatched[0] + ak7GroomMatched[1]
-                mjetRecoGroom = (ak7GroomMatched[0].M() + ak7GroomMatched[1].M()) * 0.5
-                mjjRecoGroom = dijetCandRecoGroom.M()
-                hists.histAK7MjjVsEtaMax_Groom[igroom].Fill( mjjRecoGroom , etaMax, weight)
-                hists.histAK7MjetVsEtaMax_Groom[igroom].Fill(mjetRecoGroom , etaMax, weight )
-
-                hists.histAK7MjjVsPtAvg_Groom[igroom].Fill( mjjRecoGroom , ptAvg, weight)
-                hists.histAK7MjetVsPtAvg_Groom[igroom].Fill(mjetRecoGroom , ptAvg, weight )
-                responsePtBin = findBin( ptAvgGroom, ptBins )
-                if responsePtBin is None :
-                    continue
-                response_Groom = responses_Groom[responsePtBin]
-        
-                if options.useMC :
-
-                    if len(ak7GroomMatched) < 2 :
-                        continue
-
-
-                    if len(ak7GenGroomMatched) < 2 or ak7GenGroomMatched[0] is None or ak7GenGroomMatched[1] is None:
-                        print 'ak7GenGroomMatched has a problem'
-                        print 'Reco jets'
-                        printJetColl( ak7Def )
-                        print 'Gen jets'
-                        printJetColl( ak7Gen )
-                        print 'Gen jets matched'
-                        printJetColl( ak7GenMatched )
-                        print 'Groomed jets'
-                        printJetColl( ak7GroomMatched )
-                        print 'Groomed gen jets' 
-                        printJetColl( ak7GenGroomMatched )
-
-                        continue
-                    
-                    dijetCandGroomGen  = ak7GenGroomMatched[0] + ak7GenGroomMatched[1]
-                    mjjGroomGen = dijetCandGroomGen.M()
-                    mjetGroomGen = (ak7GenGroomMatched[0].M() + ak7GenGroomMatched[1].M()) * 0.5
-                    
-
-                    # gen-jet efficiency as a function of reconstructed ptAvgGroom
-                    hists.genEffDen_Groom[igroom].Fill( mjetRecoGroom )
-
-                    
-                    if mjjGroomGen is not None :
-
-
-                        # Groomed reconstructed efficiency as a function of generated ptAvg
-                        hists.recoEffNum_Groom[igroom].Fill( mjetGroomGen )
-
-                        # Generator efficiency as a function of reconstructed ptAvgGroom
-                        hists.genEffNum_Groom[igroom].Fill( mjetRecoGroom )
-
-                        # response matrix
-                        response_Groom[igroom].Fill( mjetRecoGroom , mjetGroomGen )
-
-
-                        # Also get the number of simulated pileup interactions
-                        #event.getByLabel( puLabel, puHandle )
-                        #puInfos = puHandle.product()
-                        #npu = puInfos[0].getPU_NumInteractions()
-
-                        response0 = ak7GroomMatched[0].Perp() / ak7GenGroomMatched[0].Perp()
-                        mjjResponse = mjjRecoGroom / mjjGroomGen
-                        mjetResponse = mjetRecoGroom / mjetGroomGen
-                        ptGen0 = ak7GenGroomMatched[0].Perp()
-                        etaGen0 = ak7GenGroomMatched[0].Rapidity()
-
-                        hists.histAK7PtResponse_Groom[igroom].Fill( ptGen0, response0 )
-                        hists.histAK7EtaResponse_Groom[igroom].Fill( etaGen0, response0 )
-                        hists.histAK7MjjResponseVsEtaMax_Groom[igroom].Fill( mjjGroomGen, mjjResponse, etaMax )
-                        hists.histAK7MjetResponseVsEtaMax_Groom[igroom].Fill( mjetGroomGen, mjetResponse, etaMax )
-
-                        hists.histAK7MjjResponseVsPtAvg_Groom[igroom].Fill( mjjGroomGen, mjjResponse, ptAvgGroom )
-                        hists.histAK7MjetResponseVsPtAvg_Groom[igroom].Fill( mjetGroomGen, mjetResponse, ptAvgGroom )
-
-                        hists.histAK7MjjResponseVsEtaMax_Groom[igroom].Fill( mjjGroomGen, mjjResponse, etaMax )
-                        hists.histAK7MjetResponseVsEtaMax_Groom[igroom].Fill( mjetGroomGen, mjetResponse, etaMax )
-                        hists.histAK7MjjGenVsRecoVsEtaMax_Groom[igroom].Fill( mjjGroomGen, mjjRecoGroom, etaMax )
-                        hists.histAK7MjetGenVsRecoVsEtaMax_Groom[igroom].Fill( mjetGroomGen, mjetRecoGroom, etaMax )
-
-                        hists.histAK7MjjResponseVsPtAvg_Groom[igroom].Fill( mjjGroomGen, mjjResponse, ptAvgGroom )
-                        hists.histAK7MjetResponseVsPtAvg_Groom[igroom].Fill( mjetGroomGen, mjetResponse, ptAvgGroom )
-                        hists.histAK7MjjGenVsRecoVsPtAvg_Groom[igroom].Fill( mjjGroomGen, mjjRecoGroom, ptAvgGroom )
-                        hists.histAK7MjetGenVsRecoVsPtAvg_Groom[igroom].Fill( mjetGroomGen, mjetRecoGroom, ptAvgGroom )
-                        hists.histAK7MjjGenVsRecoVsPtAvgHighPt_Groom[igroom].Fill( mjjGroomGen, mjjRecoGroom, ptAvgGroom )
-                        hists.histAK7MjetGenVsRecoVsPtAvgHighPt_Groom[igroom].Fill( mjetGroomGen, mjetRecoGroom, ptAvgGroom )
-
-                        hists.histAK7MjjGenVsPtAvg_Groom[igroom].Fill( mjjGroomGen, ptAvgGroom, weight )
-                        hists.histAK7MjetGenVsPtAvg_Groom[igroom].Fill( mjetGroomGen, ptAvgGroom, weight )
-                    
-
-
-                elif iTrigHist is not None :
-                    if options.verbose :
-                        print ' Filling histogram ' + str(iTrigHist) + ' which corresponds to trigger ' + trigsToKeep[iTrigHist]
-                    hists.get('histAK7MjjVsEtaMax_' + trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( mjjRecoGroom, etaMax, weight )
-                    hists.get('histAK7MjetVsEtaMax_' + trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( mjetRecoGroom, etaMax, weight )                
-                    hists.get('histAK7MjjVsPtAvg_' + trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( mjjRecoGroom, ptAvgGroom, weight )
-                    hists.get('histAK7MjetVsPtAvg_' + trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( mjetRecoGroom, ptAvgGroom, weight )
                 else :
-                    print 'Error in trigger assignment!'
-                    continue
+                    # NOTE: The hists fill the _Groom vector only for groomed jets,
+                    # whereas we're counting the ungroomed above as "igroom=0", so
+                    # we offset the hists _Groom vector by 1. 
+                    hists.histAK7MjjVsEtaMax_Groom[igroom-1].Fill( mjj, etaMax, weight )
+                    hists.histAK7MjetVsEtaMax_Groom[igroom-1].Fill( mjet, etaMax, weight )
+                    hists.histAK7MjjVsPtAvg_Groom[igroom-1].Fill( mjj, ptAvg, weight )
+                    hists.histAK7MjetVsPtAvg_Groom[igroom-1].Fill( mjet, ptAvg, weight )
+                    hists.histAK7PtResponse_Groom[igroom-1].Fill( ptGen0, response0 )
+                    hists.histAK7EtaResponse_Groom[igroom-1].Fill( etaGen0, response0 )
 
+                    hists.histAK7MjjResponseVsEtaMax_Groom[igroom-1].Fill( mjjGen, mjjResponse, etaMax )
+                    hists.histAK7MjetResponseVsEtaMax_Groom[igroom-1].Fill( mjetGen, mjetResponse, etaMax )
+                    hists.histAK7MjjGenVsEtaMax_Groom[igroom-1].Fill( mjjGen, etaMax, weight )
+                    hists.histAK7MjetGenVsEtaMax_Groom[igroom-1].Fill( mjetGen, etaMax, weight )
+                    hists.histAK7MjjGenVsRecoVsEtaMax_Groom[igroom-1].Fill( mjjGen, mjj, etaMax )
+                    hists.histAK7MjetGenVsRecoVsEtaMax_Groom[igroom-1].Fill( mjetGen, mjet, etaMax )
+
+                    hists.histAK7MjjResponseVsPtAvg_Groom[igroom-1].Fill( mjjGen, mjjResponse, ptAvg )
+                    hists.histAK7MjetResponseVsPtAvg_Groom[igroom-1].Fill( mjetGen, mjetResponse, ptAvg )
+                    hists.histAK7MjjGenVsRecoVsPtAvg_Groom[igroom-1].Fill( mjjGen, mjj, ptAvg )
+                    hists.histAK7MjetGenVsRecoVsPtAvg_Groom[igroom-1].Fill( mjetGen, mjet, ptAvg )
+                    hists.histAK7MjjGenVsRecoVsPtAvgHighPt_Groom[igroom-1].Fill( mjjGen, mjj, ptAvg )
+                    hists.histAK7MjetGenVsRecoVsPtAvgHighPt_Groom[igroom-1].Fill( mjetGen, mjet, ptAvg )
+                    hists.histAK7MjjGenVsPtAvg_Groom[igroom-1].Fill( mjjGen, ptAvg, weight )
+                    hists.histAK7MjetGenVsPtAvg_Groom[igroom-1].Fill( mjetGen, ptAvg, weight )
+        
 hists.getFile().cd()
 for response in responses :
-    response.Write()
-for response_Groom in responses_Groom :
-    for res in response_Groom :
-        res.Write()
+    for groomResponse in response :
+        groomResponse.Write()
     
 hists.write()
 
