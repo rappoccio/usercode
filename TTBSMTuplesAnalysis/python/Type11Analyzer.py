@@ -41,6 +41,9 @@ class Type11Analyzer :
         self.weightsLabel = ( label, "weight" )
         self.pdfHandle = Handle("std::vector<double>")
         self.pdfLabel = ( label, "pdfWeights")
+
+        self.h_met = Handle (  "vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >"  )
+        self.metLabel = ( label, "pfMET" )
         
         self.__book__()
 
@@ -73,6 +76,11 @@ class Type11Analyzer :
         self.mttPredDistModMassQCDdistSubtract.GetPredictedHist().Write()
         self.mttPredDistModMassQCDdistSubtract.GetObservedHist().Write()
         self.mttPredDistModMassQCDdistSubtract.GetTaggableHist().Write()
+
+
+        self.metPred.GetPredictedHist().Write()
+        self.metPred.GetObservedHist().Write()
+        self.metPred.GetTaggableHist().Write()
 
         
         for pair in sorted(self.runPairs, key=itemgetter(3)) :
@@ -139,6 +147,7 @@ class Type11Analyzer :
         self.mttPredDistMod3MassFlatSubtract     = ROOT.PredictedDistribution( self.mistagMassCutSubtract, "mttPredDistMod3MassFlatSubtract", "mTT Mass",       1000, 0,  5000 )
         self.mttPredDistModMassQCDdistSubtract     = ROOT.PredictedDistribution( self.mistagMassCutSubtract, "mttPredDistModMassQCDdistSubtract", "mTT Mass",       1000, 0,  5000 )
 
+        self.metPred                     = ROOT.PredictedDistribution( self.mistagMassCutSubtract, "metPred", "MET",          1000,   0,  5000 )
 
         ROOT.SetOwnership( self.mttPredDist, False )
         ROOT.SetOwnership( self.mttPredDistMassCut, False )
@@ -146,6 +155,8 @@ class Type11Analyzer :
         ROOT.SetOwnership( self.mttPredDistMod3MassFlat, False )
         ROOT.SetOwnership( self.mttPredDistMod3MassFlatSubtract, False )
         ROOT.SetOwnership( self.mttPredDistModMassQCDdistSubtract, False )
+        ROOT.SetOwnership( self.metPred, False )
+
 
         self.jetEta               = ROOT.TH1D("jetEta",               "jetEta",            100, -4,    4)
         self.jetRap               = ROOT.TH1D("jetRap",               "jetRap",            100, -4,    4)
@@ -160,10 +171,12 @@ class Type11Analyzer :
         self.topTagPt             = ROOT.TH1D("topTagPt",                    "Top Tag Pt",               400,  0,  2000 )
         self.mttCandMass          = ROOT.TH1D("mttCandMass",                     "mTT Cand Mass",                 1000, 0,  5000 )
         self.mttMass              = ROOT.TH1D("mttMass",                     "mTT Mass",                 1000, 0,  5000 )
+        self.met                  = ROOT.TH1D("met",                        "MET",                      1000, 0,  5000 )
         self.mttMassTriggerWeighted   = ROOT.TH1D("mttMassTriggerWeighted",                     "mTT Mass",                 1000, 0,  5000 )
         self.cutflow              = ROOT.TH1D("cutflow",                     "cutflow",                 7, 0,  7 ) 
         self.mtt_gen              = ROOT.TH1D("mtt_gen",              "mtt gen",                    1000,   0,    5000)
         self.mtt_gen_vs_reco      = ROOT.TH2D("mtt_gen_vs_reco",      "mtt gen vs reco",    1000, 0,  5000, 1000, 0,  5000)
+        self.ht                   = ROOT.TH1D("ht",                   "HT",                 1000, 0,  5000)
         
         self.mttMass.Sumw2()
         self.runPairs = []
@@ -224,6 +237,9 @@ class Type11Analyzer :
         event.getByLabel (self.allTopTagPassLabel, self.allTopTagPassHandle )
         topJetPass= self.allTopTagPassHandle.product()
 
+        event.getByLabel( self.metLabel, self.h_met)
+        mets = self.h_met.product()
+
 
         if self.pdfWeight != "nominal" :
             iweight = 0.0
@@ -274,6 +290,7 @@ class Type11Analyzer :
             topTag1        = topJetMass[1] > 140 and topJetMass[1] < 250 and topJetMinMass[1] > 50 and topJetNSubjets[1] > 2
             passType11     = topTag0 and topTag1
             ttMass   = (topJets[0]+topJets[1]).mass()
+            ht       = topJets[0].pt() + topJets[1].pt()
             
             myrand = ROOT.gRandom.Uniform(140,250)
             jet0P4_massFlat = copy.copy(topJets[0])
@@ -337,6 +354,8 @@ class Type11Analyzer :
                 self.topTagMinMass.Fill( topJetMinMass[0], weight )
                 self.topTagMinMass.Fill( topJetMinMass[1], weight )
                 self.mttMass.Fill( ttMass, weight )
+                self.met.Fill( mets[0].pt(), weight )
+                self.ht.Fill( ht, weight )
                 h_mtt = Handle("double")
                 event.getByLabel( ("ttbsmAna", "mttgen"), h_mtt)
                 if h_mtt.isValid():
@@ -364,6 +383,7 @@ class Type11Analyzer :
                     self.mttPredDistMod3MassFlat. Accumulate( ttMassMod3Jet1Flat, topJets[1].pt(), topTag1, weight )
                     self.mttPredDistMod3MassFlatSubtract. Accumulate( ttMassMod3Jet1Flat, topJets[1].pt(), topTag1, weight )
                     self.mttPredDistModMassQCDdistSubtract. Accumulate( ttMassModJet1QCDdist, topJets[1].pt(), topTag1, weight )
+                    self.metPred.Accumulate( mets[0].pt(), topJets[1].pt(), topTag1, weight )
             if x >= 0.5 :
                 if topTag1 :
                     self.jetPtOneTag.Fill( topJets[0].pt(), weight )
@@ -375,6 +395,7 @@ class Type11Analyzer :
                     self.mttPredDistMod3MassFlat. Accumulate( ttMassMod3Jet0Flat, topJets[0].pt(), topTag0, weight )
                     self.mttPredDistMod3MassFlatSubtract. Accumulate( ttMassMod3Jet0Flat, topJets[0].pt(), topTag0, weight )
                     self.mttPredDistModMassQCDdistSubtract. Accumulate( ttMassModJet0QCDdist, topJets[0].pt(), topTag0, weight )
+                    self.metPred.Accumulate( mets[0].pt(), topJets[0].pt(), topTag0, weight )
 
 
 
