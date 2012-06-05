@@ -41,6 +41,12 @@ parser.add_option('--useGenWeight', action='store_true',
                   help='Use generator level weights (i.e. for QCD MC)')
 
 
+parser.add_option('--readGenInfo', action='store_true',
+                  default=False,
+                  dest='readGenInfo',
+                  help='Read generator-level mtt')
+
+
 
 parser.add_option('-m', '--mistagFile', metavar='N', type='string', action='store',
                   default='MISTAG',
@@ -133,7 +139,8 @@ if options.useMC :  print "Running on MC!"
 if options.analyzer == "Type12Analyzer" :
     analyzer = Type12Analyzer(options.useMC, options.outfile + '_type12_'+options.collectionLabelSuffix + '_Trigger' + options.triggerWeight,
                               options.mistagFile, options.collectionLabelSuffix,
-                              options.veto11, options.useGenWeight, options.triggerFile, options.pdfWeight, options.triggerWeight )
+                              options.veto11, options.useGenWeight, options.triggerFile,
+                              options.readGenInfo, options.pdfWeight, options.triggerWeight )
 elif options.analyzer == "MistagMaker" :
     analyzer = MistagMaker( options.outfile + '_mistag' + '_Trigger' + ptions.triggerWeight, options.useGenWeight, options.triggerWeight)
 elif options.analyzer == "Type11Analyzer" :

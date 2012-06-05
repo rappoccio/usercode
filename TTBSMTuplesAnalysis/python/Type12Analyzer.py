@@ -11,13 +11,17 @@ from Analysis.TTBSMTuplesAnalysis import *
 
 class Type12Analyzer :
     """Run 1 + 2 Analysis"""
-    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix, veto11, useGenWeight, triggerFile, pdfWeight = "nominal", triggerWeight = "noWeight"):
+    def __init__(self, useMC, outfile, mistagFile,collectionLabelSuffix,
+                 veto11, useGenWeight, triggerFile,
+                 readGenInfo=False,
+                 pdfWeight = "nominal", triggerWeight = "noWeight"):
         self.outfile = outfile
         self.mistagFileStr = mistagFile
         self.triggerFileStr = triggerFile
         self.useMC = False
         self.veto11 = veto11
         self.useGenWeight=useGenWeight
+        self.readGenInfo=readGenInfo
         self.pdfWeight = pdfWeight
         self.triggerWeight = triggerWeight
        
@@ -60,7 +64,8 @@ class Type12Analyzer :
 
         self.hemis1Jet3Handle    = Handle("int")
         self.hemis1Jet3Label     = ( label, "jet3Hemis1" )
-
+        self.h_mtt = Handle("double")
+        self.mtt_label = (label, "mttgen")
 
         self.weightsHandle = Handle( "double" )
         self.weightsLabel = ( label, "weight" )
@@ -202,8 +207,10 @@ class Type12Analyzer :
         self.nearJetPtAfterTopTag        = ROOT.TH1F("nearJetPtAfterTopTag",        "Near Jet Pt",              200,  0,  1000 )
         self.nearJetbValue               = ROOT.TH1F("nearJetbValue",               "Near Jet b Discriminator", 100,  0,  20 )
         self.nearJetbValueAfterTopTag    = ROOT.TH1F("nearJetbValueAfterTopTag",    "Near Jet b Discriminator", 100,  0,  20 )
+        self.type2TopPtAfterTopTag       = ROOT.TH1F("type2TopPtAfterTopTag",       "Type 2 top PT",            200,  0,  1000 )
         self.thirdLeadJetbValue          = ROOT.TH1F("thirdLeadJetbValue",           "Third Lead Jet b Discriminator", 100,  0,  20 )
         self.thirdLeadJetPt              = ROOT.TH1F("thirdLeadJetPt",               "Third Lead Jet PT",        200,  0,  1000 )
+        self.type2TopPt                  = ROOT.TH1F("type2TopPt",                  "Type 2 top PT",            200,  0,  1000 )
         self.topJetCandPtSignal          = ROOT.TH1F("topJetCandPtSignal",          "Top Jet Cand Pt",          200,  0,  1000 )
         self.topJetCandPtSideBand        = ROOT.TH1F("topJetCandPtSideBand",        "Top Jet Cand Pt",          200,  0,  1000 )
         self.topJetCandPtAll             = ROOT.TH1F("topJetCandPtAll",             "Top Jet Cand Pt",          200,  0,  1000 )
@@ -216,6 +223,7 @@ class Type12Analyzer :
         self.topJetMinMassSignal         = ROOT.TH1F("topJetMinMassSignal",         "Top Jet Min Mass",         100,  0,  500 )
         self.topJetMinMassSideBand       = ROOT.TH1F("topJetMinMassSideBand",       "Top Jet Min Mass",         100,  0,  500 )
         self.topJetMinMassAll            = ROOT.TH1F("topJetMinMassAll",             "Top Jet Min Mass",         100,  0,  500 )
+        self.type2TopPtSignal            = ROOT.TH1F("type2TopPtSignal",            "Type 2 top PT",            200,  0,  1000 )
         self.pairMassType12              = ROOT.TH1F("pairMassType12",              "Pair Jet Mass",            200,  0,  1000 )
         self.pairMassType12AfterTopTag   = ROOT.TH1F("pairMassType12AfterTopTag",   "Pair Jet Mass",            200,  0,  1000 )
         self.pairMassType12AfterTopTagWithWMass  = ROOT.TH1F("pairMassType12AfterTopTagWithWMass",    "Pair Jet Mass",            200,  0,  1000 )
@@ -229,7 +237,7 @@ class Type12Analyzer :
         self.mttMassFlatTriggerWeighted  = ROOT.TH1F("mttMassFlatTriggerWeighted",        "mTT Mass",                 1000, 0,  5000 )
         self.mttMassVeto11               = ROOT.TH1F("mttMassVeto11",               "mTT Mass",                 1000, 0,  5000 )
         self.mtt_gen                     = ROOT.TH1F("mtt_gen",                     "mtt gen",                  1000, 0,  5000 )
-        self.mtt_gen_vs_reco      = ROOT.TH2D("mtt_gen_vs_reco",      "mtt gen vs reco",    1000, 0,  5000, 1000, 0,  5000)
+        self.mtt_gen_vs_reco             = ROOT.TH2D("mtt_gen_vs_reco",      "mtt gen vs reco",    1000, 0,  5000, 1000, 0,  5000)
         self.mttMassTriggerWeightedVeto11  = ROOT.TH1F("mttMassTriggerWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
         self.mttMassFlatTriggerWeightedVeto11  = ROOT.TH1F("mttMassFlatTriggerWeightedVeto11",  "mTT Mass",                 1000, 0,  5000 )
         self.mttMassJet1MassDown         = ROOT.TH1F("mttMassJet1MassDown",         "mTT Mass",                 1000, 0,  5000 )
@@ -367,7 +375,7 @@ class Type12Analyzer :
 
         pairMass = 0.0
         ttMass = 0.0
-
+        type2TopPt = 0.0
         
         event.getByLabel (self.hemis0MinMassLabel, self.hemis0MinMassHandle)
         topJetMinMass   = self.hemis0MinMassHandle.product()
@@ -389,7 +397,6 @@ class Type12Analyzer :
         if self.useGenWeight :
             event.getByLabel( self.weightsLabel, self.weightsHandle )
             weight = self.weightsHandle.product()[0]
-
 
         if self.pdfWeight != "nominal" :
             iweight = 0.0
@@ -432,7 +439,7 @@ class Type12Analyzer :
 
         pairMass = (wJets[jet3]+wJets[0]).mass()
         ttMass = (wJets[jet3]+wJets[0]+topJets[0]).mass()
-
+        type2TopPt = (wJets[jet3]+wJets[0]).pt()
 
         if not self.useMC :        
             jet1P4_massDown = copy.copy(topJets[0])
@@ -544,6 +551,7 @@ class Type12Analyzer :
           self.nearJetbValue.Fill( wJetBDisc[jet3], weight )
           self.thirdLeadJetbValue.Fill( wJetBDisc[1], weight )
           self.thirdLeadJetPt.Fill( wJets[1].pt(), weight )
+          self.type2TopPt.Fill( type2TopPt, weight )
 
           self.mttBkgShape.Fill( ttMass, weight )
 
@@ -576,6 +584,7 @@ class Type12Analyzer :
             if wJets[0].mass() > 60 and wJets[0].mass() < 130 :
               self.pairMassType12AfterTopTagWithWMass.Fill( pairMass, weight )
             self.wCandVsTopCandMassType12WithTopTag.Fill( wJets[0].mass() ,  pairMass, weight )
+            self.type2TopPtAfterTopTag.Fill( type2TopPt, weight )
 
           self.topJetCandPtAll.Fill( topJets[0].pt(), weight )
           self.topJetCandMassAll.Fill( topJets[0].mass(), weight )
@@ -597,6 +606,7 @@ class Type12Analyzer :
             self.topJetMinMassSignal.Fill( topJetMinMass[0], weight )
             if passTopMass :
               self.NSubjetsVsMinMassSR.Fill( topJetNSubjets[0], topJetMinMass[0], weight )
+            self.type2TopPtSignal.Fill( type2TopPt, weight )
 
             #Apply top mistag rate to estimate bkg
             ptBin = self.mistag.FindBin( jet1Pt )
@@ -710,12 +720,12 @@ class Type12Analyzer :
             self.ht.Fill(ht, weight)
             self.mttMassTriggerWeightedVeto11.Fill( ttMass, weight  )
             self.mttMassFlatTriggerWeightedVeto11.Fill( ttMass, weight*flatTriggerWeight  )
-            h_mtt = Handle("double")
-            event.getByLabel( ("ttbsmAna", "mttgen"), h_mtt)
-            if h_mtt.isValid():
-                mtt = h_mtt.product()
-                self.mtt_gen.Fill(mtt[0])
-                self.mtt_gen_vs_reco.Fill(mtt[0], ttMass)
+            if self.readGenInfo == True :
+                event.getByLabel(self.mtt_label, self.h_mtt)
+                if h_mtt.isValid():
+                    mtt = h_mtt.product()
+                    self.mtt_gen.Fill(mtt[0])
+                    self.mtt_gen_vs_reco.Fill(mtt[0], ttMass)
 
           if not passType11 and hasType2Top :
               self.mttPredDist.        Accumulate( ttMass,      jet1Pt, isJetTagged, weight  )
