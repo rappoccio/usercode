@@ -3,10 +3,13 @@ import os
 import glob
 
 def findClosestJet( ijet, hadJets ) :
-    minDR = 0.8
+    minDR = 9999.
     ret = -1
     for jjet in range(0,len(hadJets) ):
-        if hadJets[ijet].DeltaR(hadJets[jjet]) < minDR:
+        if ijet == jjet :
+            continue
+        dR = hadJets[ijet].DeltaR(hadJets[jjet])
+        if dR < minDR :
             minDR = hadJets[ijet].DeltaR(hadJets[jjet])
             ret = jjet
     return ret
@@ -50,6 +53,17 @@ parser.add_option('--printEvents', metavar='F', action='store_true',
                   help='Print events that pass selection (run:lumi:event)')
 
 
+
+parser.add_option('--htCut', metavar='F', type='float', action='store',
+                  default=None,
+                  dest='htCut',
+                  help='HT cut')
+
+
+parser.add_option('--ptCut', metavar='F', type='float', action='store',
+                  default=200.0,
+                  dest='ptCut',
+                  help='Leading jet PT cut')
 
 parser.add_option('--bDiscCut', metavar='F', type='float', action='store',
                   default=2.74,
@@ -95,6 +109,9 @@ htLep3 = ROOT.TH1F("htLep3", "H_{T}^{Lep}", 300, 0., 600.)
 ptJet0 = ROOT.TH1F("ptJet0", "p_{T} Of Leading Jet", 300, 0., 600.)
 
 
+ht3 = ROOT.TH1F("ht3", "HT", 200, 0., 2000.)
+ht4 = ROOT.TH1F("ht4", "HT", 200, 0., 2000.)
+
 muHist = ROOT.TH1F("muHist", "#mu", 300, 0, 1.0)
 dRWbHist = ROOT.TH1F("dRWbHist", "#Delta R (W,b)", 300, 0.0, 5.0)
 
@@ -106,6 +123,10 @@ mWCandVsMTopCand = ROOT.TH2F("mWCandVsMTopCand","WCand+bJet Mass vs WCand mass",
 
 mWCandVsPtWCand = ROOT.TH2F("mWCandVsPtWCand", "Mass of W candidate versus p_{T} of W candidate", 100, 0, 1000, 20, 0, 200)
 mWCandVsPtWCandMuCut = ROOT.TH2F("mWCandVsPtWCandMuCut", "Mass of W candidate versus p_{T} of W candidate", 100, 0, 1000, 20, 0, 200)
+
+ptTopCand = ROOT.TH1F("ptTopCand", "WCand+bJet p_{T};p_{T} (GeV/c);Number", 250, 0., 1000.)
+ptWFromTopCand = ROOT.TH1F("ptWFromTopCand", "WCand in Type-2 top cand p_{T};p_{T} (GeV/c);Number", 250, 0., 1000.)
+ptbFromTopCand = ROOT.TH1F("ptbFromTopCand", "bCand in Type-2 top cand p_{T};p_{T} (GeV/c);Number", 250, 0., 1000.)
 
 events = Events (files)
 
@@ -290,7 +311,7 @@ for event in events:
     ptJet0.Fill( jetPts[0] )
 
     # Require leading jet pt to be pt > 200 GeV
-    if jetPts[0] < 200.0 :
+    if jetPts[0] < options.ptCut :
         continue
 
     htLep2.Fill( htLepVal )
@@ -305,6 +326,9 @@ for event in events:
 
     if ntags < 1 :
         continue
+
+
+
 
     htLep3.Fill( htLepVal )
     ptMET3.Fill( met )
@@ -326,10 +350,13 @@ for event in events:
     hadJetsBDisc = []
     lepJets = []
 
+    ht = htLepVal
+
     for ijet in range(0,len(jetPts)) :
         if jetPts[ijet] > 30.0 :
             jet = ROOT.TLorentzVector()
             jet.SetPtEtaPhiM( jetPts[ijet], jetEtas[ijet], jetPhis[ijet], jetMasss[ijet] )
+            ht += jet.Perp()
             if jet.DeltaR( lepP4 ) > ROOT.TMath.Pi() / 2.0 :
                 hadJets.append( jet )
                 hadJetsBDisc.append( jetSSVHEs[ijet] )
@@ -342,21 +369,38 @@ for event in events:
             else :
                 lepJets.append( jet )
 
+    ht3.Fill( ht )
 
+
+    if options.htCut is not None and ht < options.htCut :
+        continue
+
+
+    ht4.Fill( ht )
     highestMassJetIndex = -1
     highestJetMass = -1.0
     bJetCandIndex = -1
+    # Find highest mass jet for W-candidate
     for ijet in range(0,len(hadJets)):
         antitagged = hadJetsBDisc[ijet] < options.bDiscCut or options.bDiscCut < 0.0 
         if hadJets[ijet].M() > highestJetMass and antitagged :
             highestJetMass = hadJets[ijet].M()
             highestMassJetIndex = ijet
-        if options.useClosestForTopMass == False :
-            if hadJetsBDisc[ijet] > options.bDiscCut and bJetCandIndex == -1 :
-                bJetCandIndex = ijet
-        else :
-            bJetCandIndex = findClosestJet( ijet, hadJets )
             
+
+    # Find b-jet candidate
+    if options.useClosestForTopMass == True :
+        # If we want the closest, grab it
+        bJetCandIndex = findClosestJet( highestMassJetIndex, hadJets )
+    else :
+        # If we want the b-jet candidate to b-tagged,
+        # take the highest pt b-tagged jet
+        for ijet in range(0,len(hadJets)):
+            if ijet == highestMassJetIndex :
+                continue
+            if hadJetsBDisc[ijet] > options.bDiscCut :
+                bJetCandIndex = ijet
+                break
 
 
 
@@ -364,8 +408,8 @@ for event in events:
         muHist.Fill( hadJetsMu[highestMassJetIndex] )
         mWCandVsMuCut.Fill( highestJetMass, hadJetsMu[highestMassJetIndex] )
         mWCandVsPtWCand.Fill( hadJets[highestMassJetIndex].Perp(), highestJetMass )
-        if bJetCandIndex >= 0 :
-            dRWbHist.Fill( hadJets[highestMassJetIndex].DeltaR(hadJets[bJetCandIndex] ) )
+        #if bJetCandIndex >= 0 :
+        #    dRWbHist.Fill( hadJets[highestMassJetIndex].DeltaR(hadJets[bJetCandIndex] ) )
         if hadJetsMu[highestMassJetIndex] < 0.4 :
             mWCand.Fill( highestJetMass )
             scale = 1.0
@@ -377,7 +421,11 @@ for event in events:
                 mWCandVsMTopCand.Fill( highestJetMass, topCandP4.M() )
                 if abs(highestJetMass - 80.4) < 20 :
                     mTopCand.Fill( topCandP4.M() )
+                    ptTopCand.Fill( topCandP4.Perp() )
+                    ptWFromTopCand.Fill( hadJets[highestMassJetIndex].Perp() )
+                    ptbFromTopCand.Fill( hadJets[bJetCandIndex].Perp() )
                     dRWbHist.Fill( hadJets[highestMassJetIndex].DeltaR(hadJets[bJetCandIndex] ) )
+                    #print 'w index = ' + str(highestMassJetIndex) + ', b index = ' + str(bJetCandIndex) + ', dR = ' + str(hadJets[highestMassJetIndex].DeltaR(hadJets[bJetCandIndex] ))
                     goodEvents.append( [ event.object().id().run(), event.object().id().luminosityBlock(), event.object().id().event() ] )
 
 
