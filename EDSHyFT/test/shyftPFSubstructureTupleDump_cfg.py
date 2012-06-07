@@ -46,13 +46,9 @@ import sys
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_116_1_AOE.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_117_1_X0u.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_118_1_oH9.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_119_1_WkG.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_11_1_Lgw.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_120_1_dbd.root',
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/srappocc/SingleMu/ttbsm_v8_Run2011-May10ReReco/0d3d9a54f3a29af186ad87df2a0c3ce1/ttbsm_42x_data_121_1_kcS.root',
+'file:///uscms/home/pilot/data/Zprime8TeV/CMSSW_5_2_4/src/TopQuarkAnalysis/TopPairBSM/test/ttbsm_52x_data.root'
+#'dcap:///pnfs/cms/WAX/11/store/user/pilot/SingleMu/SingleMu_Run2012A/82fd51e0af07726fb8b1875f5746f193/ttbsm_52x_data_1_1_7O8.root'
+#'dcap:///pnfs/cms/WAX/11/store/user/pilot/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/WJetsToLNu_8TeV/8f2c5ea1c4172ee3e54a11c7e5d6a05d/ttbsm_52x_mc_1_1_JUZ.root'
 )
 )
 
@@ -92,15 +88,15 @@ from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 if options.ignoreTrigger :
     process.hltSelection = cms.Sequence()
 else :
-    process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = ['HLT_Mu30_v1',
-                                                                                                       'HLT_Mu30_v2',
-                                                                                                       'HLT_Mu30_v3',
-                                                                                                       'HLT_Mu30_v4',
-                                                                                                       'HLT_Mu30_v5',
-                                                                                                       'HLT_Mu30_v7',
-                                                                                                       'HLT_Mu40_eta2p1_v1',
+    process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = ['HLT_Mu40_eta2p1_v1',
+                                                                                                       'HLT_Mu40_eta2p1_v2',
+                                                                                                       'HLT_Mu40_eta2p1_v3',
                                                                                                        'HLT_Mu40_eta2p1_v4',
                                                                                                        'HLT_Mu40_eta2p1_v5',
+                                                                                                       'HLT_Mu40_eta2p1_v6',
+                                                                                                       'HLT_Mu40_eta2p1_v7',
+                                                                                                       'HLT_Mu40_eta2p1_v8',
+                                                                                                       'HLT_Mu40_eta2p1_v9',
                                                                                                        ])
     process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths =  ['HLT_Ele45_CaloIdVT_TrkIdT_v1',
                                                                                                          'HLT_Ele45_CaloIdVT_TrkIdT_v2',
@@ -142,6 +138,7 @@ process.pfShyftProducerLoose = cms.EDFilter('EDSHyFTPFSelector',
                                                 removeLooseLep = cms.bool(True)
                                                 )
                                             )
+
 process.pfShyftProducerLoose.shyftPFSelection.cutsToIgnore.append('== 1 Tight Lepton')
 process.pfShyftProducerLoose.shyftPFSelection.cutsToIgnore.append('0 other lepton')
 process.pfShyftProducerLoose.shyftPFSelection.cutsToIgnore.append('>=1 Jets')
@@ -184,7 +181,7 @@ process.pfShyftTupleJets = cms.EDProducer(
             ),
         cms.PSet(
             tag = cms.untracked.string("ssvhe"),
-            quantity = cms.untracked.string("bDiscriminator('simpleSecondaryVertexHighEffBJetTags')")
+            quantity = cms.untracked.string("bDiscriminator('combinedSecondaryVertexBJetTags')")
             ),
         cms.PSet(
             tag = cms.untracked.string("jetArea"),
@@ -271,7 +268,7 @@ process.pfShyftTupleJetsLooseTopTag = cms.EDProducer(
             ),
 	cms.PSet(
 	    tag = cms.untracked.string("ssvhe"),
-	    quantity = cms.untracked.string("bDiscriminator('simpleSecondaryVertexHighEffBJetTags')")
+	    quantity = cms.untracked.string("bDiscriminator('combinedSecondaryVertexBJetTags')")
             ),
         )
     )
@@ -302,6 +299,27 @@ process.pfShyftTupleMuons = cms.EDProducer(
                                             "userIsolation('pat::PfGammaIso')"
                                             )
             ),
+        cms.PSet(
+            tag = cms.untracked.string("pfisoCH"),
+            quantity = cms.untracked.string("userIsolation('pat::PfChargedHadronIso')"
+                                            )
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pfisoNH"),
+            quantity = cms.untracked.string("userIsolation('pat::PfNeutralHadronIso')"
+                                            )
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pfisoPH"),
+            quantity = cms.untracked.string("userIsolation('pat::PfGammaIso')"
+                                            )
+            ),
+	cms.PSet(
+            tag = cms.untracked.string("pfisoPU"),
+            quantity = cms.untracked.string("userIsolation('pat::PfChargedHadronIso') + " +
+                                            "max(0.0,  userIsolation('pat::PfNeutralHadronIso') + userIsolation('pat::PfGammaIso') - 0.5 * userIsolation('pat::TrackIso') )"
+                                            )
+            ),
         )  
     )
 
@@ -330,7 +348,28 @@ process.pfShyftTupleMuonsLoose = cms.EDProducer(
                                             "userIsolation('pat::PfGammaIso')"
                                             )
             ),
-        )  
+        cms.PSet(
+            tag = cms.untracked.string("pfisoCH"),
+            quantity = cms.untracked.string("userIsolation('pat::PfChargedHadronIso')"
+                                            )
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pfisoNH"),
+            quantity = cms.untracked.string("userIsolation('pat::PfNeutralHadronIso')"
+                                            )
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pfisoPH"),
+            quantity = cms.untracked.string("userIsolation('pat::PfGammaIso')"
+                                            )
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pfisoPU"),
+            quantity = cms.untracked.string("userIsolation('pat::PfChargedHadronIso') + " +
+                                            "max(0.0,  userIsolation('pat::PfNeutralHadronIso') + userIsolation('pat::PfGammaIso') - 0.5 * userIsolation('pat::TrackIso') )"
+                                            )
+            ), 
+        )
     )
 
 process.pfShyftTupleMET = cms.EDProducer(
@@ -390,6 +429,21 @@ process.pfShyftTupleElectrons = cms.EDProducer(
             tag = cms.untracked.string("pfiso"),
             quantity = cms.untracked.string("userIsolation('PfAllParticleIso')")
             ),
+        cms.PSet(
+            tag = cms.untracked.string("pfisoCH"),
+            quantity = cms.untracked.string("userIsolation('pat::PfChargedHadronIso')"
+                                            )
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pfisoNH"),
+            quantity = cms.untracked.string("userIsolation('pat::PfNeutralHadronIso')"
+                                            )
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pfisoPH"),
+            quantity = cms.untracked.string("userIsolation('pat::PfGammaIso')"
+                                            )
+            ),
         )  
     )
 
@@ -414,6 +468,21 @@ process.pfShyftTupleElectronsLoose = cms.EDProducer(
         cms.PSet(
             tag = cms.untracked.string("pfiso"),
             quantity = cms.untracked.string("userIsolation('PfAllParticleIso')")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pfisoCH"),
+            quantity = cms.untracked.string("userIsolation('pat::PfChargedHadronIso')"
+                                            )
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pfisoNH"),
+            quantity = cms.untracked.string("userIsolation('pat::PfNeutralHadronIso')"
+                                            )
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pfisoPH"),
+            quantity = cms.untracked.string("userIsolation('pat::PfGammaIso')"
+                                            )
             ),
         )  
     )
