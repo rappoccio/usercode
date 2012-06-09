@@ -272,6 +272,9 @@ rhoLabel = ( "kt6PFJets", "rho")
 # Pileup information
 puHandle = Handle("std::vector<PileupSummaryInfo>")
 puLabel = ( "addPileupInfo", "")
+npvHandle = Handle("double")
+npvLabel = ( "pvCount", "npv")
+
 
 # Generator information
 generatorHandle = Handle("GenEventInfoProduct")
@@ -337,6 +340,42 @@ for trig in trigHelper.trigsToKeep :
                  'AK7 <m_{jet}> Versus p_{T}^{AVG} ;<m_{jet}> (GeV)' + trig + ';p_{T}^{AVG} (GeV)',
                  nx=60, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
 
+    
+## # Mjj and <Mjet> versus ptAvg. Either data or MC. #
+## hists.book2F('histAK7PtAvgVsNvtx',
+##              'AK7 m_{jj} Versus p_{T}^{AVG} ;m_{jj} (GeV);p_{T}^{AVG} (GeV)',
+##              nx=70, x1=0., x2=7000., ny=len(ptBins)-1, ybins=ptBins)
+## hists.book2F('histAK7MjetVsNvtx',
+##              'AK7 <m_{jet}> Versus p_{T}^{AVG} ;<m_{jet}> (GeV);p_{T}^{AVG} (GeV)',
+##              nx=60, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
+
+## # Mjj and <Mjet> versus ptAvg for the different triggers. Only data. #
+## for trig in trigHelper.trigsToKeep :
+##     hists.book2F('histAK7PtAvgVsNvtx_' + trig,
+##                  'AK7 m_{jj} Versus p_{T}^{AVG} ' + trig +';m_{jj} (GeV);p_{T}^{AVG} (GeV)',
+##                  nx=70, x1=0., x2=7000., ny=len(ptBins)-1, ybins=ptBins)
+##     hists.book2F('histAK7MjetVsNvtx_' + trig,
+##                  'AK7 <m_{jet}> Versus p_{T}^{AVG} ;<m_{jet}> (GeV)' + trig + ';p_{T}^{AVG} (GeV)',
+##                  nx=60, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
+
+
+############## Basic distributions ##############
+
+hists.book2F('histAK7PtAvgVsNvtx',  ';N_{VTX};p_{T}^{RECO} (GeV)',   nx=25,x1=0,x2=25, ny=280, y1=0, y2=7000)
+hists.book2F('histAK7MjetVsNvtx',   ';N_{VTX};m_{jet}^{RECO} (GeV)', nx=25,x1=0,x2=25, ny=60, y1=0, y2=300)
+hists.book2F('histAK7PtAvgVsMjetGroomOverReco',   ';m_{jet}^{GROOM}/m_{jet}^{RECO};p_{T}^{AVG}', nx=51,x1=0.0,x2=1.02, ny=len(ptBins)-1, ybins=ptBins)
+
+# Mjj and <Mjet> versus ptAvg for the different triggers. Only data. #
+for trig in trigHelper.trigsToKeep :
+    hists.book2F('histAK7PtAvgVsNvtx_' + trig,
+                 trig +';N_{VTX};p_{T}^{RECO} (GeV)',
+                 nx=25,x1=0,x2=25, ny=280, y1=0, y2=7000)
+    hists.book2F('histAK7MjetVsNvtx_' + trig,
+                 trig +';N_{VTX};p_{T}^{RECO} (GeV)',
+                 nx=25,x1=0,x2=25, ny=60, y1=0, y2=300)
+    hists.book2F('histAK7PtAvgVsMjetGroomOverReco_' + trig,
+                 trig +';m_{jet}^{GROOM}/m_{jet}^{RECO};p_{T}^{AVG}',
+                 nx=51,x1=0.0,x2=1.02, ny=len(ptBins)-1, ybins=ptBins)
 
 
 mjjPtCut = 50.0
@@ -398,6 +437,8 @@ for ifile in files :
 
         event.getByLabel( rhoLabel, rhoHandle )
         rho = rhoHandle.product()[0]
+        event.getByLabel( npvLabel, npvHandle )
+        nvtx = npvHandle.product()[0]
 
         # Now get the ungroomed jets
 	if options.useMC is False :
@@ -419,11 +460,17 @@ for ifile in files :
         if len(ak7Def) < 2 :
             continue
         dijetCandReco = ak7Def[0]+ak7Def[1]
+
         mjjReco = dijetCandReco.M()
         etaMax = abs(ak7Def[0].Rapidity())
         if abs(ak7Def[0].Rapidity()) < abs(ak7Def[1].Rapidity()) :
             etaMax = abs(ak7Def[1].Rapidity())
-        [passEvent,iTrigHist] = trigHelper.passEventData(event, mjjReco, etaMax )
+
+        mjetReco = (ak7Def[0].M() + ak7Def[1].M()) * 0.5
+        ptAvg = (ak7Def[0].Perp() + ak7Def[1].Perp()) * 0.5
+        mjetFinal.append(mjetReco)
+
+        [passEvent,iTrigHist] = trigHelper.passEventData(event, ptAvg )
 
         if not passEvent :
             continue
@@ -432,16 +479,12 @@ for ifile in files :
         # Here we have two reconstructed jets. Get the
         # average jet mass, dijet mass, etaMax, average pt,
         # and trigger bin
-        mjetReco = (ak7Def[0].M() + ak7Def[1].M()) * 0.5
-        ptAvg = (ak7Def[0].Perp() + ak7Def[1].Perp()) * 0.5
-        etaMax = abs(ak7Def[0].Rapidity())
-        mjetFinal.append(mjetReco)
+
 
 
         if options.verbose :
-            print 'mjjReco = ' + str(mjjReco) + ', etaMax = ' + str(etaMax) + ', trig eta bin = ' + str(trigEtaBin)
-            print 'mjj thresholds : '
-            print mjjThresholds
+            print 'mjjReco = ' + str(mjjReco) + ', etaMax = ' + str(etaMax)
+
 
 
         # Now fill truth information for MC
@@ -464,6 +507,10 @@ for ifile in files :
         hists.histAK7MjjVsPtAvg.Fill( mjjReco, ptAvg, weight )
         hists.histAK7MjetVsPtAvg.Fill( mjetReco, ptAvg, weight )
 
+        hists.histAK7PtAvgVsNvtx.Fill( nvtx, ptAvg, weight )
+        hists.histAK7MjetVsNvtx.Fill( nvtx, mjetReco, weight )
+        hists.histAK7PtAvgVsMjetGroomOverReco.Fill( 1.0, ptAvg, weight )
+
         if iTrigHist is not None :
             if options.verbose :
                 print ' Filling histogram ' + str(iTrigHist) + ' which corresponds to trigger ' + trigHelper.trigsToKeep[iTrigHist]
@@ -471,6 +518,11 @@ for ifile in files :
             hists.get('histAK7MjetVsEtaMax_' + trigHelper.trigsToKeep[iTrigHist]).Fill( mjetReco, etaMax, weight )                
             hists.get('histAK7MjjVsPtAvg_' + trigHelper.trigsToKeep[iTrigHist]).Fill( mjjReco, ptAvg, weight )
             hists.get('histAK7MjetVsPtAvg_' + trigHelper.trigsToKeep[iTrigHist]).Fill( mjetReco, ptAvg, weight )                
+            hists.get('histAK7PtAvgVsNvtx_' + trigHelper.trigsToKeep[iTrigHist]).Fill( nvtx, ptAvg, weight )
+            hists.get('histAK7MjetVsNvtx_' + trigHelper.trigsToKeep[iTrigHist]).Fill( nvtx, mjetReco, weight )
+            hists.get('histAK7PtAvgVsMjetGroomOverReco_' + trigHelper.trigsToKeep[iTrigHist]).Fill( 1.0, ptAvg, weight )
+
+
         else :
             print 'Error in trigger assignment!'
             continue
@@ -492,19 +544,26 @@ for ifile in files :
             dijetCandRecoGroom = ak7Groom[0] + ak7Groom[1]
             mjetRecoGroom = (ak7Groom[0].M() + ak7Groom[1].M()) * 0.5
             mjjRecoGroom = dijetCandRecoGroom.M()
+            mjetGroomOverMjet = mjetRecoGroom / mjetReco
 
             mjetFinal.append( mjetRecoGroom )
             if options.verbose :
                 print 'Groomed jets'
                 ak7GroomObj[igroom].printJetColl( )
                 print 'Filling mjjRecoGroom = ' + str(mjjRecoGroom) + ', mjetRecoGroom = ' + str(mjetRecoGroom)
-
+                print 'Filling mjjReco      = ' + str(mjjReco)      + ', mjetReco      = ' + str(mjetReco) + ', ratio = ' + str(mjetGroomOverMjet)
 
             hists.histAK7MjjVsEtaMax_Groom[igroom].Fill( mjjRecoGroom , etaMax, weight)
             hists.histAK7MjetVsEtaMax_Groom[igroom].Fill(mjetRecoGroom , etaMax, weight )
 
-            hists.histAK7MjjVsPtAvg_Groom[igroom].Fill( mjjRecoGroom , ptAvg, weight)
-            hists.histAK7MjetVsPtAvg_Groom[igroom].Fill(mjetRecoGroom , ptAvg, weight )
+            hists.histAK7MjjVsPtAvg_Groom[igroom].Fill( mjjRecoGroom , ptAvgGroom, weight)
+            hists.histAK7MjetVsPtAvg_Groom[igroom].Fill(mjetRecoGroom , ptAvgGroom, weight )
+            
+            hists.histAK7PtAvgVsNvtx_Groom[igroom-1].Fill( nvtx, ptAvgGroom, weight )
+            hists.histAK7MjetVsNvtx_Groom[igroom-1].Fill( nvtx, mjetRecoGroom, weight )
+            hists.histAK7PtAvgVsMjetGroomOverReco_Groom[igroom-1].Fill( mjetGroomOverMjet, ptAvgGroom, weight )
+
+
             if iTrigHist is not None :
                 if options.verbose :
                     print ' Filling histogram ' + str(iTrigHist) + ' which corresponds to trigger ' + trigHelper.trigsToKeep[iTrigHist]
@@ -512,6 +571,11 @@ for ifile in files :
                 hists.get('histAK7MjetVsEtaMax_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( mjetRecoGroom, etaMax, weight )                
                 hists.get('histAK7MjjVsPtAvg_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( mjjRecoGroom, ptAvgGroom, weight )
                 hists.get('histAK7MjetVsPtAvg_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( mjetRecoGroom, ptAvgGroom, weight )
+                hists.get('histAK7PtAvgVsNvtx_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( nvtx, ptAvgGroom, weight )
+                hists.get('histAK7MjetVsNvtx_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( nvtx, mjetRecoGroom, weight )
+                hists.get('histAK7PtAvgVsMjetGroomOverReco_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( mjetGroomOverMjet, ptAvgGroom, weight )
+
+
             else :
                 print 'Error in trigger assignment!'
                 continue

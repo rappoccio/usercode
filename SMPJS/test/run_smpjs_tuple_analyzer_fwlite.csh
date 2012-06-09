@@ -54,14 +54,21 @@ python smpjs_tuple_analyzer_fwlite.py --files=QCD_Flat15to3000_herwigpp_23_ttbsm
 python smpjs_tuple_analyzer_fwlite.py --files=QCD_Flat15to3000_herwigpp_23_ttbsm_v10beta_tuples_withgen/res/\*.root --outname=QCD_herwigpp_23_v10beta_plots3 --useMC --nsplit=5 --isplit=3 >& qcd_herwigpp_out3.txt &
 python smpjs_tuple_analyzer_fwlite.py --files=QCD_Flat15to3000_herwigpp_23_ttbsm_v10beta_tuples_withgen/res/\*.root --outname=QCD_herwigpp_23_v10beta_plots4 --useMC --nsplit=5 --isplit=4 >& qcd_herwigpp_out4.txt &
 
-python smpjs_tuple_analyzer_fwlite.py --files=Jet_Run2011_ttbsm_v10beta_tuples_lite/res/\*.root --outname=Jet_Run2011_plots0 --nsplit=5 --isplit=0 >& Jet_Run2011_log0.txt &
-python smpjs_tuple_analyzer_fwlite.py --files=Jet_Run2011_ttbsm_v10beta_tuples_lite/res/\*.root --outname=Jet_Run2011_plots1 --nsplit=5 --isplit=1 >& Jet_Run2011_log1.txt &
-python smpjs_tuple_analyzer_fwlite.py --files=Jet_Run2011_ttbsm_v10beta_tuples_lite/res/\*.root --outname=Jet_Run2011_plots2 --nsplit=5 --isplit=2 >& Jet_Run2011_log2.txt &
-python smpjs_tuple_analyzer_fwlite.py --files=Jet_Run2011_ttbsm_v10beta_tuples_lite/res/\*.root --outname=Jet_Run2011_plots3 --nsplit=5 --isplit=3 >& Jet_Run2011_log3.txt &
-python smpjs_tuple_analyzer_fwlite.py --files=Jet_Run2011_ttbsm_v10beta_tuples_lite/res/\*.root --outname=Jet_Run2011_plots4 --nsplit=5 --isplit=4 >& Jet_Run2011_log4.txt &
+python smpjs_tuple_analyzer_fwlite.py --files=/eos/uscms/store/user/smpjs/srappocc/Jet_Run2011_ttbsm_v10beta_tuples_lite_5fbinv/res/\*.root --outname=Jet_Run2011_plots0 --nsplit=5 --isplit=0 >& Jet_Run2011_log0.txt &
+python smpjs_tuple_analyzer_fwlite.py --files=/eos/uscms/store/user/smpjs/srappocc/Jet_Run2011_ttbsm_v10beta_tuples_lite_5fbinv/res/\*.root --outname=Jet_Run2011_plots1 --nsplit=5 --isplit=1 >& Jet_Run2011_log1.txt &
+python smpjs_tuple_analyzer_fwlite.py --files=/eos/uscms/store/user/smpjs/srappocc/Jet_Run2011_ttbsm_v10beta_tuples_lite_5fbinv/res/\*.root --outname=Jet_Run2011_plots2 --nsplit=5 --isplit=2 >& Jet_Run2011_log2.txt &
+python smpjs_tuple_analyzer_fwlite.py --files=/eos/uscms/store/user/smpjs/srappocc/Jet_Run2011_ttbsm_v10beta_tuples_lite_5fbinv/res/\*.root --outname=Jet_Run2011_plots3 --nsplit=5 --isplit=3 >& Jet_Run2011_log3.txt &
+python smpjs_tuple_analyzer_fwlite.py --files=/eos/uscms/store/user/smpjs/srappocc/Jet_Run2011_ttbsm_v10beta_tuples_lite_5fbinv/res/\*.root --outname=Jet_Run2011_plots4 --nsplit=5 --isplit=4 >& Jet_Run2011_log4.txt &
 
 
 
+
+
+python smpjs_tuple_trigger_analyzer_fwlite_data.py --files=/eos/uscms/store/user/smpjs/srappocc/Jet_Run2011_ttbsm_v10beta_tuples_lite_5fbinv/res/\*.root --outname=Jet_Run2011_trigplots0 --nsplit=5 --isplit=0 >& Jet_Run2011_triglog0.txt &
+python smpjs_tuple_trigger_analyzer_fwlite_data.py --files=/eos/uscms/store/user/smpjs/srappocc/Jet_Run2011_ttbsm_v10beta_tuples_lite_5fbinv/res/\*.root --outname=Jet_Run2011_trigplots1 --nsplit=5 --isplit=1 >& Jet_Run2011_triglog1.txt &
+python smpjs_tuple_trigger_analyzer_fwlite_data.py --files=/eos/uscms/store/user/smpjs/srappocc/Jet_Run2011_ttbsm_v10beta_tuples_lite_5fbinv/res/\*.root --outname=Jet_Run2011_trigplots2 --nsplit=5 --isplit=2 >& Jet_Run2011_triglog2.txt &
+python smpjs_tuple_trigger_analyzer_fwlite_data.py --files=/eos/uscms/store/user/smpjs/srappocc/Jet_Run2011_ttbsm_v10beta_tuples_lite_5fbinv/res/\*.root --outname=Jet_Run2011_trigplots3 --nsplit=5 --isplit=3 >& Jet_Run2011_triglog3.txt &
+python smpjs_tuple_trigger_analyzer_fwlite_data.py --files=/eos/uscms/store/user/smpjs/srappocc/Jet_Run2011_ttbsm_v10beta_tuples_lite_5fbinv/res/\*.root --outname=Jet_Run2011_trigplots4 --nsplit=5 --isplit=4 >& Jet_Run2011_triglog4.txt &
 
 
 

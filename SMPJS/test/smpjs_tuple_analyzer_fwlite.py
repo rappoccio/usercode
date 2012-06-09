@@ -40,6 +40,13 @@ parser.add_option('--useMC', action='store_true',
                   help='Use MC Weight (True) or weight by trigger prescale (False)')
 
 
+# Use MC information, otherwise use trigger information
+parser.add_option('--usePY8', action='store_true',
+                  default=False,
+                  dest='usePY8',
+                  help='Use MC Weight pythia8 style.')
+
+
 # JEC systematics
 parser.add_option('--jecUnc', type='int', action='store',
                   default=None,
@@ -275,6 +282,8 @@ rhoLabel = ( "kt6PFJets", "rho")
 # Pileup information
 puHandle = Handle("std::vector<PileupSummaryInfo>")
 puLabel = ( "addPileupInfo", "")
+npvHandle = Handle("double")
+npvLabel = ( "pvCount", "npv")
 
 # Generator information
 generatorHandle = Handle("GenEventInfoProduct")
@@ -384,6 +393,12 @@ hists.book1F('genEffNum', 'gen efficiency numerator;p_{T}^{RECO} (GeV)', nx=60, 
 hists.book1F('genEffDen', 'gen efficiency denominator;p_{T}^{RECO} (GeV)', nx=60, x1=0., x2=300.)
 
 
+############## Basic distributions ##############
+
+hists.book2F('histAK7PtAvgVsNvtx',  ';N_{VTX};p_{T}^{RECO} (GeV)',   nx=25,x1=0,x2=25, ny=280, y1=0, y2=7000)
+hists.book2F('histAK7MjetVsNvtx',   ';N_{VTX};m_{jet}^{RECO} (GeV)', nx=25,x1=0,x2=25, ny=60, y1=0, y2=300)
+hists.book2F('histAK7PtAvgVsMjetGroomOverReco',   ';m_{jet}^{GROOM}/m_{jet}^{RECO};p_{T}^{AVG}', nx=51,x1=0.0,x2=1.02, ny=len(ptBins)-1, ybins=ptBins)
+
 mjjPtCut = 50.0
 mjjEtaCut = 2.0
 
@@ -461,7 +476,11 @@ for ifile in files :
         if generatorHandle.isValid() :
             generatorInfo = generatorHandle.product()
             # weight is the generator weight
-            weight *= generatorInfo.weight()
+
+            if options.usePY8 :
+                weight *= generatorInfo.weight()/pow(generatorInfo.binningValues()[0]/15.,4.5)
+            else :
+                weight *= generatorInfo.weight()
             passGen = True
 
 
@@ -472,6 +491,8 @@ for ifile in files :
         # Get mean-pt-per-unit-area
         event.getByLabel( rhoLabel, rhoHandle )
         rho = rhoHandle.product()[0]
+        event.getByLabel( npvLabel, npvHandle )
+        nvtx = npvHandle.product()[0]
 
         # Get the gen jets for each grooming algorithm (ungroomed is position 0)
         ak7Gens = []
@@ -506,6 +527,7 @@ for ifile in files :
             ak7Gen = ak7Gens[igroom]        # 4-vector coll for gen
             ak7Reco = ak7Recos[igroom]      # 4-vector coll for reco
 
+            ak7RecoMatched = ak7Obj.getMatchedReco()        # List of matched reco jets
             ak7GenIndices = ak7Obj.getMatchedGenIndices()   # List of indices for matched gen jets
             ak7GenMatched = ak7Obj.getMatchedGen()          # List of 4-vectors for matched gen jets
 
@@ -560,6 +582,11 @@ for ifile in files :
                 ptAvg = (ak7Reco[0].Perp() + ak7Reco[1].Perp()) * 0.5
                 mjj = (ak7Reco[0] + ak7Reco[1]).M()
                 mjet = (ak7Reco[0].M() + ak7Reco[1].M()) * 0.5
+                mjetGroomOverMjet = 1.0
+                if ak7RecoMatched is not None and ak7RecoMatched[0] is not None and ak7RecoMatched[1] is not None :
+                    mjetRecoMatched = (ak7RecoMatched[0].M() + ak7RecoMatched[1].M()) * 0.5
+                    mjetGroomOverMjet = mjet / mjetRecoMatched
+
                 responsePtBin = findBin( ptAvg, ptBins )
                 if responsePtBin is None :
                     continue
@@ -580,7 +607,7 @@ for ifile in files :
                 #------------------------------------------
                 if igroom == 0 :
                     mjjForTrig = mjj
-                passTrig = trigHelper.passEventMC( event, mjjForTrig, etaMax ) 
+                passTrig = trigHelper.passEventMC( event, ptAvg ) 
 
                 #------------------------------------------
                 # To pass the event, the faked trigger and the gen product
@@ -625,6 +652,10 @@ for ifile in files :
                     hists.histAK7MjjGenVsPtAvg.Fill( mjjGen, ptAvg, weight )
                     hists.histAK7MjetGenVsPtAvg.Fill( mjetGen, ptAvg, weight )
 
+                    hists.histAK7PtAvgVsNvtx.Fill( nvtx, ptAvg, weight )
+                    hists.histAK7MjetVsNvtx.Fill( nvtx, mjet, weight )
+                    hists.histAK7PtAvgVsMjetGroomOverReco.Fill( 1.0, ptAvg, weight )
+
                 else :
                     # NOTE: The hists fill the _Groom vector only for groomed jets,
                     # whereas we're counting the ungroomed above as "igroom=0", so
@@ -651,6 +682,11 @@ for ifile in files :
                     hists.histAK7MjetGenVsRecoVsPtAvgHighPt_Groom[igroom-1].Fill( mjetGen, mjet, ptAvg )
                     hists.histAK7MjjGenVsPtAvg_Groom[igroom-1].Fill( mjjGen, ptAvg, weight )
                     hists.histAK7MjetGenVsPtAvg_Groom[igroom-1].Fill( mjetGen, ptAvg, weight )
+
+                    hists.histAK7PtAvgVsNvtx_Groom[igroom-1].Fill( nvtx, ptAvg, weight )
+                    hists.histAK7MjetVsNvtx_Groom[igroom-1].Fill( nvtx, mjet, weight )
+                    hists.histAK7PtAvgVsMjetGroomOverReco_Groom[igroom-1].Fill( mjetGroomOverMjet, ptAvg, weight )
+
         
 hists.getFile().cd()
 for response in responses :

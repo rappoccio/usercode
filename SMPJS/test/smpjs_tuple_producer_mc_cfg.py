@@ -108,6 +108,7 @@ process.ca8Gen = process.ak5Gen.clone(
 
 
 process.patseq = cms.Sequence(
+    process.pvCount *
     process.ca8Lite *
     process.ak5Gen *
     process.ak7Gen *
