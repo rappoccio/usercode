@@ -320,8 +320,7 @@ for trig in trigHelper.trigsToKeep :
 
 ############## Versus PtAvg ##############
 
-ptBins = array('d', [0., 50.,125.,200., 300., 400., 500., 600., 800., 1000., 1500., 7000.])
-
+ptBins = array('d', [0., 50., 125., 150., 220., 300., 450., 500., 600., 800., 1000., 1500., 7000.])
     
 # Mjj and <Mjet> versus ptAvg. Either data or MC. #
 hists.book2F('histAK7MjjVsPtAvg',

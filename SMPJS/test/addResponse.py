@@ -25,7 +25,7 @@ gSystem.Load('libCondFormatsJetMETObjects')
 
 fout = TFile("response_full.root", "RECREATE")
   
-ptBins = [0., 50.,125.,200., 300., 400., 500., 600., 800., 1000., 1500., 7000.]
+ptBins = [0., 50., 125., 150., 220., 300., 450., 500., 600., 800., 1000., 1500., 7000.]
 
 names = [
 'QCD_pythia6_z2_plots_nominal',
