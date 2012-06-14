@@ -8,15 +8,11 @@
 #include "Math/GenVector/PxPyPzM4D.h"
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/FWLite/interface/Record.h"
-#include "PhysicsTools/SelectorUtils/interface/PFMuonSelector.h"
-/* #include "PhysicsTools/Utilities/interface/LumiWeighting.h" */
+#include "PhysicsTools/Utilities/interface/LumiWeighting.h"
 /* #include "DataFormats/FWLite/interface/EventSetup.h" */
 /* #include "DataFormats/FWLite/interface/ESHandle.h" */
 /* #include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h" */
 /* #include "RecoBTag/PerformanceDB/interface/BtagPerformance.h" */
-#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
-#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
-#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 
 
 #include <iostream>
@@ -52,31 +48,16 @@ class JetStudies2011 : public edm::BasicAnalyzer {
     TFileDirectory theDir;
     std::vector<TFileDirectory> dirs_;
 
-    edm::InputTag   jetSrc_;          /// jets
-    edm::InputTag   rhoSrc_;          /// mean pt per unit area
-    edm::InputTag   pvSrc_;           /// primary vertex
-    edm::InputTag   trigSrc_;         /// trigger
-    edm::InputTag   genJetsSrc_;      /// gen jets to input
-    bool            useCA8GenJets_;   /// use CA8 instead of AK5 gen jets
-    bool            useCA8BasicJets_; /// use CA8 pruned (basic) jets instead of AK gen jets
-    bool            weightPV_;        /// weight events by the PV
-    std::vector<std::string>    jecPayloads_; /// files for JEC payloads
-    std::vector<std::string> trigs_;  /// triggers to consider
-    bool            binPtTrig_;       /// bin triggers in pt
-    std::vector<double>  ptTrigBins_; /// pt bins for triggers
-    bool            useBTags_;        /// require btags
-    bool            orderByMass_;     /// order jets by mass rather than pt
-    // Optional: If using btags, also check a muon-in-jet selector
-    // since this comes in on a mu trigger. 
-    edm::InputTag   muonSrc_;         /// muons
-    double          rCut_;            /// rCut for deltaR(mu,jet) for tagging
-    boost::shared_ptr<PFMuonSelector> pfMuonSelector_; /// muon id selector
-
-    boost::shared_ptr<JetCorrectionUncertainty> jecUnc_;
-    boost::shared_ptr<FactorizedJetCorrector> jec_;
-    
-
-    /* boost::shared_ptr<edm::LumiWeighting> lumiWeighting_; */
+    // the following parameters need to come from the config
+    edm::InputTag   jetSrc_;
+    edm::InputTag   rhoSrc_;
+    edm::InputTag   pvSrc_;
+    edm::InputTag   trigSrc_;
+    edm::InputTag   genJetsSrc_;
+    bool            useCA8GenJets_;
+    bool            weightPV_;
+    edm::LumiWeighting lumiWeighting_;
+    std::vector<std::string> trigs_;
 };
 
 

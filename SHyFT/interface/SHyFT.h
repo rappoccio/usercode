@@ -1,16 +1,13 @@
 #ifndef Analysis_SHyFT_interface_SHyFT_h
 #define Analysis_SHyFT_interface_SHyFT_h
 
-#include "PhysicsTools/UtilAlgos/interface/BasicAnalyzer.h"
-#include "Analysis/SHyFT/interface/SHyFTSelector.h"
+#include "PhysicsTools/SelectorUtils/interface/WPlusJetsEventSelector.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "DataFormats/FWLite/interface/Event.h"
 #include "Math/GenVector/PxPyPzM4D.h"
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/FWLite/interface/Record.h"
-#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
-#include "PhysicsTools/Utilities/interface/Lumi3DReWeighting.h"
 /* #include "DataFormats/FWLite/interface/EventSetup.h" */
 /* #include "DataFormats/FWLite/interface/ESHandle.h" */
 /* #include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h" */
@@ -36,7 +33,7 @@
 
 typedef std::vector<reco::ShallowClonePtrCandidate> ShallowCloneCollection;
 
-class SHyFT : public edm::BasicAnalyzer {
+class SHyFT {
 
   public:
 
@@ -92,42 +89,25 @@ class SHyFT : public edm::BasicAnalyzer {
     bool analyze_electrons(const std::vector<reco::ShallowClonePtrCandidate>& electrons);
     bool analyze_muons(const std::vector<reco::ShallowClonePtrCandidate>& muons);    
     bool analyze_met( const reco::ShallowClonePtrCandidate & met );
-    //std::string calcSampleName (const edm::EventBase& iEvent);
-    void initializeMCPUWeight();
-	void initializePU3DWeight();
-	void weight3DPU( edm::EventBase const & iEvent);
+    std::string calcSampleName (const edm::EventBase& iEvent);
+    void weightPDF( edm::EventBase const & iEvent );
 
     bool make_templates(const std::vector<reco::ShallowClonePtrCandidate>& jets,
 			const reco::ShallowClonePtrCandidate & met,
 			const std::vector<reco::ShallowClonePtrCandidate>& muons,
-            const std::vector<reco::ShallowClonePtrCandidate>& electrons,
-            const edm::EventBase& iEvent);
+			const std::vector<reco::ShallowClonePtrCandidate>& electrons
+			);
 
-    SHyFTSelector wPlusJets;
+    WPlusJetsEventSelector wPlusJets;
     TFileDirectory& theDir;
-
-    TFileDirectory  subdirMU_plus;
-    TFileDirectory  subdirMU_minus;
-
-    TFileDirectory  subdirEB_plus;
-    TFileDirectory  subdirEE_plus;
-    
-    TFileDirectory  subdirEB_minus;
-    TFileDirectory  subdirEE_minus;
-
-    // used for reweighting
-    edm::LumiReWeighting lumiWeights_;
-	edm::Lumi3DReWeighting Lumi3DWeights_;
-    reweight::PoissonMeanShifter PShiftDown_;
-    reweight::PoissonMeanShifter PShiftUp_;
-    //void plotNPV(const edm::EventBase &, const char*, double);
-    void weightPU( edm::EventBase const & iEvent);
-    
+    // 'registry' for the histograms                                                                                                                                                                    
+    std::map<std::string, TH1F*> histograms;
+    std::map<std::string, TH2F*> histograms2d;
+    std::map<std::string, TH3F*> histograms3d;
     // the following parameters need to come from the config
     bool muPlusJets_;
     bool ePlusJets_;
-    bool use42X_;
-    bool useHFcat_;   
+    bool useHFcat_;
     int nJetsCut_ ;
     int mode;
     std::string sampleNameInput;
@@ -142,16 +122,11 @@ class SHyFT : public edm::BasicAnalyzer {
     std::vector<SHyFTSummary> summary_;
 
     double globalWeight_;  // For reweighting the entire event for, e.g., pdf reweighting
+    double globalWeight_0t;  // For reweighting the entire event for probabaility to not tag
+    double globalWeight_1t;  // For reweighting the entire event for probabaility to have 1 tag
+    double globalWeight_2t;  // For reweighting the entire event for probabaility to have 2 tags
     bool reweightPDF_;
-    bool reweightBTagEff_;
-    bool reweightPU_;
-	bool reweightPU3D_;
-	std::string pileupMC_;
-	std::string pileupData_;
-    bool puUp_;
-    bool puDn_;
     edm::InputTag pdfInputTag_; 
-    edm::InputTag pvTag_;
     std::string pdfToUse_;
     int         pdfEigenToUse_;
     int         pdfVariation_;
@@ -170,7 +145,6 @@ class SHyFT : public edm::BasicAnalyzer {
                         // as a probability to throw away an MC event. Only works for SF < 1.0.
                         // Technically, for systematics, SF < 1-dSF, since then you'd set this 
                         // up and down by dSF. 
-    bool weightSFCalc_; 
     std::string jetAlgo_;
     boost::shared_ptr<TFile> customBtagFile_;
 
