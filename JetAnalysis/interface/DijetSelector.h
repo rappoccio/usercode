@@ -215,7 +215,7 @@ class DijetSelector : public EventSelector {
 		std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsBegin =allPFJets_.begin();
 		std::vector<edm::Ptr<pat::Jet> >::const_iterator jetsEnd = allPFJets_.end();
 		std::vector<edm::Ptr<pat::Jet> >::const_iterator ijet = jetsBegin;
-		//if ( considerCut("PF Delta Phi") ) jetsEnd = jetsBegin + 2;
+		if ( considerCut("PF Delta Phi") ) jetsEnd = jetsBegin + 2;
 		for (; ijet != jetsEnd; ++ijet ) {
 		  pat::Jet const & jet = **ijet;
 		  if ( considerCut("PF Jet ID") ) {

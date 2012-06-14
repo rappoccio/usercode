@@ -11,7 +11,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    'file:/uscms_data/d2/guofan/patTuples/boostedTop/CMSSW_3_8_7/src/pickEvents/pickEvents_ReReco.root'
+    'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/ttbsm_383_V3/4ed85e3183716eb6a8394c44d2f28328/ttbsm_381_10_1_OgU.root'
     )
 )
 ## Maximal Number of Events

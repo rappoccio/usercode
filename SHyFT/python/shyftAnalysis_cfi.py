@@ -1,10 +1,20 @@
 import FWCore.ParameterSet.Config as cms
 
 
-from Analysis.SHyFT.shyftselection_cfi import wplusjetsAnalysis
+from PhysicsTools.SelectorUtils.wplusjetsAnalysis_cfi import wplusjetsAnalysis
 
 shyftAnalysis = cms.PSet(
-    wplusjetsAnalysis.clone() ,
+    wplusjetsAnalysis.clone(     
+        muonSrc = cms.InputTag('selectedPatMuons'),
+        electronSrc = cms.InputTag('selectedPatElectrons'),
+        jetSrc = cms.InputTag('selectedPatJets'),
+        metSrc = cms.InputTag('patMETs'),
+        trigSrc = cms.InputTag('patTriggerEvent'),
+        jetPtMin = cms.double(30.0),
+        jetEtaMax = cms.double(2.4),
+        jetScale=cms.double(1.0),
+        minJets = cms.int32(5)
+        ) ,
     sampleName = cms.string("top"),
     heavyFlavour = cms.bool(False),
     doMC           = cms.bool(False),
@@ -20,13 +30,7 @@ shyftAnalysis = cms.PSet(
     pdfSrc = cms.InputTag('generator'),
     pdfToUse = cms.string('cteq6ll.LHpdf'),
     pdfVariation = cms.int32(1),
-    reweightBTagEff = cms.bool(False),
-    reweightPU = cms.bool(True),
-    reweightPU3D = cms.bool(False),
-    pileupMC = cms.string('PUMC_dist.root'),
-    pileupData = cms.string('PUData_dist.root'),
-    puUp = cms.bool(False),
-    puDn = cms.bool(False),
+    doTagWeight = cms.bool(False),
     bcEffScale = cms.double(1.0),
     lfEffScale = cms.double(1.0),
     useDefaultDiscriminant = cms.bool(True),
@@ -35,9 +39,8 @@ shyftAnalysis = cms.PSet(
     lDiscriminantCut = cms.double(-1.0),
     allDiscriminantCut = cms.double(1.74),
     simpleSFCalc = cms.bool(False),
-    weightSFCalc = cms.bool(False),
-    jetAlgo = cms.string("pf"),
+    jetAlgo = cms.string("calo"),
     useCustomPayload = cms.bool(False),
-    customPayload = cms.string('ttbarEffSF_unity.root')   
+    customPayload = cms.string('ttbarEffSF.root')   
 )
 

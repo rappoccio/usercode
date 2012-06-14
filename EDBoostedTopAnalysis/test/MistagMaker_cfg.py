@@ -8,57 +8,26 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 ## Options and Output Report
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-## Options and Output Report
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-
-from FWCore.ParameterSet.VarParsing import VarParsing
-options = VarParsing ('python')
-
-options.register ('useTrigger',  True,
-                  VarParsing.multiplicity.singleton, VarParsing.varType.int,
-                  "Use trigger" )
-
-options.register( 'jetPD',    1,
-                  VarParsing.multiplicity.singleton, VarParsing.varType.int, "Jet PD" )
-
-options.register( 'htPD',    -1,
-                  VarParsing.multiplicity.singleton, VarParsing.varType.int, "HT PD" )
-
-options.parseArguments()
-
-print options
-
-###############################
-########## Trigger ############
-###############################
-from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-if options.useTrigger :
-    process.jetTrig = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Jet370_*"])
-    process.htTrig  = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_HT500_*"])
-
-    process.jetTrig.throw= cms.bool(False)
-    process.htTrig.throw= cms.bool(False)
-
-    if options.jetPD > 0 :
-        process.trigs = cms.Sequence( process.jetTrig )
-    elif options.jetPD < 0 and options.htPD > 0 :
-        process.trigs = cms.Sequence( ~process.jetTrig *
-                                      process.htTrig )
-    elif options.htPD > 0 :
-        process.trigs = cms.Sequence( process.htTrig )
-else :
-    process.alltrig = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["*"])
-    process.trigs = cms.Sequence( process.alltrig )
-
-
-
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
     #'file:/uscms_data/d2/guofan/patTuples/boostedTop/CMSSW_3_8_7/src/pickEvents/pickEvents_ReReco.root'
     #'file:/uscms/home/guofan/work/boostedTop/hadronicAnalysis/CMSSW_3_8_7/src/pickEvents/crab_0_110128_214641/res/pickevents_1_1_1Cp.root'
-    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_10_1_RKm.root',
-    'dcap:///pnfs/cms/WAX/11/store/user/rappocc/Jet/ttbsm_v2_Run2011A-PromptReco-v1/84471d8a18e499e217065966b63862b9/ttbsm_414_data_11_1_it1.root'
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_83_1_edc.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_82_1_0JR.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_81_1_MjO.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_80_1_10Z.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_7_1_NLO.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_79_1_xzO.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_78_1_gl0.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_77_1_VJA.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_76_1_2mG.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_75_1_8Os.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_74_1_NWT.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_73_1_RWQ.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_72_1_p20.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_71_1_FfP.root',
+'dcap:///pnfs/cms/WAX/11/store/user/guofan/Jet/Run2010-Nov4ReReco_v1_ttbsm_387_v2/5a03e904833f2addf159ca9dd7167ab5/ttbsm_387_70_1_Gmc.root'
     )
 )
 ## Maximal Number of Events
@@ -79,7 +48,7 @@ process.mistagAna = cms.EDAnalyzer('EDMistagMaker',
 
 
 process.p = cms.Path(
-  process.trigs*process.mistagAna
+  process.mistagAna
     )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

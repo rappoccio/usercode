@@ -7,21 +7,26 @@ import tokenize
 
 from event_flow_selectors import event_flow_selectors
 
-tokens = ['Inclusive',
-          '>= 1 Lepton',
-          '== 1 Lepton',
-          'Dilepton Veto',
-          'MET Cut Min',
-          'MET Cut Max'        
+tokens = ['== 1 Lepton',
+          '>=1 Jets'
           ]
 
 dirs = [
-'TTJets_TuneZ2_7TeV-madgraph-tauola_ttbsm_v8_003_shyftDump_v9_submit2/'
+'InclusiveMu15_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'SingleTop_sChannel-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'SingleTop_tChannel-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'TTbarJets-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'VqqJets-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'WJets-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'ZJets-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut'
+
 ]
 
 labels = [
-    'pfShyftProducerMu',
-    'pfShyftProducerEle'
+    'PF',
+    'JPT',
+    'Calo'
     ]
 
 for idir in dirs :

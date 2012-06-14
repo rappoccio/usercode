@@ -2,34 +2,22 @@
 
 import subprocess
 import sys
-import glob
 
+command = sys.argv[1]
 
-from optparse import OptionParser
+dirs = [
+'InclusiveMu15_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'SingleTop_sChannel-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'SingleTop_tChannel-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'SingleTop_tWChannel-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'TTbarJets-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'WJets-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'ZJets-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
+'VqqJets-madgraph_shyftana_38xOn35x_v12_btagReweighted_JES_NoMETCut',
 
-
-parser = OptionParser()
-
-parser.add_option('--files', metavar='F', type='string', action='store',
-                  dest='files',
-                  help='Input files')
-
-parser.add_option('--command', metavar = 'C', type='string', action='store',
-                  dest='command',
-                  default='status',
-                  help='CRAB command to run')
-
-(options, args) = parser.parse_args()
-
-
-argv = []
-
-dirs = glob.glob( options.files )
+]
 
 for idir in dirs :
-    print '--------------------------------'
-    print '--------------------------------'
-    print '--------------------------------'    
-    s = "crab -" + options.command + " -c " + idir
+    s = "crab -" + command + " -c " + idir
     print s
     subprocess.call( [s, ""], shell=True )
