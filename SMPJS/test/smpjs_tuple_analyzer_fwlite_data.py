@@ -32,12 +32,11 @@ parser.add_option('--collName', metavar='F', type='string', action='append',
                   dest='collName',
                   help='RECO collection name')
 
-
-# Use MC information, otherwise use trigger information
-parser.add_option('--useMC', action='store_true',
-                  default=False,
-                  dest='useMC',
-                  help='Use MC Weight (True) or weight by trigger prescale (False)')
+# jet collection names to use. 
+parser.add_option('--alg', metavar='F', type='string', action='store',
+                  default='ak7',
+                  dest='alg',
+                  help='Algorithms to plot')
 
 
 # JEC systematics
@@ -46,36 +45,6 @@ parser.add_option('--jecUnc', type='int', action='store',
                   dest='jecUnc',
                   help='Jet energy correction uncertainty: 1 for up, -1 for down, None for nominal')
 
-
-
-# JER systematics
-parser.add_option('--jerSmearVal', type='float', action='store',
-                  default=0.1,
-                  dest='jerSmearVal',
-                  help='Jet energy resolution smearing value. Set to : 0.0, 0.1, 0.2')
-
-# JAR systematics
-parser.add_option('--jarSmearVal', type='float', action='store',
-                  default=0.1,
-                  dest='jarSmearVal',
-                  help='Jet angular resolution smearing value. Set to : 0.0, 0.1, 0.2')
-
-
-# PU Weighting
-parser.add_option('--puWeighting', type='int', action='store',
-                  default=None,
-                  dest='puWeighting',
-                  help='PU Weighting. None=no weighting, 0=Nominal, -1=Down, +1=Up')
-
-parser.add_option('--puMCFile', metavar='F', type='string', action='store',
-                  default='PUMC_dist.root',
-                  dest='puMCFile',
-                  help='PU Monte Carlo file')
-
-parser.add_option('--puDataFile', metavar='F', type='string', action='store',
-                  default='PUData_dist.root',
-                  dest='puDataFile',
-                  help='PU Data file')
 
 
 # Print verbose information
@@ -192,13 +161,14 @@ nJets = ROOT.TH1F("nJets",         "Number of Jets, p_{T} > 30 GeV;N_{Jets};Numb
 #     Jet energy scale and uncertainties   #
 ############################################
 
-
-if options.useMC :
+if options.alg == 'ak5' :
     jecStr = [
-        'GR_R_42_V23_L1FastJet_AK7PFchs.txt',
-        'GR_R_42_V23_L2Relative_AK7PFchs.txt',
-        'GR_R_42_V23_L3Absolute_AK7PFchs.txt',
-    ]
+        'Jec11_V3_L1FastJet_AK5PFchs.txt',
+        'Jec11_V3_L2Relative_AK5PFchs.txt',
+        'Jec11_V3_L3Absolute_AK5PFchs.txt',
+        'Jec11_V3_L2L3Residual_AK5PFchs.txt'
+        ]
+    jecUncStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
 else :
     jecStr = [
         'GR_R_42_V23_L1FastJet_AK7PFchs.txt',
@@ -206,6 +176,9 @@ else :
         'GR_R_42_V23_L3Absolute_AK7PFchs.txt',
         'GR_R_42_V23_L2L3Residual_AK7PFchs.txt',
     ]
+    jecUncStr = ROOT.std.string('GR_R_42_V23_Uncertainty_AK7PFchs.txt')
+
+
 
 jecPars = ROOT.std.vector(ROOT.JetCorrectorParameters)()
 
@@ -216,29 +189,12 @@ for ijecStr in jecStr :
 
 jec = ROOT.FactorizedJetCorrector(jecPars)
 
-jecUncStr = ROOT.std.string('GR_R_42_V23_Uncertainty_AK7PFchs.txt')
 if options.jecUnc is not None:
     jecUnc = ROOT.JetCorrectionUncertainty( jecUncStr )
     upOrDown = options.jecUnc > 0.0
 else :
     jecUnc = None
     upOrDown = None
-
-if options.puWeighting is not None:
-    if options.puWeighting == 0 :
-        LumiWeights = ROOT.edm.Lumi3DReWeighting(options.puMCFile, options.puDataFile,
-                                                 "pileup", "pileup", "Weight_3D.root")
-        LumiWeights.weight3D_init( 1.08 )
-
-    elif options.puWeighting > 0:
-        LumiWeights = ROOT.edm.Lumi3DReWeighting(options.puMCFile, options.puDataFile,
-                                                 "pileup", "pileup", "Weight_3D_up.root")
-        LumiWeights.weight3D_init( 1.16 )
-
-    elif options.puWeighting < 0:
-        LumiWeights = ROOT.edm.Lumi3DReWeighting(options.puMCFile, options.puDataFile,
-                                                 "pileup", "pileup", "Weight_3D_down.root")
-        LumiWeights.weight3D_init( 1.00 )
 
 
 
@@ -250,19 +206,13 @@ if options.puWeighting is not None:
 #   Used for trigger matching, and used as
 #   primary "key". GenJets and GroomedJets matched from
 #   these.
-ak7Obj = PyFWLiteJetColl( 'ak7Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, jerSmear=options.jerSmearVal, jarSmear=options.jarSmearVal )
+ak7Obj = PyFWLiteJetColl( options.alg + 'Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, jerSmear=None, jarSmear=None )
 
 # List of groomed jets
 ak7GroomObj = []
 
 for igroom in options.collName :
-    ak7GroomObj.append( PyFWLiteJetColl( 'ak7' + igroom + 'Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, jerSmear=options.jerSmearVal, jarSmear=options.jarSmearVal) )
-    
-# GenJets
-ak7GenObj = PyFWLiteJetColl( 'ak7Gen', useGen=True )
-ak7GenGroomObj = []
-for igroom in options.collName :
-    ak7GenGroomObj.append( PyFWLiteJetColl('ak7' + igroom + 'GenLite', useGen=True) )
+    ak7GroomObj.append( PyFWLiteJetColl( options.alg + igroom + 'Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, jerSmear=None, jarSmear=None) )
 
 
 # Mean-pt-per-unit-area
@@ -276,9 +226,6 @@ npvHandle = Handle("double")
 npvLabel = ( "pvCount", "npv")
 
 
-# Generator information
-generatorHandle = Handle("GenEventInfoProduct")
-generatorLabel = ( "generator", "")
 
 
 
@@ -305,7 +252,7 @@ hists.book2F('histAK7MjjVsEtaMax',
              nx=70, x1=0., x2=7000., ny=5, y1=0.0, y2=2.5)
 hists.book2F('histAK7MjetVsEtaMax',
              'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV);#eta_{max}(radians)',
-             nx=60, x1=0., x2=300., ny=5, y1=0.0, y2=2.5)
+             nx=30, x1=0., x2=300., ny=5, y1=0.0, y2=2.5)
 
 
 # Mjj and <Mjet> versus |eta_max| for the different triggers. Only data. #
@@ -315,7 +262,7 @@ for trig in trigHelper.trigsToKeep :
                  nx=70, x1=0., x2=7000., ny=5, y1=0.0, y2=2.5)
     hists.book2F('histAK7MjetVsEtaMax_' + trig,
                  'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV)' + trig + ';#eta_{max}(radians)',
-                 nx=60, x1=0., x2=300., ny=5, y1=0.0, y2=2.5)
+                 nx=30, x1=0., x2=300., ny=5, y1=0.0, y2=2.5)
 
 
 ############## Versus PtAvg ##############
@@ -328,7 +275,7 @@ hists.book2F('histAK7MjjVsPtAvg',
              nx=70, x1=0., x2=7000., ny=len(ptBins)-1, ybins=ptBins)
 hists.book2F('histAK7MjetVsPtAvg',
              'AK7 <m_{jet}> Versus p_{T}^{AVG} ;<m_{jet}> (GeV);p_{T}^{AVG} (GeV)',
-             nx=60, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
+             nx=30, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
 
 # Mjj and <Mjet> versus ptAvg for the different triggers. Only data. #
 for trig in trigHelper.trigsToKeep :
@@ -337,7 +284,7 @@ for trig in trigHelper.trigsToKeep :
                  nx=70, x1=0., x2=7000., ny=len(ptBins)-1, ybins=ptBins)
     hists.book2F('histAK7MjetVsPtAvg_' + trig,
                  'AK7 <m_{jet}> Versus p_{T}^{AVG} ;<m_{jet}> (GeV)' + trig + ';p_{T}^{AVG} (GeV)',
-                 nx=60, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
+                 nx=30, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
 
     
 ## # Mjj and <Mjet> versus ptAvg. Either data or MC. #
@@ -346,7 +293,7 @@ for trig in trigHelper.trigsToKeep :
 ##              nx=70, x1=0., x2=7000., ny=len(ptBins)-1, ybins=ptBins)
 ## hists.book2F('histAK7MjetVsNvtx',
 ##              'AK7 <m_{jet}> Versus p_{T}^{AVG} ;<m_{jet}> (GeV);p_{T}^{AVG} (GeV)',
-##              nx=60, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
+##              nx=30, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
 
 ## # Mjj and <Mjet> versus ptAvg for the different triggers. Only data. #
 ## for trig in trigHelper.trigsToKeep :
@@ -355,13 +302,13 @@ for trig in trigHelper.trigsToKeep :
 ##                  nx=70, x1=0., x2=7000., ny=len(ptBins)-1, ybins=ptBins)
 ##     hists.book2F('histAK7MjetVsNvtx_' + trig,
 ##                  'AK7 <m_{jet}> Versus p_{T}^{AVG} ;<m_{jet}> (GeV)' + trig + ';p_{T}^{AVG} (GeV)',
-##                  nx=60, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
+##                  nx=30, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
 
 
 ############## Basic distributions ##############
 
 hists.book2F('histAK7PtAvgVsNvtx',  ';N_{VTX};p_{T}^{RECO} (GeV)',   nx=25,x1=0,x2=25, ny=280, y1=0, y2=7000)
-hists.book2F('histAK7MjetVsNvtx',   ';N_{VTX};m_{jet}^{RECO} (GeV)', nx=25,x1=0,x2=25, ny=60, y1=0, y2=300)
+hists.book2F('histAK7MjetVsNvtx',   ';N_{VTX};m_{jet}^{RECO} (GeV)', nx=25,x1=0,x2=25, ny=30, y1=0, y2=300)
 hists.book2F('histAK7PtAvgVsMjetGroomOverReco',   ';m_{jet}^{GROOM}/m_{jet}^{RECO};p_{T}^{AVG}', nx=51,x1=0.0,x2=1.02, ny=len(ptBins)-1, ybins=ptBins)
 
 # Mjj and <Mjet> versus ptAvg for the different triggers. Only data. #
@@ -371,7 +318,7 @@ for trig in trigHelper.trigsToKeep :
                  nx=25,x1=0,x2=25, ny=280, y1=0, y2=7000)
     hists.book2F('histAK7MjetVsNvtx_' + trig,
                  trig +';N_{VTX};p_{T}^{RECO} (GeV)',
-                 nx=25,x1=0,x2=25, ny=60, y1=0, y2=300)
+                 nx=25,x1=0,x2=25, ny=30, y1=0, y2=300)
     hists.book2F('histAK7PtAvgVsMjetGroomOverReco_' + trig,
                  trig +';m_{jet}^{GROOM}/m_{jet}^{RECO};p_{T}^{AVG}',
                  nx=51,x1=0.0,x2=1.02, ny=len(ptBins)-1, ybins=ptBins)
@@ -387,15 +334,10 @@ hists.makeQuickHists()
 #    Loop over events.                     #
 #    For each event:                       #
 #        1. Get the ungroomed reco jets    #
-#        2. if MC, get the gen jets        #
-#        3. Correct the ungroomed reco     #
-#           jets, and match to genjets.    #
-#        4. Find the mjj, etaMax bins, and #
-#           event weight.                  #
-#        5. If the event passes that,      #
-#           fill histograms for ungroomed  #
-#           jets, and get the groomed jets #
-#        6. For each groom, fill the histos#
+#        2. Use the ungroomed jets to find #
+#           the trigger bin                #
+#        3. Get the groomed jets.          # 
+#        4. Make plots.                    #
 ############################################
 
 count = 0
@@ -440,8 +382,7 @@ for ifile in files :
         nvtx = npvHandle.product()[0]
 
         # Now get the ungroomed jets
-	if options.useMC is False :
-	    ak7Def = ak7Obj.getJets( event, rho=rho )
+        ak7Def = ak7Obj.getJets( event, rho=rho )
 
         
         mjjReco = None
@@ -485,20 +426,9 @@ for ifile in files :
             print 'mjjReco = ' + str(mjjReco) + ', etaMax = ' + str(etaMax)
 
 
-
-        # Now fill truth information for MC
-        dijetCandGen  = None
-        mjjGen = None
-        mjetGen = None
-        ptAvgGen = None
-
-
-
         if options.verbose :
             print 'event passed! OH happy day!'
             print 'Filling mjjReco = ' + str(mjjReco) + ', mjetReco = ' + str(mjetReco) + ', etaMax = ' + str(etaMax) + ', weight = ' + str(weight)
-            if options.useMC :
-                print 'Filling mjjGen  = ' + str(mjjGen) + ', mjetGen  = ' + str(mjetGen)
 
         hists.histAK7MjjVsEtaMax.Fill( mjjReco, etaMax, weight )
         hists.histAK7MjetVsEtaMax.Fill( mjetReco, etaMax, weight )

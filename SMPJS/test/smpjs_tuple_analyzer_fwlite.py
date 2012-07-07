@@ -125,7 +125,7 @@ from DataFormats.FWLite import Events, Handle
 ROOT.gSystem.Load('libCondFormatsJetMETObjects')
 ROOT.gSystem.Load('libPhysicsToolsUtilities')
 
-from PyFWLiteJetColl import PyFWLiteJetColl, printRawColl
+from PyFWLiteJetColl import PyFWLiteJetColl, printRawColl, findJetInColl
 from HistsGroomed import HistsGroomed
 from TrigHelper import TrigHelper
 
@@ -312,7 +312,7 @@ hists.book2F('histAK7MjjVsEtaMax',
              nx=70, x1=0., x2=7000., ny=5, y1=0.0, y2=2.5)
 hists.book2F('histAK7MjetVsEtaMax',
              'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV);#eta_{max}(radians)',
-             nx=60, x1=0., x2=300., ny=5, y1=0.0, y2=2.5)
+             nx=30, x1=0., x2=300., ny=5, y1=0.0, y2=2.5)
 
 
 
@@ -322,20 +322,20 @@ hists.book2F('histAK7MjjGenVsEtaMax',
              nx=70, x1=0., x2=7000., ny=5, y1=0.0, y2=2.5)
 hists.book2F('histAK7MjetGenVsEtaMax',
              'AK7 m_{jet}^{GEN} Versus #eta_{max};m_{jj}^{GEN} (GeV);#eta_{max}(radians)',
-             nx=60, x1=0., x2=300., ny=5, y1=0.0, y2=2.5)
+             nx=30, x1=0., x2=300., ny=5, y1=0.0, y2=2.5)
 
 
 # Mjj and <Mjet> versus GENERATED Mjj and <Mjet>. Only for MC. 
 hists.book3F('histAK7MjjGenVsRecoVsEtaMax', 'AK7 m_{jj} Response Matrix;m_{jj}^{GEN} (GeV);m_{jj}^{RECO} (GeV);#eta_{max} (radians)',
               nx=70, x1=0., x2=7000., ny=70, y1=0., y2=7000., nz=5, z1=0., z2=2.5)
 hists.book3F('histAK7MjetGenVsRecoVsEtaMax', 'AK7 <m_{jet}> Response Matrix ;<m_{jet}>^{GEN} (GeV);<m_{jet}>^{RECO} (GeV);#eta_{max} (radians)',
-              nx=60, x1=0., x2=300., ny=60, y1=0., y2=300., nz=5, z1=0., z2=2.5)
+              nx=30, x1=0., x2=300., ny=60, y1=0., y2=300., nz=5, z1=0., z2=2.5)
 
 # Mjj and <Mjet> versus GENERATED Mjj and <Mjet>. Only for MC. 
 hists.book3F('histAK7MjjResponseVsEtaMax', 'AK7 m_{jj} Response;m_{jj} (GeV);#eta_{max}(radians)',
              nx=70, x1=0., x2=7000., ny=80, y1=0.8, y2=1.2, nz=5, z1=0.0, z2=2.5)
 hists.book3F('histAK7MjetResponseVsEtaMax', 'AK7 <m_{jet}> Versus #eta_{max};<m_{jet}> (GeV);#eta_{max}(radians)',
-             nx=60, x1=0., x2=300., ny=20, y1=0.0, y2=2.0, nz=5, z1=0.0, z2=2.5)
+             nx=30, x1=0., x2=300., ny=20, y1=0.0, y2=2.0, nz=5, z1=0.0, z2=2.5)
 
 
 ############## Versus PtAvg ##############
@@ -348,7 +348,7 @@ hists.book2F('histAK7MjjVsPtAvg',
              nx=70, x1=0., x2=7000., ny=len(ptBins)-1, ybins=ptBins)
 hists.book2F('histAK7MjetVsPtAvg',
              'AK7 <m_{jet}> Versus p_{T}^{AVG} ;<m_{jet}> (GeV);p_{T}^{AVG} (GeV)',
-             nx=60, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
+             nx=30, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
 
 
 # GENERATED Mjj and <Mjet> versus ptAvg. only for MC.
@@ -357,27 +357,27 @@ hists.book2F('histAK7MjjGenVsPtAvg',
              nx=70, x1=0., x2=7000., ny=len(ptBins)-1, ybins=ptBins)
 hists.book2F('histAK7MjetGenVsPtAvg',
                'AK7 m_{jet}^{GEN} Versus p_{T}^{AVG} ;m_{jj}^{GEN} (GeV);p_{T}^{AVG} (GeV)',
-               nx=60, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
+               nx=30, x1=0., x2=300., ny=len(ptBins)-1, ybins=ptBins)
 
 
 # Mjj and <Mjet> versus GENERATED Mjj and <Mjet>. Only for MC.
 hists.book3F('histAK7MjjGenVsRecoVsPtAvg', 'AK7 m_{jj} Response Matrix;m_{jj}^{GEN} (GeV);m_{jj}^{RECO} (GeV);p_{T}^{AVG} (GeV)',
               nx=70, x1=0., x2=7000., ny=70, y1=0., y2=7000., nz=8, z1=0., z2=200.)
 hists.book3F('histAK7MjetGenVsRecoVsPtAvg', 'AK7 <m_{jet}> Response Matrix ;<m_{jet}>^{GEN} (GeV);<m_{jet}>^{RECO} (GeV);p_{T}^{AVG} (GeV)',
-              nx=60, x1=0., x2=300., ny=60, y1=0., y2=300., nz=8, z1=0., z2=200.)
+              nx=30, x1=0., x2=300., ny=60, y1=0., y2=300., nz=8, z1=0., z2=200.)
 
 # Same as above, but TH3 in root doesn't play nicely with variable bin widths. grrrrr...
 hists.book3F('histAK7MjjGenVsRecoVsPtAvgHighPt', 'AK7 m_{jj} Response Matrix;m_{jj}^{GEN} (GeV);m_{jj}^{RECO} (GeV);p_{T}^{AVG} (GeV)',
               nx=70, x1=0., x2=7000., ny=70, y1=0., y2=7000., nz=14, z1=200., z2=1600.)
 hists.book3F('histAK7MjetGenVsRecoVsPtAvgHighPt', 'AK7 <m_{jet}> Response Matrix ;<m_{jet}>^{GEN} (GeV);<m_{jet}>^{RECO} (GeV);p_{T}^{AVG} (GeV)',
-              nx=60, x1=0., x2=300., ny=60, y1=0., y2=300., nz=14, z1=200., z2=1600.)
+              nx=30, x1=0., x2=300., ny=60, y1=0., y2=300., nz=14, z1=200., z2=1600.)
 
 
 # Mjj and <Mjet> versus GENERATED/RECO Mjj and <Mjet>. Only for MC. 
 hists.book3F('histAK7MjjResponseVsPtAvg', 'AK7 m_{jj} Response;m_{jj} (GeV);p_{T}^{AVG} (GeV)',
               nx=70, x1=0., x2=7000., ny=80, y1=0.8, y2=1.2, nz=10, z1=0., z2=1000.)
 hists.book3F('histAK7MjetResponseVsPtAvg', 'AK7 <m_{jet}> Versus p_{T}^{AVG} ;<m_{jet}> (GeV);p_{T}^{AVG} (GeV)',
-              nx=60, x1=0., x2=300., ny=20, y1=0.0, y2=2.0, nz=10, z1=0., z2=1000.)
+              nx=30, x1=0., x2=300., ny=20, y1=0.0, y2=2.0, nz=10, z1=0., z2=1000.)
 
 ############## Responses ##############
 
@@ -386,17 +386,18 @@ hists.book3F('histAK7MjetResponseVsPtAvg', 'AK7 <m_{jet}> Versus p_{T}^{AVG} ;<m
 hists.book2F('histAK7PtResponse',  ';p_{T}^{GEN} (GeV);p_{T}^{RECO} / p_{T}^{GEN}', nx=50, x1=0., x2=500., ny=20, y1=0.5, y2=1.5)
 hists.book2F('histAK7EtaResponse', ';#eta^{GEN} (GeV);p_{T}^{RECO} / p_{T}^{GEN}', nx=50, x1=-5.0, x2=5.0, ny=20, y1=0.5, y2=1.5)
 
-hists.book1F('recoEffNum', 'reco efficiency numerator;p_{T}^{GEN} (GeV)', nx=60, x1=0., x2=300.)
-hists.book1F('recoEffDen', 'reco efficiency denominator;p_{T}^{GEN} (GeV)', nx=60, x1=0., x2=300.)
-hists.book1F('genEffNum', 'gen efficiency numerator;p_{T}^{RECO} (GeV)', nx=60, x1=0., x2=300.)
-hists.book1F('genEffDen', 'gen efficiency denominator;p_{T}^{RECO} (GeV)', nx=60, x1=0., x2=300.)
+hists.book1F('recoEffNum', 'reco efficiency numerator;p_{T}^{GEN} (GeV)', nx=30, x1=0., x2=300.)
+hists.book1F('recoEffDen', 'reco efficiency denominator;p_{T}^{GEN} (GeV)', nx=30, x1=0., x2=300.)
+hists.book1F('genEffNum', 'gen efficiency numerator;p_{T}^{RECO} (GeV)', nx=30, x1=0., x2=300.)
+hists.book1F('genEffDen', 'gen efficiency denominator;p_{T}^{RECO} (GeV)', nx=30, x1=0., x2=300.)
 
 
 ############## Basic distributions ##############
 
 hists.book2F('histAK7PtAvgVsNvtx',  ';N_{VTX};p_{T}^{RECO} (GeV)',   nx=25,x1=0,x2=25, ny=280, y1=0, y2=7000)
 hists.book2F('histAK7MjetVsNvtx',   ';N_{VTX};m_{jet}^{RECO} (GeV)', nx=25,x1=0,x2=25, ny=60, y1=0, y2=300)
-hists.book2F('histAK7PtAvgVsMjetGroomOverReco',   ';m_{jet}^{GROOM}/m_{jet}^{RECO};p_{T}^{AVG}', nx=51,x1=0.0,x2=1.02, ny=len(ptBins)-1, ybins=ptBins)
+hists.book2F('histAK7PtAvgVsMjetGroomOverReco',   ';Reconstructed m_{jet}^{GROOM}/m_{jet}^{UNGROOM};p_{T}^{AVG}', nx=51,x1=0.0,x2=1.02, ny=len(ptBins)-1, ybins=ptBins)
+hists.book2F('histAK7PtAvgVsMjetGroomOverRecoTrue', ';True m_{jet}^{GROOM}/m_{jet}^{UNGROOM};p_{T}^{AVG}', nx=51,x1=0.0,x2=1.02, ny=len(ptBins)-1, ybins=ptBins)
 
 mjjPtCut = 50.0
 mjjEtaCut = 2.0
@@ -409,11 +410,11 @@ mjjEtaCut = 2.0
 responses = []
 
 for ibin in range(0,len(ptBins)-1) :
-    res = ROOT.RooUnfoldResponse(60, 0., 300., 60, 0., 300.)
+    res = ROOT.RooUnfoldResponse(30, 0., 300., 30, 0., 300.)
     res.SetName('response_pt' + str(ibin))
     response = [res]
     for igroom in range(0,len(options.collName)):
-        res = ROOT.RooUnfoldResponse(60, 0., 300., 60, 0., 300.)
+        res = ROOT.RooUnfoldResponse(30, 0., 300., 30, 0., 300.)
         res.SetName('response_' + options.collName[igroom] + '_pt' + str(ibin) )
         response.append( res )
     responses.append(response)
@@ -552,7 +553,7 @@ for ifile in files :
                 if responsePtBin is None :
                     continue
                 response = responses[responsePtBin][igroom]
-                response.Miss( mjet )
+                response.Miss( mjet, weight )
 
             # Next check fake: values set to reco
             # Fake condition is if the leading two reco jets do not match
@@ -568,7 +569,7 @@ for ifile in files :
                 if responsePtBin is None :
                     continue
                 response = responses[responsePtBin][igroom]
-                response.Fake( mjet )
+                response.Fake( mjet, weight )
 
             # Skip events which have misses or fakes
             if isMiss or isFake :
@@ -581,20 +582,29 @@ for ifile in files :
                 ptAvg = (ak7Reco[0].Perp() + ak7Reco[1].Perp()) * 0.5
                 mjj = (ak7Reco[0] + ak7Reco[1]).M()
                 mjet = (ak7Reco[0].M() + ak7Reco[1].M()) * 0.5
-                mjetGroomOverMjet = 1.0
-                if ak7RecoMatched is not None and ak7RecoMatched[0] is not None and ak7RecoMatched[1] is not None :
-                    mjetRecoMatched = (ak7RecoMatched[0].M() + ak7RecoMatched[1].M()) * 0.5
-                    mjetGroomOverMjet = mjet / mjetRecoMatched
 
-                responsePtBin = findBin( ptAvg, ptBins )
-                if responsePtBin is None :
-                    continue
                 ptAvgGen = (ak7GenMatched[0].Perp() + ak7GenMatched[1].Perp()) * 0.5
                 mjjGen = (ak7GenMatched[0] + ak7GenMatched[1]).M()
                 mjetGen = (ak7GenMatched[0].M() + ak7GenMatched[1].M()) * 0.5
 
+                mjetGroomOverMjet = 1.0
+                mjetGroomGenOverMjet = 1.0
+
+                if ak7RecoMatched is not None and ak7RecoMatched[0] is not None and ak7RecoMatched[1] is not None :
+                    mjetRecoMatched = (ak7RecoMatched[0].M() + ak7RecoMatched[1].M()) * 0.5
+                    mjetGroomOverMjet = mjet / mjetRecoMatched
+                    mjetUngroomGenMatched0 = findJetInColl( ak7GenMatched[0], ak7Gens[0] )
+                    mjetUngroomGenMatched1 = findJetInColl( ak7GenMatched[1], ak7Gens[0] )
+                    if mjetUngroomGenMatched0[0] is not None and mjetUngroomGenMatched1[0] is not None :
+                        mjetUngroomedGen = ( mjetUngroomGenMatched0[0].M() + mjetUngroomGenMatched1[0].M() ) * 0.5
+                        mjetGenGroomOverMjet = mjetGen / mjetUngroomedGen
+
+                responsePtBin = findBin( ptAvg, ptBins )
+                if responsePtBin is None :
+                    continue
+
                 response = responses[responsePtBin][igroom]
-                response.Fill( mjet, mjetGen )
+                response.Fill( mjet, mjetGen, weight )
 
                 etaMax = ak7Reco[0].Rapidity()
                 if abs(ak7Reco[0].Rapidity()) < abs(ak7Reco[1].Rapidity()) :
@@ -635,25 +645,26 @@ for ifile in files :
                     hists.histAK7PtResponse.Fill( ptGen0, response0 )
                     hists.histAK7EtaResponse.Fill( etaGen0, response0 )
 
-                    hists.histAK7MjjResponseVsEtaMax.Fill( mjjGen, mjjResponse, etaMax )
-                    hists.histAK7MjetResponseVsEtaMax.Fill( mjetGen, mjetResponse, etaMax )
+                    hists.histAK7MjjResponseVsEtaMax.Fill( mjjGen, mjjResponse, etaMax, weight )
+                    hists.histAK7MjetResponseVsEtaMax.Fill( mjetGen, mjetResponse, etaMax, weight )
                     hists.histAK7MjjGenVsEtaMax.Fill( mjjGen, etaMax, weight )
                     hists.histAK7MjetGenVsEtaMax.Fill( mjetGen, etaMax, weight )
-                    hists.histAK7MjjGenVsRecoVsEtaMax.Fill( mjjGen, mjj, etaMax )
-                    hists.histAK7MjetGenVsRecoVsEtaMax.Fill( mjetGen, mjet, etaMax )
+                    hists.histAK7MjjGenVsRecoVsEtaMax.Fill( mjjGen, mjj, etaMax, weight )
+                    hists.histAK7MjetGenVsRecoVsEtaMax.Fill( mjetGen, mjet, etaMax, weight )
 
                     hists.histAK7MjjResponseVsPtAvg.Fill( mjjGen, mjjResponse, ptAvg )
                     hists.histAK7MjetResponseVsPtAvg.Fill( mjetGen, mjetResponse, ptAvg )
-                    hists.histAK7MjjGenVsRecoVsPtAvg.Fill( mjjGen, mjj, ptAvg )
-                    hists.histAK7MjetGenVsRecoVsPtAvg.Fill( mjetGen, mjet, ptAvg )
-                    hists.histAK7MjjGenVsRecoVsPtAvgHighPt.Fill( mjjGen, mjj, ptAvg )
-                    hists.histAK7MjetGenVsRecoVsPtAvgHighPt.Fill( mjetGen, mjet, ptAvg )
+                    hists.histAK7MjjGenVsRecoVsPtAvg.Fill( mjjGen, mjj, ptAvg, weight )
+                    hists.histAK7MjetGenVsRecoVsPtAvg.Fill( mjetGen, mjet, ptAvg, weight )
+                    hists.histAK7MjjGenVsRecoVsPtAvgHighPt.Fill( mjjGen, mjj, ptAvg, weight )
+                    hists.histAK7MjetGenVsRecoVsPtAvgHighPt.Fill( mjetGen, mjet, ptAvg, weight )
                     hists.histAK7MjjGenVsPtAvg.Fill( mjjGen, ptAvg, weight )
                     hists.histAK7MjetGenVsPtAvg.Fill( mjetGen, ptAvg, weight )
 
                     hists.histAK7PtAvgVsNvtx.Fill( nvtx, ptAvg, weight )
                     hists.histAK7MjetVsNvtx.Fill( nvtx, mjet, weight )
                     hists.histAK7PtAvgVsMjetGroomOverReco.Fill( 1.0, ptAvg, weight )
+                    hists.histAK7PtAvgVsMjetGroomOverRecoTrue.Fill( 1.0, ptAvg, weight )
 
                 else :
                     # NOTE: The hists fill the _Groom vector only for groomed jets,
@@ -670,21 +681,22 @@ for ifile in files :
                     hists.histAK7MjetResponseVsEtaMax_Groom[igroom-1].Fill( mjetGen, mjetResponse, etaMax )
                     hists.histAK7MjjGenVsEtaMax_Groom[igroom-1].Fill( mjjGen, etaMax, weight )
                     hists.histAK7MjetGenVsEtaMax_Groom[igroom-1].Fill( mjetGen, etaMax, weight )
-                    hists.histAK7MjjGenVsRecoVsEtaMax_Groom[igroom-1].Fill( mjjGen, mjj, etaMax )
-                    hists.histAK7MjetGenVsRecoVsEtaMax_Groom[igroom-1].Fill( mjetGen, mjet, etaMax )
+                    hists.histAK7MjjGenVsRecoVsEtaMax_Groom[igroom-1].Fill( mjjGen, mjj, etaMax, weight )
+                    hists.histAK7MjetGenVsRecoVsEtaMax_Groom[igroom-1].Fill( mjetGen, mjet, etaMax, weight )
 
                     hists.histAK7MjjResponseVsPtAvg_Groom[igroom-1].Fill( mjjGen, mjjResponse, ptAvg )
                     hists.histAK7MjetResponseVsPtAvg_Groom[igroom-1].Fill( mjetGen, mjetResponse, ptAvg )
-                    hists.histAK7MjjGenVsRecoVsPtAvg_Groom[igroom-1].Fill( mjjGen, mjj, ptAvg )
-                    hists.histAK7MjetGenVsRecoVsPtAvg_Groom[igroom-1].Fill( mjetGen, mjet, ptAvg )
-                    hists.histAK7MjjGenVsRecoVsPtAvgHighPt_Groom[igroom-1].Fill( mjjGen, mjj, ptAvg )
-                    hists.histAK7MjetGenVsRecoVsPtAvgHighPt_Groom[igroom-1].Fill( mjetGen, mjet, ptAvg )
+                    hists.histAK7MjjGenVsRecoVsPtAvg_Groom[igroom-1].Fill( mjjGen, mjj, ptAvg, weight )
+                    hists.histAK7MjetGenVsRecoVsPtAvg_Groom[igroom-1].Fill( mjetGen, mjet, ptAvg, weight )
+                    hists.histAK7MjjGenVsRecoVsPtAvgHighPt_Groom[igroom-1].Fill( mjjGen, mjj, ptAvg, weight )
+                    hists.histAK7MjetGenVsRecoVsPtAvgHighPt_Groom[igroom-1].Fill( mjetGen, mjet, ptAvg, weight )
                     hists.histAK7MjjGenVsPtAvg_Groom[igroom-1].Fill( mjjGen, ptAvg, weight )
                     hists.histAK7MjetGenVsPtAvg_Groom[igroom-1].Fill( mjetGen, ptAvg, weight )
 
                     hists.histAK7PtAvgVsNvtx_Groom[igroom-1].Fill( nvtx, ptAvg, weight )
                     hists.histAK7MjetVsNvtx_Groom[igroom-1].Fill( nvtx, mjet, weight )
                     hists.histAK7PtAvgVsMjetGroomOverReco_Groom[igroom-1].Fill( mjetGroomOverMjet, ptAvg, weight )
+                    hists.histAK7PtAvgVsMjetGroomOverRecoTrue_Groom[igroom-1].Fill( mjetGenGroomOverMjet, ptAvg, weight )
 
         
 hists.getFile().cd()

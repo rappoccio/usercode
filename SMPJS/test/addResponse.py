@@ -69,7 +69,9 @@ for sample in range(0,len(names)) :
 
                 if iifile == 0 :
                     output = rur
-                    s = "response_" + names[sample] + groom + "_pt" + str(iptBin)
+                    splitname = names[sample].split('/')
+                    samplename = splitname[ len(splitname)-1 ]
+                    s = "response_" + samplename + groom + "_pt" + str(iptBin)
                     output.SetName(s)
                     print "Setting RUR, using name " + s
                 else :

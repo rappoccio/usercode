@@ -7,6 +7,8 @@ import subprocess
 
 files = [
 'Jet_plots_nominal',
+'Jet_plots_nominal_ak5',
+'Jet_plots_nominal_ak8',
 'QCD_herwigpp_23_plots_nominal',
 'QCD_pythia6_z2_plots_jardn',
 'QCD_pythia6_z2_plots_jarup',

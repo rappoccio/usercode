@@ -3,6 +3,7 @@ import ROOT
 ROOT.gSystem.Load("libFWCoreFWLite.so")
 ROOT.AutoLibraryLoader.enable()
 
+import math
 from DataFormats.FWLite import Events, Handle
 
 
@@ -11,7 +12,7 @@ from DataFormats.FWLite import Events, Handle
 # Uses DR < 0.5 matching
 #############################
 def findJetInColl( jet0, jets ) :
-    minDR = 0.5
+    minDR = 0.2
     ijet = 0
     for jet in jets :
         dR = jet0.DeltaR( jet )
@@ -167,9 +168,15 @@ class PyFWLiteJetColl :
 
                     if self.jecUnc is not None:
                         self.jecUnc.setJetEta( jdefRaw.Eta() )
-                        self.jecUnc.setJetPt( jdefRaw.Perp() * factor ); 
-                        unc = self.jecUnc.getUncertainty( self.upOrDown )
-                        factor *= (1 + unc)
+                        self.jecUnc.setJetPt( jdefRaw.Perp() * factor ) 
+                        unc1 = self.jecUnc.getUncertainty( self.upOrDown )
+                        unc2 = 0.05
+                        unc = math.sqrt(unc1*unc1 + unc2*unc2)
+                        if self.upOrDown :
+                            factor *= (1 + unc)
+                        else :
+                            factor *= (1 - unc)
+
                                                   
                 else :
 		    factor = 1.0
