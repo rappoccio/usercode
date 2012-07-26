@@ -126,6 +126,13 @@ parser.add_option('--addDirs', metavar='F', action='store_true',
                   default=False,
                   dest='addDirs',
                   help='add splitting to barrel/endcap')
+
+# EleHad data
+parser.add_option('--useEleHad', metavar='F', action='store_true',
+                  default=False,
+                  dest='useEleHad',
+                  help='eleHad Data, apply the jet pt reweighting to 3rd leading jet')
+
 (options, args) = parser.parse_args()
 
 minJets = options.minJets
@@ -202,6 +209,11 @@ elePt3j1t=[]
 eleEta3j1t=[]
 elePhi3j1t=[]
 elePFIso3j1t=[]
+ptJet0_3j1t=[]
+ptJet1_3j1t=[]
+ptJet2_3j1t=[]
+ptJet3_3j1t=[]
+ptJet4_3j1t=[]
 wMT3j1t=[]
 hT3j1t=[]
 m3j1t=[]
@@ -225,7 +237,7 @@ simplePlots = [
     [elePhi ,"elePhi", "lepton #phi", 50, -3.2, 3.2],
     [elePFIso ,"elePFIso", "lepton relative PF isolation", 50, 0.0, 0.2],
     [lepJetdR ,"lepJetdR", "dR b/w jet and lepton",    32,    0,  3.2],
-    [ptJet0 ,"ptJet0", "p_{T} Of Leading Jet", 40, 0., 600.],
+    [ptJet0 ,"ptJet0", "p_{T} Of Leading Jet", 40, 0., 800.],
     [ptJet1 ,"ptJet1", "p_{T} Of 2nd Leading Jet", 40, 0., 400.],
     [ptJet2 ,"ptJet2", "p_{T} Of 3rd Leading Jet", 30, 0., 300.],
     [ptJet3 ,"ptJet3", "p_{T} Of 4th Leading Jet", 40, 0., 200.],
@@ -240,6 +252,11 @@ simplePlots = [
     [eleEta3j1t ,"eleEta3j1t", "lepton #eta (GeV), #geq 3jets, #geq 1tag", 60,-3.0,3.0],
     [elePhi3j1t ,"elePhi3j1t", "lepton #phi,  #geq 3jets, #geq 1tag", 50, -3.2, 3.2],
     [elePFIso3j1t ,"elePFIso3j1t", "lepton PF relIso,  #geq 3jets, #geq 1tag", 50, 0.0, 0.2],
+    [ptJet0_3j1t ,"ptJet0_3j1t", "p_{T} Of Leading Jet, #geq 3jets, #geq 1tag", 40, 0., 800.],
+    [ptJet1_3j1t ,"ptJet1_3j1t", "p_{T} Of 2nd Leading Jet, #geq 3jets, #geq 1tag", 40, 0., 400.],
+    [ptJet2_3j1t ,"ptJet2_3j1t", "p_{T} Of 3rd Leading Jet, #geq 3jets, #geq 1tag", 30, 0., 300.],
+    [ptJet3_3j1t ,"ptJet3_3j1t", "p_{T} Of 4th Leading Jet, #geq 3jets, #geq 1tag", 40, 0., 200.],
+    [ptJet4_3j1t ,"ptJet4_3j1t", "p_{T} Of #geq 5th Leading Jet, #geq 3jets, #geq 1tag", 40, 0., 200.],
     [wMT3j1t,"wMT3j1t", "wMT, #geq 3jets, #geq 1tag",  120, 0., 300.],
     [hT3j1t ,"hT3j1t", "hT, #geq 3jets, #geq 1tag", 120, 0., 1200.],
     [m3j1t  ,"m3j1t", "m3, #geq 3jets, #geq 1tag",  60, 0., 600.],
@@ -472,10 +489,21 @@ electronPhiLabel    = ( "pfShyftTupleElectrons"+  Epostfix,   "phi" )
 electronPfisoHandle         = Handle( "std::vector<float>" )
 electronPfisoLabel    = ( "pfShyftTupleElectrons"+  Epostfix,   "pfiso" )
 
-metHandle = Handle( "std::vector<float>" )
-metLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "pt" )
-metPhiHandle = Handle( "std::vector<float>" )
-metPhiLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "phi" )
+if options.metSys == 'up':
+    metHandle = Handle( "std::vector<float>" )
+    metLabel = ("pfShyftTupleMETMetRes110",   "pt" )
+    metPhiHandle = Handle( "std::vector<float>" )
+    metPhiLabel = ("pfShyftTupleMETMetRes110",   "phi" )
+elif options.metSys == 'down':
+    metHandle = Handle( "std::vector<float>" )
+    metLabel = ("pfShyftTupleMETMetRes090",   "pt" )
+    metPhiHandle = Handle( "std::vector<float>" )
+    metPhiLabel = ("pfShyftTupleMETMetRes090",   "phi" )    
+else:
+    metHandle = Handle( "std::vector<float>" )
+    metLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "pt" )
+    metPhiHandle = Handle( "std::vector<float>" )
+    metPhiLabel = ("pfShyftTupleMET" + lepStr +  postfix,   "phi" )
 
 pileupHandle = Handle( "std::vector<float>" )
 if options.PUWeights == '1D':
@@ -724,51 +752,51 @@ for event in events:
         #remove the uncorrected jets
         met_px = met_px + thisJet.Px()
         met_py = met_py + thisJet.Py()
- 
-        #unclustered MET resolution
-        unclMETScale = 1.0
-        if not options.useData and abs(metScale)> 0.0:            
-            #remove the electron and muon
-            if muonPts is not None:
-                for imuonPt in range(0,len(muonPts)):
-                    muonPt = muonPts[imuonPt]
-                    muonPhi = muonsPhis[imuonPt]
-                    mu_px = muonPts[imuonPt]*math.cos(muonPhis[imuonPt])
-                    mu_py = muonPts[imuonPt]*math.sin(muonPhis[imuonPt])
-                    met_px = met_px + mu_px 
-                    met_py = met_py + mu_py 
-            if electronPts is not None:
-                for ielectronPt in range(0,len(electronPts)):
-                    electronPt = electronPts[ielectronPt]
-                    electronPhi = electronPhis[ielectronPt]
-                    el_px = electronPts[ielectronPt]*math.cos(electronPhis[ielectronPt])
-                    el_py = electronPts[ielectronPt]*math.sin(electronPhis[ielectronPt])
-                    met_px = met_px + el_px
-                    met_py = met_py + el_py
+## """ 
+##         #unclustered MET resolution
+##         unclMETScale = 1.0
+##         if not options.useData and abs(metScale)> 0.0:
+##             #remove the electron and muon
+##             if muonPts is not None:
+##                 for imuonPt in range(0,len(muonPts)):
+##                     muonPt = muonPts[imuonPt]
+##                     muonPhi = muonsPhis[imuonPt]
+##                     mu_px = muonPts[imuonPt]*math.cos(muonPhis[imuonPt])
+##                     mu_py = muonPts[imuonPt]*math.sin(muonPhis[imuonPt])
+##                     met_px = met_px + mu_px 
+##                     met_py = met_py + mu_py 
+##             if electronPts is not None:
+##                 for ielectronPt in range(0,len(electronPts)):
+##                     electronPt = electronPts[ielectronPt]
+##                     electronPhi = electronPhis[ielectronPt]
+##                     el_px = electronPts[ielectronPt]*math.cos(electronPhis[ielectronPt])
+##                     el_py = electronPts[ielectronPt]*math.sin(electronPhis[ielectronPt])
+##                     met_px = met_px + el_px
+##                     met_py = met_py + el_py
                     
-            #apply the 10% variation of 0.9 or 1.1
-            unclMETScale = 1 +  0.1*metScale
-            met_px = met_px*unclMETScale
-            met_py = met_py*unclMETScale
+##             #apply the 10% variation of 0.9 or 1.1
+##             unclMETScale = 1 +  0.1*metScale
+##             met_px = met_px*unclMETScale
+##             met_py = met_py*unclMETScale
             
-            #add back the electron and muon
-            if muonPts is not None:
-                for imuonPt in range(0,len(muonPts)):
-                    muonPt = muonPts[imuonPt]
-                    muonPhi = muonsPhis[imuonPt]
-                    mu_px = muonPts[imuonPt]*math.cos(muonPhis[imuonPt])
-                    mu_py = muonPts[imuonPt]*math.sin(muonPhis[imuonPt])
-                    met_px = met_px - mu_px 
-                    met_py = met_py - mu_py 
-            if electronPts is not None:
-                for ielectronPt in range(0,len(electronPts)):
-                    electronPt = electronPts[ielectronPt]
-                    electronPhi = electronPhis[ielectronPt]
-                    el_px = electronPts[ielectronPt]*math.cos(electronPhis[ielectronPt])
-                    el_py = electronPts[ielectronPt]*math.sin(electronPhis[ielectronPt])
-                    met_px = met_px - el_px
-                    met_py = met_py - el_py  
-
+##             #add back the electron and muon
+##             if muonPts is not None:
+##                 for imuonPt in range(0,len(muonPts)):
+##                     muonPt = muonPts[imuonPt]
+##                     muonPhi = muonsPhis[imuonPt]
+##                     mu_px = muonPts[imuonPt]*math.cos(muonPhis[imuonPt])
+##                     mu_py = muonPts[imuonPt]*math.sin(muonPhis[imuonPt])
+##                     met_px = met_px - mu_px 
+##                     met_py = met_py - mu_py 
+##             if electronPts is not None:
+##                 for ielectronPt in range(0,len(electronPts)):
+##                     electronPt = electronPts[ielectronPt]
+##                     electronPhi = electronPhis[ielectronPt]
+##                     el_px = electronPts[ielectronPt]*math.cos(electronPhis[ielectronPt])
+##                     el_py = electronPts[ielectronPt]*math.sin(electronPhis[ielectronPt])
+##                     met_px = met_px - el_px
+##                     met_py = met_py - el_py  
+## """
         #apply the SF and add back the jets and also correct the MET
         thisJet = thisJet * jetScale
         met_px = met_px - thisJet.Px()
@@ -813,7 +841,31 @@ for event in events:
         cutFlow[5][0] += 1
         for idir in dirlist:
             nJets3[idir].Fill(njets, PUweight)
+
+
+    if not options.useData and options.useEleHad and njets > 2:
         
+        if jets[2].Pt() >= 35.0 and jets[2].Pt() < 37.5:
+            PUweight = PUweight * 0.87
+        elif jets[2].Pt() >=37.5 and jets[2].Pt() < 40.0:          
+            PUweight = PUweight * 0.92
+        elif jets[2].Pt() >= 40.0 and jets[2].Pt() < 45.0:          
+            PUweight = PUweight * 0.94                      
+        elif jets[2].Pt() >= 45.0 and jets[2].Pt() < 50.0:          
+            PUweight = PUweight * 0.96                       
+        elif jets[2].Pt() >= 50.0 and jets[2].Pt() < 55.0:          
+            PUweight = PUweight * 0.99            
+        elif jets[2].Pt() >= 55.0 and jets[2].Pt() < 60.0:          
+            PUweight = PUweight * 1.0
+        elif jets[2].Pt() >= 60.0 and jets[2].Pt() < 65.0:          
+            PUweight = PUweight * 0.98
+        elif jets[2].Pt() >= 65.0 and jets[2].Pt() < 70.0:          
+            PUweight = PUweight * 0.99    
+        elif jets[2].Pt() >= 70:
+             PUweight = PUweight * 1.0 
+             
+
+    #print 'PUweight after----------', PUweight        
     ##variables to be filled:
     ##_____________________
     for idir in dirlist:
@@ -855,18 +907,7 @@ for event in events:
     wPy = lep_py + met_py
     wMT = math.sqrt(wPt*wPt-wPx*wPx-wPy*wPy)
     #print 'wMT = ', wMT
-    for idir in dirlist:
-        ptJet0[idir].Fill(jets[0].Pt(), PUweight )
-        if njets>1:
-            ptJet1[idir].Fill(jets[1].Pt(), PUweight ) 
-        if njets>2:    
-            ptJet2[idir].Fill(jets[2].Pt(), PUweight )
-        if njets>3:    
-            ptJet3[idir].Fill(jets[3].Pt(), PUweight )
-        if njets>4:
-            for j in range(4, njets):
-                ptJet4[idir].Fill(jets[j].Pt(), PUweight )# loop over 5th to njets
-
+    
     #M3 for >=3 jets
     M3 = 0.0
     highestPt = 0.0
@@ -1006,6 +1047,20 @@ for event in events:
         for idir in dirlist:
             mbb[njets][idir].Fill( imbb, PUweight )
             dRbb[njets][idir].Fill( idR, PUweight )
+            
+    for idir in dirlist:
+        if ntags >= 1: 
+            ptJet0[idir].Fill(jets[0].Pt(), PUweight )
+            if njets>1:
+                ptJet1[idir].Fill(jets[1].Pt(), PUweight ) 
+            if njets>2:    
+                ptJet2[idir].Fill(jets[2].Pt(), PUweight )
+            if njets>3:    
+                ptJet3[idir].Fill(jets[3].Pt(), PUweight )
+            if njets>4:
+                for j in range(4, njets):
+                    ptJet4[idir].Fill(jets[j].Pt(), PUweight )# loop over 5th to njets
+
     for idir in dirlist:
         if njets >= 3 and ntags >= 1 :
             nVertices3j1t[idir].Fill(vertices.size(), PUweight)
@@ -1020,7 +1075,17 @@ for event in events:
             hT3j1t[idir].Fill(hT, PUweight)
             m3j1t[idir].Fill(M3, PUweight)        
             met3j1t[idir].Fill(met, PUweight)
-        
+            ptJet0_3j1t[idir].Fill(jets[0].Pt(), PUweight )
+            if njets>1:
+                ptJet1_3j1t[idir].Fill(jets[1].Pt(), PUweight ) 
+            if njets>2:    
+                ptJet2_3j1t[idir].Fill(jets[2].Pt(), PUweight )
+            if njets>3:    
+                ptJet3_3j1t[idir].Fill(jets[3].Pt(), PUweight )
+            if njets>4:
+                for j in range(4, njets):
+                    ptJet4_3j1t[idir].Fill(jets[j].Pt(), PUweight )# loop over 5th to njets
+                    
     if options.useData :
         # always fill the "total"
         for idir in dirlist:
@@ -1065,27 +1130,27 @@ for event in events:
             for idir in dirlist:
                 if jtag > 0 :
                     secvtxMassPlots[njets][jtag][3][idir].Fill( secvtxMass, pTag )
-                nPVPlots[njets][ntags][3][idir].Fill( vertices.size(), pTag)    
+                nPVPlots[njets][jtag][3][idir].Fill( vertices.size(), pTag)    
                 lepEtaPlots[njets][jtag][3][idir].Fill( lepEta, pTag )
-                lepPtPlots[njets][ntags][3][idir].Fill( lepPt, pTag )
+                lepPtPlots[njets][jtag][3][idir].Fill( lepPt, pTag )
                 centralityPlots[njets][jtag][3][idir].Fill( sumEt / sumE, pTag )
                 sumEtPlots[njets][jtag][3][idir].Fill( sumEt, pTag )
                 #jet1PtPlots[njets][jtag][3][idir].Fill( jet1Pt, pTag )
-                METPlots[njets][ntags][3][idir].Fill( met, pTag )
-                wMTPlots[njets][ntags][3][idir].Fill( wMT, pTag )
-                hTPlots[njets][ntags][3][idir].Fill( hT, pTag )
+                METPlots[njets][jtag][3][idir].Fill( met, pTag )
+                wMTPlots[njets][jtag][3][idir].Fill( wMT, pTag )
+                hTPlots[njets][jtag][3][idir].Fill( hT, pTag )
                 if flavorIndex >= 0 :
                     if jtag > 0 :
                         secvtxMassPlots[njets][jtag][flavorIndex][idir].Fill( secvtxMass, pTag ) # Fill each jet flavor individually
-                    nPVPlots[njets][ntags][flavorIndex][idir].Fill( vertices.size(), pTag)    
+                    nPVPlots[njets][jtag][flavorIndex][idir].Fill( vertices.size(), pTag)    
                     lepEtaPlots[njets][jtag][flavorIndex][idir].Fill( lepEta, pTag )
-                    lepPtPlots[njets][ntags][flavorIndex][idir].Fill( lepPt, pTag )
+                    lepPtPlots[njets][jtag][flavorIndex][idir].Fill( lepPt, pTag )
                     centralityPlots[njets][jtag][flavorIndex][idir].Fill( sumEt / sumE, pTag )
                     sumEtPlots[njets][jtag][flavorIndex][idir].Fill( sumEt, pTag )
                     #jet1PtPlots[njets][jtag][flavorIndex][idir].Fill( jet1Pt, pTag )
-                    METPlots[njets][ntags][flavorIndex][idir].Fill( met, pTag )
-                    wMTPlots[njets][ntags][flavorIndex][idir].Fill( wMT, pTag )
-                    hTPlots[njets][ntags][flavorIndex][idir].Fill( hT, pTag )
+                    METPlots[njets][jtag][flavorIndex][idir].Fill( met, pTag )
+                    wMTPlots[njets][jtag][flavorIndex][idir].Fill( wMT, pTag )
+                    hTPlots[njets][jtag][flavorIndex][idir].Fill( hT, pTag )
 
 
 
