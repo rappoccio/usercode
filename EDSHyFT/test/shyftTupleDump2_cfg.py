@@ -37,6 +37,12 @@ options.register('useLooseMuons',
                  VarParsing.varType.int,
                  "Add loose muon collection (1) or not (0)")
 
+options.register('useMETRes',
+                 1,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
+                 "Add shifted MET collection (1) or not (0)")
+
 options.register('triggerName',
                  'HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1',
                  VarParsing.multiplicity.singleton,
@@ -113,10 +119,10 @@ process.pfShyftProducerMu = cms.EDFilter('EDSHyFTSelector',
         muPlusJets = cms.bool( True ),
         muTrig = cms.string(options.triggerName),
         eleTrig = cms.string(options.triggerName),
-        jetPtMin = cms.double(30.0),##
+        jetPtMin = cms.double(10.0),##30
         minJets = cms.int32(1),
         metMin = cms.double(0.0),
-        muPtMin = cms.double(35.0),
+        muPtMin = cms.double(25.0),##35
         identifier = cms.string('PFMu'),
         cutsToIgnore=cms.vstring( inputCutsToIgnore ),
         useData = cms.bool(useData),
@@ -131,10 +137,10 @@ process.pfShyftProducerMuLoose = cms.EDFilter('EDSHyFTSelector',
                                                 electronSrc = cms.InputTag('selectedPatElectronsLoosePFlow'),
                                                 ePlusJets = cms.bool( False ),
                                                 muPlusJets = cms.bool( True ),
-                                                jetPtMin = cms.double(30.0),##
+                                                jetPtMin = cms.double(10.0),##30
                                                 minJets = cms.int32(1),
                                                 metMin = cms.double(0.0),
-                                                muPtMin = cms.double(35.0),
+                                                muPtMin = cms.double(25.0),##35
                                                 identifier = cms.string('PFMuLoose'),
                                                 cutsToIgnore=cms.vstring( ['Trigger','== 1 Tight Lepton','== 1 Tight Lepton, Mu Veto','== 1 Lepton'] ),
                                                 useData = cms.bool(useData),
@@ -156,8 +162,8 @@ process.pfShyftProducerEle = cms.EDFilter('EDSHyFTSelector',
         muPlusJets = cms.bool( False ),
         muTrig = cms.string(options.triggerName),
         eleTrig = cms.string(options.triggerName),
-        jetPtMin = cms.double(30.0),##
-        eEtCut = cms.double(35.0),
+        jetPtMin = cms.double(10.0),##30
+        eEtCut = cms.double(25.0),##35
         usePFIso = cms.bool(True),
         useVBTFDetIso  = cms.bool(False),
         useWP95Selection = cms.bool(False),
@@ -177,7 +183,7 @@ process.pfShyftProducerEle = cms.EDFilter('EDSHyFTSelector',
 
         minJets = cms.int32(1),
         metMin = cms.double(0.0),
-        muPtMin = cms.double(35.0),
+        muPtMin = cms.double(25.0),#35
         identifier = cms.string('PFEle'),
         cutsToIgnore=cms.vstring( inputCutsToIgnore ),
         useData = cms.bool(useData),
@@ -186,10 +192,27 @@ process.pfShyftProducerEle = cms.EDFilter('EDSHyFTSelector',
         )
         )
 
+
 process.pfShyftProducerEleLoose = process.pfShyftProducerEle.clone(
     shyftSelection = process.pfShyftProducerEle.shyftSelection.clone(
     useWP95Selection = cms.bool(True),# if CiC ID loose, then pf reliso<0.2 is applied
     useWP70Selection = cms.bool(False),
+    )
+    )
+
+process.pfShyftProducerMetRes090 = process.pfShyftProducerEle.clone(
+    shyftSelection = process.pfShyftProducerEle.shyftSelection.clone(
+    unclMetScale = cms.double( 0.90 ),
+    jetSmear = cms.double(0.01),
+    identifier = cms.string('PFMETRES090'),
+    )
+    )
+
+process.pfShyftProducerMetRes110 = process.pfShyftProducerEle.clone(
+    shyftSelection = process.pfShyftProducerEle.shyftSelection.clone(
+    unclMetScale = cms.double( 1.10 ),
+    jetSmear = cms.double(0.01),
+    identifier = cms.string('PFMETRES110'),
     )
     )
 
@@ -256,6 +279,7 @@ process.pfShyftTupleJetsEleLoose = process.pfShyftTupleJetsMu.clone(
     src = cms.InputTag("pfShyftProducerEleLoose", "jets"),
     )
 
+
 process.pfShyftTupleMuons = cms.EDProducer(
     "CandViewNtpProducer", 
     src = cms.InputTag("pfShyftProducerMu", "muons"),
@@ -317,6 +341,14 @@ process.pfShyftTupleMETEleLoose = process.pfShyftTupleMETEle.clone(
     src = cms.InputTag("pfShyftProducerEleLoose", "MET"),
     )
 
+process.pfShyftTupleMETMetRes110 = process.pfShyftTupleMETEle.clone(
+    src = cms.InputTag("pfShyftProducerMetRes110", "MET"),
+    )
+
+process.pfShyftTupleMETMetRes090 = process.pfShyftTupleMETEle.clone(
+    src = cms.InputTag("pfShyftProducerMetRes090", "MET"),
+    )
+
 process.pfShyftTupleElectrons = cms.EDProducer(
     "CandViewNtpProducer", 
     src = cms.InputTag("pfShyftProducerEle", "electrons"),
@@ -349,15 +381,26 @@ process.pfShyftTupleElectronsLoose = process.pfShyftTupleElectrons.clone(
     src = cms.InputTag("pfShyftProducerEleLoose", "electrons"),
     )
 
-
-process.PUNtupleDumper = cms.EDProducer("PileupReweightingPoducer",
+process.PUNtupleDumperSingleEle = cms.EDProducer("PileupReweightingPoducer",
                                          FirstTime = cms.untracked.bool(True),
+                                         oneDReweighting = cms.untracked.bool(False),        
                                          PileupMCFile = cms.untracked.string('PUMC_dist_flat10.root'),
-                                         PileupDataFile = cms.untracked.string('Cert_160404-173692_Run2011A_pileupTruth_v2_finebin.root')
+                                         PileupDataFile = cms.untracked.string('dataPileupTruth_v2_finebin_160404-167913.root')
 )
 
+process.PUNtupleDumperEleHad = cms.EDProducer("PileupReweightingPoducer",
+                                         FirstTime = cms.untracked.bool(True),
+                                         oneDReweighting = cms.untracked.bool(False),        
+                                         PileupMCFile = cms.untracked.string('PUMC_dist_flat10.root'),
+                                         PileupDataFile = cms.untracked.string('dataPileupTruth_v2_finebin_170826-173692.root')
+)
+
+process.PUNtupleDumperOld = cms.EDProducer("PUNtupleDumper",
+                                           PUscenario = cms.string("42X")
+                                           )
+
 if not options.useData:
-    process.p0 = cms.Path( process.PUNtupleDumper )
+    process.p0 = cms.Path( process.PUNtupleDumperSingleEle + process.PUNtupleDumperEleHad + process.PUNtupleDumperOld )
 else:
     process.p0 = cms.Path( process.patTriggerDefaultSequence )
     
@@ -382,6 +425,7 @@ if options.usePDFs :
 
 process.p3 = cms.Path()
 process.p4 = cms.Path()
+process.p5 = cms.Path()
 
 if options.useLooseElectrons:
     process.p3 = cms.Path(
@@ -398,15 +442,25 @@ if options.useLooseMuons :
         process.pfShyftTupleMETMuLoose
         )        
 
+if options.useMETRes :
+    process.p5 = cms.Path(
+        process.pfShyftProducerMetRes090*
+        process.pfShyftTupleMETMetRes090*
+        process.pfShyftProducerMetRes110*
+        process.pfShyftTupleMETMetRes110
+        )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string("shyftDump.root"),
-                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p1','p2','p3','p4') ),
+                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p1','p2','p3','p4', 'p5') ),
                                outputCommands = cms.untracked.vstring('drop *',
-                                                                      'keep *_*_pileupWeights_*',
+                                                                      #'keep *_*_pileupWeights_*',
+                                                                      'keep *_PUNtupleDumperSingleEle_*_*',
+                                                                      'keep *_PUNtupleDumperEleHad_*_*',
+                                                                      'keep *_PUNtupleDumperOld_*_*',
                                                                       'keep *_pfShyftTuple*_*_*',
                                                                       'keep *_pdfWeightProducer_*_*',
                                                                       'keep PileupSummaryInfos_*_*_*',
