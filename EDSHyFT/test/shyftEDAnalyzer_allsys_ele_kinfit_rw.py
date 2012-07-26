@@ -68,17 +68,18 @@ if options.ignoreTrigger == 1 :
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-        '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_9_1_3hF.root',
-        '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_8_1_h4D.root',
-        '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_7_1_wtz.root',
-        '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_6_1_j9k.root',
-        '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_5_1_uuM.root',
-        '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_4_1_leZ.root',
-        '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_3_1_47a.root',
-        '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_2_1_ynz.root',
-        '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_1_1_DUD.root',
-        '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_11_1_YQG.root',
-        '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_10_1_7UM.root',
+        ## '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_9_1_3hF.root',
+##         '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_8_1_h4D.root',
+##         '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_7_1_wtz.root',
+##         '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_6_1_j9k.root',
+##         '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_5_1_uuM.root',
+##         '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_4_1_leZ.root',
+##         '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_3_1_47a.root',
+##         '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_2_1_ynz.root',
+##         '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_1_1_DUD.root',
+##         '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_11_1_YQG.root',
+##         '/store/user/lpctlbsm/samvel/T_TuneZ2_s-channel_7TeV-powheg-tauola/prod_2011_10_03_17_19_46/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_10_1_7UM.root',
+        '/store/user/lpctlbsm/cjenkins/TprimeTprimeToTZTZinc_M650_7TeV_madgraph_GEN_SIM_privateSample_B/TprimeTprimeToTZTZinc_M650_7TeVmadgraphSummer11_PU_S4_START42_PrivateSample_E/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_9_1_1wi.root',
         )
                                 )                           
 
@@ -237,8 +238,15 @@ process.kinFitTtSemiLepEventCSVMnoSF = cms.EDProducer("TtSemiLepKinFitProducerEl
     metResolutions              = metResolutionPF.functions,
                                         )
 
+## process.pileupReweightingProducer = cms.EDProducer("PileupReweightingPoducer",
+##                                          FirstTime = cms.untracked.bool(False),
+##                                          PileupMCFile = cms.untracked.string('PUMC_dist_flat10.root'),
+##                                          PileupDataFile = cms.untracked.string('PUData_finebin_dist.root')
+## )
+
 process.pileupReweightingProducer = cms.EDProducer("PileupReweightingPoducer",
                                          FirstTime = cms.untracked.bool(False),
+                                         oneDReweighting = cms.untracked.bool(True),
                                          PileupMCFile = cms.untracked.string('PUMC_dist_flat10.root'),
                                          PileupDataFile = cms.untracked.string('PUData_finebin_dist.root')
 )

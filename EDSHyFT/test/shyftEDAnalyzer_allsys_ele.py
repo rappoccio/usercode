@@ -49,6 +49,19 @@ options.register('eleEt',
                  VarParsing.varType.float,
                  "electron et threshold")
 
+options.register('pileupDataFile',
+				 'PUData_dist.root',
+				 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.string,
+				 "Data pileup distribution file name")
+
+options.register('pileupMCFile',
+				 'PUMC_dist.root',
+				 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.string,
+				 "MC pileup distribution file name")
+
+
 options.parseArguments()
 
 print options
@@ -64,6 +77,10 @@ inputDoMC=True
 
 inputSampleName = options.sampleNameInput
 
+pileupDataFile = options.pileupDataFile
+
+pileupMCFile = options.pileupMCFile
+
 inputCutsToIgnore = []
 if options.ignoreTrigger == 1 :
     inputCutsToIgnore.append( 'Trigger' )
@@ -72,7 +89,7 @@ if options.ignoreTrigger == 1 :
 if len(options.inputFiles) == 0:
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-        '/store/user/lpctlbsm/skhalil/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/ttbsm_v8_Summer11-PU_S4_START42_V11-v1/87037ef7c828ea57e128f1ace23a632e/ttbsm_42x_mc_9_1_qHp.root',
+        '/store/user/lpctlbsm/srappocc/TTJets_TuneZ2_7TeV-madgraph-tauola/ttbsm_v9_Summer11-PU_S4_START42_V11-v1/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_100_1_5nQ.root',
         )
                                 )                           
 else :
@@ -117,7 +134,19 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
     usePFIso = cms.bool(True),
     eEtCut = cms.double(options.eleEt),
     useVBTFDetIso  = cms.bool(False),
-    jetPtMin = cms.double(35.0),##
+
+    electronIdTight = cms.PSet(
+    version = cms.string('SPRING11'),
+    MVA = cms.double(-0.01),
+    MaxMissingHits = cms.int32(0),
+    D0 = cms.double(0.02),
+    electronIDused = cms.string('eidHyperTight1MC'),
+    ConversionRejection = cms.bool(True),
+    PFIso = cms.double(0.1),
+    cutsToIgnore = cms.vstring('MVA','MaxMissingHits', 'ConversionRejection'),
+    ),
+    
+    jetPtMin = cms.double(30.0),##
     minJets = cms.int32(5),
     metMin = cms.double(20.0),      
     reweightPU = cms.bool(True),  
@@ -133,6 +162,10 @@ process.pfShyftAna = cms.EDAnalyzer('EDSHyFT',
     lfEffScale = cms.double(1.00),
     jetSmear = cms.double(0.1),
     cutsToIgnore=cms.vstring(inputCutsToIgnore),
+    reweightPU = cms.bool(False),
+	reweightPU3D = cms.bool(True),
+    pileupData = cms.string( pileupDataFile ),
+    pileupMC = cms.string( pileupMCFile ),
     identifier = cms.string('PF'),
     jecPayloads = cms.vstring( payloads )
     )                                    
@@ -422,39 +455,39 @@ process.pfShyftAnaEleEEPt075 =  process.pfShyftAna.clone(
 process.s = cms.Sequence(
    process.pfShyftAna*                 
    process.pfShyftAnaNoMET*
-   process.pfShyftAnaMETMax20*
+   #process.pfShyftAnaMETMax20*
    
-   process.pfShyftAnaJES095*    
-   process.pfShyftAnaJES105*
-   process.pfShyftAnaMETRES090*
-   process.pfShyftAnaMETRES110*
-   process.pfShyftAnaJER000*
-   process.pfShyftAnaJER020*
-   process.pfShyftAnaPUup*
-   process.pfShyftAnaPUdown*
-   process.pfShyftAnaNoPUReweight*
-   process.pfShyftAnaEleEEPt125*
-   process.pfShyftAnaEleEEPt075*
-   process.pfShyftAnaReweightedBTag080*
-   process.pfShyftAnaReweightedBTag090*
-   process.pfShyftAnaReweightedBTag110*
-   process.pfShyftAnaReweightedBTag120*
-   process.pfShyftAnaReweightedLFTag080*
-   process.pfShyftAnaReweightedLFTag090*
-   process.pfShyftAnaReweightedLFTag110*
-   process.pfShyftAnaReweightedLFTag120*
+   #process.pfShyftAnaJES095*    
+   #process.pfShyftAnaJES105*
+   #process.pfShyftAnaMETRES090*
+   #process.pfShyftAnaMETRES110*
+   #process.pfShyftAnaJER000*
+   #process.pfShyftAnaJER020*
+   #process.pfShyftAnaPUup*
+   #process.pfShyftAnaPUdown*
+   #process.pfShyftAnaNoPUReweight*
+   #process.pfShyftAnaEleEEPt125*
+   #process.pfShyftAnaEleEEPt075*
+   #process.pfShyftAnaReweightedBTag080*
+   #process.pfShyftAnaReweightedBTag090*
+   #process.pfShyftAnaReweightedBTag110*
+   #process.pfShyftAnaReweightedBTag120*
+   #process.pfShyftAnaReweightedLFTag080*
+   #process.pfShyftAnaReweightedLFTag090*
+   #process.pfShyftAnaReweightedLFTag110*
+   #process.pfShyftAnaReweightedLFTag120*
     
-   process.pfShyftAnaQCDWP95*
-   process.pfShyftAnaQCDWP95NoMET*
-   process.pfShyftAnaMETMax20QCDWP95*
+   #process.pfShyftAnaQCDWP95*
+   #process.pfShyftAnaQCDWP95NoMET*
+   #process.pfShyftAnaMETMax20QCDWP95*
 
    process.pfShyftAnaMC*
    process.pfShyftAnaMCNoMET*
-   process.pfShyftAnaMCMETMax20*
-   process.pfShyftAnaMCQCDWP95*
-   process.pfShyftAnaMCQCDWP95NoMET*
-   process.pfShyftAnaMCMETMax20QCDWP95*
-   process.pfShyftAnaMETMax20QCDWP95
+   #process.pfShyftAnaMCMETMax20*
+   #process.pfShyftAnaMCQCDWP95*
+   #process.pfShyftAnaMCQCDWP95NoMET*
+   #process.pfShyftAnaMCMETMax20QCDWP95*
+   #process.pfShyftAnaMETMax20QCDWP95
      
    )
 

@@ -117,10 +117,13 @@ process.p = cms.Path(
 
 
 process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string('shyft_skim_386.root'),
+                               fileName = cms.untracked.string('shyft_skim_.root'),
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       'keep *_pfShyftSkim_*_*',
+                                                                      'keep *_*_pileupWeights_*',
+                                                                      'keep PileupSummaryInfos_*_*_*',
+                                                                      'keep *_goodOfflinePrimaryVertices_*_*',
                                                                       'keep patMETs_patMETsPFlow_*_*'),
                                dropMetaData = cms.untracked.string("DROPPED")
                                )

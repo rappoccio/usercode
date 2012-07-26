@@ -83,8 +83,15 @@ payloads = [
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 #_________________________________Pileup___________________________________
+## process.pileupReweightingProducer = cms.EDProducer("PileupReweightingPoducer",
+##                                          FirstTime = cms.untracked.bool(False),
+##                                          PileupMCFile = cms.untracked.string('PUMC_dist_flat10.root'),
+##                                          PileupDataFile = cms.untracked.string('PUData_finebin_dist.root')
+## )
+
 process.pileupReweightingProducer = cms.EDProducer("PileupReweightingPoducer",
                                          FirstTime = cms.untracked.bool(False),
+                                         oneDReweighting = cms.untracked.bool(True),
                                          PileupMCFile = cms.untracked.string('PUMC_dist_flat10.root'),
                                          PileupDataFile = cms.untracked.string('PUData_finebin_dist.root')
 )
