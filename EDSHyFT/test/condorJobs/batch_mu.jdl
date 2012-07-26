@@ -1,0 +1,15 @@
+universe = vanilla
+Executable = condor_mu1D.sh
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+notification = Never
+myPath = /uscms_data/d2/skhalil/SHyFT_backup/CMSSW_4_2_4/src/Analysis/EDSHyFT/test
+myFolder = condorJobs
+myLogFolder = condorLog_mu
+Output = $(myPath)/$(myFolder)/$(myLogFolder)/batch_$(cluster)_$(process).stdout
+Error  = $(myPath)/$(myFolder)/$(myLogFolder)/batch_$(cluster)_$(process).stderr
+Log    = $(myPath)/$(myFolder)/$(myLogFolder)/batch_$(cluster)_$(process).condor
+Requirements          = (Memory >= 499 && OpSys == "LINUX" && (Arch != "DUMMY"))
+Arguments = $(cluster) $(process) $(myPath) /uscms_data/d2/skhalil/ntuplesShyft/crab_MC $(myFolder)/condorOutput_mu 0
+notify_user = skhalil@FNAL.GOV
+Queue 144
