@@ -15,15 +15,17 @@ def event_flow_selectors(files, tokens, labels ) :
         sum_events = []
         for iiter in range(0,niterations) :
             sum_events.append (0)
-        
+        #print len(files), tokens, labels
         for file in files :
             infile = open(file, 'r')
             iteration = 0
             for line in infile :
+                #print 's = ', s
                 if ( line.find(s) >= 0 ) :
-                    #print 'found! line = ',line
+                    #print 'found! line = ',line 
                     i1 = p.split(line)
-                    #print i1
+                    #print 'il = ',  i1
+                    #if s in i1:    #<-------------------
                     dead1 = i1.pop( 0 )
                     index = i1.pop( 0 )
                     dead2 = i1.pop( 0 )
