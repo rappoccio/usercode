@@ -7,17 +7,35 @@ from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
 from PhysicsTools.SelectorUtils.pfMuonSelector_cfi import pfMuonSelector
 from PhysicsTools.SelectorUtils.pfElectronSelector_cfi import pfElectronSelector
 
+
 wplusjetsAnalysis = cms.PSet(
+
+    electronIdTest = cms.PSet(
+    version = cms.string('NONE'),    
+    deta_EB  =  cms.double(7.0e-03),
+    dphi_EB  =  cms.double(8.0e-01),
+    sihih_EB =  cms.double(1.0e-02),
+    hoe_EB   =  cms.double(1.5e-01), 
+    d0_EB    =  cms.double(4.0e-02),
+    dZ_EB    =  cms.double(2.0e-01), 
+    ooemoop_EB = cms.double(0),
+    deta_EE    = cms.double(1.0e-02),
+    dphi_EE    = cms.double(7.0e-01),
+    sihih_EE   = cms.double(3.0e-02),
+    hoe_EE     = cms.double(0),
+    d0_EE      = cms.double(4.0e-02),
+    dZ_EE      = cms.double(2.0e-01),
+    ooemoop_EE = cms.double(0),
+    cutsToIgnore = cms.vstring("ooemoop_EB", "hoe_EE", "ooemoop_EE")
+    ),
+    
     # Primary vertex
-    #pvSelector = cms.PSet( pvSel.clone(
-    #    maxZ=cms.double(24.0)
-    #    ) ),
-    #pvSelector = pvSelector.clone(), 
     pvSelector = cms.PSet(
     pvSrc = cms.InputTag('goodOfflinePrimaryVertices'),
     minNdof = cms.double(4.0),
     maxZ = cms.double(24.0),
     maxRho = cms.double(2.0),
+    NPV = cms.int32(1),
     ),    
     # input parameter sets
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
@@ -119,11 +137,11 @@ wplusjetsAnalysis = cms.PSet(
     rawJetPtCut    = cms.double( 0.0 ),
     useData        = cms.bool(False),
     jecPayloads    = cms.vstring([
-    'Jec11_V3_L1FastJet_AK5PFchs.txt',
-    'Jec11_V3_L2Relative_AK5PFchs.txt',
-    'Jec11_V3_L3Absolute_AK5PFchs.txt',
-    'Jec11_V3_L2L3Residual_AK5PFchs.txt',
-    'Jec11_V3_Uncertainty_AK5PFchs.txt', ])
+    'Jec12_V1_L1FastJet_AK5PFchs.txt',
+    'Jec12_V1_L2Relative_AK5PFchs.txt',
+    'Jec12_V1_L3Absolute_AK5PFchs.txt',
+    'Jec12_V1_L2L3Residual_AK5PFchs.txt',
+    'Jec12_V1_Uncertainty_AK5PFchs.txt', ])
     #useL1Offset    = cms.bool(True),#Dummy variable: will remove it next time
     #jecPayload     = cms.string('Jec11_V2_AK5PFchs_Uncertainty.txt')
 )

@@ -89,6 +89,7 @@ class SHyFTSelector : public EventSelector {
       //MuonVPlusJetsIDSelectionFunctor      muonIdTight_;
       PFMuonSelector                       muonIdTight_;
       //ElectronVPlusJetsIDSelectionFunctor  electronIdTight_;//old
+      TopElectronSelector                  electronIdTest_;
       PFElectronSelector                   electronIdTight_;//new
       //MuonVPlusJetsIDSelectionFunctor      muonIdLoose_;
       PFMuonSelector                       muonIdLoose_;
@@ -163,6 +164,7 @@ class SHyFTSelector : public EventSelector {
       bool             useVBTFDetIso_;
       // Jet energy corrections object
       std::vector<std::string> jecPayloads_;
+      std::vector<std::string> testCuts_;
       boost::shared_ptr<JetCorrectionUncertainty> jecUnc_;
       boost::shared_ptr<FactorizedJetCorrector> jec_;
 };
