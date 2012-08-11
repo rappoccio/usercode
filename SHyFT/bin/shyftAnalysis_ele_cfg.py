@@ -6,10 +6,7 @@ import sys
 
 filesin = sys.argv[2]
 outfile = sys.argv[3]
-#outfile = 'wjets_ttbsm.root'
-#filesin = 'wjets_ttbsm.txt'
 
-#prepend = 'dcap:///pnfs/cms/WAX/11'
 prepend = ''
 
 print 'Input files from ' + filesin
@@ -38,23 +35,18 @@ process.shyftAnalysis = inputShyftAnalysis.clone(
     usePFIso = cms.bool(False), ###
     metMin = cms.double(0.),
     wMTMax = cms.double(10000.),
-    #useVBTFDetIso  = cms.bool(True),
-    cutsToIgnore=cms.vstring('Trigger'),   
+    cutsToIgnore=cms.vstring('Trigger'),
+    rhoSrc  = cms.InputTag('kt6PFJets', 'rho'),
+    reweightPU = cms.bool(False),
+    reweightPU3D = cms.bool(False),
     jetScale =cms.double(0.1),
     doMC = cms.bool(True),
-    puUp = cms.bool(True),
-    #metMax = cms.double(25.),
-    
-    #***********Uncomment if want to test on WJets, ZJets, Vqq, WcJets******************
-    #sampleName="Wjets",
-    #sampleName = "Top",
-    #doMC = True,
-    #heavyFlavour = True,  
+    puUp = cms.bool(True),  
     )
 
 process.inputs = cms.PSet (
     fileNames = infilenames,
-    maxEvents = cms.int32(5000)
+    maxEvents = cms.int32(100)
 )
 
 
