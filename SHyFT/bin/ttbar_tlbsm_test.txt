@@ -1,1 +1,1 @@
-file:///ttbsm_53x_Gsf_mc.root
+file://ttbsm_53x_mc.root

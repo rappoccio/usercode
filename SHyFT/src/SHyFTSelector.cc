@@ -52,8 +52,8 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    dxy_             (params.getParameter<double>("dxy")),
    pvTag_           (params.getParameter<edm::InputTag>("pvSrc")),
    useData_         (params.getParameter<bool>("useData")),
-   jecPayloads_     (params.getParameter<std::vector<std::string> >("jecPayloads")),
-   testCuts_        (params.getParameter<std::vector<std::string> >("deta_EB"))
+   jecPayloads_     (params.getParameter<std::vector<std::string> >("jecPayloads"))
+   //testCuts_        (params.getParameter<std::vector<std::string> >("deta_EB"))
 {
    // make the bitset
    push_back( "Inclusive"      );
