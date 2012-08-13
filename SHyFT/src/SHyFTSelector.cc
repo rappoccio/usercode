@@ -24,8 +24,8 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    eleTrig_         (params.getParameter<std::string>("eleTrig")),
    pvSelector_      (params.getParameter<edm::ParameterSet>("pvSelector") ),
    muonIdTight_     (params.getParameter<edm::ParameterSet>("muonIdTight") ),
-   electronIdTight_ (params.getParameter<edm::ParameterSet>("electronIdTight") ),
    electronIdTest_  (params.getParameter<edm::ParameterSet>("electronIdTest") ),
+   electronIdTight_ (params.getParameter<edm::ParameterSet>("electronIdTight") ),
    muonIdLoose_     (params.getParameter<edm::ParameterSet>("muonIdLoose") ),
    electronIdLoose_ (params.getParameter<edm::ParameterSet>("electronIdLoose") ),
    minJets_         (params.getParameter<int> ("minJets") ),
@@ -53,7 +53,6 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    pvTag_           (params.getParameter<edm::InputTag>("pvSrc")),
    useData_         (params.getParameter<bool>("useData")),
    jecPayloads_     (params.getParameter<std::vector<std::string> >("jecPayloads"))
-   //testCuts_        (params.getParameter<std::vector<std::string> >("deta_EB"))
 {
    // make the bitset
    push_back( "Inclusive"      );
@@ -241,7 +240,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 
             bool passVeto(0), passTight(0), passSecond(0), passLoose(0);            
             //passVeto = patEleVeto(*ielectron);
-            passVeto = electronIdTest_(*ielectron);
+            passVeto = electronIdTest_(*ielectron,event);
             //passTight = patEleTight(*ielectron); //Donot use it.
             passLoose = (fabs(dB) < dxy_ &&
                          et       > eEt_ &&
