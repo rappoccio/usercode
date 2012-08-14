@@ -21,7 +21,7 @@ print infilenames
 
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 
-process.shyftAnalysis = inputShyftAnalysis.clone(
+process.shyftAnalysis = inputShyftAnalysis.clone( 
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
     electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
     metSrc = cms.InputTag('patMETsPFlow'),
@@ -46,7 +46,7 @@ process.shyftAnalysis = inputShyftAnalysis.clone(
 
 process.inputs = cms.PSet (
     fileNames = infilenames,
-    maxEvents = cms.int32(100)
+    maxEvents = cms.int32(500)
 )
 
 
