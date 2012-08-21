@@ -35,26 +35,27 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          
          if (versionStr == "VETO"){
             version = VETO;
-            if(verbose_) std::cout << "TopElectronSelector: You have choose version = VETO " <<  std::endl;
+            if(verbose_) std::cout << "CutBasedElectronSelector: You have choosen version = VETO " <<  std::endl;
          }
 
          if (versionStr == "LOOSE"){
             version = LOOSE;
-            if(verbose_) std::cout << "TopElectronSelector: You have choose version = LOOSE " <<  std::endl;
+            if(verbose_) std::cout << "CutBasedElectronSelector: You have choosen version = LOOSE " <<  std::endl;
          }
          
          if (versionStr == "MEDIUM"){
             version = MEDIUM;
-            if(verbose_) std::cout << "TopElectronSelector: You have choose version = MEDIUM " <<  std::endl;
+            if(verbose_) std::cout << "CutBasedElectronSelector: You have choosen version = MEDIUM " <<  std::endl;
          }
          
          if (versionStr == "TIGHT"){
             version = TIGHT;
-            if(verbose_) std::cout << "TopElectronSelector: You have choose version = TIGHT " <<  std::endl;
+            if(verbose_) std::cout << "CutBasedElectronSelector: You have choosen version = TIGHT " <<  std::endl;
          }
 
          if ( versionStr == "NONE" ){
-            if(verbose_){ std::cout << "TopElectronSelector: If you want to use version NONE "
+            version = NONE;
+            if(verbose_){ std::cout << "CutBasedElectronSelector: If you want to use version NONE "
                                     << "then make sure to provide the selection cuts by yourself " << std::endl;}
          }
          initialize( version,
@@ -66,7 +67,6 @@ class TopElectronSelector : public Selector<pat::Electron>  {
                      parameters.getParameter<Double_t>("dZ_EB"),
                      parameters.getParameter<Double_t>("ooemoop_EB"),
                      parameters.getParameter<Double_t>("reliso_EB"),
-                     parameters.getParameter<Double_t>("mHits_EB"),
                      parameters.getParameter<Double_t>("deta_EE"), 
                      parameters.getParameter<Double_t>("dphi_EE"), 
                      parameters.getParameter<Double_t>("sihih_EE"), 
@@ -75,9 +75,12 @@ class TopElectronSelector : public Selector<pat::Electron>  {
                      parameters.getParameter<Double_t>("dZ_EE"),
                      parameters.getParameter<Double_t>("ooemoop_EE"),
                      parameters.getParameter<Double_t>("reliso_EE"),
-                     parameters.getParameter<Double_t>("mHits_EE")
+                     parameters.getParameter<Int_t>("mHits"),
+                     parameters.getParameter<Bool_t>("vtxFitConv")
             );
          
+         
+          
          if ( parameters.exists("cutsToIgnore") )
             setIgnoredCuts( parameters.getParameter<std::vector<std::string> >("cutsToIgnore") ); 
          
@@ -90,7 +93,7 @@ class TopElectronSelector : public Selector<pat::Electron>  {
       void initialize(Version_t version,
                       Double_t sihih_EB, Double_t  dphi_EB, Double_t deta_EB, Double_t hoe_EB, Double_t d0_EB, Double_t dZ_EB, Double_t ooemoop_EB,  
                       Double_t sihih_EE, Double_t  dphi_EE, Double_t deta_EE, Double_t hoe_EE, Double_t d0_EE, Double_t dZ_EE, Double_t ooemoop_EE,
-                      Double_t reliso_EB, Double_t reliso_EE, Double_t mHits_EB, Double_t mHits_EE)
+                      Double_t reliso_EB, Double_t reliso_EE, Int_t mHits, Bool_t vtxFitConv)
       {
          version_ = version;
 
@@ -102,7 +105,6 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          push_back("dZ_EB"      );         
          push_back("ooemoop_EB" );
          push_back("reliso_EB"  );
-         push_back("mHits_EB"   );
          push_back("deta_EE"    );
          push_back("dphi_EE"    );
          push_back("sihih_EE"   );        
@@ -111,7 +113,8 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          push_back("dZ_EE"      ); 
          push_back("ooemoop_EE" );
          push_back("reliso_EE"  );
-         push_back("mHits_EE"   );
+         push_back("mHits"      );
+         push_back("vtxFitConv" );
               
          if (version_ == NONE){
             set("deta_EB",     deta_EB);
@@ -122,7 +125,6 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("dZ_EB",       dZ_EB);
             set("ooemoop_EB",  ooemoop_EB);
             set("reliso_EB",   reliso_EB);
-            set("mHits_EB",    mHits_EB);
             set("deta_EE",     deta_EE);
             set("dphi_EE",     dphi_EE);
             set("sihih_EE",    sihih_EE);        
@@ -131,7 +133,8 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("dZ_EB",       dZ_EE);
             set("ooemoop_EE",  ooemoop_EE); 
             set("reliso_EE",   reliso_EE);
-            set("mHits_EE",    mHits_EE);
+            set("mHits",       mHits);
+            set("vtxFitConv",  vtxFitConv); 
            }
           
           if (version_ == VETO) {
@@ -143,16 +146,16 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("dZ_EB",       2.0e-01); 
             set("ooemoop_EB",  false);
             set("reliso_EB",   1.5e-01);
-            set("mHits_EB",    false);
             set("deta_EE",     1.0e-02);
             set("dphi_EE",     7.0e-01);
             set("sihih_EE",    3.0e-02);
-            set("hoe_EE",      false);
+            set("hoe_EE",      false);//
             set("d0_EE",       4.0e-02);
             set("dZ_EE",       2.0e-01);
             set("ooemoop_EE",  false);
             set("reliso_EE",   1.5e-01);
-            set("mHits_EE",    false);
+            set("mHits",       false);
+            set("vtxFitConv",  false); 
          }
          
          if (version_ == LOOSE) {
@@ -172,6 +175,8 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("dZ_EE",       2.0e-01);
             set("ooemoop_EE",  5.0e-02);
             set("reliso_EE",   1.5e-01);//
+            set("mHits",       1);
+            set("vtxFitConv",  1);
          }
 
           if (version_ == MEDIUM) {
@@ -183,7 +188,6 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("dZ_EB",       1.0e-01); 
             set("ooemoop_EB",  5.0e-02);
             set("reliso_EB",   1.5e-01);
-            set("mHits_EB",    1.0e-00);
             set("deta_EE",     7.0e-03);
             set("dphi_EE",     3.0e-02);
             set("sihih_EE",    3.0e-02);
@@ -192,7 +196,8 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("dZ_EE",       1.0e-01);
             set("ooemoop_EE",  5.0e-02);
             set("reliso_EE",   1.5e-01);//
-            set("mHits_EE",    1.0e-00);
+            set("mHits",       1);
+            set("vtxFitConv",  1);
          }
 
           if (version_ == TIGHT) {
@@ -204,7 +209,6 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("dZ_EB",       1.0e-01); 
             set("ooemoop_EB",  5.0e-02);
             set("reliso_EB",   1.0e-01);
-            set("mHits_EB",    1.0e-00);
             set("deta_EE",     5.0e-03);
             set("dphi_EE",     2.0e-02);
             set("sihih_EE",    3.0e-02);
@@ -213,7 +217,8 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("dZ_EE",       1.0e-01);
             set("ooemoop_EE",  5.0e-02);
             set("reliso_EE",   1.0e-01);//
-            set("mHits_EE",    1.0e-00);
+            set("mHits",       0);
+            set("vtxFitConv",  1);
          }
 
           indexSinhih_EB_     = index_type(&bits_, "sihih_EB"     ); 
@@ -224,7 +229,6 @@ class TopElectronSelector : public Selector<pat::Electron>  {
           indexDZ_EB_         = index_type(&bits_, "dZ_EB"        );
           indexOoemoop_EB_    = index_type(&bits_, "ooemoop_EB"   );
           indexRelIso_EB_     = index_type(&bits_, "reliso_EB"    );
-          indexMHits_EB_      = index_type(&bits_, "mHits_EB"     );
           indexSinhih_EE_     = index_type(&bits_, "sihih_EE"     ); 
           indexDphi_EE_       = index_type(&bits_, "dphi_EE"      );
           indexDeta_EE_       = index_type(&bits_, "deta_EE"      ); 
@@ -233,7 +237,8 @@ class TopElectronSelector : public Selector<pat::Electron>  {
           indexDZ_EE_         = index_type(&bits_, "dZ_EE"        );
           indexOoemoop_EE_    = index_type(&bits_, "ooemoop_EE"   ); 
           indexRelIso_EE_     = index_type(&bits_, "reliso_EE"    );
-          indexMHits_EE_      = index_type(&bits_, "mHits_EE"     );   
+          indexMHits_         = index_type(&bits_, "mHits"        ); 
+          indexVtxFitConv_    = index_type(&bits_, "vtxFitConv"   );   
       }
 
      
@@ -242,7 +247,6 @@ class TopElectronSelector : public Selector<pat::Electron>  {
       {
          edm::Handle<std::vector<reco::Vertex> > pvtxHandle;
          event.getByLabel( pvSrc_, pvtxHandle);
-         //Point PVtx(0,0,0);
          if ( pvtxHandle->size() > 0 ) {
             PVtx = pvtxHandle->at(0).position();
          } else {
@@ -275,52 +279,51 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          Double_t DZ    = electron.gsfTrack()->dz(PVtx);//
          Double_t Ooemoop = (1.0/electron.ecalEnergy() - electron.eSuperClusterOverP()/electron.ecalEnergy());
          Double_t RelIso  = ( chIso + max(0.0, nhIso + phIso - rhoIso*AEff) )/ electron.ecalDrivenMomentum().pt();
-         Double_t mHits   =  electron.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
-         //Bool_t   vtxFitConv = electron.passConversionVeto();
+         Int_t mHits   =  electron.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
+         Bool_t vtxFitConv = electron.passConversionVeto();
 
          // now apply the cuts
          if (electron.isEB()) { // BARREL case
             // check the EB cuts
-            if ( sihih      <  cut(indexSinhih_EB_,double()) || ignoreCut(indexSinhih_EB_)) passCut(ret, indexSinhih_EB_);
-            if ( fabs(Dphi) <  cut(indexDphi_EB_,  double()) || ignoreCut(indexDphi_EB_)  ) passCut(ret, indexDphi_EB_);
-            if ( fabs(Deta) <  cut(indexDeta_EB_,  double()) || ignoreCut(indexDeta_EB_)  ) passCut(ret, indexDeta_EB_);
-            if ( HoE        <  cut(indexHoE_EB_,   double()) || ignoreCut(indexHoE_EB_)   ) passCut(ret, indexHoE_EB_);
-            if ( fabs(D0)   <  cut(indexD0_EB_,    double()) || ignoreCut(indexD0_EB_)    ) passCut(ret, indexD0_EB_);
-            if ( fabs(DZ)   <  cut(indexDZ_EB_,    double()) || ignoreCut(indexDZ_EB_)    ) passCut(ret, indexDZ_EB_);
-            if ( Ooemoop    <  cut(indexOoemoop_EB_, double()) || ignoreCut(indexOoemoop_EB_) ) passCut(ret, indexOoemoop_EB_); 
-            if ( RelIso     <  cut(indexRelIso_EB_, double()) || ignoreCut(indexRelIso_EB_) ) passCut(ret, indexRelIso_EB_);  
-            if ( mHits      <=  cut(indexMHits_EB_, double()) || ignoreCut(indexMHits_EB_) ) passCut(ret, indexMHits_EB_);
+            if ( fabs(Deta)    <  cut(indexDeta_EB_,  double()) || ignoreCut(indexDeta_EB_)  ) passCut(ret, indexDeta_EB_);
+            if ( fabs(Dphi)    <  cut(indexDphi_EB_,  double()) || ignoreCut(indexDphi_EB_)  ) passCut(ret, indexDphi_EB_);
+            if ( sihih         <  cut(indexSinhih_EB_,double()) || ignoreCut(indexSinhih_EB_)) passCut(ret, indexSinhih_EB_);           
+            if ( HoE           <  cut(indexHoE_EB_,   double()) || ignoreCut(indexHoE_EB_)   ) passCut(ret, indexHoE_EB_);
+            if ( fabs(D0)      <  cut(indexD0_EB_,    double()) || ignoreCut(indexD0_EB_)    ) passCut(ret, indexD0_EB_);
+            if ( fabs(DZ)      <  cut(indexDZ_EB_,    double()) || ignoreCut(indexDZ_EB_)    ) passCut(ret, indexDZ_EB_);
+            if ( fabs(Ooemoop) <  cut(indexOoemoop_EB_, double()) || ignoreCut(indexOoemoop_EB_) ) passCut(ret, indexOoemoop_EB_); 
+            if ( RelIso        <  cut(indexRelIso_EB_, double()) || ignoreCut(indexRelIso_EB_) ) passCut(ret, indexRelIso_EB_);  
             // pass all the EE cuts
-            passCut(ret, indexSinhih_EE_);	
-            passCut(ret, indexDphi_EE_);	
-            passCut(ret, indexDeta_EE_);	
+           	passCut(ret, indexDeta_EE_);
+            passCut(ret, indexDphi_EE_);
+	        passCut(ret, indexSinhih_EE_);
             passCut(ret, indexHoE_EE_);	
             passCut(ret, indexD0_EE_);
             passCut(ret, indexDZ_EE_);
             passCut(ret, indexOoemoop_EE_);
             passCut(ret, indexRelIso_EE_);
-            passCut(ret, indexMHits_EE_);
          } else if (electron.isEE()) {  // ENDCAPS case
             // check the EE cuts
-            if ( sihih      <  cut(indexSinhih_EE_,double()) || ignoreCut(indexSinhih_EE_)) passCut(ret, indexSinhih_EE_);
-            if ( fabs(Dphi) <  cut(indexDphi_EE_,  double()) || ignoreCut(indexDphi_EE_)  ) passCut(ret, indexDphi_EE_);
-            if ( fabs(Deta) <  cut(indexDeta_EE_,  double()) || ignoreCut(indexDeta_EE_)  ) passCut(ret, indexDeta_EE_);
-            if ( HoE        <  cut(indexHoE_EE_,   double()) || ignoreCut(indexHoE_EE_)   ) passCut(ret, indexHoE_EE_);
-            if ( D0         <  cut(indexD0_EE_,    double()) || ignoreCut(indexD0_EE_)    ) passCut(ret, indexD0_EE_);
-            if ( DZ         <  cut(indexDZ_EE_,    double()) || ignoreCut(indexDZ_EE_)    ) passCut(ret, indexDZ_EE_);
-            if ( Ooemoop    <  cut(indexOoemoop_EE_, double()) || ignoreCut(indexOoemoop_EE_) ) passCut(ret, indexOoemoop_EE_); 
-            if ( RelIso     <  cut(indexRelIso_EE_, double()) || ignoreCut(indexRelIso_EE_) ) passCut(ret, indexRelIso_EE_); 
-            if ( mHits      <=  cut(indexMHits_EE_, double()) || ignoreCut(indexMHits_EE_) ) passCut(ret, indexMHits_EE_); 
+            if ( fabs(Deta)    <  cut(indexDeta_EE_,  double()) || ignoreCut(indexDeta_EE_)  ) passCut(ret, indexDeta_EE_);
+            if ( fabs(Dphi)    <  cut(indexDphi_EE_,  double()) || ignoreCut(indexDphi_EE_)  ) passCut(ret, indexDphi_EE_);
+            if ( sihih         <  cut(indexSinhih_EE_,double()) || ignoreCut(indexSinhih_EE_)) passCut(ret, indexSinhih_EE_);
+            if ( HoE           <  cut(indexHoE_EE_,   double()) || ignoreCut(indexHoE_EE_)   ) passCut(ret, indexHoE_EE_);
+            if ( D0            <  cut(indexD0_EE_,    double()) || ignoreCut(indexD0_EE_)    ) passCut(ret, indexD0_EE_);
+            if ( DZ            <  cut(indexDZ_EE_,    double()) || ignoreCut(indexDZ_EE_)    ) passCut(ret, indexDZ_EE_);
+            if ( fabs(Ooemoop) <  cut(indexOoemoop_EE_, double()) || ignoreCut(indexOoemoop_EE_) ) passCut(ret, indexOoemoop_EE_); 
+            if ( RelIso        <  cut(indexRelIso_EE_, double()) || ignoreCut(indexRelIso_EE_) ) passCut(ret, indexRelIso_EE_); 
             // pass all the EB cuts
-            passCut(ret, indexSinhih_EB_);	
+            passCut(ret, indexDeta_EB_);
             passCut(ret, indexDphi_EB_);	
-            passCut(ret, indexDeta_EB_);	
+            passCut(ret, indexSinhih_EB_);
             passCut(ret, indexHoE_EB_);
             passCut(ret, indexD0_EB_);
             passCut(ret, indexDZ_EB_);
             passCut(ret, indexOoemoop_EB_);
             passCut(ret, indexRelIso_EB_);
-            passCut(ret, indexMHits_EB_);
+           
+            if ( mHits         <=  cut(indexMHits_, int()) || ignoreCut(indexMHits_) ) passCut(ret, indexMHits_);
+            if (vtxFitConv     ==  cut(indexVtxFitConv_, bool()) || ignoreCut(indexVtxFitConv_) ) passCut(ret, indexVtxFitConv_);
          }
         
          setIgnored(ret);   
@@ -341,7 +344,6 @@ class TopElectronSelector : public Selector<pat::Electron>  {
       index_type indexDZ_EB_; 
       index_type indexOoemoop_EB_;
       index_type indexRelIso_EB_;
-      index_type indexMHits_EB_;
       index_type indexSinhih_EE_;
       index_type indexDphi_EE_;
       index_type indexDeta_EE_;
@@ -350,7 +352,8 @@ class TopElectronSelector : public Selector<pat::Electron>  {
       index_type indexDZ_EE_;
       index_type indexOoemoop_EE_;
       index_type indexRelIso_EE_;
-      index_type indexMHits_EE_;
+      index_type indexMHits_;
+      index_type indexVtxFitConv_;
 };
 
 #endif

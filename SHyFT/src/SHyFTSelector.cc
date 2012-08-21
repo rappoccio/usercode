@@ -4,7 +4,7 @@
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
-
+#include "EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h"
 #include <iostream>
 
 using namespace std;
@@ -19,15 +19,15 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    jetTag_          (params.getParameter<edm::InputTag>("jetSrc") ),
    metTag_          (params.getParameter<edm::InputTag>("metSrc") ), 
    rhoTag_          (params.getParameter<edm::InputTag>("rhoSrc") ), 
+   rhoIsoTag_       (params.getParameter<edm::InputTag>("rhoIsoSrc") ), 
    trigTag_         (params.getParameter<edm::InputTag>("trigSrc") ),
    muTrig_          (params.getParameter<std::string>("muTrig")),
    eleTrig_         (params.getParameter<std::string>("eleTrig")),
    pvSelector_      (params.getParameter<edm::ParameterSet>("pvSelector") ),
    muonIdTight_     (params.getParameter<edm::ParameterSet>("muonIdTight") ),
-   electronIdTest_  (params.getParameter<edm::ParameterSet>("electronIdTest") ),
-   electronIdTight_ (params.getParameter<edm::ParameterSet>("electronIdTight") ),
    muonIdLoose_     (params.getParameter<edm::ParameterSet>("muonIdLoose") ),
-   electronIdLoose_ (params.getParameter<edm::ParameterSet>("electronIdLoose") ),
+   electronIdVeto_  (params.getParameter<edm::ParameterSet>("electronIdVeto") ),
+   electronIdTight_ (params.getParameter<edm::ParameterSet>("electronIdTight") ),
    minJets_         (params.getParameter<int> ("minJets") ),
    muJetDR_         (params.getParameter<double>("muJetDR")),
    eleJetDR_        (params.getParameter<double>("eleJetDR")),
@@ -48,10 +48,13 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    unclMetScale_    (params.getParameter<double>("unclMetScale")),
    ePtScale_        (params.getParameter<double>("ePtScale")),
    ePtUncertaintyEE_(params.getParameter<double>("ePtUncertaintyEE")),
-   eEt_             (params.getParameter<double>("eEtCut")),
+   eRelIso_         (params.getParameter<double>("eRelIso")),
+   eEt_             (params.getParameter<double>("eEt")),
    dxy_             (params.getParameter<double>("dxy")),
    pvTag_           (params.getParameter<edm::InputTag>("pvSrc")),
    useData_         (params.getParameter<bool>("useData")),
+   useNoPFIso_      (params.getParameter<bool>("useNoPFIso")),
+   useNoID_         (params.getParameter<bool>("useNoID")),
    jecPayloads_     (params.getParameter<std::vector<std::string> >("jecPayloads"))
 {
    // make the bitset
@@ -212,11 +215,11 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
         
          edm::Handle<double> rhoHandle;
          event.getByLabel(rhoTag_, rhoHandle);
-       
-         //TopElectronSelector patEleVeto(TopElectronSelector::VETO, PV);
-         //TopElectronSelector patEleTight(TopElectronSelector::TIGHT, PV);
-         //patEleTight.setIgnoredCuts( testCuts_);
-        
+
+         edm::Handle<double> rhoHandleIso;
+         event.getByLabel(rhoIsoTag_, rhoHandleIso);     
+         double rhoIso = std::max(*(rhoHandleIso.product()), 0.0);
+         
          int nElectrons = 0;
          for ( std::vector<pat::Electron>::const_iterator electronBegin = electronHandle->begin(),
                   electronEnd = electronHandle->end(), ielectron = electronBegin;
@@ -224,34 +227,69 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             allElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
             ++nElectrons;
             
-            double scEta   = fabs( ielectron->superCluster()->eta() );
-            double eta     = fabs( ielectron->eta() );
+            double scEta   = ielectron->superCluster()->eta();
+            double eta     = ielectron->eta();
             double et      = ielectron->et();
             double dB      = ielectron->dB();
+            double AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2011);
             double chIso = ielectron->userIsolation(pat::PfChargedHadronIso);
             double nhIso = ielectron->userIsolation(pat::PfNeutralHadronIso);
-            double gIso  = ielectron->userIsolation(pat::PfGammaIso);
-            double relIso = (chIso + nhIso + gIso )/ ielectron->p4().Pt();            
+            double phIso  = ielectron->userIsolation(pat::PfGammaIso);
+            double relIso = ( chIso + max(0.0, nhIso + phIso - rhoIso*AEff) )/ ielectron->ecalDrivenMomentum().pt();           
    
 //Electron Selection for e+jets
 //-----------------------------  
-            if (scEta <= 1.566 && scEta > 1.4442 ) continue;  //Fiducial cuts 
-            if( eta >= eleEtaMaxLoose_ ) continue;
-
-            bool passVeto(0), passTight(0), passSecond(0), passLoose(0);            
-            //passVeto = patEleVeto(*ielectron);
-            passVeto = electronIdTest_(*ielectron,event);
-            //passTight = patEleTight(*ielectron); //Donot use it.
-            passLoose = (fabs(dB) < dxy_ &&
-                         et       > eEt_ &&
-                         (ielectron->passConversionVeto()) 
-               );
-            passSecond = (passVeto && et > 30. && relIso < 0.2);
+            if (fabs(scEta) < 1.5660 && fabs(scEta) > 1.4442 ) continue;  //Fiducial cuts 
             
-            if(passLoose){
+            bool passTopCuts(0), passIso(0), passMVAID(0), passVetoID(0), passTightID(0);            
+            
+            passTopCuts = (fabs(eta)< 2.5 && 
+                           fabs(dB) < dxy_ &&
+                           et       > eEt_ &&
+                           (ielectron->passConversionVeto()) 
+               );
+            
+            if(useNoPFIso_) passIso = 1;
+            else passIso = relIso < eRelIso_;  
+           
+            if(useNoID_) passMVAID = 1;
+            else passMVAID = ielectron->electronID("mvaTrigV0") > 0;
+            
+            passVetoID = electronIdVeto_(*ielectron,event);//WP:"Veto" from cut based ID
+            passTightID = electronIdTight_(*ielectron, event);//WP: "Tight" from cut based ID
+           
+            //std::cout << "pass ID " << passVetoID << std::endl;
+
+            //pat::strbitset electronIDSel =  electronIdVeto_.getBitTemplate();
+            //bool sihih = electronIDSel.test("sihih_EB") || electronIDSel.test("sihih_EE");
+            //std::cout << sihih << std::endl;
+            //std::cout << "sihih" << ielectron->sigmaIetaIeta() << std::endl;     
+            //std::cout << "Fixing a WP Tight" << electronIdTight_.version_("TIGHT");
+
+/*           
+            if(passVetoID) {
+
+               if(ielectron->isEB()) std::cout << "barrel--> " << std::endl;
+               else if (ielectron->isEE()) std::cout << "endcap--> " << std::endl;
+                 
+               std::cout << "delEta" <<ielectron->deltaEtaSuperClusterTrackAtVtx() << std::endl;
+               std::cout << "delPhi" <<ielectron->deltaPhiSuperClusterTrackAtVtx() << std::endl;
+               std::cout << "sietaieta " << ielectron->sigmaIetaIeta() << std::endl;
+               std::cout << "H/E" <<ielectron->hadronicOverEm() << std::endl;
+               std::cout << "dxy "<< ielectron->dB() << std::endl;
+               std::cout << "dZ" << ielectron->gsfTrack()->dz(PV) << std::endl;
+               std::cout << "ooemoop "<<  (1.0/ielectron->ecalEnergy() - ielectron->eSuperClusterOverP()/ielectron->ecalEnergy()) << std::endl;
+               std::cout << "relIso" << relIso << std::endl;
+               std::cout << "mva "<< ielectron->mva() << std::endl;
+               std::cout << "mHits" <<  ielectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits() << std::endl;
+               std::cout << "vtxFitConv" << ielectron->passConversionVeto() << std::endl;
+            }
+*/             
+            if(passTopCuts && passIso && passMVAID){
+               
                selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
             }
-            else if(passSecond){
+            else if(passVetoID && et > 20){
                selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
             }   
             
@@ -391,13 +429,15 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                   }// end if jet is not within dR of a muon
                }// end if mu+jets
                else {
+
                   //Remove some jets
                   bool indeltaR = false;
                   for( std::vector<reco::ShallowClonePtrCandidate>::const_iterator electronBegin = selectedElectrons_.begin(),
                           electronEnd = selectedElectrons_.end(), ielectron = electronBegin;
                        ielectron != electronEnd; ++ielectron ) {
+                     
                      if( reco::deltaR( ielectron->eta(), ielectron->phi(), scaledJet.eta(), scaledJet.phi() ) < eleJetDR_ )
-                     {  indeltaR = true;}// std::cout << "jet is matched " << std::endl; }
+                     {  indeltaR = true; }//std::cout << "jet is matched to an electron" << std::endl; }
                   }
                   if( !indeltaR ) {
                      cleanedJets_.push_back( scaledJet );

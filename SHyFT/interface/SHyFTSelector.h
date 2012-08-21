@@ -51,8 +51,8 @@ class SHyFTSelector : public EventSelector {
          electronIdTight_.print(out);
          out << "Muon ID Loose Selector: " << std::endl;
          muonIdLoose_.print(out);
-         out << "Electron ID Loose Selector: " << std::endl;
-         electronIdLoose_.print(out);
+         out << "Electron ID Veto Selector: " << std::endl;
+         electronIdVeto_.print(out);
          //out << "Calo Jet Selector: " << std::endl;
          //jetIdLoose_.print(out);
          //out << "PF Jet Selector: " << std::endl;
@@ -66,6 +66,7 @@ class SHyFTSelector : public EventSelector {
       edm::InputTag               jetTag_;
       edm::InputTag               metTag_;
       edm::InputTag               rhoTag_;
+      edm::InputTag               rhoIsoTag_;
       edm::InputTag               trigTag_;
 
       std::string                 muTrig_;
@@ -85,27 +86,18 @@ class SHyFTSelector : public EventSelector {
       reco::ShallowClonePtrCandidate              met_;
       std::vector<reco::ShallowClonePtrCandidate> selectedLooseElectrons_;
       std::vector<reco::ShallowClonePtrCandidate> selectedLooseMuons_;
+
       PVSelector                           pvSelector_;
-      //MuonVPlusJetsIDSelectionFunctor      muonIdTight_;
       PFMuonSelector                       muonIdTight_;
-      //ElectronVPlusJetsIDSelectionFunctor  electronIdTight_;//old
-      TopElectronSelector                  electronIdTest_;
-      PFElectronSelector                   electronIdTight_;//new
-      //MuonVPlusJetsIDSelectionFunctor      muonIdLoose_;
       PFMuonSelector                       muonIdLoose_;
-      //ElectronVPlusJetsIDSelectionFunctor  electronIdLoose_;//old
-      PFElectronSelector                   electronIdLoose_;//new
-      JetIDSelectionFunctor                jetIdLoose_;
-      PFJetIDSelectionFunctor              pfjetIdLoose_;
+      TopElectronSelector                  electronIdVeto_;
+      TopElectronSelector                  electronIdTight_;
       
       int minJets_;
-
       double muJetDR_;
       double eleJetDR_;
-
       bool muPlusJets_;
       bool ePlusJets_;
-
       double muPtMin_  ;
       double muEtaMax_ ;
       double eleEtMin_ ;
@@ -122,9 +114,6 @@ class SHyFTSelector : public EventSelector {
       double jetScale_;
       double jetUncertainty_; // "flat" uncertainty after the L2L3 uncertainty
       double jetSmear_;
-      double metMin_;
-      double metMax_;
-      double wMTMax_;
       double unclMetScale_; 
       double ePtScale_;        
       double ePtUncertaintyEE_;
@@ -148,23 +137,17 @@ class SHyFTSelector : public EventSelector {
       index_type   jet3Index_;      
       index_type   jet4Index_;      
       index_type   jet5Index_;      
-
-      double         elDist_;
-      double         elDcot_;
+     
       double         eRelIso_;
       double         eEt_;
-      double         vCut_;
       double         dxy_;
       edm::InputTag  pvTag_;
-      bool           useWP95Selection_;   
-      bool           useWP70Selection_;    
       bool           useData_;    
-      bool           usePFIso_;      
-      bool           useNoID_;    
-      bool             useVBTFDetIso_;
+      bool           useNoPFIso_;      
+      bool           useNoID_;   
+ 
       // Jet energy corrections object
       std::vector<std::string> jecPayloads_;
-      std::vector<std::string> testCuts_;
       boost::shared_ptr<JetCorrectionUncertainty> jecUnc_;
       boost::shared_ptr<FactorizedJetCorrector> jec_;
 };

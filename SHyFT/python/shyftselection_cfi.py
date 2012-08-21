@@ -2,17 +2,19 @@ import FWCore.ParameterSet.Config as cms
 
 #from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector as pvSel
 from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
-#from PhysicsTools.SelectorUtils.jetIDSelector_cfi import jetIDSelector
-#from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
 from PhysicsTools.SelectorUtils.pfMuonSelector_cfi import pfMuonSelector
 from PhysicsTools.SelectorUtils.pfElectronSelector_cfi import pfElectronSelector
 from Analysis.SHyFT.cutbasedIDSelector_cfi import cutbasedIDSelector
 
 wplusjetsAnalysis = cms.PSet(
 
-    electronIdTest = cutbasedIDSelector.clone(
-    version = cms.string('VETO'),
-    cutsToIgnore = cms.vstring("ooemoop_EB", "hoe_EE", "ooemoop_EE") 
+    electronIdTight = cutbasedIDSelector.clone(
+    version = cms.string('TIGHT'),
+    cutsToIgnore = cms.vstring("reliso_EB", "reliso_EE", "vtxFitConv") 
+    ),
+    
+    electronIdVeto = cutbasedIDSelector.clone(
+    version = cms.string('VETO')
     ),
     
     # Primary vertex
@@ -33,10 +35,9 @@ wplusjetsAnalysis = cms.PSet(
     muTrig = cms.string('HLT_Mu9'),
     eleTrig = cms.string('HLT_Ele10_LW_L1R'),
     pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
-    rhoSrc  = cms.InputTag('kt6PFJetsPFlow', 'rho'),
-    useWP95Selection = cms.bool(False),
-    useWP70Selection = cms.bool(True),
-    usePFIso = cms.bool(True),
+    rhoSrc  = cms.InputTag('kt6PFJets', 'rho'),
+    rhoIsoSrc     = cms.InputTag("kt6PFJetsForIsolation", 'rho'), 
+    useNoPFIso = cms.bool(False),
     useNoID  = cms.bool(False),
     useVBTFDetIso  = cms.bool(False),
     # tight muons
@@ -52,16 +53,16 @@ wplusjetsAnalysis = cms.PSet(
     cutsToIgnore=cms.vstring()
     ),
     # tight electrons
-    electronIdTight = pfElectronSelector.clone(
-    version = cms.string('SPRING11'),
-    MVA = cms.double(-0.01),
-    MaxMissingHits = cms.int32(1),
-    D0 = cms.double(0.02),
-    electronIDused = cms.string('eidSuperTightMC'),
-    ConversionRejection = cms.bool(False),
-    PFIso = cms.double(0.1),
-    cutsToIgnore = cms.vstring('MVA', 'ConversionRejection', 'MaxMissingHits')
-    ),
+   ##  electronIdTight = pfElectronSelector.clone(
+##     version = cms.string('SPRING11'),
+##     MVA = cms.double(-0.01),
+##     MaxMissingHits = cms.int32(1),
+##     D0 = cms.double(0.02),
+##     electronIDused = cms.string('eidSuperTightMC'),
+##     ConversionRejection = cms.bool(False),
+##     PFIso = cms.double(0.1),
+##     cutsToIgnore = cms.vstring('MVA', 'ConversionRejection', 'MaxMissingHits')
+##     ),
     # loose electrons
     electronIdLoose = pfElectronSelector.clone(
     version = cms.string('SPRING11'),
@@ -98,12 +99,12 @@ wplusjetsAnalysis = cms.PSet(
     eleEtaMax      = cms.double( 2.4 ),
     muPtMinLoose   = cms.double( 10.0 ),
     muEtaMaxLoose  = cms.double( 2.5 ),
-    eleEtMinLoose  = cms.double( 15.0 ),
-    eleEtaMaxLoose = cms.double( 2.5 ),
+    eleEtMinLoose  = cms.double( 15.0 ),#ele pt to be vetoed in muon
+    eleEtaMaxLoose = cms.double( 2.5 ), #eta to be vetoed in muon
     elDist         = cms.double( 0.02 ),
     elDcot         = cms.double( 0.02 ),
     eRelIso        = cms.double( 0.1 ),
-    eEtCut         = cms.double( 30. ),
+    eEt            = cms.double( 30. ),
     vertexCut      = cms.double( 1.),
     dxy            = cms.double( 0.02),
     jetPtMin       = cms.double( 30.0 ),
@@ -119,7 +120,7 @@ wplusjetsAnalysis = cms.PSet(
     unclMetScale   = cms.double( 0.0 ),
     muJetDR        = cms.double( 0.3 ),
     useJetClones   = cms.bool(False),
-    eleJetDR       = cms.double( 0.3 ),
+    eleJetDR       = cms.double( 0.5 ),
     rawJetPtCut    = cms.double( 0.0 ),
     useData        = cms.bool(False),
     jecPayloads    = cms.vstring([
