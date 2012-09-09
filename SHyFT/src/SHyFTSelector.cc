@@ -5,6 +5,10 @@
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h"
+#include "DataFormats/Common/interface/ValueMap.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+
 #include <iostream>
 
 using namespace std;
@@ -55,6 +59,7 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
    useData_         (params.getParameter<bool>("useData")),
    useNoPFIso_      (params.getParameter<bool>("useNoPFIso")),
    useNoID_         (params.getParameter<bool>("useNoID")),
+   pfEleSrc_       (params.getParameter<edm::InputTag>( "pfEleSrc" )),
    jecPayloads_     (params.getParameter<std::vector<std::string> >("jecPayloads"))
 {
    // make the bitset
@@ -226,26 +231,32 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                ielectron != electronEnd; ++ielectron ) {
             allElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
             ++nElectrons;
-            
+            double AEff    = 0.0;
             double scEta   = ielectron->superCluster()->eta();
             double eta     = ielectron->eta();
             double et      = ielectron->et();
             double dB      = ielectron->dB();
-            double AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2011);
+            if(useData_){
+               AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2011);
+            }else{
+               AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAFall11MC);
+            }
             double chIso = ielectron->userIsolation(pat::PfChargedHadronIso);
             double nhIso = ielectron->userIsolation(pat::PfNeutralHadronIso);
             double phIso  = ielectron->userIsolation(pat::PfGammaIso);
             double relIso = ( chIso + max(0.0, nhIso + phIso - rhoIso*AEff) )/ ielectron->ecalDrivenMomentum().pt();           
-   
+            int mHits  =  ielectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits();   
+
 //Electron Selection for e+jets
 //-----------------------------  
-            if (fabs(scEta) < 1.5660 && fabs(scEta) > 1.4442 ) continue;  //Fiducial cuts 
+            if (fabs(scEta) > 1.4442 &&  fabs(scEta) < 1.5660 ) continue;  //Fiducial cuts 
             
-            bool passTopCuts(0), passIso(0), passMVAID(0), passVetoID(0), passTightID(0);            
+            bool passTopCuts(0), passIso(0), passMVAID(0), passVetoID(0);// passTightID(0);            
             
             passTopCuts = (fabs(eta)< 2.5 && 
                            fabs(dB) < dxy_ &&
                            et       > eEt_ &&
+                           mHits    <= 0 &&
                            (ielectron->passConversionVeto()) 
                );
             
@@ -256,35 +267,8 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             else passMVAID = ielectron->electronID("mvaTrigV0") > 0;
             
             passVetoID = electronIdVeto_(*ielectron,event);//WP:"Veto" from cut based ID
-            passTightID = electronIdTight_(*ielectron, event);//WP: "Tight" from cut based ID
+            // passTightID = electronIdTight_(*ielectron, event);//WP: "Tight" from cut based ID
            
-            //std::cout << "pass ID " << passVetoID << std::endl;
-
-            //pat::strbitset electronIDSel =  electronIdVeto_.getBitTemplate();
-            //bool sihih = electronIDSel.test("sihih_EB") || electronIDSel.test("sihih_EE");
-            //std::cout << sihih << std::endl;
-            //std::cout << "sihih" << ielectron->sigmaIetaIeta() << std::endl;     
-            //std::cout << "Fixing a WP Tight" << electronIdTight_.version_("TIGHT");
-
-/*           
-            if(passVetoID) {
-
-               if(ielectron->isEB()) std::cout << "barrel--> " << std::endl;
-               else if (ielectron->isEE()) std::cout << "endcap--> " << std::endl;
-                 
-               std::cout << "delEta" <<ielectron->deltaEtaSuperClusterTrackAtVtx() << std::endl;
-               std::cout << "delPhi" <<ielectron->deltaPhiSuperClusterTrackAtVtx() << std::endl;
-               std::cout << "sietaieta " << ielectron->sigmaIetaIeta() << std::endl;
-               std::cout << "H/E" <<ielectron->hadronicOverEm() << std::endl;
-               std::cout << "dxy "<< ielectron->dB() << std::endl;
-               std::cout << "dZ" << ielectron->gsfTrack()->dz(PV) << std::endl;
-               std::cout << "ooemoop "<<  (1.0/ielectron->ecalEnergy() - ielectron->eSuperClusterOverP()/ielectron->ecalEnergy()) << std::endl;
-               std::cout << "relIso" << relIso << std::endl;
-               std::cout << "mva "<< ielectron->mva() << std::endl;
-               std::cout << "mHits" <<  ielectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits() << std::endl;
-               std::cout << "vtxFitConv" << ielectron->passConversionVeto() << std::endl;
-            }
-*/             
             if(passTopCuts && passIso && passMVAID){
                
                selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
@@ -436,8 +420,10 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                           electronEnd = selectedElectrons_.end(), ielectron = electronBegin;
                        ielectron != electronEnd; ++ielectron ) {
                      
-                     if( reco::deltaR( ielectron->eta(), ielectron->phi(), scaledJet.eta(), scaledJet.phi() ) < eleJetDR_ )
-                     {  indeltaR = true; }//std::cout << "jet is matched to an electron" << std::endl; }
+                     const pat::Electron * electron_ = dynamic_cast<const pat::Electron *>(ielectron->masterClonePtr().get());
+                     
+                     if( reco::deltaR( ielectron->eta(), ielectron->phi(), scaledJet.eta(), scaledJet.phi() ) < eleJetDR_ ){
+                        indeltaR = true; }                     
                   }
                   if( !indeltaR ) {
                      cleanedJets_.push_back( scaledJet );
@@ -599,76 +585,39 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                         ){
                         passCut(ret, dlepvetoIndex_);
                                                       
-                       //  //MET cuts
-//                         bool metCutMin = met_.pt() > metMin_;
-//                         bool metCutMax = met_.pt() < metMax_;
-//                         //cout << "metCutMin = " << metCutMin << ",metCutMax = " << metCutMax << endl;
-//                         //cout << "minCut = " << metMin_ << ", maxCut = " << metMax_ << endl;
-//                         if ( ignoreCut(metLowIndex_) || (metCutMin)) {
-//                            passCut( ret, metLowIndex_ );
-                                       
-//                            if ( ignoreCut(metHighIndex_) || (metCutMax)) {
-//                               passCut( ret, metHighIndex_ );
-                                            
-//                               //wMT
-//                               bool wMTMaxCut(true);
-//                               // double wMT (-100.);   
-//                               for( std::vector<reco::ShallowClonePtrCandidate>::const_iterator electronBegin = selectedElectrons_.begin(),
-//                                       electronEnd = selectedElectrons_.end(), ielectron = electronBegin;
-//                                    ielectron != electronEnd; ++ielectron ) {
+                        bool cosmicVeto = true;
+                        if ( ignoreCut(cosmicIndex_) ||
+                             cosmicVeto ) {
+                           passCut(ret,cosmicIndex_);
                                              
-//                                  reco::Candidate::LorentzVector nu_p4 = met_.p4();
-//                                  reco::Candidate::LorentzVector lep_p4 = ielectron->p4();
-//                                  double wPt = lep_p4.Pt() + nu_p4.Pt();
-//                                  double wPx = lep_p4.Px() + nu_p4.Px();
-//                                  double wPy = lep_p4.Py() + nu_p4.Py();
-//                                  double wMT = TMath::Sqrt(wPt*wPt-wPx*wPx-wPy*wPy);
-//                                  //cout << "wMT = " << wMT << endl;
-//                                  //wMTMaxCut = wMT < wMTMax_;
-//                               }
-//                               //cout << "wMTMaxCut = " << wMTMaxCut << ",cut value " << wMTMax_ << endl;
-//                               //wMT cut
-//                               if ( ignoreCut(wmtIndex_) || wMTMaxCut  ){
-//                                  passCut( ret, wmtIndex_);
-                                             
-                                 bool cosmicVeto = true;
-                                 if ( ignoreCut(cosmicIndex_) ||
-                                      cosmicVeto ) {
-                                    passCut(ret,cosmicIndex_);
-                                             
-                                    if ( ignoreCut(jet1Index_) ||
-                                         static_cast<int>(cleanedJets_.size()) >=  1 ){
-                                       passCut(ret,jet1Index_);  
-                                    } // end if >=1 tight jets
+                           if ( ignoreCut(jet1Index_) ||
+                                static_cast<int>(cleanedJets_.size()) >=  1 ){
+                              passCut(ret,jet1Index_);  
+                           } // end if >=1 tight jets
 
-                                    if ( ignoreCut(jet2Index_) ||
-                                         static_cast<int>(cleanedJets_.size()) >=  2 ){
-                                       passCut(ret,jet2Index_);  
-                                    } // end if >=2 tight jets
+                           if ( ignoreCut(jet2Index_) ||
+                                static_cast<int>(cleanedJets_.size()) >=  2 ){
+                              passCut(ret,jet2Index_);  
+                           } // end if >=2 tight jets
 
-                                    if ( ignoreCut(jet3Index_) ||
-                                         static_cast<int>(cleanedJets_.size()) >=  3 ){
-                                       passCut(ret,jet3Index_);  
-                                    } // end if >=3 tight jets
+                           if ( ignoreCut(jet3Index_) ||
+                                static_cast<int>(cleanedJets_.size()) >=  3 ){
+                              passCut(ret,jet3Index_);  
+                           } // end if >=3 tight jets
 
-                                    if ( ignoreCut(jet4Index_) ||
-                                         static_cast<int>(cleanedJets_.size()) >=  4 ){
-                                       passCut(ret,jet4Index_);  
-                                    } // end if >=4 tight jets
+                           if ( ignoreCut(jet4Index_) ||
+                                static_cast<int>(cleanedJets_.size()) >=  4 ){
+                              passCut(ret,jet4Index_);  
+                           } // end if >=4 tight jets
 
-                                    if ( ignoreCut(jet5Index_) ||
-                                         static_cast<int>(cleanedJets_.size()) >=  5 ){
-                                       passCut(ret,jet5Index_);  
-                                    } // end if >=5 tight jets
+                           if ( ignoreCut(jet5Index_) ||
+                                static_cast<int>(cleanedJets_.size()) >=  5 ){
+                              passCut(ret,jet5Index_);  
+                           } // end if >=5 tight jets
                                              
 
-                                 } // end if cosmic veto		
+                        } // end if cosmic veto		
                                           
-//                               }// end of wMT cut
-                                       
-//                            } // end if met cut max
-                              
-//                         }// end if met cut low
                            
                      } //end if dilepton veto
                         

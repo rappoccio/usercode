@@ -47,16 +47,13 @@ class SHyFTSelector : public EventSelector {
          pvSelector_.print(out);
          out << "Muon ID Tight Selector: " << std::endl;
          muonIdTight_.print(out);
-         out << "Electron ID Tight Selector: " << std::endl;
-         electronIdTight_.print(out);
+         // out << "Electron ID Tight Selector: " << std::endl;
+//          electronIdTight_.print(out);
          out << "Muon ID Loose Selector: " << std::endl;
          muonIdLoose_.print(out);
          out << "Electron ID Veto Selector: " << std::endl;
          electronIdVeto_.print(out);
-         //out << "Calo Jet Selector: " << std::endl;
-         //jetIdLoose_.print(out);
-         //out << "PF Jet Selector: " << std::endl;
-         //pfjetIdLoose_.print(out);
+         
       }
  
    protected: 
@@ -145,7 +142,9 @@ class SHyFTSelector : public EventSelector {
       bool           useData_;    
       bool           useNoPFIso_;      
       bool           useNoID_;   
- 
+     
+      edm::InputTag pfEleSrc_;
+
       // Jet energy corrections object
       std::vector<std::string> jecPayloads_;
       boost::shared_ptr<JetCorrectionUncertainty> jecUnc_;

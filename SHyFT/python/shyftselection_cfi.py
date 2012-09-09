@@ -28,18 +28,17 @@ wplusjetsAnalysis = cms.PSet(
     # input parameter sets
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
     electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
-    jetSrc = cms.InputTag('selectedPatJetsPFlow'),
-    jetClonesSrc = cms.InputTag('myClones'),
+    jetSrc = cms.InputTag('goodPatJetsPFlow'),
     metSrc = cms.InputTag('patMETsPFlow'),
     trigSrc = cms.InputTag('patTriggerEvent'),
     muTrig = cms.string('HLT_Mu9'),
     eleTrig = cms.string('HLT_Ele10_LW_L1R'),
     pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
     rhoSrc  = cms.InputTag('kt6PFJets', 'rho'),
-    rhoIsoSrc     = cms.InputTag("kt6PFJetsForIsolation", 'rho'), 
+    rhoIsoSrc = cms.InputTag("kt6PFJetsForIsolation", 'rho'),
+    pfEleSrc  = cms.InputTag("particleFlow"),
     useNoPFIso = cms.bool(False),
     useNoID  = cms.bool(False),
-    useVBTFDetIso  = cms.bool(False),
     # tight muons
     muonIdTight = pfMuonSelector.clone(
     version = cms.string('SPRING11'),
@@ -52,17 +51,7 @@ wplusjetsAnalysis = cms.PSet(
     nMatchedStations=cms.int32(1),
     cutsToIgnore=cms.vstring()
     ),
-    # tight electrons
-   ##  electronIdTight = pfElectronSelector.clone(
-##     version = cms.string('SPRING11'),
-##     MVA = cms.double(-0.01),
-##     MaxMissingHits = cms.int32(1),
-##     D0 = cms.double(0.02),
-##     electronIDused = cms.string('eidSuperTightMC'),
-##     ConversionRejection = cms.bool(False),
-##     PFIso = cms.double(0.1),
-##     cutsToIgnore = cms.vstring('MVA', 'ConversionRejection', 'MaxMissingHits')
-##     ),
+  
     # loose electrons
     electronIdLoose = pfElectronSelector.clone(
     version = cms.string('SPRING11'),
@@ -86,9 +75,7 @@ wplusjetsAnalysis = cms.PSet(
     nMatchedStations=cms.int32(1),
     cutsToIgnore=cms.vstring('Chi2','D0','NHits','NValMuHits','nPixelHits','nMatchedStations')
     ),
-    # loose jets
-    #jetIdLoose = jetIDSelector.clone(),
-    #pfjetIdLoose = pfJetIDSelector.clone(),
+   
     # kinematic cuts
     minJets        = cms.int32( 1 ),
     muPlusJets     = cms.bool( True ),
@@ -123,12 +110,13 @@ wplusjetsAnalysis = cms.PSet(
     eleJetDR       = cms.double( 0.5 ),
     rawJetPtCut    = cms.double( 0.0 ),
     useData        = cms.bool(False),
+    pfCandidateMap = cms.InputTag('particleFlow:electrons'),
     jecPayloads    = cms.vstring([
-    'Jec12_V1_L1FastJet_AK5PFchs.txt',
-    'Jec12_V1_L2Relative_AK5PFchs.txt',
-    'Jec12_V1_L3Absolute_AK5PFchs.txt',
-    'Jec12_V1_L2L3Residual_AK5PFchs.txt',
-    'Jec12_V1_Uncertainty_AK5PFchs.txt', ])
-    #useL1Offset    = cms.bool(True),#Dummy variable: will remove it next time
-    #jecPayload     = cms.string('Jec11_V2_AK5PFchs_Uncertainty.txt')
+    'Jec12_V2_L1FastJet_AK5PFchs.txt',
+    'Jec12_V2_L2Relative_AK5PFchs.txt',
+    'Jec12_V2_L3Absolute_AK5PFchs.txt',
+    'Jec12_V2_L2L3Residual_AK5PFchs.txt',
+    'Jec12_V2_Uncertainty_AK5PFchs.txt', ])
+   
+    #jecPayload     = cms.string('Jec12_V2_AK5PFchs_Uncertainty.txt')
 )
