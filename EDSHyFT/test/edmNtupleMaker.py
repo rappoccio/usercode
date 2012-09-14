@@ -75,6 +75,7 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 # run the trigger on the fly
 process.load('PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff')
 
+# apply the JEC on fly
 payloads = [
     'Jec12_V2_L1FastJet_AK5PFchs.txt',
     'Jec12_V2_L2Relative_AK5PFchs.txt', 
@@ -82,8 +83,6 @@ payloads = [
     'Jec12_V2_L2L3Residual_AK5PFchs.txt',
     'Jec12_V2_Uncertainty_AK5PFchs.txt',   
 ]
-## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 #_______________________________BTagging SF and Pileup________________________________________
@@ -112,8 +111,11 @@ if not runData:
 
 #_____________________________________PF__________________________________________________
 
-process.pfTupleEle = cms.EDFilter('EDWPlusJetsSelector',
-                                   inputShyftAnalysis.clone(
+
+from Analysis.SHyFT.shyftselection_cfi import wplusjetsAnalysis as shyftSelectionInput
+
+process.pfTupleEle = cms.EDFilter('EDSHyFTSelector',
+                                   shyftSelection = shyftSelectionInput.clone(
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
     electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
     metSrc = cms.InputTag('patMETsPFlow'),
@@ -124,7 +126,6 @@ process.pfTupleEle = cms.EDFilter('EDWPlusJetsSelector',
     eEt = cms.double(options.eleEt),
     jetPtMin = cms.double(30.0),
     minJets = cms.int32(1),
-    reweightPU = cms.bool(False),
     useNoPFIso = cms.bool(False),
     useNoID  = cms.bool(False),
     useData = cms.bool(runData),
@@ -140,10 +141,8 @@ process.pfTupleEleLoose.useNoID = cms.bool(True)
 process.pfTupleEleLoose.identifier = cms.string('relIso<0.2, no MVA ID')
 
 
-
-
 ## configure output module
-process.p0 = cms.Path( process.patTriggerDefaultSequence * process.pfTupleEle)
+process.p0 = cms.Path( process.patTriggerDefaultSequence * process.pfTupleEle )
 
 process.p1 = cms.Path()
 
@@ -163,7 +162,7 @@ process.out = cms.OutputModule("PoolOutputModule",
                                )
 if not runData:
     process.out.outputCommands += [
-                               'keep *_prunedGenParticles_*_*',
+                               #'keep *_prunedGenParticles_*_*',
                                'keep *_*_pileupWeights_*'
                                ]
 #if runNoEleID:

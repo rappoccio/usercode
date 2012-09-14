@@ -14,7 +14,7 @@ from optparse import OptionParser
 parser = OptionParser()
 
 parser.add_option('--files', metavar='F', type='string', action='store',
-                  default = "edmTest1.root",
+                  default = "edmTest.root",
                   dest='files',
                   help='Input files')
 
@@ -83,7 +83,7 @@ jetsH = Handle ("std::vector<pat::Jet>")
 jetsLabel = ("pfTupleEle", "jets")
 
 metH = Handle ("std::vector<pat::MET>")
-metLabel = ("pfTupleEle", "met")
+metLabel = ("pfTupleEle", "MET")
 
 trigH = Handle("pat::TriggerEvent")
 trigLabel = ("patTriggerEvent", "")
@@ -190,7 +190,7 @@ nEventsAnalyzed = 0
 timer = TStopwatch()
 timer.Start()
 
-randomGenerator = TRandom()
+#randomGenerator = TRandom()
 
 # loop over events
 i = 0
@@ -213,7 +213,7 @@ for event in events:
         pileupProduct = pileupWeightsH.product()
         pileupWeight[0] = pileupProduct[0]
         pileupWeightUp[0] = pileupProduct[1]
-        pileupWeightDown[0] = pileupProduct[2]
+        pileupWeightDown[0] = pileupProduct[2]     
     else:
         runNumber[0] = event.object().id().run()
         lumiNumber[0] = event.object().id().luminosityBlock() 
@@ -231,32 +231,57 @@ for event in events:
         continue
     if len(jets) == 0:
         continue
-
-    #JES and JER
+    
+    #Systematic variations studies:
+    #=============================
+    
+    # get the P4 of the edm MET
+    metP4 = metObj.p4()
+    
+    #JEC is already applied to jets/MET in EDM Ntuples
     for ijet in jets :
+        
+        ## get the uncorrected jets 
+        uncorrJet = ijet.correctedP4(0)
+        
+        #JES 
         jetScale = 1.0
         if not options.data and abs(jecScale) > 0.0001 :
             jecUnc.setJetEta( ijet.eta() )
             jecUnc.setJetPt( ijet.pt() )
             upOrDown = bool(jecScale > 0.0)
-
             unc1 = abs(jecUnc.getUncertainty(upOrDown))
             unc2 = flatJecUnc
             unc = math.sqrt(unc1*unc1 + unc2*unc2)
-            #print 'Correction = ' + str( 1 + unc * jecScale)
             jetScale = 1 + unc * jecScale
+         
+        ##JER
+        genJets =  ijet.userFloat('genJetPt')
+        if not options.data and abs(options.jetSmear)>0.0001 and genJets>15.0:
+            scale = options.jetSmear
+            recopt = ijet.pt()
+            genpt = genJets
+            deltapt = (recopt-genpt)*scale
+            ptscale = max(0.0, (recopt+deltapt)/recopt)
+            jetScale*=ptscale
+           
+        #remove the uncorrected jets
+        metP4.SetPx(metP4.px() + uncorrJet.px())
+        metP4.SetPy(metP4.py() + uncorrJet.py())
 
-##          ## also do Jet energy resolution variation 
-##         if not options.data and abs(options.jetSmear)>0.0001 and ijet.genJet() != 0 and ijet.genJet().pt()>15.0:
-##             scale = options.jetSmear
-##             recopt = ijet.pt()
-##             genpt = ijet.genJet().pt()
-##             deltapt = (recopt-genpt)*scale
-##             ptscale = max(0.0, (recopt+deltapt)/recopt)
-##             jetScale*=ptscale   
-##             print 'Correction = ' + str(jecScale)
+        #apply the SF and add back the jets and also correct the MET
+        metP4.SetPx(metP4.px() - uncorrJet.px() * jetScale)
+        metP4.SetPy(metP4.py() - uncorrJet.py() * jetScale)
+      
+        #Reset the jet p4
+        ijet.setP4( ijet.p4()*jetScale )
+        
 
+    #Reset MET
+    metObj.setP4(metP4)
 
+    #########################
+    
     # store the trigger paths
     trig_path[0]  = -1
     eleHad    = "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet"
@@ -286,10 +311,10 @@ for event in events:
     sumEt4jets35 = sumEt
     
     nj = 0
-    ntagsTCHEM = 0
-    ntagsSSVHEM = 0
     ntagsCSVM = 0
+    
     for jet in jets :
+    
         jetEt[nj] = jet.pt()
         if nj < 4 :
             sumEt4jets += jet.pt()
