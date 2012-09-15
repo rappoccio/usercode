@@ -129,7 +129,7 @@ process.pfTupleEle = cms.EDFilter('EDSHyFTSelector',
     useNoPFIso = cms.bool(False),
     useNoID  = cms.bool(False),
     useData = cms.bool(runData),
-    identifier = cms.string('PF'),
+    identifier = cms.string('AK5 PF'),
     cutsToIgnore=cms.vstring(inputCutsToIgnore),
     jecPayloads = cms.vstring( payloads )
     )
@@ -140,10 +140,17 @@ process.pfTupleEleLoose.eRelIso = cms.double(0.2)
 process.pfTupleEleLoose.useNoID = cms.bool(True)
 process.pfTupleEleLoose.identifier = cms.string('relIso<0.2, no MVA ID')
 
+process.pfTupleC8APruned = process.pfTupleEle.clone()
+process.pfTupleC8APruned.jetsSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
+process.pfTupleC8APruned.identifier = cms.string('CA8 Prunded PF')
 
 ## configure output module
-process.p0 = cms.Path( process.patTriggerDefaultSequence * process.pfTupleEle )
 
+#process.s1 = cms.Path(process.pfTupleEle)
+#process.s2 = cms.Path(process.pfTupleC8APruned)
+process.p0 = cms.Path( process.patTriggerDefaultSequence * process.pfTupleEle * process.pfTupleC8APruned )
+
+#process.p0 *= process.s1
 process.p1 = cms.Path()
 
 if not runData:
@@ -162,7 +169,7 @@ process.out = cms.OutputModule("PoolOutputModule",
                                )
 if not runData:
     process.out.outputCommands += [
-                               #'keep *_prunedGenParticles_*_*',
+                               'keep *_prunedGenParticles_*_*',
                                'keep *_*_pileupWeights_*'
                                ]
 #if runNoEleID:

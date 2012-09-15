@@ -84,11 +84,11 @@ if len(options.inputFiles) == 0 :
                                 )                           
 
 payloads = [
-    'Jec12_V1_L1FastJet_AK5PFchs.txt',
-    'Jec12_V1_L2Relative_AK5PFchs.txt', 
-    'Jec12_V1_L3Absolute_AK5PFchs.txt',
-    'Jec12_V1_L2L3Residual_AK5PFchs.txt',
-    'Jec12_V1_Uncertainty_AK5PFchs.txt',   
+    'Jec12_V2_L1FastJet_AK5PFchs.txt',
+    'Jec12_V2_L2Relative_AK5PFchs.txt', 
+    'Jec12_V2_L3Absolute_AK5PFchs.txt',
+    'Jec12_V2_L2L3Residual_AK5PFchs.txt',
+    'Jec12_V2_Uncertainty_AK5PFchs.txt',   
 ]
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
@@ -119,12 +119,9 @@ process.pfShyftSkim = cms.EDFilter('EDWPlusJetsSelector',
     pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
     ePlusJets = cms.bool( True ),
     muPlusJets = cms.bool(False),
-    usePFIso = cms.bool(True),
-    eEtCut = cms.double(options.eleEt),
-    useVBTFDetIso  = cms.bool(False),
-    jetPtMin = cms.double(35.0),##
+    eEt  = cms.double(options.eleEt),
+    jetPtMin = cms.double(30.0),##
     minJets = cms.int32(4),
-    metMin = cms.double(0.0),
     reweightPU = cms.bool(False),
     doMC = cms.bool( inputDoMC),
     sampleName = cms.string(inputSampleName),

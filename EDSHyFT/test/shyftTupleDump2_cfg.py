@@ -73,13 +73,14 @@ import sys
 
 if useData:
     inputFiles = [
-        'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/dstrom/SingleElectron/SingleElectron_Run2011A-PromptReco/f8e845a0332c56398831da6c30999af1/ttbsm_42x_data_9_1_PZg.root'
+        #'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/dstrom/SingleElectron/SingleElectron_Run2011A-PromptReco/f8e845a0332c56398831da6c30999af1/ttbsm_42x_data_9_1_PZg.root'
         #'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/SingleMu/ttbsm_v9_Run2011A-PromptReco-v4/f8e845a0332c56398831da6c30999af1/ttbsm_42x_data_326_1_ZF4.root'
         ]
 
 else :
     inputFiles = [
-        'dcap:///pnfs/cms/WAX/11//store/user/lpctlbsm/srappocc/TTJets_TuneZ2_7TeV-madgraph-tauola/ttbsm_v9_Summer11-PU_S4_START42_V11-v1/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_9_1_7Fg.root'
+        '/store/user/b2g12006/bazterra/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_1001_1_eOl.root',
+        #'dcap:///pnfs/cms/WAX/11//store/user/lpctlbsm/srappocc/TTJets_TuneZ2_7TeV-madgraph-tauola/ttbsm_v9_Summer11-PU_S4_START42_V11-v1/bf57a985b107a689982b667a3f2f23c7/ttbsm_42x_mc_9_1_7Fg.root'
         ]
 
 process.source = cms.Source("PoolSource",
