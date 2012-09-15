@@ -26,15 +26,19 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
 	i != iend; ++i ) {
     pat::Jet const * ijet = dynamic_cast<pat::Jet const *>( i->masterClonePtr().get() );
     if ( ijet != 0 ){
-       int matched = 0; float genJetPt = 0.0;
+       int matched = 0; 
       if(ijet->genJet()) matched=1;
       jets->push_back( *ijet );
       jets->back().setP4( i->p4() );//set back the P4 to the clonned jet
       jets->back().addUserInt("matched",matched);
       if(matched == 1 ){ 
          jets->back().addUserFloat("genJetPt",ijet->genJet()->pt());
+         jets->back().addUserFloat("genJetPhi", ijet->genJet()->phi());
+         jets->back().addUserFloat("genJetEta", ijet->genJet()->eta());
       }else{
          jets->back().addUserFloat("genJetPt", -10);
+         jets->back().addUserFloat("genJetPhi", -10);
+         jets->back().addUserFloat("genJetEta", -10);
       }
     }
 
