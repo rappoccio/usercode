@@ -145,19 +145,18 @@ process.pfTupleC8APruned.jetsSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
 process.pfTupleC8APruned.identifier = cms.string('CA8 Prunded PF')
 
 ## configure output module
-
-#process.s1 = cms.Path(process.pfTupleEle)
-#process.s2 = cms.Path(process.pfTupleC8APruned)
-process.p0 = cms.Path( process.patTriggerDefaultSequence * process.pfTupleEle * process.pfTupleC8APruned )
+process.p0 = cms.Path( process.patTriggerDefaultSequence)
+process.p1 = cms.Path( process.pfTupleEle)
+process.p2 = cms.Path( process.pfTupleC8APruned)
 
 #process.p0 *= process.s1
-process.p1 = cms.Path()
+process.p3 = cms.Path()
 
 if not runData:
-    process.p1 = cms.Path( process.pileupReweightingProducer * process.goodPatJetsPFlowSF )
+    process.p3 = cms.Path( process.pileupReweightingProducer * process.goodPatJetsPFlowSF )
     
 process.out = cms.OutputModule("PoolOutputModule",
-                               SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p0','p1') ),
+                               SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p0','p1', 'p2', 'p3') ),
                                fileName =  cms.untracked.string('edmTest.root'),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       'keep *_pfTuple*_*_*',
@@ -182,6 +181,7 @@ process.outpath = cms.EndPath(process.out)
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.MessageLogger.suppressWarning.append('patTrigger')
+#process.MessageLogger.cout.INFO = cms.untracked.PSet( limit = cms.untracked.int32(0) )
 process.MessageLogger.cerr.FwkJob.limit=1
 process.MessageLogger.cerr.ERROR = cms.untracked.PSet( limit = cms.untracked.int32(0) )
 
