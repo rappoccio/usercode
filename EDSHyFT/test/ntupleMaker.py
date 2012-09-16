@@ -28,10 +28,15 @@ parser.add_option('--JES', metavar='F', type='string', action='store',
                   dest='JES',
                   help='JEC Systematic variation. Options are "nominal, up, down"')
 
-parser.add_option('--jetSmear', metavar='F', type='float', action='store',
+parser.add_option('--jetPtSmear', metavar='F', type='float', action='store',
                   default=0.1,
-                  dest='jetSmear',
+                  dest='jetPtSmear',
                   help='JER smearing. Standard values are 0.1 (nominal), 0.0 (down), 0.2 (up)')
+
+parser.add_option('--jetEtaSmear', metavar='F', type='float', action='store',
+                  default=0.1,
+                  dest='jetEtaSmear',
+                  help='Jet Phi smearing. Standard values are 0.1 (nominal), 0.0 (down), 0.2 (up)')
 
 parser.add_option("--data", action='store_true',
                   default=False,
@@ -48,10 +53,16 @@ parser.add_option("--bTag",action='store',
                   dest="bTag",
                   help="b-tag SF")
 
+parser.add_option("--useC8APrune", action='store_true',
+                  default=True,
+                  dest="useC8APrune",
+                  help="switch on(1) / off(0) C8APrune jets")
+
 # Parse and get arguments
 (options, args) = parser.parse_args()
 
 runMu = options.runMuons
+c8aPruneJets = options.useC8APrune
 
 # JEC
 jecScale = 0.0
@@ -82,8 +93,14 @@ events = Events (files)
 jetsH = Handle ("std::vector<pat::Jet>")
 jetsLabel = ("pfTupleEle", "jets")
 
+c8aPruneJetsH = Handle ("std::vector<pat::Jet>")
+c8aPruneJetsLabel = ("pfTupleC8APruned", "jets")
+
 metH = Handle ("std::vector<pat::MET>")
 metLabel = ("pfTupleEle", "MET")
+
+c8aPruneMetH = Handle ("std::vector<pat::MET>")
+c8aPruneMetLabel = ("pfTupleC8APruned", "MET")
 
 trigH = Handle("pat::TriggerEvent")
 trigLabel = ("patTriggerEvent", "")
@@ -190,8 +207,6 @@ nEventsAnalyzed = 0
 timer = TStopwatch()
 timer.Start()
 
-#randomGenerator = TRandom()
-
 # loop over events
 i = 0
 for event in events:
@@ -206,7 +221,10 @@ for event in events:
     event.getByLabel(leptonsLabel, leptonsH)
     event.getByLabel(metLabel, metH)
     event.getByLabel(trigLabel, trigH)
-   
+    
+    event.getByLabel(c8aPruneJetsLabel,  c8aPruneJetsH)
+    event.getByLabel(c8aPruneMetLabel,  c8aPruneMetH)
+    
     # PileupReweighting
     if not options.data :
         event.getByLabel(pileupWeightsLabel, pileupWeightsH)
@@ -222,9 +240,15 @@ for event in events:
   
     # Get the "product" of the handle (i.e. what it's "pointing to" in C++)
     vertices = vertH.product()
-    jets = jetsH.product()
+    
+    if c8aPruneJets:
+        jets = c8aPruneJetsH.product()
+        metObj = (c8aPruneMetH.product())[0]
+    else:
+        jets = jetsH.product()
+        metObj = (metH.product())[0]
+        
     leptons = leptonsH.product()
-    metObj = (metH.product())[0]
     trigObj = trigH.product()
     
     if len(leptons) == 0:
@@ -238,12 +262,22 @@ for event in events:
     # get the P4 of the edm MET
     metP4 = metObj.p4()
     
-    #JEC is already applied to jets/MET in EDM Ntuples
+    #L1, L2, L3 JEC are already applied to jets in EDM Ntuples
     for ijet in jets :
         
         ## get the uncorrected jets 
         uncorrJet = ijet.correctedP4(0)
+
+        ## get p4 of L1,L2,L3 corrected jets
+        #jetP4 = TLorentzVector()
+        #jetP4.SetPtEtaPhi( ijet.pt(), ijet.eta(), ijet.phi(), ijet.mass() )
+        jetP4     = ijet.p4()
         
+        #genJets
+        genJetPt  = ijet.userFloat('genJetPt')
+        genJetPhi = ijet.userFloat('genJetPhi')
+        genJetEta = ijet.userFloat('genJetEta')
+         
         #JES 
         jetScale = 1.0
         if not options.data and abs(jecScale) > 0.0001 :
@@ -254,17 +288,42 @@ for event in events:
             unc2 = flatJecUnc
             unc = math.sqrt(unc1*unc1 + unc2*unc2)
             jetScale = 1 + unc * jecScale
-         
-        ##JER
-        genJets =  ijet.userFloat('genJetPt')
-        if not options.data and abs(options.jetSmear)>0.0001 and genJets>15.0:
-            scale = options.jetSmear
+
+        ##Jet energy resolution smearing
+        if not options.data and abs(options.jetPtSmear)>0.0001 and genJetPt>15.0:
+            scale = options.jetPtSmear
             recopt = ijet.pt()
-            genpt = genJets
+            genpt = genJetPt
             deltapt = (recopt-genpt)*scale
             ptscale = max(0.0, (recopt+deltapt)/recopt)
             jetScale*=ptscale
+
+        ##Jet angular resolution smearing
+        etaScale = 1.0
+        phiScale = 1.0
+        if not options.data and abs(options.jetEtaSmear)>0.0001 and genJetPt>15.0:
+            scale = options.jetPtSmear
+            recoeta = ijet.eta()
+            recophi = ijet.phi()
+            geneta = genJetEta
+            genphi = genJetPhi
+            deltaeta = (recoeta-geneta)*scale
+            deltaphi = (recophi-genphi)*scale
+            etascale = max(0.0, (recoeta+deltaeta)/recoeta)
+            phiscale = max(0.0, (recophi+deltaphi)/recophi)
            
+        #Reset the jet p4
+
+        #------(FIX ME)----
+           
+        #jetP4.SetPt( ijet.pt() * jetScale )
+        #jetP4.SetM ( ijet.m() * jetScale )
+        #jetP4.SetEta( ijet.eta() * jetScale * etaScale )
+        #jetP4.SetPhi( ijet.phi() * jetScale * phiScale )
+
+        #For the time being, let's only smear in pt.
+        ijet.setP4( ijet.p4() * jetScale )
+
         #remove the uncorrected jets
         metP4.SetPx(metP4.px() + uncorrJet.px())
         metP4.SetPy(metP4.py() + uncorrJet.py())
@@ -273,8 +332,7 @@ for event in events:
         metP4.SetPx(metP4.px() - uncorrJet.px() * jetScale)
         metP4.SetPy(metP4.py() - uncorrJet.py() * jetScale)
       
-        #Reset the jet p4
-        ijet.setP4( ijet.p4()*jetScale )
+        
         
 
     #Reset MET
