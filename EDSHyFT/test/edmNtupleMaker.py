@@ -57,7 +57,8 @@ if options.ignoreTrigger == 1 :
 ## Source    
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-    '/store/user/b2g12006/bazterra/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_1001_1_eOl.root',
+   # '/store/user/b2g12006/bazterra/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_1001_1_eOl.root',
+	'/store/user/lpctlbsm/jpilot/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola-Summer12_DR53X-PU_S10/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_53x_mc_105_1_sFj.root'                                
     )
                             )                           
 
@@ -141,8 +142,8 @@ process.pfTupleEleLoose.useNoID = cms.bool(True)
 process.pfTupleEleLoose.identifier = cms.string('relIso<0.2, no MVA ID')
 
 process.pfTupleC8APruned = process.pfTupleEle.clone()
-process.pfTupleC8APruned.jetsSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
-process.pfTupleC8APruned.identifier = cms.string('CA8 Prunded PF')
+process.pfTupleC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
+process.pfTupleC8APruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
 
 ## configure output module
 process.p0 = cms.Path( process.patTriggerDefaultSequence)
@@ -163,8 +164,12 @@ process.out = cms.OutputModule("PoolOutputModule",
                                                                       'keep *_patTriggerEvent_*_*',
                                                                       'keep *_patTrigger_*_*',
                                                                       'keep PileupSummaryInfos_*_*_*',
-                                                                      'keep *_goodOfflinePrimaryVertices_*_*'
-                                                                      ),
+                                                                      'keep *_goodOfflinePrimaryVertices_*_*',
+                                                                      'drop *_pfTupleC8APruned_*_*',
+								      'keep *_pfTupleC8APruned_jets_*',
+								      'keep *_pfTupleC8APruned_MET_*',
+								      'keep *_caPrunedPFlow_SubJets_*'
+									),
                                )
 if not runData:
     process.out.outputCommands += [
