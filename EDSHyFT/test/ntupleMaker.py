@@ -171,6 +171,12 @@ max_nJets = 20
 jetEt = array('d',max_nJets*[0.])
 t.Branch('jetEt',jetEt,'jetEt[nJets]/D')
 
+WjetM = array('d', max_nJets*[0.])
+t.Branch('WjetM', WjetM, 'WjetM[nJets]/D')
+
+WjetMu = array('d', max_nJets*[0.])
+t.Branch('WjetMu', WjetMu, 'WjetMu[nJets]/D')
+
 minDR_je = array('d',[0.])
 t.Branch('minDR_je',minDR_je,'minDR_je/D')
 
@@ -272,7 +278,13 @@ for event in events:
         #jetP4 = TLorentzVector()
         #jetP4.SetPtEtaPhi( ijet.pt(), ijet.eta(), ijet.phi(), ijet.mass() )
         jetP4     = ijet.p4()
-        
+       
+
+	print ijet.numberOfDaughters()
+	print ijet.daughter(0).mass(), ijet.daughter(1).mass()
+	
+
+ 
         #genJets
         genJetPt  = ijet.userFloat('genJetPt')
         genJetPhi = ijet.userFloat('genJetPhi')
@@ -376,7 +388,18 @@ for event in events:
         jetEt[nj] = jet.pt()
         if nj < 4 :
             sumEt4jets += jet.pt()
-            
+        
+
+	if c8aPruneJets :
+	
+	    WjetM[nj] = jet.mass()
+	    subjet1M = jet.daughter(0).mass() 
+	    subjet2M = jet.daughter(1).mass()
+	    mu = max(subjet1M,subjet2M) / jet.mass()
+	    WjetMu[nj] = mu
+
+
+    
         nj = nj + 1
         sumEt += jet.pt()
 
