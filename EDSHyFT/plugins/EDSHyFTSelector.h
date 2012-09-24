@@ -11,6 +11,7 @@ class EDSHyFTSelector : public edm::FilterWrapper<SHyFTSelector> {
  public:
  EDSHyFTSelector( const edm::ParameterSet & params ) :
   edm::FilterWrapper<SHyFTSelector>( params.getParameter<edm::ParameterSet>("shyftSelection") ),
+  matchByHand_(params.getParameter<bool>("matchByHand")),   
   name_( params.getParameter<std::string>("@module_label") )
     {
       produces< std::vector<pat::Jet> >      ("jets");
@@ -18,7 +19,6 @@ class EDSHyFTSelector : public edm::FilterWrapper<SHyFTSelector> {
       produces< std::vector<pat::Muon> >     ("muons");
       produces< std::vector<pat::Electron> > ("electrons");
     };
-    
   virtual ~EDSHyFTSelector() {}
 
   virtual bool filter( edm::Event & event, const edm::EventSetup& eventSetup);
@@ -34,6 +34,7 @@ class EDSHyFTSelector : public edm::FilterWrapper<SHyFTSelector> {
   }
 
  protected:
+  bool matchByHand_;
   std::string name_;
 };
 

@@ -132,8 +132,9 @@ process.pfTupleEle = cms.EDFilter('EDSHyFTSelector',
     useData = cms.bool(runData),
     identifier = cms.string('AK5 PF'),
     cutsToIgnore=cms.vstring(inputCutsToIgnore),
-    jecPayloads = cms.vstring( payloads )
-    )
+    jecPayloads = cms.vstring( payloads ),
+   ),
+    matchByHand = cms.bool(False)
                                        )
 
 process.pfTupleEleLoose = process.pfTupleEle.clone()
@@ -144,6 +145,8 @@ process.pfTupleEleLoose.identifier = cms.string('relIso<0.2, no MVA ID')
 process.pfTupleC8APruned = process.pfTupleEle.clone()
 process.pfTupleC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
 process.pfTupleC8APruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
+process.pfTupleC8APruned.matchByHand = cms.bool(True)
+
 
 ## configure output module
 process.p0 = cms.Path( process.patTriggerDefaultSequence)

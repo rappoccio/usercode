@@ -20,8 +20,47 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
     mets->push_back( *patmet );
     mets->back().setP4( imet.p4() );//set back the P4 to the clonned met
   }
-
+	
   typedef std::vector<reco::ShallowClonePtrCandidate>::const_iterator clone_iter;
+
+  if (matchByHand_) {
+	edm::Handle<std::vector<reco::GenJet> > h_genJets;
+ 	event.getByLabel("ca8GenJetsNoNu", h_genJets);
+        for ( clone_iter ibegin = ijets.begin(), iend = ijets.end(), i = ibegin;i != iend; ++i ) {
+		pat::Jet const * ijet = dynamic_cast<pat::Jet const *>( i->masterClonePtr().get() );
+    		if ( ijet != 0 ){
+       			int matched = 0;
+      			jets->push_back( *ijet );
+      			jets->back().setP4( i->p4() );//set back the P4 to the clonned jet
+      			jets->back().addUserInt("matched",matched);
+
+		//Find mathcing genJet for systematic smearing
+		float minDR = 9.9;
+		float deltaR = 0.0;
+		reco::GenJet theMatchingGenJet;	
+	        for (std::vector<reco::GenJet>::const_iterator genJBegin = h_genJets->begin(), genJEnd = h_genJets->end(), igenjet = genJBegin; igenjet != genJEnd; ++igenjet){
+			deltaR = std::sqrt( (ijet->eta() - igenjet->eta())*(ijet->eta() - igenjet->eta()) + (ijet->phi() - igenjet->phi())*(ijet->phi() - igenjet->phi())  );
+			if (deltaR < minDR){
+				theMatchingGenJet = (*igenjet);
+				minDR = deltaR;
+				matched = 1;
+			}		
+		}
+		if (matched == 1) {
+         		jets->back().addUserFloat("genJetPt",theMatchingGenJet.pt());
+        		jets->back().addUserFloat("genJetPhi", theMatchingGenJet.phi());
+       			jets->back().addUserFloat("genJetEta", theMatchingGenJet.eta());
+		}
+		else {
+        	 	jets->back().addUserFloat("genJetPt", -10);
+         		jets->back().addUserFloat("genJetPhi", -10);
+         		jets->back().addUserFloat("genJetEta", -10);
+		}
+	}
+    }	
+}
+
+else{
   for ( clone_iter ibegin = ijets.begin(), iend = ijets.end(), i = ibegin;
 	i != iend; ++i ) {
     pat::Jet const * ijet = dynamic_cast<pat::Jet const *>( i->masterClonePtr().get() );
@@ -43,6 +82,8 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
     }
 
   }
+
+}
   for ( clone_iter jbegin = imuons.begin(), jend = imuons.end(), j = jbegin;
 	j != jend; ++j ) {
     pat::Muon const * jmuon = dynamic_cast<pat::Muon const *>( j->masterClonePtr().get() );
