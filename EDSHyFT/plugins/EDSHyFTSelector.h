@@ -11,16 +11,23 @@ class EDSHyFTSelector : public edm::FilterWrapper<SHyFTSelector> {
  public:
  EDSHyFTSelector( const edm::ParameterSet & params ) :
   edm::FilterWrapper<SHyFTSelector>( params.getParameter<edm::ParameterSet>("shyftSelection") ),
-  matchByHand_(params.getParameter<bool>("matchByHand")),   
+  matchByHand_(params.getParameter<bool>("matchByHand")), 
+  //doMC_(params.getParameter<bool>("doMC")),
   name_( params.getParameter<std::string>("@module_label") )
     {
       produces< std::vector<pat::Jet> >      ("jets");
       produces< std::vector<pat::MET> >      ("MET");
       produces< std::vector<pat::Muon> >     ("muons");
       produces< std::vector<pat::Electron> > ("electrons");
+     
+      produces< double > ("dRqqFromZ");
+      produces< double > ("dRqqFromW");
+      //produces< unsigned int > ("npv");
+      //produces< int > ("npvTrue");
     };
+     
   virtual ~EDSHyFTSelector() {}
-
+ 
   virtual bool filter( edm::Event & event, const edm::EventSetup& eventSetup);
    
   /// Pass the event to the filter. NOTE! We can't use the eventSetup in FWLite so ignore it.
@@ -35,6 +42,7 @@ class EDSHyFTSelector : public edm::FilterWrapper<SHyFTSelector> {
 
  protected:
   bool matchByHand_;
+      //bool doMC_;
   std::string name_;
 };
 
