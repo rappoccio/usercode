@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+from __future__ import print_function
+
 # Import everything from ROOT
 from ROOT import *
 gROOT.Macro("~/rootlogon.C")
@@ -17,6 +19,11 @@ parser.add_option('--files', metavar='F', type='string', action='store',
                   default = "edmTest.root",
                   dest='files',
                   help='Input files')
+
+parser.add_option("--onDcache", action='store_true',
+                  default=True,
+                  dest="onDcache",
+                  help="onDcache(1), onDcache(0)")
 
 parser.add_option("--sample", action='store',
                   default="DY",
@@ -63,7 +70,7 @@ parser.add_option("--useC8APrune", action='store_true',
 
 runMu = options.runMuons
 c8aPruneJets = options.useC8APrune
-
+dcache = options.onDcache
 # JEC
 jecScale = 0.0
 if options.JES == 'up' :
@@ -78,7 +85,12 @@ ROOT.gSystem.Load('libCondFormatsJetMETObjects')
 
 # Get the file list. 
 files = glob.glob( options.files )
-print 'getting files: ', files
+print('getting files: ', files)
+
+if dcache:
+	files = ["dcap://" + x for x in files]
+	print('new files', *files, sep='\n')
+	#print('new files', files[0], files[1], ..., sep='\n')
 
 #JEC
 jecParStr = std.string('Jec12_V2_Uncertainty_AK5PFchs.txt')
@@ -125,8 +137,8 @@ if options.JES != '':
 elif options.bTag:
     systtag = "_" + options.bTag
     
-print "value of options.JES = ", options.JES		
-print "value of systtag = ", systtag
+print("value of options.JES = ", options.JES		)
+print("value of systtag = ", systtag)
 
 f = TFile(options.sample + systtag + ".root", "RECREATE")
 
@@ -224,7 +236,7 @@ i = 0
 for event in events:
     i = i + 1
     if i % 1000 == 0 :
-        print "EVENT ", i
+        print("EVENT ", i)
     nEventsAnalyzed = nEventsAnalyzed + 1
     
     # Get the objects 
@@ -362,10 +374,10 @@ for event in events:
     for ipath in trigPaths:
         if eleHad+"30_v" in ipath.name() or eleHad+"30_30_20_v" in ipath.name():
             trigEleHad_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-            #if trigEleHad_path[0]==1: print "your path ", ipath.name(), "was run and accepted"
+            #if trigEleHad_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
         if singleEle in ipath.name():
             trigSigEle_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-            #if trigSigEle_path[0]==1: print "your path ", ipath.name(), "was run and accepted"
+            #if trigSigEle_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
             
     nvertices[0] =  vertices.size()     
     met[0] = metObj.pt()
@@ -396,8 +408,8 @@ for event in events:
         
 
 	if c8aPruneJets :
-        #print ijet.numberOfDaughters()
-	    #print ijet.daughter(0).mass(), ijet.daughter(1).mass()
+        #print(ijet.numberOfDaughters())
+	    #print(ijet.daughter(0).mass(), ijet.daughter(1).mass())
 	    WjetM[nj] = jet.mass()
 	    subjet1M = jet.daughter(0).mass() 
 	    subjet2M = jet.daughter(1).mass()
@@ -409,6 +421,9 @@ for event in events:
         nj = nj + 1
         sumEt += jet.pt()
 
+        if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
+            ntagsCSVM = ntagsCSVM + 1 
+        '''
         if options.data:
             if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
                 ntagsCSVM = ntagsCSVM + 1  
@@ -425,7 +440,7 @@ for event in events:
             elif options.bTag =="BTagSFdown" :
                 if (jet.userInt('btagRegular') & 8) == 8 :
                     ntagsCSVM = ntagsCSVM + 1
-                            
+        '''                            
     ht[0] = sumEt
     ht4jets[0] = sumEt4jets
     nTagsCSVM[0] = ntagsCSVM
@@ -457,10 +472,10 @@ timer.Stop()
 # Print out our timing information
 rtime = timer.RealTime(); # Real time (or "wall time")
 ctime = timer.CpuTime(); # CPU time
-print("Analyzed events: {0:6d}").format(nEventsAnalyzed)
-print("RealTime={0:6.2f} seconds, CpuTime={1:6.2f} seconds").format(rtime,ctime)
-print("{0:4.2f} events / RealTime second .").format( nEventsAnalyzed/rtime)
-print("{0:4.2f} events / CpuTime second .").format( nEventsAnalyzed/ctime)
+print("Analyzed events: {0:6d}".format(nEventsAnalyzed))
+print("RealTime={0:6.2f} seconds, CpuTime={1:6.2f} seconds".format(rtime,ctime))
+print("{0:4.2f} events / RealTime second .".format( nEventsAnalyzed/rtime))
+print("{0:4.2f} events / CpuTime second .".format( nEventsAnalyzed/ctime))
 
 # "cd" to our output file
 f.cd()
