@@ -29,12 +29,12 @@ parser.add_option('--JES', metavar='F', type='string', action='store',
                   help='JEC Systematic variation. Options are "nominal, up, down"')
 
 parser.add_option('--jetPtSmear', metavar='F', type='float', action='store',
-                  default=0.1,
+                  default=0.0,
                   dest='jetPtSmear',
                   help='JER smearing. Standard values are 0.1 (nominal), 0.0 (down), 0.2 (up)')
 
 parser.add_option('--jetEtaSmear', metavar='F', type='float', action='store',
-                  default=0.1,
+                  default=0.0,
                   dest='jetEtaSmear',
                   help='Jet Phi smearing. Standard values are 0.1 (nominal), 0.0 (down), 0.2 (up)')
 
@@ -133,8 +133,11 @@ f = TFile(options.sample + systtag + ".root", "RECREATE")
 f.cd()
 t = TTree("tree","tree")
 
-trig_path = array('i', [0])
-t.Branch('trig_path', trig_path, 'trig_path/I')
+trigEleHad_path = array('i', [0])
+t.Branch('trigEleHad_path', trigEleHad_path, 'trigEleHad_path/I')
+
+trigSigEle_path = array('i', [0])
+t.Branch('trigSigEle_path', trigSigEle_path, 'trigSigEle_path/I')
 
 met = array('d',[0.])
 t.Branch('met',met,'met/D')
@@ -157,6 +160,9 @@ t.Branch('lepEta',lepEta,'lepEta/D')
 if not runMu:
     eSCEta = array('d',[0.])
     t.Branch('eSCEta',eSCEta,'eSCEta/D')
+
+    eMVA = array('d', [0.])
+    t.Branch('eMVA',eMVA,'eMVA/D')
 
 lepIso = array('d',[0.])
 t.Branch('lepIso',lepIso,'lepIso/D')
@@ -278,13 +284,7 @@ for event in events:
         #jetP4 = TLorentzVector()
         #jetP4.SetPtEtaPhi( ijet.pt(), ijet.eta(), ijet.phi(), ijet.mass() )
         jetP4     = ijet.p4()
-       
-
-	print ijet.numberOfDaughters()
-	print ijet.daughter(0).mass(), ijet.daughter(1).mass()
-	
-
- 
+      	
         #genJets
         genJetPt  = ijet.userFloat('genJetPt')
         genJetPhi = ijet.userFloat('genJetPhi')
@@ -353,14 +353,19 @@ for event in events:
     #########################
     
     # store the trigger paths
-    trig_path[0]  = -1
+    trigEleHad_path[0]  = -1
+    trigSigEle_path[0]  = -1
     eleHad    = "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet"
+    singleEle = "HLT_Ele27_WP80_v"
      
     trigPaths = trigObj.paths() #TriggerPathCollection
     for ipath in trigPaths:
         if eleHad+"30_v" in ipath.name() or eleHad+"30_30_20_v" in ipath.name():
-            trig_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-            #if trig_path[0]==1: print "your path ", ipath.name(), "was run and accepted"
+            trigEleHad_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
+            #if trigEleHad_path[0]==1: print "your path ", ipath.name(), "was run and accepted"
+        if singleEle in ipath.name():
+            trigSigEle_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
+            #if trigSigEle_path[0]==1: print "your path ", ipath.name(), "was run and accepted"
             
     nvertices[0] =  vertices.size()     
     met[0] = metObj.pt()
@@ -368,7 +373,7 @@ for event in events:
     lepEta[0] = (leptons[0]).eta()
     if not runMu:
         eSCEta[0] = (leptons[0]).superCluster().eta()
-    
+        eMVA[0] = (leptons[0]).electronID("mvaTrigV0")
     chIso = (leptons[0]).userIsolation(pat.PfChargedHadronIso)
     nhIso = (leptons[0]).userIsolation(pat.PfNeutralHadronIso)
     gIso  = (leptons[0]).userIsolation(pat.PfGammaIso)
@@ -391,7 +396,8 @@ for event in events:
         
 
 	if c8aPruneJets :
-	
+        #print ijet.numberOfDaughters()
+	    #print ijet.daughter(0).mass(), ijet.daughter(1).mass()
 	    WjetM[nj] = jet.mass()
 	    subjet1M = jet.daughter(0).mass() 
 	    subjet2M = jet.daughter(1).mass()
