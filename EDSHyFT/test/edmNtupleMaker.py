@@ -44,7 +44,7 @@ options.parseArguments()
 
 print options
 
-if options.runData == '1':
+if options.runData == 1:
     runData = True
 else: runData  = False
 
@@ -58,7 +58,12 @@ if options.ignoreTrigger == 1 :
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
    # '/store/user/b2g12006/bazterra/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_1001_1_eOl.root',
-	'/store/user/lpctlbsm/jpilot/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola-Summer12_DR53X-PU_S10/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_53x_mc_105_1_sFj.root'                                
+#   '/store/user/lpctlbsm/jpilot/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola-Summer12_DR53X-PU_S10/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_53x_mc_105_1_sFj.root'
+ #  '/store/user/lpctlbsm/skhalil/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_10_3_lNR.root'
+  #  '/store/user/b2g12006/agarabed/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1_TLBSM_52x_v5/2bcc6fdd1e664d93e9026c3764d0b403/ttbsm_52x_mc_486_1_xai.root'
+  #'/store/user/b2g12006/peiffer/peiffer/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2_TLBSM_52x_v5/2bcc6fdd1e664d93e9026c3764d0b403/ttbsm_52x_mc_9_1_ZnS.root'
+
+ '/store/results/B2G/SingleElectron/StoreResults-Run2012A-PromptReco-v1_TLBSM_52x_v5-37420123b49b4f52358fad22bcc775a4/SingleElectron/USER/StoreResults-Run2012A-PromptReco-v1_TLBSM_52x_v5-37420123b49b4f52358fad22bcc775a4/0000/94340698-D6F7-E111-80B4-001A92971B30.root',    
     )
                             )                           
 
@@ -69,7 +74,8 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 if runData:
     process.GlobalTag.globaltag = 'GR_P_V40_AN1::All'
 else:
-    process.GlobalTag.globaltag = 'START53_V7E::All' 
+    process.GlobalTag.globaltag = 'START53_V7E::All'
+    #process.GlobalTag.globaltag = 'START53_V11::All'
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
@@ -93,6 +99,8 @@ process.load("CondCore.DBCommon.CondDBCommon_cfi")
 #Data measurements from Summer11
 process.load ("RecoBTag.PerformanceDB.BTagPerformanceDB1107")
 process.load ("RecoBTag.PerformanceDB.PoolBTagPerformanceDB1107")
+#process.load ("RecoBTag.PerformanceDB.BTagPerformanceDB062012")
+#process.load ("RecoBTag.PerformanceDB.PoolBTagPerformanceDB062012")
 
 if not runData:
     process.pileupReweightingProducer = cms.EDProducer("PileupReweightingPoducer",
@@ -127,20 +135,16 @@ process.pfTupleEle = cms.EDFilter('EDSHyFTSelector',
     eEt = cms.double(options.eleEt),
     jetPtMin = cms.double(30.0),
     minJets = cms.int32(1),
-    useNoPFIso = cms.bool(False),
-    useNoID  = cms.bool(False),
+    useNoPFIso = cms.bool(True),
+    useNoID  = cms.bool(True),
     useData = cms.bool(runData),
     identifier = cms.string('AK5 PF'),
     cutsToIgnore=cms.vstring(inputCutsToIgnore),
     jecPayloads = cms.vstring( payloads ),
-   ),
-    matchByHand = cms.bool(False)
-                                       )
+    ),
+    matchByHand = cms.bool(False),
+                                  )
 
-process.pfTupleEleLoose = process.pfTupleEle.clone()
-process.pfTupleEleLoose.eRelIso = cms.double(0.2)
-process.pfTupleEleLoose.useNoID = cms.bool(True)
-process.pfTupleEleLoose.identifier = cms.string('relIso<0.2, no MVA ID')
 
 process.pfTupleC8APruned = process.pfTupleEle.clone()
 process.pfTupleC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
@@ -153,20 +157,19 @@ process.p0 = cms.Path( process.patTriggerDefaultSequence)
 process.p1 = cms.Path( process.pfTupleEle)
 process.p2 = cms.Path( process.pfTupleC8APruned)
 
-#process.p0 *= process.s1
+
 process.p3 = cms.Path()
 
 if not runData:
     process.p3 = cms.Path( process.pileupReweightingProducer * process.goodPatJetsPFlowSF )
     
 process.out = cms.OutputModule("PoolOutputModule",
-                               SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p0','p1', 'p2', 'p3') ),
+                               SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p0', 'p1', 'p2', 'p3') ),
                                fileName =  cms.untracked.string('edmTest.root'),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       'keep *_pfTuple*_*_*',
                                                                       'keep *_patTriggerEvent_*_*',
                                                                       'keep *_patTrigger_*_*',
-                                                                      'keep PileupSummaryInfos_*_*_*',
                                                                       'keep *_goodOfflinePrimaryVertices_*_*',
                                                                       'drop *_pfTupleC8APruned_*_*',
 								      'keep *_pfTupleC8APruned_jets_*',
@@ -176,12 +179,10 @@ process.out = cms.OutputModule("PoolOutputModule",
                                )
 if not runData:
     process.out.outputCommands += [
-                               'keep *_prunedGenParticles_*_*',
-                               'keep *_*_pileupWeights_*'
+                               #'keep *_prunedGenParticles_*_*',
+                               'keep *_*_pileupWeights_*',
+                               'keep PileupSummaryInfos_*_*_*',
                                ]
-#if runNoEleID:
-#    process.out.outputCommands.append( 'keep *_eleLooseSkim*_*_*' )
-
 
 ## output path
 process.outpath = cms.EndPath(process.out)
@@ -189,7 +190,6 @@ process.outpath = cms.EndPath(process.out)
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.MessageLogger.suppressWarning.append('patTrigger')
-#process.MessageLogger.cout.INFO = cms.untracked.PSet( limit = cms.untracked.int32(0) )
 process.MessageLogger.cerr.FwkJob.limit=1
 process.MessageLogger.cerr.ERROR = cms.untracked.PSet( limit = cms.untracked.int32(0) )
 
