@@ -1,0 +1,15 @@
+universe = vanilla
+Executable = condor.sh
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+notification = Never
+myPath = /uscms/home/skhalil/CMSSW_5_3_2/src/Analysis/EDSHyFT/test
+myFolder = condorJobs_8TeV
+myLogFolder = condorLog
+Output = $(myPath)/$(myFolder)/$(myLogFolder)/batch_$(cluster)_$(process).stdout
+Error  = $(myPath)/$(myFolder)/$(myLogFolder)/batch_$(cluster)_$(process).stderr
+Log    = $(myPath)/$(myFolder)/$(myLogFolder)/batch_$(cluster)_$(process).condor
+Requirements          = (Memory >= 499 && OpSys == "LINUX" && (Arch != "DUMMY"))
+Arguments = $(cluster) $(process) $(myPath) /uscms_data/d2/skhalil/BPrimeNtuples_8TeV/Oct2 $myPath/$(myFolder)/condorOutput 0
+notify_user = skhalil@FNAL.GOV
+Queue 2
