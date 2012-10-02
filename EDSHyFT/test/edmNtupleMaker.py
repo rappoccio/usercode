@@ -111,22 +111,25 @@ if not runData:
     # creates value maps to jets as userInt index:
     #-1 -- ignore, 1 -- right out of the box, 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.    
     process.goodPatJetsPFlowSF = cms.EDProducer("BTaggingSFProducer",
-        JetSource = cms.InputTag('goodPatJetsPFlow'),
-        DiscriminatorTag = cms.string('combinedSecondaryVertexBJetTags'),
-        DiscriminatorValue = cms.double(0.679),
-        BTagger = cms.string('CSVM'),
-        HeavySFUncInflateBy = cms.double(1.5),
-        LightSFCorrFunction = cms.string('1.10422 + -0.000523856*x + 1.14251e-06*x*x'),
-        FixedBTaggingEff = cms.double(0.7)
+                                                JetSource = cms.InputTag('goodPatJetsPFlow'),
+                                                DiscriminatorTag = cms.string('combinedSecondaryVertexBJetTags'),
+                                                DiscriminatorValue = cms.double(0.679),
+                                                BTagger = cms.string('CSVM'),
+                                                HeavySFUncInflateBy = cms.double(1.5),
+                                                LightSFCorrFunction = cms.string('1.10422 + -0.000523856*x + 1.14251e-06*x*x'),
+                                                FixedBTaggingEff = cms.double(0.7)
     )
 
+
+    process.GenInfo = cms.EDProducer('BoostedParticles')
+    
 #_____________________________________PF__________________________________________________
 
 
 from Analysis.SHyFT.shyftselection_cfi import wplusjetsAnalysis as shyftSelectionInput
 
 process.pfTupleEle = cms.EDFilter('EDSHyFTSelector',
-                                   shyftSelection = shyftSelectionInput.clone(
+                                  shyftSelection = shyftSelectionInput.clone(
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
     electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
     metSrc = cms.InputTag('patMETsPFlow'),
@@ -144,7 +147,7 @@ process.pfTupleEle = cms.EDFilter('EDSHyFTSelector',
     cutsToIgnore=cms.vstring(inputCutsToIgnore),
     jecPayloads = cms.vstring( payloads ),
     ),
-    matchByHand = cms.bool(False),
+                                  matchByHand = cms.bool(False),
                                   )
 
 
@@ -163,7 +166,7 @@ process.p2 = cms.Path( process.pfTupleC8APruned)
 process.p3 = cms.Path()
 
 if not runData:
-    process.p3 = cms.Path( process.pileupReweightingProducer * process.goodPatJetsPFlowSF )
+    process.p3 = cms.Path( process.pileupReweightingProducer * process.goodPatJetsPFlowSF * process.GenInfo)
     
 process.out = cms.OutputModule("PoolOutputModule",
                                SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p0', 'p1', 'p2', 'p3') ),
@@ -174,14 +177,15 @@ process.out = cms.OutputModule("PoolOutputModule",
                                                                       'keep *_patTrigger_*_*',
                                                                       'keep *_goodOfflinePrimaryVertices_*_*',
                                                                       'drop *_pfTupleC8APruned_*_*',
-								      'keep *_pfTupleC8APruned_jets_*',
-								      'keep *_pfTupleC8APruned_MET_*',
-								      'keep *_caPrunedPFlow_SubJets_*'
-									),
+                                                                      'keep *_pfTupleC8APruned_jets_*',
+                                                                      'keep *_pfTupleC8APruned_MET_*',
+                                                                      'keep *_caPrunedPFlow_SubJets_*'
+                                                                      ),
                                )
 if not runData:
     process.out.outputCommands += [
                                #'keep *_prunedGenParticles_*_*',
+                               'keep *_GenInfo*_*_*',
                                'keep *_*_pileupWeights_*',
                                'keep PileupSummaryInfos_*_*_*',
                                ]
