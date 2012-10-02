@@ -23,7 +23,8 @@ class BoostedParticles : public edm::EDProducer {
       virtual void beginJob(const edm::EventSetup&) ;
       virtual void produce(edm::Event& event, const edm::EventSetup& setup);
       virtual void endJob() ;
-      void BBtotWtW(const reco::Candidate* bprimes, bool hasLepWt, bool hasHadWt,
+      void BBtotWtW(const reco::Candidate* bprimes, bool &hasLepWt, bool &hasHadWt,
+                    bool& hasLepWtLepW, bool& hasLepWtHadW, bool& hasHadWtLepW, bool& hasHadWtHadW,
                     LorentzV& Lep, LorentzV& Nu, LorentzV& LepT, 
                     LorentzV& HadT, LorentzV& WPart1, LorentzV& WPart2,
                     LorentzV& HadTtoW, LorentzV& HadTtob, LorentzV& LepTtoW, LorentzV& LepTtob);
@@ -47,7 +48,12 @@ BoostedParticles::BoostedParticles(const edm::ParameterSet& cfg)
    produces<reco::Candidate::PolarLorentzVector> ("HadTtoW");
    produces<reco::Candidate::PolarLorentzVector> ("HadTtob");
    produces<reco::Candidate::PolarLorentzVector> ("LepTtoW");
-   produces<reco::Candidate::PolarLorentzVector> ("LepTtob");    
+   produces<reco::Candidate::PolarLorentzVector> ("LepTtob"); 
+
+   produces<bool> ("bprimeSemileptoni"); 
+   produces<bool> ("bprimeDileptonic");
+   produces<bool> ("bprimeHadronic"); 
+   produces<bool> ("pureSemileptonicEvent"); 
 }
 
 BoostedParticles::~BoostedParticles()
