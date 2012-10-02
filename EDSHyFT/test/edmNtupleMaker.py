@@ -74,7 +74,7 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 if runData:
     process.GlobalTag.globaltag = 'GR_P_V40_AN1::All'
 else:
-    process.GlobalTag.globaltag = 'START53_V7E::All'
+    process.GlobalTag.globaltag = 'START53_V7::All'
     #process.GlobalTag.globaltag = 'START53_V11::All'
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
@@ -96,11 +96,9 @@ from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 
 process.load("CondCore.DBCommon.CondDBCommon_cfi")
 
-#Data measurements from Summer11
-process.load ("RecoBTag.PerformanceDB.BTagPerformanceDB1107")
-process.load ("RecoBTag.PerformanceDB.PoolBTagPerformanceDB1107")
-#process.load ("RecoBTag.PerformanceDB.BTagPerformanceDB062012")
-#process.load ("RecoBTag.PerformanceDB.PoolBTagPerformanceDB062012")
+# Final 2011 b-tag performance measurements
+process.load ("RecoBTag.PerformanceDB.BTagPerformanceDB062012")
+process.load ("RecoBTag.PerformanceDB.PoolBTagPerformanceDB062012")
 
 if not runData:
     process.pileupReweightingProducer = cms.EDProducer("PileupReweightingPoducer",
@@ -113,10 +111,14 @@ if not runData:
     # creates value maps to jets as userInt index:
     #-1 -- ignore, 1 -- right out of the box, 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.    
     process.goodPatJetsPFlowSF = cms.EDProducer("BTaggingSFProducer",
-                                                jetSource = cms.InputTag('goodPatJetsPFlow'),
-                                                Tagger = cms.string('combinedSecondaryVertexBJetTags'),
-                                                DiscriminantValue = cms.double(0.679)
-                                                )
+        JetSource = cms.InputTag('goodPatJetsPFlow'),
+        DiscriminatorTag = cms.string('combinedSecondaryVertexBJetTags'),
+        DiscriminatorValue = cms.double(0.679),
+        BTagger = cms.string('CSVM'),
+        HeavySFUncInflateBy = cms.double(1.5),
+        LightSFCorrFunction = cms.string('1.10422 + -0.000523856*x + 1.14251e-06*x*x'),
+        FixedBTaggingEff = cms.double(0.7)
+    )
 
 #_____________________________________PF__________________________________________________
 
