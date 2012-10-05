@@ -13,6 +13,7 @@ gROOT.SetBatch(1)
 partonFlavor = 'b'
 
 inputFilename = 'BprimeBprimeToTWTWinc_bTaggingEfficiency.root'
+subdirectory = 'bTaggingEffAnalyzer'
 outputFilename = 'BprimeBprimeToTWTWinc_bTaggingEfficiencyMap.root'
 
 binsX = array('d', [0., 50., 100., 200., 400., 1000.])
@@ -20,8 +21,8 @@ binsY = array('d', [0., 0.6, 1.2, 2.4])
 
 #----------------------------------------------------------------------------------
 
-denominatorHisto = 'bTaggingEffAnalyzer/h2_BTaggingEff_Denom_' + partonFlavor
-numeratorHisto = 'bTaggingEffAnalyzer/h2_BTaggingEff_Num_' + partonFlavor
+denominatorHisto = subdirectory + '/h2_BTaggingEff_Denom_' + partonFlavor
+numeratorHisto = subdirectory + '/h2_BTaggingEff_Num_' + partonFlavor
 
 inputFile = TFile(inputFilename, 'READ')
 
