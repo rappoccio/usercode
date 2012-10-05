@@ -86,8 +86,10 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
     }
     for ( clone_iter jbegin = imuons.begin(), jend = imuons.end(), j = jbegin; j != jend; ++j ) {
         pat::Muon const * jmuon = dynamic_cast<pat::Muon const *>( j->masterClonePtr().get() );
-        if ( jmuon != 0 )
-            muons->push_back( *jmuon );
+        if ( jmuon != 0 ){
+            bool passid = jmuon->isPFMuon() && ( jmuon->isGlobalMuon() && jmuon->isTrackerMuon() );
+            if( passid ) muons->push_back( *jmuon );
+        }
     }
 
     for ( clone_iter jbegin = ielectrons.begin(), jend = ielectrons.end(), j = jbegin; j != jend; ++j ) {
