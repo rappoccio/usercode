@@ -16,6 +16,9 @@
 #include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h"
 #include "RecoBTag/PerformanceDB/interface/BtagPerformance.h"
 #include "FWCore/Framework/interface/ESHandle.h"
+#include "TFile.h"
+#include "TH1D.h"
+#include "TH2D.h"
 #include "TF1.h"
 
 class BTaggingSFProducer : public edm::EDProducer {
@@ -35,9 +38,19 @@ private:
   std::string btagger_;
   double heavySFUncInflateBy_;
   std::string lightSFCorrFunction_;
-  double fixedBTaggingEff_;
+  std::string effMapB_;
+  std::string effMapC_;
+  std::string effMapUDSG_;
 
   TF1 lightSFCorr_;
+
+  TFile *f_EffMapB_;
+  TFile *f_EffMapC_;
+  TFile *f_EffMapUDSG_;
+
+  TH2D *h2_EffMapB_;
+  TH2D *h2_EffMapC_;
+  TH2D *h2_EffMapUDSG_;
 };
 
 BTaggingSFProducer::BTaggingSFProducer(const edm::ParameterSet& iConfig)
@@ -48,16 +61,32 @@ BTaggingSFProducer::BTaggingSFProducer(const edm::ParameterSet& iConfig)
   btagger_ = iConfig.getParameter<std::string>("BTagger");
   heavySFUncInflateBy_ = iConfig.getParameter<double>("HeavySFUncInflateBy");
   lightSFCorrFunction_ = iConfig.getParameter<std::string>("LightSFCorrFunction");
-  fixedBTaggingEff_ = iConfig.getParameter<double>("FixedBTaggingEff");
-
+  effMapB_ = iConfig.getParameter<std::string>("EffMapB");
+  effMapC_ = iConfig.getParameter<std::string>("EffMapC");
+  effMapUDSG_ = iConfig.getParameter<std::string>("EffMapUDSG");
+  
   lightSFCorr_ = TF1("lightSFCorr",lightSFCorrFunction_.c_str(), 0.,670.);
+
+  edm::FileInPath fipEffMapB(effMapB_);
+  edm::FileInPath fipEffMapC(effMapC_);
+  edm::FileInPath fipEffMapUDSG(effMapUDSG_);
+
+  f_EffMapB_ = new TFile(fipEffMapB.fullPath().c_str());
+  f_EffMapC_ = new TFile(fipEffMapC.fullPath().c_str());
+  f_EffMapUDSG_ = new TFile(fipEffMapUDSG.fullPath().c_str());
+
+  h2_EffMapB_ = (TH2D*)f_EffMapB_->Get("efficiency");
+  h2_EffMapC_ = (TH2D*)f_EffMapC_->Get("efficiency");
+  h2_EffMapUDSG_ = (TH2D*)f_EffMapUDSG_->Get("efficiency");
 
   produces< std::vector< pat::Jet > >();
 }
 
 BTaggingSFProducer::~BTaggingSFProducer()
 {
-
+  delete f_EffMapB_;
+  delete f_EffMapC_;
+  delete f_EffMapUDSG_;
 }
 
 // ------------ method called to produce the data  ------------
@@ -124,7 +153,7 @@ BTaggingSFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       ScaleFactor_up   = ScaleFactor + heavySFUncInflateBy_*ScaleFactor_unc;
       ScaleFactor_down = ScaleFactor - heavySFUncInflateBy_*ScaleFactor_unc;
 
-      tagEfficiency = fixedBTaggingEff_;
+      tagEfficiency = h2_EffMapB_->GetBinContent( h2_EffMapB_->GetXaxis()->FindBin(jetIt->pt()), h2_EffMapB_->GetYaxis()->FindBin(fabs(jetIt->eta())) );
     }
     // if c jet
     else if ( abs(parton) == 4 )
@@ -146,7 +175,7 @@ BTaggingSFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       ScaleFactor_up   = ScaleFactor + 2*heavySFUncInflateBy_*ScaleFactor_unc;
       ScaleFactor_down = ScaleFactor - 2*heavySFUncInflateBy_*ScaleFactor_unc;
 
-      tagEfficiency = fixedBTaggingEff_/5.;
+      tagEfficiency = h2_EffMapC_->GetBinContent( h2_EffMapC_->GetXaxis()->FindBin(jetIt->pt()), h2_EffMapC_->GetYaxis()->FindBin(fabs(jetIt->eta())) );
     }
     else
     {
@@ -166,7 +195,7 @@ BTaggingSFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       ScaleFactor_up   = ScaleFactor + ScaleFactor_unc*ScaleFactor;
       ScaleFactor_down = ScaleFactor - ScaleFactor_unc*ScaleFactor;
 
-      tagEfficiency = perfH_Mistag->getResult(PerformanceResult::BTAGLEFF, measurePoint);
+      tagEfficiency = h2_EffMapUDSG_->GetBinContent( h2_EffMapUDSG_->GetXaxis()->FindBin(jetIt->pt()), h2_EffMapUDSG_->GetYaxis()->FindBin(fabs(jetIt->eta())) );
     }
 
     btagNominal = btaggingUtility.applySF( btag, ScaleFactor, tagEfficiency);

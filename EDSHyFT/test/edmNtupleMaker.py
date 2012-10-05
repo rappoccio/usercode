@@ -111,13 +111,15 @@ if not runData:
     # creates value maps to jets as userInt index:
     #-1 -- ignore, 1 -- right out of the box, 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.    
     process.goodPatJetsPFlowSF = cms.EDProducer("BTaggingSFProducer",
-                                                JetSource = cms.InputTag('goodPatJetsPFlow'),
-                                                DiscriminatorTag = cms.string('combinedSecondaryVertexBJetTags'),
-                                                DiscriminatorValue = cms.double(0.679),
-                                                BTagger = cms.string('CSVM'),
-                                                HeavySFUncInflateBy = cms.double(1.5),
-                                                LightSFCorrFunction = cms.string('1.10422 + -0.000523856*x + 1.14251e-06*x*x'),
-                                                FixedBTaggingEff = cms.double(0.7)
+        JetSource = cms.InputTag('goodPatJetsPFlow'),
+        DiscriminatorTag = cms.string('combinedSecondaryVertexBJetTags'),
+        DiscriminatorValue = cms.double(0.679),
+        BTagger = cms.string('CSVM'),
+        HeavySFUncInflateBy = cms.double(1.5),
+        LightSFCorrFunction = cms.string('1.10422 + (-0.000523856*x) + (1.14251e-06*x*x)'),
+        EffMapB = cms.string('Analysis/EDSHyFT/data/BprimeBprimeToTWTWinc_bTaggingEfficiencyMap_b.root'),
+        EffMapC = cms.string('Analysis/EDSHyFT/data/BprimeBprimeToTWTWinc_bTaggingEfficiencyMap_c.root'),
+        EffMapUDSG = cms.string('Analysis/EDSHyFT/data/BprimeBprimeToTWTWinc_bTaggingEfficiencyMap_udsg.root')
     )
 
 
