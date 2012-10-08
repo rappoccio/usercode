@@ -14,6 +14,7 @@
 #include "DataFormats/PatCandidates/interface/Particle.h"
 
 typedef reco::Candidate::PolarLorentzVector LorentzV;
+typedef std::vector< LorentzV > p4_vector;
 
 class BoostedParticles : public edm::EDProducer {
    public:
@@ -23,38 +24,83 @@ class BoostedParticles : public edm::EDProducer {
       virtual void beginJob(const edm::EventSetup&) ;
       virtual void produce(edm::Event& event, const edm::EventSetup& setup);
       virtual void endJob() ;
-      void BBtotWtW(const reco::Candidate* bprimes, bool &hasLepWt, bool &hasHadWt,
-                    bool& hasLepWtLepW, bool& hasLepWtHadW, bool& hasHadWtLepW, bool& hasHadWtHadW,
-                    LorentzV& Lep, LorentzV& Nu, LorentzV& LepT, 
-                    LorentzV& HadT, LorentzV& WPart1, LorentzV& WPart2,
-                    LorentzV& HadTtoW, LorentzV& HadTtob, LorentzV& LepTtoW, LorentzV& LepTtob);
-
+      void  topDecay(const reco::Candidate* bprimes, int numTopDau, int di,  
+                     const reco::Candidate* &TtoWtoLep, const reco::Candidate* &TtoWtoHad, 
+                     const reco::Candidate* &Ttob);
+      void setPointers(std::vector<const reco::Candidate *> decayList);
+      //bool pick_bZtW_;
       // ----------member data ---------------------------
    protected:
-
+      
 };
 
 #endif
 
-BoostedParticles::BoostedParticles(const edm::ParameterSet& cfg)
+BoostedParticles::BoostedParticles(const edm::ParameterSet& cfg)//:
+   //pick_bZtW_(cfg.getParameter<bool>("pick_bZtW"))
 {  
-   produces<reco::Candidate::PolarLorentzVector> ("Lep");
-   produces<reco::Candidate::PolarLorentzVector> ("Nu");
-   produces<reco::Candidate::PolarLorentzVector> ("LepT");
-   produces<reco::Candidate::PolarLorentzVector> ("HadT");
-   produces<reco::Candidate::PolarLorentzVector> ("WPart1");
-   produces<reco::Candidate::PolarLorentzVector> ("WPart2"); 
-
-   produces<reco::Candidate::PolarLorentzVector> ("HadTtoW");
-   produces<reco::Candidate::PolarLorentzVector> ("HadTtob");
-   produces<reco::Candidate::PolarLorentzVector> ("LepTtoW");
-   produces<reco::Candidate::PolarLorentzVector> ("LepTtob"); 
-
-   produces<bool> ("bprimeSemileptoni"); 
-   produces<bool> ("bprimeDileptonic");
-   produces<bool> ("bprimeHadronic"); 
-   produces<bool> ("pureSemileptonicEvent"); 
+   //register the products
+    
+   //leptonic side of b'->tW->tlnu
+   produces< LorentzV > ("Lep1");
+   produces< LorentzV > ("Nu1");
+   produces< LorentzV > ("LepT1");
+   produces< LorentzV > ("Lep2");
+   produces< LorentzV > ("Nu2");
+   produces< LorentzV > ("LepT2");
+   //P4 of W and b from a t decay: t->Wb->(lnub, qqb)
+   produces< LorentzV > ("LepT1toWtoLep");
+   produces< LorentzV > ("LepT1toWtoHad");
+   produces< LorentzV > ("LepT1tob");
+   produces< LorentzV > ("LepT2toWtoLep");
+   produces< LorentzV > ("LepT2toWtoHad");
+   produces< LorentzV > ("LepT2tob");
+   //hadronic side of b'->tW->tqq
+   produces< LorentzV > ("WPart1");
+   produces< LorentzV > ("WPart2");
+   produces< LorentzV > ("HadT1");
+   produces< LorentzV > ("WPart3");
+   produces< LorentzV > ("WPart4");
+   produces< LorentzV > ("HadT2");
+   //P4 of W and b from a t decay: t->Wb->(lnub, qqb)
+   produces< LorentzV > ("HadT1toWtoLep");
+   produces< LorentzV > ("HadT1toWtoHad");
+   produces< LorentzV > ("HadT1tob");
+   produces< LorentzV > ("HadT2toWtoLep");
+   produces< LorentzV > ("HadT2toWtoHad");
+   produces< LorentzV > ("HadT2tob");
+   //leptonic side of b'->bZ->bll
+   produces< LorentzV > ("ZLep1");
+   produces< LorentzV > ("ZLep2");
+   produces< LorentzV > ("LepB1");
+   produces< LorentzV > ("ZLep3");
+   produces< LorentzV > ("ZLep4");
+   produces< LorentzV > ("LepB2");
+   //hadronic side of b'->bZ->bqq
+   produces< LorentzV > ("ZPart1");
+   produces< LorentzV > ("ZPart2");
+   produces< LorentzV > ("HadB1");
+   produces< LorentzV > ("ZPart3");
+   produces< LorentzV > ("ZPart4");
+   produces< LorentzV > ("HadB2");
+   //event configuration of b'b'->tWtW
+   produces<bool> ("WtWtTolnutlnut"); 
+   produces<bool> ("WtWtToqqtqqt");
+   produces<bool> ("WtWtToluntqqt"); 
+   produces<bool> ("BBtoWtWt"); 
+   //event configuration of b'b'->bZbZ
+   produces<bool> ("ZbZbTollbllb"); 
+   produces<bool> ("ZbZbToqqbqqb");
+   produces<bool> ("ZbZbTollbqqb"); 
+   produces<bool> ("BBtoZbZb");
+   //event configuration of b'b'->bZtW
+   produces<bool> ("WtZbTolnutllb"); 
+   produces<bool> ("WtZbTolnutqqb");
+   produces<bool> ("WtZbToqqtllb"); 
+   produces<bool> ("WtZbToqqtqqb");
+   produces<bool> ("BBtoWtZb");
 }
+
 
 BoostedParticles::~BoostedParticles()
 {
