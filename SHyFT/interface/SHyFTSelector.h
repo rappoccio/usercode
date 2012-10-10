@@ -46,11 +46,11 @@ class SHyFTSelector : public EventSelector {
          out << "PV Selector: " << std::endl;
          pvSelector_.print(out);
          out << "Muon ID Tight Selector: " << std::endl;
-         muonIdTight_.print(out);
+         //muonIdTight_.print(out);
          // out << "Electron ID Tight Selector: " << std::endl;
 //          electronIdTight_.print(out);
-         out << "Muon ID Loose Selector: " << std::endl;
-         muonIdLoose_.print(out);
+         //out << "Muon ID Loose Selector: " << std::endl;
+         //muonIdLoose_.print(out);
          out << "Electron ID Veto Selector: " << std::endl;
          electronIdVeto_.print(out);
          

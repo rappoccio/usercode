@@ -309,15 +309,19 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                 allMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
                 if ( !imuon->isGlobalMuon() ) continue;
                 // Tight cuts
-                bool passTight = muonIdTight_(*imuon,event) && imuon->isTrackerMuon() ;
+                //bool passTight = muonIdTight_(*imuon,event) && imuon->isTrackerMuon() ;
+                // Loose cuts
+                bool passLoose = imuon->isPFMuon() && ( imuon->isGlobalMuon() || imuon->isTrackerMuon() );
+                // in the vector-like quark analysis, we will use the loose muon selection from muon POG without isolation cut requiring one muon exclusively.
+                // any events which have too loose muons will be rejected. 
                 if (  imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && 
-                        passTight ) {
+                        passLoose ) {
 
                     selectedMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
                 } else {
-                    // Loose cuts
+                    // Loose cuts : currently the same passLoose is applied but pt can be different.
                     if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ && 
-                            muonIdLoose_(*imuon,event) ) {
+                            passLoose ) {
                         looseMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
                     }
                 }
