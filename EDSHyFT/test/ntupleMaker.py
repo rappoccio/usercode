@@ -16,9 +16,14 @@ from optparse import OptionParser
 parser = OptionParser()
 
 parser.add_option('--files', metavar='F', type='string', action='store',
-                  default = "edmTest.root",
+                  default = "",
                   dest='files',
                   help='Input files')
+
+parser.add_option('--txtfiles', metavar='F', type='string', action='store',
+                  default = "",
+                  dest='txtfiles',
+                  help='Input txt files')
 
 parser.add_option("--onDcache", action='store_true',
                   default=True,
@@ -65,12 +70,20 @@ parser.add_option("--useC8APrune", action='store_true',
                   dest="useC8APrune",
                   help="switch on(1) / off(0) C8APrune jets")
 
+parser.add_option("--useBPrimeGenInfo",  action='store_true',
+                  default=False,
+                  dest="useBPrimeGenInfo",
+                  help="switch on(1) / off(0) gen particle info") 
+
 # Parse and get arguments
 (options, args) = parser.parse_args()
 
 runMu = options.runMuons
 c8aPruneJets = options.useC8APrune
+bprimeGenInfo = options.useBPrimeGenInfo
 dcache = options.onDcache
+
+print('options', options)
 # JEC
 jecScale = 0.0
 if options.JES == 'up' :
@@ -83,14 +96,25 @@ flatJecUnc = 0.0
 from DataFormats.FWLite import Events, Handle
 ROOT.gSystem.Load('libCondFormatsJetMETObjects')
 
-# Get the file list. 
-files = glob.glob( options.files )
-print('getting files: ', files)
+# Get the file list.
+if options.files:
+    files = glob.glob( options.files )
+elif options.txtfiles:
+    files = []
+    with open(options.txtfiles, 'r') as input_:
+        for line in input_:
+            files.append(line.strip())
+else:
+    files = []
+
+#print('getting files: ', files)
 
 if dcache:
 	files = ["dcap://" + x for x in files]
 	print('new files', *files, sep='\n')
 	#print('new files', files[0], files[1], ..., sep='\n')
+            
+#sys.exit(0)
 
 #JEC
 jecParStr = std.string('Jec12_V2_Uncertainty_AK5PFchs.txt')
@@ -123,6 +147,14 @@ vertLabel = ("goodOfflinePrimaryVertices")
 pileupWeightsH = Handle ("std::vector<float>")
 pileupWeightsLabel = ("pileupReweightingProducer","pileupWeights")
 
+if bprimeGenInfo:
+    BBtoWtWt_H  = Handle("int")
+    BBtoWtWt_L  = ( "GenInfo", "BBtoWtWt" )
+    BBtoWtZb_H  = Handle("int")
+    BBtoWtZb_L  = ( "GenInfo", "BBtoWtZb" )
+    BBtoZbZb_H  = Handle("int")
+    BBtoZbZb_L  = ( "GenInfo", "BBtoZbZb" )
+    
 if runMu:
     leptonsH  = Handle ("std::vector<pat::Muon>")
     leptonsLabel = ("pfTupleEle", "muons")
@@ -144,6 +176,15 @@ f = TFile(options.sample + systtag + ".root", "RECREATE")
 
 f.cd()
 t = TTree("tree","tree")
+
+WtWt = array('i',[0])
+t.Branch('WtWt',WtWt,'WtWt/I')
+
+WtZb = array('i',[0])
+t.Branch('WtZb',WtWt,'WtZb/I')
+
+ZbZb = array('i',[0])
+t.Branch('ZbZb',WtWt,'ZbZb/I')
 
 trigEleHad_path = array('i', [0])
 t.Branch('trigEleHad_path', trigEleHad_path, 'trigEleHad_path/I')
@@ -238,7 +279,7 @@ for event in events:
     if i % 1000 == 0 :
         print("EVENT ", i)
     nEventsAnalyzed = nEventsAnalyzed + 1
-    
+    #if nEventsAnalyzed == 1000: break
     # Get the objects 
     event.getByLabel(vertLabel,  vertH)
     event.getByLabel(jetsLabel,  jetsH)    
@@ -248,7 +289,16 @@ for event in events:
     
     event.getByLabel(c8aPruneJetsLabel,  c8aPruneJetsH)
     event.getByLabel(c8aPruneMetLabel,  c8aPruneMetH)
-    
+
+    # the bprime gen info categorization
+    if bprimeGenInfo:
+        event.getByLabel(BBtoWtWt_L, BBtoWtWt_H)
+        event.getByLabel(BBtoWtZb_L, BBtoWtZb_H)
+        event.getByLabel(BBtoZbZb_L, BBtoZbZb_H)
+        BBtoWtWt = BBtoWtWt_H.product()[0]
+        BBtoWtZb = BBtoWtZb_H.product()[0]
+        BBtoZbZb = BBtoZbZb_H.product()[0]
+        
     # PileupReweighting
     if not options.data :
         event.getByLabel(pileupWeightsLabel, pileupWeightsH)
@@ -363,6 +413,10 @@ for event in events:
     metObj.setP4(metP4)
 
     #########################
+    #store the bprime event categorization from gen perticle info
+    WtWt[0] = BBtoWtWt
+    WtZb[0] = BBtoWtZb
+    ZbZb[0] = BBtoZbZb
     
     # store the trigger paths
     trigEleHad_path[0]  = -1
