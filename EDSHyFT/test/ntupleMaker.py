@@ -181,10 +181,10 @@ WtWt = array('i',[0])
 t.Branch('WtWt',WtWt,'WtWt/I')
 
 WtZb = array('i',[0])
-t.Branch('WtZb',WtWt,'WtZb/I')
+t.Branch('WtZb',WtZb,'WtZb/I')
 
 ZbZb = array('i',[0])
-t.Branch('ZbZb',WtWt,'ZbZb/I')
+t.Branch('ZbZb',ZbZb,'ZbZb/I')
 
 trigEleHad_path = array('i', [0])
 t.Branch('trigEleHad_path', trigEleHad_path, 'trigEleHad_path/I')
@@ -272,14 +272,17 @@ nEventsAnalyzed = 0
 timer = TStopwatch()
 timer.Start()
 
+iWtWt = 0
+iWtZb = 0
+iZbZb = 0 
 # loop over events
-i = 0
+i = 0 
 for event in events:
     i = i + 1
     if i % 1000 == 0 :
         print("EVENT ", i)
     nEventsAnalyzed = nEventsAnalyzed + 1
-    #if nEventsAnalyzed == 1000: break
+    #if nEventsAnalyzed == 100: break
     # Get the objects 
     event.getByLabel(vertLabel,  vertH)
     event.getByLabel(jetsLabel,  jetsH)    
@@ -299,6 +302,17 @@ for event in events:
         BBtoWtZb = BBtoWtZb_H.product()[0]
         BBtoZbZb = BBtoZbZb_H.product()[0]
         
+        WtWt[0] = BBtoWtWt
+        WtZb[0] = BBtoWtZb
+        ZbZb[0] = BBtoZbZb
+        
+        if BBtoWtWt == 1:iWtWt = iWtWt+1
+        if BBtoWtZb == 1:iWtZb = iWtZb+1
+        if BBtoZbZb == 1:iZbZb = iZbZb+1
+    
+        if BBtoWtWt == 0 and  BBtoWtZb == 0 and BBtoZbZb == 0:
+            print('impossible: the MC should be either WtWt or WtZb or ZbZb')
+            
     # PileupReweighting
     if not options.data :
         event.getByLabel(pileupWeightsLabel, pileupWeightsH)
@@ -413,11 +427,7 @@ for event in events:
     metObj.setP4(metP4)
 
     #########################
-    #store the bprime event categorization from gen perticle info
-    WtWt[0] = BBtoWtWt
-    WtZb[0] = BBtoWtZb
-    ZbZb[0] = BBtoZbZb
-    
+   
     # store the trigger paths
     trigEleHad_path[0]  = -1
     trigSigEle_path[0]  = -1
@@ -522,6 +532,10 @@ for event in events:
 # Done processing the events!
 # Stop our timer
 timer.Stop()
+
+print('BBtoWtWt', iWtWt)
+print('BBtoWtZb', iWtZb)
+print('BBtoZbZb', iZbZb)
 
 # Print out our timing information
 rtime = timer.RealTime(); # Real time (or "wall time")
