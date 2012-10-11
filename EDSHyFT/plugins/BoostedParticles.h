@@ -84,21 +84,21 @@ BoostedParticles::BoostedParticles(const edm::ParameterSet& cfg)//:
    produces< LorentzV > ("ZPart4");
    produces< LorentzV > ("HadB2");
    //event configuration of b'b'->tWtW
-   produces<bool> ("WtWtTolnutlnut"); 
-   produces<bool> ("WtWtToqqtqqt");
-   produces<bool> ("WtWtToluntqqt"); 
-   produces<bool> ("BBtoWtWt"); 
+   produces<int> ("WtWtTolnutlnut"); 
+   produces<int> ("WtWtToqqtqqt");
+   produces<int> ("WtWtToluntqqt"); 
+   produces<int> ("BBtoWtWt"); 
    //event configuration of b'b'->bZbZ
-   produces<bool> ("ZbZbTollbllb"); 
-   produces<bool> ("ZbZbToqqbqqb");
-   produces<bool> ("ZbZbTollbqqb"); 
-   produces<bool> ("BBtoZbZb");
+   produces<int> ("ZbZbTollbllb"); 
+   produces<int> ("ZbZbToqqbqqb");
+   produces<int> ("ZbZbTollbqqb"); 
+   produces<int> ("BBtoZbZb");
    //event configuration of b'b'->bZtW
-   produces<bool> ("WtZbTolnutllb"); 
-   produces<bool> ("WtZbTolnutqqb");
-   produces<bool> ("WtZbToqqtllb"); 
-   produces<bool> ("WtZbToqqtqqb");
-   produces<bool> ("BBtoWtZb");
+   produces<int> ("WtZbTolnutllb"); 
+   produces<int> ("WtZbTolnutqqb");
+   produces<int> ("WtZbToqqtllb"); 
+   produces<int> ("WtZbToqqtqqb");
+   produces<int> ("BBtoWtZb");
 }
 
 

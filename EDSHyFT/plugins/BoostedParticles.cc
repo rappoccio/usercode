@@ -62,23 +62,23 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
    std::auto_ptr< LorentzV > HadB2  ( new LorentzV() );
     
    //event configuration of b'b'->tWtW
-   std::auto_ptr< bool >  WtWtTolnutlnut(new bool (0));
-   std::auto_ptr< bool >  WtWtToqqtqqt  (new bool (0));
-   std::auto_ptr< bool >  WtWtToluntqqt (new bool (0));
-   std::auto_ptr< bool >  BBtoWtWt      (new bool (0));
+   std::auto_ptr< int >  WtWtTolnutlnut(new int (0));
+   std::auto_ptr< int >  WtWtToqqtqqt  (new int (0));
+   std::auto_ptr< int >  WtWtToluntqqt (new int (0));
+   std::auto_ptr< int >  BBtoWtWt      (new int (0));
    
    //event configuration of b'b'->bZbZ
-   std::auto_ptr< bool >  ZbZbTollbllb  (new bool (0));
-   std::auto_ptr< bool >  ZbZbToqqbqqb  (new bool (0));
-   std::auto_ptr< bool >  ZbZbTollbqqb  (new bool (0));
-   std::auto_ptr< bool >  BBtoZbZb      (new bool (0));
+   std::auto_ptr< int >  ZbZbTollbllb  (new int (0));
+   std::auto_ptr< int >  ZbZbToqqbqqb  (new int (0));
+   std::auto_ptr< int >  ZbZbTollbqqb  (new int (0));
+   std::auto_ptr< int >  BBtoZbZb      (new int (0));
    
    //event configuration of b'b'->bZtW
-   std::auto_ptr< bool >  WtZbTolnutllb  (new bool (0));
-   std::auto_ptr< bool >  WtZbTolnutqqb  (new bool (0));
-   std::auto_ptr< bool >  WtZbToqqtllb   (new bool (0));
-   std::auto_ptr< bool >  WtZbToqqtqqb   (new bool (0));
-   std::auto_ptr< bool >  BBtoWtZb       (new bool (0));
+   std::auto_ptr< int >  WtZbTolnutllb  (new int (0));
+   std::auto_ptr< int >  WtZbTolnutqqb  (new int (0));
+   std::auto_ptr< int >  WtZbToqqtllb   (new int (0));
+   std::auto_ptr< int >  WtZbToqqtqqb   (new int (0));
+   std::auto_ptr< int >  BBtoWtZb       (new int (0));
    
    if(!event.isRealData()){
       edm::Handle<std::vector<reco::GenParticle> > h_gen;
@@ -254,22 +254,22 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
          }// at least 2 daughters       
          
       }//gpIter
-     
-       *WtWtTolnutlnut = (numLeptW == 2);
-       *WtWtToqqtqqt   = (numHadtW == 2);
-       *WtWtToluntqqt  = (numLeptW == 1 && numHadtW == 1);
-       *BBtoWtWt       = (*WtWtTolnutlnut || *WtWtToqqtqqt || *WtWtToluntqqt);
+    
+       if (numLeptW == 2) *WtWtToqqtqqt = 1;
+       if (numHadtW == 2) *WtWtToqqtqqt = 1;
+       if (numLeptW == 1 && numHadtW == 1) *WtWtToluntqqt = 1;
+       if (*WtWtTolnutlnut == 1 || *WtWtToqqtqqt == 1 || *WtWtToluntqqt == 1) *BBtoWtWt = 1;
 
-       *ZbZbTollbllb   = (numLepbZ == 2);
-       *ZbZbToqqbqqb   = (numHadbZ == 2);
-       *ZbZbTollbqqb   = (numLepbZ == 1 &&  numHadbZ == 1);
-       *BBtoZbZb       = (*ZbZbTollbllb || *ZbZbToqqbqqb || *ZbZbTollbqqb);
+       if (numLepbZ == 2) *ZbZbTollbllb = 1;
+       if (numHadbZ == 2) *ZbZbToqqbqqb = 1;
+       if (numLepbZ == 1 &&  numHadbZ == 1) *ZbZbTollbqqb = 1;
+       if (*ZbZbTollbllb ==1 || *ZbZbToqqbqqb ==1 || *ZbZbTollbqqb == 1) *BBtoZbZb = 1;
 
-       *WtZbTolnutllb  = (numLeptW == 1 && numLepbZ == 1);
-       *WtZbTolnutqqb  = (numLeptW == 1 && numHadbZ == 1);
-       *WtZbToqqtllb   = (numHadtW == 1 && numLepbZ == 1);
-       *WtZbToqqtqqb   = (numHadtW == 1 && numHadbZ == 1);
-       *BBtoWtZb       = (*WtZbTolnutllb || *WtZbTolnutqqb || *WtZbToqqtllb || *WtZbToqqtqqb);
+       if (numLeptW == 1 && numLepbZ == 1) *WtZbTolnutllb = 1;
+       if (numLeptW == 1 && numHadbZ == 1) *WtZbTolnutqqb = 1;
+       if (numHadtW == 1 && numLepbZ == 1) *WtZbToqqtllb  = 1;
+       if (numHadtW == 1 && numHadbZ == 1) *WtZbToqqtqqb  = 1;
+       if (*WtZbTolnutllb == 1 || *WtZbTolnutqqb == 1 || *WtZbToqqtllb == 1 || *WtZbToqqtqqb == 1) *BBtoWtZb = 1;  
 
        //Fill Leptonic side of b->tW': l1, nu1, t1, l2, nu2, t2
         //----------------------------------------------------
