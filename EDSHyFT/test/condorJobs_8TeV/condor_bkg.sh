@@ -43,8 +43,8 @@ for txt in `ls $INPATH`; do
         echo "output file name: $name "
         if test $DATA -eq 0; then
             if test $counter -eq $PROCESS; then
-                echo "python ntupleMaker.py --useBPrimeGenInfo --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}"
-                python ntupleMaker.py --useBPrimeGenInfo --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}
+                echo "python ntupleMaker.py --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}"
+                python ntupleMaker.py --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}
             fi
             let "counter+=1"
         else
