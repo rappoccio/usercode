@@ -111,7 +111,7 @@ if not runData:
     # creates value maps to jets as userInt index:
     #-1 -- ignore, 1 -- right out of the box, 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.    
     process.goodPatJetsPFlowSF = cms.EDProducer("BTaggingSFProducer",
-        JetSource = cms.InputTag('goodPatJetsPFlow'),
+        JetSource = cms.InputTag('goodPatJetsCA8PrunedPF'),
         DiscriminatorTag = cms.string('combinedSecondaryVertexBJetTags'),
         DiscriminatorValue = cms.double(0.679),
         BTagger = cms.string('CSVM'),
@@ -152,18 +152,33 @@ process.pfTupleEle = cms.EDFilter('EDSHyFTSelector',
                                   matchByHand = cms.bool(False),
                                   )
 
+## old
+##process.pfTupleC8APruned = process.pfTupleEle.clone()
+##process.pfTupleC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
+##process.pfTupleC8APruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
+##process.pfTupleC8APruned.matchByHand = cms.bool(True)
 
-process.pfTupleC8APruned = process.pfTupleEle.clone()
-process.pfTupleC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
-process.pfTupleC8APruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
-process.pfTupleC8APruned.matchByHand = cms.bool(True)
+## electron+jets decay mode
+process.pfTupleEleC8APruned = process.pfTupleEle.clone()
+process.pfTupleEleC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
+process.pfTupleEleC8APruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
+process.pfTupleEleC8APruned.matchByHand = cms.bool(True)
 
+## muon+jets decay mode
+process.pfTupleMuC8APruned = process.pfTupleEle.clone()
+process.pfTupleMuC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
+process.pfTupleMuC8APruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
+process.pfTupleMuC8APruned.matchByHand = cms.bool(True)
+process.pfTupleMuC8APruned.ePlusJets = cms.bool( False )
+process.pfTupleMuC8APruned.muPlusJets = cms.bool( True )
 
 ## configure output module
 process.p0 = cms.Path( process.patTriggerDefaultSequence)
-process.p1 = cms.Path( process.pfTupleEle)
-process.p2 = cms.Path( process.pfTupleC8APruned)
-
+#old
+#process.p1 = cms.Path( process.pfTupleEle)
+#process.p2 = cms.Path( process.pfTupleC8APruned)
+process.p1 = cms.Path( process.pfTupleEleC8APruned)
+process.p2 = cms.Path( process.pfTupleMuC8APruned)
 
 process.p3 = cms.Path()
 
@@ -178,9 +193,9 @@ process.out = cms.OutputModule("PoolOutputModule",
                                                                       'keep *_patTriggerEvent_*_*',
                                                                       'keep *_patTrigger_*_*',
                                                                       'keep *_goodOfflinePrimaryVertices_*_*',
-                                                                      'drop *_pfTupleC8APruned_*_*',
-                                                                      'keep *_pfTupleC8APruned_jets_*',
-                                                                      'keep *_pfTupleC8APruned_MET_*',
+                                                                      #'drop *_pfTupleC8APruned_*_*',
+                                                                      #'keep *_pfTupleC8APruned_jets_*',
+                                                                      #'keep *_pfTupleC8APruned_MET_*',
                                                                       'keep *_caPrunedPFlow_SubJets_*'
                                                                       ),
                                )
