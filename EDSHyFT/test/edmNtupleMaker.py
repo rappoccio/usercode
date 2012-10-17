@@ -109,8 +109,8 @@ if not runData:
                                                        )
 
     # creates value maps to jets as userInt index:
-    #-1 -- ignore, 1 -- right out of the box, 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.    
-    process.goodPatJetsPFlowSF = cms.EDProducer("BTaggingSFProducer",
+    #-1 -- ignore, 1 -- right out of the box, 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.
+    process.goodPatJetsCA8PrunedPFSF = cms.EDProducer("BTaggingSFProducer",
         JetSource = cms.InputTag('goodPatJetsCA8PrunedPF'),
         DiscriminatorTag = cms.string('combinedSecondaryVertexBJetTags'),
         DiscriminatorValue = cms.double(0.679),
@@ -124,49 +124,43 @@ if not runData:
 
 
     process.GenInfo = cms.EDProducer('BoostedParticles')
-    
+
 #_____________________________________PF__________________________________________________
 
 
 from Analysis.SHyFT.shyftselection_cfi import wplusjetsAnalysis as shyftSelectionInput
 
 process.pfTupleEle = cms.EDFilter('EDSHyFTSelector',
-                                  shyftSelection = shyftSelectionInput.clone(
-    muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
-    electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
-    metSrc = cms.InputTag('patMETsPFlow'),
-    jetSrc = cms.InputTag('goodPatJetsPFlow'),
-    pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
-    ePlusJets = cms.bool( True ),
-    muPlusJets = cms.bool( False ),
-    eEt = cms.double(options.eleEt),
-    jetPtMin = cms.double(30.0),
-    minJets = cms.int32(1),
-    useNoPFIso = cms.bool(True),
-    useNoID  = cms.bool(True),
-    useData = cms.bool(runData),
-    identifier = cms.string('AK5 PF'),
-    cutsToIgnore=cms.vstring(inputCutsToIgnore),
-    jecPayloads = cms.vstring( payloads ),
+    shyftSelection = shyftSelectionInput.clone(
+	muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
+	electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
+	metSrc = cms.InputTag('patMETsPFlow'),
+	jetSrc = cms.InputTag('goodPatJetsPFlow'),
+	pvSrc   = cms.InputTag('goodOfflinePrimaryVertices'),
+	ePlusJets = cms.bool( True ),
+	muPlusJets = cms.bool( False ),
+	eEt = cms.double(options.eleEt),
+	jetPtMin = cms.double(30.0),
+	minJets = cms.int32(1),
+	useNoPFIso = cms.bool(True),
+	useNoID  = cms.bool(True),
+	useData = cms.bool(runData),
+	identifier = cms.string('AK5 PF'),
+	cutsToIgnore=cms.vstring(inputCutsToIgnore),
+	jecPayloads = cms.vstring( payloads ),
     ),
-                                  matchByHand = cms.bool(False),
-                                  )
-
-## old
-##process.pfTupleC8APruned = process.pfTupleEle.clone()
-##process.pfTupleC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
-##process.pfTupleC8APruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
-##process.pfTupleC8APruned.matchByHand = cms.bool(True)
+    matchByHand = cms.bool(False)
+)
 
 ## electron+jets decay mode
 process.pfTupleEleC8APruned = process.pfTupleEle.clone()
-process.pfTupleEleC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
+process.pfTupleEleC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPFSF')
 process.pfTupleEleC8APruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
 process.pfTupleEleC8APruned.matchByHand = cms.bool(True)
 
 ## muon+jets decay mode
 process.pfTupleMuC8APruned = process.pfTupleEle.clone()
-process.pfTupleMuC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF')
+process.pfTupleMuC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPFSF')
 process.pfTupleMuC8APruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
 process.pfTupleMuC8APruned.matchByHand = cms.bool(True)
 process.pfTupleMuC8APruned.ePlusJets = cms.bool( False )
@@ -174,17 +168,14 @@ process.pfTupleMuC8APruned.muPlusJets = cms.bool( True )
 
 ## configure output module
 process.p0 = cms.Path( process.patTriggerDefaultSequence)
-#old
-#process.p1 = cms.Path( process.pfTupleEle)
-#process.p2 = cms.Path( process.pfTupleC8APruned)
-process.p1 = cms.Path( process.pfTupleEleC8APruned)
-process.p2 = cms.Path( process.pfTupleMuC8APruned)
+process.p1 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleEleC8APruned)
+process.p2 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleMuC8APruned)
 
 process.p3 = cms.Path()
 
 if not runData:
-    process.p3 = cms.Path( process.pileupReweightingProducer * process.goodPatJetsPFlowSF * process.GenInfo)
-    
+    process.p3 = cms.Path( process.pileupReweightingProducer * process.GenInfo )
+
 process.out = cms.OutputModule("PoolOutputModule",
                                SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p0', 'p1', 'p2', 'p3') ),
                                fileName =  cms.untracked.string('edmTest.root'),
@@ -193,9 +184,6 @@ process.out = cms.OutputModule("PoolOutputModule",
                                                                       'keep *_patTriggerEvent_*_*',
                                                                       'keep *_patTrigger_*_*',
                                                                       'keep *_goodOfflinePrimaryVertices_*_*',
-                                                                      #'drop *_pfTupleC8APruned_*_*',
-                                                                      #'keep *_pfTupleC8APruned_jets_*',
-                                                                      #'keep *_pfTupleC8APruned_MET_*',
                                                                       'keep *_caPrunedPFlow_SubJets_*'
                                                                       ),
                                )
