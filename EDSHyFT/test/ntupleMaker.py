@@ -8,6 +8,14 @@ gROOT.Macro("~/rootlogon.C")
 
 import sys
 import glob
+import math
+
+def deltaR( eta1, phi1, eta2, phi2):
+    deta = eta1 - eta2
+    dphi = phi1 - phi2
+    if dphi >= math.pi: dphi -= 2*math.pi
+    elif dphi < -math.pi: dphi += 2*math.pi
+    return math.sqrt(deta*deta + dphi*dphi)
 
 from array import array
 from optparse import OptionParser
@@ -99,6 +107,7 @@ ROOT.gSystem.Load('libCondFormatsJetMETObjects')
 # Get the file list.
 if options.files:
     files = glob.glob( options.files )
+    print('getting files', files)
 elif options.txtfiles:
     files = []
     with open(options.txtfiles, 'r') as input_:
@@ -154,6 +163,23 @@ if bprimeGenInfo:
     BBtoWtZb_L  = ( "GenInfo", "BBtoWtZb" )
     BBtoZbZb_H  = Handle("int")
     BBtoZbZb_L  = ( "GenInfo", "BBtoZbZb" )
+    WPart1_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    WPart1_L    = ( "GenInfo",   "WPart1")
+    WPart2_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    WPart2_L    = ( "GenInfo",   "WPart2")
+    WPart3_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    WPart3_L    = ( "GenInfo",   "WPart3")
+    WPart4_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    WPart4_L    = ( "GenInfo",   "WPart4")
+    ZPart1_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    ZPart1_L    = ( "GenInfo",   "ZPart1")
+    ZPart2_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    ZPart2_L    = ( "GenInfo",   "ZPart2")
+    ZPart3_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    ZPart3_L    = ( "GenInfo",   "ZPart3")
+    ZPart4_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    ZPart4_L    = ( "GenInfo",   "ZPart4")
+
     
 if runMu:
     leptonsH  = Handle ("std::vector<pat::Muon>")
@@ -236,6 +262,27 @@ t.Branch('WjetM', WjetM, 'WjetM[nJets]/D')
 WjetMu = array('d', max_nJets*[0.])
 t.Branch('WjetMu', WjetMu, 'WjetMu[nJets]/D')
 
+WjetM_true = array('d', max_nJets*[0.])
+t.Branch('WjetM_true', WjetM_true, 'WjetM_true[nJets]/D')
+
+WjetMu_true = array('d', max_nJets*[0.])
+t.Branch('WjetMu_true', WjetMu_true, 'WjetMu_true[nJets]/D')
+
+ZjetM_true = array('d', max_nJets*[0.])
+t.Branch('ZjetM_true', ZjetM_true, 'ZjetM_true[nJets]/D')
+
+ZjetMu_true = array('d', max_nJets*[0.])
+t.Branch('ZjetMu_true', ZjetMu_true, 'ZjetMu_true[nJets]/D')
+
+dR_Wjjqq_match = array('d', max_nJets*[-1.])
+t.Branch('dR_Wjjqq_match',dR_Wjjqq_match,'dR_Wjjqq_match[nJets]/D')
+
+dR_Zjjqq_match = array('d', max_nJets*[-1.])
+t.Branch('dR_Zjjqq_match',dR_Zjjqq_match,'dR_Zjjqq_match[nJets]/D')
+
+nVTags = array('i',[0])
+t.Branch('nVTags',nVTags,'nVTags/I')
+
 minDR_je = array('d',[0.])
 t.Branch('minDR_je',minDR_je,'minDR_je/D')
 
@@ -282,7 +329,7 @@ for event in events:
     if i % 1000 == 0 :
         print("EVENT ", i)
     nEventsAnalyzed = nEventsAnalyzed + 1
-    #if nEventsAnalyzed == 100: break
+    #if nEventsAnalyzed == 5000: break
     # Get the objects 
     event.getByLabel(vertLabel,  vertH)
     event.getByLabel(jetsLabel,  jetsH)    
@@ -298,10 +345,33 @@ for event in events:
         event.getByLabel(BBtoWtWt_L, BBtoWtWt_H)
         event.getByLabel(BBtoWtZb_L, BBtoWtZb_H)
         event.getByLabel(BBtoZbZb_L, BBtoZbZb_H)
+               
+        event.getByLabel(WPart1_L,   WPart1_H)
+        event.getByLabel(WPart2_L,   WPart2_H)
+        event.getByLabel(WPart3_L,   WPart3_H)
+        event.getByLabel(WPart4_L,   WPart4_H)
+        event.getByLabel(ZPart1_L,   ZPart1_H)
+        event.getByLabel(ZPart2_L,   ZPart2_H)
+        event.getByLabel(ZPart3_L,   ZPart3_H)
+        event.getByLabel(ZPart4_L,   ZPart4_H)
+
         BBtoWtWt = BBtoWtWt_H.product()[0]
         BBtoWtZb = BBtoWtZb_H.product()[0]
         BBtoZbZb = BBtoZbZb_H.product()[0]
-        
+        WPart1 = WPart1_H.product()
+        WPart2 = WPart2_H.product()
+        WPart3 = WPart3_H.product()
+        WPart4 = WPart4_H.product()
+        ZPart1 = ZPart1_H.product()
+        ZPart2 = ZPart2_H.product()
+        ZPart3 = ZPart3_H.product()
+        ZPart4 = ZPart4_H.product()
+
+        WPart1P4 = WPart1 + WPart2
+        WPart2P4 = WPart3 + WPart4
+        ZPart1P4 = ZPart1 + ZPart2
+        ZPart2P4 = ZPart3 + ZPart4
+
         WtWt[0] = BBtoWtWt
         WtZb[0] = BBtoWtZb
         ZbZb[0] = BBtoZbZb
@@ -312,6 +382,7 @@ for event in events:
     
         if BBtoWtWt == 0 and  BBtoWtZb == 0 and BBtoZbZb == 0:
             print('impossible: the MC should be either WtWt or WtZb or ZbZb')
+            print('which event', i)  
             
     # PileupReweighting
     if not options.data :
@@ -349,7 +420,7 @@ for event in events:
     
     # get the P4 of the edm MET
     metP4 = metObj.p4()
-    
+    #print ('njets--------------->' , len(jets))    
     #L1, L2, L3 JEC are already applied to jets in EDM Ntuples
     for ijet in jets :
         
@@ -384,6 +455,11 @@ for event in events:
             genpt = genJetPt
             deltapt = (recopt-genpt)*scale
             ptscale = max(0.0, (recopt+deltapt)/recopt)
+            #print('ptscale', ptscale, 'deltapt', deltapt, 'recopt', recopt, 'genpt', genpt)
+            #------------
+            #DO SOME DIRTY TRICK TO MAKE IT RUN
+            #-----------
+            if ptscale == 0: ptscale = 1
             jetScale*=ptscale
 
         ##Jet angular resolution smearing
@@ -410,8 +486,9 @@ for event in events:
         #jetP4.SetPhi( ijet.phi() * jetScale * phiScale )
 
         #For the time being, let's only smear in pt.
+        #print('ijet p4 before ---->', ijet.p4().pt())
         ijet.setP4( ijet.p4() * jetScale )
-
+        #print('ijet p4 after ---->', ijet.p4().pt(), 'jetScale', jetScale)
         #remove the uncorrected jets
         metP4.SetPx(metP4.px() + uncorrJet.px())
         metP4.SetPy(metP4.py() + uncorrJet.py())
@@ -447,9 +524,11 @@ for event in events:
     met[0] = metObj.pt()
     lepEt[0] = (leptons[0]).pt()
     lepEta[0] = (leptons[0]).eta()
+    
     if not runMu:
         eSCEta[0] = (leptons[0]).superCluster().eta()
         eMVA[0] = (leptons[0]).electronID("mvaTrigV0")
+        
     chIso = (leptons[0]).userIsolation(pat.PfChargedHadronIso)
     nhIso = (leptons[0]).userIsolation(pat.PfNeutralHadronIso)
     gIso  = (leptons[0]).userIsolation(pat.PfGammaIso)
@@ -457,34 +536,101 @@ for event in events:
     
     njets[0] = len(jets)
     sumEt = leptons[0].pt() + metObj.pt()
-    sumEt35 = sumEt
     sumEt4jets = sumEt
-    sumEt4jets35 = sumEt
+    
+
+    lepton_vector = TLorentzVector()
+    lepton_vector.SetPtEtaPhiM( leptons[0].pt(), leptons[0].eta(), leptons[0].phi(), leptons[0].mass() )
+    nu_p4 = metObj.p4()
+    wPt = lepton_vector.Pt() + nu_p4.Pt()
+    wPx = lepton_vector.Px() + nu_p4.Px()
+    wPy = lepton_vector.Py() + nu_p4.Py()
+    wMT = TMath.Sqrt(wPt*wPt-wPx*wPx-wPy*wPy)
+    wMt[0] = wMT
     
     nj = 0
     ntagsCSVM = 0
+    minDeltaR_lepjet = 5.0
+    dR_Wjjqq = -1.0
+    dR_Zjjqq = -1.0
+    nVtags = 0
+
+    #print('WPart1', WPart1P4.Pt(), 'WPart2', WPart2P4.Pt(), 'ZPart1', ZPart1P4.Pt(), 'ZPart2', ZPart2P4.Pt() ) 
+    #print('njets', njets[0])
     
-    for jet in jets :
-    
+    for jet in jets :   
         jetEt[nj] = jet.pt()
+        
         if nj < 4 :
             sumEt4jets += jet.pt()
+
+        jet_vector = TLorentzVector()
+        jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
+        minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
         
-
-	if c8aPruneJets :
-        #print(ijet.numberOfDaughters())
-	    #print(ijet.daughter(0).mass(), ijet.daughter(1).mass())
-	    WjetM[nj] = jet.mass()
-	    subjet1M = jet.daughter(0).mass() 
-	    subjet2M = jet.daughter(1).mass()
-	    mu = max(subjet1M,subjet2M) / jet.mass()
-	    WjetMu[nj] = mu
-
-
-    
         nj = nj + 1
         sumEt += jet.pt()
+        
+        if c8aPruneJets :  
+            WjetM[nj] = jet.mass()
+            subjet1M = jet.daughter(0).mass() 
+            subjet2M = jet.daughter(1).mass()
+            mu = max(subjet1M,subjet2M) / jet.mass()
+            WjetMu[nj] = mu
+            
+            if bprimeGenInfo:               
+                dR_Wqq_match1 = deltaR( jet.eta(), jet.phi(), WPart1.Eta(), WPart1.Phi())
+                dR_Wqq_match2 = deltaR( jet.eta(), jet.phi(), WPart2.Eta(), WPart2.Phi())
+                dR_Zqq_match1 = deltaR( jet.eta(), jet.phi(), ZPart1.Eta(), ZPart1.Phi())
+                dR_Zqq_match2 = deltaR( jet.eta(), jet.phi(), ZPart2.Eta(), ZPart2.Phi())
 
+                #if there are two W->qq, pick the one with min DeltaR, else pick the one which exists 
+                if WPart1P4.Pt() != 0 and WPart2P4.Pt() != 0:
+                    dR_Wjjqq = TMath.Min(dR_Wqq_match1,dR_Wqq_match2)
+                elif WPart1P4.Pt() != 0:
+                    dR_Wjjqq = dR_Wqq_match1
+                elif WPart2P4.Pt() != 0:
+                    dR_Wjjqq = dR_Wqq_match2
+                else:   dR_Wjjqq = -1  
+
+                if dR_Wjjqq <= 0.5 :
+                    dR_Wjjqq_match[nj] = dR_Wjjqq
+                    WjetMu_true[nj] = mu
+                    if WjetMu_true[nj] < 0.5:
+                        WjetM_true[nj] = jet.mass()
+                    else: WjetM_true[nj] = 0.    
+                else:
+                    dR_Wjjqq_match[nj] = -1.
+                    WjetMu_true[nj] = 0.
+                    WjetM_true[nj] = 0.
+
+                #if there are two Z->qq, pick the one with min DeltaR, else pick the one which exists 
+                if ZPart1P4.Pt() != 0 and ZPart2P4.Pt() != 0:
+                    dR_Zjjqq = TMath.Min(dR_Zqq_match1,dR_Zqq_match2)
+                elif ZPart1P4.Pt() != 0:
+                    dR_Zjjqq = dR_Zqq_match1
+                elif ZPart2P4.Pt() != 0:
+                    dR_Zjjqq = dR_Zqq_match2
+                else:   dR_Zjjqq = -1  
+
+                if dR_Zjjqq <= 0.5 :
+                    dR_Zjjqq_match[nj] = dR_Zjjqq
+                    ZjetMu_true[nj] = mu
+                    if ZjetMu_true[nj] < 0.5:
+                        ZjetM_true[nj] = jet.mass()
+                    else: ZjetM_true[nj] = 0.    
+                else:
+                    dR_Zjjqq_match[nj] = -1.
+                    ZjetMu_true[nj] = 0.
+                    ZjetM_true[nj] = 0.    
+                
+                #print('dR_Wqq1', dR_Wqq_match1,'dR_Wqq2', dR_Wqq_match2, 'dR_Zqq1', dR_Zqq_match1,'dR_Zqq2', dR_Zqq_match2)
+                #print('dR_Wjjqq_match[nj]', dR_Wjjqq_match[nj], 'WjetMu_true[nj]', WjetMu_true[nj], ' WjetM_true[nj]',  WjetM_true[nj])
+                #print('mu', WjetMu[nj], 'WjetM[nj]', WjetM[nj])
+                
+                if  WjetMu[nj] <=0.5 and (WjetM[nj] < 120 and WjetM[nj] > 50):
+                    nVtags = nVtags + 1
+                    
         if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
             ntagsCSVM = ntagsCSVM + 1 
         '''
@@ -504,21 +650,12 @@ for event in events:
             elif options.bTag =="BTagSFdown" :
                 if (jet.userInt('btagRegular') & 8) == 8 :
                     ntagsCSVM = ntagsCSVM + 1
-        '''                            
+        '''                                
     ht[0] = sumEt
     ht4jets[0] = sumEt4jets
     nTagsCSVM[0] = ntagsCSVM
-        
-    lepton_vector = TLorentzVector()
-    lepton_vector.SetPtEtaPhiM( leptons[0].pt(), leptons[0].eta(), leptons[0].phi(), leptons[0].mass() )
-    nu_p4 = metObj.p4()
-    wPt = lepton_vector.Pt() + nu_p4.Pt()
-    wPx = lepton_vector.Px() + nu_p4.Px()
-    wPy = lepton_vector.Py() + nu_p4.Py()
-    wMT = TMath.Sqrt(wPt*wPt-wPx*wPx-wPy*wPy)
-    wMt[0] = wMT
-    minDeltaR_elejet = 5.0
-    minDR_je[0] = minDeltaR_elejet
+    nVTags[0] = nVtags    
+    minDR_je[0] = minDeltaR_lepjet
     
     met_vector = TLorentzVector()
     met_vector.SetPxPyPzE( metObj.px(), metObj.py(), metObj.pz(), metObj.et())
