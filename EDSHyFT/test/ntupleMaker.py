@@ -34,7 +34,7 @@ parser.add_option('--txtfiles', metavar='F', type='string', action='store',
                   help='Input txt files')
 
 parser.add_option("--onDcache", action='store_true',
-                  default=True,
+                  default=False,
                   dest="onDcache",
                   help="onDcache(1), onDcache(0)")
 
@@ -262,16 +262,16 @@ t.Branch('WjetM', WjetM, 'WjetM[nJets]/D')
 WjetMu = array('d', max_nJets*[0.])
 t.Branch('WjetMu', WjetMu, 'WjetMu[nJets]/D')
 
-WjetM_true = array('d', max_nJets*[0.])
+WjetM_true = array('d', max_nJets*[-1.])
 t.Branch('WjetM_true', WjetM_true, 'WjetM_true[nJets]/D')
 
-WjetMu_true = array('d', max_nJets*[0.])
+WjetMu_true = array('d', max_nJets*[-1.])
 t.Branch('WjetMu_true', WjetMu_true, 'WjetMu_true[nJets]/D')
 
-ZjetM_true = array('d', max_nJets*[0.])
+ZjetM_true = array('d', max_nJets*[-1.])
 t.Branch('ZjetM_true', ZjetM_true, 'ZjetM_true[nJets]/D')
 
-ZjetMu_true = array('d', max_nJets*[0.])
+ZjetMu_true = array('d', max_nJets*[-1.])
 t.Branch('ZjetMu_true', ZjetMu_true, 'ZjetMu_true[nJets]/D')
 
 dR_Wjjqq_match = array('d', max_nJets*[-1.])
@@ -568,9 +568,6 @@ for event in events:
         jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
         minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
         
-        nj = nj + 1
-        sumEt += jet.pt()
-        
         if c8aPruneJets :  
             WjetM[nj] = jet.mass()
             subjet1M = jet.daughter(0).mass() 
@@ -598,11 +595,11 @@ for event in events:
                     WjetMu_true[nj] = mu
                     if WjetMu_true[nj] < 0.5:
                         WjetM_true[nj] = jet.mass()
-                    else: WjetM_true[nj] = 0.    
+                    else: WjetM_true[nj] = -1.    
                 else:
                     dR_Wjjqq_match[nj] = -1.
-                    WjetMu_true[nj] = 0.
-                    WjetM_true[nj] = 0.
+                    WjetMu_true[nj] = -1.
+                    WjetM_true[nj] = -1.
 
                 #if there are two Z->qq, pick the one with min DeltaR, else pick the one which exists 
                 if ZPart1P4.Pt() != 0 and ZPart2P4.Pt() != 0:
@@ -618,21 +615,23 @@ for event in events:
                     ZjetMu_true[nj] = mu
                     if ZjetMu_true[nj] < 0.5:
                         ZjetM_true[nj] = jet.mass()
-                    else: ZjetM_true[nj] = 0.    
+                    else: ZjetM_true[nj] = -1.    
                 else:
                     dR_Zjjqq_match[nj] = -1.
-                    ZjetMu_true[nj] = 0.
-                    ZjetM_true[nj] = 0.    
+                    ZjetMu_true[nj] = -1.
+                    ZjetM_true[nj] = -1.    
                 
                 #print('dR_Wqq1', dR_Wqq_match1,'dR_Wqq2', dR_Wqq_match2, 'dR_Zqq1', dR_Zqq_match1,'dR_Zqq2', dR_Zqq_match2)
                 #print('dR_Wjjqq_match[nj]', dR_Wjjqq_match[nj], 'WjetMu_true[nj]', WjetMu_true[nj], ' WjetM_true[nj]',  WjetM_true[nj])
                 #print('mu', WjetMu[nj], 'WjetM[nj]', WjetM[nj])
                 
-                if  WjetMu[nj] <=0.5 and (WjetM[nj] < 120 and WjetM[nj] > 50):
-                    nVtags = nVtags + 1
-                    
+        if  WjetMu[nj] < 0.5 and (WjetM[nj] < 120 and WjetM[nj] > 50):
+            nVtags = nVtags + 1
+       
+                 
         if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
-            ntagsCSVM = ntagsCSVM + 1 
+            ntagsCSVM = ntagsCSVM + 1
+
         '''
         if options.data:
             if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
@@ -650,7 +649,11 @@ for event in events:
             elif options.bTag =="BTagSFdown" :
                 if (jet.userInt('btagRegular') & 8) == 8 :
                     ntagsCSVM = ntagsCSVM + 1
-        '''                                
+        '''
+                    
+        nj = nj + 1
+        sumEt += jet.pt()
+        
     ht[0] = sumEt
     ht4jets[0] = sumEt4jets
     nTagsCSVM[0] = ntagsCSVM
