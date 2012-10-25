@@ -298,7 +298,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                 double nhIso   = imuon->userIsolation(pat::PfNeutralHadronIso);
                 double phIso   = imuon->userIsolation(pat::PfGammaIso);
                 double puIso   = imuon->userIsolation(pat::PfPUChargedHadronIso);
-                double relIso  = chIso+ max(0.,nhIso+phIso - 0.5*puIso)/imuon->pt();
+                double relIso  = (chIso+ max(0.,nhIso+phIso - 0.5*puIso)) /imuon->pt();
                 
                 //if ( !imuon->isGlobalMuon() ) continue;
                               
