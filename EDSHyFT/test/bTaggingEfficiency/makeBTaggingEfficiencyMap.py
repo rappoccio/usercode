@@ -118,7 +118,7 @@ outputFileSuffix = 'bTaggingEfficiencyMap'
 
 #----------------------------------------------------------------------------------
 
-def calculateEfficiency(dataset, inputPath, subdirectory, suffix):
+def produceEfficiencyMaps(dataset, inputPath, subdirectory, suffix):
 
   inputFilename = os.path.join(inputPath, dataset[0].lstrip('/').replace('/','__') + '.root')
   inputFile = TFile(inputFilename, 'READ')
@@ -196,7 +196,7 @@ def calculateEfficiency(dataset, inputPath, subdirectory, suffix):
 def main():
 
   for dataset in datasets:
-    calculateEfficiency(dataset, pathToInputFiles, inputFileSubdirectory, outputFileSuffix)
+    produceEfficiencyMaps(dataset, pathToInputFiles, inputFileSubdirectory, outputFileSuffix)
 
 if __name__ == "__main__":
   main()
