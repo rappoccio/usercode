@@ -22,6 +22,9 @@ class TopElectronSelector : public Selector<pat::Electron>  {
    public: // interface  
 
       bool verbose_;
+      bool runData_;
+
+      void setUseData(const bool &flag) { runData_ = flag; }
       enum Version_t { VETO, LOOSE, MEDIUM, TIGHT, NONE, N_VERSIONS};
       TopElectronSelector() {}
       
@@ -29,7 +32,8 @@ class TopElectronSelector : public Selector<pat::Electron>  {
       TopElectronSelector( edm::ParameterSet const & parameters ){
 
          verbose_ = true;
-
+         
+         //runData_= parameters.getParameter<bool>("runData");
          std::string versionStr = parameters.getParameter<std::string>("version");
          Version_t version = N_VERSIONS;
          
@@ -241,9 +245,12 @@ class TopElectronSelector : public Selector<pat::Electron>  {
           indexVtxFitConv_    = index_type(&bits_, "vtxFitConv"   );   
       }
 
-     
+      using Selector<pat::Electron>::operator();
+      
+
       // Allow for multiple definitions of the cuts. 
-      bool operator()( const pat::Electron & electron, pat::strbitset & ret, edm::EventBase const & event)
+
+      bool operator()( const pat::Electron & electron, edm::EventBase const & event, pat::strbitset & ret)
       {
          edm::Handle<std::vector<reco::Vertex> > pvtxHandle;
          event.getByLabel( pvSrc_, pvtxHandle);
@@ -259,15 +266,18 @@ class TopElectronSelector : public Selector<pat::Electron>  {
 
          return operator()(electron, ret);
       }
-
-      using Selector<pat::Electron>::operator();
       
       //Spring 12 cuts
       bool operator()( const pat::Electron & electron, pat::strbitset & ret) 
-      {
+      {    
          ret.set(false);
-         Double_t eta   = electron.superCluster()->eta();
-         Double_t AEff  = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, eta, ElectronEffectiveArea::kEleEAData2011);
+         Double_t scEta   = electron.superCluster()->eta();
+         Double_t AEff  = 0;
+         if(runData_){
+            AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2011);
+         }else{
+            AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAFall11MC);
+         }
          Double_t chIso = electron.chargedHadronIso();
          Double_t nhIso = electron.neutralHadronIso();
          Double_t phIso = electron.photonIso();
@@ -322,9 +332,9 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             passCut(ret, indexOoemoop_EB_);
             passCut(ret, indexRelIso_EB_);
            
+         }
             if ( mHits         <=  cut(indexMHits_, int()) || ignoreCut(indexMHits_) ) passCut(ret, indexMHits_);
             if (vtxFitConv     ==  cut(indexVtxFitConv_, bool()) || ignoreCut(indexVtxFitConv_) ) passCut(ret, indexVtxFitConv_);
-         }
         
          setIgnored(ret);   
          return (bool)ret;
