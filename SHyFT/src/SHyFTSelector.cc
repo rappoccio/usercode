@@ -63,6 +63,8 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
     pfEleSrc_       (params.getParameter<edm::InputTag>( "pfEleSrc" )),
     jecPayloads_     (params.getParameter<std::vector<std::string> >("jecPayloads"))
 {
+   electronIdVeto_.setUseData(useData_);
+   
     // make the bitset
     push_back( "Inclusive"      );
     push_back( "Trigger"        );
