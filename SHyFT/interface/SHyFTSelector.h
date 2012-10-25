@@ -34,9 +34,9 @@ class SHyFTSelector : public EventSelector {
       using EventSelector::operator();
 
       std::vector<reco::ShallowClonePtrCandidate> const & allJets           () const { return allJets_;     } 
-      std::vector<reco::ShallowClonePtrCandidate> const & selectedJets      () const { return selectedJets_;     } 
+      //std::vector<reco::ShallowClonePtrCandidate> const & selectedJets      () const { return selectedJets_;     } 
       std::vector<reco::ShallowClonePtrCandidate> const & cleanedJets       () const { return cleanedJets_;      } 
-      std::vector<reco::ShallowClonePtrCandidate> const & oldElectrons      () const { return oldElectrons_;}
+      //std::vector<reco::ShallowClonePtrCandidate> const & oldElectrons      () const { return oldElectrons_;}
       std::vector<reco::ShallowClonePtrCandidate> const & selectedMuons     () const { return selectedMuons_;    }       
       reco::ShallowClonePtrCandidate const &              selectedMET       () const { return met_; }
       std::vector<reco::ShallowClonePtrCandidate> const & selectedElectrons () const { return selectedElectrons_; }
@@ -45,10 +45,8 @@ class SHyFTSelector : public EventSelector {
       void printSelectors(std::ostream & out) const {
          out << "PV Selector: " << std::endl;
          pvSelector_.print(out);
-         out << "Muon ID Tight Selector: " << std::endl;
+         // out << "Muon ID Tight Selector: " << std::endl;
          //muonIdTight_.print(out);
-         // out << "Electron ID Tight Selector: " << std::endl;
-//          electronIdTight_.print(out);
          //out << "Muon ID Loose Selector: " << std::endl;
          //muonIdLoose_.print(out);
          out << "Electron ID Veto Selector: " << std::endl;
@@ -70,11 +68,11 @@ class SHyFTSelector : public EventSelector {
       std::string                 eleTrig_;
 
       std::vector<reco::ShallowClonePtrCandidate> allJets_;
-      std::vector<reco::ShallowClonePtrCandidate> selectedJets_;
+      //std::vector<reco::ShallowClonePtrCandidate> selectedJets_;
       std::vector<reco::ShallowClonePtrCandidate> selectedElectrons_;
       std::vector<reco::ShallowClonePtrCandidate> allMuons_;
       std::vector<reco::ShallowClonePtrCandidate> selectedMuons_;
-      std::vector<reco::ShallowClonePtrCandidate> oldElectrons_;
+      //std::vector<reco::ShallowClonePtrCandidate> oldElectrons_;
       std::vector<reco::ShallowClonePtrCandidate> looseMuons_;
       std::vector<reco::ShallowClonePtrCandidate> allElectrons_;
       std::vector<reco::ShallowClonePtrCandidate> looseElectrons_;
@@ -136,6 +134,7 @@ class SHyFTSelector : public EventSelector {
       index_type   jet5Index_;      
      
       double         eRelIso_;
+      double         muRelIso_;
       double         eEt_;
       double         dxy_;
       edm::InputTag  pvTag_;

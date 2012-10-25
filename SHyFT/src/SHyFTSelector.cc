@@ -28,10 +28,10 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
     muTrig_          (params.getParameter<std::string>("muTrig")),
     eleTrig_         (params.getParameter<std::string>("eleTrig")),
     pvSelector_      (params.getParameter<edm::ParameterSet>("pvSelector") ),
-    muonIdTight_     (params.getParameter<edm::ParameterSet>("muonIdTight") ),
-    muonIdLoose_     (params.getParameter<edm::ParameterSet>("muonIdLoose") ),
+    //muonIdTight_     (params.getParameter<edm::ParameterSet>("muonIdTight") ),
+    //muonIdLoose_     (params.getParameter<edm::ParameterSet>("muonIdLoose") ),
     electronIdVeto_  (params.getParameter<edm::ParameterSet>("electronIdVeto") ),
-    electronIdTight_ (params.getParameter<edm::ParameterSet>("electronIdTight") ),
+    //electronIdTight_ (params.getParameter<edm::ParameterSet>("electronIdTight") ),
     minJets_         (params.getParameter<int> ("minJets") ),
     muJetDR_         (params.getParameter<double>("muJetDR")),
     eleJetDR_        (params.getParameter<double>("eleJetDR")),
@@ -53,6 +53,7 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
     ePtScale_        (params.getParameter<double>("ePtScale")),
     ePtUncertaintyEE_(params.getParameter<double>("ePtUncertaintyEE")),
     eRelIso_         (params.getParameter<double>("eRelIso")),
+    muRelIso_        (params.getParameter<double>("muRelIso")),
     eEt_             (params.getParameter<double>("eEt")),
     dxy_             (params.getParameter<double>("dxy")),
     pvTag_           (params.getParameter<edm::InputTag>("pvSrc")),
@@ -70,7 +71,6 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
     push_back( "== 1 Tight Lepton"    );
     push_back( "== 1 Tight Lepton, Mu Veto");
     push_back( "== 1 Lepton"    );
-    push_back( "Conversion Veto");
     push_back( "Dilepton Veto"  );
     push_back( "Cosmic Veto"    );
     push_back( ">=1 Jets"       );
@@ -143,11 +143,11 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
     ret.set(false);
 
     allJets_.clear();
-    selectedJets_.clear();
+    //selectedJets_.clear();
     cleanedJets_.clear();
     allMuons_.clear();
     selectedMuons_.clear();
-    oldElectrons_.clear();
+    //oldElectrons_.clear();
     looseMuons_.clear();
     looseElectrons_.clear();
     selectedMETs_.clear();
@@ -226,6 +226,9 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             double rhoIso = std::max(*(rhoHandleIso.product()), 0.0);
 
             int nElectrons = 0;
+
+            //Electron selections:
+            //-------------------
             for ( std::vector<pat::Electron>::const_iterator electronBegin = electronHandle->begin(),
                     electronEnd = electronHandle->end(), ielectron = electronBegin;
                     ielectron != electronEnd; ++ielectron ) {
@@ -251,7 +254,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                 //-----------------------------  
                 if (fabs(scEta) > 1.4442 &&  fabs(scEta) < 1.5660 ) continue;  //Fiducial cuts 
 
-                bool passTopCuts(0), passIso(0), passMVAID(0), passVetoID(0);// passTightID(0);            
+                bool passTopCuts(0), passIso(0), passMVAID(0), passVetoID(0);
 
                 passTopCuts = (fabs(eta)< 2.5 && 
                         fabs(dB) < dxy_ &&
@@ -267,13 +270,12 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                 else passMVAID = ielectron->electronID("mvaTrigV0") > 0;
 
                 passVetoID = electronIdVeto_(*ielectron,event);//WP:"Veto" from cut based ID
-                // passTightID = electronIdTight_(*ielectron, event);//WP: "Tight" from cut based ID
-
+               
                 if(passTopCuts && passIso && passMVAID){
 
                     selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                 }
-                else if(passVetoID && et > 20){
+                else if(passVetoID && et > 20.0){
                     selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                 }   
 
@@ -285,46 +287,44 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             }
 
 
-            //Loose Muon Selection to be vetoed for e+jets 
-            //--------------------------------------------
+            //Muons Selection:
+            //---------------
             for ( std::vector<pat::Muon>::const_iterator muonBegin = muonHandle->begin(),
                     muonEnd = muonHandle->end(), imuon = muonBegin;
                     imuon != muonEnd; ++imuon ) { 
+
+                bool passIso(0);
                 double chIso   = imuon->userIsolation(pat::PfChargedHadronIso);
                 double nhIso   = imuon->userIsolation(pat::PfNeutralHadronIso);
-                double gIso    = imuon->userIsolation(pat::PfGammaIso);
-                double relIso  = (chIso + nhIso + gIso )/imuon->pt(); 
-                if ( !imuon->isGlobalMuon() ) continue;
+                double phIso   = imuon->userIsolation(pat::PfGammaIso);
+                double puIso   = imuon->userIsolation(pat::PfPUChargedHadronIso);
+                double relIso  = chIso+ max(0.,nhIso+phIso - 0.5*puIso)/imuon->pt();
+                
+                //if ( !imuon->isGlobalMuon() ) continue;
+                              
+                //Muon Selection for mu+jets
+                //-------------------------- 
+                if(useNoPFIso_) passIso = 1; //no isolation by default
+                else passIso = relIso < muRelIso_; 
+                
+                // Loose cuts: in the vector-like quark analysis, we will use the loose muon selection from muon POG without isolation cut.
+                bool passLoose = imuon->isPFMuon() && ( imuon->isGlobalMuon() || imuon->isTrackerMuon() );
+               
+                if ( imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && passLoose && passIso ) {                   
+                   selectedMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
+                } else {
+                    // Loose cuts : currently the same passLoose is applied but pt and iso can be different.
+                   if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ && passLoose && relIso < 0.2) {
+                      looseMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
+                   }
+                }
+
+                //Loose Muon Selection to be vetoed for e+jets 
+                //--------------------------------------------
                 if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ &&  relIso < 0.2 ) {
                     selectedLooseMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
                 }
-            }
-
-            //Muon Selection for mu+jets
-            //--------------------------     
-
-            for ( std::vector<pat::Muon>::const_iterator muonBegin = muonHandle->begin(),
-                    muonEnd = muonHandle->end(), imuon = muonBegin;
-                    imuon != muonEnd; ++imuon ) {
-                allMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
-                if ( !imuon->isGlobalMuon() ) continue;
-                // Tight cuts
-                //bool passTight = muonIdTight_(*imuon,event) && imuon->isTrackerMuon() ;
-                // Loose cuts
-                bool passLoose = imuon->isPFMuon() && ( imuon->isGlobalMuon() || imuon->isTrackerMuon() );
-                // in the vector-like quark analysis, we will use the loose muon selection from muon POG without isolation cut requiring one muon exclusively.
-                // any events which have too loose muons will be rejected. 
-                if (  imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && 
-                        passLoose ) {
-
-                    selectedMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
-                } else {
-                    // Loose cuts : currently the same passLoose is applied but pt can be different.
-                    if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ && 
-                            passLoose ) {
-                        looseMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
-                    }
-                }
+                
             }
 
             //Jet selection
@@ -400,10 +400,11 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                 allJets_.push_back( scaledJet );
 
                 if ( scaledJet.pt() > jetPtMin_ && fabs(scaledJet.eta()) < jetEtaMax_ ) {  
-                    selectedJets_.push_back( scaledJet );
+                   //selectedJets_.push_back( scaledJet );
+                    cleanedJets_.push_back( scaledJet );
 
+/*
                     if ( muPlusJets_ ) {
-
                         //Remove some jets
                         bool indeltaR = false;
                         for( std::vector<reco::ShallowClonePtrCandidate>::const_iterator muonBegin = selectedMuons_.begin(),
@@ -433,6 +434,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                             cleanedJets_.push_back( scaledJet );
                         }// end if jet is not within dR of an electron
                     }// end if e+jets
+*/
                 }// end if pass id and kin cuts
             }// end loop over jets
 
@@ -553,7 +555,6 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
 
                     bool oneMuon = 
                         ( selectedMuons_.size() == 1 && 
-                          //looseMuons_.size() + oldElectrons_.size() + looseElectrons_.size() == 0 
                           looseMuons_.size() + looseElectrons_.size() == 0 
                         );
                     bool oneElectron =

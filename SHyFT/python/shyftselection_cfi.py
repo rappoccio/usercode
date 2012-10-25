@@ -7,11 +7,6 @@ from PhysicsTools.SelectorUtils.pfElectronSelector_cfi import pfElectronSelector
 from Analysis.SHyFT.cutbasedIDSelector_cfi import cutbasedIDSelector
 
 wplusjetsAnalysis = cms.PSet(
-
-    electronIdTight = cutbasedIDSelector.clone(
-    version = cms.string('TIGHT'),
-    cutsToIgnore = cms.vstring("reliso_EB", "reliso_EE", "vtxFitConv") 
-    ),
     
     electronIdVeto = cutbasedIDSelector.clone(
     version = cms.string('VETO')
@@ -24,7 +19,8 @@ wplusjetsAnalysis = cms.PSet(
     maxZ = cms.double(24.0),
     maxRho = cms.double(2.0),
     NPV = cms.int32(1),
-    ),    
+    ),
+    
     # input parameter sets
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
     electronSrc = cms.InputTag('selectedPatElectronsPFlow'),
@@ -39,43 +35,7 @@ wplusjetsAnalysis = cms.PSet(
     pfEleSrc  = cms.InputTag("particleFlow"),
     useNoPFIso = cms.bool(False),
     useNoID  = cms.bool(False),
-    # tight muons
-    muonIdTight = pfMuonSelector.clone(
-    version = cms.string('SPRING11'),
-    Chi2 = cms.double(10.0),
-    D0 = cms.double(0.02),
-    NHits = cms.int32(11),
-    NValMuHits = cms.int32(0),
-    PFIso = cms.double(0.125),
-    nPixelHits = cms.int32(1),
-    nMatchedStations=cms.int32(1),
-    cutsToIgnore=cms.vstring()
-    ),
-  
-    # loose electrons
-    electronIdLoose = pfElectronSelector.clone(
-    version = cms.string('SPRING11'),
-    MVA = cms.double(-0.01),
-    MaxMissingHits = cms.int32(1),
-    D0 = cms.double(999.0),
-    electronIDused = cms.string('eidLooseMC'),
-    ConversionRejection = cms.bool(False),
-    PFIso = cms.double(0.2),
-    cutsToIgnore = cms.vstring('MVA', 'D0', 'MaxMissingHits', 'ConversionRejection')
-    ),
-    # loose muons
-    muonIdLoose = pfMuonSelector.clone(
-    version = cms.string('SPRING11'),
-    Chi2 = cms.double(999.0),
-    D0 = cms.double(999.0),
-    NHits = cms.int32(-1),
-    NValMuHits = cms.int32(-1),
-    PFIso = cms.double(0.2),
-    nPixelHits = cms.int32(1),
-    nMatchedStations=cms.int32(1),
-    cutsToIgnore=cms.vstring('Chi2','D0','NHits','NValMuHits','nPixelHits','nMatchedStations')
-    ),
-   
+    
     # kinematic cuts
     minJets        = cms.int32( 1 ),
     muPlusJets     = cms.bool( True ),
@@ -84,14 +44,15 @@ wplusjetsAnalysis = cms.PSet(
     muEtaMax       = cms.double( 2.1 ),
     eleEtMin       = cms.double( 20.0 ),
     eleEtaMax      = cms.double( 2.4 ),
-    muPtMinLoose   = cms.double( 10.0 ),
-    muEtaMaxLoose  = cms.double( 2.5 ),
+    muPtMinLoose   = cms.double( 10.0 ),#mu pt to be vetoed in mu+jets
+    muEtaMaxLoose  = cms.double( 2.5 ), #mu eta to be vetoed in mu+jets
     eleEtMinLoose  = cms.double( 15.0 ),#ele pt to be vetoed in muon
     eleEtaMaxLoose = cms.double( 2.5 ), #eta to be vetoed in muon
     elDist         = cms.double( 0.02 ),
     elDcot         = cms.double( 0.02 ),
     eRelIso        = cms.double( 0.1 ),
     eEt            = cms.double( 30. ),
+    muRelIso       = cms.double( 0.125),
     vertexCut      = cms.double( 1.),
     dxy            = cms.double( 0.02),
     jetPtMin       = cms.double( 30.0 ),
@@ -101,12 +62,8 @@ wplusjetsAnalysis = cms.PSet(
     jetSmear       = cms.double( 0.0 ),
     ePtScale       = cms.double( 0.0 ),
     ePtUncertaintyEE = cms.double( 0.025), 
-    metMin         = cms.double( 0.0 ),
-    metMax         = cms.double( 100000.0),
-    wMTMax         = cms.double( 100000.0),
     unclMetScale   = cms.double( 0.0 ),
     muJetDR        = cms.double( 0.3 ),
-    useJetClones   = cms.bool(False),
     eleJetDR       = cms.double( 0.5 ),
     rawJetPtCut    = cms.double( 0.0 ),
     useData        = cms.bool(False),
