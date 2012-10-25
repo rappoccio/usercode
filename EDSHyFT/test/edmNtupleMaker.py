@@ -68,14 +68,13 @@ process.source = cms.Source("PoolSource",
                             )                           
 
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
-process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 
 if runData:
     process.GlobalTag.globaltag = 'GR_P_V40_AN1::All'
 else:
-    process.GlobalTag.globaltag = 'START53_V7::All'
-    #process.GlobalTag.globaltag = 'START53_V11::All'
+    process.GlobalTag.globaltag = 'START53_V7F::All'
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
@@ -94,12 +93,6 @@ payloads = [
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 #_______________________________BTagging SF and Pileup________________________________________
 
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-
-# Final 2011 b-tag performance measurements
-process.load ("RecoBTag.PerformanceDB.BTagPerformanceDB062012")
-process.load ("RecoBTag.PerformanceDB.PoolBTagPerformanceDB062012")
-
 if not runData:
     process.pileupReweightingProducer = cms.EDProducer("PileupReweightingPoducer",
                                          FirstTime = cms.untracked.bool(False),
@@ -114,14 +107,8 @@ if not runData:
         JetSource = cms.InputTag('goodPatJetsCA8PrunedPF'),
         DiscriminatorTag = cms.string('combinedSecondaryVertexBJetTags'),
         DiscriminatorValue = cms.double(0.679),
-        BTagger = cms.string('CSVM'),
-        HeavySFUncInflateBy = cms.double(1.5),
-        LightSFCorrFunction = cms.string('1.10422 + (-0.000523856*x) + (1.14251e-06*x*x)'),
-        EffMapB = cms.string('Analysis/EDSHyFT/data/BprimeBprimeToTWTWinc_bTaggingEfficiencyMap_b.root'),
-        EffMapC = cms.string('Analysis/EDSHyFT/data/BprimeBprimeToTWTWinc_bTaggingEfficiencyMap_c.root'),
-        EffMapUDSG = cms.string('Analysis/EDSHyFT/data/BprimeBprimeToTWTWinc_bTaggingEfficiencyMap_udsg.root')
+        EffMapFile = cms.string('Analysis/EDSHyFT/data/BprimeBprimeToTWTWinc_M-750_TuneZ2star_8TeV-madgraph_CA8PrunedPF_CSVM_bTaggingEfficiencyMap.root')
     )
-
 
     process.GenInfo = cms.EDProducer('BoostedParticles')
 
@@ -153,23 +140,23 @@ process.pfTupleEle = cms.EDFilter('EDSHyFTSelector',
 )
 
 ## electron+jets decay mode
-process.pfTupleEleC8APruned = process.pfTupleEle.clone()
-process.pfTupleEleC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPFSF')
-process.pfTupleEleC8APruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
-process.pfTupleEleC8APruned.matchByHand = cms.bool(True)
+process.pfTupleEleCA8Pruned = process.pfTupleEle.clone()
+process.pfTupleEleCA8Pruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPFSF')
+process.pfTupleEleCA8Pruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
+process.pfTupleEleCA8Pruned.matchByHand = cms.bool(True)
 
 ## muon+jets decay mode
-process.pfTupleMuC8APruned = process.pfTupleEle.clone()
-process.pfTupleMuC8APruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPFSF')
-process.pfTupleMuC8APruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
-process.pfTupleMuC8APruned.matchByHand = cms.bool(True)
-process.pfTupleMuC8APruned.ePlusJets = cms.bool( False )
-process.pfTupleMuC8APruned.muPlusJets = cms.bool( True )
+process.pfTupleMuCA8Pruned = process.pfTupleEle.clone()
+process.pfTupleMuCA8Pruned.shyftSelection.jetSrc = cms.InputTag('goodPatJetsCA8PrunedPFSF')
+process.pfTupleMuCA8Pruned.shyftSelection.identifier = cms.string('CA8 Prunded PF')
+process.pfTupleMuCA8Pruned.matchByHand = cms.bool(True)
+process.pfTupleMuCA8Pruned.ePlusJets = cms.bool( False )
+process.pfTupleMuCA8Pruned.muPlusJets = cms.bool( True )
 
 ## configure output module
 process.p0 = cms.Path( process.patTriggerDefaultSequence)
-process.p1 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleEleC8APruned)
-process.p2 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleMuC8APruned)
+process.p1 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleEleCA8Pruned)
+process.p2 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleMuCA8Pruned)
 
 process.p3 = cms.Path()
 
