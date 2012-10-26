@@ -54,6 +54,27 @@ datasets = [
     'T_t-channel_TuneZ2star_8TeV-powheg-tauola_CA8PrunedPF_CSVM'
   ],
   [
+    '/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola/dsperka-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 120., 240., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_CA8PrunedPF_CSVM'
+  ],
+  [
+    '/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/mmhl-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 150., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_CA8PrunedPF_CSVM'
+  ],
+  [
+    '/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/mmhl-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 150., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 150., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_CA8PrunedPF_CSVM'
+  ],
+  [
     '/WW_TuneZ2star_8TeV_pythia6_tauola/mmhl-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
     {'b':    [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]],
      'c':    [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]],
@@ -187,6 +208,7 @@ def produceEfficiencyMaps(dataset, inputPath, subdirectory, suffix):
 
   outputFile.Close()
 
+  print '-------------------------------------------------------------------------------------------'
   print 'b-tagging efficiency map for'
   print dataset[0]
   print 'successfully created and stored in %s'%outputFilename
