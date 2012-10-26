@@ -51,6 +51,7 @@ def main():
 
     workdir = line_elements[0].lstrip('/').replace('/','__')
 
+    print '------------------------------------------------------------------------------------'
     print workdir
 
     # final output
