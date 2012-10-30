@@ -65,7 +65,7 @@ process.TFileService = cms.Service('TFileService',
 )
 
 process.bTaggingEffAnalyzer = cms.EDAnalyzer('BTaggingEffAnalyzer',
-    JetsTag            = cms.InputTag('goodPatJetsCA8PrunedPF'),
+    JetsTag            = cms.InputTag('goodPatJetsPFlow'),
     DiscriminatorTag   = cms.string('combinedSecondaryVertexBJetTags'),
     DiscriminatorValue = cms.double(0.679),
     PtNBins            = cms.int32(100),
