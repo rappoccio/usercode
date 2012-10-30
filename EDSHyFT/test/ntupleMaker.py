@@ -34,7 +34,7 @@ parser.add_option('--txtfiles', metavar='F', type='string', action='store',
                   help='Input txt files')
 
 parser.add_option("--onDcache", action='store_true',
-                  default=False,
+                  default=True,
                   dest="onDcache",
                   help="onDcache(1), onDcache(0)")
 
@@ -73,10 +73,10 @@ parser.add_option("--bTag",action='store',
                   dest="bTag",
                   help="b-tag SF")
 
-parser.add_option("--useC8APrune", action='store_true',
-                  default=True,
-                  dest="useC8APrune",
-                  help="switch on(1) / off(0) C8APrune jets")
+## parser.add_option("--useC8APrune", action='store_true',
+##                   default=True,
+##                   dest="useC8APrune",
+##                   help="switch on(1) / off(0) C8APrune jets")
 
 parser.add_option("--useBPrimeGenInfo",  action='store_true',
                   default=False,
@@ -87,7 +87,7 @@ parser.add_option("--useBPrimeGenInfo",  action='store_true',
 (options, args) = parser.parse_args()
 
 runMu = options.runMuons
-c8aPruneJets = options.useC8APrune
+#c8aPruneJets = options.useC8APrune
 bprimeGenInfo = options.useBPrimeGenInfo
 dcache = options.onDcache
 
@@ -212,6 +212,9 @@ t.Branch('WtZb',WtZb,'WtZb/I')
 ZbZb = array('i',[0])
 t.Branch('ZbZb',ZbZb,'ZbZb/I')
 
+trigEleStop_path = array('i', [0])
+t.Branch('trigEleStop_path', trigEleStop_path, 'trigEleStop_path/I')
+
 trigEleHad_path = array('i', [0])
 t.Branch('trigEleHad_path', trigEleHad_path, 'trigEleHad_path/I')
 
@@ -256,23 +259,20 @@ max_nJets = 20
 jetEt = array('d',max_nJets*[0.])
 t.Branch('jetEt',jetEt,'jetEt[nJets]/D')
 
+jetEt_ca8 = array('d',max_nJets*[0.])
+t.Branch('jetEt_ca8',jetEt_ca8,'jetEt_ca8[nJets]/D')
+
 WjetM = array('d', max_nJets*[0.])
 t.Branch('WjetM', WjetM, 'WjetM[nJets]/D')
 
 WjetMu = array('d', max_nJets*[0.])
 t.Branch('WjetMu', WjetMu, 'WjetMu[nJets]/D')
 
-WjetM_true = array('d', max_nJets*[-1.])
-t.Branch('WjetM_true', WjetM_true, 'WjetM_true[nJets]/D')
+WPt_true = array('d', max_nJets*[-1.])
+t.Branch('WPt_true', WPt_true, 'WPt_true[nJets]/D')
 
-WjetMu_true = array('d', max_nJets*[-1.])
-t.Branch('WjetMu_true', WjetMu_true, 'WjetMu_true[nJets]/D')
-
-ZjetM_true = array('d', max_nJets*[-1.])
-t.Branch('ZjetM_true', ZjetM_true, 'ZjetM_true[nJets]/D')
-
-ZjetMu_true = array('d', max_nJets*[-1.])
-t.Branch('ZjetMu_true', ZjetMu_true, 'ZjetMu_true[nJets]/D')
+ZPt_true = array('d', max_nJets*[-1.])
+t.Branch('ZPt_true', ZPt_true, 'ZPt_true[nJets]/D')
 
 dR_Wjjqq_match = array('d', max_nJets*[-1.])
 t.Branch('dR_Wjjqq_match',dR_Wjjqq_match,'dR_Wjjqq_match[nJets]/D')
@@ -400,12 +400,12 @@ for event in events:
     # Get the "product" of the handle (i.e. what it's "pointing to" in C++)
     vertices = vertH.product()
     
-    if c8aPruneJets:
-        jets = c8aPruneJetsH.product()
-        metObj = (c8aPruneMetH.product())[0]
-    else:
-        jets = jetsH.product()
-        metObj = (metH.product())[0]
+    #if c8aPruneJets:
+    jets_ca8 = c8aPruneJetsH.product()
+    metObj_ca8 = (c8aPruneMetH.product())[0]
+    #else:
+    jets = jetsH.product()
+    metObj = (metH.product())[0]
         
     leptons = leptonsH.product()
     trigObj = trigH.product()
@@ -414,7 +414,8 @@ for event in events:
         continue
     if len(jets) == 0:
         continue
-    
+    #if len(jets_ca8) == 0:
+    #    continue
     #Systematic variations studies:
     #=============================
     
@@ -506,13 +507,18 @@ for event in events:
     #########################
    
     # store the trigger paths
+    trigEleStop_path[0] = -1
     trigEleHad_path[0]  = -1
     trigSigEle_path[0]  = -1
+    eleStop   = "HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet"
     eleHad    = "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet"
     singleEle = "HLT_Ele27_WP80_v"
      
     trigPaths = trigObj.paths() #TriggerPathCollection
     for ipath in trigPaths:
+        if eleStop+"30_v" in ipath.name() or eleStop+"45_35_25_v" in ipath.name() or eleStop+"50_40_30_v" in ipath.name():
+            trigEleStop_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
+            #if trigEleStop_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
         if eleHad+"30_v" in ipath.name() or eleHad+"30_30_20_v" in ipath.name():
             trigEleHad_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
             #if trigEleHad_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
@@ -538,7 +544,6 @@ for event in events:
     sumEt = leptons[0].pt() + metObj.pt()
     sumEt4jets = sumEt
     
-
     lepton_vector = TLorentzVector()
     lepton_vector.SetPtEtaPhiM( leptons[0].pt(), leptons[0].eta(), leptons[0].phi(), leptons[0].mass() )
     nu_p4 = metObj.p4()
@@ -549,12 +554,15 @@ for event in events:
     wMt[0] = wMT
     
     nj = 0
+    cj = 0
     ntagsCSVM = 0
     minDeltaR_lepjet = 5.0
     dR_Wjjqq = -1.0
     dR_Zjjqq = -1.0
     nVtags = 0
-
+    WPt = 0
+    ZPt = 0
+    
     #print('WPart1', WPart1P4.Pt(), 'WPart2', WPart2P4.Pt(), 'ZPart1', ZPart1P4.Pt(), 'ZPart2', ZPart2P4.Pt() ) 
     #print('njets', njets[0])
     
@@ -567,71 +575,10 @@ for event in events:
         jet_vector = TLorentzVector()
         jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
         minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
-        
-        if c8aPruneJets :  
-            WjetM[nj] = jet.mass()
-            subjet1M = jet.daughter(0).mass() 
-            subjet2M = jet.daughter(1).mass()
-            mu = max(subjet1M,subjet2M) / jet.mass()
-            WjetMu[nj] = mu
-            
-            if bprimeGenInfo:               
-                dR_Wqq_match1 = deltaR( jet.eta(), jet.phi(), WPart1.Eta(), WPart1.Phi())
-                dR_Wqq_match2 = deltaR( jet.eta(), jet.phi(), WPart2.Eta(), WPart2.Phi())
-                dR_Zqq_match1 = deltaR( jet.eta(), jet.phi(), ZPart1.Eta(), ZPart1.Phi())
-                dR_Zqq_match2 = deltaR( jet.eta(), jet.phi(), ZPart2.Eta(), ZPart2.Phi())
-
-                #if there are two W->qq, pick the one with min DeltaR, else pick the one which exists 
-                if WPart1P4.Pt() != 0 and WPart2P4.Pt() != 0:
-                    dR_Wjjqq = TMath.Min(dR_Wqq_match1,dR_Wqq_match2)
-                elif WPart1P4.Pt() != 0:
-                    dR_Wjjqq = dR_Wqq_match1
-                elif WPart2P4.Pt() != 0:
-                    dR_Wjjqq = dR_Wqq_match2
-                else:   dR_Wjjqq = -1  
-
-                if dR_Wjjqq <= 0.5 :
-                    dR_Wjjqq_match[nj] = dR_Wjjqq
-                    WjetMu_true[nj] = mu
-                    if WjetMu_true[nj] < 0.5:
-                        WjetM_true[nj] = jet.mass()
-                    else: WjetM_true[nj] = -1.    
-                else:
-                    dR_Wjjqq_match[nj] = -1.
-                    WjetMu_true[nj] = -1.
-                    WjetM_true[nj] = -1.
-
-                #if there are two Z->qq, pick the one with min DeltaR, else pick the one which exists 
-                if ZPart1P4.Pt() != 0 and ZPart2P4.Pt() != 0:
-                    dR_Zjjqq = TMath.Min(dR_Zqq_match1,dR_Zqq_match2)
-                elif ZPart1P4.Pt() != 0:
-                    dR_Zjjqq = dR_Zqq_match1
-                elif ZPart2P4.Pt() != 0:
-                    dR_Zjjqq = dR_Zqq_match2
-                else:   dR_Zjjqq = -1  
-
-                if dR_Zjjqq <= 0.5 :
-                    dR_Zjjqq_match[nj] = dR_Zjjqq
-                    ZjetMu_true[nj] = mu
-                    if ZjetMu_true[nj] < 0.5:
-                        ZjetM_true[nj] = jet.mass()
-                    else: ZjetM_true[nj] = -1.    
-                else:
-                    dR_Zjjqq_match[nj] = -1.
-                    ZjetMu_true[nj] = -1.
-                    ZjetM_true[nj] = -1.    
-                
-                #print('dR_Wqq1', dR_Wqq_match1,'dR_Wqq2', dR_Wqq_match2, 'dR_Zqq1', dR_Zqq_match1,'dR_Zqq2', dR_Zqq_match2)
-                #print('dR_Wjjqq_match[nj]', dR_Wjjqq_match[nj], 'WjetMu_true[nj]', WjetMu_true[nj], ' WjetM_true[nj]',  WjetM_true[nj])
-                #print('mu', WjetMu[nj], 'WjetM[nj]', WjetM[nj])
-                
-        if  WjetMu[nj] < 0.5 and (WjetM[nj] < 120 and WjetM[nj] > 50):
-            nVtags = nVtags + 1
-       
                  
         if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
             ntagsCSVM = ntagsCSVM + 1
-
+            
         '''
         if options.data:
             if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
@@ -653,6 +600,62 @@ for event in events:
                     
         nj = nj + 1
         sumEt += jet.pt()
+        
+    if len(jets_ca8) != 0:
+        for jet in jets_ca8 :   
+            jetEt_ca8[cj] = jet.pt()    
+            WjetM[cj] = jet.mass()
+            subjet1M = jet.daughter(0).mass() 
+            subjet2M = jet.daughter(1).mass()
+            mu = max(subjet1M,subjet2M) / jet.mass()
+            WjetMu[cj] = mu
+            
+            if bprimeGenInfo:               
+                dR_Wqq_match1 = deltaR( jet.eta(), jet.phi(), WPart1P4.Eta(), WPart1P4.Phi())
+                dR_Wqq_match2 = deltaR( jet.eta(), jet.phi(), WPart2P4.Eta(), WPart2P4.Phi())
+                dR_Zqq_match1 = deltaR( jet.eta(), jet.phi(), ZPart1P4.Eta(), ZPart1P4.Phi())
+                dR_Zqq_match2 = deltaR( jet.eta(), jet.phi(), ZPart2P4.Eta(), ZPart2P4.Phi())
+                
+                #if there are two W->qq, pick the one with min DeltaR, else pick the one which exists 
+                if WPart1P4.Pt() != 0 and WPart2P4.Pt() != 0:
+                    dR_Wjjqq = TMath.Min(dR_Wqq_match1,dR_Wqq_match2)
+                    if dR_Wjjqq == dR_Wqq_match1: WPt = WPart1P4.Pt()
+                    elif dR_Wjjqq == dR_Wqq_match2: WPt = WPart2P4.Pt()
+                elif WPart1P4.Pt() != 0:
+                    dR_Wjjqq = dR_Wqq_match1
+                    WPt = WPart1P4.Pt()
+                elif WPart2P4.Pt() != 0:
+                    dR_Wjjqq = dR_Wqq_match2
+                    WPt = WPart2P4.Pt()
+                else:
+                    dR_Wjjqq = -1
+                    WPt = -1
+                
+                dR_Wjjqq_match[cj] = dR_Wjjqq
+                WPt_true[cj] = WPt
+
+                #if there are two Z->qq, pick the one with min DeltaR, else pick the one which exists 
+                if ZPart1P4.Pt() != 0 and ZPart2P4.Pt() != 0:
+                    dR_Zjjqq = TMath.Min(dR_Zqq_match1,dR_Zqq_match2)
+                    if dR_Zjjqq == dR_Zqq_match1: ZPt = ZPart1P4.Pt()
+                    elif dR_Zjjqq == dR_Zqq_match2: ZPt = ZPart2P4.Pt()
+                elif ZPart1P4.Pt() != 0:
+                    dR_Zjjqq = dR_Zqq_match1
+                    ZPt = ZPart1P4.Pt()
+                elif ZPart2P4.Pt() != 0:
+                    dR_Zjjqq = dR_Zqq_match2
+                    ZPt = ZPart2P4.Pt()
+                else:
+                    dR_Zjjqq = -1
+                    ZPt = -1
+
+                dR_Zjjqq_match[cj] = dR_Zjjqq
+                ZPt_true[cj] = ZPt
+
+            if WjetMu[cj] < 0.4 and (WjetM[cj] < 120 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
+                nVtags = nVtags + 1
+            cj = cj + 1
+        
         
     ht[0] = sumEt
     ht4jets[0] = sumEt4jets
