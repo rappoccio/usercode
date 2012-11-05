@@ -554,7 +554,6 @@ for event in events:
     wMt[0] = wMT
     
     nj = 0
-    cj = 0
     ntagsCSVM = 0
     minDeltaR_lepjet = 5.0
     dR_Wjjqq = -1.0
@@ -600,21 +599,37 @@ for event in events:
                     
         nj = nj + 1
         sumEt += jet.pt()
-        
+
+   
+    cj = 0    
     if len(jets_ca8) != 0:
-        for jet in jets_ca8 :   
-            jetEt_ca8[cj] = jet.pt()    
-            WjetM[cj] = jet.mass()
-            subjet1M = jet.daughter(0).mass() 
-            subjet2M = jet.daughter(1).mass()
-            mu = max(subjet1M,subjet2M) / jet.mass()
+        for ca8jet in jets_ca8:
+            matched = false
+            ca8jet_vector = TLorentzVector()
+            ca8jet_vector.SetPtEtaPhiM( ca8jet.pt(), ca8jet.eta(), ca8jet.phi(), ca8jet.mass() )
+            #print('ca8jets', len(jets_ca8),'ak5jets', len(jets))
+            
+            for ak5jet in jets :                
+                ak5jet_vector = TLorentzVector()
+                ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
+                if ak5jet_vector.DeltaR(ca8jet_vector) < 0.3:
+                    matched = true
+                    break
+                
+            if not matched: continue
+            
+            jetEt_ca8[cj] = ca8jet.pt()    
+            WjetM[cj] = ca8jet.mass()
+            subjet1M = ca8jet.daughter(0).mass() 
+            subjet2M = ca8jet.daughter(1).mass()
+            mu = max(subjet1M,subjet2M) / ca8jet.mass()
             WjetMu[cj] = mu
             
             if bprimeGenInfo:               
-                dR_Wqq_match1 = deltaR( jet.eta(), jet.phi(), WPart1P4.Eta(), WPart1P4.Phi())
-                dR_Wqq_match2 = deltaR( jet.eta(), jet.phi(), WPart2P4.Eta(), WPart2P4.Phi())
-                dR_Zqq_match1 = deltaR( jet.eta(), jet.phi(), ZPart1P4.Eta(), ZPart1P4.Phi())
-                dR_Zqq_match2 = deltaR( jet.eta(), jet.phi(), ZPart2P4.Eta(), ZPart2P4.Phi())
+                dR_Wqq_match1 = deltaR( ca8jet.eta(), ca8jet.phi(), WPart1P4.Eta(), WPart1P4.Phi())
+                dR_Wqq_match2 = deltaR( ca8jet.eta(), ca8jet.phi(), WPart2P4.Eta(), WPart2P4.Phi())
+                dR_Zqq_match1 = deltaR( ca8jet.eta(), ca8jet.phi(), ZPart1P4.Eta(), ZPart1P4.Phi())
+                dR_Zqq_match2 = deltaR( ca8jet.eta(), ca8jet.phi(), ZPart2P4.Eta(), ZPart2P4.Phi())
                 
                 #if there are two W->qq, pick the one with min DeltaR, else pick the one which exists 
                 if WPart1P4.Pt() != 0 and WPart2P4.Pt() != 0:
@@ -630,7 +645,7 @@ for event in events:
                 else:
                     dR_Wjjqq = -1
                     WPt = -1
-                
+                    
                 dR_Wjjqq_match[cj] = dR_Wjjqq
                 WPt_true[cj] = WPt
 
@@ -648,14 +663,14 @@ for event in events:
                 else:
                     dR_Zjjqq = -1
                     ZPt = -1
-
+                    
                 dR_Zjjqq_match[cj] = dR_Zjjqq
                 ZPt_true[cj] = ZPt
-
+                
             if WjetMu[cj] < 0.4 and (WjetM[cj] < 120 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
                 nVtags = nVtags + 1
             cj = cj + 1
-        
+            
         
     ht[0] = sumEt
     ht4jets[0] = sumEt4jets
