@@ -221,6 +221,9 @@ t.Branch('trigEleHad_path', trigEleHad_path, 'trigEleHad_path/I')
 trigSigEle_path = array('i', [0])
 t.Branch('trigSigEle_path', trigSigEle_path, 'trigSigEle_path/I')
 
+trigSigMu_path = array('i', [0])
+t.Branch('trigSigMu_path', trigSigMu_path, 'trigSigMu_path/I')
+
 met = array('d',[0.])
 t.Branch('met',met,'met/D')
 
@@ -513,7 +516,15 @@ for event in events:
     eleStop   = "HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet"
     eleHad    = "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet"
     singleEle = "HLT_Ele27_WP80_v"
-     
+ 
+    trigSigMu_path[0] = -1
+    muHadPFJet30     = "HLT_IsoMu20_eta2p1_TriCentralPFJet30_v"
+    muHadPFNoPUJet30 = "HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v"
+    singleMuPFNoPUJet30         = "HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v"
+    singleMuPFNoPUJet30_30_20   = "HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v" 
+    singleMuPFNoPUJet45_35_25   = "HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v"
+    singleMuPFNoPUJet50_40_30   = "HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1"
+
     trigPaths = trigObj.paths() #TriggerPathCollection
     for ipath in trigPaths:
         if eleStop+"30_v" in ipath.name() or eleStop+"45_35_25_v" in ipath.name() or eleStop+"50_40_30_v" in ipath.name():
@@ -525,6 +536,8 @@ for event in events:
         if singleEle in ipath.name():
             trigSigEle_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
             #if trigSigEle_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
+        if muHadPFJet30 in ipath.name() or muHadPFNoPUJet30 in ipath.name() or singleMuPFNoPUJet30 in ipath.name() or singleMuPFNoPUJet30_30_20 in ipath.name() or singleMuPFNoPUJet45_35_25 in ipath.name() or singleMuPFNoPUJet50_40_30 in ipath.name():
+            trigSigMu_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
             
     nvertices[0] =  vertices.size()     
     met[0] = metObj.pt()
