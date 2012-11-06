@@ -24,10 +24,10 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
    //P4 of W and b from a t decay: t->Wb->(lnub, qqb)
    std::auto_ptr< LorentzV > LepT1toWtoLep (new LorentzV() );
    std::auto_ptr< LorentzV > LepT1toWtoHad (new LorentzV() );
-   std::auto_ptr< LorentzV > LepT1tob (new LorentzV() );
+   std::auto_ptr< LorentzV > LepT1tob      (new LorentzV() );
    std::auto_ptr< LorentzV > LepT2toWtoLep (new LorentzV() );
    std::auto_ptr< LorentzV > LepT2toWtoHad (new LorentzV() );
-   std::auto_ptr< LorentzV > LepT2tob (new LorentzV() );  
+   std::auto_ptr< LorentzV > LepT2tob      (new LorentzV() );  
    
    //hadronic side of b'->tW->tqq
    std::auto_ptr< LorentzV > WPart1( new LorentzV() );
@@ -60,6 +60,22 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
    std::auto_ptr< LorentzV > ZPart3 ( new LorentzV() );
    std::auto_ptr< LorentzV > ZPart4 ( new LorentzV() );
    std::auto_ptr< LorentzV > HadB2  ( new LorentzV() );
+
+   //leptonic side of b'->bH->bll
+   std::auto_ptr< LorentzV > HLep1  ( new LorentzV() );
+   std::auto_ptr< LorentzV > HLep2  ( new LorentzV() );
+   std::auto_ptr< LorentzV > LepBh1 ( new LorentzV() );
+   std::auto_ptr< LorentzV > HLep3  ( new LorentzV() );
+   std::auto_ptr< LorentzV > HLep4  ( new LorentzV() );
+   std::auto_ptr< LorentzV > LepBh2 ( new LorentzV() );
+
+   //hadronic side of b'->bH->bqq
+   std::auto_ptr< LorentzV > HPart1  ( new LorentzV() );
+   std::auto_ptr< LorentzV > HPart2  ( new LorentzV() );
+   std::auto_ptr< LorentzV > HadBh1  ( new LorentzV() );
+   std::auto_ptr< LorentzV > HPart3  ( new LorentzV() );
+   std::auto_ptr< LorentzV > HPart4  ( new LorentzV() );
+   std::auto_ptr< LorentzV > HadBh2  ( new LorentzV() );
     
    //event configuration of b'b'->tWtW
    std::auto_ptr< int >  WtWtTolnutlnut(new int (0));
@@ -67,18 +83,47 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
    std::auto_ptr< int >  WtWtToluntqqt (new int (0));
    std::auto_ptr< int >  BBtoWtWt      (new int (0));
    
-   //event configuration of b'b'->bZbZ
+   //event configuration of b'b'->ZbZb
    std::auto_ptr< int >  ZbZbTollbllb  (new int (0));
    std::auto_ptr< int >  ZbZbToqqbqqb  (new int (0));
    std::auto_ptr< int >  ZbZbTollbqqb  (new int (0));
    std::auto_ptr< int >  BBtoZbZb      (new int (0));
    
-   //event configuration of b'b'->bZtW
+   //event configuration of b'b'->tWZb
    std::auto_ptr< int >  WtZbTolnutllb  (new int (0));
    std::auto_ptr< int >  WtZbTolnutqqb  (new int (0));
    std::auto_ptr< int >  WtZbToqqtllb   (new int (0));
    std::auto_ptr< int >  WtZbToqqtqqb   (new int (0));
    std::auto_ptr< int >  BBtoWtZb       (new int (0));
+
+   //event configuration of b'b'->HbHb
+   std::auto_ptr< int >  HbHbTollbllb  (new int (0));
+   std::auto_ptr< int >  HbHbToqqbqqb  (new int (0));
+   std::auto_ptr< int >  HbHbTollbqqb  (new int (0));
+   std::auto_ptr< int >  BBtoHbHb      (new int (0));
+   
+   //event configuration of b'b'->WtHb
+   std::auto_ptr< int >  WtHbTolnutllb  (new int (0));
+   std::auto_ptr< int >  WtHbTolnutqqb  (new int (0));
+   std::auto_ptr< int >  WtHbToqqtllb   (new int (0));
+   std::auto_ptr< int >  WtHbToqqtqqb   (new int (0));
+   std::auto_ptr< int >  BBtoWtHb       (new int (0));
+
+   //event configuration of b'b'->ZbHb
+   std::auto_ptr< int >  ZbHbTollbllb  (new int (0));
+   std::auto_ptr< int >  ZbHbTollbqqb  (new int (0));
+   std::auto_ptr< int >  ZbHbToqqbllb  (new int (0));
+   std::auto_ptr< int >  ZbHbToqqbqqb  (new int (0));
+   std::auto_ptr< int >  BBtoZbHb      (new int (0));
+
+   //special hadronic side of b'->bH(bb)
+   //===================================
+   std::auto_ptr< LorentzV > Htobb1  ( new LorentzV() );
+   std::auto_ptr< LorentzV > Htobb2  ( new LorentzV() );
+   std::auto_ptr< LorentzV > b1      ( new LorentzV() );
+   std::auto_ptr< LorentzV > Htobb3  ( new LorentzV() );
+   std::auto_ptr< LorentzV > Htobb4  ( new LorentzV() );
+   std::auto_ptr< LorentzV > b2      ( new LorentzV() );
    
    if(!event.isRealData()){
       edm::Handle<std::vector<reco::GenParticle> > h_gen;
@@ -91,6 +136,9 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
       std::vector<const reco::Candidate *> HadtW(6);
       std::vector<const reco::Candidate *> LepbZ(6);
       std::vector<const reco::Candidate *> HadbZ(6);
+      std::vector<const reco::Candidate *> LepbH(6);
+      std::vector<const reco::Candidate *> HadbH(6);
+      std::vector<const reco::Candidate *> HadbHtobb(6);
     
       std::vector<const reco::Candidate *> LepTtoWtoLep(2);
       std::vector<const reco::Candidate *> LepTtoWtoHad(2);
@@ -99,7 +147,7 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
       std::vector<const reco::Candidate *> LepTtob(2);
       std::vector<const reco::Candidate *> HadTtob(2);
      
-      int numLeptW(0), numHadtW(0), numLepbZ(0), numHadbZ(0);
+      int numLeptW(0), numHadtW(0), numLepbZ(0), numHadbZ(0), numLepbH(0), numHadbH(0),  numHadbHtobb(0);
       
       setPointers(LeptW); setPointers(HadtW); setPointers(LepbZ); setPointers(HadbZ);
       setPointers(LepTtoWtoLep); setPointers(LepTtoWtoHad); setPointers(HadTtoWtoLep); setPointers(HadTtoWtoHad);
@@ -170,9 +218,8 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
                         }
                         
                      }//-----------hadronic side----------
-                     else if(abs(bprimes[bi]->daughter(di)->daughter(0)->pdgId())<6 && abs(bprimes[bi]->daughter(di)->daughter(1)->pdgId())<6){ 
+                     else if(abs(bprimes[bi]->daughter(di)->daughter(0)->pdgId())<=6 && abs(bprimes[bi]->daughter(di)->daughter(1)->pdgId())<=6){ 
                         numHadtW++;
-                       
                         if(abs(bprimes[bi]->daughter(di)->daughter(0)->pdgId())%2==1){//W+ -> q q'bar
                           if(numHadtW == 1){
                              HadtW[0] = bprimes[bi]->daughter(di)->daughter(1); 
@@ -194,13 +241,13 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
                            }
                         }
                         //fill the hadronic leg, t quark
-                        if(abs(bprimes[bi]->daughter((di+1)%2)->pdgId())!=6){std::cout << "hadronic side W does not have brother t quark!" << std::endl; break;}
+                        if(abs(bprimes[bi]->daughter((di+1)%2)->pdgId())!=6){std::cout << "hadronic side W does not have associated t quark!" << std::endl; break;}
                         if(numHadtW == 1){
                            HadtW[2] = bprimes[bi]->daughter((di+1)%2);
                         }else{
                            HadtW[5] = bprimes[bi]->daughter((di+1)%2);
                         }
-                        
+   
                         //fill the top decay
                         if(numHadtW == 1){
                            topDecay( bprimes[bi], numTopDau, di, HadTtoWtoLep[0], HadTtoWtoHad[0], HadTtob[0]);
@@ -222,14 +269,14 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
                            LepbZ[3] =  bprimes[bi]->daughter(di)->daughter(0);
                            LepbZ[4] =  bprimes[bi]->daughter(di)->daughter(1);
                         }
-                        if(abs(bprimes[bi]->daughter((di+1)%2)->pdgId())!=5){std::cout << "leptonic side Z does not have brother b quark!" << std::endl; break;}
+                        if(abs(bprimes[bi]->daughter((di+1)%2)->pdgId())!=5){std::cout << "leptonic side Z does not have associated b quark!" << std::endl; break;}
                         if(numLepbZ == 1){
                            LepbZ[2] =  bprimes[bi]->daughter((di+1)%2);
                         }else{
                            LepbZ[5] =  bprimes[bi]->daughter((di+1)%2);
                         }
                      }
-                     else if(abs(bprimes[bi]->daughter(di)->daughter(0)->pdgId())<6 && abs(bprimes[bi]->daughter(di)->daughter(1)->pdgId())<6){//Z  -> qq
+                     else if(abs(bprimes[bi]->daughter(di)->daughter(0)->pdgId())<=6 && abs(bprimes[bi]->daughter(di)->daughter(1)->pdgId())<=6){//Z  -> qq
                         numHadbZ++;
                         
                         if(numHadbZ == 1){
@@ -239,15 +286,71 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
                            HadbZ[3] = bprimes[bi]->daughter(di)->daughter(0);
                            HadbZ[4] = bprimes[bi]->daughter(di)->daughter(1);
                         }
-                        if(abs(bprimes[bi]->daughter((di+1)%2)->pdgId())!=5){std::cout << "hadronic side Z does not have brother b quark!" << std::endl; break;}
+                        if(abs(bprimes[bi]->daughter((di+1)%2)->pdgId())!=5){std::cout << "hadronic side Z does not have associated b quark!" << std::endl; break;}
                         if(numHadbZ == 1){
                            HadbZ[2] = bprimes[bi]->daughter((di+1)%2);
                         }else{
                            HadbZ[5] = bprimes[bi]->daughter((di+1)%2);
-                        }
-                        
+                        } 
                      }//Z->qq
-                  }//b'->bZ
+                  }//b'->bZ// //---------b'->bH---------
+                  else if( abs(bprimes[bi]->daughter(di)->pdgId()) == 25 && di < 2){ //look for H boson(s)
+                     if(bprimes[bi]->daughter(di)->numberOfDaughters()!=2) {cout << "H doesn't decay into 2 particles!" << endl; break;}
+                     if(abs(bprimes[bi]->daughter(di)->daughter(0)->pdgId())>10){//H -> ll, gg
+                        numLepbH++;
+
+                        if(numLepbH == 1){
+                           LepbH[0] =  bprimes[bi]->daughter(di)->daughter(0);
+                           LepbH[1] =  bprimes[bi]->daughter(di)->daughter(1);
+                        }else{
+                           LepbH[3] =  bprimes[bi]->daughter(di)->daughter(0);
+                           LepbH[4] =  bprimes[bi]->daughter(di)->daughter(1);
+                        }
+                        if(abs(bprimes[bi]->daughter((di+1)%2)->pdgId())!=5){std::cout << "leptonic side H does not have associated b quark!" << std::endl; break;}
+                        if(numLepbH == 1){
+                           LepbH[2] =  bprimes[bi]->daughter((di+1)%2);
+                        }else{
+                           LepbH[5] =  bprimes[bi]->daughter((di+1)%2);
+                        }
+                     }
+                     else if(abs(bprimes[bi]->daughter(di)->daughter(0)->pdgId())<=6 && abs(bprimes[bi]->daughter(di)->daughter(1)->pdgId())<=6){//H -> qq
+                        numHadbH++;
+                        
+                        if(numHadbH == 1){
+                           HadbH[0] = bprimes[bi]->daughter(di)->daughter(0);
+                           HadbH[1] = bprimes[bi]->daughter(di)->daughter(1);
+                        }else{
+                           HadbH[3] = bprimes[bi]->daughter(di)->daughter(0);
+                           HadbH[4] = bprimes[bi]->daughter(di)->daughter(1);
+                        }
+                        if(abs(bprimes[bi]->daughter((di+1)%2)->pdgId())!=5){std::cout << "hadronic side H does not have associated b quark!" << std::endl; break;}
+                        if(numHadbH == 1){
+                           HadbH[2] = bprimes[bi]->daughter((di+1)%2);
+                        }else{
+                           HadbH[5] = bprimes[bi]->daughter((di+1)%2);
+                        } 
+ 
+                     }//H->qq
+                     //-----------------H -> bb ---------------------
+                     if(abs(bprimes[bi]->daughter(di)->daughter(0)->pdgId())==5 && abs(bprimes[bi]->daughter(di)->daughter(1)->pdgId())==5){//H -> bb
+                        numHadbHtobb++;
+                        
+                        if(numHadbHtobb == 1){
+                           HadbHtobb[0] = bprimes[bi]->daughter(di)->daughter(0);
+                           HadbHtobb[1] = bprimes[bi]->daughter(di)->daughter(1);
+                        }else{
+                           HadbHtobb[3] = bprimes[bi]->daughter(di)->daughter(0);
+                           HadbHtobb[4] = bprimes[bi]->daughter(di)->daughter(1);
+                        }
+                        if(abs(bprimes[bi]->daughter((di+1)%2)->pdgId())!=5){std::cout << "H->bb does not have associated b quark!" << std::endl; break;}
+                        if(numHadbHtobb == 1){
+                           HadbHtobb[2] = bprimes[bi]->daughter((di+1)%2);
+                        }else{
+                           HadbHtobb[5] = bprimes[bi]->daughter((di+1)%2);
+                        } 
+                     }//H->bb
+                  }//b'->bH
+
                }//di 
             }//bi
             break; // if we find one b'b' pair, lets stop the loop
@@ -255,22 +358,53 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
          
       }//gpIter
     
+       //BB->WtWt
        if (numLeptW == 2) *WtWtToqqtqqt = 1;
        if (numHadtW == 2) *WtWtToqqtqqt = 1;
        if (numLeptW == 1 && numHadtW == 1) *WtWtToluntqqt = 1;
        if (*WtWtTolnutlnut == 1 || *WtWtToqqtqqt == 1 || *WtWtToluntqqt == 1) *BBtoWtWt = 1;
-
+      
+       //BB->ZbZb
        if (numLepbZ == 2) *ZbZbTollbllb = 1;
        if (numHadbZ == 2) *ZbZbToqqbqqb = 1;
        if (numLepbZ == 1 &&  numHadbZ == 1) *ZbZbTollbqqb = 1;
        if (*ZbZbTollbllb ==1 || *ZbZbToqqbqqb ==1 || *ZbZbTollbqqb == 1) *BBtoZbZb = 1;
 
+       //BB->WtZb
        if (numLeptW == 1 && numLepbZ == 1) *WtZbTolnutllb = 1;
        if (numLeptW == 1 && numHadbZ == 1) *WtZbTolnutqqb = 1;
        if (numHadtW == 1 && numLepbZ == 1) *WtZbToqqtllb  = 1;
        if (numHadtW == 1 && numHadbZ == 1) *WtZbToqqtqqb  = 1;
-       if (*WtZbTolnutllb == 1 || *WtZbTolnutqqb == 1 || *WtZbToqqtllb == 1 || *WtZbToqqtqqb == 1) *BBtoWtZb = 1;  
+       if (*WtZbTolnutllb == 1 || *WtZbTolnutqqb == 1 || *WtZbToqqtllb == 1 || *WtZbToqqtqqb == 1) *BBtoWtZb = 1; 
 
+       //BB->HbHb
+       if (numLepbH == 2) *HbHbTollbllb = 1;
+       if (numHadbH == 2) *HbHbToqqbqqb = 1;
+       if (numLepbH == 1 &&  numHadbH == 1) *HbHbTollbqqb = 1;
+       if (*HbHbTollbllb ==1 || *HbHbToqqbqqb ==1 || *HbHbTollbqqb == 1) *BBtoHbHb = 1;
+
+       //BB->WtHb
+       if (numLeptW == 1 && numLepbH == 1) *WtHbTolnutllb = 1;
+       if (numLeptW == 1 && numHadbH == 1) *WtHbTolnutqqb = 1;
+       if (numHadtW == 1 && numLepbH == 1) *WtHbToqqtllb  = 1;
+       if (numHadtW == 1 && numHadbH == 1) *WtHbToqqtqqb  = 1;
+       if (*WtHbTolnutllb == 1 || *WtHbTolnutqqb == 1 || *WtHbToqqtllb == 1 || *WtHbToqqtqqb == 1) *BBtoWtHb = 1; 
+  
+       //BB->ZbHb
+       if (numLepbZ == 1 && numLepbH == 1) *ZbHbTollbllb  = 1;
+       if (numLepbZ == 1 && numHadbH == 1) *ZbHbTollbqqb  = 1;
+       if (numHadbZ == 1 && numLepbH == 1) *ZbHbToqqbllb  = 1;
+       if (numHadbZ == 1 && numHadbH == 1) *ZbHbToqqbqqb  = 1;
+       if (*ZbHbTollbllb == 1 || *ZbHbTollbqqb == 1 || *ZbHbToqqbllb == 1 || *ZbHbToqqbqqb == 1) *BBtoZbHb = 1; 
+
+       cout << "BBtoWtHb = " << *BBtoWtHb << ",BBtoHbHb = " << *BBtoHbHb << ",BBtoWtWt = " << *BBtoWtWt << endl;
+/*
+       if (! (*BBtoWtZb || *BBtoZbZb || *BBtoWtWt)){
+          cout << "event---->" << event.id() << endl;
+          cout << "*BBtoWtWt = " <<  *BBtoWtWt  << ",WtWtTolnutlnut = " << *WtWtTolnutlnut << ",WtWtToqqtqqt = " << *WtWtToqqtqqt <<",WtWtToluntqqt = " << *WtWtToluntqqt << endl;
+          cout << "numHadtW, = " << numHadtW << endl;
+       }
+*/
        //Fill Leptonic side of b->tW': l1, nu1, t1, l2, nu2, t2
         //----------------------------------------------------
        if(numLeptW == 1) {
@@ -324,17 +458,47 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
        //Fill the hadronic side of b'->bZ: q1, q2, b1, q3, q4, b2
        //--------------------------------------------------------
        if(numHadbZ == 1) {
-          *ZPart1 = HadbZ[0]->p4(); *WPart2 = HadbZ[1]->p4(); *HadT1 = HadbZ[2]->p4();
+          *ZPart1 = HadbZ[0]->p4(); *ZPart2 = HadbZ[1]->p4(); *HadB1 = HadbZ[2]->p4();
        }
        else if(numHadbZ == 2) {
           *ZPart1 = HadbZ[0]->p4(); *ZPart2 = HadbZ[1]->p4(); *HadB1 = HadbZ[2]->p4();
           *ZPart3 = HadbZ[3]->p4(); *ZPart4 = HadbZ[4]->p4(); *HadB2 = HadbZ[5]->p4();
        }
-       
-/*  
 
+       //Fill the leptonic side of b'->bH: l1, l2, b1, l3, l4, b2
+       //-------------------------------------------------------
+       if(numLepbH == 1) {
+          *HLep1 = LepbH[0]->p4(); *HLep2 = LepbH[1]->p4(); *LepBh1 = LepbH[2]->p4();
+       }
+       else if(numLepbH == 2) {
+          *HLep1 = LepbH[0]->p4(); *HLep2 = LepbH[1]->p4(); *LepBh1 = LepbH[2]->p4();
+          *HLep3 = LepbH[3]->p4(); *HLep4 = LepbH[4]->p4(); *LepBh2 = LepbH[5]->p4();
+       }
+       
+       //Fill the hadronic side of b'->bH: q1, q2, b1, q3, q4, b2
+       //--------------------------------------------------------
+       if(numHadbH == 1) {
+          *HPart1 = HadbH[0]->p4(); *HPart2 = HadbH[1]->p4(); *HadBh1 = HadbH[2]->p4();
+       }
+       else if(numHadbH == 2) {
+          *HPart1 = HadbH[0]->p4(); *HPart2 = HadbH[1]->p4(); *HadBh1 = HadbH[2]->p4();
+          *HPart3 = HadbH[3]->p4(); *HPart4 = HadbH[4]->p4(); *HadBh2 = HadbH[5]->p4();
+       }
+       
+
+       //Special:Fill the hadronic side of b'->bH(bb): q1, q2, b1, q3, q4, b2
+       //=====================================================================
+       if(numHadbHtobb == 1) {
+          *Htobb1 = HadbHtobb[0]->p4(); *Htobb2 = HadbHtobb[1]->p4(); *b1 = HadbHtobb[2]->p4();
+       }
+       else if(numHadbHtobb == 2) {
+          *Htobb1 = HadbHtobb[0]->p4(); *Htobb2 = HadbHtobb[1]->p4(); *b1 = HadbHtobb[2]->p4();
+          *Htobb3 = HadbHtobb[3]->p4(); *Htobb4 = HadbHtobb[4]->p4(); *b2 = HadbHtobb[5]->p4();
+       }
+
+/*
        for( unsigned i=0; i<6; ++i){
-          
+         
           if(numLeptW > 0 && LeptW[i] != 0){
              cout << "i: " << i << " tW: Lep pt: " << LeptW[i]->p4().pt() <<" pdgId: " << LeptW[i]->pdgId() << endl;
 
@@ -351,12 +515,21 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
              if(i<2 && HadTtoWtoHad[i]!= 0) cout << "W Pt: b'->tW->Wb(qq)->qqb(qq): "  << HadTtoWtoHad[i]->p4().pt() 
                                                  << " pdgId: " << HadTtoWtoHad[i]->pdgId() << endl;
           }
+
           if(numLepbZ > 0 && LepbZ[i] != 0){
              cout << "i: " << i << " bZ: Lep pt: " << LepbZ[i]->p4().pt() <<" pdgId: " << LepbZ[i]->pdgId() << endl;
           }
           if(numHadbZ > 0 && HadbZ[i] != 0 ){
              cout << "i: " << i << " bZ: Had pt: " << HadbZ[i]->p4().pt() <<" pdgId: " << HadbZ[i]->pdgId() << endl;
           }
+
+        if(numLepbH > 0 && LepbH[i] != 0){
+             cout << "i: " << i << " bH: Lep/glu pt: " << LepbH[i]->p4().pt() <<" pdgId: " << LepbH[i]->pdgId() << endl;
+          }
+          if(numHadbH > 0 && HadbH[i] != 0 ){
+             cout << "i: " << i << " bH: Had pt: " << HadbH[i]->p4().pt() <<" pdgId: " << HadbH[i]->pdgId() << endl;
+          }
+
        }
 */
 
@@ -404,6 +577,20 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
    event.put ( ZPart4, "ZPart4");
    event.put ( HadB2,  "HadB2" );
 
+   event.put ( HLep1,  "HLep1");   
+   event.put ( HLep2,  "HLep2"); 
+   event.put ( LepBh1, "LepBh1");
+   event.put ( HLep3,  "HLep3");   
+   event.put ( HLep4,  "HLep4"); 
+   event.put ( LepBh2, "LepBh2");
+
+   event.put ( HPart1, "HPart1");
+   event.put ( HPart2, "HPart2");
+   event.put ( HadBh1, "HadBh1");
+   event.put ( HPart3, "HPart3");
+   event.put ( HPart4, "HPart4");
+   event.put ( HadBh2, "HadBh2");
+
    event.put ( WtWtTolnutlnut, "WtWtTolnutlnut");
    event.put ( WtWtToqqtqqt,   "WtWtToqqtqqt"  );
    event.put ( WtWtToluntqqt,  "WtWtToluntqqt" );
@@ -419,6 +606,23 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
    event.put ( WtZbToqqtllb,   "WtZbToqqtllb"  ); 
    event.put ( WtZbToqqtqqb,   "WtZbToqqtqqb"  );
    event.put ( BBtoWtZb,       "BBtoWtZb"      );
+   
+   event.put ( HbHbTollbllb,   "HbHbTollbllb"  );
+   event.put ( HbHbToqqbqqb,   "HbHbToqqbqqb"  );
+   event.put ( HbHbTollbqqb,   "HbHbTollbqqb"  );
+   event.put ( BBtoHbHb,       "BBtoHbHb"      );
+
+   event.put ( WtHbTolnutllb,  "WtHbTolnutllb" ); 
+   event.put ( WtHbTolnutqqb,  "WtHbTolnutqqb" );
+   event.put ( WtHbToqqtllb,   "WtHbToqqtllb"  ); 
+   event.put ( WtHbToqqtqqb,   "WtHbToqqtqqb"  );
+   event.put ( BBtoWtHb,       "BBtoWtHb"      );
+   
+   event.put ( ZbHbTollbllb,   "ZbHbTollbllb"  ); 
+   event.put ( ZbHbTollbqqb,   "ZbHbTollbqqb"  );
+   event.put ( ZbHbToqqbllb,   "ZbHbToqqbllb"  ); 
+   event.put ( ZbHbToqqbqqb,   "ZbHbToqqbqqb"  );
+   event.put ( BBtoZbHb,       "BBtoZbHb"      );
 
 }
 
@@ -441,7 +645,7 @@ void  BoostedParticles::topDecay(const reco::Candidate* bprimes, int numTopDau, 
             TtoWtoHad = bprimes->daughter((di+1)%2)->daughter(td);
          }
          //the other b/q quark from top decay
-         if(abs(bprimes->daughter((di+1)%2)->daughter((td+1)%2)->pdgId())>5){std::cout << "W LepTtoW does not have brother b,d,s quark!" << std::endl; break;}
+         if(abs(bprimes->daughter((di+1)%2)->daughter((td+1)%2)->pdgId())>5){std::cout << "W LepTtoW does not have associated b,d,s quark!" << std::endl; break;}
          Ttob = bprimes->daughter((di+1)%2)->daughter((td+1)%2);
       }//W
    }//td 

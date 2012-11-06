@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("GenInfo")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
 process.MessageLogger.cerr.FwkJob.limit=1
 process.MessageLogger.cerr.ERROR = cms.untracked.PSet( limit = cms.untracked.int32(0) )
@@ -21,10 +21,16 @@ options.register ('runOntWtW',
                   "Run on BB->tWtW sample"),
 
 options.register ('runOnbZtW',
-                  1,
+                  0,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
                   "Run on BB->bZtW sample")
+
+options.register ('runOnbHtW',
+                  1,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "Run on BB->bHtW sample")
 
 options.parseArguments()            
                                     
@@ -32,18 +38,38 @@ print options
 
 readFiles = cms.untracked.vstring()
 
-if options.runOnbZtW:
+if options.runOnbHtW:
     readFiles.extend( [
-        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_101_3_UGF.root',
-        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_100_3_Btf.root',
-        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_103_3_f7U.root',
-        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_102_5_MbH.root',
-        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_105_3_A9h.root',
-        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_104_4_fgM.root',
-        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_107_3_O82.root',
-        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_106_4_aBY.root',
-        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_109_3_Orl.root',
-    '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_108_3_Y2C.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_99_1_7Lv.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_139_1_fvp.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_144_1_Fvy.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_190_1_ZNm.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_19_1_mnu.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_123_1_fvY.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_2_1_zFf.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_26_1_l6x.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_63_2_VGa.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_104_1_krO.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_115_1_Jmo.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_177_3_eWu.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_18_1_4SD.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_196_1_89p.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_193_1_njn.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_155_1_cRj.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_93_1_ciT.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-600_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_39_1_wg4.root',
+        ]);
+    
+elif options.runOnbZtW:
+    readFiles.extend( [
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_183_3_Akn.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_63_3_I2v.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_68_3_dEz.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_118_3_N1L.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_72_3_p5I.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_88_3_Po1.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_154_3_JuS.root',
+        '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M750_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_69_3_zA8.root',
         ]);
 
 elif options.runOntWtW:
@@ -56,19 +82,18 @@ elif options.runOntWtW:
         '/store/user/lpctlbsm/skhalil/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_1_4_qzI.root',
         '/store/user/lpctlbsm/skhalil/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_15_3_Vg0.root',
         '/store/user/lpctlbsm/skhalil/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_16_1_hvB.root',
-        '/store/user/lpctlbsm/skhalil/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_2_4_SXV.root',
-        '/store/user/lpctlbsm/skhalil/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_3_3_pY5.root',
-        '/store/user/lpctlbsm/skhalil/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_4_4_Zkt.root',
-        '/store/user/lpctlbsm/skhalil/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_5_4_oTh.root',
-        '/store/user/lpctlbsm/skhalil/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_6_5_p9W.root',
-        '/store/user/lpctlbsm/skhalil/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_7_7_TjL.root',
-        '/store/user/lpctlbsm/skhalil/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_8_4_Lxp.root',
-        '/store/user/lpctlbsm/skhalil/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v1/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_9_3_c4F.root'
         ]);
 
 if len(options.inputFiles) == 0 :
     process.source = cms.Source("PoolSource",
-                                fileNames = cms.untracked.vstring(readFiles)
+                                fileNames = cms.untracked.vstring(readFiles),
+                                ## eventsToProcess = cms.untracked.VEventRange(
+##         '1:215583-215584:1',
+##         #'1:15:4471',
+##         #'1:1617:484808',
+##         #'1:333:99729',
+##         #'1:257:76943',
+##         )
                                 )
 else:
     filelist = []
@@ -95,7 +120,7 @@ process.printTree = cms.EDAnalyzer("ParticleTreeDrawer",
                                    )
 
 process.printList = cms.EDAnalyzer("ParticleListDrawer",
-  maxEventsToPrint = cms.untracked.int32(20),
+  maxEventsToPrint = cms.untracked.int32(-1),
   printVertex = cms.untracked.bool(False),
   src = cms.InputTag("prunedGenParticles")
 )

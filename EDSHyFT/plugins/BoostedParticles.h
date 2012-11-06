@@ -83,6 +83,20 @@ BoostedParticles::BoostedParticles(const edm::ParameterSet& cfg)//:
    produces< LorentzV > ("ZPart3");
    produces< LorentzV > ("ZPart4");
    produces< LorentzV > ("HadB2");
+   //leptonic side of b'->bH-> (bll or bgg) 
+   produces< LorentzV > ("HLep1");
+   produces< LorentzV > ("HLep2");
+   produces< LorentzV > ("LepBh1");
+   produces< LorentzV > ("HLep3");
+   produces< LorentzV > ("HLep4");
+   produces< LorentzV > ("LepBh2");
+   //hadronic side of b'->bH->bqq
+   produces< LorentzV > ("HPart1");
+   produces< LorentzV > ("HPart2");
+   produces< LorentzV > ("HadBh1");
+   produces< LorentzV > ("HPart3");
+   produces< LorentzV > ("HPart4");
+   produces< LorentzV > ("HadBh2");
    //event configuration of b'b'->tWtW
    produces<int> ("WtWtTolnutlnut"); 
    produces<int> ("WtWtToqqtqqt");
@@ -99,6 +113,30 @@ BoostedParticles::BoostedParticles(const edm::ParameterSet& cfg)//:
    produces<int> ("WtZbToqqtllb"); 
    produces<int> ("WtZbToqqtqqb");
    produces<int> ("BBtoWtZb");
+   //event configuration of b'b'->bHbH
+   produces<int> ("HbHbTollbllb"); 
+   produces<int> ("HbHbToqqbqqb");
+   produces<int> ("HbHbTollbqqb"); 
+   produces<int> ("BBtoHbHb");
+   //event configuration of b'b'->bHtW
+   produces<int> ("WtHbTolnutllb"); 
+   produces<int> ("WtHbTolnutqqb");
+   produces<int> ("WtHbToqqtllb"); 
+   produces<int> ("WtHbToqqtqqb");
+   produces<int> ("BBtoWtHb");
+   //event configuration of b'b'->bZbH
+   produces<int> ("ZbHbTollbllb"); 
+   produces<int> ("ZbHbToqqbqqb");
+   produces<int> ("ZbHbTollbqqb"); 
+   produces<int> ("ZbHbToqqbllb");
+   produces<int> ("BBtoZbHb");
+   //special:hadronic side of b'->bH->bbb
+   produces< LorentzV > ("Htobb1");
+   produces< LorentzV > ("Htobb2");
+   produces< LorentzV > ("b1");
+   produces< LorentzV > ("Htobb3");
+   produces< LorentzV > ("Htobb4");
+   produces< LorentzV > ("b2");
 }
 
 
