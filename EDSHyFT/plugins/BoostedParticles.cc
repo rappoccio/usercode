@@ -396,9 +396,9 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
        if (numHadbZ == 1 && numLepbH == 1) *ZbHbToqqbllb  = 1;
        if (numHadbZ == 1 && numHadbH == 1) *ZbHbToqqbqqb  = 1;
        if (*ZbHbTollbllb == 1 || *ZbHbTollbqqb == 1 || *ZbHbToqqbllb == 1 || *ZbHbToqqbqqb == 1) *BBtoZbHb = 1; 
-
-       cout << "BBtoWtHb = " << *BBtoWtHb << ",BBtoHbHb = " << *BBtoHbHb << ",BBtoWtWt = " << *BBtoWtWt << endl;
 /*
+       cout << "BBtoWtHb = " << *BBtoWtHb << ",BBtoHbHb = " << *BBtoHbHb << ",BBtoWtWt = " << *BBtoWtWt << endl;
+
        if (! (*BBtoWtZb || *BBtoZbZb || *BBtoWtWt)){
           cout << "event---->" << event.id() << endl;
           cout << "*BBtoWtWt = " <<  *BBtoWtWt  << ",WtWtTolnutlnut = " << *WtWtTolnutlnut << ",WtWtToqqtqqt = " << *WtWtToqqtqqt <<",WtWtToluntqqt = " << *WtWtToluntqqt << endl;

@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("GenInfo")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
 process.MessageLogger.cerr.FwkJob.limit=1
 process.MessageLogger.cerr.ERROR = cms.untracked.PSet( limit = cms.untracked.int32(0) )
@@ -125,7 +125,7 @@ process.printList = cms.EDAnalyzer("ParticleListDrawer",
   src = cms.InputTag("prunedGenParticles")
 )
 
-process.p = cms.Path(process.GenInfo * process.printTree * process.printList)
+process.p = cms.Path(process.GenInfo)# * process.printTree * process.printList)
 
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string('genOutputFileTest.root'),
