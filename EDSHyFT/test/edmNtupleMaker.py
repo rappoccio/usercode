@@ -154,7 +154,7 @@ process.pfTupleMuCA8Pruned.ePlusJets = cms.bool( False )
 process.pfTupleMuCA8Pruned.muPlusJets = cms.bool( True )
 
 ## configure output module
-process.p0 = cms.Path( process.patTriggerDefaultSequence)
+process.p0 = cms.Path( process.patTriggerDefaultSequence * process.pfTupleEle)
 process.p1 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleEleCA8Pruned)
 process.p2 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleMuCA8Pruned)
 

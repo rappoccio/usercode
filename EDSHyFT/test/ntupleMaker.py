@@ -139,13 +139,13 @@ jetsH = Handle ("std::vector<pat::Jet>")
 jetsLabel = ("pfTupleEle", "jets")
 
 c8aPruneJetsH = Handle ("std::vector<pat::Jet>")
-c8aPruneJetsLabel = ("pfTupleC8APruned", "jets")
+c8aPruneJetsLabel = ("pfTupleEleCA8Pruned", "jets")
 
 metH = Handle ("std::vector<pat::MET>")
 metLabel = ("pfTupleEle", "MET")
 
 c8aPruneMetH = Handle ("std::vector<pat::MET>")
-c8aPruneMetLabel = ("pfTupleC8APruned", "MET")
+c8aPruneMetLabel = ("pfTupleEleCA8Pruned", "MET")
 
 trigH = Handle("pat::TriggerEvent")
 trigLabel = ("patTriggerEvent", "")
