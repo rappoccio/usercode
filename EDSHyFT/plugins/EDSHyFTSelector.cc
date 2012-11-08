@@ -1,5 +1,6 @@
 #include "Analysis/EDSHyFT/plugins/EDSHyFTSelector.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h"
 
 using namespace std;
 
@@ -16,7 +17,7 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
     std::auto_ptr< std::vector<pat::MET> > mets ( new std::vector<pat::MET> );
     std::auto_ptr< std::vector<pat::Muon> > muons ( new std::vector<pat::Muon> );
     std::auto_ptr< std::vector<pat::Electron> > electrons ( new std::vector<pat::Electron> );
-
+    
     pat::MET const * patmet = dynamic_cast<pat::MET const *>( imet.masterClonePtr().get() ); 
     if ( patmet != 0 ){  
         mets->push_back( *patmet );
@@ -36,7 +37,7 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
                 jets->back().setP4( i->p4() );//set back the P4 to the clonned jet
                 jets->back().addUserInt("matched",matched);
 
-                //Find mathcing genJet for systematic smearing
+                //Find matching genJet for systematic smearing
                 float minDR = 9.9;
                 float dR = 10.;
                 reco::GenJet theMatchingGenJet; 
@@ -92,8 +93,18 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
 
     for ( clone_iter jbegin = ielectrons.begin(), jend = ielectrons.end(), j = jbegin; j != jend; ++j ) {
         pat::Electron const * jelectron = dynamic_cast<pat::Electron const *>( j->masterClonePtr().get() );
-        if ( jelectron != 0 )
-            electrons->push_back( *jelectron );
+        if ( jelectron != 0 ){
+
+           double scEta  = jelectron->superCluster()->eta();
+           double  AEff  = 0;
+           if(useData_){
+              AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2011);
+           }else{
+              AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAFall11MC);
+           }
+           electrons->push_back( *jelectron );
+           electrons->back().addUserFloat("AEff", AEff);        
+        }
     }
 
 

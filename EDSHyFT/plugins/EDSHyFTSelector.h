@@ -11,6 +11,7 @@ class EDSHyFTSelector : public edm::FilterWrapper<SHyFTSelector> {
  public:
  EDSHyFTSelector( const edm::ParameterSet & params ) :
   edm::FilterWrapper<SHyFTSelector>( params.getParameter<edm::ParameterSet>("shyftSelection") ),
+  useData_(params.getParameter<bool>("useData")), 
   matchByHand_(params.getParameter<bool>("matchByHand")), 
   name_( params.getParameter<std::string>("@module_label") )
     {
@@ -35,6 +36,7 @@ class EDSHyFTSelector : public edm::FilterWrapper<SHyFTSelector> {
   }
 
  protected:
+  bool useData_;
   bool matchByHand_;
   std::string name_;
 };
