@@ -49,14 +49,14 @@ parser.add_option('--JES', metavar='F', type='string', action='store',
                   help='JEC Systematic variation. Options are "nominal, up, down"')
 
 parser.add_option('--jetPtSmear', metavar='F', type='float', action='store',
-                  default=0.0,
+                  default=0.1,
                   dest='jetPtSmear',
                   help='JER smearing. Standard values are 0.1 (nominal), 0.0 (down), 0.2 (up)')
 
 parser.add_option('--jetEtaSmear', metavar='F', type='float', action='store',
                   default=0.0,
                   dest='jetEtaSmear',
-                  help='Jet Phi smearing. Standard values are 0.1 (nominal), 0.0 (down), 0.2 (up)')
+                  help='Jet Phi smearing. Standard values are 0.1 (up), 0.0 (nominal), 0.2 (down)')
 
 parser.add_option("--data", action='store_true',
                   default=False,
@@ -73,11 +73,6 @@ parser.add_option("--bTag",action='store',
                   dest="bTag",
                   help="b-tag SF")
 
-## parser.add_option("--useC8APrune", action='store_true',
-##                   default=True,
-##                   dest="useC8APrune",
-##                   help="switch on(1) / off(0) C8APrune jets")
-
 parser.add_option("--useBPrimeGenInfo",  action='store_true',
                   default=False,
                   dest="useBPrimeGenInfo",
@@ -87,7 +82,6 @@ parser.add_option("--useBPrimeGenInfo",  action='store_true',
 (options, args) = parser.parse_args()
 
 runMu = options.runMuons
-#c8aPruneJets = options.useC8APrune
 bprimeGenInfo = options.useBPrimeGenInfo
 dcache = options.onDcache
 
@@ -402,11 +396,10 @@ for event in events:
   
     # Get the "product" of the handle (i.e. what it's "pointing to" in C++)
     vertices = vertH.product()
-    
-    #if c8aPruneJets:
+
     jets_ca8 = c8aPruneJetsH.product()
     metObj_ca8 = (c8aPruneMetH.product())[0]
-    #else:
+    
     jets = jetsH.product()
     metObj = (metH.product())[0]
         
@@ -417,31 +410,25 @@ for event in events:
         continue
     if len(jets) == 0:
         continue
-    #if len(jets_ca8) == 0:
-    #    continue
+    
     #Systematic variations studies:
     #=============================
     
     # get the P4 of the edm MET
     metP4 = metObj.p4()
-    #print ('njets--------------->' , len(jets))    
-    #L1, L2, L3 JEC are already applied to jets in EDM Ntuples
+    
+    #L1, L2, L3 JEC are already applied to jets in EDM Ntuples   
     for ijet in jets :
         
         ## get the uncorrected jets 
         uncorrJet = ijet.correctedP4(0)
-
-        ## get p4 of L1,L2,L3 corrected jets
-        #jetP4 = TLorentzVector()
-        #jetP4.SetPtEtaPhi( ijet.pt(), ijet.eta(), ijet.phi(), ijet.mass() )
-        jetP4     = ijet.p4()
-      	
-        #genJets
+        
+        ##genJets
         genJetPt  = ijet.userFloat('genJetPt')
         genJetPhi = ijet.userFloat('genJetPhi')
         genJetEta = ijet.userFloat('genJetEta')
          
-        #JES 
+        ##Jet energy scale variation
         jetScale = 1.0
         if not options.data and abs(jecScale) > 0.0001 :
             jecUnc.setJetEta( ijet.eta() )
@@ -458,41 +445,34 @@ for event in events:
             recopt = ijet.pt()
             genpt = genJetPt
             deltapt = (recopt-genpt)*scale
-            ptscale = max(0.0, (recopt+deltapt)/recopt)
-            #print('ptscale', ptscale, 'deltapt', deltapt, 'recopt', recopt, 'genpt', genpt)
-            #------------
-            #DO SOME DIRTY TRICK TO MAKE IT RUN
-            #-----------
-            if ptscale == 0: ptscale = 1
-            jetScale*=ptscale
+            ptScale = max(0.0, (recopt+deltapt)/recopt)
+            if ptScale == 0:
+                print(' jet pt smearing failed: resetting the pt scale to one')
+                ptScale = 1
+            jetScale*=ptScale
 
         ##Jet angular resolution smearing
         etaScale = 1.0
         phiScale = 1.0
         if not options.data and abs(options.jetEtaSmear)>0.0001 and genJetPt>15.0:
-            scale = options.jetPtSmear
+            scale = options.jetEtaSmear
             recoeta = ijet.eta()
             recophi = ijet.phi()
             geneta = genJetEta
             genphi = genJetPhi
             deltaeta = (recoeta-geneta)*scale
             deltaphi = (recophi-genphi)*scale
-            etascale = max(0.0, (recoeta+deltaeta)/recoeta)
-            phiscale = max(0.0, (recophi+deltaphi)/recophi)
-           
-        #Reset the jet p4
+            etaScale = max(0.0, (recoeta+deltaeta)/recoeta)
+            phiScale = max(0.0, (recophi+deltaphi)/recophi)
+            
+        #Reset the jet p4        
+        ijet.polarP4().SetEta(ijet.eta() * etaScale)
+        ijet.polarP4().SetPhi(ijet.phi() * phiScale)
 
-        #------(FIX ME)----
-           
-        #jetP4.SetPt( ijet.pt() * jetScale )
-        #jetP4.SetM ( ijet.m() * jetScale )
-        #jetP4.SetEta( ijet.eta() * jetScale * etaScale )
-        #jetP4.SetPhi( ijet.phi() * jetScale * phiScale )
-
-        #For the time being, let's only smear in pt.
-        #print('ijet p4 before ---->', ijet.p4().pt())
+        #print('ijet pt before ---->', ijet.p4().pt())
         ijet.setP4( ijet.p4() * jetScale )
-        #print('ijet p4 after ---->', ijet.p4().pt(), 'jetScale', jetScale)
+        #print('ijet pt after ---->', ijet.p4().pt(), 'jetScale', jetScale)
+        
         #remove the uncorrected jets
         metP4.SetPx(metP4.px() + uncorrJet.px())
         metP4.SetPy(metP4.py() + uncorrJet.py())
@@ -501,9 +481,6 @@ for event in events:
         metP4.SetPx(metP4.px() - uncorrJet.px() * jetScale)
         metP4.SetPy(metP4.py() - uncorrJet.py() * jetScale)
       
-        
-        
-
     #Reset MET
     metObj.setP4(metP4)
 
@@ -635,7 +612,7 @@ for event in events:
             WjetM[cj] = ca8jet.mass()
             subjet1M = ca8jet.daughter(0).mass() 
             subjet2M = ca8jet.daughter(1).mass()
-            mu = max(subjet1M,subjet2M) / ca8jet.mass()
+            mu = max(subjet1M,subjet2M) / ca8jet.correctedP4(0).mass()
             WjetMu[cj] = mu
             
             if bprimeGenInfo:               

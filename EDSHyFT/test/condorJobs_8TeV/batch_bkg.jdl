@@ -3,13 +3,13 @@ Executable = condor_bkg.sh
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 notification = Never
-myPath = /uscms/home/skhalil/CMSSW_5_3_2/src/Analysis/EDSHyFT/test/condorJobs_8TeV
+myPath = /uscms_data/d2/skhalil/BPrimeBoost/CMSSW_5_3_4/src/Analysis/EDSHyFT/test/condorJobs_8TeV
 myOutPath = /uscms_data/d2/skhalil/BPrimeNtuples_8TeV
 myLogFolder = condorLog
 Output = $(myPath)/$(myLogFolder)/batch_$(cluster)_$(process).stdout
 Error  = $(myPath)/$(myLogFolder)/batch_$(cluster)_$(process).stderr
 Log    = $(myPath)/$(myLogFolder)/batch_$(cluster)_$(process).condor
 Requirements          = (Memory >= 499 && OpSys == "LINUX" && (Arch != "DUMMY"))
-Arguments = $(cluster) $(process) $(myPath) $(myPath)/BKGTextFiles $(myOutPath) 0
+Arguments = $(cluster) $(process) $(myPath) $(myPath)/TestTextFiles $(myOutPath) 0
 notify_user = skhalil@FNAL.GOV
-Queue 11
+Queue 22
