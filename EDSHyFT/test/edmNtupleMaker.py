@@ -38,6 +38,12 @@ options.register('runLoose',
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.int,
                  "Run extra sequence(1) for loose selction  or ignore them (0)")
+
+options.register('btagMap',
+		 'Analysis/EDSHyFT/data/BprimeBprimeToTWTWinc_M-750_TuneZ2star_8TeV-madgraph',
+		 VarParsing.multiplicity.singleton,
+		 VarParsing.varType.string,
+		 "BTag Efficiency Map File")
                  
 options.parseArguments()
 
@@ -96,18 +102,19 @@ if not runData:
 
     # creates value maps to jets as userInt index:
     #-1 -- ignore, 1 -- right out of the box, 2 -- Nominal SF, 4 -- SF up, 8 -- SF down.
+    print options.btagMap+'_AK5PF_CSVM_bTaggingEfficiencyMap.root'
     process.goodPatJetsPFSF = cms.EDProducer("BTaggingSFProducer",
         JetSource = cms.InputTag('goodPatJetsPFlow'),
         DiscriminatorTag = cms.string('combinedSecondaryVertexBJetTags'),
         DiscriminatorValue = cms.double(0.679),
-        EffMapFile = cms.string('Analysis/EDSHyFT/data/BprimeBprimeToTWTWinc_M-750_TuneZ2star_8TeV-madgraph_AK5PF_CSVM_bTaggingEfficiencyMap.root')
+        EffMapFile = cms.string(options.btagMap+'_AK5PF_CSVM_bTaggingEfficiencyMap.root')
     )
 
     process.goodPatJetsCA8PrunedPFSF = cms.EDProducer("BTaggingSFProducer",
         JetSource = cms.InputTag('goodPatJetsCA8PrunedPF'),
         DiscriminatorTag = cms.string('combinedSecondaryVertexBJetTags'),
         DiscriminatorValue = cms.double(0.679),
-        EffMapFile = cms.string('Analysis/EDSHyFT/data/BprimeBprimeToTWTWinc_M-750_TuneZ2star_8TeV-madgraph_CA8PrunedPF_CSVM_bTaggingEfficiencyMap.root')
+        EffMapFile = cms.string(options.btagMap+'_CA8PrunedPF_CSVM_bTaggingEfficiencyMap.root')
     )
 
     process.GenInfo = cms.EDProducer('BoostedParticles')
