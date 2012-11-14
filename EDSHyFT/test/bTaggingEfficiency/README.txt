@@ -38,7 +38,8 @@ C) Edit the makeBTaggingEfficiencyMap.py file by defining dataset names, output 
    to be used in making the b-tagging efficiency maps. The binning can be defined per dataset per jet flavor, where the
    allowed jet flavors are 'b', 'c', and 'udsg'. You are now ready to produce the efficiency maps
 
-   ./makeBTaggingEfficiencyMap.py
+   ./makeBTaggingEfficiencyMapAK5PF.py
+   ./makeBTaggingEfficiencyMapCA8PrunedPF.py
 
    And you are done!
 
