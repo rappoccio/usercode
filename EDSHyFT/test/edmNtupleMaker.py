@@ -188,8 +188,8 @@ process.pfTupleEleMetRes110.shyftSelection.identifier = cms.string('PFMETRES110'
 ## mu+jets decay mode
 ## =================
 process.pfTupleMu = process.pfTupleEle.clone()
-process.pfTupleMu.ePlusJets = cms.bool( False )
-process.pfTupleMu.muPlusJets = cms.bool( True )
+process.pfTupleMu.shyftSelection.ePlusJets = cms.bool(False)
+process.pfTupleMu.shyftSelection.muPlusJets = cms.bool(True)
 
 ## mu+jets with loose collections
 process.pfTupleMuLoose = process.pfTupleMu.clone()
@@ -226,7 +226,10 @@ if runData:
     process.p5 = cms.Path( process.pfTupleEleLoose)
     process.p6 = cms.Path( process.pfTupleMuLoose)
     process.p7 = cms.Path()
-    
+    process.p8 = cms.Path()
+    process.p9 = cms.Path()
+    process.p10 = cms.Path()
+    process.p11 = cms.Path()
 else:
     process.p1 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEle)
     process.p2 = cms.Path( process.goodPatJetsPFSF * process.pfTupleMu)
@@ -234,12 +237,15 @@ else:
     process.p4 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleMuCA8Pruned)
     process.p5 = cms.Path()
     process.p6 = cms.Path()
-    process.p7 = cms.Path( process.pileupReweightingProducer * process.GenInfo *
-                           process.pfTupleEleMetRes090 * process.pfTupleEleMetRes110 *
-                           process.pfTupleMuMetRes090 * process.pfTupleMuMetRes110)
+    process.p7 = cms.Path( process.pileupReweightingProducer * process.GenInfo )
+    process.p8 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEleMetRes090)
+    process.p9 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEleMetRes110)
+    process.p10 = cms.Path( process.goodPatJetsPFSF * process.pfTupleMuMetRes090)
+    process.p11 = cms.Path( process.goodPatJetsPFSF * process.pfTupleMuMetRes110)
     
 process.out = cms.OutputModule("PoolOutputModule",
-                               SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7') ),
+                               #SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p0', 'p2') ),
+                               SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7' ,'p8', 'p9', 'p10', 'p11') ),
                                fileName =  cms.untracked.string('edmTest.root'),
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       'keep *_pfTuple*_*_*',
@@ -266,8 +272,8 @@ if not runData:
 ## output path
 process.outpath = cms.EndPath(process.out)
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(500) )
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.suppressWarning.append('patTrigger')
 process.MessageLogger.cerr.FwkJob.limit=1
 process.MessageLogger.cerr.ERROR = cms.untracked.PSet( limit = cms.untracked.int32(0) )
