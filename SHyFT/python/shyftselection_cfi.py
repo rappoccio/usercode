@@ -48,9 +48,7 @@ wplusjetsAnalysis = cms.PSet(
     muEtaMaxLoose  = cms.double( 2.5 ), #mu eta to be vetoed in mu+jets
     eleEtMinLoose  = cms.double( 15.0 ),#ele pt to be vetoed in muon
     eleEtaMaxLoose = cms.double( 2.5 ), #eta to be vetoed in muon
-    elDist         = cms.double( 0.02 ),
-    elDcot         = cms.double( 0.02 ),
-    eRelIso        = cms.double( 0.1 ),
+    eRelIso        = cms.double( 0.10),
     eEt            = cms.double( 30. ),
     muRelIso       = cms.double( 0.125),
     vertexCut      = cms.double( 1.),
@@ -63,11 +61,11 @@ wplusjetsAnalysis = cms.PSet(
     ePtScale       = cms.double( 0.0 ),
     ePtUncertaintyEE = cms.double( 0.025), 
     unclMetScale   = cms.double( 0.0 ),
-    muJetDR        = cms.double( 0.3 ),
-    eleJetDR       = cms.double( 0.5 ),
-    rawJetPtCut    = cms.double( 0.0 ),
+    #muJetDR        = cms.double( 0.3 ),
+    #eleJetDR       = cms.double( 0.5 ),
+    #rawJetPtCut    = cms.double( 0.0 ),
     useData        = cms.bool(False),
-    pfCandidateMap = cms.InputTag('particleFlow:electrons'),
+    #pfCandidateMap = cms.InputTag('particleFlow:electrons'),
     jecPayloads    = cms.vstring([
     'Jec12_V2_L1FastJet_AK5PFchs.txt',
     'Jec12_V2_L2Relative_AK5PFchs.txt',
