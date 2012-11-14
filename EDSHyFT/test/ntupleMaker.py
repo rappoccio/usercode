@@ -177,7 +177,7 @@ if bprimeGenInfo:
     
 if runMu:
     leptonsH  = Handle ("std::vector<pat::Muon>")
-    leptonsLabel = ("pfTupleEle", "muons")
+    leptonsLabel = ("pfTupleMu", "muons")
 else:
     leptonsH  = Handle ("std::vector<pat::Electron>")
     leptonsLabel = ("pfTupleEle", "electrons")
@@ -283,6 +283,9 @@ t.Branch('nVTags',nVTags,'nVTags/I')
 minDR_je = array('d',[0.])
 t.Branch('minDR_je',minDR_je,'minDR_je/D')
 
+minDR_bV = array('d',max_nJets*[0.])
+t.Branch('minDR_bV',minDR_bV,'minDR_bV[nJets]/D')
+
 nTagsCSVM = array('i',[0])
 t.Branch('nTagsCSVM',nTagsCSVM,'nTagsCSVM/I')
 
@@ -291,6 +294,15 @@ t.Branch('ht',ht,'ht/D')
 
 ht4jets = array('d',[0.0] )
 t.Branch('ht4jets', ht4jets, 'ht4jets/D')
+
+sphericity = array('d',[0.])
+t.Branch('sphericity',sphericity,'sphericity/D')
+
+aplanarity = array('d',[0.])
+t.Branch('aplanarity',aplanarity,'aplanarity/D')
+
+centrality = array('d',[0.])
+t.Branch('centrality', centrality,'centrality/D')
 
 if not options.data :
     pileupWeight = array('d',[0.])
@@ -543,8 +555,56 @@ for event in events:
     wMT = TMath.Sqrt(wPt*wPt-wPx*wPx-wPy*wPy)
     wMt[0] = wMT
     
+    # sphericity and aplanarity from Andrew Ivanov
+    # see: http://cepa.fnal.gov/psm/simulation/mcgen/lund/pythia_manual/pythia6.3/pythia6301/node213.html
+    sum = leptons[0].p()*leptons[0].p() + metObj.p()*metObj.p()
+    for jet in jets: sum+=jet.p()*jet.p()
+    
+    tensor = TMatrix(3,3)
+    # mxx
+    tensor[0][0] = leptons[0].px()*leptons[0].px() + metObj.px()*metObj.px()
+    for jet in jets: tensor[0][0]+=jet.px()*jet.px()
+    tensor[0][0]/=sum
+    # myy
+    tensor[1][1] = leptons[0].py()*leptons[0].py() + metObj.py()*metObj.py()
+    for jet in jets: tensor[1][1]+=jet.py()*jet.py()
+    tensor[1][1]/=sum
+    # mzz
+    tensor[2][2] = leptons[0].pz()*leptons[0].pz() + metObj.pz()*metObj.pz()
+    for jet in jets: tensor[2][2]+=jet.pz()*jet.pz()
+    tensor[2][2]/=sum
+    # mxy
+    tensor[0][1] = leptons[0].px()*leptons[0].py() + metObj.px()*metObj.py()
+    for jet in jets: tensor[0][1]+=jet.px()*jet.py()
+    tensor[0][1]/=sum
+    tensor[1][0] = tensor[0][1]
+    # mxz
+    tensor[0][2] = leptons[0].px()*leptons[0].pz() + metObj.px()*metObj.pz()
+    for jet in jets: tensor[0][2]+=jet.px()*jet.pz()
+    tensor[0][2]/=sum
+    tensor[2][0] = tensor[0][2]
+    # myz
+    tensor[1][2] = leptons[0].py()*leptons[0].pz() + metObj.py()*metObj.pz()
+    for jet in jets: tensor[1][2]+=jet.py()*jet.pz()
+    tensor[1][2]/=sum
+    tensor[2][1] = tensor[1][2]
+
+    eigenval = TVector(3)
+    tensor.EigenVectors(eigenval)
+
+    sphericity[0] = 3.0*(eigenval(1)+eigenval(2))/2.0
+    aplanarity[0] = 3.0*eigenval(2)/2.0
+
+    #print("eigen values: {0:4.2f}, {1:4.2f}, {2:4.2f}".format(eigenval(0),eigenval(1), eigenval(2)) )
+    #print("sphericity {0:4.2f}, aplanarity = {1:4.2f}".format( sphericity, aplanarity))
+    #print("mxx = {0:4.2f}, myy = {1:4.2f}, mzz = {2:4.2f}".format( tensor(0,0), tensor(1,1), tensor(2,2) ))
+    #print("mxy = {0:4.2f}, mxz = {1:4.2f}, myz = {2:4.2f}".format( tensor(0,1), tensor(0,2), tensor(1,2) ))
+    #print("myx = {0:4.2f}, mzx = {1:4.2f}, mzy = {2:4.2f}".format( tensor(1,0), tensor(2,0), tensor(2,1) ))
+    
     nj = 0
     ntagsCSVM = 0
+    sumJetPt = 0
+    sumJetE = 0
     minDeltaR_lepjet = 5.0
     dR_Wjjqq = -1.0
     dR_Zjjqq = -1.0
@@ -552,23 +612,23 @@ for event in events:
     WPt = 0
     ZPt = 0
     
-    #print('WPart1', WPart1P4.Pt(), 'WPart2', WPart2P4.Pt(), 'ZPart1', ZPart1P4.Pt(), 'ZPart2', ZPart2P4.Pt() ) 
-    #print('njets', njets[0])
-    
     for jet in jets :   
         jetEt[nj] = jet.pt()
-        
+
+        sumJetPt += jet.pt()
+        sumJetE += jet.energy()
+         
         if nj < 4 :
             sumEt4jets += jet.pt()
 
         jet_vector = TLorentzVector()
         jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
         minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
-                 
-        if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
-            ntagsCSVM = ntagsCSVM + 1
+        
+        #if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
+        #    ntagsCSVM = ntagsCSVM + 1
             
-        '''
+         
         if options.data:
             if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
                 ntagsCSVM = ntagsCSVM + 1  
@@ -585,8 +645,8 @@ for event in events:
             elif options.bTag =="BTagSFdown" :
                 if (jet.userInt('btagRegular') & 8) == 8 :
                     ntagsCSVM = ntagsCSVM + 1
-        '''
-                    
+                   
+        #print('btags',  ntagsCSVM)           
         nj = nj + 1
         sumEt += jet.pt()
 
@@ -594,6 +654,7 @@ for event in events:
     cj = 0    
     if len(jets_ca8) != 0:
         for ca8jet in jets_ca8:
+        
             matched = false
             ca8jet_vector = TLorentzVector()
             ca8jet_vector.SetPtEtaPhiM( ca8jet.pt(), ca8jet.eta(), ca8jet.phi(), ca8jet.mass() )
@@ -607,12 +668,12 @@ for event in events:
                     break
                 
             if not matched: continue
-            
+
             jetEt_ca8[cj] = ca8jet.pt()    
             WjetM[cj] = ca8jet.mass()
             subjet1M = ca8jet.daughter(0).mass() 
             subjet2M = ca8jet.daughter(1).mass()
-            mu = max(subjet1M,subjet2M) / ca8jet.correctedP4(0).mass()
+            mu = max(subjet1M,subjet2M) / ca8jet.correctedJet("Uncorrected").mass()
             WjetMu[cj] = mu
             
             if bprimeGenInfo:               
@@ -659,9 +720,21 @@ for event in events:
                 
             if WjetMu[cj] < 0.4 and (WjetM[cj] < 120 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
                 nVtags = nVtags + 1
+
+            
+            #min dR b/w a fat jet and b-tag jet
+            minDR_bjetV = 5.0
+            for ak5jet in jets :                
+                ak5jet_vector = TLorentzVector()
+                ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
+                if ntagsCSVM > 0 and  nVtags > 0:
+                     minDR_bjetV = TMath.Min ( ak5jet_vector.DeltaR(ca8jet_vector), minDR_bjetV )
+            #print('minDR_bV', minDR_bjetV)  
+            
+            minDR_bV[cj] = minDR_bjetV
             cj = cj + 1
             
-        
+    centrality[0] = sumJetPt/sumJetE    
     ht[0] = sumEt
     ht4jets[0] = sumEt4jets
     nTagsCSVM[0] = ntagsCSVM
