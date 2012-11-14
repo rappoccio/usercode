@@ -272,8 +272,8 @@ if not runData:
 ## output path
 process.outpath = cms.EndPath(process.out)
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(500) )
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.MessageLogger.suppressWarning.append('patTrigger')
 process.MessageLogger.cerr.FwkJob.limit=1
 process.MessageLogger.cerr.ERROR = cms.untracked.PSet( limit = cms.untracked.int32(0) )
