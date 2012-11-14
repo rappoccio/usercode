@@ -669,13 +669,31 @@ for event in events:
                 
             if not matched: continue
 
+            # V-tagging
             jetEt_ca8[cj] = ca8jet.pt()    
             WjetM[cj] = ca8jet.mass()
             subjet1M = ca8jet.daughter(0).mass() 
             subjet2M = ca8jet.daughter(1).mass()
             mu = max(subjet1M,subjet2M) / ca8jet.correctedJet("Uncorrected").mass()
-            WjetMu[cj] = mu
+
+            if (WjetM[cj] < 120 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
+                WjetMu[cj] = mu
             
+            if WjetMu[cj] < 0.4 and (WjetM[cj] < 120 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
+                nVtags = nVtags + 1
+
+            #min dR b/w a fat jet and b-tag jet
+            minDR_bjetV = 5.0
+            for ak5jet in jets :                
+                ak5jet_vector = TLorentzVector()
+                ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
+                if ntagsCSVM > 0 and  nVtags > 0:
+                     minDR_bjetV = TMath.Min ( ak5jet_vector.DeltaR(ca8jet_vector), minDR_bjetV )
+            #print('minDR_bV', minDR_bjetV)  
+            
+            minDR_bV[cj] = minDR_bjetV
+
+            # gen parton related info:
             if bprimeGenInfo:               
                 dR_Wqq_match1 = deltaR( ca8jet.eta(), ca8jet.phi(), WPart1P4.Eta(), WPart1P4.Phi())
                 dR_Wqq_match2 = deltaR( ca8jet.eta(), ca8jet.phi(), WPart2P4.Eta(), WPart2P4.Phi())
@@ -718,22 +736,10 @@ for event in events:
                 dR_Zjjqq_match[cj] = dR_Zjjqq
                 ZPt_true[cj] = ZPt
                 
-            if WjetMu[cj] < 0.4 and (WjetM[cj] < 120 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
-                nVtags = nVtags + 1
 
-            
-            #min dR b/w a fat jet and b-tag jet
-            minDR_bjetV = 5.0
-            for ak5jet in jets :                
-                ak5jet_vector = TLorentzVector()
-                ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
-                if ntagsCSVM > 0 and  nVtags > 0:
-                     minDR_bjetV = TMath.Min ( ak5jet_vector.DeltaR(ca8jet_vector), minDR_bjetV )
-            #print('minDR_bV', minDR_bjetV)  
-            
-            minDR_bV[cj] = minDR_bjetV
             cj = cj + 1
-            
+
+    #fill the rest of variables        
     centrality[0] = sumJetPt/sumJetE    
     ht[0] = sumEt
     ht4jets[0] = sumEt4jets
