@@ -134,6 +134,26 @@ joblist = [
     {'datasetpath':'/SingleElectron/mmhl-Run2012C-PromptReco-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
      'number_of_jobs':'50', 'pycfg_params':'runData=1','runselection':'197770-198913' ,'lumi_mask':'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt' ,
      '#sample_name': 'DataC', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
+
+#    {'datasetpath':'/SingleMu/knash-SingleMu_Run2012A-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
+#     'number_of_jobs':'50', 'pycfg_params':'runData=1','runselection':'190456-203002','lumi_mask':'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt' ,
+#     '#sample_name': 'Data-Run2012A-13Jul2012-v1', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
+
+#    {'datasetpath':'/SingleMu/agarabed-Run2012B-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
+#     'number_of_jobs':'50', 'pycfg_params':'runData=1','runselection':'190456-203002','lumi_mask':'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt' ,
+#     '#sample_name': 'Data-Run2012B-13Jul2012-v1', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
+
+#    {'datasetpath':'/SingleMu/StoreResults-Run2012C-24Aug2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
+#     'number_of_jobs':'50', 'pycfg_params':'runData=1','runselection':'190456-203002','lumi_mask':'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt' ,
+#     '#sample_name': 'Data-Run2012C-24Aug2012-v1', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
+
+#    {'datasetpath':'/SingleMu/StoreResults-Run2012C-PromptReco-v2_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
+#     'number_of_jobs':'50', 'pycfg_params':'runData=1','runselection':'190456-203002','lumi_mask':'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt' ,
+#     '#sample_name': 'Data-Run2012C-PromptReco-v2-a', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
+
+#    {'datasetpath':'/SingleMu/jpilot-Run2012C-PromptReco-v2_TLBSM_53x_v2-646f7563e9ae6f48814faa1c250f042a/USER',
+#     'number_of_jobs':'50', 'pycfg_params':'runData=1','runselection':'190456-203002','lumi_mask':'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt' ,
+#     '#sample_name': 'Data-Run2012C-PromptReco-v2-b', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
                       
     ]
 
