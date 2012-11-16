@@ -28,11 +28,6 @@ options.register ('runData',
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
                   "if running over data (1) else (0)")
-options.register('eleEt',
-                  25.,
-                 VarParsing.multiplicity.singleton,
-                 VarParsing.varType.float,
-                 "electron et threshold")
 options.register('runLoose',
                  0,
                  VarParsing.multiplicity.singleton,
@@ -244,7 +239,6 @@ else:
     process.p11 = cms.Path( process.goodPatJetsPFSF * process.pfTupleMuMetRes110)
     
 process.out = cms.OutputModule("PoolOutputModule",
-                               #SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p0', 'p2') ),
                                SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring( 'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7' ,'p8', 'p9', 'p10', 'p11') ),
                                fileName =  cms.untracked.string('edmTest.root'),
                                outputCommands = cms.untracked.vstring('drop *',
@@ -253,7 +247,8 @@ process.out = cms.OutputModule("PoolOutputModule",
                                                                       'keep *_pfTuple*CA8Pruned_jets_*',
                                                                       'keep *_pfTuple*CA8Pruned_MET_*',
                                                                       'keep *_patTriggerEvent_*_*',
-                                                                      'keep *_patTrigger_*_*',
+                                                                      'keep patTriggerPaths_patTrigger_*_*',
+                                                                      #'keep *_patTrigger_*_*',
                                                                       'keep *_kt6PFJetsForIsolation_rho_*',
                                                                       'keep *_goodOfflinePrimaryVertices_*_*',
                                                                       'keep *_caPrunedPFlow_SubJets_*'
