@@ -273,11 +273,11 @@ class TopElectronSelector : public Selector<pat::Electron>  {
          ret.set(false);
          Double_t scEta   = electron.superCluster()->eta();
          Double_t AEff  = 0;
-         if(runData_){
-            AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2011);
-         }else{
-            AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAFall11MC);
-         }
+         //if(runData_){
+         AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2012);
+         //}else{
+         //   AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAFall11MC);
+         //}
          Double_t chIso = electron.chargedHadronIso();
          Double_t nhIso = electron.neutralHadronIso();
          Double_t phIso = electron.photonIso();

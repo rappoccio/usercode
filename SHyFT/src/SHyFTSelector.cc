@@ -23,7 +23,7 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
     jetTag_          (params.getParameter<edm::InputTag>("jetSrc") ),
     metTag_          (params.getParameter<edm::InputTag>("metSrc") ), 
     rhoTag_          (params.getParameter<edm::InputTag>("rhoSrc") ), 
-    rhoIsoTag_       (params.getParameter<edm::InputTag>("rhoIsoSrc") ), 
+    //rhoIsoTag_       (params.getParameter<edm::InputTag>("rhoIsoSrc") ), 
     trigTag_         (params.getParameter<edm::InputTag>("trigSrc") ),
     muTrig_          (params.getParameter<std::string>("muTrig")),
     eleTrig_         (params.getParameter<std::string>("eleTrig")),
@@ -223,9 +223,9 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             edm::Handle<double> rhoHandle;
             event.getByLabel(rhoTag_, rhoHandle);
 
-            edm::Handle<double> rhoHandleIso;
-            event.getByLabel(rhoIsoTag_, rhoHandleIso);     
-            double rhoIso = std::max(*(rhoHandleIso.product()), 0.0);
+            //edm::Handle<double> rhoHandleIso;
+            //event.getByLabel(rhoIsoTag_, rhoHandleIso);     
+            double rhoIso = std::max(*(rhoHandle.product()), 0.0);
 
             int nElectrons = 0;
 
@@ -241,11 +241,11 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                 double eta     = ielectron->eta();
                 double et      = ielectron->et();
                 double dB      = ielectron->dB();
-                if(useData_){
-                    AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2011);
-                }else{
-                    AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAFall11MC);
-                }
+                //if(useData_){
+                AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2012);
+                    //}else{
+                    //AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAFall11MC);
+                    //}
                 double chIso = ielectron->userIsolation(pat::PfChargedHadronIso);
                 double nhIso = ielectron->userIsolation(pat::PfNeutralHadronIso);
                 double phIso  = ielectron->userIsolation(pat::PfGammaIso);

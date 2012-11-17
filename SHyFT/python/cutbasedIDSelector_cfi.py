@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 cutbasedIDSelector = cms.PSet(
-    version = cms.string('TIGHT'),    
+   # useData_  = cms.bool(True),
+    version  = cms.string('TIGHT'),    
     deta_EB  =  cms.double(4.0e-03),
     dphi_EB  =  cms.double(3.0e-02),
     sihih_EB =  cms.double(1.0e-02),
@@ -21,6 +22,6 @@ cutbasedIDSelector = cms.PSet(
     mHits      = cms.int32(0),
     vtxFitConv = cms.bool(True),
     pvSrc      = cms.InputTag("goodOfflinePrimaryVertices"),
-    rhoSrc     = cms.InputTag("kt6PFJetsForIsolation", 'rho'),
+    rhoSrc     = cms.InputTag('kt6PFJets', 'rho'),
     cutsToIgnore = cms.vstring(""), 
     )

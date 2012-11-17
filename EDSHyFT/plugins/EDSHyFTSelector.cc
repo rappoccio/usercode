@@ -97,11 +97,11 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
 
            double scEta  = jelectron->superCluster()->eta();
            double  AEff  = 0;
-           if(useData_){
-              AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2011);
-           }else{
-              AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAFall11MC);
-           }
+           //if(useData_){
+           AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2012);
+           //}else{
+           //   AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAFall11MC);
+           // }
            electrons->push_back( *jelectron );
            electrons->back().addUserFloat("AEff", AEff);        
         }
