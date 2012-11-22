@@ -1,3 +1,12 @@
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_1_1_sRj.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_2_1_TgZ.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_3_1_8Nz.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_4_1_sFf.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_5_1_kyO.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_6_1_zXK.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_7_1_dTX.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_8_1_w4I.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_9_1_Foh.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_10_1_fog.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_11_1_5kz.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_12_1_LZE.root
@@ -8,7 +17,6 @@
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_17_1_AkS.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_18_1_B22.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_19_1_tpH.root
-/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_1_1_sRj.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_20_1_dD9.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_21_1_clL.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_22_1_Zu6.root
@@ -19,7 +27,6 @@
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_27_1_htf.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_28_1_MpO.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_29_1_bS1.root
-/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_2_1_TgZ.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_30_1_9IO.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_31_1_KZa.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_32_1_VRm.root
@@ -30,7 +37,6 @@
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_37_1_HTl.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_38_1_yI1.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_39_1_75B.root
-/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_3_1_8Nz.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_40_1_BoK.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_41_1_hmy.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_42_1_k4x.root
@@ -41,11 +47,5 @@
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_47_1_Zt9.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_48_1_DhU.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_49_1_1UN.root
-/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_4_1_sFf.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_50_1_XQC.root
 /pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_51_1_zt5.root
-/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_5_1_kyO.root
-/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_6_1_zXK.root
-/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_7_1_dTX.root
-/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_8_1_w4I.root
-/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f/edmTest_9_1_Foh.root
