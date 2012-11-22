@@ -29,7 +29,7 @@ parser.add_option('--files', metavar='F', type='string', action='store',
                   help='Input files')
 
 parser.add_option('--txtfiles', metavar='F', type='string', action='store',
-                  default = "",
+                  default = "edmTest.root",
                   dest='txtfiles',
                   help='Input txt files')
 
@@ -86,6 +86,12 @@ bprimeGenInfo = options.useBPrimeGenInfo
 dcache = options.onDcache
 
 print('options', options)
+
+if options.runMuons:
+    lepStr = 'Mu'
+else:
+    lepStr = 'Ele'
+    
 # JEC
 jecScale = 0.0
 if options.JES == 'up' :
@@ -116,7 +122,9 @@ if dcache:
 	files = ["dcap://" + x for x in files]
 	print('new files', *files, sep='\n')
 	#print('new files', files[0], files[1], ..., sep='\n')
-            
+    
+fname = options.txtfiles
+fileN = fname[fname.rfind('/')+1:]
 #sys.exit(0)
 
 #JEC
@@ -129,17 +137,23 @@ jecUnc = JetCorrectionUncertainty( jecParStr )
 events = Events (files)
 
 # Get a "handle" (i.e. a smart pointer) to the vector of jets
+muonsH  = Handle ("std::vector<pat::Muon>")
+muonsLabel = ("pfTuple"+lepStr, "muons")
+
+electronsH  = Handle ("std::vector<pat::Electron>")
+electronsLabel = ("pfTuple"+lepStr, "electrons")
+      
 jetsH = Handle ("std::vector<pat::Jet>")
-jetsLabel = ("pfTupleEle", "jets")
+jetsLabel = ("pfTuple"+lepStr, "jets")
 
 c8aPruneJetsH = Handle ("std::vector<pat::Jet>")
-c8aPruneJetsLabel = ("pfTupleEleCA8Pruned", "jets")
+c8aPruneJetsLabel = ("pfTuple"+lepStr+"CA8Pruned", "jets")
 
 metH = Handle ("std::vector<pat::MET>")
-metLabel = ("pfTupleEle", "MET")
+metLabel = ("pfTuple"+lepStr, "MET")
 
 c8aPruneMetH = Handle ("std::vector<pat::MET>")
-c8aPruneMetLabel = ("pfTupleEleCA8Pruned", "MET")
+c8aPruneMetLabel = ("pfTuple"+lepStr+"CA8Pruned", "MET")
 
 trigH = Handle("pat::TriggerEvent")
 trigLabel = ("patTriggerEvent", "")
@@ -157,6 +171,12 @@ if bprimeGenInfo:
     BBtoWtZb_L  = ( "GenInfo", "BBtoWtZb" )
     BBtoZbZb_H  = Handle("int")
     BBtoZbZb_L  = ( "GenInfo", "BBtoZbZb" )
+    BBtoZbHb_H  = Handle("int")
+    BBtoZbHb_L  = ( "GenInfo", "BBtoZbHb" )
+    BBtoWtHb_H  = Handle("int")
+    BBtoWtHb_L  = ( "GenInfo", "BBtoWtHb" )
+    BBtoHbHb_H  = Handle("int")
+    BBtoHbHb_L  = ( "GenInfo", "BBtoHbHb" )
     WPart1_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
     WPart1_L    = ( "GenInfo",   "WPart1")
     WPart2_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
@@ -172,16 +192,17 @@ if bprimeGenInfo:
     ZPart3_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
     ZPart3_L    = ( "GenInfo",   "ZPart3")
     ZPart4_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
-    ZPart4_L    = ( "GenInfo",   "ZPart4")
+    ZPart4_L    = ( "GenInfo",   "ZPart4")    
+    HPart1_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    HPart1_L    = ( "GenInfo",   "HPart1")
+    HPart2_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    HPart2_L    = ( "GenInfo",   "HPart2")
+    HPart3_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    HPart3_L    = ( "GenInfo",   "HPart3")
+    HPart4_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    HPart4_L    = ( "GenInfo",   "HPart4")
 
     
-if runMu:
-    leptonsH  = Handle ("std::vector<pat::Muon>")
-    leptonsLabel = ("pfTupleMu", "muons")
-else:
-    leptonsH  = Handle ("std::vector<pat::Electron>")
-    leptonsLabel = ("pfTupleEle", "electrons")
-      
 # Create an output file and a tree
 systtag = ''
 if options.JES != '':
@@ -206,17 +227,30 @@ t.Branch('WtZb',WtZb,'WtZb/I')
 ZbZb = array('i',[0])
 t.Branch('ZbZb',ZbZb,'ZbZb/I')
 
-trigEleStop_path = array('i', [0])
-t.Branch('trigEleStop_path', trigEleStop_path, 'trigEleStop_path/I')
+ZbHb = array('i',[0])
+t.Branch('ZbHb',ZbHb,'ZbHb/I')
 
-trigEleHad_path = array('i', [0])
-t.Branch('trigEleHad_path', trigEleHad_path, 'trigEleHad_path/I')
+WtHb = array('i',[0])
+t.Branch('WtHb',WtHb,'WtHb/I')
 
-trigSigEle_path = array('i', [0])
-t.Branch('trigSigEle_path', trigSigEle_path, 'trigSigEle_path/I')
+HbHb = array('i',[0])
+t.Branch('HbHb',HbHb,'HbHb/I')
 
-trigSigMu_path = array('i', [0])
-t.Branch('trigSigMu_path', trigSigMu_path, 'trigSigMu_path/I')
+if runMu:
+    trigSigMuNonIso_path = array('i', [0])
+    t.Branch('trigSigMuNonIso_path', trigSigMuNonIso_path, 'trigSigMuNonIso_path/I')
+    
+    trigSigMuIso_path = array('i', [0])
+    t.Branch('trigSigMuIso_path', trigSigMuIso_path, 'trigSigMuIso_path/I')
+else:
+    trigEleStop_path = array('i', [0])
+    t.Branch('trigEleStop_path', trigEleStop_path, 'trigEleStop_path/I')
+    
+    trigEleHad_path = array('i', [0])
+    t.Branch('trigEleHad_path', trigEleHad_path, 'trigEleHad_path/I')
+    
+    trigSigEle_path = array('i', [0])
+    t.Branch('trigSigEle_path', trigSigEle_path, 'trigSigEle_path/I')
 
 met = array('d',[0.])
 t.Branch('met',met,'met/D')
@@ -271,11 +305,17 @@ t.Branch('WPt_true', WPt_true, 'WPt_true[nJets]/D')
 ZPt_true = array('d', max_nJets*[-1.])
 t.Branch('ZPt_true', ZPt_true, 'ZPt_true[nJets]/D')
 
+HPt_true = array('d', max_nJets*[-1.])
+t.Branch('HPt_true', HPt_true, 'HPt_true[nJets]/D')
+
 dR_Wjjqq_match = array('d', max_nJets*[-1.])
 t.Branch('dR_Wjjqq_match',dR_Wjjqq_match,'dR_Wjjqq_match[nJets]/D')
 
 dR_Zjjqq_match = array('d', max_nJets*[-1.])
 t.Branch('dR_Zjjqq_match',dR_Zjjqq_match,'dR_Zjjqq_match[nJets]/D')
+
+dR_Hjjqq_match = array('d', max_nJets*[-1.])
+t.Branch('dR_Hjjqq_match',dR_Hjjqq_match,'dR_Hjjqq_match[nJets]/D')
 
 nVTags = array('i',[0])
 t.Branch('nVTags',nVTags,'nVTags/I')
@@ -289,11 +329,11 @@ t.Branch('minDR_bV',minDR_bV,'minDR_bV[nJets]/D')
 nTagsCSVM = array('i',[0])
 t.Branch('nTagsCSVM',nTagsCSVM,'nTagsCSVM/I')
 
+m3 = array('d',[0.])
+t.Branch('m3',m3,'m3/D')
+
 ht = array('d',[0.])
 t.Branch('ht',ht,'ht/D')
-
-ht4jets = array('d',[0.0] )
-t.Branch('ht4jets', ht4jets, 'ht4jets/D')
 
 sphericity = array('d',[0.])
 t.Branch('sphericity',sphericity,'sphericity/D')
@@ -330,7 +370,10 @@ timer.Start()
 
 iWtWt = 0
 iWtZb = 0
-iZbZb = 0 
+iZbZb = 0
+iZbHb = 0
+iWtHb = 0
+iHbHb = 0
 # loop over events
 i = 0 
 for event in events:
@@ -342,10 +385,10 @@ for event in events:
     # Get the objects 
     event.getByLabel(vertLabel,  vertH)
     event.getByLabel(jetsLabel,  jetsH)    
-    event.getByLabel(leptonsLabel, leptonsH)
+    event.getByLabel(muonsLabel, muonsH)
+    event.getByLabel(electronsLabel, electronsH)
     event.getByLabel(metLabel, metH)
-    event.getByLabel(trigLabel, trigH)
-    
+    event.getByLabel(trigLabel, trigH)    
     event.getByLabel(c8aPruneJetsLabel,  c8aPruneJetsH)
     event.getByLabel(c8aPruneMetLabel,  c8aPruneMetH)
 
@@ -354,7 +397,10 @@ for event in events:
         event.getByLabel(BBtoWtWt_L, BBtoWtWt_H)
         event.getByLabel(BBtoWtZb_L, BBtoWtZb_H)
         event.getByLabel(BBtoZbZb_L, BBtoZbZb_H)
-               
+        event.getByLabel(BBtoZbHb_L, BBtoZbHb_H)
+        event.getByLabel(BBtoWtHb_L, BBtoWtHb_H)
+        event.getByLabel(BBtoHbHb_L, BBtoHbHb_H)
+                     
         event.getByLabel(WPart1_L,   WPart1_H)
         event.getByLabel(WPart2_L,   WPart2_H)
         event.getByLabel(WPart3_L,   WPart3_H)
@@ -363,10 +409,18 @@ for event in events:
         event.getByLabel(ZPart2_L,   ZPart2_H)
         event.getByLabel(ZPart3_L,   ZPart3_H)
         event.getByLabel(ZPart4_L,   ZPart4_H)
+        event.getByLabel(HPart1_L,   HPart1_H)
+        event.getByLabel(HPart2_L,   HPart2_H)
+        event.getByLabel(HPart3_L,   HPart3_H)
+        event.getByLabel(HPart4_L,   HPart4_H)
 
         BBtoWtWt = BBtoWtWt_H.product()[0]
         BBtoWtZb = BBtoWtZb_H.product()[0]
         BBtoZbZb = BBtoZbZb_H.product()[0]
+        BBtoZbHb = BBtoZbHb_H.product()[0]
+        BBtoWtHb = BBtoWtHb_H.product()[0]
+        BBtoHbHb = BBtoHbHb_H.product()[0]
+        
         WPart1 = WPart1_H.product()
         WPart2 = WPart2_H.product()
         WPart3 = WPart3_H.product()
@@ -375,23 +429,44 @@ for event in events:
         ZPart2 = ZPart2_H.product()
         ZPart3 = ZPart3_H.product()
         ZPart4 = ZPart4_H.product()
+        HPart1 = HPart1_H.product()
+        HPart2 = HPart2_H.product()
+        HPart3 = HPart3_H.product()
+        HPart4 = HPart4_H.product()
 
         WPart1P4 = WPart1 + WPart2
         WPart2P4 = WPart3 + WPart4
         ZPart1P4 = ZPart1 + ZPart2
         ZPart2P4 = ZPart3 + ZPart4
+        HPart1P4 = HPart1 + HPart2
+        HPart2P4 = HPart3 + HPart4
 
         WtWt[0] = BBtoWtWt
         WtZb[0] = BBtoWtZb
         ZbZb[0] = BBtoZbZb
+        ZbHb[0] = BBtoZbHb
+        WtHb[0] = BBtoWtHb
+        HbHb[0] = BBtoHbHb
         
         if BBtoWtWt == 1:iWtWt = iWtWt+1
         if BBtoWtZb == 1:iWtZb = iWtZb+1
         if BBtoZbZb == 1:iZbZb = iZbZb+1
-    
-        if BBtoWtWt == 0 and  BBtoWtZb == 0 and BBtoZbZb == 0:
+        if BBtoZbHb == 1:iZbHb = iZbHb+1
+        if BBtoWtHb == 1:iWtHb = iWtHb+1
+        if BBtoHbHb == 1:iHbHb = iHbHb+1
+
+        if "BprimeBprimeToBZTWinc" in fileN and BBtoWtWt == 0 and  BBtoWtZb == 0 and BBtoZbZb == 0:
+            print('running over WtZb sample')
             print('impossible: the MC should be either WtWt or WtZb or ZbZb')
-            print('which event', i)  
+            print('which event', i)
+        elif "BprimeBprimeToBHBZinc" in fileN and BBtoZbHb == 0 and  BBtoHbHb == 0 and BBtoZbZb == 0:
+            print('running over ZbHb sample')
+            print('impossible: the MC should be either ZbHb or HbHb or ZbZb')
+            print('which event', i)
+        elif "BprimeBprimeToBHTWinc" in fileN and BBtoWtHb == 0 and  BBtoHbHb == 0 and BBtoWtWt == 0:
+            print('running over WtHb sample')
+            print('impossible: the MC should be either WtHb or HbHb or WtWt')
+            print('which event', i)    
             
     # PileupReweighting
     if not options.data :
@@ -407,31 +482,65 @@ for event in events:
         
   
     # Get the "product" of the handle (i.e. what it's "pointing to" in C++)
+    if muonsH.isValid():
+        muons = muonsH.product()
+    if electronsH.isValid():
+        electrons = electronsH.product()
+
+    #Require exactly one lepton
+    if len(muons) == 0 and len(electrons) == 0:
+        continue
+    
+    nMuons = 0
+    for imu in muons:
+        if imu.pt() > 30:
+            nMuons += 1    
+           
+    nElectrons = 0
+    for iel in electrons:
+        if iel.pt() > 30:
+            nElectrons += 1
+            
+    # remove any remaining dilepton event...
+    if nElectrons+nMuons > 1 :
+        #print('ele', nElectrons, 'mu', nMuons)
+        continue        
+
+    # to be sure of one lepton...
+    if runMu==1 and nMuons!=1:
+        continue
+    if runMu==0 and nElectrons!=1 :
+        continue
+    
+    # assigning one varaible to handle both lepton flavours
+    if runMu:
+        leptons = muons
+    else:
+        leptons = electrons
+
+    # get other objects    
     vertices = vertH.product()
 
+    trigObj = trigH.product()
+    
     jets_ca8 = c8aPruneJetsH.product()
     metObj_ca8 = (c8aPruneMetH.product())[0]
     
     jets = jetsH.product()
     metObj = (metH.product())[0]
-        
-    leptons = leptonsH.product()
-    trigObj = trigH.product()
-    
-    if len(leptons) == 0:
-        continue
+
     if len(jets) == 0:
         continue
     
     #Systematic variations studies:
-    #=============================
+    # ============================
     
     # get the P4 of the edm MET
     metP4 = metObj.p4()
     
     #L1, L2, L3 JEC are already applied to jets in EDM Ntuples   
     for ijet in jets :
-        
+    
         ## get the uncorrected jets 
         uncorrJet = ijet.correctedP4(0)
         
@@ -439,7 +548,8 @@ for event in events:
         genJetPt  = ijet.userFloat('genJetPt')
         genJetPhi = ijet.userFloat('genJetPhi')
         genJetEta = ijet.userFloat('genJetEta')
-         
+        genJetMass= ijet.userFloat('genJetMass')
+        
         ##Jet energy scale variation
         jetScale = 1.0
         if not options.data and abs(jecScale) > 0.0001 :
@@ -460,6 +570,7 @@ for event in events:
             ptScale = max(0.0, (recopt+deltapt)/recopt)
             if ptScale == 0:
                 print(' jet pt smearing failed: resetting the pt scale to one')
+                print(' gen jet P4: pt, eta, phi, mass', genJetPt, genJetPhi, genJetEta,genJetMass)
                 ptScale = 1
             jetScale*=ptScale
 
@@ -497,37 +608,43 @@ for event in events:
     metObj.setP4(metP4)
 
     #########################
-   
+    
+    (leptons[0]).pt() < 30 : continue
+    
     # store the trigger paths
-    trigEleStop_path[0] = -1
-    trigEleHad_path[0]  = -1
-    trigSigEle_path[0]  = -1
-    eleStop   = "HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet"
-    eleHad    = "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet"
-    singleEle = "HLT_Ele27_WP80_v"
- 
-    trigSigMu_path[0] = -1
-    muHadPFJet30     = "HLT_IsoMu20_eta2p1_TriCentralPFJet30_v"
-    muHadPFNoPUJet30 = "HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v"
-    singleMuPFNoPUJet30         = "HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v"
-    singleMuPFNoPUJet30_30_20   = "HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v" 
-    singleMuPFNoPUJet45_35_25   = "HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v"
-    singleMuPFNoPUJet50_40_30   = "HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1"
+    if runMu:
+            trigSigMuNonIso_path[0] = -1
+            trigSigMuIso_path[0] = -1
+            mu40_eta2p1 = "HLT_Mu40_eta2p1_v"
+            mu24_Iso    = "HLT_IsoMu24_eta2p1_v"
+    else:        
+        trigEleStop_path[0] = -1
+        trigEleHad_path[0]  = -1
+        trigSigEle_path[0]  = -1
+        eleStop   = "HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet"
+        eleHad    = "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet"
+        singleEle = "HLT_Ele27_WP80_v"
 
     trigPaths = trigObj.paths() #TriggerPathCollection
     for ipath in trigPaths:
-        if eleStop+"30_v" in ipath.name() or eleStop+"45_35_25_v" in ipath.name() or eleStop+"50_40_30_v" in ipath.name():
-            trigEleStop_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-            #if trigEleStop_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
-        if eleHad+"30_v" in ipath.name() or eleHad+"30_30_20_v" in ipath.name():
-            trigEleHad_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-            #if trigEleHad_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
-        if singleEle in ipath.name():
-            trigSigEle_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-            #if trigSigEle_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
-        if muHadPFJet30 in ipath.name() or muHadPFNoPUJet30 in ipath.name() or singleMuPFNoPUJet30 in ipath.name() or singleMuPFNoPUJet30_30_20 in ipath.name() or singleMuPFNoPUJet45_35_25 in ipath.name() or singleMuPFNoPUJet50_40_30 in ipath.name():
-            trigSigMu_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-            
+        if runMu:   
+            if mu40_eta2p1 in ipath.name():
+                trigSigMuNonIso_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
+                #if trigSigMuNonIso_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
+            if mu24_Iso in ipath.name():
+                trigSigMuIso_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
+                #if trigSigMuIso_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
+        else:    
+            if eleStop+"30_v" in ipath.name() or eleStop+"45_35_25_v" in ipath.name() or eleStop+"50_40_30_v" in ipath.name():
+                trigEleStop_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
+                #if trigEleStop_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
+            if eleHad+"30_v" in ipath.name() or eleHad+"30_30_20_v" in ipath.name():
+                trigEleHad_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
+                #if trigEleHad_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
+            if singleEle in ipath.name():
+                trigSigEle_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
+                #if trigSigEle_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
+        
     nvertices[0] =  vertices.size()     
     met[0] = metObj.pt()
     lepEt[0] = (leptons[0]).pt()
@@ -544,7 +661,7 @@ for event in events:
     
     njets[0] = len(jets)
     sumEt = leptons[0].pt() + metObj.pt()
-    sumEt4jets = sumEt
+    #sumEt4jets = sumEt
     
     lepton_vector = TLorentzVector()
     lepton_vector.SetPtEtaPhiM( leptons[0].pt(), leptons[0].eta(), leptons[0].phi(), leptons[0].mass() )
@@ -611,24 +728,17 @@ for event in events:
     nVtags = 0
     WPt = 0
     ZPt = 0
-    
+
+    jet_p4 = []
     for jet in jets :   
         jetEt[nj] = jet.pt()
-
         sumJetPt += jet.pt()
         sumJetE += jet.energy()
-         
-        if nj < 4 :
-            sumEt4jets += jet.pt()
-
         jet_vector = TLorentzVector()
         jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
+        jet_p4.append(jet_vector) 
         minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
-        
-        #if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
-        #    ntagsCSVM = ntagsCSVM + 1
-            
-         
+              
         if options.data:
             if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
                 ntagsCSVM = ntagsCSVM + 1  
@@ -649,8 +759,23 @@ for event in events:
         #print('btags',  ntagsCSVM)           
         nj = nj + 1
         sumEt += jet.pt()
+        
+    M3 = 0.0
+    highestPt = 0.0
+    if nj >= 3:
+        for j in range(0, nj-2):
+            for k in range(j+1, nj-1):
+                for l in range(k+1, nj):
+                    threeJets = jet_p4[j] + jet_p4[k] + jet_p4[l]
+                    if highestPt < threeJets.Perp():
+                        M3 = threeJets.M()
+                        highestPt=threeJets.Perp()
+        #print('M3', M3)
+        m3[0] = M3
 
-   
+    # empty the list for the next event
+    del jet_p4[:]
+    
     cj = 0    
     if len(jets_ca8) != 0:
         for ca8jet in jets_ca8:
@@ -676,10 +801,11 @@ for event in events:
             subjet2M = ca8jet.daughter(1).mass()
             mu = max(subjet1M,subjet2M) / ca8jet.correctedJet("Uncorrected").mass()
 
-            if (WjetM[cj] < 120 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
+            # widen to accomodate Higgs
+            if (WjetM[cj] < 150 and WjetM[cj] > 50) and jetEt_ca8[cj] > 150:
                 WjetMu[cj] = mu
             
-            if WjetMu[cj] < 0.4 and (WjetM[cj] < 120 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
+            if mu < 0.4 and (WjetM[cj] < 150 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
                 nVtags = nVtags + 1
 
             #min dR b/w a fat jet and b-tag jet
@@ -699,6 +825,8 @@ for event in events:
                 dR_Wqq_match2 = deltaR( ca8jet.eta(), ca8jet.phi(), WPart2P4.Eta(), WPart2P4.Phi())
                 dR_Zqq_match1 = deltaR( ca8jet.eta(), ca8jet.phi(), ZPart1P4.Eta(), ZPart1P4.Phi())
                 dR_Zqq_match2 = deltaR( ca8jet.eta(), ca8jet.phi(), ZPart2P4.Eta(), ZPart2P4.Phi())
+                dR_Hqq_match1 = deltaR( ca8jet.eta(), ca8jet.phi(), HPart1P4.Eta(), HPart1P4.Phi())
+                dR_Hqq_match2 = deltaR( ca8jet.eta(), ca8jet.phi(), HPart2P4.Eta(), HPart2P4.Phi())
                 
                 #if there are two W->qq, pick the one with min DeltaR, else pick the one which exists 
                 if WPart1P4.Pt() != 0 and WPart2P4.Pt() != 0:
@@ -735,6 +863,24 @@ for event in events:
                     
                 dR_Zjjqq_match[cj] = dR_Zjjqq
                 ZPt_true[cj] = ZPt
+
+                #if there are two H->qq, pick the one with min DeltaR, else pick the one which exists 
+                if HPart1P4.Pt() != 0 and HPart2P4.Pt() != 0:
+                    dR_Hjjqq = TMath.Min(dR_Hqq_match1,dR_Hqq_match2)
+                    if dR_Hjjqq == dR_Hqq_match1: HPt = HPart1P4.Pt()
+                    elif dR_Hjjqq == dR_Hqq_match2: HPt = HPart2P4.Pt()
+                elif HPart1P4.Pt() != 0:
+                    dR_Hjjqq = dR_Hqq_match1
+                    HPt = HPart1P4.Pt()
+                elif HPart2P4.Pt() != 0:
+                    dR_Hjjqq = dR_Hqq_match2
+                    HPt = HPart2P4.Pt()
+                else:
+                    dR_Hjjqq = -1
+                    HPt = -1
+                    
+                dR_Hjjqq_match[cj] = dR_Hjjqq
+                HPt_true[cj] = HPt
                 
 
             cj = cj + 1
@@ -742,7 +888,6 @@ for event in events:
     #fill the rest of variables        
     centrality[0] = sumJetPt/sumJetE    
     ht[0] = sumEt
-    ht4jets[0] = sumEt4jets
     nTagsCSVM[0] = ntagsCSVM
     nVTags[0] = nVtags    
     minDR_je[0] = minDeltaR_lepjet
@@ -763,6 +908,9 @@ timer.Stop()
 print('BBtoWtWt', iWtWt)
 print('BBtoWtZb', iWtZb)
 print('BBtoZbZb', iZbZb)
+print('BBtoZbHb', iZbHb)
+print('BBtoWtHb', iWtHb)
+print('BBtoHbHb', iHbHb)
 
 # Print out our timing information
 rtime = timer.RealTime(); # Real time (or "wall time")
