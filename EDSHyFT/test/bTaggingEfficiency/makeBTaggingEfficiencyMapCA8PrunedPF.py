@@ -95,6 +95,20 @@ datasets = [
      'udsg': [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]]},
     'CA8PrunedPF_CSVM'
   ],
+  [
+    '/TTWJets_8TeV-madgraph/mgabusi-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 150., 200., 300., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'CA8PrunedPF_CSVM'
+  ],
+  [
+    '/TTZJets_8TeV-madgraph_v2/mgabusi-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 150., 200., 300., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'CA8PrunedPF_CSVM'
+  ],
   # Signal
   [
     '/BprimeBprimeToTWTWinc_M-450_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToTWTWinc_M-450_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
