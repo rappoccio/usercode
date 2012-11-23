@@ -42,15 +42,27 @@ for txt in `ls $INPATH`; do
         name=`basename $txt .txt`
         echo "output file name: $name "
         if test $DATA -eq 0; then
+        for option in "--JES nominal" \
+                      "--JES up" \
+                      "--JES down" \
+                      "--jetPtSmear 0.0" \
+                      "--jetPtSmear 0.2" \
+                      "--bTag BTagSFup" \
+                      "--bTag BTagSFdown"; do
             if test $counter -eq $PROCESS; then
-                echo "python ntupleMaker.py --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}"
-                python ntupleMaker.py --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}
+                echo "python ntupleMaker.py --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name} $option"
+                python ntupleMaker.py --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name} $option
             fi
             let "counter+=1"
+        done
         else
+            if test $counter -eq $PROCESS; then
+                echo "echo python ntupleMaker.py --data  --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}"
+                python ntupleMaker.py --data --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}
+            fi
             let "counter+=1"
-        fi
 
+        fi
     fi
 done
 
