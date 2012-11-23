@@ -71,16 +71,28 @@ parser.add_option("--runMuons", action='store_true',
 parser.add_option("--bTag",action='store',
                   default="",
                   dest="bTag",
-                  help="b-tag SF")
+                  help="b-tag SF, Options as '', BTagSFup, BTagSFdown")
 
 parser.add_option("--useBPrimeGenInfo",  action='store_true',
                   default=False,
                   dest="useBPrimeGenInfo",
-                  help="switch on(1) / off(0) gen particle info") 
+                  help="switch on(1) / off(0) gen particle info")
+
+parser.add_option('--ak5jetPtMin', metavar='F', type='float', action='store',
+                  default=30.,
+                  dest='ak5jetPtMin',
+                  help='jet pt threshold')
+
+parser.add_option('--lepPtMin', metavar='F', type='float', action='store',
+                  default=30.,
+                  dest='lepPtMin',
+                  help='lepton pt threshold')
 
 # Parse and get arguments
 (options, args) = parser.parse_args()
 
+jetPtMin = options.ak5jetPtMin
+lepPtMin = options.lepPtMin
 runMu = options.runMuons
 bprimeGenInfo = options.useBPrimeGenInfo
 dcache = options.onDcache
@@ -164,6 +176,9 @@ vertLabel = ("goodOfflinePrimaryVertices")
 pileupWeightsH = Handle ("std::vector<float>")
 pileupWeightsLabel = ("pileupReweightingProducer","pileupWeights")
 
+rhoH =  Handle ("double")
+rhoLabel = ("kt6PFJets", "rho")
+
 if bprimeGenInfo:
     BBtoWtWt_H  = Handle("int")
     BBtoWtWt_L  = ( "GenInfo", "BBtoWtWt" )
@@ -205,12 +220,18 @@ if bprimeGenInfo:
     
 # Create an output file and a tree
 systtag = ''
-if options.JES != '':
-	systtag = "_" + options.JES
-elif options.bTag:
+
+if options.JES == "up" or options.JES == "down":
+	systtag = "_JES" + options.JES
+elif options.JES != '':
+    systtag = "_" + options.JES
+if options.bTag != '':
     systtag = "_" + options.bTag
+if options.jetPtSmear == 0.0:
+	systtag = "_JERdown"
+if options.jetPtSmear == 0.2:
+	systtag = "_JERup"    
     
-print("value of options.JES = ", options.JES		)
 print("value of systtag = ", systtag)
 
 f = TFile(options.sample + systtag + ".root", "RECREATE")
@@ -277,8 +298,26 @@ if not runMu:
     eMVA = array('d', [0.])
     t.Branch('eMVA',eMVA,'eMVA/D')
 
+    eSihih = array('d', [0.])
+    t.Branch('eSihih',eSihih,'eSihih/D')
+
+    eHOverE = array('d', [0.])
+    t.Branch('eHOverE',eHOverE,'eHOverE/D')
+
+    eDphi = array('d', [0.])
+    t.Branch('eDphi',eDphi,'eDphi/D')
+    
+    eDeta = array('d', [0.])
+    t.Branch('eDeta',eDeta,'eDeta/D')
+    
+lepd0 =  array('d',[0.])
+t.Branch('lepd0',lepd0,'lepd0/D')
+
 lepIso = array('d',[0.])
 t.Branch('lepIso',lepIso,'lepIso/D')
+
+lepIsoUncorr = array('d',[0.])
+t.Branch('lepIsoUncorr',lepIsoUncorr,'lepIsoUncorr/D')
 
 nvertices = array('i',[0])
 t.Branch('nVertices',nvertices,'nVertices/I')
@@ -391,7 +430,8 @@ for event in events:
     event.getByLabel(trigLabel, trigH)    
     event.getByLabel(c8aPruneJetsLabel,  c8aPruneJetsH)
     event.getByLabel(c8aPruneMetLabel,  c8aPruneMetH)
-
+    event.getByLabel(rhoLabel,  rhoH)
+    
     # the bprime gen info categorization
     if bprimeGenInfo:
         event.getByLabel(BBtoWtWt_L, BBtoWtWt_H)
@@ -458,15 +498,15 @@ for event in events:
         if "BprimeBprimeToBZTWinc" in fileN and BBtoWtWt == 0 and  BBtoWtZb == 0 and BBtoZbZb == 0:
             print('running over WtZb sample')
             print('impossible: the MC should be either WtWt or WtZb or ZbZb')
-            print('which event', i)
+            print('which event', event.object().id().event())
         elif "BprimeBprimeToBHBZinc" in fileN and BBtoZbHb == 0 and  BBtoHbHb == 0 and BBtoZbZb == 0:
             print('running over ZbHb sample')
             print('impossible: the MC should be either ZbHb or HbHb or ZbZb')
-            print('which event', i)
+            print('which event', event.object().id().event())
         elif "BprimeBprimeToBHTWinc" in fileN and BBtoWtHb == 0 and  BBtoHbHb == 0 and BBtoWtWt == 0:
             print('running over WtHb sample')
             print('impossible: the MC should be either WtHb or HbHb or WtWt')
-            print('which event', i)    
+            print('which event', event.object().id().event())    
             
     # PileupReweighting
     if not options.data :
@@ -493,12 +533,12 @@ for event in events:
     
     nMuons = 0
     for imu in muons:
-        if imu.pt() > 30:
+        if imu.pt() > lepPtMin:
             nMuons += 1    
            
     nElectrons = 0
     for iel in electrons:
-        if iel.pt() > 30:
+        if iel.pt() > lepPtMin:
             nElectrons += 1
             
     # remove any remaining dilepton event...
@@ -518,9 +558,11 @@ for event in events:
     else:
         leptons = electrons
 
-    # get other objects    
+    # get other objects
+    rho = (rhoH.product())[0]
+    
     vertices = vertH.product()
-
+    
     trigObj = trigH.product()
     
     jets_ca8 = c8aPruneJetsH.product()
@@ -562,16 +604,20 @@ for event in events:
             jetScale = 1 + unc * jecScale
 
         ##Jet energy resolution smearing
-        if not options.data and abs(options.jetPtSmear)>0.0001 and genJetPt>15.0:
+        if not options.data and abs(options.jetPtSmear)>0.0001 and genJetPt>15.0:     
             scale = options.jetPtSmear
             recopt = ijet.pt()
+            uncorrpt = ijet.correctedJet("Uncorrected").pt()
             genpt = genJetPt
             deltapt = (recopt-genpt)*scale
             ptScale = max(0.0, (recopt+deltapt)/recopt)
-            if ptScale == 0:
-                print(' jet pt smearing failed: resetting the pt scale to one')
-                print(' gen jet P4: pt, eta, phi, mass', genJetPt, genJetPhi, genJetEta,genJetMass)
-                ptScale = 1
+            
+##             if ptScale == 0:
+##                 print(' jet pt smearing failed: resetting the pt scale to one')
+##                 #print(' uncorr pt, reco pt, gen pt', uncorrpt, recopt, genpt)
+##                 #print(' gen jet P4: pt, eta, phi, mass', genJetPt, genJetPhi, genJetEta,genJetMass)
+##                 ptScale = 1
+
             jetScale*=ptScale
 
         ##Jet angular resolution smearing
@@ -609,7 +655,7 @@ for event in events:
 
     #########################
     
-    (leptons[0]).pt() < 30 : continue
+    if leptons[0].pt() < lepPtMin : continue
     
     # store the trigger paths
     if runMu:
@@ -649,19 +695,30 @@ for event in events:
     met[0] = metObj.pt()
     lepEt[0] = (leptons[0]).pt()
     lepEta[0] = (leptons[0]).eta()
+    lepd0[0] =  (leptons[0]).dB()
     
     if not runMu:
-        eSCEta[0] = (leptons[0]).superCluster().eta()
-        eMVA[0] = (leptons[0]).electronID("mvaTrigV0")
+        eSCEta[0]  = (leptons[0]).superCluster().eta()
+        eMVA[0]    = (leptons[0]).electronID("mvaTrigV0")
+        eSihih[0]  = (leptons[0]).sigmaIetaIeta()
+        eHOverE[0] = (leptons[0]).hadronicOverEm()
+        eDphi[0]   = (leptons[0]).deltaEtaSuperClusterTrackAtVtx()
+        eDeta[0]   = (leptons[0]).deltaPhiSuperClusterTrackAtVtx()
         
     chIso = (leptons[0]).userIsolation(pat.PfChargedHadronIso)
     nhIso = (leptons[0]).userIsolation(pat.PfNeutralHadronIso)
-    gIso  = (leptons[0]).userIsolation(pat.PfGammaIso)
-    lepIso[0] = (chIso + nhIso + gIso)/lepEt[0] 
-    
+    phIso = (leptons[0]).userIsolation(pat.PfGammaIso)
+    puIso = (leptons[0]).userIsolation(pat.PfPUChargedHadronIso)
+      
+    if runMu :
+        lepIso[0] = (chIso + max(0.0, nhIso + phIso - 0.5*puIso))/(leptons[0]).pt()
+    else:
+        AEff = (leptons[0]).userFloat('AEff')
+        lepIso[0] = (chIso + max(0.0, nhIso + phIso - rho*AEff))/(leptons[0]).pt()
+        
+    lepIsoUncorr[0] = (chIso + nhIso + phIso)/(leptons[0]).pt()
     njets[0] = len(jets)
     sumEt = leptons[0].pt() + metObj.pt()
-    #sumEt4jets = sumEt
     
     lepton_vector = TLorentzVector()
     lepton_vector.SetPtEtaPhiM( leptons[0].pt(), leptons[0].eta(), leptons[0].phi(), leptons[0].mass() )
@@ -730,13 +787,16 @@ for event in events:
     ZPt = 0
 
     jet_p4 = []
-    for jet in jets :   
+    for jet in jets :
+        if jet.pt() < jetPtMin: continue
         jetEt[nj] = jet.pt()
         sumJetPt += jet.pt()
         sumJetE += jet.energy()
         jet_vector = TLorentzVector()
         jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
-        jet_p4.append(jet_vector) 
+        
+        jet_p4.append(jet_vector)
+        #if jet_vector.Pt() != 0:
         minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
               
         if options.data:
@@ -770,8 +830,7 @@ for event in events:
                     if highestPt < threeJets.Perp():
                         M3 = threeJets.M()
                         highestPt=threeJets.Perp()
-        #print('M3', M3)
-        m3[0] = M3
+    m3[0] = M3
 
     # empty the list for the next event
     del jet_p4[:]
@@ -785,7 +844,8 @@ for event in events:
             ca8jet_vector.SetPtEtaPhiM( ca8jet.pt(), ca8jet.eta(), ca8jet.phi(), ca8jet.mass() )
             #print('ca8jets', len(jets_ca8),'ak5jets', len(jets))
             
-            for ak5jet in jets :                
+            for ak5jet in jets :
+                if ak5jet.pt() < jetPtMin: continue
                 ak5jet_vector = TLorentzVector()
                 ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
                 if ak5jet_vector.DeltaR(ca8jet_vector) < 0.3:
@@ -810,7 +870,8 @@ for event in events:
 
             #min dR b/w a fat jet and b-tag jet
             minDR_bjetV = 5.0
-            for ak5jet in jets :                
+            for ak5jet in jets :
+                if ak5jet.pt() < jetPtMin: continue
                 ak5jet_vector = TLorentzVector()
                 ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
                 if ntagsCSVM > 0 and  nVtags > 0:
@@ -890,14 +951,14 @@ for event in events:
     ht[0] = sumEt
     nTagsCSVM[0] = ntagsCSVM
     nVTags[0] = nVtags    
-    minDR_je[0] = minDeltaR_lepjet
-    
+    minDR_je[0] = minDeltaR_lepjet    
     met_vector = TLorentzVector()
     met_vector.SetPxPyPzE( metObj.px(), metObj.py(), metObj.pz(), metObj.et())
     deltaPhiMETe[0] = lepton_vector.DeltaPhi( met_vector )
     leadingJetVector = TLorentzVector()
     leadingJetVector.SetPxPyPzE( jets[0].px(), jets[0].py(), jets[0].pz(), jets[0].energy())
-    deltaPhiMETLeadingJet[0] = met_vector.DeltaPhi( leadingJetVector )
+    if leadingJetVector.Pt() >= jetPtMin:
+        deltaPhiMETLeadingJet[0] = met_vector.DeltaPhi( leadingJetVector )
     
     # Now loop over the jets, and figure out how many tags are per event
     t.Fill()
