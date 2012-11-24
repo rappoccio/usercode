@@ -655,7 +655,7 @@ for event in events:
 
     #########################
     
-    if leptons[0].pt() < lepPtMin : continue
+    if leptons[0].pt() <= lepPtMin : continue
     
     # store the trigger paths
     if runMu:
@@ -737,29 +737,35 @@ for event in events:
     tensor = TMatrix(3,3)
     # mxx
     tensor[0][0] = leptons[0].px()*leptons[0].px() + metObj.px()*metObj.px()
-    for jet in jets: tensor[0][0]+=jet.px()*jet.px()
+    for jet in jets:
+        if jet.pt() > jetPtMin: tensor[0][0]+=jet.px()*jet.px()
     tensor[0][0]/=sum
     # myy
     tensor[1][1] = leptons[0].py()*leptons[0].py() + metObj.py()*metObj.py()
-    for jet in jets: tensor[1][1]+=jet.py()*jet.py()
+    for jet in jets:
+        if jet.pt() > jetPtMin: tensor[1][1]+=jet.py()*jet.py()
     tensor[1][1]/=sum
     # mzz
     tensor[2][2] = leptons[0].pz()*leptons[0].pz() + metObj.pz()*metObj.pz()
-    for jet in jets: tensor[2][2]+=jet.pz()*jet.pz()
+    for jet in jets:
+        if jet.pt() > jetPtMin: tensor[2][2]+=jet.pz()*jet.pz()
     tensor[2][2]/=sum
     # mxy
     tensor[0][1] = leptons[0].px()*leptons[0].py() + metObj.px()*metObj.py()
-    for jet in jets: tensor[0][1]+=jet.px()*jet.py()
+    for jet in jets:
+        if jet.pt() > jetPtMin: tensor[0][1]+=jet.px()*jet.py()
     tensor[0][1]/=sum
     tensor[1][0] = tensor[0][1]
     # mxz
     tensor[0][2] = leptons[0].px()*leptons[0].pz() + metObj.px()*metObj.pz()
-    for jet in jets: tensor[0][2]+=jet.px()*jet.pz()
+    for jet in jets:
+        if jet.pt() > jetPtMin: tensor[0][2]+=jet.px()*jet.pz()
     tensor[0][2]/=sum
     tensor[2][0] = tensor[0][2]
     # myz
     tensor[1][2] = leptons[0].py()*leptons[0].pz() + metObj.py()*metObj.pz()
-    for jet in jets: tensor[1][2]+=jet.py()*jet.pz()
+    for jet in jets:
+        if jet.pt() > jetPtMin: tensor[1][2]+=jet.py()*jet.pz()
     tensor[1][2]/=sum
     tensor[2][1] = tensor[1][2]
 
@@ -788,7 +794,7 @@ for event in events:
 
     jet_p4 = []
     for jet in jets :
-        if jet.pt() < jetPtMin: continue
+        if jet.pt() <= jetPtMin: continue
         jetEt[nj] = jet.pt()
         sumJetPt += jet.pt()
         sumJetE += jet.energy()
@@ -796,7 +802,6 @@ for event in events:
         jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
         
         jet_p4.append(jet_vector)
-        #if jet_vector.Pt() != 0:
         minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
               
         if options.data:
@@ -845,7 +850,7 @@ for event in events:
             #print('ca8jets', len(jets_ca8),'ak5jets', len(jets))
             
             for ak5jet in jets :
-                if ak5jet.pt() < jetPtMin: continue
+                if ak5jet.pt() <= jetPtMin: continue
                 ak5jet_vector = TLorentzVector()
                 ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
                 if ak5jet_vector.DeltaR(ca8jet_vector) < 0.3:
@@ -862,7 +867,7 @@ for event in events:
             mu = max(subjet1M,subjet2M) / ca8jet.correctedJet("Uncorrected").mass()
 
             # widen to accomodate Higgs
-            if (WjetM[cj] < 150 and WjetM[cj] > 50) and jetEt_ca8[cj] > 150:
+            if (WjetM[cj] < 150 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
                 WjetMu[cj] = mu
             
             if mu < 0.4 and (WjetM[cj] < 150 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
@@ -871,7 +876,7 @@ for event in events:
             #min dR b/w a fat jet and b-tag jet
             minDR_bjetV = 5.0
             for ak5jet in jets :
-                if ak5jet.pt() < jetPtMin: continue
+                if ak5jet.pt() <= jetPtMin: continue
                 ak5jet_vector = TLorentzVector()
                 ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
                 if ntagsCSVM > 0 and  nVtags > 0:
@@ -946,8 +951,9 @@ for event in events:
 
             cj = cj + 1
 
-    #fill the rest of variables        
-    centrality[0] = sumJetPt/sumJetE    
+    #fill the rest of variables
+    if sumJetE != 0:
+        centrality[0] = sumJetPt/sumJetE    
     ht[0] = sumEt
     nTagsCSVM[0] = ntagsCSVM
     nVTags[0] = nVtags    
@@ -956,11 +962,10 @@ for event in events:
     met_vector.SetPxPyPzE( metObj.px(), metObj.py(), metObj.pz(), metObj.et())
     deltaPhiMETe[0] = lepton_vector.DeltaPhi( met_vector )
     leadingJetVector = TLorentzVector()
-    leadingJetVector.SetPxPyPzE( jets[0].px(), jets[0].py(), jets[0].pz(), jets[0].energy())
-    if leadingJetVector.Pt() >= jetPtMin:
+    if leadingJetVector.Pt() > jetPtMin:
+        leadingJetVector.SetPxPyPzE( jets[0].px(), jets[0].py(), jets[0].pz(), jets[0].energy())
         deltaPhiMETLeadingJet[0] = met_vector.DeltaPhi( leadingJetVector )
     
-    # Now loop over the jets, and figure out how many tags are per event
     t.Fill()
 # Done processing the events!
 # Stop our timer
