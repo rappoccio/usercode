@@ -36,17 +36,19 @@ options = [
     
 ##     [cPath+'/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/7000854d42c24f65de61849943369a7e', 'TTJets_MassiveBinDECAY'],
 ##     [cPath+'/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v2/38eddd5ef342de22cab5bd8e80290480',            'WJetsToLNu_v1'],
-##     [cPathD+'/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v1_sv1/38eddd5ef342de22cab5bd8e80290480',       'WJetsToLNu_v2'], # --> from Dinko
-##     [cPath+'/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v2/a60a0dd9b60ef43d8211bd3e6a37948a',       'DYJetsToLL_M-50'],  # missing 1 file
+##     [cPathD+'/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v1_sv1/38eddd5ef342de22cab5bd8e80290480',       'WJetsToLNu_v2'], 
+##     [cPath+'/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v2/a60a0dd9b60ef43d8211bd3e6a37948a',       'DYJetsToLL_M-50'],  
 ##     [cPath+'/T_s-channel_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v2/c490bef7a116783745a0fc2ba7f5829b',              'T_s-channel'],
 ##     [cPath+'/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v2/3634d5bfbe2330f532661942ded293f4',           'Tbar_s-channel'],
 ##     [cPath+'/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v2/c114355b592a64421cb88659f78c20a0',          'T_tW-channel'],
 ##     [cPath+'/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v2/1108f988efee6a1b56cf8d0589ec1413',       'Tbar_tW-channel'],
-##     [cPath+'/T_t-channel_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v2/f6badf5a99a305089a615312bdc01cd8',              'T_t-channel'],     # --> from Dinko
+##     [cPath+'/T_t-channel_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v2/f6badf5a99a305089a615312bdc01cd8',              'T_t-channel'],     
 ##     [cPathD+'/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v1_sv1/b2920ed0e9546a75cd957af99944e3fd',      'Tbar_t-channel'],  
 ##     [cPath+'/WW_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/3eae0fe03c18a4e6b1efa738288ae25a',                      'WW'],
 ##     [cPath+'/ZZ_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/9e3db7760160cf554941b3d39faaff0f',                      'ZZ'],
 ##     [cPath+'/WZ_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/ae567d5fa2b1517ba8c8f2c9b67b3086',                      'WZ'], # no PAT tuple
+##     [cPathD+'/TTWJets_8TeV-madgraph/BPrimeEDMNtuples_53x_v1_sv1/1113526d4b87e89003d8033323f9ae66',                             'TTWJets'],
+##     [cPathD+'/TTZJets_8TeV-madgraph_v2/BPrimeEDMNtuples_53x_v1_sv1/cbbbb92a19d127b8966f23067be98b6a',                          'TTZJets'],
 ##     #[cPath+'/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/7000854d42c24f65de61849943369a7e',     'TTJets_matchingdown'], # missisng 2 files
 ##     [cPathD+'/TTJets_matchingup_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v1_sv1/7000854d42c24f65de61849943369a7e',  'TTJets_matchingup'], #--> from Dinko
 ##     [cPath+'/TTJets_scaledown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/7000854d42c24f65de61849943369a7e',        'TTJets_scaledown'],
