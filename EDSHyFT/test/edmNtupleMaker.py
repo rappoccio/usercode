@@ -28,11 +28,6 @@ options.register ('runData',
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
                   "if running over data (1) else (0)")
-options.register('runLoose',
-                 0,
-                 VarParsing.multiplicity.singleton,
-                 VarParsing.varType.int,
-                 "Run extra sequence(1) for loose selction  or ignore them (0)")
 
 options.register('btagMap',
 		 'BprimeBprimeToTWTWinc_M-750_TuneZ2star_8TeV-madgraph',
@@ -48,8 +43,6 @@ if options.runData == 1:
     runData = True
 else: runData  = False
 
-runNoEleID = options.runLoose
-
 inputCutsToIgnore = []
 if options.ignoreTrigger == 1 :
     inputCutsToIgnore.append( 'Trigger' )
@@ -57,7 +50,7 @@ if options.ignoreTrigger == 1 :
 ## Source    
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-    '/store/user/lpctlbsm/cjenkins/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2_B/c04f3b4fa74c8266c913b71e0c74901d/tlbsm_53x_v2_mc_10_1_0GF.root',
+    '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-650_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M650_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TSBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_1_1_6xj.root',
     )
                             )                           
 
@@ -159,7 +152,8 @@ process.pfTupleEle = cms.EDFilter('EDSHyFTSelector',
 process.pfTupleEleLoose = process.pfTupleEle.clone()
 process.pfTupleEleLoose.shyftSelection.muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose')
 process.pfTupleEleLoose.shyftSelection.electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose')
-process.pfTupleEleLoose.shyftSelection.eRelIso = cms.double( 0.5)
+process.pfTupleEleLoose.shyftSelection.useNoPFIso = cms.bool(True)
+process.pfTupleEleLoose.shyftSelection.eRelIso = cms.double( 10.0)
 process.pfTupleEleLoose.shyftSelection.useNoID  = cms.bool(True)
 process.pfTupleEleLoose.shyftSelection.identifier = cms.string('AK5 PF Loose electrons')
 
@@ -190,7 +184,8 @@ process.pfTupleMu.shyftSelection.muPlusJets = cms.bool(True)
 process.pfTupleMuLoose = process.pfTupleMu.clone()
 process.pfTupleMuLoose.shyftSelection.muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose')
 process.pfTupleMuLoose.shyftSelection.electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose')
-process.pfTupleMuLoose.shyftSelection.muRelIso = cms.double(0.5)
+process.pfTupleMuLoose.shyftSelection.useNoPFIso = cms.bool(True)
+process.pfTupleMuLoose.shyftSelection.eRelIso = cms.double( 10.0)
 process.pfTupleMuLoose.shyftSelection.identifier = cms.string('AK5 PF Loose muons')
 
 ## mu+jets with ca8jets
