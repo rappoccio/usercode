@@ -33,7 +33,7 @@ options = [
 ##     [cPath+'/BprimeBprimeToBZBZinc_M-700_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/cb1ba62717d878e006efbfa43d0e9a5f',   'BprimeBprimeToBZBZinc_M-700'],
 ##     [cPath+'/BprimeBprimeToBZBZinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77234f1150c8925def5b05c662d4685f',   'BprimeBprimeToBZBZinc_M-750'],
 ##     [cPath+'/BprimeBprimeToBZBZinc_M-800_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/b0715275d100cd8919ea58ee7708f9ed',   'BprimeBprimeToBZBZinc_M-800'],
-    
+
 ##     [cPath+'/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/7000854d42c24f65de61849943369a7e', 'TTJets_MassiveBinDECAY'],
 ##     [cPath+'/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v2/38eddd5ef342de22cab5bd8e80290480',            'WJetsToLNu_v1'],
 ##     [cPathD+'/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v1_sv1/38eddd5ef342de22cab5bd8e80290480',       'WJetsToLNu_v2'], 
@@ -50,9 +50,13 @@ options = [
 ##     [cPathD+'/TTWJets_8TeV-madgraph/BPrimeEDMNtuples_53x_v1_sv1/1113526d4b87e89003d8033323f9ae66',                             'TTWJets'],
 ##     [cPathD+'/TTZJets_8TeV-madgraph_v2/BPrimeEDMNtuples_53x_v1_sv1/cbbbb92a19d127b8966f23067be98b6a',                          'TTZJets'],
 ##     #[cPath+'/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/7000854d42c24f65de61849943369a7e',     'TTJets_matchingdown'], # missisng 2 files
-##     [cPathD+'/TTJets_matchingup_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v1_sv1/7000854d42c24f65de61849943369a7e',  'TTJets_matchingup'], #--> from Dinko
+##     [cPathD+'/TTJets_matchingup_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v1_sv1/7000854d42c24f65de61849943369a7e',  'TTJets_matchingup'], 
 ##     [cPath+'/TTJets_scaledown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/7000854d42c24f65de61849943369a7e',        'TTJets_scaledown'],
 ##     [cPath+'/TTJets_scaleup_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/7000854d42c24f65de61849943369a7e',          'TTJets_scaleup'],
+
+    [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-13Jul2012-v1/275c5fe237cf9316feedf3ccd300c5b0',     'SingleEle-Run2012A-13Jul2012'],
+    [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/275c5fe237cf9316feedf3ccd300c5b0',     'SingleEle-Run2012A-06Aug2012'],
+    
     ]
 command = 'python listFiles.py --path={0:s} --outputText={1:s} '
 
