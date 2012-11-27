@@ -35,7 +35,7 @@ wplusjetsAnalysis = cms.PSet(
     pfEleSrc  = cms.InputTag("particleFlow"),
     useNoPFIso = cms.bool(False),
     useNoID  = cms.bool(False),
-    
+    useMuonTightID = cms.bool(False),
     # kinematic cuts
     minJets        = cms.int32( 1 ),
     muPlusJets     = cms.bool( True ),

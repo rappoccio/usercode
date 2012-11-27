@@ -141,8 +141,8 @@ class SHyFTSelector : public EventSelector {
       bool           useData_;    
       bool           useNoPFIso_;      
       bool           useNoID_;   
-     
-      edm::InputTag pfEleSrc_;
+      bool           useMuonTightID_;
+      //edm::InputTag pfEleSrc_;
 
       // Jet energy corrections object
       std::vector<std::string> jecPayloads_;

@@ -60,7 +60,8 @@ SHyFTSelector::SHyFTSelector( edm::ParameterSet const & params ) :
     useData_         (params.getParameter<bool>("useData")),
     useNoPFIso_      (params.getParameter<bool>("useNoPFIso")),
     useNoID_         (params.getParameter<bool>("useNoID")),
-    pfEleSrc_       (params.getParameter<edm::InputTag>( "pfEleSrc" )),
+    useMuonTightID_  (params.getParameter<bool>("useMuonTightID")),
+    //pfEleSrc_       (params.getParameter<edm::InputTag>( "pfEleSrc" )),
     jecPayloads_     (params.getParameter<std::vector<std::string> >("jecPayloads"))
 {
    electronIdVeto_.setUseData(useData_);
@@ -149,7 +150,6 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
     cleanedJets_.clear();
     allMuons_.clear();
     selectedMuons_.clear();
-    //oldElectrons_.clear();
     looseMuons_.clear();
     looseElectrons_.clear();
     selectedMETs_.clear();
@@ -296,13 +296,12 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                     imuon != muonEnd; ++imuon ) { 
 
                 bool passIso(0);
+                bool passID(0);
                 double chIso   = imuon->userIsolation(pat::PfChargedHadronIso);
                 double nhIso   = imuon->userIsolation(pat::PfNeutralHadronIso);
                 double phIso   = imuon->userIsolation(pat::PfGammaIso);
                 double puIso   = imuon->userIsolation(pat::PfPUChargedHadronIso);
                 double relIso  = (chIso+ max(0.,nhIso+phIso - 0.5*puIso)) /imuon->pt();
-                
-                //if ( !imuon->isGlobalMuon() ) continue;
                               
                 //Muon Selection for mu+jets
                 //-------------------------- 
@@ -311,11 +310,23 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                 
                 // Loose cuts: in the vector-like quark analysis, we will use the loose muon selection from muon POG without isolation cut.
                 bool passLoose = imuon->isPFMuon() && ( imuon->isGlobalMuon() || imuon->isTrackerMuon() );
-               
-                if ( imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && passLoose && passIso ) {                   
+                bool passTight = (imuon->isPFMuon() && 
+                                  imuon->isGlobalMuon() && 
+                                  imuon->normChi2() < 10 && 
+                                  imuon->track()->hitPattern().trackerLayersWithMeasurement() > 5 &&
+                                  imuon->globalTrack()->hitPattern().numberOfValidMuonHits() > 0 &&
+                                  fabs(imuon->dB()) < dxy_ &&
+                                  fabs(imuon->vertex().z() - PVz) < 0.5 &&
+                                  imuon->innerTrack()->hitPattern().numberOfValidPixelHits() > 0 &&
+                                  imuon->numberOfMatchedStations() > 1);
+
+                if(useMuonTightID_){ passID = passTight;}
+                else {passID = passLoose;}
+
+                if ( imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && passID && passIso ) {                   
                    selectedMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
                 } else {
-                    // Loose cuts : currently the same passLoose is applied but pt and iso can be different.
+                    // Loose cuts : currently the same passLoose is applied but pt, eta and iso can be different.
                    if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ && passLoose && relIso < 0.2) {
                       looseMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
                    }
