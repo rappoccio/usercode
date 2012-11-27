@@ -14,8 +14,15 @@ options = [
 ##     [cPath+'/BprimeBprimeToTWTWinc_M-550_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/ea4ad54b428dc29e524c10137de170d5',   'BprimeBprimeToTWTWinc_M-550'],
 ##     [cPath+'/BprimeBprimeToTWTWinc_M-650_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/02895d388b1ea79e62432deaf0604ab7',   'BprimeBprimeToTWTWinc_M-650'],
 ##     [cPath+'/BprimeBprimeToTWTWinc_M-700_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/ce6202f7b26fd2baae775ae4de8fa21a',   'BprimeBprimeToTWTWinc_M-700'],
-##     #[cPath+'/BprimeBprimeToTWTWinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/ce6202f7b26fd2baae775ae4de8fa21a',   'BprimeBprimeToTWTWinc_M-750'],# no PAT tuple
+##     [cPath+'/BprimeBprimeToTWTWinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/6b281b00834132716e366297d2f87441',   'BprimeBprimeToTWTWinc_M-750'],
 ##     [cPath+'/BprimeBprimeToTWTWinc_M-800_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/77ab2b6b752dfb20b5b7d3bed3a54008',   'BprimeBprimeToTWTWinc_M-800'],
+##        [cPath+'/BprimeBprimeToBHBHinc_M-450_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/1600b512286b36e44296e5a52ac1874d',   'BprimeBprimeToBHBHinc_M-450'],
+##        [cPath+'/BprimeBprimeToBHBHinc_M-500_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9b410e411f2bd32c86bc14c0e914140a',   'BprimeBprimeToBHBHinc_M-500'],
+##        [cPath+'/BprimeBprimeToBHBHinc_M-600_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/bf4aa553730e6059dcecab262917b0ca',   'BprimeBprimeToBHBHinc_M-600'],
+##        [cPath+'/BprimeBprimeToBHBHinc_M-650_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/528d6a26f92c7b1aad0ea9b6399b17ab',   'BprimeBprimeToBHBHinc_M-650'],
+##        [cPath+'/BprimeBprimeToBHBHinc_M-700_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/738b6d58f366ae29a27fee06354ea504',   'BprimeBprimeToBHBHinc_M-700'],
+##        [cPath+'/BprimeBprimeToBHBHinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/34a67765527fa7235d3c939065809cc0',   'BprimeBprimeToBHBHinc_M-750'],
+##        [cPath+'/BprimeBprimeToBHBHinc_M-800_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/1e023c40e282cb502acaf509a19be920',   'BprimeBprimeToBHBHinc_M-800'],
 ##     [cPath+'/BprimeBprimeToBHBZinc_M-500_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/e0c9d2b3fd71a450a7976751820f2413',   'BprimeBprimeToBHBZinc_M-500'],
 ##     [cPath+'/BprimeBprimeToBHBZinc_M-550_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/e09b379c51c91341d0ce846afc4b509d',   'BprimeBprimeToBHBZinc_M-550'],
 ##     [cPath+'/BprimeBprimeToBHBZinc_M-600_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/0701bb8b6fc0451e1f080397a5c5f3a3',   'BprimeBprimeToBHBZinc_M-600'],
@@ -54,8 +61,8 @@ options = [
 ##     [cPath+'/TTJets_scaledown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/7000854d42c24f65de61849943369a7e',        'TTJets_scaledown'],
 ##     [cPath+'/TTJets_scaleup_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/7000854d42c24f65de61849943369a7e',          'TTJets_scaleup'],
 
-    [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-13Jul2012-v1/275c5fe237cf9316feedf3ccd300c5b0',     'SingleEle-Run2012A-13Jul2012'],
-    [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/275c5fe237cf9316feedf3ccd300c5b0',     'SingleEle-Run2012A-06Aug2012'],
+##    [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-13Jul2012-v1/275c5fe237cf9316feedf3ccd300c5b0',     'SingleEle-Run2012A-13Jul2012'],
+##    [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/275c5fe237cf9316feedf3ccd300c5b0',     'SingleEle-Run2012A-06Aug2012'],
     
     ]
 command = 'python listFiles.py --path={0:s} --outputText={1:s} '
