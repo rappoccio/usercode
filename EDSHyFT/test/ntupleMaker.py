@@ -88,6 +88,11 @@ parser.add_option('--lepPtMin', metavar='F', type='float', action='store',
                   dest='lepPtMin',
                   help='lepton pt threshold')
 
+parser.add_option("--runDataLoose", action='store_true',
+                  default=False,
+                  dest="runDataLoose",
+                  help="to run over loose leptons in data")
+
 # Parse and get arguments
 (options, args) = parser.parse_args()
 
@@ -96,6 +101,7 @@ lepPtMin = options.lepPtMin
 runMu = options.runMuons
 bprimeGenInfo = options.useBPrimeGenInfo
 dcache = options.onDcache
+runDataLoose = options.runDataLoose
 
 print('options', options)
 
@@ -103,7 +109,14 @@ if options.runMuons:
     lepStr = 'Mu'
 else:
     lepStr = 'Ele'
+
+condStr = ''    
+if runDataLoose and options.data:
+    condStr = 'Loose'
     
+print('lepType', lepStr)
+print('Loose?', condStr)
+ 
 # JEC
 jecScale = 0.0
 if options.JES == 'up' :
@@ -148,21 +161,21 @@ jecUnc = JetCorrectionUncertainty( jecParStr )
 # Get the FWLite "Events"
 events = Events (files)
 
-# Get a "handle" (i.e. a smart pointer) to the vector of jets
+# Get a "handle" (i.e. a smart pointer) to the vector of jets    
 muonsH  = Handle ("std::vector<pat::Muon>")
-muonsLabel = ("pfTuple"+lepStr, "muons")
+muonsLabel = ("pfTuple"+lepStr+condStr, "muons")
 
 electronsH  = Handle ("std::vector<pat::Electron>")
-electronsLabel = ("pfTuple"+lepStr, "electrons")
+electronsLabel = ("pfTuple"+lepStr+condStr, "electrons")
       
 jetsH = Handle ("std::vector<pat::Jet>")
-jetsLabel = ("pfTuple"+lepStr, "jets")
+jetsLabel = ("pfTuple"+lepStr+condStr, "jets")
 
 c8aPruneJetsH = Handle ("std::vector<pat::Jet>")
 c8aPruneJetsLabel = ("pfTuple"+lepStr+"CA8Pruned", "jets")
 
 metH = Handle ("std::vector<pat::MET>")
-metLabel = ("pfTuple"+lepStr, "MET")
+metLabel = ("pfTuple"+lepStr+condStr, "MET")
 
 c8aPruneMetH = Handle ("std::vector<pat::MET>")
 c8aPruneMetLabel = ("pfTuple"+lepStr+"CA8Pruned", "MET")
@@ -649,10 +662,10 @@ for event in events:
         #apply the SF and add back the jets and also correct the MET
         metP4.SetPx(metP4.px() - uncorrJet.px() * jetScale)
         metP4.SetPy(metP4.py() - uncorrJet.py() * jetScale)
-      
+        
     #Reset MET
     metObj.setP4(metP4)
-
+    
     #########################
     
     if leptons[0].pt() <= lepPtMin : continue
