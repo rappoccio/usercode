@@ -276,6 +276,9 @@ if runMu:
     
     trigSigMuIso_path = array('i', [0])
     t.Branch('trigSigMuIso_path', trigSigMuIso_path, 'trigSigMuIso_path/I')
+
+    trigSigMuIsoHad_path = array('i', [0])
+    t.Branch('trigSigMuIsoHad_path', trigSigMuIsoHad_path, 'trigSigMuIsoHad_path/I')
 else:
     trigEleStop_path = array('i', [0])
     t.Branch('trigEleStop_path', trigEleStop_path, 'trigEleStop_path/I')
@@ -338,7 +341,7 @@ t.Branch('nVertices',nvertices,'nVertices/I')
 njets = array('i',[0])
 t.Branch('nJets',njets,'nJets/I')
 
-max_nJets = 20
+max_nJets = 30
 jetEt = array('d',max_nJets*[0.])
 t.Branch('jetEt',jetEt,'jetEt[nJets]/D')
 
@@ -541,18 +544,21 @@ for event in events:
         electrons = electronsH.product()
 
     #Require exactly one lepton
-    if len(muons) == 0 and len(electrons) == 0:
-        continue
+    if  muonsH.isValid() and electronsH.isValid():
+        if len(muons) == 0 and len(electrons) == 0:
+            continue
     
     nMuons = 0
-    for imu in muons:
-        if imu.pt() > lepPtMin:
-            nMuons += 1    
+    if  muonsH.isValid():
+        for imu in muons:
+            if imu.pt() > lepPtMin:
+                nMuons += 1    
            
     nElectrons = 0
-    for iel in electrons:
-        if iel.pt() > lepPtMin:
-            nElectrons += 1
+    if electronsH.isValid():
+        for iel in electrons:
+            if iel.pt() > lepPtMin:
+                nElectrons += 1
             
     # remove any remaining dilepton event...
     if nElectrons+nMuons > 1 :
@@ -674,14 +680,16 @@ for event in events:
     if runMu:
             trigSigMuNonIso_path[0] = -1
             trigSigMuIso_path[0] = -1
+            trigSigMuIsoHad_path[0] = -1
             mu40_eta2p1 = "HLT_Mu40_eta2p1_v"
             mu24_Iso    = "HLT_IsoMu24_eta2p1_v"
+            mu17_eta2p1_Had = "HLT_IsoMu17_eta2p1_TriCentral"
     else:        
         trigEleStop_path[0] = -1
         trigEleHad_path[0]  = -1
         trigSigEle_path[0]  = -1
         eleStop   = "HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet"
-        eleHad    = "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet"
+        eleHad    = "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentral"
         singleEle = "HLT_Ele27_WP80_v"
 
     trigPaths = trigObj.paths() #TriggerPathCollection
@@ -693,11 +701,14 @@ for event in events:
             if mu24_Iso in ipath.name():
                 trigSigMuIso_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
                 #if trigSigMuIso_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
+            if mu17_eta2p1_Had+"PFJet30_v" in ipath.name() or mu17_eta2p1_Had+"PFNoPUJet30_v" or mu17_eta2p1_Had+"PFNoPUJet30_30_20_v" or mu17_eta2p1_Had+"PFNoPUJet45_35_25_v":
+                trigSigMuIsoHad_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
+                #if trigSigMuIso_path[0]==1: print("your path ", ipath.name(), "was run and accepted")    
         else:    
             if eleStop+"30_v" in ipath.name() or eleStop+"45_35_25_v" in ipath.name() or eleStop+"50_40_30_v" in ipath.name():
                 trigEleStop_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
                 #if trigEleStop_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
-            if eleHad+"30_v" in ipath.name() or eleHad+"30_30_20_v" in ipath.name():
+            if eleHad+"PFJet30_v" in ipath.name() or eleHad+"PFNoPUJet30_v" in ipath.name() or eleHad+"PFNoPUJet30_30_20_v" in ipath.name()or eleHad+"PFNoPUJet45_35_25_v" in ipath.name():
                 trigEleHad_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
                 #if trigEleHad_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
             if singleEle in ipath.name():

@@ -20,20 +20,39 @@ options = VarParsing ('python')
 
 options.register('ignoreTrigger',
                  1,
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "Ignore trigger in selection")
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
+                 "Ignore trigger in selection")
+
 options.register ('runData',
-                  0,
+                  1,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
                   "if running over data (1) else (0)")
 
 options.register('btagMap',
-		 'BprimeBprimeToTWTWinc_M-750_TuneZ2star_8TeV-madgraph',
-		 VarParsing.multiplicity.singleton,
-		 VarParsing.varType.string,
-		 "BTag Efficiency Map File")
+                 'BprimeBprimeToTWTWinc_M-750_TuneZ2star_8TeV-madgraph',
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.string,
+                 "BTag Efficiency Map File")
+
+options.register('useMuTrigs',
+                 0,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
+                 "Use muon triggers (1) or not (0)")
+    
+options.register('useEleTrigs',
+                 1,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
+                 "Use electron triggers (1) or not (0)")
+
+options.register('runEleQCDSamples',
+                 0,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
+                 "To run on only electron QCD samples (1) or not (0)")
                  
 options.parseArguments()
 
@@ -50,7 +69,9 @@ if options.ignoreTrigger == 1 :
 ## Source    
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-    '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-650_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M650_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TSBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_1_1_6xj.root',
+    'dcap:///pnfs/cms/WAX/11/store/results/B2G/SingleElectron/StoreResults-Run2012A-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/SingleElectron/USER/StoreResults-Run2012A-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/0000/FE2F7667-4728-E211-8F95-002618FDA263.root',
+    #'/store/user/lpctlbsm/cjenkins/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2/c04f3b4fa74c8266c913b71e0c74901d/tlbsm_53x_v2_mc_9_1_ysy.root',
+    #'/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-650_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M650_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TSBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_1_1_6xj.root',
     )
                             )                           
 
@@ -108,6 +129,47 @@ if not runData:
     
     process.GenInfo = cms.EDProducer('BoostedParticles')
 
+
+#____________________________________Trigger Filter________________________________________
+mutopTrig = 'HLT_IsoMu17_eta2p1_TriCentral'
+estopTrig = 'HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentral'
+etopTrig  = 'HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentral'
+
+from HLTrigger.HLTfilters.hltHighLevel_cfi import *
+if options.useMuTrigs == 0 and options.useEleTrigs == 0 :
+    process.hltSelectionMu = cms.Sequence()
+    process.hltSelectionEle = cms.Sequence()
+else :
+    process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = [mutopTrig+'PFJet30_v*',
+                                                                                                       mutopTrig+'PFNoPUJet30_v*',
+                                                                                                       mutopTrig+'PFNoPUJet30_30_20_v*',
+                                                                                                       mutopTrig+'PFNoPUJet45_35_25_v*',
+                                                                                                       mutopTrig+'PFNoPUJet50_40_30_v*',
+                                                                                                       'HLT_IsoMu24_eta2p1_v*',
+                                                                                                       'HLT_Mu40_eta2p1_v*',
+                                                                                                       ])
+    process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths =  [etopTrig+'PFJet30_v*',
+                                                                                                         etopTrig+'PFJet50_40_30_v*',
+                                                                                                         etopTrig+'PFNoPUJet30_v*',
+                                                                                                         etopTrig+'PFNoPUJet30_30_20_v*',
+                                                                                                         etopTrig+'PFNoPUJet45_35_25_v*',
+                                                                                                         etopTrig+'PFNoPUJet50_40_30_v*',
+                                                                                                         estopTrig+'PFNoPUJet30_v*',
+                                                                                                         estopTrig+'PFNoPUJet45_35_25_v*', 
+                                                                                                         estopTrig+'PFNoPUJet50_40_30_v*',
+                                                                                                         'HLT_Ele27_WP80_v*',   
+                                                                                                         ])
+    process.hltSelectionMu.throw = False
+    process.hltSelectionEle.throw = False
+
+
+    if options.useMuTrigs == 0 and options.useEleTrigs == 1 :
+        process.hltSelectionMu =  cms.Sequence()
+    elif options.useMuTrigs == 1 and options.useEleTrigs == 0 :
+        process.hltSelectionEle =  cms.Sequence()
+
+
+ 
 #_____________________________________PF__________________________________________________
 
 
@@ -209,15 +271,28 @@ process.pfTupleMuMetRes110.shyftSelection.identifier = cms.string('PFMETRES110')
 process.p0 = cms.Path( process.patTriggerDefaultSequence )
 
 if runData:
-    process.p1 = cms.Path( process.pfTupleEle)
-    process.p2 = cms.Path( process.pfTupleMu)
-    process.p3 = cms.Path( process.pfTupleEleCA8Pruned)
-    process.p4 = cms.Path( process.pfTupleMuCA8Pruned)
-    process.p5 = cms.Path( process.pfTupleEleLoose)
-    process.p6 = cms.Path( process.pfTupleMuLoose)
+    process.p1 = cms.Path( process.hltSelectionEle * process.pfTupleEle)
+    process.p2 = cms.Path( process.hltSelectionMu * process.pfTupleMu)
+    process.p3 = cms.Path( process.hltSelectionEle * process.pfTupleEleCA8Pruned)
+    process.p4 = cms.Path( process.hltSelectionMu * process.pfTupleMuCA8Pruned)
+    process.p5 = cms.Path( process.hltSelectionEle * process.pfTupleEleLoose)
+    process.p6 = cms.Path( process.hltSelectionMu * process.pfTupleMuLoose)
     process.p7 = cms.Path()
     process.p8 = cms.Path()
     process.p9 = cms.Path()
+    process.p10 = cms.Path()
+    process.p11 = cms.Path()
+    
+elif options.runEleQCDSamples:
+    process.p1 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEle)
+    process.p2 = cms.Path()
+    process.p3 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleEleCA8Pruned)
+    process.p4 = cms.Path()
+    process.p5 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEleLoose)
+    process.p6 = cms.Path()
+    process.p7 = cms.Path( process.pileupReweightingProducer * process.GenInfo )
+    process.p8 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEleMetRes090)
+    process.p9 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEleMetRes110)
     process.p10 = cms.Path()
     process.p11 = cms.Path()
 else:
