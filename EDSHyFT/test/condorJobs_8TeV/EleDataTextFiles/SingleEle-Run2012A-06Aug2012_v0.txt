@@ -1,0 +1,8 @@
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/275c5fe237cf9316feedf3ccd300c5b0/edmTest_1_1_YCs.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/275c5fe237cf9316feedf3ccd300c5b0/edmTest_2_1_0sl.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/275c5fe237cf9316feedf3ccd300c5b0/edmTest_3_1_3rk.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/275c5fe237cf9316feedf3ccd300c5b0/edmTest_4_1_Cuk.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/275c5fe237cf9316feedf3ccd300c5b0/edmTest_5_1_ti7.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/275c5fe237cf9316feedf3ccd300c5b0/edmTest_6_1_AN7.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/275c5fe237cf9316feedf3ccd300c5b0/edmTest_7_1_wqE.root
+/pnfs/cms/WAX/11/store/user/lpctlbsm/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/275c5fe237cf9316feedf3ccd300c5b0/edmTest_8_1_K8s.root
