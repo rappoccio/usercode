@@ -62,22 +62,13 @@ options = [
     [cPathD+'/WW_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/9e3f42c8ee3a5f17b7caca37f495d0b6',                      'WW'],
     [cPathD+'/ZZ_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/25781fc03aed6941de2c00608448d699',                      'ZZ'],
 ##     [cPath+'/WZ_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/ae567d5fa2b1517ba8c8f2c9b67b3086',                      'WZ'], # no PAT tuple
-<<<<<<< drawListFiles.py
-##     [cPathD+'/TTWJets_8TeV-madgraph/BPrimeEDMNtuples_53x_v1_sv1/1113526d4b87e89003d8033323f9ae66',                             'TTWJets'],
-##     [cPathD+'/TTZJets_8TeV-madgraph_v2/BPrimeEDMNtuples_53x_v1_sv1/cbbbb92a19d127b8966f23067be98b6a',                          'TTZJets'],
-##     [cPath+'/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/7000854d42c24f65de61849943369a7e',     'TTJets_matchingdown'], 
-##     [cPathD+'/TTJets_matchingup_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v1_sv1/7000854d42c24f65de61849943369a7e',  'TTJets_matchingup'], 
-##     [cPath+'/TTJets_scaledown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/7000854d42c24f65de61849943369a7e',        'TTJets_scaledown'],
-##     [cPath+'/TTJets_scaleup_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/7000854d42c24f65de61849943369a7e',          'TTJets_scaleup'],
-=======
+
     [cPathD+'/TTWJets_8TeV-madgraph/BPrimeEDMNtuples_53x_v1_sv1/1113526d4b87e89003d8033323f9ae66',                              'TTWJets'],
     [cPathD+'/TTZJets_8TeV-madgraph_v2/BPrimeEDMNtuples_53x_v1_sv1/cbbbb92a19d127b8966f23067be98b6a',                           'TTZJets'],
     [cPathD+'/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/d95e55af553259cb72fbafcf4f1f2bdb',    'TTJets_matchingdown'],
     [cPathD+'/TTJets_matchingup_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v1_sv1/7000854d42c24f65de61849943369a7e',  'TTJets_matchingup'],
     [cPathD+'/TTJets_scaledown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v1_sv1/7000854d42c24f65de61849943369a7e',   'TTJets_scaledown'],
     [cPathD+'/TTJets_scaleup_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/d95e55af553259cb72fbafcf4f1f2bdb',         'TTJets_scaleup'],
->>>>>>> 1.1.2.10
-
 
     [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-13Jul2012-v1/275c5fe237cf9316feedf3ccd300c5b0',   'SingleEle-Run2012A-13Jul2012'],
     [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/275c5fe237cf9316feedf3ccd300c5b0',   'SingleEle-Run2012A-06Aug2012'],
