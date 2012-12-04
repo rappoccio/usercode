@@ -12,10 +12,14 @@ def get_num_input_files(filename):
 path='Unsplit/'
 
 textFiles = [
-    [path+'SingleEle-Run2012A-13Jul2012', 4],
-    [path+'SingleEle-Run2012B-13Jul2012', 16],
-    [path+'SingleEle-Run2012A-06Aug2012', 4],
-    [path+'SingleEle-Run2012C-24Aug2012', 4],
+    #[path+'SingleEle-Run2012A-13Jul2012', 4],
+    #[path+'SingleEle-Run2012B-13Jul2012', 16],
+    #[path+'SingleEle-Run2012A-06Aug2012', 4],
+    #[path+'SingleEle-Run2012C-24Aug2012', 4],
+    [path+'TTJets_matchingdown', 10],
+    [path+'TTJets_matchingup', 10],
+    [path+'TTJets_scaleup', 5],
+    [path+'TTJets_scaledown', 10],
     ]
 
 for file in textFiles:
