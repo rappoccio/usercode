@@ -59,8 +59,8 @@ for txt in `ls $INPATH`; do
             if test $counter -eq $PROCESS; then
                 echo "echo python ntupleMaker.py --data  --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}"
                 python ntupleMaker.py --data --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}
-                echo "echo python ntupleMaker.py --data  --runDataLoose --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}"
-                python ntupleMaker.py --data --runDataLoose --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}
+                echo "echo python ntupleMaker.py --data  --runDataLoose --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}_Loose"
+                python ntupleMaker.py --data --runDataLoose --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}_Loose
             fi
             let "counter+=1"
         fi
