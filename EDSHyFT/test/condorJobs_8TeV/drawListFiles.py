@@ -9,6 +9,7 @@ options = [
     [cPath+'/BprimeBprimeToBZTWinc_M-600_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/4fdda4306321856da59075dad73499e2',   'BprimeBprimeToBZTWinc_M-600'],
     [cPath+'/BprimeBprimeToBZTWinc_M-650_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/7170a863f2542c177d49ed84ed9421bc',   'BprimeBprimeToBZTWinc_M-650'],
     [cPath+'/BprimeBprimeToBZTWinc_M-700_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/ae7a781c7f8dcfce0a9c559f5f6adc18',   'BprimeBprimeToBZTWinc_M-700'],
+    [cPath+'/BprimeBprimeToBZTWinc_M-750_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/fc549314e4436ea2607408950864d3c2',   'BprimeBprimeToBZTWinc_M-750'],
     [cPath+'/BprimeBprimeToBZTWinc_M-800_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/329d9bff9b20d385310905e444bfc40f',   'BprimeBprimeToBZTWinc_M-800'],
     
     [cPath+'/BprimeBprimeToTWTWinc_M-450_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/a3f5134f8319c443f64eda1133b2421d',   'BprimeBprimeToTWTWinc_M-450'],
@@ -61,7 +62,7 @@ options = [
     [cPathD+'/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v2/cbffc5c24f5b2c6f7cd2533f2708fe2f',           'Tbar_t-channel'],
     [cPathD+'/WW_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/9e3f42c8ee3a5f17b7caca37f495d0b6',                      'WW'],
     [cPathD+'/ZZ_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/25781fc03aed6941de2c00608448d699',                      'ZZ'],
-##     [cPath+'/WZ_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/ae567d5fa2b1517ba8c8f2c9b67b3086',                      'WZ'], # no PAT tuple
+    [cPath+'/WZ_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/ae567d5fa2b1517ba8c8f2c9b67b3086',                      'WZ'], # no PAT tuple
 
     [cPathD+'/TTWJets_8TeV-madgraph/BPrimeEDMNtuples_53x_v1_sv1/1113526d4b87e89003d8033323f9ae66',                              'TTWJets'],
     [cPathD+'/TTZJets_8TeV-madgraph_v2/BPrimeEDMNtuples_53x_v1_sv1/cbbbb92a19d127b8966f23067be98b6a',                           'TTZJets'],
