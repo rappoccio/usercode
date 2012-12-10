@@ -61,6 +61,7 @@ class PyFWLiteJetColl :
 		  coll,                               # collection name to use
 		  jec=None,                           # JEC to use
 		  jecUnc=None, upOrDown=True,         # JEC uncertainty, up or down
+                  flatUnc=None,                       # Flat uncertainty to add to JEC
 		  useGen = False,                     # use gen-jet info only
 		  jerSmear=None,                      # jet energy smearing
 		  jarSmear=None,                      # jet angular smearing
@@ -85,6 +86,7 @@ class PyFWLiteJetColl :
 	self.jec = jec
         self.jecUnc = jecUnc
         self.upOrDown = upOrDown
+        self.flatUnc=flatUnc
         self.useGen = useGen
 	self.jerSmearVal=jerSmear
 	self.jarSmearVal=jarSmear
@@ -170,8 +172,11 @@ class PyFWLiteJetColl :
                         self.jecUnc.setJetEta( jdefRaw.Eta() )
                         self.jecUnc.setJetPt( jdefRaw.Perp() * factor ) 
                         unc1 = self.jecUnc.getUncertainty( self.upOrDown )
-                        unc2 = 0.05
-                        unc = math.sqrt(unc1*unc1 + unc2*unc2)
+                        if self.flatUnc is not None :
+                            unc2 = self.flatUnc
+                            unc = math.sqrt(unc1*unc1 + unc2*unc2)
+                        else :
+                            unc = unc1
                         if self.upOrDown :
                             factor *= (1 + unc)
                         else :

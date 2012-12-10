@@ -265,9 +265,9 @@ trigsToKeep = trigHelper.trigsToKeep
 
 
 # List of reco jets
-ak7Objs = [PyFWLiteJetColl( 'ak7Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, jerSmear=options.jerSmearVal, jarSmear=options.jarSmearVal )]
+ak7Objs = [PyFWLiteJetColl( 'ak7Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, flatUnc=None, jerSmear=options.jerSmearVal, jarSmear=options.jarSmearVal )]
 for igroom in options.collName :
-    ak7Objs.append( PyFWLiteJetColl( 'ak7' + igroom + 'Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, jerSmear=options.jerSmearVal, jarSmear=options.jarSmearVal) )
+    ak7Objs.append( PyFWLiteJetColl( 'ak7' + igroom + 'Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, flatUnc=0.01, jerSmear=options.jerSmearVal, jarSmear=options.jarSmearVal) )
     
 # List of gen Jets
 ak7GenObjs = [PyFWLiteJetColl( 'ak7Gen', useGen=True )]
@@ -393,6 +393,9 @@ hists.book1F('genEffDen', 'gen efficiency denominator;p_{T}^{RECO} (GeV)', nx=30
 
 
 ############## Basic distributions ##############
+
+hists.book1F('histAK7DeltaPhi',  ';#Delta #phi', nx=25,x1=0,x2=ROOT.TMath.Pi())
+hists.book1F('histAK7DeltaY',    ';#Delta y', nx=25,x1=0,x2=ROOT.TMath.Pi()*2.0)
 
 hists.book2F('histAK7PtAvgVsNvtx',  ';N_{VTX};p_{T}^{RECO} (GeV)',   nx=25,x1=0,x2=25, ny=280, y1=0, y2=7000)
 hists.book2F('histAK7MjetVsNvtx',   ';N_{VTX};m_{jet}^{RECO} (GeV)', nx=25,x1=0,x2=25, ny=60, y1=0, y2=300)
@@ -583,6 +586,8 @@ for ifile in files :
                 mjj = (ak7Reco[0] + ak7Reco[1]).M()
                 mjet = (ak7Reco[0].M() + ak7Reco[1].M()) * 0.5
 
+                deltaPhi = abs(ak7Reco[0].DeltaPhi( ak7Reco[1] ))
+                deltaY = abs(ak7Reco[0].Rapidity() - ak7Reco[1].Rapidity())
                 ptAvgGen = (ak7GenMatched[0].Perp() + ak7GenMatched[1].Perp()) * 0.5
                 mjjGen = (ak7GenMatched[0] + ak7GenMatched[1]).M()
                 mjetGen = (ak7GenMatched[0].M() + ak7GenMatched[1].M()) * 0.5
@@ -663,6 +668,8 @@ for ifile in files :
 
                     hists.histAK7PtAvgVsNvtx.Fill( nvtx, ptAvg, weight )
                     hists.histAK7MjetVsNvtx.Fill( nvtx, mjet, weight )
+                    hists.histAK7DeltaPhi.Fill( deltaPhi, weight )
+                    hists.histAK7DeltaY.Fill( deltaY, weight )
                     hists.histAK7PtAvgVsMjetGroomOverReco.Fill( 1.0, ptAvg, weight )
                     hists.histAK7PtAvgVsMjetGroomOverRecoTrue.Fill( 1.0, ptAvg, weight )
 
@@ -695,6 +702,8 @@ for ifile in files :
 
                     hists.histAK7PtAvgVsNvtx_Groom[igroom-1].Fill( nvtx, ptAvg, weight )
                     hists.histAK7MjetVsNvtx_Groom[igroom-1].Fill( nvtx, mjet, weight )
+                    hists.histAK7DeltaPhi_Groom[igroom-1].Fill( deltaPhi, weight )
+                    hists.histAK7DeltaY_Groom[igroom-1].Fill( deltaY, weight )
                     hists.histAK7PtAvgVsMjetGroomOverReco_Groom[igroom-1].Fill( mjetGroomOverMjet, ptAvg, weight )
                     hists.histAK7PtAvgVsMjetGroomOverRecoTrue_Groom[igroom-1].Fill( mjetGenGroomOverMjet, ptAvg, weight )
 

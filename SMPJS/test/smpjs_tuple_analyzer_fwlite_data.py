@@ -206,13 +206,13 @@ else :
 #   Used for trigger matching, and used as
 #   primary "key". GenJets and GroomedJets matched from
 #   these.
-ak7Obj = PyFWLiteJetColl( options.alg + 'Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, jerSmear=None, jarSmear=None )
+ak7Obj = PyFWLiteJetColl( options.alg + 'Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, flatUnc=None, jerSmear=None, jarSmear=None )
 
 # List of groomed jets
 ak7GroomObj = []
 
 for igroom in options.collName :
-    ak7GroomObj.append( PyFWLiteJetColl( options.alg + igroom + 'Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, jerSmear=None, jarSmear=None) )
+    ak7GroomObj.append( PyFWLiteJetColl( options.alg + igroom + 'Lite', jec=jec, jecUnc=jecUnc, upOrDown=upOrDown, flatUnc=0.01, jerSmear=None, jarSmear=None) )
 
 
 # Mean-pt-per-unit-area
@@ -306,6 +306,8 @@ for trig in trigHelper.trigsToKeep :
 
 
 ############## Basic distributions ##############
+hists.book1F('histAK7DeltaPhi',  ';#Delta #phi', nx=25,x1=0,x2=ROOT.TMath.Pi())
+hists.book1F('histAK7DeltaY',    ';#Delta y', nx=25,x1=0,x2=ROOT.TMath.Pi()*2.0)
 
 hists.book2F('histAK7PtAvgVsNvtx',  ';N_{VTX};p_{T}^{RECO} (GeV)',   nx=25,x1=0,x2=25, ny=280, y1=0, y2=7000)
 hists.book2F('histAK7MjetVsNvtx',   ';N_{VTX};m_{jet}^{RECO} (GeV)', nx=25,x1=0,x2=25, ny=30, y1=0, y2=300)
@@ -313,6 +315,8 @@ hists.book2F('histAK7PtAvgVsMjetGroomOverReco',   ';m_{jet}^{GROOM}/m_{jet}^{REC
 
 # Mjj and <Mjet> versus ptAvg for the different triggers. Only data. #
 for trig in trigHelper.trigsToKeep :
+    hists.book1F('histAK7DeltaPhi_' + trig,  trig + ';#Delta #phi', nx=25,x1=0,x2=ROOT.TMath.Pi())
+    hists.book1F('histAK7DeltaY_' + trig,    trig + ';#Delta y', nx=25,x1=0,x2=ROOT.TMath.Pi())
     hists.book2F('histAK7PtAvgVsNvtx_' + trig,
                  trig +';N_{VTX};p_{T}^{RECO} (GeV)',
                  nx=25,x1=0,x2=25, ny=280, y1=0, y2=7000)
@@ -410,6 +414,10 @@ for ifile in files :
         ptAvg = (ak7Def[0].Perp() + ak7Def[1].Perp()) * 0.5
         mjetFinal.append(mjetReco)
 
+        deltaPhi = abs(ak7Def[0].DeltaPhi( ak7Def[1] ))
+        deltaY = abs(ak7Def[0].Rapidity() - ak7Def[1].Rapidity())
+
+
         [passEvent,iTrigHist] = trigHelper.passEventData(event, ptAvg )
 
         if not passEvent :
@@ -446,7 +454,9 @@ for ifile in files :
             hists.get('histAK7MjjVsEtaMax_' + trigHelper.trigsToKeep[iTrigHist]).Fill( mjjReco, etaMax, weight )
             hists.get('histAK7MjetVsEtaMax_' + trigHelper.trigsToKeep[iTrigHist]).Fill( mjetReco, etaMax, weight )                
             hists.get('histAK7MjjVsPtAvg_' + trigHelper.trigsToKeep[iTrigHist]).Fill( mjjReco, ptAvg, weight )
-            hists.get('histAK7MjetVsPtAvg_' + trigHelper.trigsToKeep[iTrigHist]).Fill( mjetReco, ptAvg, weight )                
+            hists.get('histAK7MjetVsPtAvg_' + trigHelper.trigsToKeep[iTrigHist]).Fill( mjetReco, ptAvg, weight )
+            hists.get('histAK7DeltaPhi_' + trigHelper.trigsToKeep[iTrigHist]).Fill( deltaPhi, weight )
+            hists.get('histAK7DeltaY_' + trigHelper.trigsToKeep[iTrigHist]).Fill( deltaY, weight )
             hists.get('histAK7PtAvgVsNvtx_' + trigHelper.trigsToKeep[iTrigHist]).Fill( nvtx, ptAvg, weight )
             hists.get('histAK7MjetVsNvtx_' + trigHelper.trigsToKeep[iTrigHist]).Fill( nvtx, mjetReco, weight )
             hists.get('histAK7PtAvgVsMjetGroomOverReco_' + trigHelper.trigsToKeep[iTrigHist]).Fill( 1.0, ptAvg, weight )
@@ -475,6 +485,10 @@ for ifile in files :
             mjjRecoGroom = dijetCandRecoGroom.M()
             mjetGroomOverMjet = mjetRecoGroom / mjetReco
 
+            deltaPhiGroom = abs(ak7Groom[0].DeltaPhi( ak7Groom[1] ))
+            deltaYGroom = abs(ak7Groom[0].Rapidity() - ak7Groom[1].Rapidity())
+
+
             mjetFinal.append( mjetRecoGroom )
             if options.verbose :
                 print 'Groomed jets'
@@ -500,6 +514,8 @@ for ifile in files :
                 hists.get('histAK7MjetVsEtaMax_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( mjetRecoGroom, etaMax, weight )                
                 hists.get('histAK7MjjVsPtAvg_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( mjjRecoGroom, ptAvgGroom, weight )
                 hists.get('histAK7MjetVsPtAvg_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( mjetRecoGroom, ptAvgGroom, weight )
+                hists.get('histAK7DeltaPhi_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( deltaPhiGroom, weight )
+                hists.get('histAK7DeltaY_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( deltaYGroom, weight )
                 hists.get('histAK7PtAvgVsNvtx_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( nvtx, ptAvgGroom, weight )
                 hists.get('histAK7MjetVsNvtx_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( nvtx, mjetRecoGroom, weight )
                 hists.get('histAK7PtAvgVsMjetGroomOverReco_' + trigHelper.trigsToKeep[iTrigHist] + '_' + options.collName[igroom]).Fill( mjetGroomOverMjet, ptAvgGroom, weight )
