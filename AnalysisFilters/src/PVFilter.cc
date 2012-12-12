@@ -13,7 +13,7 @@
 //
 // Original Author:  "Salvatore Rappoccio"
 //         Created:  Sun Jan 24 22:48:12 CST 2010
-// $Id: PVFilter.cc,v 1.4 2010/03/24 18:54:59 srappocc Exp $
+// $Id: PVFilter.cc,v 1.2 2010/01/27 17:39:04 srappocc Exp $
 //
 //
 
@@ -30,7 +30,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "PhysicsTools/SelectorUtils/interface/PVSelector.h"
+#include "Analysis/AnalysisFilters/interface/PVSelector.h"
 
 //
 // class declaration

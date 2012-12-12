@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 
-from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector as pvSelectorInput
+from Analysis.AnalysisFilters.pvSelector_cfi import pvSelector
 
 pvFilter = cms.EDFilter("PVFilter",
-                        pvSelector = cms.PSet( pvSelectorInput )
+                        pvSelector
                         )
