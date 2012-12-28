@@ -174,7 +174,7 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("deta_EE",     9.0e-03);
             set("dphi_EE",     1.0e-01);
             set("sihih_EE",    3.0e-02);
-            set("hoe_EE",      1.0e-02);
+            set("hoe_EE",      1.0e-01);
             set("d0_EE",       2.0e-02);
             set("dZ_EE",       2.0e-01);
             set("ooemoop_EE",  5.0e-02);
@@ -195,7 +195,7 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("deta_EE",     7.0e-03);
             set("dphi_EE",     3.0e-02);
             set("sihih_EE",    3.0e-02);
-            set("hoe_EE",      1.0e-02);
+            set("hoe_EE",      1.0e-01);
             set("d0_EE",       2.0e-02);
             set("dZ_EE",       1.0e-01);
             set("ooemoop_EE",  5.0e-02);
@@ -216,7 +216,7 @@ class TopElectronSelector : public Selector<pat::Electron>  {
             set("deta_EE",     5.0e-03);
             set("dphi_EE",     2.0e-02);
             set("sihih_EE",    3.0e-02);
-            set("hoe_EE",      1.0e-02);
+            set("hoe_EE",      1.0e-01);
             set("d0_EE",       2.0e-02);
             set("dZ_EE",       1.0e-01);
             set("ooemoop_EE",  5.0e-02);
