@@ -269,7 +269,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                 else passIso = relIso < eRelIso_;  
 
                 if(useNoID_) passMVAID = 1;
-                else passMVAID = ielectron->electronID("mvaTrigV0") > 0;
+                else passMVAID = ielectron->electronID("mvaTrigV0") > 0.5;
 
                 passVetoID = electronIdVeto_(*ielectron,event);//WP:"Veto" from cut based ID
                
