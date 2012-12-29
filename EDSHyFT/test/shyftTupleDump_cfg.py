@@ -69,32 +69,39 @@ print options
 
 #ignore trigger in SHyft Selector
 inputCutsToIgnore = ['Trigger']
+
+## Geometry and Detector Conditions (needed for a few patTuple production steps)
+process.load("Configuration.Geometry.GeometryIdeal_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+
 useData = True
 if options.useData == 0 :
     useData = False
     #inputCutsToIgnore.append('Trigger')
+    process.GlobalTag.globaltag = 'START53_V7F::All'
+    payloads = [
+        'Jec12_V3_MC_L1FastJet_AK5PFchs.txt',
+        'Jec12_V3_MC_L2Relative_AK5PFchs.txt',
+        'Jec12_V3_MC_L3Absolute_AK5PFchs.txt',
+        'Jec12_V3_MC_L2L3Residual_AK5PFchs.txt',
+        'Jec12_V3_MC_Uncertainty_AK5PFchs.txt',
+        ]
 else:
-    ## Geometry and Detector Conditions (needed for a few patTuple production steps)
-    process.load("Configuration.StandardSequences.Geometry_cff")
-    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-    if options.useData:
-        process.GlobalTag.globaltag = 'GR_P_V40_AN1::All'
-    else:
-        process.GlobalTag.globaltag = 'START53_V7F::All'
-    process.load("Configuration.StandardSequences.MagneticField_cff")
-    
-    # run the trigger on the fly
-    process.load('PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff')
+    process.GlobalTag.globaltag = 'GR_P_V40_AN1::All'
+    payloads = [
+        'Jec12_V3_L1FastJet_AK5PFchs.txt',
+        'Jec12_V3_L2Relative_AK5PFchs.txt',
+        'Jec12_V3_L3Absolute_AK5PFchs.txt',
+        'Jec12_V3_L2L3Residual_AK5PFchs.txt',
+        'Jec12_V3_Uncertainty_AK5PFchs.txt',
+        ]
+
+
+process.load("Configuration.StandardSequences.MagneticField_cff")
+# run the trigger on the fly
+process.load('PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff')
 
 import sys
-
-payloads = [
-    'Jec12_V2_L1FastJet_AK5PFchs.txt',
-    'Jec12_V2_L2Relative_AK5PFchs.txt',
-    'Jec12_V2_L3Absolute_AK5PFchs.txt',
-    'Jec12_V2_L2L3Residual_AK5PFchs.txt',
-    'Jec12_V2_Uncertainty_AK5PFchs.txt'
-]
 
 if useData :
     jetSmear = 0.0
@@ -177,8 +184,8 @@ process.pfShyftProducerMu = cms.EDFilter('EDSHyFTSelector',
         eleTrig = cms.string(options.triggerName),
         useNoPFIso = cms.bool(False),
         eEt = cms.double( 30.0 ), ##
-        useNoID  = cms.bool(False), # use eMVA > 0
-        eRelIso = cms.double( 0.15 ), 
+        useNoID  = cms.bool(False), # use eMVA > 0.5
+        eRelIso = cms.double( 0.1 ), 
         muPtMin = cms.double( 40.0 ),##
         useMuonTightID = cms.bool(True), #default off
         muRelIso = cms.double( 0.12 ),            
@@ -216,9 +223,9 @@ process.pfShyftProducerEleLoose.shyftSelection.muonSrc = cms.InputTag('selectedP
 process.pfShyftProducerEleLoose.shyftSelection.electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose')
 process.pfShyftProducerEleLoose.shyftSelection.useNoPFIso = cms.bool(True)
 process.pfShyftProducerEleLoose.shyftSelection.eRelIso = cms.double( 10.0 ) # to be sure again
-process.pfShyftProducerEleLoose.shyftSelection.useNoID  = cms.bool(True) #no eMVA > 0 cut
+process.pfShyftProducerEleLoose.shyftSelection.useNoID  = cms.bool(True) #no eMVA > 0.5 cut
 
-# now get the edm tees:
+# now get the edm trees:
 # ====================
 
 # get the jet trees
