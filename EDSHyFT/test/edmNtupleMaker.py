@@ -25,7 +25,7 @@ options.register('ignoreTrigger',
                  "Ignore trigger in selection")
 
 options.register ('runData',
-                  1,
+                  0,
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.int,
                   "if running over data (1) else (0)")
@@ -69,9 +69,8 @@ if options.ignoreTrigger == 1 :
 ## Source    
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-    'dcap:///pnfs/cms/WAX/11/store/results/B2G/SingleElectron/StoreResults-Run2012A-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/SingleElectron/USER/StoreResults-Run2012A-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/0000/FE2F7667-4728-E211-8F95-002618FDA263.root',
-    #'/store/user/lpctlbsm/cjenkins/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2/c04f3b4fa74c8266c913b71e0c74901d/tlbsm_53x_v2_mc_9_1_ysy.root',
-    #'/store/user/lpctlbsm/cjenkins/BprimeBprimeToBZTWinc_M-650_TuneZ2star_8TeV-madgraph/BprimeBprimeToBZTWinc_M650_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TSBSMv2/fe5dcf8cf2a24180bf030f68a7d97dda/ttbsm_tlbsm_53x_v1_mc_1_1_6xj.root',
+    # 'dcap:///pnfs/cms/WAX/11/store/results/B2G/SingleElectron/StoreResults-Run2012A-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/SingleElectron/USER/StoreResults-Run2012A-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/0000/FE2F7667-4728-E211-8F95-002618FDA263.root',
+    '/store/user/lpctlbsm/cjenkins/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2/c04f3b4fa74c8266c913b71e0c74901d/tlbsm_53x_v2_mc_9_1_ysy.root',
     )
                             )                           
 
@@ -79,24 +78,32 @@ process.source = cms.Source("PoolSource",
 process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 
+# get the right GT for trigger and apply the JEC on fly
+# note L1FastJet corrections are different for data and MC only, however both are kept for consistency
 if runData:
     process.GlobalTag.globaltag = 'GR_P_V40_AN1::All'
+    payloads = [
+        'Jec12_V3_L1FastJet_AK5PFchs.txt',
+        'Jec12_V3_L2Relative_AK5PFchs.txt',
+        'Jec12_V3_L3Absolute_AK5PFchs.txt',
+        'Jec12_V3_L2L3Residual_AK5PFchs.txt',
+        'Jec12_V3_Uncertainty_AK5PFchs.txt',
+        ]
 else:
     process.GlobalTag.globaltag = 'START53_V7F::All'
+    payloads = [
+        'Jec12_V3_MC_L1FastJet_AK5PFchs.txt',
+        'Jec12_V3_MC_L2Relative_AK5PFchs.txt',
+        'Jec12_V3_MC_L3Absolute_AK5PFchs.txt',
+        'Jec12_V3_MC_L2L3Residual_AK5PFchs.txt',
+        'Jec12_V3_MC_Uncertainty_AK5PFchs.txt',
+        ]	
+
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 # run the trigger on the fly
 process.load('PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff')
-
-# apply the JEC on fly
-payloads = [
-    'Jec12_V2_L1FastJet_AK5PFchs.txt',
-    'Jec12_V2_L2Relative_AK5PFchs.txt', 
-    'Jec12_V2_L3Absolute_AK5PFchs.txt',
-    'Jec12_V2_L2L3Residual_AK5PFchs.txt',
-    'Jec12_V2_Uncertainty_AK5PFchs.txt',   
-]
 
 from Analysis.SHyFT.shyftAnalysis_cfi import shyftAnalysis as inputShyftAnalysis
 #_______________________________BTagging SF and Pileup________________________________________
@@ -200,7 +207,7 @@ process.pfTupleEle = cms.EDFilter('EDSHyFTSelector',
     eRelIso = cms.double( 0.2 ), #loose iso
     muRelIso = cms.double( 0.2), #loose iso
     useNoPFIso = cms.bool(False),
-    useNoID  = cms.bool(False), # use eMVA > 0
+    useNoID  = cms.bool(False), # use eMVA > 0.5
     useData = cms.bool(runData),
     identifier = cms.string('AK5 PF'),
     cutsToIgnore=cms.vstring(inputCutsToIgnore),
