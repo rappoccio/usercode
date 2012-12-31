@@ -115,32 +115,23 @@ else :
         'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/meloam/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2/c04f3b4fa74c8266c913b71e0c74901d/tlbsm_53x_v2_mc_725_1_opY.root'
         ]
 
-eHadTrig = 'HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentral'
-
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
+
+eleStop = 'HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet'
+
 if options.useMuTrigs == 0 and options.useEleTrigs == 0 :
     process.hltSelectionMu = cms.Sequence()
     process.hltSelectionEle = cms.Sequence()
 else :
-    process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = [
-                                                                                                       'HLT_Mu40_eta2p1_v9',
-                                                                                                       'HLT_Mu40_eta2p1_v10',
-                                                                                                       'HLT_Mu40_eta2p1_v11',
+    process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = ['HLT_Mu40_eta2p1_v*',
                                                                                                        ])
-    process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths =  [## eHadTrig+'PFJet30_v8',            #PD:EleHad(2012A)
-##                                                                                                          eHadTrig+'PFJet30_v9',            #PD:EleHad(2012A)
-##                                                                                                          eHadTrig+'PFJet30_v10',           #PD:EleHad(2012A)
-##                                                                                                          eHadTrig+'PFNoPUJet30_v3',        #PD:EleHad(2012A)
-##                                                                                                          eHadTrig+'PFNoPUJet30_v4',        #PD:EleHad(2012A)
-##                                                                                                          eHadTrig+'PFNoPUJet30_v5',        #PD:SingleElectron(2012B)
-##                                                                                                          eHadTrig+'PFNoPUJet30_30_20_v1',  #PD:SingleElectron(2012B)
-##                                                                                                          eHadTrig+'PFNoPUJet30_30_20_v2',  #PD:SingleElectron(2012C)
-##                                                                                                          eHadTrig+'PFNoPUJet45_35_25_v1',  #PD:SingleElectron(2012C+D)
-##                                                                                                          eHadTrig+'PFNoPUJet45_35_25_v2',  #PD:SingleElectron(2012D)
-                                                                                                         'HLT_Ele27_WP80_v8',   #PD:SingleElectron
-                                                                                                         'HLT_Ele27_WP80_v9',   #PD:SingleElectron                                            
-                                                                                                         'HLT_Ele27_WP80_v10',  #PD:SingleElectron
-                                                                                                         'HLT_Ele27_WP80_v11',  #PD:SingleElectron
+    if options.useLooseElectrons==1:
+	process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths =  [eleStop+'30_v*',
+                                                                                                             eleStop+'45_35_25_v*',   
+                                                                                                             eleStop+'50_40_30_v*',            
+                                                                                                            ])
+    else:
+    	process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths =  ['HLT_Ele27_WP80_v*', #PD:SingleElectron
                                                                                                          ])
     process.hltSelectionMu.throw = False
     process.hltSelectionEle.throw = False
