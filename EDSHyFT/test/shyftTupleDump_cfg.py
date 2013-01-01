@@ -197,23 +197,25 @@ process.pfShyftProducerMuLoose = process.pfShyftProducerMu.clone()
 process.pfShyftProducerMuLoose.shyftSelection.muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose')
 process.pfShyftProducerMuLoose.shyftSelection.electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose')
 process.pfShyftProducerMuLoose.shyftSelection.useNoPFIso = cms.bool(True)
-process.pfShyftProducerMuLoose.shyftSelection.muRelIso = cms.double( 10.0 ) # to be sure again
-process.pfShyftProducerMuLoose.shyftSelection.muEtaMax = cms.double( 2.5 )
-process.pfShyftProducerMuLoose.shyftSelection.useMuonTightID = cms.bool(False)
+process.pfShyftProducerMuLoose.shyftSelection.muRelIso = cms.double( 20.0 ) # to be sure again
+#process.pfShyftProducerMuLoose.shyftSelection.muEtaMax = cms.double( 2.1 ) #2.5
+process.pfShyftProducerMuLoose.shyftSelection.useMuonTightID = cms.bool(True)
 process.pfShyftProducerMuLoose.shyftSelection.identifier = cms.string('PFMuLoose')
 
 # e+jets
 process.pfShyftProducerEle = process.pfShyftProducerMu.clone()
 process.pfShyftProducerEle.shyftSelection.ePlusJets = cms.bool( True )
-process.pfShyftProducerEle.shyftSelection.muPlusJets = cms.bool( True )
+process.pfShyftProducerEle.shyftSelection.muPlusJets = cms.bool( False )
 process.pfShyftProducerMuLoose.shyftSelection.identifier = cms.string('PFEle')
 
 # e+jets with loose electron
-process.pfShyftProducerEleLoose = process.pfShyftProducerEle.clone()
+process.pfShyftProducerEleLoose = process.pfShyftProducerMu.clone()
+process.pfShyftProducerEle.shyftSelection.ePlusJets = cms.bool( True )
+process.pfShyftProducerEle.shyftSelection.muPlusJets = cms.bool( False )
 process.pfShyftProducerEleLoose.shyftSelection.muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose')
 process.pfShyftProducerEleLoose.shyftSelection.electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose')
 process.pfShyftProducerEleLoose.shyftSelection.useNoPFIso = cms.bool(True)
-process.pfShyftProducerEleLoose.shyftSelection.eRelIso = cms.double( 10.0 ) # to be sure again
+process.pfShyftProducerEleLoose.shyftSelection.eRelIso = cms.double( 20.0 ) # to be sure again
 process.pfShyftProducerEleLoose.shyftSelection.useNoID  = cms.bool(True) #no eMVA > 0.5 cut
 
 # now get the edm trees:
