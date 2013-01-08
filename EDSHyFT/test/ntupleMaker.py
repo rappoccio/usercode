@@ -17,6 +17,40 @@ def deltaR( eta1, phi1, eta2, phi2):
     elif dphi < -math.pi: dphi += 2*math.pi
     return math.sqrt(deta*deta + dphi*dphi)
 
+def smear_factor(eta, variation):
+    abseta = abs(eta)
+    smear_nominal = 0.0
+    smear_up = 0.0
+    smear_down = 0.0
+
+    if abseta <= 0.5:
+                smear_nominal = 0.052
+                smear_up = 0.115
+                smear_down = 0.0
+    elif abseta <= 1.1:
+                smear_nominal = 0.057
+                smear_up = 0.114
+                smear_down = 0.001
+    elif abseta <= 1.7:
+                smear_nominal = 0.096
+                smear_up = 0.161
+                smear_down = 0.032
+    elif abseta <= 2.3:
+                smear_nominal = 0.134
+                smear_up = 0.228
+                smear_down = 0.042
+    elif abseta < 5.0:
+                smear_nominal = 0.288
+                smear_up = 0.488
+                smear_down = 0.089
+
+    if variation == 0: return smear_nominal
+    elif variation == 1: return smear_up
+    elif variation == -1: return smear_down
+    
+
+
+
 from array import array
 from optparse import OptionParser
 
@@ -49,9 +83,9 @@ parser.add_option('--JES', metavar='F', type='string', action='store',
                   help='JEC Systematic variation. Options are "nominal, up, down"')
 
 parser.add_option('--jetPtSmear', metavar='F', type='float', action='store',
-                  default=0.1,
+                  default=0,
                   dest='jetPtSmear',
-                  help='JER smearing. Standard values are 0.1 (nominal), 0.0 (down), 0.2 (up)')
+                  help='JER smearing. Standard values are 0 (nominal), -1 (down), 1 (up)')
 
 parser.add_option('--jetEtaSmear', metavar='F', type='float', action='store',
                   default=0.0,
@@ -240,9 +274,9 @@ elif options.JES != '':
     systtag = "_" + options.JES
 if options.bTag != '':
     systtag = "_" + options.bTag
-if options.jetPtSmear == 0.0:
+if options.jetPtSmear == -1:
 	systtag = "_JERdown"
-if options.jetPtSmear == 0.2:
+if options.jetPtSmear == 1:
 	systtag = "_JERup"    
     
 print("value of systtag = ", systtag)
@@ -528,8 +562,8 @@ for event in events:
     if not options.data :
         event.getByLabel(pileupWeightsLabel, pileupWeightsH)
         pileupProduct = pileupWeightsH.product()
-        pileupWeight[0] = pileupProduct[0]
-        pileupWeightUp[0] = pileupProduct[1]
+	pileupWeight[0] = pileupProduct[0]
+	pileupWeightUp[0] = pileupProduct[1]
         pileupWeightDown[0] = pileupProduct[2]     
     else:
         runNumber[0] = event.object().id().run()
@@ -623,8 +657,8 @@ for event in events:
             jetScale = 1 + unc * jecScale
 
         ##Jet energy resolution smearing
-        if not options.data and abs(options.jetPtSmear)>0.0001 and genJetPt>15.0:     
-            scale = options.jetPtSmear
+        if not options.data and genJetPt>15.0:     
+            scale = smear_factor(ijet.eta(), options.jetPtSmear)
             recopt = ijet.pt()
             uncorrpt = ijet.correctedJet("Uncorrected").pt()
             genpt = genJetPt
