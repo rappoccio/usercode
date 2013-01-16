@@ -92,7 +92,7 @@ if runData:
 else:
     process.GlobalTag.globaltag = 'START53_V7F::All'
     payloads = [
-        'Jec12_V3_L1FastJet_AK5PFchs.txt',
+        'Jec12_V3_MC_L1FastJet_AK5PFchs.txt',
         'Jec12_V3_MC_L2Relative_AK5PFchs.txt',
         'Jec12_V3_MC_L3Absolute_AK5PFchs.txt',
         'Jec12_V3_MC_L2L3Residual_AK5PFchs.txt',
