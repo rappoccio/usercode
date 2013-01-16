@@ -92,7 +92,7 @@ if runData:
 else:
     process.GlobalTag.globaltag = 'START53_V7F::All'
     payloads = [
-        'Jec12_V3_MC_L1FastJet_AK5PFchs.txt',
+        'Jec12_V3_L1FastJet_AK5PFchs.txt',
         'Jec12_V3_MC_L2Relative_AK5PFchs.txt',
         'Jec12_V3_MC_L3Absolute_AK5PFchs.txt',
         'Jec12_V3_MC_L2L3Residual_AK5PFchs.txt',
@@ -126,14 +126,7 @@ if not runData:
                                              DiscriminatorValue = cms.double(0.679),
                                              EffMapFile = cms.string('Analysis/EDSHyFT/data/'+options.btagMap+'_AK5PF_CSVM_bTaggingEfficiencyMap.root')
                                              )
-    
-    process.goodPatJetsCA8PrunedPFSF = cms.EDProducer("BTaggingSFProducer",
-                                                      JetSource = cms.InputTag('goodPatJetsCA8PrunedPF'),
-                                                      DiscriminatorTag = cms.string('combinedSecondaryVertexBJetTags'),
-                                                      DiscriminatorValue = cms.double(0.679),
-                                                      EffMapFile = cms.string('Analysis/EDSHyFT/data/'+options.btagMap+'_CA8PrunedPF_CSVM_bTaggingEfficiencyMap.root')
-                                                          )
-    
+
     process.GenInfo = cms.EDProducer('BoostedParticles')
 
 
@@ -187,7 +180,7 @@ if runData:
     goodCA8Patjet = 'goodPatJetsCA8PrunedPF'
 else:
     goodAK5Patjet = 'goodPatJetsPFSF'
-    goodCA8Patjet = 'goodPatJetsCA8PrunedPFSF'
+    goodCA8Patjet = 'goodPatJetsCA8PrunedPF'
     
 ## electron+jets decay mode
 ## ========================
@@ -293,7 +286,7 @@ if runData:
 elif options.runEleQCDSamples:
     process.p1 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEle)
     process.p2 = cms.Path()
-    process.p3 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleEleCA8Pruned)
+    process.p3 = cms.Path( process.pfTupleEleCA8Pruned)
     process.p4 = cms.Path()
     process.p5 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEleLoose)
     process.p6 = cms.Path()
@@ -305,8 +298,8 @@ elif options.runEleQCDSamples:
 else:
     process.p1 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEle)
     process.p2 = cms.Path( process.goodPatJetsPFSF * process.pfTupleMu)
-    process.p3 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleEleCA8Pruned)
-    process.p4 = cms.Path( process.goodPatJetsCA8PrunedPFSF * process.pfTupleMuCA8Pruned)
+    process.p3 = cms.Path( process.pfTupleEleCA8Pruned)
+    process.p4 = cms.Path( process.pfTupleMuCA8Pruned)
     process.p5 = cms.Path()
     process.p6 = cms.Path()
     process.p7 = cms.Path( process.pileupReweightingProducer * process.GenInfo )
