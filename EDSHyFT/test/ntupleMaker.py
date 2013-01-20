@@ -219,7 +219,7 @@ fileN = fname[fname.rfind('/')+1:]
 #sys.exit(0)
 
 #JEC
-jecParStr = std.string('Jec12_V3_Uncertainty_AK5PFchs.txt')
+jecParStr = std.string('Jec12_V3_MC_Uncertainty_AK5PFchs.txt')
 jecUnc = JetCorrectionUncertainty( jecParStr )
   
 #------------------------------------------------------------------
