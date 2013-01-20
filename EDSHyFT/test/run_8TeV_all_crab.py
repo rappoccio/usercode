@@ -56,7 +56,7 @@ joblist = [
 
 ##      {'datasetpath': '/BprimeBprimeToBHBHinc_M-800_TuneZ2star_8TeV-madgraph/StoreResults-BprimeBprimeToBHBHinc_M-800_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBHBH_800', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' },
 
-##      {'datasetpath': '/BprimeBprimeToBHBZinc_M-450_TuneZ2star_8TeV-madgraph/StoreResults-BprimeBprimeToBHBZinc_M-450_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBHBZ_450', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' },
+##      {'datasetpath': '/BprimeBprimeToBHBZinc_M-450_TuneZ2star_8TeV-madgraph/StoreResults-BprimeBprimeToBHBZinc_M-450_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBHBZ_450', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet', 'btag_map':'BprimeBprimeToBHBZinc_M-500_TuneZ2star_8TeV-madgraph' },
 
 ##      {'datasetpath': '/BprimeBprimeToBHBZinc_M-500_TuneZ2star_8TeV-madgraph/StoreResults-BprimeBprimeToBHBZinc_M-500_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBHBZ_500', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' },
 
@@ -212,41 +212,11 @@ for job in joblist:
         #config.set('CRAB', 'scheduler', 'remoteGlidein')
 
     if 'Data' not in job['#sample_name']:
-        dataset =  job['datasetpath'].split('/')[1]
+        btagMap = job['datasetpath'].split('/')[1]
+        if 'btag_map' in job.keys():
+            btagMap = job['btag_map']
 
-        # set the b-tag maps for missing mass points to approx. mass samples
-        if 'BprimeBprimeToBHBZinc' in dataset:
-             mass = dataset.split('_')[1]
-             m = mass.split('-')[1]
-             if eval(m) == 450 :
-                 dataset = dataset.replace(mass, 'M-500')
-
-       ##  if 'BprimeBprimeToTWTWinc' in dataset:
-##             mass = dataset.split('_')[1]
-##             m = mass.split('-')[1]
-##             if eval(m) >= 600 :
-##                 dataset = dataset.replace(mass, 'M-750')
-##             else:
-##                 dataset = dataset.replace(mass, 'M-450')
-##         elif 'BprimeBprimeToBZTWinc' in dataset:
-##             mass = dataset.split('_')[1]
-##             m = mass.split('-')[1]
-##             if eval(m) >= 600 :
-##                 dataset = dataset.replace(mass, 'M-750')
-##             else:
-##                 dataset = dataset.replace(mass, 'M-450')
-##         elif 'BprimeBprimeToBHBHinc' in dataset:
-##             mass = dataset.split('_')[1]
-##             m = mass.split('-')[1]
-##             if eval(m) >= 600 :
-##                 dataset = dataset.replace(mass, 'M-600')
-##             else:
-##                 dataset = dataset.replace(mass, 'M-450')
-        if 'TTJets' in dataset:
-            sample = dataset.split('_')[1]
-            dataset =dataset.replace(sample, 'MassiveBinDECAY')
-
-        config.set('CMSSW', 'pycfg_params', config.get('CMSSW', 'pycfg_params')+" btagMap="+dataset)
+        config.set('CMSSW', 'pycfg_params', config.get('CMSSW', 'pycfg_params')+" btagMap="+btagMap)
 
 
     # specify the name in case of data and signal
@@ -260,7 +230,7 @@ for job in joblist:
     elif 'WJets_v1' in job['#sample_name']:
         publish_data_name = 'BPrimeEDMNtuples_53x_v2_WJets_v1'
         ui_working_dir = working_dir + job['datasetpath'].split('/')[1] + '_v1'+ dir_suffix
-    else:    
+    else:
         ui_working_dir = working_dir + job['datasetpath'].split('/')[1] + dir_suffix
         publish_data_name = 'BPrimeEDMNtuples_53x_v2'
     config.set('USER','ui_working_dir',ui_working_dir)
