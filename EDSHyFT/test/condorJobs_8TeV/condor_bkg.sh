@@ -45,8 +45,8 @@ for txt in `ls $INPATH`; do
         for option in "--JES nominal" \
                       "--JES up" \
                       "--JES down" \
-                      "--jetPtSmear 0.0" \
-                      "--jetPtSmear 0.2" \
+                      "--jetPtSmear -1" \
+                      "--jetPtSmear 1" \
                       "--bTag BTagSFup" \
                       "--bTag BTagSFdown"; do
             if test $counter -eq $PROCESS; then
