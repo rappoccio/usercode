@@ -39,7 +39,6 @@ C) Edit the makeBTaggingEfficiencyMap.py file by defining dataset names, output 
    allowed jet flavors are 'b', 'c', and 'udsg'. You are now ready to produce the efficiency maps
 
    ./makeBTaggingEfficiencyMapAK5PF.py
-   ./makeBTaggingEfficiencyMapCA8PrunedPF.py
 
    And you are done!
 

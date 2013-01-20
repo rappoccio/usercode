@@ -61,16 +61,4 @@ process.bTaggingEffAnalyzerAK5PF = cms.EDAnalyzer('BTaggingEffAnalyzer',
     EtaMax             = cms.double(3.)
 )
 
-process.bTaggingEffAnalyzerCA8PrunedPF = cms.EDAnalyzer('BTaggingEffAnalyzer',
-    JetsTag            = cms.InputTag('goodPatJetsCA8PrunedPF'),
-    DiscriminatorTag   = cms.string('combinedSecondaryVertexBJetTags'),
-    DiscriminatorValue = cms.double(0.679),
-    PtNBins            = cms.int32(100),
-    PtMin              = cms.double(0.),
-    PtMax              = cms.double(1000.),
-    EtaNBins           = cms.int32(60),
-    EtaMin             = cms.double(-3.),
-    EtaMax             = cms.double(3.)
-)
-
-process.p = cms.Path(process.bTaggingEffAnalyzerAK5PF+process.bTaggingEffAnalyzerCA8PrunedPF)
+process.p = cms.Path(process.bTaggingEffAnalyzerAK5PF)
