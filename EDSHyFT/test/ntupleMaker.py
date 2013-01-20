@@ -48,8 +48,40 @@ def smear_factor(eta, variation):
     elif variation == 1: return smear_up
     elif variation == -1: return smear_down
     
-
-
+def electronID_SF(eta, pt):
+    abseta = abs(eta)
+    SF = 1.0
+    if abseta >= 0.0 and abseta < 0.80:
+        if pt >= 20. and pt < 30.:
+            SF = 0.869
+        elif pt >= 30. and pt < 40.:
+            SF = 0.990
+        elif pt >= 40. and pt < 50.:
+            SF = 0.997
+        elif pt > 50. and pt < 200.:
+            SF = 0.993
+        else: SF = 0.993    
+    elif abseta >= 0.80 and abseta < 1.48:
+        if pt >= 20. and pt < 30.:
+            SF = 0.932
+        elif pt >= 30. and pt < 40.:
+            SF = 0.991
+        elif pt >= 40. and pt < 50.:
+            SF = 0.996
+        elif pt > 50. and pt < 200.:
+            SF = 0.997
+        else: SF = 0.997    
+    elif abseta >= 1.48 and abseta < 2.50:
+        if pt >= 20. and pt < 30.:
+            SF = 0.935
+        elif pt >= 30. and pt < 40.:
+            SF = 0.975
+        elif pt >= 40. and pt < 50.:
+            SF = 0.990
+        elif pt > 50. and pt < 200.:
+            SF = 0.990
+        else: SF = 0.990    
+    return SF       
 
 from array import array
 from optparse import OptionParser
@@ -187,7 +219,7 @@ fileN = fname[fname.rfind('/')+1:]
 #sys.exit(0)
 
 #JEC
-jecParStr = std.string('Jec12_V2_Uncertainty_AK5PFchs.txt')
+jecParStr = std.string('Jec12_V3_Uncertainty_AK5PFchs.txt')
 jecUnc = JetCorrectionUncertainty( jecParStr )
   
 #------------------------------------------------------------------
@@ -359,7 +391,10 @@ if not runMu:
     
     eDeta = array('d', [0.])
     t.Branch('eDeta',eDeta,'eDeta/D')
-    
+
+lepSF = array('d', [0.])
+t.Branch('lepSF', lepSF, 'lepSF/D')
+
 lepd0 =  array('d',[0.])
 t.Branch('lepd0',lepd0,'lepd0/D')
 
@@ -591,7 +626,7 @@ for event in events:
     nElectrons = 0
     if electronsH.isValid():
         for iel in electrons:
-            if iel.pt() > lepPtMin:
+            if iel.ecalDrivenMomentum().pt() > lepPtMin:
                 nElectrons += 1
             
     # remove any remaining dilepton event...
@@ -707,8 +742,20 @@ for event in events:
     metObj.setP4(metP4)
     
     #########################
-    
-    if leptons[0].pt() <= lepPtMin : continue
+    if runMu:
+        leptonsPt = leptons[0].pt()
+        leptonsPx = leptons[0].px()
+        leptonsPy = leptons[0].py()
+        leptonsPz = leptons[0].pz()
+        leptonsP  = leptons[0].p()
+    else:
+        leptonsPt = leptons[0].ecalDrivenMomentum().pt()
+        leptonsPx = leptons[0].ecalDrivenMomentum().px()
+        leptonsPy = leptons[0].ecalDrivenMomentum().py()
+        leptonsPz = leptons[0].ecalDrivenMomentum().pz()
+        leptonsP  = leptons[0].ecalDrivenMomentum().P()
+        
+    if leptonsPt <= lepPtMin : continue
     
     # store the trigger paths
     if runMu:
@@ -751,7 +798,7 @@ for event in events:
         
     nvertices[0] =  vertices.size()     
     met[0] = metObj.pt()
-    lepEt[0] = (leptons[0]).pt()
+    lepEt[0] = leptonsPt
     lepEta[0] = (leptons[0]).eta()
     lepd0[0] =  (leptons[0]).dB()
     
@@ -769,17 +816,19 @@ for event in events:
     puIso = (leptons[0]).userIsolation(pat.PfPUChargedHadronIso)
       
     if runMu :
-        lepIso[0] = (chIso + max(0.0, nhIso + phIso - 0.5*puIso))/(leptons[0]).pt()
+        lepIso[0] = (chIso + max(0.0, nhIso + phIso - 0.5*puIso))/leptonsPt
+        lepSF[0]  = 1
     else:
         AEff = (leptons[0]).userFloat('AEff')
-        lepIso[0] = (chIso + max(0.0, nhIso + phIso - rho*AEff))/(leptons[0]).pt()
-        
-    lepIsoUncorr[0] = (chIso + nhIso + phIso)/(leptons[0]).pt()
+        lepIso[0] = (chIso + max(0.0, nhIso + phIso - rho*AEff))/leptonsPt
+        lepSF[0]  = electronID_SF((leptons[0]).eta(), leptonsPt)
+    
+    lepIsoUncorr[0] = (chIso + nhIso + phIso)/leptonsPt
     njets[0] = len(jets)
-    sumEt = leptons[0].pt() + metObj.pt()
+    sumEt = leptonsPt + metObj.pt()
     
     lepton_vector = TLorentzVector()
-    lepton_vector.SetPtEtaPhiM( leptons[0].pt(), leptons[0].eta(), leptons[0].phi(), leptons[0].mass() )
+    lepton_vector.SetPtEtaPhiM( leptonsPt, leptons[0].eta(), leptons[0].phi(), leptons[0].mass() )
     nu_p4 = metObj.p4()
     wPt = lepton_vector.Pt() + nu_p4.Pt()
     wPx = lepton_vector.Px() + nu_p4.Px()
@@ -789,39 +838,39 @@ for event in events:
     
     # sphericity and aplanarity from Andrew Ivanov
     # see: http://cepa.fnal.gov/psm/simulation/mcgen/lund/pythia_manual/pythia6.3/pythia6301/node213.html
-    sum = leptons[0].p()*leptons[0].p() + metObj.p()*metObj.p()
+    sum = leptonsP*leptonsP + metObj.p()*metObj.p()
     for jet in jets: sum+=jet.p()*jet.p()
     
     tensor = TMatrix(3,3)
     # mxx
-    tensor[0][0] = leptons[0].px()*leptons[0].px() + metObj.px()*metObj.px()
+    tensor[0][0] = leptonsPx*leptonsPx + metObj.px()*metObj.px()
     for jet in jets:
         if jet.pt() > jetPtMin: tensor[0][0]+=jet.px()*jet.px()
     tensor[0][0]/=sum
     # myy
-    tensor[1][1] = leptons[0].py()*leptons[0].py() + metObj.py()*metObj.py()
+    tensor[1][1] = leptonsPy*leptonsPy + metObj.py()*metObj.py()
     for jet in jets:
         if jet.pt() > jetPtMin: tensor[1][1]+=jet.py()*jet.py()
     tensor[1][1]/=sum
     # mzz
-    tensor[2][2] = leptons[0].pz()*leptons[0].pz() + metObj.pz()*metObj.pz()
+    tensor[2][2] = leptonsPz*leptonsPz + metObj.pz()*metObj.pz()
     for jet in jets:
         if jet.pt() > jetPtMin: tensor[2][2]+=jet.pz()*jet.pz()
     tensor[2][2]/=sum
     # mxy
-    tensor[0][1] = leptons[0].px()*leptons[0].py() + metObj.px()*metObj.py()
+    tensor[0][1] = leptonsPx*leptonsPy + metObj.px()*metObj.py()
     for jet in jets:
         if jet.pt() > jetPtMin: tensor[0][1]+=jet.px()*jet.py()
     tensor[0][1]/=sum
     tensor[1][0] = tensor[0][1]
     # mxz
-    tensor[0][2] = leptons[0].px()*leptons[0].pz() + metObj.px()*metObj.pz()
+    tensor[0][2] = leptonsPx*leptonsPz + metObj.px()*metObj.pz()
     for jet in jets:
         if jet.pt() > jetPtMin: tensor[0][2]+=jet.px()*jet.pz()
     tensor[0][2]/=sum
     tensor[2][0] = tensor[0][2]
     # myz
-    tensor[1][2] = leptons[0].py()*leptons[0].pz() + metObj.py()*metObj.pz()
+    tensor[1][2] = leptonsPy*leptonsPz + metObj.py()*metObj.pz()
     for jet in jets:
         if jet.pt() > jetPtMin: tensor[1][2]+=jet.py()*jet.pz()
     tensor[1][2]/=sum
