@@ -1,0 +1,11 @@
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792/edmTest_78_1_ESs.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792/edmTest_79_1_YS5.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792/edmTest_80_1_cB2.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792/edmTest_81_1_OEz.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792/edmTest_82_1_4ev.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792/edmTest_83_1_rJ9.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792/edmTest_84_1_dJI.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792/edmTest_85_1_VDW.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792/edmTest_86_1_qev.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792/edmTest_87_1_fA5.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792/edmTest_88_1_95b.root
