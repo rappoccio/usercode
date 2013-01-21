@@ -18,6 +18,10 @@ joblist = [
 
 ##      {'datasetpath':'/BprimeBprimeToBZTWinc_M-450_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBZTWinc_M-450_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBZTW_450', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet'},
 
+##        {'datasetpath':'/BprimeBprimeToBZTWinc_M-500_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBZTWinc_M-500_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBZTW_500', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', 'btag_map':'BprimeBprimeToBZTWinc_M-500_TuneZ2star_8TeV-madgraph'},
+
+##        {'datasetpath':'/BprimeBprimeToBZTWinc_M-550_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBZTWinc_M-550_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBZTW_550', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', 'btag_map':'BprimeBprimeToBZTWinc_M-550_TuneZ2star_8TeV-madgraph'},
+    
 ##      {'datasetpath':'/BprimeBprimeToBZTWinc_M-600_TuneZ2star_8TeV-madgraph/StoreResults-BprimeBprimeToBZTWinc_M-600_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2_A-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBZTW_600', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
 
 ##      {'datasetpath':'/BprimeBprimeToBZTWinc_M-650_TuneZ2star_8TeV-madgraph/StoreResults-BprimeBprimeToBZTWinc_M-650_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBZTW_650', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
@@ -28,9 +32,17 @@ joblist = [
 
 ##      {'datasetpath':'/BprimeBprimeToBZTWinc_M-800_TuneZ2star_8TeV-madgraph/StoreResults-BprimeBprimeToBZTWinc_M-800_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBZTW_800', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
 
+#      {'datasetpath':'/BprimeBprimeToBZTWinc_M-900_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBZTWinc_M-900_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7C-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBZTW_900', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', 'btag_map':'BprimeBprimeToBZTWinc_M-900_TuneZ2star_8TeV-madgraph'},
+
+#      {'datasetpath':'/BprimeBprimeToBZTWinc_M-1000_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBZTWinc_M-1000_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7C-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBZTW_1000', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', 'btag_map':'BprimeBprimeToBZTWinc_M-1000_TuneZ2star_8TeV-madgraph'},
+      
+#      {'datasetpath':'/BprimeBprimeToBZTWinc_M-1100_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBZTWinc_M-1100_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7C-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToBZTW_1100', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', ''btag_map':'BprimeBprimeToBZTWinc_M-1100_TuneZ2star_8TeV-madgraph'},
+       
 ##      {'datasetpath':'/BprimeBprimeToTWTWinc_M-450_TuneZ2star_8TeV-madgraph/StoreResults-BprimeBprimeToTWTWinc_M-450_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToTWTW_450', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
 
 ##      {'datasetpath':'/BprimeBprimeToTWTWinc_M-550_TuneZ2star_8TeV-madgraph/StoreResults-BprimeBprimeToTWTWinc_M-550_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToTWTW_550', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
+
+##       {'datasetpath':'/BprimeBprimeToTWTWinc_M-550_TuneZ2star_8TeV-madgraph/StoreResults-BprimeBprimeToTWTWinc_M-550_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToTWTW_550', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet', 'btag_map':'BprimeBprimeToTWTWinc_M-550_TuneZ2star_8TeV-madgraph'},
 
 ##      {'datasetpath':'/BprimeBprimeToTWTWinc_M-650_TuneZ2star_8TeV-madgraph/StoreResults-BprimeBprimeToTWTWinc_M-650_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2_B-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'50', 'pycfg_params':'runData=0', '#sample_name': 'BBToTWTW_650', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
 
@@ -132,19 +144,19 @@ joblist = [
 
 
 # ========== Data Electron ==========
-
+   
 ##     {'datasetpath':'/SingleElectron/StoreResults-Run2012A-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
 ##      'number_of_jobs':'50', 'pycfg_params':'runData=1','runselection':'190450-193621' ,'lumi_mask':'Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt' ,
 ##      '#sample_name': 'Data-Run2012A-13Jul2012-v1','dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
 
-##      {'datasetpath':'/SingleElectron/StoreResults-Run2012A-recover-06Aug2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
-##       'number_of_jobs':'50', 'pycfg_params':'runData=1','runselection':'190782-190949' ,'lumi_mask':'Cert_190782-190949_8TeV_06Aug2012ReReco_Collisions12_JSON.txt' ,
-##       '#sample_name': 'Data-Run2012A-06Aug2012-v1','dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
-
-##     {'datasetpath':'/SingleElectron/dsperka-Run2012B-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
+##     {'datasetpath':'/SingleElectron/StoreResults-Run2012A-recover-06Aug2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
+##      'number_of_jobs':'30', 'pycfg_params':'runData=1','runselection':'190782-190949' ,'lumi_mask':'Cert_190782-190949_8TeV_06Aug2012ReReco_Collisions12_JSON.txt' ,
+##      '#sample_name': 'Data-Run2012A-06Aug2012-v1','dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
+    
+##     {'datasetpath':'/SingleElectron/StoreResults-Run2012B-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
 ##      'number_of_jobs':'300', 'pycfg_params':'runData=1', 'runselection':'193834-196531', 'lumi_mask':'Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt' ,
-##      '#sample_name': 'Data_Run2012B-13Jul2012-v1', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet'},
-
+##      '#sample_name': 'Data_Run2012B-13Jul2012-v1', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global//servlet/DBSServlet'},
+    
 ##     {'datasetpath':'/SingleElectron/StoreResults-Run2012C-24Aug2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
 ##      'number_of_jobs':'50', 'pycfg_params':'runData=1','runselection':'198022-198523' ,'lumi_mask':'Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt' ,
 ##      '#sample_name': 'Data-Run2012C-24Aug2012-v1', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
@@ -156,6 +168,15 @@ joblist = [
 ##      {'datasetpath':'/SingleElectron/StoreResults-Run2012C-PromptReco-v2_TLBSM_53x_v2_extension_v1-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
 ##      'number_of_jobs':'80', 'pycfg_params':'runData=1','runselection':'198934-203755' ,'lumi_mask':'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt' ,
 ##      '#sample_name': 'Data-Run2012C-PromptReco-v2-b', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
+    
+##      {'datasetpath':'/SingleElectron/StoreResults-Run2012D-PromptReco-v1_TLBSM_53x_v2_bugfix-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
+##      'number_of_jobs':'300', 'pycfg_params':'runData=1','runselection':'203773-209465' ,'lumi_mask':'Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt' ,
+##      '#sample_name': 'Data-Run2012D-PromptReco-v1-a', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
+
+##      {'datasetpath':'/SingleElectron/StoreResults-Run2012D-PromptReco-v1_TLBSM_53x_v2_extension_v1-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
+##      'number_of_jobs':'100', 'pycfg_params':'runData=1','runselection':'203773-209465' ,'lumi_mask':'Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt' ,
+##      '#sample_name': 'Data-Run2012D-PromptReco-v1-b', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
+      
 
 ##=========== Data Muon ===============
 
@@ -182,7 +203,6 @@ joblist = [
 ##     {'datasetpath':'/SingleMu/StoreResults-Run2012C-PromptReco-v2_TLBSM_53x_v2-646f7563e9ae6f48814faa1c250f042a/USER',
 ##      'number_of_jobs':'150', 'pycfg_params':'runData=1','runselection':'198934-203755','lumi_mask':'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_MuonPhys_v2.txt' ,
 ##      '#sample_name': 'Data-Run2012C-PromptReco-v2-b', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'},
-
 
 ##     {'datasetpath':'/SingleMu/StoreResults-Run2012C-PromptReco-v2_TLBSM_53x_v2_extension_v1-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
 ##      'number_of_jobs':'50', 'pycfg_params':'runData=1','runselection':'198934-203755','lumi_mask':'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_MuonPhys_v2.txt' ,
