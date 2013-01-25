@@ -47,41 +47,78 @@ def smear_factor(eta, variation):
     if variation == 0: return smear_nominal
     elif variation == 1: return smear_up
     elif variation == -1: return smear_down
-    
+
+# SF for HLT_Ele27_WP80
+def electronTrig_SF(eta, pt):    
+    abseta = abs(eta)
+    SF = 1.0
+    if abseta >= 0.0 and abseta < 0.80:
+        if pt >= 20. and pt < 30.:
+            SF = 0.695
+        elif pt >= 30. and pt < 40.:
+            SF = 0.984
+        elif pt >= 40. and pt < 50.:
+            SF = 0.999
+        elif pt > 50. and pt < 200.:
+            SF = 0.999
+        else: SF = 0.999    
+    elif abseta >= 0.80 and abseta < 1.48:
+        if pt >= 20. and pt < 30.:
+            SF = 0.462
+        elif pt >= 30. and pt < 40.:
+            SF = 0.967
+        elif pt >= 40. and pt < 50.:
+            SF = 0.983
+        elif pt > 50. and pt < 200.:
+            SF = 0.988
+        else: SF = 0.988    
+    elif abseta >= 1.48 and abseta < 2.50:
+        if pt >= 20. and pt < 30.:
+            SF = 0.804
+        elif pt >= 30. and pt < 40.:
+            SF = 0.991
+        elif pt >= 40. and pt < 50.:
+            SF = 1.018
+        elif pt > 50. and pt < 200.:
+            SF = 0.977
+        else: SF = 0.977    
+    return SF
+
+# SF for electron ID (MVA >0.9 && relIso <0.1)
 def electronID_SF(eta, pt):
     abseta = abs(eta)
     SF = 1.0
     if abseta >= 0.0 and abseta < 0.80:
         if pt >= 20. and pt < 30.:
-            SF = 0.869
+            SF = 0.972
         elif pt >= 30. and pt < 40.:
-            SF = 0.990
+            SF = 0.950
         elif pt >= 40. and pt < 50.:
-            SF = 0.997
+            SF = 0.966
         elif pt > 50. and pt < 200.:
-            SF = 0.993
-        else: SF = 0.993    
+            SF = 0.961
+        else: SF = 0.961    
     elif abseta >= 0.80 and abseta < 1.48:
         if pt >= 20. and pt < 30.:
-            SF = 0.932
+            SF = 0.928
         elif pt >= 30. and pt < 40.:
-            SF = 0.991
+            SF = 0.957
         elif pt >= 40. and pt < 50.:
-            SF = 0.996
+            SF = 0.961
         elif pt > 50. and pt < 200.:
-            SF = 0.997
-        else: SF = 0.997    
+            SF = 0.963
+        else: SF = 0.963    
     elif abseta >= 1.48 and abseta < 2.50:
         if pt >= 20. and pt < 30.:
-            SF = 0.935
+            SF = 0.834
         elif pt >= 30. and pt < 40.:
-            SF = 0.975
+            SF = 0.922
         elif pt >= 40. and pt < 50.:
-            SF = 0.990
+            SF = 0.941
         elif pt > 50. and pt < 200.:
-            SF = 0.990
-        else: SF = 0.990    
-    return SF       
+            SF = 0.971
+        else: SF = 0.971    
+    return SF
 
 from array import array
 from optparse import OptionParser
@@ -354,6 +391,9 @@ else:
     
     trigSigEle_path = array('i', [0])
     t.Branch('trigSigEle_path', trigSigEle_path, 'trigSigEle_path/I')
+
+trigSF = array('d', [0.])
+t.Branch('trigSF', trigSF, 'trigSF/D')
 
 met = array('d',[0.])
 t.Branch('met',met,'met/D')
@@ -818,11 +858,17 @@ for event in events:
     if runMu :
         lepIso[0] = (chIso + max(0.0, nhIso + phIso - 0.5*puIso))/leptonsPt
         lepSF[0]  = 1
+        trigSF[0] = 1
     else:
         AEff = (leptons[0]).userFloat('AEff')
         lepIso[0] = (chIso + max(0.0, nhIso + phIso - rho*AEff))/leptonsPt
-        lepSF[0]  = electronID_SF((leptons[0]).eta(), leptonsPt)
-    
+        if not options.data :
+            lepSF[0]  = electronID_SF((leptons[0]).eta(), leptonsPt)
+            trigSF[0] = electronTrig_SF((leptons[0]).eta(), leptonsPt)
+        else:
+            lepSF[0]  = 1
+            trigSF[0] = 1
+            
     lepIsoUncorr[0] = (chIso + nhIso + phIso)/leptonsPt
     njets[0] = len(jets)
     sumEt = leptonsPt + metObj.pt()
