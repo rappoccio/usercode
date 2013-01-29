@@ -180,6 +180,13 @@ datasets = [
     'AK5PF_CSVM'
   ],
   [
+    '/QCD_Pt-15to20_MuEnrichedPt5_TuneZ2star_8TeV_pythia6/cjenkins-QCD_Pt-15to20_MuEnrichedPt5_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 20., 40., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 20., 40., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 20., 40., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'AK5PF_CSVM'
+  ],
+  [
     '/QCD_Pt_20_30_EMEnriched_TuneZ2star_8TeV_pythia6/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
     {'b':    [[0., 40., 60., 1000.],[0., 0.6, 1.2, 2.4]],
      'c':    [[0., 40., 60., 1000.],[0., 0.6, 1.2, 2.4]],
@@ -250,6 +257,13 @@ datasets = [
     'AK5PF_CSVM'
   ],
   [
+    '/QCD_Pt_250_350_BCtoE_TuneZ2star_8TeV_pythia6/cjenkins-QCD_Pt_250_350_BCtoE_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 150., 200., 250., 300., 350., 400., 450., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 150., 200., 250., 300., 350., 400., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 150., 200., 250., 300., 350., 400., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'AK5PF_CSVM'
+  ],
+  [
     '/QCD_Pt_350_BCtoE_TuneZ2star_8TeV_pythia6/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
     {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 500., 600., 700., 800., 1000.],[0., 0.6, 1.2, 2.4]],
      'c':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 500., 600., 700., 800., 1000.],[0., 0.6, 1.2, 2.4]],
@@ -261,6 +275,13 @@ datasets = [
     {'b':    [[0., 40., 60., 80., 100., 150., 200., 250., 1000.],[0., 0.6, 1.2, 2.4]],
      'c':    [[0., 40., 60., 80., 100., 150., 200., 250., 1000.],[0., 0.6, 1.2, 2.4]],
      'udsg': [[0., 40., 60., 80., 100., 150., 200., 250., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'AK5PF_CSVM'
+  ],
+  [
+    '/GJets_HT-400ToInf_8TeV-madgraph/cjenkins-GJets_HT-400ToInf_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 150., 200., 250., 300., 350., 450.,1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 150., 200., 250., 300., 350., 450.,1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 150., 200., 250., 300., 400., 500., 1000.],[0., 0.6, 1.2, 2.4]]},
     'AK5PF_CSVM'
   ],
   # Signal
@@ -584,6 +605,13 @@ datasets = [
     'AK5PF_CSVM'
   ],
   [
+    '/BprimeBprimeToBZBZinc_M-500_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBZBZinc_M-500_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'AK5PF_CSVM'
+  ],
+  [
     '/BprimeBprimeToBZBZinc_M-550_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBZBZinc_M-550_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
     {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 1000.],[0., 0.6, 1.2, 2.4]],
      'c':    [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]],
@@ -719,6 +747,13 @@ datasets = [
   ],
   [
     '/BprimeBprimeToBZTWinc_M-900_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBZTWinc_M-900_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7C-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 600., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 150., 200., 300., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'AK5PF_CSVM'
+  ],
+  [
+    '/BprimeBprimeToBZTWinc_M-950_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBZTWinc_M-950_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7C-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
     {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 600., 1000.],[0., 0.6, 1.2, 2.4]],
      'c':    [[0., 40., 60., 80., 100., 150., 200., 300., 1000.],[0., 0.6, 1.2, 2.4]],
      'udsg': [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]]},
