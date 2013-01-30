@@ -16,7 +16,21 @@ datasets = [
     {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 1000.],[0., 0.6, 1.2, 2.4]],  # jet Pt and |eta| bins for b jets
      'c':    [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]],  # jet Pt and |eta| bins for c jets
      'udsg': [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]]},  # jet Pt and |eta| bins for udsg jets
-    'AK5PF_CSVM'  # jet type and b-tagging label
+    'AK5PF_CSVM'
+  ],
+  [
+    '/TT_8TeV-mcatnlo/galank-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 500., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 150., 200., 300., 400., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'AK5PF_CSVM'
+  ],
+  [
+    '/TT_CT10_TuneZ2star_8TeV-powheg-tauola/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 500., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 150., 200., 300., 400., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'AK5PF_CSVM'
   ],
   [
     '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
