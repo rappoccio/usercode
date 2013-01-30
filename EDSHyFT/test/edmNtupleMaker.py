@@ -53,7 +53,13 @@ options.register('runEleQCDSamples',
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.int,
                  "To run on only electron QCD samples (1) or not (0)")
-                 
+
+options.register('runMuonQCDSamples',
+                 0,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
+                 "To run on only muon QCD samples (1) or not (0)")
+                                  
 options.parseArguments()
 
 print options
@@ -282,7 +288,6 @@ if runData:
     process.p9 = cms.Path()
     process.p10 = cms.Path()
     process.p11 = cms.Path()
-    
 elif options.runEleQCDSamples:
     process.p1 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEle)
     process.p2 = cms.Path()
@@ -295,6 +300,18 @@ elif options.runEleQCDSamples:
     process.p9 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEleMetRes110)
     process.p10 = cms.Path()
     process.p11 = cms.Path()
+elif options.runMuonQCDSamples:
+    process.p1 = cms.Path()
+    process.p2 = cms.Path( process.goodPatJetsPFSF * process.pfTupleMu)
+    process.p3 = cms.Path()
+    process.p4 = cms.Path( process.pfTupleMuCA8Pruned)
+    process.p5 = cms.Path()
+    process.p6 = cms.Path( process.goodPatJetsPFSF * process.pfTupleMuLoose)
+    process.p7 = cms.Path( process.pileupReweightingProducer * process.GenInfo )
+    process.p8 = cms.Path()
+    process.p9 = cms.Path()
+    process.p10 = cms.Path( process.goodPatJetsPFSF * process.pfTupleMuMetRes090)
+    process.p11 = cms.Path( process.goodPatJetsPFSF * process.pfTupleMuMetRes110)  
 else:
     process.p1 = cms.Path( process.goodPatJetsPFSF * process.pfTupleEle)
     process.p2 = cms.Path( process.goodPatJetsPFSF * process.pfTupleMu)
