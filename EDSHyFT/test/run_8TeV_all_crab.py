@@ -162,7 +162,7 @@ joblist = [
 ##    {'datasetpath': '/TTJets_scaleup_TuneZ2star_8TeV-madgraph-tauola/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0', '#sample_name': 'TopScaleup', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' },
  
 ##     {'datasetpath': '/QCD_Pt_20_30_BCtoE_TuneZ2star_8TeV_pythia6/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runEleQCDSamples=1', '#sample_name': 'QCD_Pt_20_30_BCtoE', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet', 'btag_map':'QCD_Pt_20_30_BCtoE_TuneZ2star_8TeV_pythia6' },
-
+    
     {'datasetpath': '/QCD_Pt_30_80_BCtoE_TuneZ2star_8TeV_pythia6/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runEleQCDSamples=1', '#sample_name': 'QCD_Pt_30_80_BCtoE', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet', 'btag_map':'QCD_Pt_30_80_BCtoE_TuneZ2star_8TeV_pythia6' },
 
     {'datasetpath': '/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6/cjenkins-QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runEleQCDSamples=1', '#sample_name': 'QCD_Pt_80_170_BCtoE', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', 'btag_map':'QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6'},
@@ -221,7 +221,7 @@ joblist = [
 
 
 ##     {'datasetpath':'/SingleElectron/cjenkins-Run2012C-EcalRecover_11Dec2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
-##      'number_of_jobs':'5', 'pycfg_params':'runData=1','runselection':'201191-201191' ,'lumi_mask':'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt' ,
+##      'number_of_jobs':'5', 'pycfg_params':'runData=1','runselection':'201191-201191' ,'lumi_mask':'Cert_201191-201191_8TeV_11Dec2012ReReco-recover_Collisions12_JSON.txt' ,
 ##      '#sample_name': 'Data-Run2012C-EcalRecover_11Dec2012-v1', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet'},
     
 ##      {'datasetpath':'/SingleElectron/StoreResults-Run2012D-PromptReco-v1_TLBSM_53x_v2_bugfix-e3fb55b810dc7a0811f4c66dfa2267c9/USER',
