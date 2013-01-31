@@ -189,8 +189,27 @@ joblist = [
 
     {'datasetpath': '/GJets_HT-400ToInf_8TeV-madgraph/cjenkins-GJets_HT-400ToInf_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runEleQCDSamples=1', '#sample_name': 'GJets_HT-400ToInf', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', 'btag_map':'GJets_HT-400ToInf_8TeV-madgraph' },
 
+    {'datasetpath': '/QCD_Pt-15to20_MuEnrichedPt5_TuneZ2star_8TeV_pythia6/cjenkins-QCD_Pt-15to20_MuEnrichedPt5_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runMuonQCDSamples=1', '#sample_name': 'QCD_Pt-15to20_MuEnrichedPt5', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', 'btag_map':'QCD_Pt-15to20_MuEnrichedPt5_TuneZ2star_8TeV_pythia6' },
+
     {'datasetpath': '/QCD_Pt-20to30_MuEnrichedPt5_TuneZ2star_8TeV_pythia6/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runMuonQCDSamples=1', '#sample_name': 'QCD_Pt-20to30_MuEnrichedPt5', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet', 'btag_map':'QCD_Pt-20to30_MuEnrichedPt5_TuneZ2star_8TeV_pythia6' },
-  
+    
+    {'datasetpath': '/QCD_Pt-30to50_MuEnrichedPt5_TuneZ2star_8TeV_pythia6/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runMuonQCDSamples=1', '#sample_name': 'QCD_Pt-30to50_MuEnrichedPt5', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet', 'btag_map':'QCD_Pt-30to50_MuEnrichedPt5_TuneZ2star_8TeV_pythia6' },
+
+    {'datasetpath': 'QCD_Pt-50to80_MuEnrichedPt5_TuneZ2star_8TeV_pythia6/cjenkins-QCD_Pt-50to80_MuEnrichedPt5_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runMuonQCDSamples=1', '#sample_name': 'QCD_Pt-50to80_MuEnrichedPt5', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', 'btag_map':'QCD_Pt-50to80_MuEnrichedPt5_TuneZ2star_8TeV_pythia6' },
+
+    {'datasetpath': '/QCD_Pt-80to120_MuEnrichedPt5_TuneZ2star_8TeV_pythia6/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runMuonQCDSamples=1', '#sample_name': 'QCD_Pt-80to120_MuEnrichedPt5', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet', 'btag_map':'QCD_Pt-80to120_MuEnrichedPt5_TuneZ2star_8TeV_pythia6' },
+
+    {'datasetpath': '/QCD_Pt-120to170_MuEnrichedPt5_TuneZ2star_8TeV_pythia6/cjenkins-QCD_Pt-120to170_MuEnrichedPt5_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runMuonQCDSamples=1', '#sample_name': 'QCD_Pt-120to170_MuEnrichedPt5', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', 'btag_map':'QCD_Pt-120to170_MuEnrichedPt5_TuneZ2star_8TeV_pythia6' },
+
+    {'datasetpath': '/QCD_Pt-170to300_MuEnrichedPt5_TuneZ2star_8TeV_pythia6/cjenkins-QCD_Pt-170to300_MuEnrichedPt5_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runMuonQCDSamples=1', '#sample_name': 'QCD_Pt-170to300_MuEnrichedPt5', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', 'btag_map':'QCD_Pt-170to300_MuEnrichedPt5_TuneZ2star_8TeV_pythia6' },
+
+    {'datasetpath': '/QCD_Pt-300to470_MuEnrichedPt5_TuneZ2star_8TeV_pythia6/cjenkins-QCD_Pt-300to470_MuEnrichedPt5_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runMuonQCDSamples=1', '#sample_name': 'QCD_Pt-300to470_MuEnrichedPt5', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', 'btag_map':'QCD_Pt-300to470_MuEnrichedPt5_TuneZ2star_8TeV_pythia6' },
+
+    {'datasetpath': '/QCD_Pt-470to600_MuEnrichedPt5_TuneZ2star_8TeV_pythia6/cjenkins-QCD_Pt-470to600_MuEnrichedPt5_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runMuonQCDSamples=1', '#sample_name': 'QCD_Pt-470to600_MuEnrichedPt5', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet', 'btag_map':'QCD_Pt-470to600_MuEnrichedPt5_TuneZ2star_8TeV_pythia6' },
+
+    {'datasetpath': '/QCD_Pt-600to800_MuEnrichedPt5_TuneZ2star_8TeV_pythia6/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runMuonQCDSamples=1', '#sample_name': 'QCD_Pt-600to800_MuEnrichedPt5', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet', 'btag_map':'QCD_Pt-600to800_MuEnrichedPt5_TuneZ2star_8TeV_pythia6' },
+
+    {'datasetpath': '/QCD_Pt-800to1000_MuEnrichedPt5_TuneZ2star_8TeV_pythia6/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER', 'number_of_jobs':'100', 'pycfg_params':'runData=0 runMuonQCDSamples=1', '#sample_name': 'QCD_Pt-800to1000_MuEnrichedPt5', 'dbs_url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet', 'btag_map':'QCD_Pt-800to1000_MuEnrichedPt5_TuneZ2star_8TeV_pythia6' },
      
 
 # ========== Data Electron ==========
