@@ -1,0 +1,11 @@
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_200_1_DZd.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_201_1_Sxc.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_202_1_jvs.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_203_1_Vkf.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_204_2_PLr.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_205_1_N51.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_206_1_py4.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_207_2_mXQ.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_208_2_Sim.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_209_1_GPX.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_210_1_peD.root

@@ -1,0 +1,14 @@
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_15_1_AwI.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_16_1_VLc.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_17_1_vuI.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_18_1_0yw.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_19_1_2qP.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_20_1_mdq.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_21_1_Jnc.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_22_1_wRw.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_23_1_W95.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_24_1_sHf.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_25_1_Lwz.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_26_1_X9W.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_27_1_4C0.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_28_1_217.root

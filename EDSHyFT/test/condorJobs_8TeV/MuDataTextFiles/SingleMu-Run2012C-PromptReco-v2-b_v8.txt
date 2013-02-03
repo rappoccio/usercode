@@ -1,0 +1,13 @@
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_108_1_XFJ.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_109_1_Q1L.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_110_1_ByB.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_111_1_61b.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_112_1_kzD.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_113_1_TNM.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_114_1_87H.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_116_1_Rjj.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_117_1_cjO.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_118_2_eTc.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_119_1_2ko.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_120_2_v3r.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_121_1_O5q.root

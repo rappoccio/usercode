@@ -1,0 +1,5 @@
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-ex1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_19_1_fx6.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-ex1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_20_1_Wke.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-ex1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_21_1_GOw.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-ex1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_22_1_lDb.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-ex1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_23_1_NK4.root

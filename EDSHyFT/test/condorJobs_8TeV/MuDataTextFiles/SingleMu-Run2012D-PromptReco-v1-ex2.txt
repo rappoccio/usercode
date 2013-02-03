@@ -1,0 +1,1 @@
+/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-ex2/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_49_1_s4N.root
