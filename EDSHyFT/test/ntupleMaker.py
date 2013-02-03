@@ -47,6 +47,33 @@ def smear_factor(eta, variation):
     if variation == 0: return smear_nominal
     elif variation == 1: return smear_up
     elif variation == -1: return smear_down
+    
+#SF for HLT_Mu40
+def muonTrig_SF(eta, pt):    
+    abseta = abs(eta)
+    SF = 1.0
+    if abseta >= 0.0 and abseta < 0.90:
+        if pt >= 40.   and pt < 50.  : SF = 0.9810
+        elif pt >= 50. and pt < 60.  : SF = 0.9810
+        elif pt >= 60. and pt < 90.  : SF = 0.9806
+        elif pt >= 90. and pt < 140. : SF = 0.9786
+        elif pt >= 140. and pt < 500.: SF = 0.9810
+        else: SF = 0.9810    
+    elif abseta >= 0.90 and abseta < 1.2:
+        if pt >= 40.   and pt < 50.  : SF = 0.9626
+        elif pt >= 50. and pt < 60.  : SF = 0.9570
+        elif pt >= 60. and pt < 90.  : SF = 0.9528
+        elif pt >= 90. and pt < 140. : SF = 0.9504
+        elif pt >= 140. and pt < 500.: SF = 1.0088
+        else: SF = 1.0088    
+    elif abseta >= 1.2 and abseta < 2.1:
+        if pt >= 40.   and pt < 50.  : SF = 0.9931
+        elif pt >= 50. and pt < 60.  : SF = 0.9894
+        elif pt >= 60. and pt < 90.  : SF = 0.9827
+        elif pt >= 90. and pt < 140. : SF = 0.9908
+        elif pt >= 140. and pt < 500.: SF = 0.9970
+        else: SF = 0.9970     
+    return SF
 
 # SF for HLT_Ele27_WP80
 def electronTrig_SF(eta, pt):    
@@ -448,7 +475,7 @@ nvertices = array('i',[0])
 t.Branch('nVertices',nvertices,'nVertices/I')
 
 njets = array('i',[0])
-t.Branch('nJets',njets,'nJets/I')
+t.Branch('njets',njets,'nJets/I')
 
 max_nJets = 30
 jetEt = array('d',max_nJets*[0.])
@@ -495,6 +522,9 @@ t.Branch('nTagsCSVM',nTagsCSVM,'nTagsCSVM/I')
 
 m3 = array('d',[0.])
 t.Branch('m3',m3,'m3/D')
+
+mj = array('d',[0.])
+t.Branch('mj',mj,'mj/D')
 
 ht = array('d',[0.])
 t.Branch('ht',ht,'ht/D')
@@ -780,7 +810,7 @@ for event in events:
         
     #Reset MET
     metObj.setP4(metP4)
-    
+
     #########################
     if runMu:
         leptonsPt = leptons[0].pt()
@@ -857,8 +887,12 @@ for event in events:
       
     if runMu :
         lepIso[0] = (chIso + max(0.0, nhIso + phIso - 0.5*puIso))/leptonsPt
-        lepSF[0]  = 1
-        trigSF[0] = 1
+        if not options.data:
+            lepSF[0]  = 1
+            trigSF[0] = muonTrig_SF((leptons[0]).eta(), leptonsPt)
+        else:    
+            lepSF[0]  = 1
+            trigSF[0] = 1
     else:
         AEff = (leptons[0]).userFloat('AEff')
         lepIso[0] = (chIso + max(0.0, nhIso + phIso - rho*AEff))/leptonsPt
@@ -870,7 +904,6 @@ for event in events:
             trigSF[0] = 1
             
     lepIsoUncorr[0] = (chIso + nhIso + phIso)/leptonsPt
-    njets[0] = len(jets)
     sumEt = leptonsPt + metObj.pt()
     
     lepton_vector = TLorentzVector()
@@ -944,8 +977,9 @@ for event in events:
     nVtags = 0
     WPt = 0
     ZPt = 0
-
+    
     jet_p4 = []
+    sum_jetP4 = TLorentzVector(0.0,0.0,0.0,0.0) 
     for jet in jets :
         if jet.pt() <= jetPtMin: continue
         jetEt[nj] = jet.pt()
@@ -953,10 +987,10 @@ for event in events:
         sumJetE += jet.energy()
         jet_vector = TLorentzVector()
         jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
-        
+        sum_jetP4 += jet_vector
         jet_p4.append(jet_vector)
         minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
-              
+        
         if options.data:
             if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
                 ntagsCSVM = ntagsCSVM + 1  
@@ -978,6 +1012,13 @@ for event in events:
         nj = nj + 1
         sumEt += jet.pt()
         
+    # mass of sum of all jets
+    mj[0] = sum_jetP4.M()
+    
+    # count the jets that passes a certain jet pt threshold
+    njets[0] = nj
+
+    # m3
     M3 = 0.0
     highestPt = 0.0
     if nj >= 3:
@@ -1032,8 +1073,8 @@ for event in events:
                 if ak5jet.pt() <= jetPtMin: continue
                 ak5jet_vector = TLorentzVector()
                 ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
-                if ntagsCSVM > 0 and  nVtags > 0:
-                     minDR_bjetV = TMath.Min ( ak5jet_vector.DeltaR(ca8jet_vector), minDR_bjetV )
+                #if ntagsCSVM > 0 and  nVtags > 0:
+                minDR_bjetV = TMath.Min ( ak5jet_vector.DeltaR(ca8jet_vector), minDR_bjetV )
             #print('minDR_bV', minDR_bjetV)  
             
             minDR_bV[cj] = minDR_bjetV
