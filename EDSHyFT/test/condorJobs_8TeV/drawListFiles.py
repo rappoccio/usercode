@@ -3,6 +3,7 @@
 import subprocess
 
 cPath = '/pnfs/cms/WAX/11/store/user/skhalil'
+cPathM = '/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins'
 cPathJ = '/pnfs/cms/WAX/11/store/user/lpcbprime/jpilot'
 cPathS = '/pnfs/cms/WAX/11/store/user/lpcbprime/skhalil'
 cPathD = '/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek'
@@ -53,6 +54,7 @@ options = [
 ##     [cPath+'/BprimeBprimeToBHTWinc_M-800_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/e1d25a379a95e79fb6533cb42a5ca12c',   'BprimeBprimeToBHTWinc_M-800'],
       
 ##     [cPath+'/BprimeBprimeToBZBZinc_M-450_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/ce3fd64a5c2dc7d35af06807c792b6ab',   'BprimeBprimeToBZBZinc_M-450'],
+##     [cPathS+'/BprimeBprimeToBZBZinc_M-500_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/fd9abb124e85048bd34f28c7643e4ae9',   'BprimeBprimeToBZBZinc_M-500'],
 ##     [cPath+'/BprimeBprimeToBZBZinc_M-550_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/23da2a7f39cbdf2e02b94e9a37d7ab9a',   'BprimeBprimeToBZBZinc_M-550'],
 ##     [cPath+'/BprimeBprimeToBZBZinc_M-600_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/d130027865fb26480084abb18440a984',   'BprimeBprimeToBZBZinc_M-600'],
 ##     [cPath+'/BprimeBprimeToBZBZinc_M-650_TuneZ2star_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/79dcc9bce8ef862ae699f9b90d336fc9',   'BprimeBprimeToBZBZinc_M-650'],
@@ -73,33 +75,44 @@ options = [
 ##     [cPathD+'/WW_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/de74174e9a7fde15a7430d7e1cf8067b',                      'WW'],
 ##     [cPathD+'/ZZ_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/cee07b73d31b64d945d1b37f2d1588c6',                      'ZZ'],
 ##     [cPathS+'/WZ_TuneZ2star_8TeV_pythia6_tauola/BPrimeEDMNtuples_53x_v2/0b0405642bd7425bf8086d4a8a777caf',                      'WZ'],
-
 ##     [cPathD+'/TTWJets_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/5c59c72b540b108688e338ba6cfe657f',                                  'TTWJets'],
 ##     [cPathD+'/TTZJets_8TeV-madgraph_v2/BPrimeEDMNtuples_53x_v2/c88fd9005cbc44d80d207f75a57e1f21',                               'TTZJets'],
 ##     [cPathD+'/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792',    'TTJets_matchingdown'],
 ##     [cPathD+'/TTJets_matchingup_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792',      'TTJets_matchingup'],
 ##     [cPathD+'/TTJets_scaledown_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792',       'TTJets_scaledown'],
 ##     [cPathD+'/TTJets_scaleup_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v2/ec1c239d99fddd6d785510b07dffd792',         'TTJets_scaleup'],
+##     [cPathS+'/TT_CT10_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v2/8035056e21a89a32faee19c240705a7f',                  'TTJets_Powheg'],
+##     [cPathS+'/TT_8TeV-mcatnlo/BPrimeEDMNtuples_53x_v2/c758896ed2f659088f0a57f48c72a768/',                                       'TTJets_MCatnlo'],
+##     [cPathS+'/QCD_Pt_20_30_BCtoE_TuneZ2star_8TeV_pythia6/BPrimeEDMNtuples_53x_v2/ffd29c63b5a1f9e80b067685dd610a49',             'BCtoE_2030'],
+##     [cPathM+'/QCD_Pt_30_80_BCtoE_TuneZ2star_8TeV_pythia6/BPrimeEDMNtuples_53x_v2/c8255d2d0832cecfbf79e4f5ef0926c3',             'BCtoE_3080'],
+##     [cPathM+'/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6/BPrimeEDMNtuples_53x_v2/a6aa0b2416b65147a5babc8b1cb3edf9',            'BCtoE_80170'],
+##     [cPathM+'/QCD_Pt_170_250_BCtoE_TuneZ2star_8TeV_pythia6/BPrimeEDMNtuples_53x_v2/2475da4b9f0f8b7789726349ee79d0f8',           'BCtoE_170250'],
+##     [cPathM+'/QCD_Pt_250_350_BCtoE_TuneZ2star_8TeV_pythia6/BPrimeEDMNtuples_53x_v2/1ad78c80da2d57c533ae83f97e4f2f2b',           'BCtoE_250350'],
+##     [cPathM+'/QCD_Pt_350_BCtoE_TuneZ2star_8TeV_pythia6/BPrimeEDMNtuples_53x_v2/11cb661eccb8fbe9decb9d719207a266',               'BCtoE_350Inf'],
+
+##     [cPathM+'/QCD_Pt_20_30_EMEnriched_TuneZ2star_8TeV_pythia6/BPrimeEDMNtuples_53x_v2/86d3cefa621f6632b6d61795778f103a',        'EMEn_2030'],   
+
 
 ##     [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-13Jul2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleEle-Run2012A-13Jul2012'],
 ##     [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleEle-Run2012A-06Aug2012'],
 ##     [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data_Run2012B-13Jul2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleEle-Run2012B-13Jul2012'],
 ##     [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012C-24Aug2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleEle-Run2012C-24Aug2012'],
+##     [cPathS+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012C-EcalRecover_11Dec2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f', 'SingleEle-Run2012C-EcalRecover_11Dec2012'],
 ##     [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f', 'SingleEle-Run2012C-PromptReco-v2-a'],
 ##     [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f', 'SingleEle-Run2012C-PromptReco-v2-b'],
 ##     [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-a/dc4e5f86dc698f8df05464eb1d2fb82f', 'SingleEle-Run2012D-PromptReco-v2-a'],
 ##     [cPath+'/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-b/dc4e5f86dc698f8df05464eb1d2fb82f', 'SingleEle-Run2012D-PromptReco-v2-b'],
 
-      [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012A-13Jul2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012A-13Jul2012'],
-      [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012A-06Aug2012'],
-      [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012B-13Jul2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012B-13Jul2012'],
-      [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-24Aug2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012C-24Aug2012'],
-      [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012C-PromptReco-v2-a'],
-      [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012C-PromptReco-v2-b'],
-      [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-c/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012C-PromptReco-v2-c'],
-      [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f',     'SingleEle-Run2012D-PromptReco-v1'],
-      [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-ex1/dc4e5f86dc698f8df05464eb1d2fb82f', 'SingleEle-Run2012D-PromptReco-v1-ex1'],
-      [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-ex2/dc4e5f86dc698f8df05464eb1d2fb82f', 'SingleEle-Run2012D-PromptReco-v1-ex2'],
+##     [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012A-13Jul2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012A-13Jul2012'],
+##     [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012A-06Aug2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012A-06Aug2012'],
+##     [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012B-13Jul2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012B-13Jul2012'],
+##     [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-24Aug2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012C-24Aug2012'],
+##     [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-a/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012C-PromptReco-v2-a'],
+##     [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-b/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012C-PromptReco-v2-b'],
+##     [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012C-PromptReco-v2-c/dc4e5f86dc698f8df05464eb1d2fb82f',   'SingleMu-Run2012C-PromptReco-v2-c'],
+##     [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1/dc4e5f86dc698f8df05464eb1d2fb82f',     'SingleMu-Run2012D-PromptReco-v1'],
+##     [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-ex1/dc4e5f86dc698f8df05464eb1d2fb82f', 'SingleMu-Run2012D-PromptReco-v1-ex1'],
+##     [cPathJ+'/SingleMu/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-ex2/dc4e5f86dc698f8df05464eb1d2fb82f', 'SingleMu-Run2012D-PromptReco-v1-ex2'],
     ]
 command = 'python listFiles.py --path={0:s} --outputText={1:s} '
 
