@@ -10,6 +10,6 @@ Output = $(myPath)/$(myLogFolder)/batch_$(cluster)_$(process).stdout
 Error  = $(myPath)/$(myLogFolder)/batch_$(cluster)_$(process).stderr
 Log    = $(myPath)/$(myLogFolder)/batch_$(cluster)_$(process).condor
 Requirements          = (Memory >= 499 && OpSys == "LINUX" && (Arch != "DUMMY"))
-Arguments = $(cluster) $(process) $(myPath) $(myPath)/SignalTextFiles $(myOutPath) 0
+Arguments = $(cluster) $(process) $(myPath) $(myPath)/MuDataTextFiles $(myOutPath) 1
 notify_user = skhalil@FNAL.GOV
-Queue 336
+Queue 154
