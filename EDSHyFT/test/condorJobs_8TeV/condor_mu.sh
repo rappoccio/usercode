@@ -50,17 +50,17 @@ for txt in `ls $INPATH`; do
                       "--bTag BTagSFup" \
                       "--bTag BTagSFdown"; do
             if test $counter -eq $PROCESS; then
-                echo "python ntupleMaker.py --useBPrimeGenInfo --lepPtMin=40 --runMuons --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name} $option"
-                python ntupleMaker.py --useBPrimeGenInfo --lepPtMin=40 --runMuons --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name} $option
+                echo "python ntupleMaker.py --useBPrimeGenInfo --lepPtMin 40 --runMuons --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name} $option"
+                python ntupleMaker.py --useBPrimeGenInfo --lepPtMin 40 --runMuons --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name} $option
             fi
             let "counter+=1"
         done
         else
             if test $counter -eq $PROCESS; then
-                echo "echo python ntupleMaker.py --data  --lepPtMin=40 --runMuons --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}"
-                python ntupleMaker.py --data --onDcache --lepPtMin=40 --runMuons --txtfiles $INPATH/$txt --sample $OUTPATH/${name}
-                echo "echo python ntupleMaker.py --data  --lepPtMin=40 --runMuons --runDataLoose --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}_Loose"
-                python ntupleMaker.py --data --lepPtMin=40 --runMuons --runDataLoose --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}_Loose
+                echo "echo python ntupleMaker.py --data  --lepPtMin 40 --runMuons --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}"
+                python ntupleMaker.py --data --onDcache --lepPtMin 40 --runMuons --txtfiles $INPATH/$txt --sample $OUTPATH/${name}
+                echo "echo python ntupleMaker.py --data  --lepPtMin 40 --runMuons --runDataLoose --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}_Loose"
+                python ntupleMaker.py --data --lepPtMin 40 --runMuons --runDataLoose --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}_Loose
             fi
             let "counter+=1"
         fi
