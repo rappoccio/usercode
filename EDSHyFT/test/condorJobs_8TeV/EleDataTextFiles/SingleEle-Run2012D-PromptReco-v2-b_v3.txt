@@ -1,0 +1,10 @@
+/pnfs/cms/WAX/11/store/user/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_31_1_D6c.root
+/pnfs/cms/WAX/11/store/user/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_32_1_LAK.root
+/pnfs/cms/WAX/11/store/user/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_33_1_Zvi.root
+/pnfs/cms/WAX/11/store/user/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_34_1_oJk.root
+/pnfs/cms/WAX/11/store/user/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_35_1_13M.root
+/pnfs/cms/WAX/11/store/user/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_36_1_Jaj.root
+/pnfs/cms/WAX/11/store/user/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_37_1_fKV.root
+/pnfs/cms/WAX/11/store/user/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_38_1_fcy.root
+/pnfs/cms/WAX/11/store/user/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_39_1_B4C.root
+/pnfs/cms/WAX/11/store/user/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012D-PromptReco-v1-b/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_40_1_Fkk.root

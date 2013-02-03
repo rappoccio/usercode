@@ -1,0 +1,1 @@
+/pnfs/cms/WAX/11/store/user/lpcbprime/skhalil/SingleElectron/BPrimeEDMNtuples_53x_v2_Data-Run2012C-EcalRecover_11Dec2012-v1/dc4e5f86dc698f8df05464eb1d2fb82f/edmTest_1_1_jGN.root
