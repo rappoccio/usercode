@@ -45,7 +45,7 @@ for txt in `ls $INPATH`; do
         if test $counter -eq $PROCESS; then
             echo "python ntupleMaker.py --JES nominal --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}"
             python ntupleMaker.py --JES nominal --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}
-            echo "python ntupleMaker.py --JES nominal --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}_Loose"
+            echo "python ntupleMaker.py --JES nominal --runDataLoose --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}_Loose"
             python ntupleMaker.py --JES nominal --runDataLoose --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}_Loose
         fi
             let "counter+=1"
