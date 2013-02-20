@@ -10,6 +10,40 @@ import sys
 import glob
 import math
 
+def isVTagged(ca8jet):
+    pt = ca8jet.pt()    
+    mass = ca8jet.mass()
+    subjet1M = ca8jet.daughter(0).mass() 
+    subjet2M = ca8jet.daughter(1).mass()
+    mu = max(subjet1M,subjet2M) / ca8jet.correctedJet("Uncorrected").mass()    
+    if mu < 0.4 and (mass < 150 and mass > 50) and pt > 200:
+        return True
+    else:
+        return False
+
+def isBTagged(ak5jet):
+    bjet=0
+    if options.data:
+        if ak5jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
+             bjet=1
+    else:
+        if options.bTag == "OutOfBox" :
+            if (ak5jet.userInt('btagRegular') & 1) == 1 :
+                bjet=1
+        elif options.bTag == "" :
+            if (ak5jet.userInt('btagRegular') & 2) == 2 :
+                bjet=1
+        elif options.bTag =="BTagSFup" :
+            if (ak5jet.userInt('btagRegular') & 4) == 4 :
+                bjet=1
+        elif options.bTag =="BTagSFdown" :
+            if (ak5jet.userInt('btagRegular') & 8) == 8 :
+                bjet=1
+    if bjet==1:
+        return True
+    else:
+        return False
+
 def deltaR( eta1, phi1, eta2, phi2):
     deta = eta1 - eta2
     dphi = phi1 - phi2
@@ -382,24 +416,6 @@ f = TFile(options.sample + systtag + ".root", "RECREATE")
 f.cd()
 t = TTree("tree","tree")
 
-WtWt = array('i',[0])
-t.Branch('WtWt',WtWt,'WtWt/I')
-
-WtZb = array('i',[0])
-t.Branch('WtZb',WtZb,'WtZb/I')
-
-ZbZb = array('i',[0])
-t.Branch('ZbZb',ZbZb,'ZbZb/I')
-
-ZbHb = array('i',[0])
-t.Branch('ZbHb',ZbHb,'ZbHb/I')
-
-WtHb = array('i',[0])
-t.Branch('WtHb',WtHb,'WtHb/I')
-
-HbHb = array('i',[0])
-t.Branch('HbHb',HbHb,'HbHb/I')
-
 if runMu:
     trigSigMuNonIso_path = array('i', [0])
     t.Branch('trigSigMuNonIso_path', trigSigMuNonIso_path, 'trigSigMuNonIso_path/I')
@@ -490,35 +506,60 @@ t.Branch('WjetM', WjetM, 'WjetM[nJets]/D')
 WjetMu = array('d', max_nJets*[0.])
 t.Branch('WjetMu', WjetMu, 'WjetMu[nJets]/D')
 
-WPt_true = array('d', max_nJets*[-1.])
-t.Branch('WPt_true', WPt_true, 'WPt_true[nJets]/D')
-
-ZPt_true = array('d', max_nJets*[-1.])
-t.Branch('ZPt_true', ZPt_true, 'ZPt_true[nJets]/D')
-
-HPt_true = array('d', max_nJets*[-1.])
-t.Branch('HPt_true', HPt_true, 'HPt_true[nJets]/D')
-
-dR_Wjjqq_match = array('d', max_nJets*[-1.])
-t.Branch('dR_Wjjqq_match',dR_Wjjqq_match,'dR_Wjjqq_match[nJets]/D')
-
-dR_Zjjqq_match = array('d', max_nJets*[-1.])
-t.Branch('dR_Zjjqq_match',dR_Zjjqq_match,'dR_Zjjqq_match[nJets]/D')
-
-dR_Hjjqq_match = array('d', max_nJets*[-1.])
-t.Branch('dR_Hjjqq_match',dR_Hjjqq_match,'dR_Hjjqq_match[nJets]/D')
+if bprimeGenInfo:
+    WPt_true = array('d', max_nJets*[-1.])
+    t.Branch('WPt_true', WPt_true, 'WPt_true[nJets]/D')
+    
+    ZPt_true = array('d', max_nJets*[-1.])
+    t.Branch('ZPt_true', ZPt_true, 'ZPt_true[nJets]/D')
+    
+    HPt_true = array('d', max_nJets*[-1.])
+    t.Branch('HPt_true', HPt_true, 'HPt_true[nJets]/D')
+    
+    dR_Wjjqq_match = array('d', max_nJets*[-1.])
+    t.Branch('dR_Wjjqq_match',dR_Wjjqq_match,'dR_Wjjqq_match[nJets]/D')
+    
+    dR_Zjjqq_match = array('d', max_nJets*[-1.])
+    t.Branch('dR_Zjjqq_match',dR_Zjjqq_match,'dR_Zjjqq_match[nJets]/D')
+    
+    dR_Hjjqq_match = array('d', max_nJets*[-1.])
+    t.Branch('dR_Hjjqq_match',dR_Hjjqq_match,'dR_Hjjqq_match[nJets]/D')
+    
+    WtWt = array('i',[0])
+    t.Branch('WtWt',WtWt,'WtWt/I')
+    
+    WtZb = array('i',[0])
+    t.Branch('WtZb',WtZb,'WtZb/I')
+    
+    ZbZb = array('i',[0])
+    t.Branch('ZbZb',ZbZb,'ZbZb/I')
+    
+    ZbHb = array('i',[0])
+    t.Branch('ZbHb',ZbHb,'ZbHb/I')
+    
+    WtHb = array('i',[0])
+    t.Branch('WtHb',WtHb,'WtHb/I')
+    
+    HbHb = array('i',[0])
+    t.Branch('HbHb',HbHb,'HbHb/I')
 
 nVTags = array('i',[0])
 t.Branch('nVTags',nVTags,'nVTags/I')
 
+nTagsCSVM = array('i',[0])
+t.Branch('nTagsCSVM',nTagsCSVM,'nTagsCSVM/I')
+
+bDistriminator = array('d', max_nJets*[0.])
+t.Branch('bDistriminator', bDistriminator, 'bDistriminator[nJets]/D')
+
 minDR_je = array('d',[0.])
 t.Branch('minDR_je',minDR_je,'minDR_je/D')
 
+minDR_ca8je = array('d',[0.])
+t.Branch('minDR_ca8je',minDR_ca8je,'minDR_ca8je/D')
+
 minDR_bV = array('d',max_nJets*[0.])
 t.Branch('minDR_bV',minDR_bV,'minDR_bV[nJets]/D')
-
-nTagsCSVM = array('i',[0])
-t.Branch('nTagsCSVM',nTagsCSVM,'nTagsCSVM/I')
 
 m3 = array('d',[0.])
 t.Branch('m3',m3,'m3/D')
@@ -573,9 +614,9 @@ i = 0
 for event in events:
     i = i + 1
     if i % 1000 == 0 :
-        print("EVENT ", i)
+    	print("EVENT ", i)
     nEventsAnalyzed = nEventsAnalyzed + 1
-    #if nEventsAnalyzed == 5000: break
+    #if nEventsAnalyzed == 10000: break
     # Get the objects 
     event.getByLabel(vertLabel,  vertH)
     event.getByLabel(jetsLabel,  jetsH)    
@@ -769,13 +810,6 @@ for event in events:
             genpt = genJetPt
             deltapt = (recopt-genpt)*scale
             ptScale = max(0.0, (recopt+deltapt)/recopt)
-            
-##             if ptScale == 0:
-##                 print(' jet pt smearing failed: resetting the pt scale to one')
-##                 #print(' uncorr pt, reco pt, gen pt', uncorrpt, recopt, genpt)
-##                 #print(' gen jet P4: pt, eta, phi, mass', genJetPt, genJetPhi, genJetEta,genJetMass)
-##                 ptScale = 1
-
             jetScale*=ptScale
 
         ##Jet angular resolution smearing
@@ -979,8 +1013,9 @@ for event in events:
     ZPt = 0
     
     jet_p4 = []
-    sum_jetP4 = TLorentzVector(0.0,0.0,0.0,0.0) 
-    for jet in jets :
+    sum_jetP4 = TLorentzVector(0.0,0.0,0.0,0.0)
+    nBtags = []
+    for jetid, jet in enumerate(jets) :
         if jet.pt() <= jetPtMin: continue
         jetEt[nj] = jet.pt()
         sumJetPt += jet.pt()
@@ -990,27 +1025,14 @@ for event in events:
         sum_jetP4 += jet_vector
         jet_p4.append(jet_vector)
         minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
-        
-        if options.data:
-            if jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
-                ntagsCSVM = ntagsCSVM + 1  
-        else:
-            if options.bTag == "OutOfBox" :
-                if (jet.userInt('btagRegular') & 1) == 1 :
-                    ntagsCSVM = ntagsCSVM + 1
-            elif options.bTag == "" :
-                if (jet.userInt('btagRegular') & 2) == 2 :
-                    ntagsCSVM = ntagsCSVM + 1
-            elif options.bTag =="BTagSFup" :
-                if (jet.userInt('btagRegular') & 4) == 4 :
-                    ntagsCSVM = ntagsCSVM + 1
-            elif options.bTag =="BTagSFdown" :
-                if (jet.userInt('btagRegular') & 8) == 8 :
-                    ntagsCSVM = ntagsCSVM + 1
-                   
+        bDistriminator[nj] = jet.bDiscriminator('combinedSecondaryVertexBJetTags')
+        if isBTagged(jet):
+            ntagsCSVM = ntagsCSVM + 1
+            nBtags.append(jetid)       
         #print('btags',  ntagsCSVM)           
         nj = nj + 1
         sumEt += jet.pt()
+
         
     # mass of sum of all jets
     mj[0] = sum_jetP4.M()
@@ -1034,25 +1056,41 @@ for event in events:
     # empty the list for the next event
     del jet_p4[:]
     
-    cj = 0    
+    cj = 0
+    minDeltaR_lepca8jet = 5.0
+    nBtags_remove = []
+
     if len(jets_ca8) != 0:
         for ca8jet in jets_ca8:
         
             matched = false
             ca8jet_vector = TLorentzVector()
             ca8jet_vector.SetPtEtaPhiM( ca8jet.pt(), ca8jet.eta(), ca8jet.phi(), ca8jet.mass() )
-            #print('ca8jets', len(jets_ca8),'ak5jets', len(jets))
+
             
-            for ak5jet in jets :
+            minDR_bjetV = 0.5
+            for jetid, ak5jet in enumerate(jets) :
                 if ak5jet.pt() <= jetPtMin: continue
                 ak5jet_vector = TLorentzVector()
                 ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
-                if ak5jet_vector.DeltaR(ca8jet_vector) < 0.3:
-                    matched = true
-                    break
                 
+                # min dR b/w ak5 jet and ca8 jet
+                minDR_bjetV = TMath.Min ( ak5jet_vector.DeltaR(ca8jet_vector), minDR_bjetV )
+                    
+                if ak5jet_vector.DeltaR(ca8jet_vector) < 0.3:
+                    matched = true 
+                    # double tag
+                    if isVTagged(ca8jet) and isBTagged(ak5jet):                        
+                        nBtags_remove.append(jetid) 
+                        
+            # require ca8 jet to match to at least one ak5 jet
             if not matched: continue
-
+            
+            minDR_bV[cj] = minDR_bjetV
+                        
+            # dR b/w lepton and CA8 jet:
+            minDeltaR_lepca8jet = TMath.Min ( ca8jet_vector.DeltaR(lepton_vector), minDeltaR_lepca8jet )
+            
             # V-tagging
             jetEt_ca8[cj] = ca8jet.pt()    
             WjetM[cj] = ca8jet.mass()
@@ -1063,22 +1101,11 @@ for event in events:
             # widen to accomodate Higgs
             if (WjetM[cj] < 150 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
                 WjetMu[cj] = mu
-            
-            if mu < 0.4 and (WjetM[cj] < 150 and WjetM[cj] > 50) and jetEt_ca8[cj] > 200:
+
+            # nVtags
+            if isVTagged(ca8jet):
                 nVtags = nVtags + 1
-
-            #min dR b/w a fat jet and b-tag jet
-            minDR_bjetV = 5.0
-            for ak5jet in jets :
-                if ak5jet.pt() <= jetPtMin: continue
-                ak5jet_vector = TLorentzVector()
-                ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
-                #if ntagsCSVM > 0 and  nVtags > 0:
-                minDR_bjetV = TMath.Min ( ak5jet_vector.DeltaR(ca8jet_vector), minDR_bjetV )
-            #print('minDR_bV', minDR_bjetV)  
-            
-            minDR_bV[cj] = minDR_bjetV
-
+    
             # gen parton related info:
             if bprimeGenInfo:               
                 dR_Wqq_match1 = deltaR( ca8jet.eta(), ca8jet.phi(), WPart1P4.Eta(), WPart1P4.Phi())
@@ -1142,16 +1169,22 @@ for event in events:
                 dR_Hjjqq_match[cj] = dR_Hjjqq
                 HPt_true[cj] = HPt
                 
+        cj = cj + 1
 
-            cj = cj + 1
-
+    
     #fill the rest of variables
     if sumJetE != 0:
         centrality[0] = sumJetPt/sumJetE    
     ht[0] = sumEt
-    nTagsCSVM[0] = ntagsCSVM
+    
+    #print ("all b-tagged jets", len(nBtags), ":  to be removed", len(nBtags_remove))
+    #print("nBtags: {0} nBtags_remove: {1}".format(nBtags, nBtags_remove))        
+    nBtags = len([x for x in nBtags if x not in nBtags_remove])
+    
+    nTagsCSVM[0] = nBtags
     nVTags[0] = nVtags    
-    minDR_je[0] = minDeltaR_lepjet    
+    minDR_je[0] = minDeltaR_lepjet
+    minDR_ca8je[0] = minDeltaR_lepca8jet
     met_vector = TLorentzVector()
     met_vector.SetPxPyPzE( metObj.px(), metObj.py(), metObj.pz(), metObj.et())
     deltaPhiMETe[0] = lepton_vector.DeltaPhi( met_vector )
