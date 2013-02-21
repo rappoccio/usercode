@@ -958,12 +958,11 @@ for event in events:
     nhIso = (leptons[0]).userIsolation(pat.PfNeutralHadronIso)
     phIso = (leptons[0]).userIsolation(pat.PfGammaIso)
     puIso = (leptons[0]).userIsolation(pat.PfPUChargedHadronIso) 
-    passTightMu = isTightMu(leptons[0], PVz)
-    #print ("pass tight muon", passTightMu)
+    
       
     if runMu :
+        isMuTight[0] = isTightMu(leptons[0], PVz)
         lepIso[0] = (chIso + max(0.0, nhIso + phIso - 0.5*puIso))/leptonsPt
-        isMuTight[0] = passTightMu
         if not options.data:
             lepSF[0]  = muonID_SF( (leptons[0]).eta())
             trigSF[0] = muonTrig_SF((leptons[0]).eta(), leptonsPt)
@@ -1102,6 +1101,9 @@ for event in events:
     cj = 0
     minDeltaR_lepca8jet = 5.0
     nBtags_remove = []
+
+    #for i in range(max_nJets):
+	#minDR_bV[i] = 0
 
     if len(jets_ca8) != 0:
         for ca8jet in jets_ca8:
