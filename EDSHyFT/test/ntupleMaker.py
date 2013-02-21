@@ -44,6 +44,23 @@ def isBTagged(ak5jet):
     else:
         return False
 
+def isTightMu(lep, PVz):
+    isPF      =  lep.isPFMuon()
+    isGlob    =  lep.isGlobalMuon()
+    if isPF and isGlob:    
+        normChi2  =  lep.globalTrack().normalizedChi2()
+        trkLayers =  lep.track().hitPattern().trackerLayersWithMeasurement()
+        mVMuHits  =  lep.globalTrack().hitPattern().numberOfValidMuonHits()
+        dB        =  fabs( lep.dB() )
+        diffVz    =  fabs( lep.vertex().z() - PVz )
+        mPixHits  =  lep.innerTrack().hitPattern().numberOfValidPixelHits()
+        matchStat =  lep.numberOfMatchedStations()
+    
+    if(isPF and isGlob and normChi2<10 and trkLayers>5 and mVMuHits>0 and dB<0.2 and diffVz<0.5 and mPixHits>0 and matchStat >1):
+        return True
+    else:
+        return False
+    
 def deltaR( eta1, phi1, eta2, phi2):
     deta = eta1 - eta2
     dphi = phi1 - phi2
@@ -107,6 +124,18 @@ def muonTrig_SF(eta, pt):
         elif pt >= 90. and pt < 140. : SF = 0.9908
         elif pt >= 140. and pt < 500.: SF = 0.9970
         else: SF = 0.9970     
+    return SF
+
+# SF for muon ID (Tight && relIso <0.12)
+def muonID_SF(eta):
+    abseta = abs(eta)
+    SF = 1.0
+    if abseta >= 0.0 and abseta < 0.90:
+        SF = 0.9943
+    elif abseta >= 0.90 and abseta < 1.2:    
+        SF = 0.9933
+    elif abseta >= 1.2 and abseta < 2.1:
+        SF = 1.0020  
     return SF
 
 # SF for HLT_Ele27_WP80
@@ -180,6 +209,7 @@ def electronID_SF(eta, pt):
             SF = 0.971
         else: SF = 0.971    
     return SF
+
 
 from array import array
 from optparse import OptionParser
@@ -425,6 +455,9 @@ if runMu:
 
     trigSigMuIsoHad_path = array('i', [0])
     t.Branch('trigSigMuIsoHad_path', trigSigMuIsoHad_path, 'trigSigMuIsoHad_path/I')
+
+    isMuTight =  array('d',[0.])
+    t.Branch('isMuTight',isMuTight,'isMuTight/D')
 else:
     trigEleStop_path = array('i', [0])
     t.Branch('trigEleStop_path', trigEleStop_path, 'trigEleStop_path/I')
@@ -434,6 +467,24 @@ else:
     
     trigSigEle_path = array('i', [0])
     t.Branch('trigSigEle_path', trigSigEle_path, 'trigSigEle_path/I')
+
+    eSCEta = array('d',[0.])
+    t.Branch('eSCEta',eSCEta,'eSCEta/D')
+
+    eMVA = array('d', [0.])
+    t.Branch('eMVA',eMVA,'eMVA/D')
+
+    eSihih = array('d', [0.])
+    t.Branch('eSihih',eSihih,'eSihih/D')
+
+    eHOverE = array('d', [0.])
+    t.Branch('eHOverE',eHOverE,'eHOverE/D')
+
+    eDphi = array('d', [0.])
+    t.Branch('eDphi',eDphi,'eDphi/D')
+    
+    eDeta = array('d', [0.])
+    t.Branch('eDeta',eDeta,'eDeta/D')
 
 trigSF = array('d', [0.])
 t.Branch('trigSF', trigSF, 'trigSF/D')
@@ -455,25 +506,6 @@ t.Branch('deltaPhiMETLeadingJet', deltaPhiMETLeadingJet, 'deltaPhiMETLeadingJet/
 
 lepEta = array('d',[0.])
 t.Branch('lepEta',lepEta,'lepEta/D')
-
-if not runMu:
-    eSCEta = array('d',[0.])
-    t.Branch('eSCEta',eSCEta,'eSCEta/D')
-
-    eMVA = array('d', [0.])
-    t.Branch('eMVA',eMVA,'eMVA/D')
-
-    eSihih = array('d', [0.])
-    t.Branch('eSihih',eSihih,'eSihih/D')
-
-    eHOverE = array('d', [0.])
-    t.Branch('eHOverE',eHOverE,'eHOverE/D')
-
-    eDphi = array('d', [0.])
-    t.Branch('eDphi',eDphi,'eDphi/D')
-    
-    eDeta = array('d', [0.])
-    t.Branch('eDeta',eDeta,'eDeta/D')
 
 lepSF = array('d', [0.])
 t.Branch('lepSF', lepSF, 'lepSF/D')
@@ -548,6 +580,9 @@ t.Branch('nVTags',nVTags,'nVTags/I')
 
 nTagsCSVM = array('i',[0])
 t.Branch('nTagsCSVM',nTagsCSVM,'nTagsCSVM/I')
+
+nTagsCSVMUncor = array('i',[0])
+t.Branch('nTagsCSVMUncor',nTagsCSVMUncor,'nTagsCSVMUncor/I')
 
 bDistriminator = array('d', max_nJets*[0.])
 t.Branch('bDistriminator', bDistriminator, 'bDistriminator[nJets]/D')
@@ -900,7 +935,12 @@ for event in events:
                 trigSigEle_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
                 #if trigSigEle_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
         
-    nvertices[0] =  vertices.size()     
+    nvertices[0] =  vertices.size()
+    if vertices.size() > 0:
+        PVz = vertices[0].z()
+    else:
+        print("no primary vertex found, settign PVz=0")
+        PVz=0
     met[0] = metObj.pt()
     lepEt[0] = leptonsPt
     lepEta[0] = (leptons[0]).eta()
@@ -917,12 +957,15 @@ for event in events:
     chIso = (leptons[0]).userIsolation(pat.PfChargedHadronIso)
     nhIso = (leptons[0]).userIsolation(pat.PfNeutralHadronIso)
     phIso = (leptons[0]).userIsolation(pat.PfGammaIso)
-    puIso = (leptons[0]).userIsolation(pat.PfPUChargedHadronIso)
+    puIso = (leptons[0]).userIsolation(pat.PfPUChargedHadronIso) 
+    passTightMu = isTightMu(leptons[0], PVz)
+    #print ("pass tight muon", passTightMu)
       
     if runMu :
         lepIso[0] = (chIso + max(0.0, nhIso + phIso - 0.5*puIso))/leptonsPt
+        isMuTight[0] = passTightMu
         if not options.data:
-            lepSF[0]  = 1
+            lepSF[0]  = muonID_SF( leptons[0]).eta())
             trigSF[0] = muonTrig_SF((leptons[0]).eta(), leptonsPt)
         else:    
             lepSF[0]  = 1
@@ -1066,7 +1109,6 @@ for event in events:
             matched = false
             ca8jet_vector = TLorentzVector()
             ca8jet_vector.SetPtEtaPhiM( ca8jet.pt(), ca8jet.eta(), ca8jet.phi(), ca8jet.mass() )
-
             
             minDR_bjetV = 0.5
             for jetid, ak5jet in enumerate(jets) :
@@ -1083,11 +1125,13 @@ for event in events:
                     if isVTagged(ca8jet) and isBTagged(ak5jet):                        
                         nBtags_remove.append(jetid) 
                         
+                       
+            minDR_bV[cj] = minDR_bjetV
+            #print("min DR_ak5_ca8", minDR_bV[cj])
+
             # require ca8 jet to match to at least one ak5 jet
             if not matched: continue
             
-            minDR_bV[cj] = minDR_bjetV
-                        
             # dR b/w lepton and CA8 jet:
             minDeltaR_lepca8jet = TMath.Min ( ca8jet_vector.DeltaR(lepton_vector), minDeltaR_lepca8jet )
             
@@ -1176,11 +1220,11 @@ for event in events:
     if sumJetE != 0:
         centrality[0] = sumJetPt/sumJetE    
     ht[0] = sumEt
-    
+    nTagsCSVMUncor[0] = len(nBtags)
     #print ("all b-tagged jets", len(nBtags), ":  to be removed", len(nBtags_remove))
     #print("nBtags: {0} nBtags_remove: {1}".format(nBtags, nBtags_remove))        
     nBtags = len([x for x in nBtags if x not in nBtags_remove])
-    
+    #print("nBTags", nBtags)
     nTagsCSVM[0] = nBtags
     nVTags[0] = nVtags    
     minDR_je[0] = minDeltaR_lepjet
