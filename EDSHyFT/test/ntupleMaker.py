@@ -965,7 +965,7 @@ for event in events:
         lepIso[0] = (chIso + max(0.0, nhIso + phIso - 0.5*puIso))/leptonsPt
         isMuTight[0] = passTightMu
         if not options.data:
-            lepSF[0]  = muonID_SF( leptons[0]).eta())
+            lepSF[0]  = muonID_SF( (leptons[0]).eta())
             trigSF[0] = muonTrig_SF((leptons[0]).eta(), leptonsPt)
         else:    
             lepSF[0]  = 1
