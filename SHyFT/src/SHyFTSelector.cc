@@ -228,7 +228,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             double rhoIso = std::max(*(rhoHandle.product()), 0.0);
 
             int nElectrons = 0;
-
+    
             //Electron selections:
             //-------------------
             for ( std::vector<pat::Electron>::const_iterator electronBegin = electronHandle->begin(),
@@ -236,20 +236,15 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                     ielectron != electronEnd; ++ielectron ) {
                 allElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                 ++nElectrons;
-                double AEff    = 0.0;
                 double scEta   = ielectron->superCluster()->eta();
                 double eta     = ielectron->eta();
-                double et      = ielectron->et();
+                double pt      = ielectron->ecalDrivenMomentum().pt();
                 double dB      = ielectron->dB();
-                //if(useData_){
-                AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2012);
-                    //}else{
-                    //AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAFall11MC);
-                    //}
+                double AEff    = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, ElectronEffectiveArea::kEleEAData2012);
                 double chIso = ielectron->userIsolation(pat::PfChargedHadronIso);
                 double nhIso = ielectron->userIsolation(pat::PfNeutralHadronIso);
                 double phIso  = ielectron->userIsolation(pat::PfGammaIso);
-                double relIso = ( chIso + max(0.0, nhIso + phIso - rhoIso*AEff) )/ ielectron->ecalDrivenMomentum().pt();           
+                double relIso = ( chIso + max(0.0, nhIso + phIso - rhoIso*AEff) )/ ielectron->ecalDrivenMomentum().pt();
                 int mHits  =  ielectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits();   
 
                 //Electron Selection for e+jets
@@ -257,37 +252,36 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                 if (fabs(scEta) > 1.4442 &&  fabs(scEta) < 1.5660 ) continue;  //Fiducial cuts 
 
                 bool passTopCuts(0), passIso(0), passMVAID(0), passVetoID(0);
-
+               
                 passTopCuts = (fabs(eta)< 2.5 && 
                         fabs(dB) < dxy_ &&
-                        et       > eEt_ &&
+                        pt       > eEt_ &&
                         mHits    <= 0 &&
                         (ielectron->passConversionVeto()) 
                         );
-
-                if(useNoPFIso_) passIso = 1;
-                else passIso = relIso < eRelIso_;  
-
+               
                 if(useNoID_) passMVAID = 1;
                 else passMVAID = ielectron->electronID("mvaTrigV0") > 0.5;
+           
+                if(useNoPFIso_) passIso = 1;
+                else passIso = relIso < eRelIso_;  
 
                 passVetoID = electronIdVeto_(*ielectron,event);//WP:"Veto" from cut based ID
                
                 if(passTopCuts && passIso && passMVAID){
-
                     selectedElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                 }
-                else if(passVetoID && et > 20.0){
+                else if(passVetoID && pt > 20.0){
                     selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                 }   
 
                 //Loose Electron Selection to be vetoed for mu+jets
                 //-------------------------------------------------
-                if ( et > eleEtMinLoose_ && eta < eleEtaMaxLoose_ && relIso < 0.2 ){
+                if ( pt > eleEtMinLoose_ && eta < eleEtaMaxLoose_ && relIso < 0.2 ){
                     looseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
                 }
             }
-
+            
 
             //Muons Selection:
             //---------------
@@ -315,7 +309,7 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                                   imuon->normChi2() < 10 && 
                                   imuon->track()->hitPattern().trackerLayersWithMeasurement() > 5 &&
                                   imuon->globalTrack()->hitPattern().numberOfValidMuonHits() > 0 &&
-                                  fabs(imuon->dB()) < dxy_ &&
+                                  fabs(imuon->dB()) < 0.2 &&
                                   fabs(imuon->vertex().z() - PVz) < 0.5 &&
                                   imuon->innerTrack()->hitPattern().numberOfValidPixelHits() > 0 &&
                                   imuon->numberOfMatchedStations() > 1);
@@ -323,7 +317,8 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                 if(useMuonTightID_){ passID = passTight;}
                 else {passID = passLoose;}
 
-                if ( imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && passID && passIso ) {                   
+                if ( imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && passID && passIso ) {
+                   //cout <<"relIso" << relIso << endl;             
                    selectedMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
                 } else {
                     // Loose cuts : currently the same passLoose is applied but pt, eta and iso can be different.
@@ -559,8 +554,8 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
             if ( ignoreCut(lep1Index_) || 
                     ( nleptons > 0 ) ){
                 passCut( ret, lep1Index_);
-
-
+                  
+                //cout << "run " <<  event.id().run() << ": lumi " <<  event.id().luminosityBlock() << ": event " << event.id().event() << endl;
                 if ( ignoreCut(lep2Index_) || 
                         ( nleptons == 1 ) ){
                     passCut( ret, lep2Index_);
