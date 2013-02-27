@@ -63,7 +63,7 @@ int main ( int argc, char ** argv )
    fwlite::TFileService fs = fwlite::TFileService( outputs.getParameter<std::string>("outputName") );
    TFileDirectory theDir = fs.mkdir( "histos" ); 
 
-   TH1F * ph = theDir.make<TH1F>("PileUpInteractions", "PileUp interactions", 50, 0, 50 );
+   TH1F * ph = theDir.make<TH1F>("PileUpInteractions", "PileUp interactions", 60, 0, 60 );
   
    fwlite::ChainEvent ev ( inputs.getParameter<std::vector<std::string> > ("fileNames") );
    int maxEvents = inputs.getParameter<int>("maxEvents");
@@ -86,14 +86,15 @@ int main ( int argc, char ** argv )
       event.getByLabel( edm::InputTag("addPileupInfo"), PupInfo_h);
      
       std::vector<PileupSummaryInfo>::const_iterator PVI;
-      int npv = -1;
+      int npv = -1; int npv_true = -1;
       if(PupInfo_h.isValid()){
          for(PVI = PupInfo_h->begin(); PVI != PupInfo_h->end(); ++PVI){
             //std::cout << "Run:event " << event.id().run() << ", Pileup Information: nvtx: " << PVI->getPU_NumInteractions() << std::endl;         
             int BX = PVI->getBunchCrossing();
             if(BX == 0) { 
                npv = PVI->getPU_NumInteractions();
-               ph->Fill ( npv);
+               npv_true = PVI->getTrueNumInteractions();
+               ph->Fill ( npv_true);
                continue;
             }     
          }
