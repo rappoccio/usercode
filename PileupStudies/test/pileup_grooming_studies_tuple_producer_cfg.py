@@ -150,6 +150,10 @@ process.ak5Pruned = process.ak5Trimmed.clone(
 
 
 
+process.ak5Gen = process.ak5Trimmed.clone(
+    src = cms.InputTag("ak5GenJetsNoNu")
+    )
+
 # run the trigger on the fly
 process.load('PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff')
 
@@ -165,7 +169,8 @@ process.patseq = cms.Sequence(
     process.ak5FilteredPFlow *
     process.ak5Trimmed * 
     process.ak5Filtered *
-    process.ak5Pruned 
+    process.ak5Pruned *
+    process.ak5Gen
     )
 
 
