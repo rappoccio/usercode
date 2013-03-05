@@ -64,7 +64,7 @@ class BoostedTopWTagFunctor : public Selector<pat::Jet> {
        int numOfDaughters 	= jet.numberOfDaughters();
        double pt		= jet.pt();
        double eta		= jet.eta();
-       /* double m_fat            = jet.mass(); */
+       double m_fat            = jet.mass();
        if( pt >        cut("jetPtMin", double() ) || ignoreCut("jetPtMin" ) )   passCut(ret, "jetPtMin" );
        if( fabs(eta )  < cut("jetEtaMax", double() ) || ignoreCut("jetEtaMax" ) ) passCut(ret, "jetEtaMax");
        if( numOfDaughters == cut("numOfDaughters", int() ) || ignoreCut("numOfDaughters")  )     passCut(ret, "numOfDaughters" );
@@ -77,7 +77,6 @@ class BoostedTopWTagFunctor : public Selector<pat::Jet> {
        return (bool) ret;
 
      }
-     using Selector<pat::Jet>::operator();
 
 };
 

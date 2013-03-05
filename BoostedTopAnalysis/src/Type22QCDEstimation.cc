@@ -2,8 +2,6 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "AnalysisDataFormats/TopObjects/interface/CATopJetTagInfo.h"
 
-using namespace std;
-
 Type22QCDEstimation::Type22QCDEstimation( const edm::ParameterSet & iConfig,  TFileDirectory & iDir ) :
   theDir( iDir ),
   type22Selection_v1_     ( iConfig.getParameter<edm::ParameterSet>("Type22Selection") ),

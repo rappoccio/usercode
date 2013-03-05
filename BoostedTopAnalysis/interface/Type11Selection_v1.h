@@ -6,6 +6,8 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
+using namespace std;
+
 class Type11Selection_v1 : public EventSelector {
   public :
     Type11Selection_v1( edm::ParameterSet const & params );

@@ -7,7 +7,7 @@ from Analysis.BoostedTopAnalysis.BoostedTopWTagParams_cfi import boostedTopWTagP
 MistagMakerParams = cms.PSet(
     dijetSelectorParams = cms.PSet(
         jetSrc = cms.InputTag('selectedPatJetsCA8PrunedCalo'),
-        pfJetSrc = cms.InputTag('goodPatJetsCA8PrunedPF'),
+        pfJetSrc = cms.InputTag('selectedPatJetsCA8PrunedPF'),
         metSrc = cms.InputTag('patMETs'),
         pfMetSrc = cms.InputTag('patMETsPF'),
         useCalo = cms.bool(False),

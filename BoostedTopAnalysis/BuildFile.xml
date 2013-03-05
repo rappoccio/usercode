@@ -12,14 +12,9 @@
 <use   name="FWCore/ParameterSet"/>
 <use   name="FWCore/Common"/>
 <use   name="PhysicsTools/CandUtils"/>
+<use   name="Analysis/BoostedTopObjects"/>
 <use   name="FWCore/ServiceRegistry"/>
 <use   name="AnalysisDataFormats/TopObjects"/>
-<use   name="Analysis/SHyFT"/>
-<use   name="rootrflx"/>
-<use   name="FWCore/PluginManager"/>
-<use   name="FWCore/Framework"/>
-<use   name="FWCore/Utilities"/>
-<use   name="PhysicsTools/UtilAlgos"/>
 <export>
   <lib   name="1"/>
 </export>
