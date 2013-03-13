@@ -1,0 +1,13 @@
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_27_1_UdO.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_28_1_R90.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_29_1_3TI.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_30_1_GNn.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_31_1_175.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_32_1_RBQ.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_33_1_XbC.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_34_1_8Yz.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_35_1_u6A.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_36_1_SyL.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_37_1_jUl.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_38_1_aZA.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/BPrimeEDMNtuples_53x_v3/d1ddf57585ff65b8db638ded4a314f6f/edmTest_39_1_aKh.root

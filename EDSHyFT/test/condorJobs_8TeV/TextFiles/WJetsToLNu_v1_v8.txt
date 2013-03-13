@@ -1,0 +1,4 @@
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v3_WJets_v1/7dd843baaf47d9c9e7be7d2189664474/edmTest_33_1_PKY.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v3_WJets_v1/7dd843baaf47d9c9e7be7d2189664474/edmTest_34_1_oOC.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v3_WJets_v1/7dd843baaf47d9c9e7be7d2189664474/edmTest_35_1_N6F.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v3_WJets_v1/7dd843baaf47d9c9e7be7d2189664474/edmTest_36_1_6xw.root
