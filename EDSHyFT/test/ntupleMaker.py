@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 from __future__ import print_function
-
+import subprocess
 # Import everything from ROOT
 from ROOT import *
 gROOT.Macro("~/rootlogon.C")
@@ -9,6 +9,7 @@ gROOT.Macro("~/rootlogon.C")
 import sys
 import glob
 import math
+
 
 def isVTagged(ca8jet):
     pt = ca8jet.pt()    
@@ -305,7 +306,7 @@ else:
     lepStr = 'Ele'
 
 condStr = ''    
-if runDataLoose and options.data:
+if runDataLoose:
     condStr = 'Loose'
     
 print('lepType', lepStr)
@@ -644,6 +645,14 @@ iZbZb = 0
 iZbHb = 0
 iWtHb = 0
 iHbHb = 0
+tensor = TMatrix(3,3)
+sum_jetP4 = TLorentzVector(0.0,0.0,0.0,0.0)
+lepton_vector = TLorentzVector()
+jet_vector = TLorentzVector()
+ca8jet_vector = TLorentzVector()
+ak5jet_vector = TLorentzVector()
+leadingJetVector = TLorentzVector()
+met_vector = TLorentzVector()
 # loop over events
 i = 0 
 for event in events:
@@ -651,7 +660,9 @@ for event in events:
     if i % 1000 == 0 :
     	print("EVENT ", i)
     nEventsAnalyzed = nEventsAnalyzed + 1
-    #if nEventsAnalyzed == 10000: break
+
+    #if nEventsAnalyzed == 1000: break
+   
     # Get the objects 
     event.getByLabel(vertLabel,  vertH)
     event.getByLabel(jetsLabel,  jetsH)    
@@ -916,24 +927,19 @@ for event in events:
     for ipath in trigPaths:
         if runMu:   
             if mu40_eta2p1 in ipath.name():
-                trigSigMuNonIso_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-                #if trigSigMuNonIso_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
+                trigSigMuNonIso_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()                
             if mu24_Iso in ipath.name():
                 trigSigMuIso_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-                #if trigSigMuIso_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
             if mu17_eta2p1_Had+"PFJet30_v" in ipath.name() or mu17_eta2p1_Had+"PFNoPUJet30_v" or mu17_eta2p1_Had+"PFNoPUJet30_30_20_v" or mu17_eta2p1_Had+"PFNoPUJet45_35_25_v":
-                trigSigMuIsoHad_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-                #if trigSigMuIso_path[0]==1: print("your path ", ipath.name(), "was run and accepted")    
+                trigSigMuIsoHad_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()               
         else:    
             if eleStop+"30_v" in ipath.name() or eleStop+"45_35_25_v" in ipath.name() or eleStop+"50_40_30_v" in ipath.name():
-                trigEleStop_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-                #if trigEleStop_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
+                trigEleStop_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()                
             if eleHad+"PFJet30_v" in ipath.name() or eleHad+"PFNoPUJet30_v" in ipath.name() or eleHad+"PFNoPUJet30_30_20_v" in ipath.name()or eleHad+"PFNoPUJet45_35_25_v" in ipath.name():
                 trigEleHad_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-                #if trigEleHad_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
             if singleEle in ipath.name():
                 trigSigEle_path[0] =  trigObj.path(ipath.name()).wasAccept() and trigObj.path(ipath.name()).wasRun()
-                #if trigSigEle_path[0]==1: print("your path ", ipath.name(), "was run and accepted")
+                
         
     nvertices[0] =  vertices.size()
     if vertices.size() > 0:
@@ -981,8 +987,6 @@ for event in events:
             
     lepIsoUncorr[0] = (chIso + nhIso + phIso)/leptonsPt
     sumEt = leptonsPt + metObj.pt()
-    
-    lepton_vector = TLorentzVector()
     lepton_vector.SetPtEtaPhiM( leptonsPt, leptons[0].eta(), leptons[0].phi(), leptons[0].mass() )
     nu_p4 = metObj.p4()
     wPt = lepton_vector.Pt() + nu_p4.Pt()
@@ -996,7 +1000,6 @@ for event in events:
     sum = leptonsP*leptonsP + metObj.p()*metObj.p()
     for jet in jets: sum+=jet.p()*jet.p()
     
-    tensor = TMatrix(3,3)
     # mxx
     tensor[0][0] = leptonsPx*leptonsPx + metObj.px()*metObj.px()
     for jet in jets:
@@ -1039,12 +1042,8 @@ for event in events:
 
     #print("eigen values: {0:4.2f}, {1:4.2f}, {2:4.2f}".format(eigenval(0),eigenval(1), eigenval(2)) )
     #print("sphericity {0:4.2f}, aplanarity = {1:4.2f}".format( sphericity, aplanarity))
-    #print("mxx = {0:4.2f}, myy = {1:4.2f}, mzz = {2:4.2f}".format( tensor(0,0), tensor(1,1), tensor(2,2) ))
-    #print("mxy = {0:4.2f}, mxz = {1:4.2f}, myz = {2:4.2f}".format( tensor(0,1), tensor(0,2), tensor(1,2) ))
-    #print("myx = {0:4.2f}, mzx = {1:4.2f}, mzy = {2:4.2f}".format( tensor(1,0), tensor(2,0), tensor(2,1) ))
     
     nj = 0
-    ntagsCSVM = 0
     sumJetPt = 0
     sumJetE = 0
     minDeltaR_lepjet = 5.0
@@ -1055,26 +1054,22 @@ for event in events:
     ZPt = 0
     
     jet_p4 = []
-    sum_jetP4 = TLorentzVector(0.0,0.0,0.0,0.0)
+    sum_jetP4.SetPtEtaPhiM(0.0,0.0,0.0,0.0)
     nBtags = []
     for jetid, jet in enumerate(jets) :
         if jet.pt() <= jetPtMin: continue
         jetEt[nj] = jet.pt()
         sumJetPt += jet.pt()
         sumJetE += jet.energy()
-        jet_vector = TLorentzVector()
         jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
         sum_jetP4 += jet_vector
         jet_p4.append(jet_vector)
         minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
         bDistriminator[nj] = jet.bDiscriminator('combinedSecondaryVertexBJetTags')
         if isBTagged(jet):
-            ntagsCSVM = ntagsCSVM + 1
             nBtags.append(jetid)       
-        #print('btags',  ntagsCSVM)           
         nj = nj + 1
         sumEt += jet.pt()
-
         
     # mass of sum of all jets
     mj[0] = sum_jetP4.M()
@@ -1106,16 +1101,12 @@ for event in events:
 	#minDR_bV[i] = 0
 
     if len(jets_ca8) != 0:
-        for ca8jet in jets_ca8:
-        
+        for ca8jet in jets_ca8:        
             matched = false
-            ca8jet_vector = TLorentzVector()
-            ca8jet_vector.SetPtEtaPhiM( ca8jet.pt(), ca8jet.eta(), ca8jet.phi(), ca8jet.mass() )
-            
+            ca8jet_vector.SetPtEtaPhiM( ca8jet.pt(), ca8jet.eta(), ca8jet.phi(), ca8jet.mass() )            
             minDR_bjetV = 0.5
             for jetid, ak5jet in enumerate(jets) :
                 if ak5jet.pt() <= jetPtMin: continue
-                ak5jet_vector = TLorentzVector()
                 ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
                 
                 # min dR b/w ak5 jet and ca8 jet
@@ -1127,10 +1118,8 @@ for event in events:
                     if isVTagged(ca8jet) and isBTagged(ak5jet):                        
                         nBtags_remove.append(jetid) 
                         
-                       
             minDR_bV[cj] = minDR_bjetV
-            #print("min DR_ak5_ca8", minDR_bV[cj])
-
+           
             # require ca8 jet to match to at least one ak5 jet
             if not matched: continue
             
@@ -1223,21 +1212,19 @@ for event in events:
         centrality[0] = sumJetPt/sumJetE    
     ht[0] = sumEt
     nTagsCSVMUncor[0] = len(nBtags)
-    #print ("all b-tagged jets", len(nBtags), ":  to be removed", len(nBtags_remove))
-    #print("nBtags: {0} nBtags_remove: {1}".format(nBtags, nBtags_remove))        
-    nBtags = len([x for x in nBtags if x not in nBtags_remove])
-    #print("nBTags", nBtags)
-    nTagsCSVM[0] = nBtags
+    nTagsCSVM[0] = len([x for x in nBtags if x not in nBtags_remove])
     nVTags[0] = nVtags    
     minDR_je[0] = minDeltaR_lepjet
-    minDR_ca8je[0] = minDeltaR_lepca8jet
-    met_vector = TLorentzVector()
+    minDR_ca8je[0] = minDeltaR_lepca8jet   
     met_vector.SetPxPyPzE( metObj.px(), metObj.py(), metObj.pz(), metObj.et())
     deltaPhiMETe[0] = lepton_vector.DeltaPhi( met_vector )
-    leadingJetVector = TLorentzVector()
+    leadingJetVector.SetPxPyPzE( jets[0].px(), jets[0].py(), jets[0].pz(), jets[0].energy())
     if leadingJetVector.Pt() > jetPtMin:
-        leadingJetVector.SetPxPyPzE( jets[0].px(), jets[0].py(), jets[0].pz(), jets[0].energy())
         deltaPhiMETLeadingJet[0] = met_vector.DeltaPhi( leadingJetVector )
+    
+    # empty the list for the next event
+    del nBtags[:]
+    del nBtags_remove[:]    
     
     t.Fill()
 # Done processing the events!
@@ -1258,6 +1245,7 @@ print("Analyzed events: {0:6d}".format(nEventsAnalyzed))
 print("RealTime={0:6.2f} seconds, CpuTime={1:6.2f} seconds".format(rtime,ctime))
 print("{0:4.2f} events / RealTime second .".format( nEventsAnalyzed/rtime))
 print("{0:4.2f} events / CpuTime second .".format( nEventsAnalyzed/ctime))
+subprocess.call( ["ps aux | grep skhalil | cat > memory.txt", ""], shell=True )
 
 # "cd" to our output file
 f.cd()
