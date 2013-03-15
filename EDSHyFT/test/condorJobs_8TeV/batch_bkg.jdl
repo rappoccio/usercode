@@ -11,4 +11,4 @@ Log    = $(myPath)/$(myLogFolder)/batch_$(cluster)_$(process).condor
 Requirements          = (Memory >= 499 && OpSys == "LINUX" && (Arch != "DUMMY"))
 Arguments = $(cluster) $(process) $(myPath) $(myPath)/TextFiles 0
 notify_user = skhalil@FNAL.GOV
-Queue 1043
+Queue 196
