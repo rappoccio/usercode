@@ -1,13 +1,13 @@
  #!/bin/bash
 
-echo "input parameters: cluster, process, run path, input path, output path, data?, leptype " $1 $2 $3 $4 $5 $6
+echo "input parameters: cluster, process, run path, input path, data?" $1 $2 $3 $4 $5
 
 CLUSTER=$1
 PROCESS=$2
 RUNPATH=$3
 INPATH=$4
 OUTPATH=$_CONDOR_SCRATCH_DIR 
-DATA=$6
+DATA=$5
 
 
 echo ""
@@ -45,8 +45,6 @@ for txt in `ls $INPATH`; do
         if test $counter -eq $PROCESS; then
             echo "python ntupleMaker.py --JES nominal --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}"
             python ntupleMaker.py --JES nominal --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}
-            echo "python ntupleMaker.py --JES nominal --runDataLoose --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}_Loose"
-            python ntupleMaker.py --JES nominal --runDataLoose --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name}_Loose
         fi
             let "counter+=1"
         else
