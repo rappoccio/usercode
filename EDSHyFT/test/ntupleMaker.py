@@ -1212,7 +1212,8 @@ for event in events:
         centrality[0] = sumJetPt/sumJetE    
     ht[0] = sumEt
     nTagsCSVMUncor[0] = len(nBtags)
-    nTagsCSVM[0] = len([x for x in nBtags if x not in nBtags_remove])
+    #nTagsCSVM[0] = len([x for x in nBtags if x not in nBtags_remove])
+    nTagsCSVM[0] = len(set(nBtags) - set(nBtags_remove))
     nVTags[0] = nVtags    
     minDR_je[0] = minDeltaR_lepjet
     minDR_ca8je[0] = minDeltaR_lepca8jet   
