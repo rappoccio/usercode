@@ -3,7 +3,8 @@
 from __future__ import print_function
 import subprocess
 # Import everything from ROOT
-from ROOT import *
+#from ROOT import *
+from ROOT import gROOT,std,ROOT,TFile,TTree,TStopwatch,TMatrix,TLorentzVector,TMath,TVector
 gROOT.Macro("~/rootlogon.C")
 
 import sys
@@ -323,6 +324,10 @@ flatJecUnc = 0.0
 # Import what we need from FWLite
 from DataFormats.FWLite import Events, Handle
 ROOT.gSystem.Load('libCondFormatsJetMETObjects')
+from ROOT import JetCorrectionUncertainty
+
+ROOT.gSystem.Load('libDataFormatsPatCandidates')
+from ROOT import pat
 
 # Get the file list.
 if options.files:
@@ -341,11 +346,9 @@ else:
 if dcache:
 	files = ["dcap://" + x for x in files]
 	print('new files', *files, sep='\n')
-	#print('new files', files[0], files[1], ..., sep='\n')
-    
+	
 fname = options.txtfiles
 fileN = fname[fname.rfind('/')+1:]
-#sys.exit(0)
 
 #JEC
 jecParStr = std.string('Jec12_V3_MC_Uncertainty_AK5PFchs.txt')
@@ -646,6 +649,7 @@ iZbHb = 0
 iWtHb = 0
 iHbHb = 0
 tensor = TMatrix(3,3)
+eigenval = TVector(3)
 sum_jetP4 = TLorentzVector(0.0,0.0,0.0,0.0)
 lepton_vector = TLorentzVector()
 jet_vector = TLorentzVector()
@@ -1034,7 +1038,6 @@ for event in events:
     tensor[1][2]/=sum
     tensor[2][1] = tensor[1][2]
 
-    eigenval = TVector(3)
     tensor.EigenVectors(eigenval)
 
     sphericity[0] = 3.0*(eigenval(1)+eigenval(2))/2.0
@@ -1102,7 +1105,7 @@ for event in events:
 
     if len(jets_ca8) != 0:
         for ca8jet in jets_ca8:        
-            matched = false
+            matched = False
             ca8jet_vector.SetPtEtaPhiM( ca8jet.pt(), ca8jet.eta(), ca8jet.phi(), ca8jet.mass() )            
             minDR_bjetV = 0.5
             for jetid, ak5jet in enumerate(jets) :
@@ -1113,7 +1116,7 @@ for event in events:
                 minDR_bjetV = TMath.Min ( ak5jet_vector.DeltaR(ca8jet_vector), minDR_bjetV )
                     
                 if ak5jet_vector.DeltaR(ca8jet_vector) < 0.3:
-                    matched = true 
+                    matched = True 
                     # double tag
                     if isVTagged(ca8jet) and isBTagged(ak5jet):                        
                         nBtags_remove.append(jetid) 
