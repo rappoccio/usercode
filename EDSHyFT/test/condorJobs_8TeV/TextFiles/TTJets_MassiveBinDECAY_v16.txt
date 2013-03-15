@@ -1,7 +1,0 @@
-/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v3/c2c5ab1f900a09372ddd6cdc9816dd24/edmTest_113_1_2Oi.root
-/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v3/c2c5ab1f900a09372ddd6cdc9816dd24/edmTest_114_1_rvy.root
-/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v3/c2c5ab1f900a09372ddd6cdc9816dd24/edmTest_115_1_61U.root
-/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v3/c2c5ab1f900a09372ddd6cdc9816dd24/edmTest_116_1_DVD.root
-/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v3/c2c5ab1f900a09372ddd6cdc9816dd24/edmTest_117_1_de9.root
-/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v3/c2c5ab1f900a09372ddd6cdc9816dd24/edmTest_118_1_Xex.root
-/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/BPrimeEDMNtuples_53x_v3/c2c5ab1f900a09372ddd6cdc9816dd24/edmTest_119_1_Ak2.root

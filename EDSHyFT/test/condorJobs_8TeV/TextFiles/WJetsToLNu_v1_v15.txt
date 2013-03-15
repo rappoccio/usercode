@@ -1,2 +1,0 @@
-/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v3_WJets_v1/7dd843baaf47d9c9e7be7d2189664474/edmTest_61_1_OIZ.root
-/pnfs/cms/WAX/11/store/user/lpcbprime/ferencek/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/BPrimeEDMNtuples_53x_v3_WJets_v1/7dd843baaf47d9c9e7be7d2189664474/edmTest_62_1_MMz.root
