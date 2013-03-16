@@ -53,8 +53,8 @@ def isTightMu(lep, PVz):
         normChi2  =  lep.globalTrack().normalizedChi2()
         trkLayers =  lep.track().hitPattern().trackerLayersWithMeasurement()
         mVMuHits  =  lep.globalTrack().hitPattern().numberOfValidMuonHits()
-        dB        =  fabs( lep.dB() )
-        diffVz    =  fabs( lep.vertex().z() - PVz )
+        dB        =  TMath.Abs( lep.dB() )
+        diffVz    =  TMath.Abs( lep.vertex().z() - PVz )
         mPixHits  =  lep.innerTrack().hitPattern().numberOfValidPixelHits()
         matchStat =  lep.numberOfMatchedStations()
     
