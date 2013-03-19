@@ -597,8 +597,22 @@ datasets = [
     'AK5PF_CSVM'
   ],
   [
+    '/BprimeBprimeToBHTWinc_M-850_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBHTWinc_M-850_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7C-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 600., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 150., 200., 300., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'AK5PF_CSVM'
+  ],
+  [
     '/BprimeBprimeToBHTWinc_M-900_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBHTWinc_M-900_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7C-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
     {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 600., 1000.],[0., 0.6, 1.2, 2.4]],
+     'c':    [[0., 40., 60., 80., 100., 150., 200., 300., 1000.],[0., 0.6, 1.2, 2.4]],
+     'udsg': [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]]},
+    'AK5PF_CSVM'
+  ],
+  [
+    '/BprimeBprimeToBHTWinc_M-1200_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBHTWinc_M-1200_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7C-v1_TLBSM_53x_v2-c04f3b4fa74c8266c913b71e0c74901d/USER',
+    {'b':    [[0., 40., 60., 80., 100., 150., 200., 300., 400., 500., 600., 800., 1000.],[0., 0.6, 1.2, 2.4]],
      'c':    [[0., 40., 60., 80., 100., 150., 200., 300., 1000.],[0., 0.6, 1.2, 2.4]],
      'udsg': [[0., 40., 60., 80., 100., 150., 200., 1000.],[0., 0.6, 1.2, 2.4]]},
     'AK5PF_CSVM'
