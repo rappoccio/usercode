@@ -1,13 +1,13 @@
 #!/bin/bash
 
-echo "input parameters: cluster, process, run path, input path, output path, data?, leptype " $1 $2 $3 $4 $5 $6
+echo "input parameters: cluster, process, run path, input path, data?" $1 $2 $3 $4 $5
 
 CLUSTER=$1
 PROCESS=$2
 RUNPATH=$3
 INPATH=$4
-OUTPATH=$5 
-DATA=$6
+OUTPATH=$_CONDOR_SCRATCH_DIR 
+DATA=$5
 
 
 echo ""
@@ -29,9 +29,6 @@ echo "DATA: $DATA"
 cd $RUNPATH
 source /uscmst1/prod/sw/cms/shrc uaf
 eval `scramv1 runtime -sh`
-
-# setup certificate to copy files to dCache
-#export X509_USER_PROXY=/uscms/home/skhalil/x509up_u44569
 
 counter=0
 
