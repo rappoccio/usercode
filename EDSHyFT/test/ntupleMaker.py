@@ -2,217 +2,13 @@
 
 from __future__ import print_function
 import subprocess
-# Import everything from ROOT
-#from ROOT import *
-from ROOT import gROOT,std,ROOT,TFile,TTree,TStopwatch,TMatrix,TLorentzVector,TMath,TVector
-gROOT.Macro("~/rootlogon.C")
-
 import sys
 import glob
 import math
+from ROOT import gROOT,std,fabs,ROOT,TFile,TTree,TStopwatch,TMatrix,TLorentzVector,TMath,TVector
+gROOT.Macro("~/rootlogon.C")
 
-
-def isVTagged(ca8jet):
-    pt = ca8jet.pt()    
-    mass = ca8jet.mass()
-    subjet1M = ca8jet.daughter(0).mass() 
-    subjet2M = ca8jet.daughter(1).mass()
-    mu = max(subjet1M,subjet2M) / ca8jet.correctedJet("Uncorrected").mass()    
-    if mu < 0.4 and (mass < 150 and mass > 50) and pt > 200:
-        return True
-    else:
-        return False
-
-def isBTagged(ak5jet):
-    bjet=0
-    if options.data:
-        if ak5jet.bDiscriminator('combinedSecondaryVertexBJetTags') >= 0.679 :
-             bjet=1
-    else:
-        if options.bTag == "OutOfBox" :
-            if (ak5jet.userInt('btagRegular') & 1) == 1 :
-                bjet=1
-        elif options.bTag == "" :
-            if (ak5jet.userInt('btagRegular') & 2) == 2 :
-                bjet=1
-        elif options.bTag =="BTagSFup" :
-            if (ak5jet.userInt('btagRegular') & 4) == 4 :
-                bjet=1
-        elif options.bTag =="BTagSFdown" :
-            if (ak5jet.userInt('btagRegular') & 8) == 8 :
-                bjet=1
-    if bjet==1:
-        return True
-    else:
-        return False
-
-def isTightMu(lep, PVz):
-    isPF      =  lep.isPFMuon()
-    isGlob    =  lep.isGlobalMuon()
-    if isPF and isGlob:    
-        normChi2  =  lep.globalTrack().normalizedChi2()
-        trkLayers =  lep.track().hitPattern().trackerLayersWithMeasurement()
-        mVMuHits  =  lep.globalTrack().hitPattern().numberOfValidMuonHits()
-        dB        =  TMath.Abs( lep.dB() )
-        diffVz    =  TMath.Abs( lep.vertex().z() - PVz )
-        mPixHits  =  lep.innerTrack().hitPattern().numberOfValidPixelHits()
-        matchStat =  lep.numberOfMatchedStations()
-    
-    if(isPF and isGlob and normChi2<10 and trkLayers>5 and mVMuHits>0 and dB<0.2 and diffVz<0.5 and mPixHits>0 and matchStat >1):
-        return True
-    else:
-        return False
-    
-def deltaR( eta1, phi1, eta2, phi2):
-    deta = eta1 - eta2
-    dphi = phi1 - phi2
-    if dphi >= math.pi: dphi -= 2*math.pi
-    elif dphi < -math.pi: dphi += 2*math.pi
-    return math.sqrt(deta*deta + dphi*dphi)
-
-def smear_factor(eta, variation):
-    abseta = abs(eta)
-    smear_nominal = 0.0
-    smear_up = 0.0
-    smear_down = 0.0
-
-    if abseta <= 0.5:
-                smear_nominal = 0.052
-                smear_up = 0.115
-                smear_down = 0.0
-    elif abseta <= 1.1:
-                smear_nominal = 0.057
-                smear_up = 0.114
-                smear_down = 0.001
-    elif abseta <= 1.7:
-                smear_nominal = 0.096
-                smear_up = 0.161
-                smear_down = 0.032
-    elif abseta <= 2.3:
-                smear_nominal = 0.134
-                smear_up = 0.228
-                smear_down = 0.042
-    elif abseta < 5.0:
-                smear_nominal = 0.288
-                smear_up = 0.488
-                smear_down = 0.089
-
-    if variation == 0: return smear_nominal
-    elif variation == 1: return smear_up
-    elif variation == -1: return smear_down
-    
-#SF for HLT_Mu40
-def muonTrig_SF(eta, pt):    
-    abseta = abs(eta)
-    SF = 1.0
-    if abseta >= 0.0 and abseta < 0.90:
-        if pt >= 40.   and pt < 50.  : SF = 0.9810
-        elif pt >= 50. and pt < 60.  : SF = 0.9810
-        elif pt >= 60. and pt < 90.  : SF = 0.9806
-        elif pt >= 90. and pt < 140. : SF = 0.9786
-        elif pt >= 140. and pt < 500.: SF = 0.9810
-        else: SF = 0.9810    
-    elif abseta >= 0.90 and abseta < 1.2:
-        if pt >= 40.   and pt < 50.  : SF = 0.9626
-        elif pt >= 50. and pt < 60.  : SF = 0.9570
-        elif pt >= 60. and pt < 90.  : SF = 0.9528
-        elif pt >= 90. and pt < 140. : SF = 0.9504
-        elif pt >= 140. and pt < 500.: SF = 1.0088
-        else: SF = 1.0088    
-    elif abseta >= 1.2 and abseta < 2.1:
-        if pt >= 40.   and pt < 50.  : SF = 0.9931
-        elif pt >= 50. and pt < 60.  : SF = 0.9894
-        elif pt >= 60. and pt < 90.  : SF = 0.9827
-        elif pt >= 90. and pt < 140. : SF = 0.9908
-        elif pt >= 140. and pt < 500.: SF = 0.9970
-        else: SF = 0.9970     
-    return SF
-
-# SF for muon ID (Tight && relIso <0.12)
-def muonID_SF(eta):
-    abseta = abs(eta)
-    SF = 1.0
-    if abseta >= 0.0 and abseta < 0.90:
-        SF = 0.9943
-    elif abseta >= 0.90 and abseta < 1.2:    
-        SF = 0.9933
-    elif abseta >= 1.2 and abseta < 2.1:
-        SF = 1.0020  
-    return SF
-
-# SF for HLT_Ele27_WP80
-def electronTrig_SF(eta, pt):    
-    abseta = abs(eta)
-    SF = 1.0
-    if abseta >= 0.0 and abseta < 0.80:
-        if pt >= 20. and pt < 30.:
-            SF = 0.695
-        elif pt >= 30. and pt < 40.:
-            SF = 0.984
-        elif pt >= 40. and pt < 50.:
-            SF = 0.999
-        elif pt > 50. and pt < 200.:
-            SF = 0.999
-        else: SF = 0.999    
-    elif abseta >= 0.80 and abseta < 1.48:
-        if pt >= 20. and pt < 30.:
-            SF = 0.462
-        elif pt >= 30. and pt < 40.:
-            SF = 0.967
-        elif pt >= 40. and pt < 50.:
-            SF = 0.983
-        elif pt > 50. and pt < 200.:
-            SF = 0.988
-        else: SF = 0.988    
-    elif abseta >= 1.48 and abseta < 2.50:
-        if pt >= 20. and pt < 30.:
-            SF = 0.804
-        elif pt >= 30. and pt < 40.:
-            SF = 0.991
-        elif pt >= 40. and pt < 50.:
-            SF = 1.018
-        elif pt > 50. and pt < 200.:
-            SF = 0.977
-        else: SF = 0.977    
-    return SF
-
-# SF for electron ID (MVA >0.9 && relIso <0.1)
-def electronID_SF(eta, pt):
-    abseta = abs(eta)
-    SF = 1.0
-    if abseta >= 0.0 and abseta < 0.80:
-        if pt >= 20. and pt < 30.:
-            SF = 0.972
-        elif pt >= 30. and pt < 40.:
-            SF = 0.950
-        elif pt >= 40. and pt < 50.:
-            SF = 0.966
-        elif pt > 50. and pt < 200.:
-            SF = 0.961
-        else: SF = 0.961    
-    elif abseta >= 0.80 and abseta < 1.48:
-        if pt >= 20. and pt < 30.:
-            SF = 0.928
-        elif pt >= 30. and pt < 40.:
-            SF = 0.957
-        elif pt >= 40. and pt < 50.:
-            SF = 0.961
-        elif pt > 50. and pt < 200.:
-            SF = 0.963
-        else: SF = 0.963    
-    elif abseta >= 1.48 and abseta < 2.50:
-        if pt >= 20. and pt < 30.:
-            SF = 0.834
-        elif pt >= 30. and pt < 40.:
-            SF = 0.922
-        elif pt >= 40. and pt < 50.:
-            SF = 0.941
-        elif pt > 50. and pt < 200.:
-            SF = 0.971
-        else: SF = 0.971    
-    return SF
-
-
+from ntupleDef import *
 from array import array
 from optparse import OptionParser
 
@@ -490,6 +286,9 @@ else:
     eDeta = array('d', [0.])
     t.Branch('eDeta',eDeta,'eDeta/D')
 
+    ePreTrig = array('i', [0])
+    t.Branch('ePreTrig', ePreTrig, 'ePreTrig/I')
+
 trigSF = array('d', [0.])
 t.Branch('trigSF', trigSF, 'trigSF/D')
 
@@ -582,6 +381,15 @@ if bprimeGenInfo:
 nVTags = array('i',[0])
 t.Branch('nVTags',nVTags,'nVTags/I')
 
+VTagsSF = array('d',[0])
+t.Branch('VTagsSF',VTagsSF,'VTagsSF/D')
+
+VTagsSFUp = array('d',[0])
+t.Branch('VTagsSFUp',VTagsSFUp,'VTagsSFUp/D')
+
+VTagsSFDn = array('d',[0])
+t.Branch('VTagsSFDn',VTagsSFDn,'VTagsSFDn/D')
+
 nTagsCSVM = array('i',[0])
 t.Branch('nTagsCSVM',nTagsCSVM,'nTagsCSVM/I')
 
@@ -602,6 +410,9 @@ t.Branch('minDR_bV',minDR_bV,'minDR_bV[nJets]/D')
 
 m3 = array('d',[0.])
 t.Branch('m3',m3,'m3/D')
+
+mbV = array('d',max_nJets*[0.])
+t.Branch('mbV',mbV,'mbV[nJets]/D')
 
 mj = array('d',[0.])
 t.Branch('mj',mj,'mj/D')
@@ -657,6 +468,7 @@ ca8jet_vector = TLorentzVector()
 ak5jet_vector = TLorentzVector()
 leadingJetVector = TLorentzVector()
 met_vector = TLorentzVector()
+VTags_SF = 0.934
 # loop over events
 i = 0 
 for event in events:
@@ -664,7 +476,6 @@ for event in events:
     if i % 1000 == 0 :
     	print("EVENT ", i)
     nEventsAnalyzed = nEventsAnalyzed + 1
-
     #if nEventsAnalyzed == 1000: break
    
     # Get the objects 
@@ -963,6 +774,7 @@ for event in events:
         eHOverE[0] = (leptons[0]).hadronicOverEm()
         eDphi[0]   = (leptons[0]).deltaEtaSuperClusterTrackAtVtx()
         eDeta[0]   = (leptons[0]).deltaPhiSuperClusterTrackAtVtx()
+        ePreTrig[0] = passPreTrigMVA(leptons[0])
         
     chIso = (leptons[0]).userIsolation(pat.PfChargedHadronIso)
     nhIso = (leptons[0]).userIsolation(pat.PfNeutralHadronIso)
@@ -1069,7 +881,7 @@ for event in events:
         jet_p4.append(jet_vector)
         minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
         bDistriminator[nj] = jet.bDiscriminator('combinedSecondaryVertexBJetTags')
-        if isBTagged(jet):
+        if isBTagged(jet, options.data, options.bTag):
             nBtags.append(jetid)       
         nj = nj + 1
         sumEt += jet.pt()
@@ -1099,15 +911,13 @@ for event in events:
     cj = 0
     minDeltaR_lepca8jet = 5.0
     nBtags_remove = []
-
-    #for i in range(max_nJets):
-	#minDR_bV[i] = 0
+    Vjets = []
 
     if len(jets_ca8) != 0:
         for ca8jet in jets_ca8:        
             matched = False
             ca8jet_vector.SetPtEtaPhiM( ca8jet.pt(), ca8jet.eta(), ca8jet.phi(), ca8jet.mass() )            
-            minDR_bjetV = 0.5
+            minDR_bjetV = 1.0
             for jetid, ak5jet in enumerate(jets) :
                 if ak5jet.pt() <= jetPtMin: continue
                 ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
@@ -1115,17 +925,17 @@ for event in events:
                 # min dR b/w ak5 jet and ca8 jet
                 minDR_bjetV = TMath.Min ( ak5jet_vector.DeltaR(ca8jet_vector), minDR_bjetV )
                     
-                if ak5jet_vector.DeltaR(ca8jet_vector) < 0.3:
+                if ak5jet_vector.DeltaR(ca8jet_vector) < 0.5:
                     matched = True 
                     # double tag
-                    if isVTagged(ca8jet) and isBTagged(ak5jet):                        
+                    if isVTagged(ca8jet) and isBTagged(ak5jet, options.data, options.bTag):                        
                         nBtags_remove.append(jetid) 
                         
             minDR_bV[cj] = minDR_bjetV
            
             # require ca8 jet to match to at least one ak5 jet
             if not matched: continue
-            
+            #print ('cj', cj)
             # dR b/w lepton and CA8 jet:
             minDeltaR_lepca8jet = TMath.Min ( ca8jet_vector.DeltaR(lepton_vector), minDeltaR_lepca8jet )
             
@@ -1143,7 +953,7 @@ for event in events:
             # nVtags
             if isVTagged(ca8jet):
                 nVtags = nVtags + 1
-    
+                Vjets.append(ca8jet)
             # gen parton related info:
             if bprimeGenInfo:               
                 dR_Wqq_match1 = deltaR( ca8jet.eta(), ca8jet.phi(), WPart1P4.Eta(), WPart1P4.Phi())
@@ -1207,7 +1017,7 @@ for event in events:
                 dR_Hjjqq_match[cj] = dR_Hjjqq
                 HPt_true[cj] = HPt
                 
-        cj = cj + 1
+            cj = cj + 1
 
     
     #fill the rest of variables
@@ -1215,9 +1025,11 @@ for event in events:
         centrality[0] = sumJetPt/sumJetE    
     ht[0] = sumEt
     nTagsCSVMUncor[0] = len(nBtags)
-    #nTagsCSVM[0] = len([x for x in nBtags if x not in nBtags_remove])
     nTagsCSVM[0] = len(set(nBtags) - set(nBtags_remove))
-    nVTags[0] = nVtags    
+    nVTags[0] = nVtags
+    VTagsSF[0] = VTag_SF(nVtags,0) ** nVtags
+    VTagsSFUp[0] = VTag_SF(nVtags,+1) ** nVtags
+    VTagsSFDn[0] = VTag_SF(nVtags,-1) ** nVtags    
     minDR_je[0] = minDeltaR_lepjet
     minDR_ca8je[0] = minDeltaR_lepca8jet   
     met_vector.SetPxPyPzE( metObj.px(), metObj.py(), metObj.pz(), metObj.et())
@@ -1225,11 +1037,19 @@ for event in events:
     leadingJetVector.SetPxPyPzE( jets[0].px(), jets[0].py(), jets[0].pz(), jets[0].energy())
     if leadingJetVector.Pt() > jetPtMin:
         deltaPhiMETLeadingJet[0] = met_vector.DeltaPhi( leadingJetVector )
-    
-    # empty the list for the next event
+        
+    ##-----Mass reconstruction------
+    listOfPairs =  massbV(Vjets, jets, nBtags, nBtags_remove)
+    for vj, mass_bV in listOfPairs:
+        if mass_bV != 0 :
+            #print ("vj", vj, "bV_Mass", mass_bV)        
+            mbV[vj] = mass_bV
+
+    #empty the list for the next event
     del nBtags[:]
     del nBtags_remove[:]    
-    
+
+
     t.Fill()
 # Done processing the events!
 # Stop our timer
