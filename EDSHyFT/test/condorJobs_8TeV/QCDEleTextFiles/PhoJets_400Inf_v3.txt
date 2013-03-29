@@ -1,0 +1,17 @@
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_52_1_3oC.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_53_1_1k3.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_54_1_70A.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_55_1_y8Y.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_56_1_pRx.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_57_1_zxh.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_58_1_3Jr.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_59_1_PQH.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_60_1_G0F.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_61_1_sFP.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_62_1_Epn.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_63_1_JRd.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_64_1_Vwj.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_65_1_Snb.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_66_1_C5W.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_67_1_9RX.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-400ToInf_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/f8b9ac468a52f28ed02d0a7715c166ac/edmTest_68_1_AeZ.root

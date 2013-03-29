@@ -1,0 +1,13 @@
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_91_1_DEW.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_92_1_ANj.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_93_1_HHS.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_94_1_GGN.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_95_1_ux6.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_96_1_4Au.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_97_1_WvX.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_98_1_eBi.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_99_1_orq.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_100_1_5HO.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_101_1_D7B.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_102_1_HFX.root
+/pnfs/cms/WAX/11/store/user/lpcbprime/cjenkins/GJets_HT-200To400_8TeV-madgraph/BPrimeEDMNtuples_53x_v2/9d4dd0dae445118249c26e782131802c/edmTest_103_1_kKa.root
