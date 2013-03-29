@@ -5,7 +5,7 @@ import subprocess
 import sys
 import glob
 import math
-from ROOT import gROOT,std,fabs,ROOT,TFile,TTree,TStopwatch,TMatrix,TLorentzVector,TMath,TVector
+from ROOT import gROOT,std,math,fabs,ROOT,TFile,TTree,TStopwatch,TMatrix,TLorentzVector,TMath,TVector
 gROOT.Macro("~/rootlogon.C")
 
 from ntupleDef import *
