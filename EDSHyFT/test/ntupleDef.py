@@ -1,4 +1,4 @@
-from ROOT import fabs,TLorentzVector
+from ROOT import fabs,math,TLorentzVector
 
 def massbV(Vjets, jets, nBtags, nBtags_remove):
     #reconstruct b' mass if a bjet and a Vjet lies in opposite hemisphere,
