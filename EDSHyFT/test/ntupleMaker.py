@@ -468,13 +468,15 @@ ca8jet_vector = TLorentzVector()
 ak5jet_vector = TLorentzVector()
 leadingJetVector = TLorentzVector()
 met_vector = TLorentzVector()
-VTags_SF = 0.934
+vjet_vector = TLorentzVector()
+bjet_vector = TLorentzVector()
+
 # loop over events
 i = 0 
 for event in events:
     i = i + 1
     if i % 1000 == 0 :
-    	print("EVENT ", i)
+        print("EVENT ", i)
     nEventsAnalyzed = nEventsAnalyzed + 1
     #if nEventsAnalyzed == 1000: break
    
@@ -1039,7 +1041,7 @@ for event in events:
         deltaPhiMETLeadingJet[0] = met_vector.DeltaPhi( leadingJetVector )
         
     ##-----Mass reconstruction------
-    listOfPairs =  massbV(Vjets, jets, nBtags, nBtags_remove)
+    listOfPairs =  massbV(Vjets, vjet_vector, jets, bjet_vector, nBtags, nBtags_remove)
     for vj, mass_bV in listOfPairs:
         if mass_bV != 0 :
             #print ("vj", vj, "bV_Mass", mass_bV)        

@@ -1,16 +1,15 @@
 from ROOT import fabs,TLorentzVector
 import math
 
-def massbV(Vjets, jets, nBtags, nBtags_remove):
+def massbV(Vjets, vjet_vector, jets, bjet_vector, nBtags, nBtags_remove):
     #reconstruct b' mass if a bjet and a Vjet lies in opposite hemisphere,
     #if not then form the mass between any fartherest jet and V-jet.
     pair= []
     vj = 0
-
+    
     for vjet in Vjets:
         # require at least one b-tag jet
-        if len(set(nBtags) - set(nBtags_remove)) == 0: continue
-        vjet_vector = TLorentzVector()
+        if len(set(nBtags) - set(nBtags_remove)) == 0: continue        
         vjet_vector.SetPtEtaPhiM( vjet.pt(), vjet.eta(), vjet.phi(), vjet.mass() )
         
         far_bjet_p4 = None
@@ -19,20 +18,20 @@ def massbV(Vjets, jets, nBtags, nBtags_remove):
         dR_max_jV  = 0.0
         
         for jetid, jet in enumerate(jets) :
-            jet_vector = TLorentzVector()
-            jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
-            dR = jet_vector.DeltaR(vjet_vector)
+            if jet.pt() <= 30: continue
+            bjet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
+            dR = bjet_vector.DeltaR(vjet_vector)
     
             # max dR b/w jets and V-jets
             if dR > dR_max_jV:
                 dR_max_jV = dR
-                far_jet_p4 = jet_vector
+                far_jet_p4 = bjet_vector
 
             # max dR b/w bjets and V-jets  
             if jetid in nBtags and jetid not in nBtags_remove:
                 if dR > dR_max_bV:
                     dR_max_bV = dR
-                    far_bjet_p4 = jet_vector
+                    far_bjet_p4 = bjet_vector
 
         bV_Mass = 0.
         if far_bjet_p4:
