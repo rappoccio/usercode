@@ -102,6 +102,51 @@ def isVTagged(ca8jet):
     else:
         return False
 
+## def isBTagged(ak5jet, isdata, isbTag, jetFlavor):
+##     bjet=0
+##     if isdata:
+##          if ak5jet.bDiscriminator('combinedSecondaryVertexBJetTags') >=0.679 :
+##              bjet=1
+##          else:
+##              if isbTag == "OutOfBox" :
+##                  if (ak5jet.userInt('btagRegular') & 1) == 1 :
+##                      bjet=1
+##              elif isbTag == "" :
+##                  if (ak5jet.userInt('btagRegular') & 2) == 2 :
+##                      bjet=1
+##              elif isbTag =="BTagSFupHF" :
+##                  if (jetFlavor == 5 or jetFlavor == 4) :
+##                      if (ak5jet.userInt('btagRegular') & 4) == 4 :
+##                          bjet=1
+##                  else:
+##                      if (ak5jet.userInt('btagRegular') & 2) == 2 :
+##                          bjet=1
+##              elif isbTag =="BTagSFupLF" :
+##                  if (jetFlavor == 5 or jetFlavor == 4) :
+##                      if (ak5jet.userInt('btagRegular') & 2) == 2 :
+##                          bjet=1
+##                  else:
+##                      if (ak5jet.userInt('btagRegular') & 4) == 4 :
+##                          bjet=1
+##              elif isbTag =="BTagSFdownHF" :
+##                  if (jetFlavor == 5 or jetFlavor == 4) :
+##                      if (ak5jet.userInt('btagRegular') & 8) == 8 :
+##                      bjet=1
+##                  else:
+##                      if (ak5jet.userInt('btagRegular') & 2) == 2 :
+##                      bjet=1
+##              elif isbTag =="BTagSFdownLF" :
+##                  if (jetFlavor == 5 or jetFlavor == 4) :
+##                      if (ak5jet.userInt('btagRegular') & 2) == 2 :
+##                      bjet=1
+##                  else:
+##                      if (ak5jet.userInt('btagRegular') & 8) == 8 :
+##                      bjet=1
+##     if bjet==1:
+##         return True
+##     else:
+##         return False
+         
 def isBTagged(ak5jet, isdata, isbTag):
     bjet=0
     if isdata:
@@ -185,12 +230,12 @@ def muonTrig_SF(eta, pt):
     abseta = abs(eta)
     SF = 1.0
     if abseta >= 0.0 and abseta < 0.90:
-        if pt >= 40.   and pt < 50.  : SF = 0.9810
-        elif pt >= 50. and pt < 60.  : SF = 0.9810
-        elif pt >= 60. and pt < 90.  : SF = 0.9806
-        elif pt >= 90. and pt < 140. : SF = 0.9786
-        elif pt >= 140. and pt < 500.: SF = 0.9810
-        else: SF = 0.9810    
+        if pt >= 40.   and pt < 50.  : SF = 0.9771
+        elif pt >= 50. and pt < 60.  : SF = 0.9748
+        elif pt >= 60. and pt < 90.  : SF = 0.9736
+        elif pt >= 90. and pt < 140. : SF = 0.9658
+        elif pt >= 140. and pt < 500.: SF = 0.9840
+        else: SF = 0.9840    
     elif abseta >= 0.90 and abseta < 1.2:
         if pt >= 40.   and pt < 50.  : SF = 0.9626
         elif pt >= 50. and pt < 60.  : SF = 0.9570
@@ -199,24 +244,42 @@ def muonTrig_SF(eta, pt):
         elif pt >= 140. and pt < 500.: SF = 1.0088
         else: SF = 1.0088    
     elif abseta >= 1.2 and abseta < 2.1:
-        if pt >= 40.   and pt < 50.  : SF = 0.9931
+        if pt >= 40.   and pt < 50.  : SF = 0.9930
         elif pt >= 50. and pt < 60.  : SF = 0.9894
         elif pt >= 60. and pt < 90.  : SF = 0.9827
         elif pt >= 90. and pt < 140. : SF = 0.9908
         elif pt >= 140. and pt < 500.: SF = 0.9970
-        else: SF = 0.9970     
+        else: SF = 0.9970    
     return SF
 
 # SF for muon ID (Tight && relIso <0.12)
-def muonID_SF(eta):
+def muonID_SF(eta, pt):
     abseta = abs(eta)
     SF = 1.0
     if abseta >= 0.0 and abseta < 0.90:
-        SF = 0.9943
-    elif abseta >= 0.90 and abseta < 1.2:    
-        SF = 0.9933
+        if pt >= 40.   and pt < 50.  : SF = 0.9866
+        elif pt >= 50. and pt < 60.  : SF = 0.9866
+        elif pt >= 60. and pt < 90.  : SF = 0.9895
+        elif pt >= 90. and pt < 140. : SF = 1.0049
+        elif pt >= 140. and pt < 300.: SF = 1.0283
+        elif pt >= 300. and pt < 500.: SF = 1.0198
+        else: SF = 1.0198    
+    elif abseta >= 0.90 and abseta < 1.2:
+        if pt >= 40.   and pt < 50.  : SF = 0.9878
+        elif pt >= 50. and pt < 60.  : SF = 0.9900
+        elif pt >= 60. and pt < 90.  : SF = 0.9855
+        elif pt >= 90. and pt < 140. : SF = 1.0115
+        elif pt >= 140. and pt < 300.: SF = 0.9525
+        elif pt >= 300. and pt < 500.: SF = 1.0078
+        else: SF = 1.0078
     elif abseta >= 1.2 and abseta < 2.1:
-        SF = 1.0020  
+        if pt >= 40.   and pt < 50.  : SF = 0.9995
+        elif pt >= 50. and pt < 60.  : SF = 0.9988
+        elif pt >= 60. and pt < 90.  : SF = 0.9946
+        elif pt >= 90. and pt < 140. : SF = 1.0191
+        elif pt >= 140. and pt < 300.: SF = 1.0164
+        elif pt >= 300. and pt < 500.: SF = 0.6173
+        else: SF = 0.6173
     return SF
 
 # SF for HLT_Ele27_WP80

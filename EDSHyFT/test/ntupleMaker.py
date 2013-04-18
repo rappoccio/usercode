@@ -63,7 +63,7 @@ parser.add_option("--runMuons", action='store_true',
 parser.add_option("--bTag",action='store',
                   default="",
                   dest="bTag",
-                  help="b-tag SF, Options as '', BTagSFup, BTagSFdown")
+                  help="b-tag SF, Options as '', BTagSFupHF, BTagSFupLF, BTagSFdownHF, BTagSFdownLF")
 
 parser.add_option("--useBPrimeGenInfo",  action='store_true',
                   default=False,
@@ -571,8 +571,8 @@ for event in events:
     if not options.data :
         event.getByLabel(pileupWeightsLabel, pileupWeightsH)
         pileupProduct = pileupWeightsH.product()
-	pileupWeight[0] = pileupProduct[0]
-	pileupWeightUp[0] = pileupProduct[1]
+        pileupWeight[0] = pileupProduct[0]
+        pileupWeightUp[0] = pileupProduct[1]
         pileupWeightDown[0] = pileupProduct[2]     
     else:
         runNumber[0] = event.object().id().run()
@@ -788,7 +788,7 @@ for event in events:
         isMuTight[0] = isTightMu(leptons[0], PVz)
         lepIso[0] = (chIso + max(0.0, nhIso + phIso - 0.5*puIso))/leptonsPt
         if not options.data:
-            lepSF[0]  = muonID_SF( (leptons[0]).eta())
+            lepSF[0]  = muonID_SF( (leptons[0]).eta(), leptonsPt)
             trigSF[0] = muonTrig_SF((leptons[0]).eta(), leptonsPt)
         else:    
             lepSF[0]  = 1
@@ -873,6 +873,7 @@ for event in events:
     jet_p4 = []
     sum_jetP4.SetPtEtaPhiM(0.0,0.0,0.0,0.0)
     nBtags = []
+    
     for jetid, jet in enumerate(jets) :
         if jet.pt() <= jetPtMin: continue
         jetEt[nj] = jet.pt()
@@ -882,9 +883,12 @@ for event in events:
         sum_jetP4 += jet_vector
         jet_p4.append(jet_vector)
         minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
-        bDistriminator[nj] = jet.bDiscriminator('combinedSecondaryVertexBJetTags')
-        if isBTagged(jet, options.data, options.bTag):
+        bDistriminator[nj] = jet.bDiscriminator('combinedSecondaryVertexBJetTags')      
+        jetFlavor = fabs( jet.partonFlavour() )
+        #if isBTagged(jet, options.data, options.bTag, jetFlavor):
+        if isBTagged(jet, options.data, options.bTag):            
             nBtags.append(jetid)       
+
         nj = nj + 1
         sumEt += jet.pt()
         
@@ -926,11 +930,12 @@ for event in events:
                 
                 # min dR b/w ak5 jet and ca8 jet
                 minDR_bjetV = TMath.Min ( ak5jet_vector.DeltaR(ca8jet_vector), minDR_bjetV )
-                    
+                ak5jetFlavor = fabs( ak5jet.partonFlavour() )    
                 if ak5jet_vector.DeltaR(ca8jet_vector) < 0.5:
                     matched = True 
                     # double tag
-                    if isVTagged(ca8jet) and isBTagged(ak5jet, options.data, options.bTag):                        
+                    #if isVTagged(ca8jet) and isBTagged(ak5jet, options.data, options.bTag, ak5jetFlavor):
+                    if isVTagged(ca8jet) and isBTagged(ak5jet, options.data, options.bTag):    
                         nBtags_remove.append(jetid) 
                         
             minDR_bV[cj] = minDR_bjetV
