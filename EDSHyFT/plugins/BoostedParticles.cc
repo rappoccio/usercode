@@ -12,6 +12,8 @@ using namespace reco;
 
 void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
 {
+   std::auto_ptr< double >  higgsWeight  (new double (0));
+   double higgsSF(1.0);
 
    //leptonic side of b'->tW->tlnu
    std::auto_ptr< LorentzV > Lep1 ( new LorentzV() );
@@ -130,8 +132,24 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
       event.getByLabel(edm::InputTag("prunedGenParticles"), h_gen); 
       assert ( h_gen.isValid() );
 
-      int numDa; int id(0); 
+      int numDa; int id(0), numHiggsDau(0);
       
+            //Obtain the BF from Pythia for Higgs mass = 120 GeV; for example H-> bb = 0.391413
+      //Use Higgs BF at NLO from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt8TeV
+      //For example, H- -> bb = 0.577 => higgsBBSf = 1.47415
+
+      //From Mike Luk: April 10th 2013 
+      double higgsBBSf          = 1.47415;
+      double higgsTauTauSf      = 1.32511;
+      double higgsMuMuSf        = 1.30178;
+      double higgsCCSf          = 1.35842;
+
+      double higgsGGSf          = 0.25024;
+      double higgsGammaGammaSf  = 5.55457;
+      double higgsZGammaSf      = 1.61765;
+      double higgsWWSf          = 1.22012;
+      double higgsZZSf          = 1.38307;
+
       std::vector<const reco::Candidate *> LeptW(6); //l1, nu1, t1, l2, nu2, t2
       std::vector<const reco::Candidate *> HadtW(6);
       std::vector<const reco::Candidate *> LepbZ(6);
@@ -296,6 +314,27 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
                   }//b'->bZ// //---------b'->bH---------
                   else if( abs(bprimes[bi]->daughter(di)->pdgId()) == 25 && di < 2){ //look for H boson(s)
                      if(bprimes[bi]->daughter(di)->numberOfDaughters()!=2) {cout << "H doesn't decay into 2 particles!" << endl; break;}
+
+                     int absDauIds(0);
+                     numHiggsDau = bprimes[bi]->daughter(di)->numberOfDaughters();
+                     
+                     //--------H->xx ----------
+                     for(int dauH=0; dauH<numHiggsDau; dauH++){ 
+                        int higgsDauId = bprimes[bi]->daughter(di)->daughter(dauH)->pdgId();
+                        absDauIds +=abs(higgsDauId);
+                     }
+                                                                            
+                     if(absDauIds==10) higgsSF *= higgsBBSf;
+                     if(absDauIds==30) higgsSF *= higgsTauTauSf;
+                     if(absDauIds==26) higgsSF *= higgsMuMuSf;
+                     if(absDauIds==8)  higgsSF *= higgsCCSf;
+                     if(absDauIds==42) higgsSF *= higgsGGSf;
+                     if(absDauIds==44) higgsSF *= higgsGammaGammaSf;
+                     if(absDauIds==45) higgsSF *= higgsZGammaSf;
+                     if(absDauIds==48) higgsSF *= higgsWWSf;
+                     if(absDauIds==46) higgsSF *= higgsZZSf; 
+                    
+
                      if(abs(bprimes[bi]->daughter(di)->daughter(0)->pdgId())>10){//H -> ll, gg
                         numLepbH++;
 
@@ -357,9 +396,12 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
          }// at least 2 daughters       
          
       }//gpIter
-    
+  
+      //cout << "final SF = " << higgsSF << endl;
+      *higgsWeight = higgsSF;  
+
        //BB->WtWt
-       if (numLeptW == 2) *WtWtToqqtqqt = 1;
+       if (numLeptW == 2) *WtWtTolnutlnut = 1;
        if (numHadtW == 2) *WtWtToqqtqqt = 1;
        if (numLeptW == 1 && numHadtW == 1) *WtWtToluntqqt = 1;
        if (*WtWtTolnutlnut == 1 || *WtWtToqqtqqt == 1 || *WtWtToluntqqt == 1) *BBtoWtWt = 1;
@@ -535,6 +577,8 @@ void BoostedParticles::produce(edm::Event& event, const edm::EventSetup& setup)
 
    }
   
+   event.put ( higgsWeight,       "higgsWeight"      );
+
    event.put ( Lep1,  "Lep1");   
    event.put ( Nu1,   "Nu1"); 
    event.put ( LepT1, "LepT1");

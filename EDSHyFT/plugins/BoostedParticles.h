@@ -40,7 +40,8 @@ BoostedParticles::BoostedParticles(const edm::ParameterSet& cfg)//:
    //pick_bZtW_(cfg.getParameter<bool>("pick_bZtW"))
 {  
    //register the products
-    
+   produces<double> ("higgsWeight");
+
    //leptonic side of b'->tW->tlnu
    produces< LorentzV > ("Lep1");
    produces< LorentzV > ("Nu1");
