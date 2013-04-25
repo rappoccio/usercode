@@ -187,6 +187,8 @@ rhoH =  Handle ("double")
 rhoLabel = ("kt6PFJets", "rho")
 
 if bprimeGenInfo:
+    HiggsSF_H   = Handle("double")
+    HiggsSF_L   = ( "GenInfo", "higgsWeight")
     BBtoWtWt_H  = Handle("int")
     BBtoWtWt_L  = ( "GenInfo", "BBtoWtWt" )
     BBtoWtZb_H  = Handle("int")
@@ -223,7 +225,6 @@ if bprimeGenInfo:
     HPart3_L    = ( "GenInfo",   "HPart3")
     HPart4_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
     HPart4_L    = ( "GenInfo",   "HPart4")
-
     
 # Create an output file and a tree
 systtag = ''
@@ -342,6 +343,9 @@ WjetMu = array('d', max_nJets*[0.])
 t.Branch('WjetMu', WjetMu, 'WjetMu[nJets]/D')
 
 if bprimeGenInfo:
+    HiggsSF = array('d',[0])
+    t.Branch('HiggsSF',HiggsSF,'HiggsSF/D')
+    
     WPt_true = array('d', max_nJets*[-1.])
     t.Branch('WPt_true', WPt_true, 'WPt_true[nJets]/D')
     
@@ -493,6 +497,14 @@ for event in events:
     
     # the bprime gen info categorization
     if bprimeGenInfo:
+
+        if "BH" in fileN:
+            event.getByLabel(HiggsSF_L, HiggsSF_H)
+            #print ("getting higss SF = ", HiggsSF_H.product()[0] )
+            HiggsSF[0] = HiggsSF_H.product()[0]
+        else:
+            HiggsSF[0] = 1
+            
         event.getByLabel(BBtoWtWt_L, BBtoWtWt_H)
         event.getByLabel(BBtoWtZb_L, BBtoWtZb_H)
         event.getByLabel(BBtoZbZb_L, BBtoZbZb_H)
@@ -886,12 +898,12 @@ for event in events:
         bDistriminator[nj] = jet.bDiscriminator('combinedSecondaryVertexBJetTags')      
         jetFlavor = fabs( jet.partonFlavour() )
         #if isBTagged(jet, options.data, options.bTag, jetFlavor):
-        if isBTagged(jet, options.data, options.bTag):            
+        if isBTagged(jet, options.data, options.bTag):
             nBtags.append(jetid)       
 
         nj = nj + 1
         sumEt += jet.pt()
-        
+   
     # mass of sum of all jets
     mj[0] = sum_jetP4.M()
     
@@ -910,9 +922,6 @@ for event in events:
                         M3 = threeJets.M()
                         highestPt=threeJets.Perp()
     m3[0] = M3
-
-    # empty the list for the next event
-    del jet_p4[:]
     
     cj = 0
     minDeltaR_lepca8jet = 5.0
@@ -1053,9 +1062,9 @@ for event in events:
             mbV[vj] = mass_bV
 
     #empty the list for the next event
+    del jet_p4[:]
     del nBtags[:]
     del nBtags_remove[:]    
-
 
     t.Fill()
 # Done processing the events!

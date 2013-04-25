@@ -53,16 +53,16 @@ def VTag_SF(nVtags,variation):
     
     if nVtags == 1:
         VTag_SF_nominal = 0.934
-        VTag_SF_up = 1.01 * VTag_SF_nominal
-        VTag_SF_dn = 0.99 * VTag_SF_nominal      
+        VTag_SF_up = 1.03 * VTag_SF_nominal
+        VTag_SF_dn = 0.97 * VTag_SF_nominal      
     elif nVtags == 2:
         VTag_SF_nominal = 0.934
-        VTag_SF_up = 1.02 * VTag_SF_nominal
-        VTag_SF_dn = 0.98 * VTag_SF_nominal
+        VTag_SF_up = 1.06 * VTag_SF_nominal
+        VTag_SF_dn = 0.94 * VTag_SF_nominal
     elif nVtags >= 3:
         VTag_SF_nominal = 0.934
-        VTag_SF_up = 1.03 * VTag_SF_nominal
-        VTag_SF_dn = 0.97 * VTag_SF_nominal
+        VTag_SF_up = 1.09 * VTag_SF_nominal
+        VTag_SF_dn = 0.91 * VTag_SF_nominal
 
     if variation == 0: return VTag_SF_nominal
     elif variation == 1: return VTag_SF_up
@@ -101,52 +101,55 @@ def isVTagged(ca8jet):
         return True
     else:
         return False
+    
+'''
+def isBTagged(ak5jet, isdata, isbTag, jetFlavor):
+    bjet=0
+    if isdata:
+         if ak5jet.bDiscriminator('combinedSecondaryVertexBJetTags') >=0.679 :
+             bjet=1
+    else:
+        if isbTag == "OutOfBox" :
+            if (ak5jet.userInt('btagRegular') & 1) == 1 :
+                bjet=1
+        elif isbTag == "" :
+            if (ak5jet.userInt('btagRegular') & 2) == 2 :
+                bjet=1
+        elif isbTag =="BTagSFupHF" :
+            if (jetFlavor == 5 or jetFlavor == 4) :
+                if (ak5jet.userInt('btagRegular') & 4) == 4 :
+                    bjet=1
+            else:
+                if (ak5jet.userInt('btagRegular') & 2) == 2 :
+                    bjet=1
+        elif isbTag =="BTagSFupLF" :
+            if (jetFlavor == 5 or jetFlavor == 4) :
+                if (ak5jet.userInt('btagRegular') & 2) == 2 :
+                    bjet=1
+            else:
+                if (ak5jet.userInt('btagRegular') & 4) == 4 :
+                    bjet=1
+        elif isbTag =="BTagSFdownHF" :
+            if (jetFlavor == 5 or jetFlavor == 4) :
+                if (ak5jet.userInt('btagRegular') & 8) == 8 :
+                    bjet=1
+            else:
+                if (ak5jet.userInt('btagRegular') & 2) == 2 :
+                    bjet=1
+        elif isbTag =="BTagSFdownLF" :
+            if (jetFlavor == 5 or jetFlavor == 4) :
+                if (ak5jet.userInt('btagRegular') & 2) == 2 :
+                    bjet=1
+            else:
+                if (ak5jet.userInt('btagRegular') & 8) == 8 :
+                    bjet=1
+    if bjet==1:
+        return True
+    else:
+        return False
+'''
 
-## def isBTagged(ak5jet, isdata, isbTag, jetFlavor):
-##     bjet=0
-##     if isdata:
-##          if ak5jet.bDiscriminator('combinedSecondaryVertexBJetTags') >=0.679 :
-##              bjet=1
-##          else:
-##              if isbTag == "OutOfBox" :
-##                  if (ak5jet.userInt('btagRegular') & 1) == 1 :
-##                      bjet=1
-##              elif isbTag == "" :
-##                  if (ak5jet.userInt('btagRegular') & 2) == 2 :
-##                      bjet=1
-##              elif isbTag =="BTagSFupHF" :
-##                  if (jetFlavor == 5 or jetFlavor == 4) :
-##                      if (ak5jet.userInt('btagRegular') & 4) == 4 :
-##                          bjet=1
-##                  else:
-##                      if (ak5jet.userInt('btagRegular') & 2) == 2 :
-##                          bjet=1
-##              elif isbTag =="BTagSFupLF" :
-##                  if (jetFlavor == 5 or jetFlavor == 4) :
-##                      if (ak5jet.userInt('btagRegular') & 2) == 2 :
-##                          bjet=1
-##                  else:
-##                      if (ak5jet.userInt('btagRegular') & 4) == 4 :
-##                          bjet=1
-##              elif isbTag =="BTagSFdownHF" :
-##                  if (jetFlavor == 5 or jetFlavor == 4) :
-##                      if (ak5jet.userInt('btagRegular') & 8) == 8 :
-##                      bjet=1
-##                  else:
-##                      if (ak5jet.userInt('btagRegular') & 2) == 2 :
-##                      bjet=1
-##              elif isbTag =="BTagSFdownLF" :
-##                  if (jetFlavor == 5 or jetFlavor == 4) :
-##                      if (ak5jet.userInt('btagRegular') & 2) == 2 :
-##                      bjet=1
-##                  else:
-##                      if (ak5jet.userInt('btagRegular') & 8) == 8 :
-##                      bjet=1
-##     if bjet==1:
-##         return True
-##     else:
-##         return False
-         
+
 def isBTagged(ak5jet, isdata, isbTag):
     bjet=0
     if isdata:
