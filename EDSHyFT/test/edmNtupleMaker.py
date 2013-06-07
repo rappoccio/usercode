@@ -31,13 +31,13 @@ options.register ('runData',
                   "if running over data (1) else (0)")
 
 options.register('btagMap',
-                 'BprimeBprimeToTWTWinc_M-750_TuneZ2star_8TeV-madgraph',
+                 'BprimeBprimeToBHTWinc_M-800_TuneZ2star_8TeV-madgraph',
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.string,
                  "BTag Efficiency Map File")
 
 options.register('useMuTrigs',
-                 0,
+                 1,
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.int,
                  "Use muon triggers (1) or not (0)")
@@ -75,8 +75,16 @@ if options.ignoreTrigger == 1 :
 ## Source    
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
+    #'/store/user/lpctlbsm/cjenkins/SMS-MadGraph_Pythia6Zstar_8TeV_T1t1t_2J_mGo-1000_mStop-200to750_mLSP-100to650_25GeVX25GeV_Binning/Summer12-START52_V9_FSIM-v1_TLBSM_53x_v2/2edd878f06e6657d28e7b09ed9cb5095/tlbsm_53x_v2_mc_10_1_Bxd.root',
+
     # 'dcap:///pnfs/cms/WAX/11/store/results/B2G/SingleElectron/StoreResults-Run2012A-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/SingleElectron/USER/StoreResults-Run2012A-13Jul2012-v1_TLBSM_53x_v2-e3fb55b810dc7a0811f4c66dfa2267c9/0000/FE2F7667-4728-E211-8F95-002618FDA263.root',
-    '/store/user/lpctlbsm/cjenkins/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2/c04f3b4fa74c8266c913b71e0c74901d/tlbsm_53x_v2_mc_9_1_ysy.root',
+    #'/store/user/lpctlbsm/cjenkins/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6-Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2/c04f3b4fa74c8266c913b71e0c74901d/tlbsm_53x_v2_mc_9_1_ysy.root',
+    '/store/user/lpctlbsm/meloam/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2/c04f3b4fa74c8266c913b71e0c74901d/tlbsm_53x_v2_mc_1_1_v0T.root',
+    #'/store/user/lpctlbsm/meloam/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2/c04f3b4fa74c8266c913b71e0c74901d/tlbsm_53x_v2_mc_2_1_y3T.root',
+    #'/store/user/lpctlbsm/meloam/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2/c04f3b4fa74c8266c913b71e0c74901d/tlbsm_53x_v2_mc_3_1_Wij.root',
+    #'/store/user/lpctlbsm/meloam/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1_TLBSM_53x_v2/c04f3b4fa74c8266c913b71e0c74901d/tlbsm_53x_v2_mc_4_1_THL.root',
+#    '/store/user/lpctlbsm/cjenkins/BprimeBprimeToBHTWinc_M-850_TuneZ2star_8TeV-madgraph/BprimeBprimeToBHTWinc_M-850_TuneZ2star_8TeV-madgraph-Summer12_DR53X-PU_S10_START53_V7C-v1_TLBSM_53x_v2/c04f3b4fa74c8266c913b71e0c74901d/tlbsm_53x_v2_mc_27_1_QPX.root',
+    #'file:/uscms_data/d2/skhalil/BPrimeBoost/CMSSW_5_3_3/src/TopQuarkAnalysis/TopPairBSM/test/tlbsm_53x_v2_mc.root',
     )
                             )                           
 
@@ -174,8 +182,24 @@ else :
     elif options.useMuTrigs == 1 and options.useEleTrigs == 0 :
         process.hltSelectionEle =  cms.Sequence()
 
+#___________GEN_________
+process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+process.printTree = cms.EDAnalyzer("ParticleTreeDrawer",
+                                   src = cms.InputTag("prunedGenParticles"),
+                                   printP4 = cms.untracked.bool(False),
+                                   printPtEtaPhi = cms.untracked.bool(False),
+                                   printVertex = cms.untracked.bool(False),
+                                   printStatus = cms.untracked.bool(False),
+                                   printIndex = cms.untracked.bool(False),
+                                   status = cms.untracked.vint32( 3 )
+                                   )
 
- 
+process.printList = cms.EDAnalyzer("ParticleListDrawer",
+  maxEventsToPrint = cms.untracked.int32(10),
+  printVertex = cms.untracked.bool(False),
+  src = cms.InputTag("prunedGenParticles")
+)
+
 #_____________________________________PF__________________________________________________
 
 
@@ -274,8 +298,11 @@ process.pfTupleMuMetRes110.shyftSelection.unclMetScale = cms.double( 1.10 )
 process.pfTupleMuMetRes110.shyftSelection.identifier = cms.string('PFMETRES110')
 
 ## configure output module
+#if runData:
 process.p0 = cms.Path( process.patTriggerDefaultSequence )
-
+#else:
+#    process.p0 = cms.Path( process.patTriggerDefaultSequence * process.printTree * process.printList )
+     
 if runData:
     process.p1 = cms.Path( process.hltSelectionEle * process.pfTupleEle)
     process.p2 = cms.Path( process.hltSelectionMu * process.pfTupleMu)

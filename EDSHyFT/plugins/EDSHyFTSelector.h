@@ -7,6 +7,9 @@
 #include "PhysicsTools/UtilAlgos/interface/EDFilterWrapper.h"
 #include "Analysis/SHyFT/interface/SHyFTSelector.h"
 
+typedef reco::Candidate::PolarLorentzVector LorentzV;
+typedef std::vector< LorentzV > p4_vector;
+
 class EDSHyFTSelector : public edm::FilterWrapper<SHyFTSelector> {
  public:
  EDSHyFTSelector( const edm::ParameterSet & params ) :
@@ -15,6 +18,8 @@ class EDSHyFTSelector : public edm::FilterWrapper<SHyFTSelector> {
   matchByHand_(params.getParameter<bool>("matchByHand")), 
   name_( params.getParameter<std::string>("@module_label") )
     {
+      produces<  LorentzV > ("top1");
+      produces<  LorentzV > ("top2");
       produces< std::vector<pat::Jet> >      ("jets");
       produces< std::vector<pat::MET> >      ("MET");
       produces< std::vector<pat::Muon> >     ("muons");

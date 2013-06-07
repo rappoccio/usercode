@@ -8,11 +8,13 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
 {
     bool passed = edm::FilterWrapper<SHyFTSelector>::filter( event, eventSetup );
 
+    std::auto_ptr< LorentzV > top1   ( new LorentzV() );
+    std::auto_ptr< LorentzV > top2   ( new LorentzV() );
+
     std::vector<reco::ShallowClonePtrCandidate> const & ijets = filter_->cleanedJets();
     reco::ShallowClonePtrCandidate const & imet = filter_->selectedMET();
     std::vector<reco::ShallowClonePtrCandidate> const & imuons = filter_->selectedMuons();
     std::vector<reco::ShallowClonePtrCandidate> const & ielectrons = filter_->selectedElectrons();
-
     std::auto_ptr< std::vector<pat::Jet> > jets ( new std::vector<pat::Jet> );
     std::auto_ptr< std::vector<pat::MET> > mets ( new std::vector<pat::MET> );
     std::auto_ptr< std::vector<pat::Muon> > muons ( new std::vector<pat::Muon> );
@@ -25,6 +27,32 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
     }
 
     typedef std::vector<reco::ShallowClonePtrCandidate>::const_iterator clone_iter;
+
+   
+    std::vector<const reco::GenParticle *> top(2);
+
+    if(!event.isRealData()){
+       edm::Handle<std::vector<reco::GenParticle> > h_gen;
+       event.getByLabel(edm::InputTag("prunedGenParticles"), h_gen); 
+       assert ( h_gen.isValid() );
+
+       int numDa; int id(0);
+
+       for (vector< reco::GenParticle>::const_iterator gpIter = h_gen->begin(); 
+            gpIter != h_gen->end(); ++gpIter, ++id){
+          
+          if( gpIter->status() !=3) continue;
+          numDa = gpIter->numberOfDaughters();
+          
+          if(numDa >= 2){
+             if(gpIter->pdgId() == 6) {top[0] = (&(*gpIter));}
+             else if (gpIter->pdgId() == -6) {top[1] = (&(*gpIter));}
+          }
+
+       }
+    }
+    if (top[0] != 0) {*top1 = top[0]->p4();}
+    if (top[1] != 0) {*top2 = top[1]->p4();}
 
     if ( matchByHand_ && !event.isRealData() ) {
         edm::Handle<std::vector<reco::GenJet> > h_genJets;
@@ -107,12 +135,13 @@ bool EDSHyFTSelector::filter( edm::Event & event, const edm::EventSetup& eventSe
         }
     }
 
-
-    event.put( jets, "jets");
-    event.put( mets, "MET");
-    event.put( muons, "muons");
-    event.put( electrons, "electrons");
-    return passed; 
+   event.put( top1, "top1"); 
+   event.put( top2, "top2"); 
+   event.put( jets, "jets");
+   event.put( mets, "MET");
+   event.put( muons, "muons");
+   event.put( electrons, "electrons");
+   return passed; 
 }
 
 
