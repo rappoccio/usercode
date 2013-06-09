@@ -52,8 +52,8 @@ for txt in `ls $INPATH`; do
                       "--bTag BTagSFdownHF" \
                       "--bTag BTagSFdownLF"; do
             if test $counter -eq $PROCESS; then
-                echo "python ntupleMaker_test.py --lepPtMin 40 --runMuons --onDcache --txtfiles --runTopSample $INPATH/$txt --sample $OUTPATH/${name} $option"
-                python ntupleMaker_test.py --lepPtMin 40 --runMuons --onDcache --txtfiles --runTopSample $INPATH/$txt --sample $OUTPATH/${name} $option
+                echo "python ntupleMaker.py --lepPtMin 40 --runMuons --onDcache --txtfiles --runTopSample $INPATH/$txt --sample $OUTPATH/${name} $option"
+                python ntupleMaker.py --lepPtMin 40 --runMuons --onDcache --txtfiles --runTopSample $INPATH/$txt --sample $OUTPATH/${name} $option
             fi
             let "counter+=1"
         done
