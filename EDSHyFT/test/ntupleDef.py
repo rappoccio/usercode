@@ -52,15 +52,15 @@ def VTag_SF(nVtags,variation):
     VTag_SF_dn = 1.0
     
     if nVtags == 1:
-        VTag_SF_nominal = 0.934
+        VTag_SF_nominal = 0.951
         VTag_SF_up = 1.03 * VTag_SF_nominal
         VTag_SF_dn = 0.97 * VTag_SF_nominal      
     elif nVtags == 2:
-        VTag_SF_nominal = 0.934
+        VTag_SF_nominal = 0.951
         VTag_SF_up = 1.06 * VTag_SF_nominal
         VTag_SF_dn = 0.94 * VTag_SF_nominal
     elif nVtags >= 3:
-        VTag_SF_nominal = 0.934
+        VTag_SF_nominal = 0.951
         VTag_SF_up = 1.09 * VTag_SF_nominal
         VTag_SF_dn = 0.91 * VTag_SF_nominal
 
@@ -97,12 +97,13 @@ def isVTagged(ca8jet):
     subjet1M = ca8jet.daughter(0).mass() 
     subjet2M = ca8jet.daughter(1).mass()
     mu = max(subjet1M,subjet2M) / ca8jet.correctedJet("Uncorrected").mass()    
-    if mu < 0.4 and (mass < 150 and mass > 50) and pt > 200:
+    #if mu < 0.4 and (mass < 150 and mass > 50) and pt > 200:
+    if (mass < 150 and mass > 50) and pt > 200:    
         return True
     else:
         return False
     
-'''
+
 def isBTagged(ak5jet, isdata, isbTag, jetFlavor):
     bjet=0
     if isdata:
@@ -147,9 +148,8 @@ def isBTagged(ak5jet, isdata, isbTag, jetFlavor):
         return True
     else:
         return False
+
 '''
-
-
 def isBTagged(ak5jet, isdata, isbTag):
     bjet=0
     if isdata:
@@ -172,7 +172,7 @@ def isBTagged(ak5jet, isdata, isbTag):
         return True
     else:
         return False
-
+'''
 def isTightMu(lep, PVz):
     isPF      =  lep.isPFMuon()
     isGlob    =  lep.isGlobalMuon()

@@ -85,6 +85,11 @@ parser.add_option("--runDataLoose", action='store_true',
                   dest="runDataLoose",
                   help="to run over loose leptons in data")
 
+parser.add_option("--runTopSample", action='store_true',
+                  default=False,
+                  dest="runTopSample",
+                  help="get the gen top pt for Top samples")
+
 # Parse and get arguments
 (options, args) = parser.parse_args()
 
@@ -94,6 +99,7 @@ runMu = options.runMuons
 bprimeGenInfo = options.useBPrimeGenInfo
 dcache = options.onDcache
 runDataLoose = options.runDataLoose
+runTop = options.runTopSample
 
 print('options', options)
 
@@ -186,6 +192,11 @@ pileupWeightsLabel = ("pileupReweightingProducer","pileupWeights")
 rhoH =  Handle ("double")
 rhoLabel = ("kt6PFJets", "rho")
 
+if runTop:
+    Top1_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )
+    Top1_L    = ( "pfTuple"+lepStr+condStr,   "top1")
+    Top2_H    = Handle (  "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >"  )    
+    Top2_L    = ( "pfTuple"+lepStr+condStr,   "top2")
 if bprimeGenInfo:
     HiggsSF_H   = Handle("double")
     HiggsSF_L   = ( "GenInfo", "higgsWeight")
@@ -342,6 +353,9 @@ t.Branch('WjetM', WjetM, 'WjetM[nJets]/D')
 WjetMu = array('d', max_nJets*[0.])
 t.Branch('WjetMu', WjetMu, 'WjetMu[nJets]/D')
 
+TopPtSF = array('d',[0])
+t.Branch('TopPtSF',TopPtSF,'TopPtSF/D')
+
 if bprimeGenInfo:
     HiggsSF = array('d',[0])
     t.Branch('HiggsSF',HiggsSF,'HiggsSF/D')
@@ -494,7 +508,21 @@ for event in events:
     event.getByLabel(c8aPruneJetsLabel,  c8aPruneJetsH)
     event.getByLabel(c8aPruneMetLabel,  c8aPruneMetH)
     event.getByLabel(rhoLabel,  rhoH)
-    
+
+    # gen top pt for Top sample(s)
+    topWeight = 1
+    if runTop:
+          event.getByLabel(Top1_L, Top1_H)
+          event.getByLabel(Top2_L, Top2_H)
+          if(Top1_H.isValid() and Top2_H.isValid()):
+              topGen1Pt = Top1_H.product().Pt()
+              topGen2Pt = Top2_H.product().Pt()
+              topWeight = math.sqrt(math.exp(0.156-0.00137*topGen1Pt)*math.exp(0.156-0.00137*topGen2Pt))
+              #print ('top1 = ',topGen1Pt, 'top2 = ',topGen2Pt )
+
+    #print('topWeight', topWeight)
+    TopPtSF[0] = topWeight
+
     # the bprime gen info categorization
     if bprimeGenInfo:
 
@@ -824,43 +852,53 @@ for event in events:
     wPy = lepton_vector.Py() + nu_p4.Py()
     wMT = TMath.Sqrt(wPt*wPt-wPx*wPx-wPy*wPy)
     wMt[0] = wMT
+
     
     # sphericity and aplanarity from Andrew Ivanov
     # see: http://cepa.fnal.gov/psm/simulation/mcgen/lund/pythia_manual/pythia6.3/pythia6301/node213.html
     sum = leptonsP*leptonsP + metObj.p()*metObj.p()
-    for jet in jets: sum+=jet.p()*jet.p()
+    for jet in jets:
+        jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
+        if jet.pt() > jetPtMin and jet_vector.DeltaR(lepton_vector) > 0.3:
+            sum+=jet.p()*jet.p()
     
     # mxx
     tensor[0][0] = leptonsPx*leptonsPx + metObj.px()*metObj.px()
     for jet in jets:
-        if jet.pt() > jetPtMin: tensor[0][0]+=jet.px()*jet.px()
+        jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
+        if jet.pt() > jetPtMin and jet_vector.DeltaR(lepton_vector) > 0.3: tensor[0][0]+=jet.px()*jet.px()
     tensor[0][0]/=sum
     # myy
     tensor[1][1] = leptonsPy*leptonsPy + metObj.py()*metObj.py()
     for jet in jets:
-        if jet.pt() > jetPtMin: tensor[1][1]+=jet.py()*jet.py()
+        jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
+        if jet.pt() > jetPtMin and jet_vector.DeltaR(lepton_vector) > 0.3: tensor[1][1]+=jet.py()*jet.py()
     tensor[1][1]/=sum
     # mzz
     tensor[2][2] = leptonsPz*leptonsPz + metObj.pz()*metObj.pz()
     for jet in jets:
-        if jet.pt() > jetPtMin: tensor[2][2]+=jet.pz()*jet.pz()
+        jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
+        if jet.pt() > jetPtMin and jet_vector.DeltaR(lepton_vector) > 0.3: tensor[2][2]+=jet.pz()*jet.pz()
     tensor[2][2]/=sum
     # mxy
     tensor[0][1] = leptonsPx*leptonsPy + metObj.px()*metObj.py()
     for jet in jets:
-        if jet.pt() > jetPtMin: tensor[0][1]+=jet.px()*jet.py()
+        jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
+        if jet.pt() > jetPtMin and jet_vector.DeltaR(lepton_vector) > 0.3: tensor[0][1]+=jet.px()*jet.py()
     tensor[0][1]/=sum
     tensor[1][0] = tensor[0][1]
     # mxz
     tensor[0][2] = leptonsPx*leptonsPz + metObj.px()*metObj.pz()
     for jet in jets:
-        if jet.pt() > jetPtMin: tensor[0][2]+=jet.px()*jet.pz()
+        jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
+        if jet.pt() > jetPtMin and jet_vector.DeltaR(lepton_vector) > 0.3: tensor[0][2]+=jet.px()*jet.pz()
     tensor[0][2]/=sum
     tensor[2][0] = tensor[0][2]
     # myz
     tensor[1][2] = leptonsPy*leptonsPz + metObj.py()*metObj.pz()
     for jet in jets:
-        if jet.pt() > jetPtMin: tensor[1][2]+=jet.py()*jet.pz()
+        jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
+        if jet.pt() > jetPtMin and jet_vector.DeltaR(lepton_vector) > 0.3: tensor[1][2]+=jet.py()*jet.pz()
     tensor[1][2]/=sum
     tensor[2][1] = tensor[1][2]
 
@@ -887,23 +925,24 @@ for event in events:
     nBtags = []
     
     for jetid, jet in enumerate(jets) :
-        if jet.pt() <= jetPtMin: continue
+        if jet.pt() <= jetPtMin: continue      
+        jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
+        if jet_vector.DeltaR(lepton_vector) <= 0.3: continue
+        minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )        
         jetEt[nj] = jet.pt()
         sumJetPt += jet.pt()
-        sumJetE += jet.energy()
-        jet_vector.SetPtEtaPhiM( jet.pt(), jet.eta(), jet.phi(), jet.mass() )
+        sumJetE += jet.energy()        
         sum_jetP4 += jet_vector
         jet_p4.append(jet_vector)
-        minDeltaR_lepjet = TMath.Min ( jet_vector.DeltaR(lepton_vector), minDeltaR_lepjet )
         bDistriminator[nj] = jet.bDiscriminator('combinedSecondaryVertexBJetTags')      
         jetFlavor = fabs( jet.partonFlavour() )
-        #if isBTagged(jet, options.data, options.bTag, jetFlavor):
-        if isBTagged(jet, options.data, options.bTag):
+        if isBTagged(jet, options.data, options.bTag, jetFlavor):
+        #if isBTagged(jet, options.data, options.bTag):
             nBtags.append(jetid)       
 
         nj = nj + 1
         sumEt += jet.pt()
-   
+    
     # mass of sum of all jets
     mj[0] = sum_jetP4.M()
     
@@ -931,7 +970,8 @@ for event in events:
     if len(jets_ca8) != 0:
         for ca8jet in jets_ca8:        
             matched = False
-            ca8jet_vector.SetPtEtaPhiM( ca8jet.pt(), ca8jet.eta(), ca8jet.phi(), ca8jet.mass() )            
+            ca8jet_vector.SetPtEtaPhiM( ca8jet.pt(), ca8jet.eta(), ca8jet.phi(), ca8jet.mass() )
+            if ca8jet_vector.DeltaR(lepton_vector) <= 0.3: continue
             minDR_bjetV = 1.0
             for jetid, ak5jet in enumerate(jets) :
                 if ak5jet.pt() <= jetPtMin: continue
@@ -943,18 +983,21 @@ for event in events:
                 if ak5jet_vector.DeltaR(ca8jet_vector) < 0.5:
                     matched = True 
                     # double tag
-                    #if isVTagged(ca8jet) and isBTagged(ak5jet, options.data, options.bTag, ak5jetFlavor):
-                    if isVTagged(ca8jet) and isBTagged(ak5jet, options.data, options.bTag):    
+                    if isVTagged(ca8jet) and isBTagged(ak5jet, options.data, options.bTag, ak5jetFlavor):
+                    #if isVTagged(ca8jet) and isBTagged(ak5jet, options.data, options.bTag):    
                         nBtags_remove.append(jetid) 
-                        
+
+           
             minDR_bV[cj] = minDR_bjetV
            
             # require ca8 jet to match to at least one ak5 jet
             if not matched: continue
+            
             #print ('cj', cj)
+            
             # dR b/w lepton and CA8 jet:
             minDeltaR_lepca8jet = TMath.Min ( ca8jet_vector.DeltaR(lepton_vector), minDeltaR_lepca8jet )
-            
+                        
             # V-tagging
             jetEt_ca8[cj] = ca8jet.pt()    
             WjetM[cj] = ca8jet.mass()
