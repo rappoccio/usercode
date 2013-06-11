@@ -1,13 +1,13 @@
 #!/bin/bash
 
-echo "input parameters: cluster, process, run path, input path, output path, data?, leptype " $1 $2 $3 $4 $5 $6
+echo "input parameters: cluster, process, run path, input path, data" $1 $2 $3 $4 $5
 
 CLUSTER=$1
 PROCESS=$2
 RUNPATH=$3
 INPATH=$4
 OUTPATH=$_CONDOR_SCRATCH_DIR 
-DATA=$6
+DATA=$5
 
 
 echo ""
@@ -47,8 +47,10 @@ for txt in `ls $INPATH`; do
                       "--JES down" \
                       "--jetPtSmear -1" \
                       "--jetPtSmear 1" \
-                      "--bTag BTagSFup" \
-                      "--bTag BTagSFdown"; do
+                      "--bTag BTagSFupHF" \
+                      "--bTag BTagSFupLF" \
+                      "--bTag BTagSFdownHF" \
+                      "--bTag BTagSFdownLF"; do
             if test $counter -eq $PROCESS; then
                 echo "python ntupleMaker.py --useBPrimeGenInfo --lepPtMin 40 --runMuons --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name} $option"
                 python ntupleMaker.py --useBPrimeGenInfo --lepPtMin 40 --runMuons --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name} $option

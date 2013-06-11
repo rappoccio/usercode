@@ -44,8 +44,10 @@ for txt in `ls $INPATH`; do
                       "--JES down" \
                       "--jetPtSmear -1" \
                       "--jetPtSmear 1" \
-                      "--bTag BTagSFup" \
-                      "--bTag BTagSFdown"; do
+                      "--bTag BTagSFupHF" \
+                      "--bTag BTagSFupLF" \
+                      "--bTag BTagSFdownHF" \
+                      "--bTag BTagSFdownLF"; do
             if test $counter -eq $PROCESS; then
                 echo "python ntupleMaker.py --useBPrimeGenInfo --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name} $option"
                 python ntupleMaker.py --useBPrimeGenInfo --onDcache --txtfiles $INPATH/$txt --sample $OUTPATH/${name} $option
