@@ -307,6 +307,9 @@ t.Branch('trigSF', trigSF, 'trigSF/D')
 met = array('d',[0.])
 t.Branch('met',met,'met/D')
 
+metPhi = array('d',[0.])
+t.Branch('metPhi',metPhi,'metPhi/D')
+
 wMt = array('d',[0.])
 t.Branch('wMt',wMt, 'wMt/D')
 
@@ -355,6 +358,12 @@ t.Branch('WjetMu', WjetMu, 'WjetMu[nJets]/D')
 
 TopPtSF = array('d',[0])
 t.Branch('TopPtSF',TopPtSF,'TopPtSF/D')
+
+topGenPt = array('d',[0])
+t.Branch('topGenPt',topGenPt,'topGenPt/D')
+
+topbarGenPt = array('d',[0])
+t.Branch('topbarGenPt',topbarGenPt,'topbarGenPt/D')
 
 if bprimeGenInfo:
     HiggsSF = array('d',[0])
@@ -510,7 +519,6 @@ for event in events:
     event.getByLabel(rhoLabel,  rhoH)
 
     # gen top pt for Top sample(s)
-    topWeight = 1
     if runTop:
           event.getByLabel(Top1_L, Top1_H)
           event.getByLabel(Top2_L, Top2_H)
@@ -518,11 +526,14 @@ for event in events:
               topGen1Pt = Top1_H.product().Pt()
               topGen2Pt = Top2_H.product().Pt()
               topWeight = math.sqrt(math.exp(0.156-0.00137*topGen1Pt)*math.exp(0.156-0.00137*topGen2Pt))
-              #print ('top1 = ',topGen1Pt, 'top2 = ',topGen2Pt )
-
-    #print('topWeight', topWeight)
-    TopPtSF[0] = topWeight
-
+              topGenPt[0] = topGen1Pt
+              topbarGenPt[0] = topGen2Pt
+              TopPtSF[0] = topWeight
+    else:
+        TopPtSF[0] = 1
+        topGenPt[0] = 1
+        topbarGenPt[0] = 1
+            
     # the bprime gen info categorization
     if bprimeGenInfo:
 
@@ -805,6 +816,7 @@ for event in events:
         print("no primary vertex found, settign PVz=0")
         PVz=0
     met[0] = metObj.pt()
+    metPhi[0] = metObj.phi()
     lepEt[0] = leptonsPt
     lepEta[0] = (leptons[0]).eta()
     lepd0[0] =  (leptons[0]).dB()
