@@ -52,15 +52,15 @@ def VTag_SF(nVtags,variation):
     VTag_SF_dn = 1.0
     
     if nVtags == 1:
-        VTag_SF_nominal = 0.951
+        VTag_SF_nominal = 0.934
         VTag_SF_up = 1.03 * VTag_SF_nominal
         VTag_SF_dn = 0.97 * VTag_SF_nominal      
     elif nVtags == 2:
-        VTag_SF_nominal = 0.951
+        VTag_SF_nominal = 0.934
         VTag_SF_up = 1.06 * VTag_SF_nominal
         VTag_SF_dn = 0.94 * VTag_SF_nominal
     elif nVtags >= 3:
-        VTag_SF_nominal = 0.951
+        VTag_SF_nominal = 0.934
         VTag_SF_up = 1.09 * VTag_SF_nominal
         VTag_SF_dn = 0.91 * VTag_SF_nominal
 
