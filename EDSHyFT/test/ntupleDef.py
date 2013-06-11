@@ -97,8 +97,8 @@ def isVTagged(ca8jet):
     subjet1M = ca8jet.daughter(0).mass() 
     subjet2M = ca8jet.daughter(1).mass()
     mu = max(subjet1M,subjet2M) / ca8jet.correctedJet("Uncorrected").mass()    
-    #if mu < 0.4 and (mass < 150 and mass > 50) and pt > 200:
-    if (mass < 150 and mass > 50) and pt > 200:    
+    if mu < 0.4 and (mass < 150 and mass > 50) and pt > 200:
+    #if (mass < 150 and mass > 50) and pt > 200:    
         return True
     else:
         return False

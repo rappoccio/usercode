@@ -976,7 +976,7 @@ for event in events:
             for jetid, ak5jet in enumerate(jets) :
                 if ak5jet.pt() <= jetPtMin: continue
                 ak5jet_vector.SetPtEtaPhiM( ak5jet.pt(), ak5jet.eta(), ak5jet.phi(), ak5jet.mass() )
-                
+                if  ak5jet_vector.DeltaR(lepton_vector) <= 0.3: continue
                 # min dR b/w ak5 jet and ca8 jet
                 minDR_bjetV = TMath.Min ( ak5jet_vector.DeltaR(ca8jet_vector), minDR_bjetV )
                 ak5jetFlavor = fabs( ak5jet.partonFlavour() )    
