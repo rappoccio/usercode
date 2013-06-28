@@ -46,25 +46,29 @@ import sys
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-'file:///uscms/home/pilot/data/Zprime8TeV/CMSSW_5_2_4/src/TopQuarkAnalysis/TopPairBSM/test/ttbsm_52x_data.root'
+'/store/results/B2G/SingleMu/StoreResults-SingleMu_Run2012A-13Jul2012-v1_TLBSM_53x_v2_jsonfix-e3fb55b810dc7a0811f4c66dfa2267c9/SingleMu/USER/StoreResults-SingleMu_Run2012A-13Jul2012-v1_TLBSM_53x_v2_jsonfix-e3fb55b810dc7a0811f4c66dfa2267c9/0000/F85709B7-113B-E211-81DD-00261894386D.root'
+#'/store/user/lpctlbsm/knash/SingleMu/SingleMu_Run2012C-PromptReco-v1_TLBSM_53x_v2/e3fb55b810dc7a0811f4c66dfa2267c9/tlbsm_53x_v2_data_36_1_6Os.root'
+#'file:///uscms/home/osherson/Wtagging/SemiLep/CMSSW_5_3_2/src/Analysis/EDSHyFT/test/MARC/TRUTH/crab_0_130507_135257/res/skim_marc1_1_1_qrR.root'
+#'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/knash/SingleMu/SingleMu_Run2012C-PromptReco-v1_TLBSM_53x_v2/e3fb55b810dc7a0811f4c66dfa2267c9/tlbsm_53x_v2_data_57_1_58Z.root'
 #'dcap:///pnfs/cms/WAX/11/store/user/pilot/SingleMu/SingleMu_Run2012A/82fd51e0af07726fb8b1875f5746f193/ttbsm_52x_data_1_1_7O8.root'
 #'dcap:///pnfs/cms/WAX/11/store/user/pilot/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/WJetsToLNu_8TeV/8f2c5ea1c4172ee3e54a11c7e5d6a05d/ttbsm_52x_mc_1_1_JUZ.root'
 )
 )
 
+
 payloadsData = [
-    'Jec11_V3_L1FastJet_AK5PFchs.txt',
-    'Jec11_V3_L2Relative_AK5PFchs.txt',
-    'Jec11_V3_L3Absolute_AK5PFchs.txt',
-    'Jec11_V3_L2L3Residual_AK5PFchs.txt',
-    'Jec11_V3_Uncertainty_AK5PFchs.txt'
+    'GR_P_V40_AN3_L1FastJet_AK7PFchs.txt',
+    'GR_P_V40_AN3_L2Relative_AK7PFchs.txt',
+    'GR_P_V40_AN3_L3Absolute_AK7PFchs.txt',
+    'GR_P_V40_AN3_L2L3Residual_AK7PFchs.txt',
+    'GR_P_V40_AN3_Uncertainty_AK7PFchs.txt'
                 ]
 
 payloadsMC = [
-    'Jec11_V3_L1FastJet_AK5PFchs.txt',
-    'Jec11_V3_L2Relative_AK5PFchs.txt',
-    'Jec11_V3_L3Absolute_AK5PFchs.txt',
-    'Jec11_V3_Uncertainty_AK5PFchs.txt'
+    'START53_V15_L1FastJet_AK7PFchs.txt',
+    'START53_V15_L2Relative_AK7PFchs.txt',
+    'START53_V15_L3Absolute_AK7PFchs.txt',
+    'START53_V15_Uncertainty_AK7PFchs.txt'
 ]
 
 if options.useData :
@@ -88,15 +92,7 @@ from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 if options.ignoreTrigger :
     process.hltSelection = cms.Sequence()
 else :
-    process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = ['HLT_Mu40_eta2p1_v1',
-                                                                                                       'HLT_Mu40_eta2p1_v2',
-                                                                                                       'HLT_Mu40_eta2p1_v3',
-                                                                                                       'HLT_Mu40_eta2p1_v4',
-                                                                                                       'HLT_Mu40_eta2p1_v5',
-                                                                                                       'HLT_Mu40_eta2p1_v6',
-                                                                                                       'HLT_Mu40_eta2p1_v7',
-                                                                                                       'HLT_Mu40_eta2p1_v8',
-                                                                                                       'HLT_Mu40_eta2p1_v9',
+    process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = ['HLT_Mu40_eta2p1_v*'
                                                                                                        ])
     process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths =  ['HLT_Ele45_CaloIdVT_TrkIdT_v1',
                                                                                                          'HLT_Ele45_CaloIdVT_TrkIdT_v2',
@@ -120,11 +116,15 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 from Analysis.SHyFT.shyftPFSelection_cfi import shyftPFSelection as shyftPFSelectionInput
 
+process.pileup = cms.EDFilter('PileUpProducer',
+                                pvSrc = cms.InputTag('goodOfflinePrimaryVertices')
 
+)
 
 process.pfShyftProducer = cms.EDFilter('EDSHyFTPFSelector',
                                     shyftPFSelection = shyftPFSelectionInput.clone(
                                            jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF'),
+    					   rhoSrc = cms.InputTag('kt6PFJets', 'rho'),
                                            jecPayloads = cms.vstring( payloads )
                                         )
                                     )
@@ -132,8 +132,9 @@ process.pfShyftProducer = cms.EDFilter('EDSHyFTPFSelector',
 process.pfShyftProducerLoose = cms.EDFilter('EDSHyFTPFSelector',
                                             shyftPFSelection = shyftPFSelectionInput.clone(
                                                 jetSrc = cms.InputTag('goodPatJetsCA8PrunedPF'),
-                                                muonSrc = cms.InputTag('selectedPatMuonsLoosePFlow'),
-                                                electronSrc = cms.InputTag('selectedPatElectronsLoosePFlow'),
+                                                muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose'),
+                                                electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose'),
+    					   	rhoSrc = cms.InputTag('kt6PFJets', 'rho'),
                                                 jecPayloads = cms.vstring( payloads ),
                                                 removeLooseLep = cms.bool(True)
                                                 )
@@ -154,8 +155,6 @@ process.kinFitTtSemiLepEvent.mets = cms.InputTag("pfShyftProducer", "MET")
 process.kinFitTtSemiLepEvent.leps = cms.InputTag("pfShyftProducer", "muons")
 
 process.load("TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Muons_cfi")
-
-
 
 process.pfShyftTupleJets = cms.EDProducer(
     "CandViewNtpProducer", 
@@ -180,7 +179,7 @@ process.pfShyftTupleJets = cms.EDProducer(
             quantity = cms.untracked.string("phi")
             ),
         cms.PSet(
-            tag = cms.untracked.string("ssvhe"),
+            tag = cms.untracked.string("csv"),
             quantity = cms.untracked.string("bDiscriminator('combinedSecondaryVertexBJetTags')")
             ),
         cms.PSet(
@@ -265,10 +264,6 @@ process.pfShyftTupleJetsLooseTopTag = cms.EDProducer(
         cms.PSet(
             tag = cms.untracked.string("topMass"),
             quantity = cms.untracked.string("? hasTagInfo('CATop') ? tagInfo('CATop').properties().topMass : 0.0")
-            ),
-	cms.PSet(
-	    tag = cms.untracked.string("ssvhe"),
-	    quantity = cms.untracked.string("bDiscriminator('combinedSecondaryVertexBJetTags')")
             ),
         )
     )
@@ -489,6 +484,7 @@ process.pfShyftTupleElectronsLoose = cms.EDProducer(
 
 process.p1 = cms.Path(
     process.hltSelection*
+    process.pileup*
     process.pfShyftProducerLoose *
     process.pfShyftTupleJetsLoose*
     process.pfShyftTupleJetsLooseTopTag*
@@ -518,7 +514,8 @@ process.out = cms.OutputModule("PoolOutputModule",
                                outputCommands = cms.untracked.vstring('drop *',
                                                                       #'keep *_pfShyftProducer_*_*',
                                                                       'keep double_*_rho_*',
-                                                                      'keep *_pfShyftTuple*_*_*'
+                                                                      'keep *_pfShyftTuple*_*_*',
+                                                                      'keep *_pileup*_*_*'
                                                                       #'keep *_kinFitTtSemiLepEvent_*_*'
                                                                       ) 
                                )
