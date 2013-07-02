@@ -5,12 +5,14 @@ from PhysicsTools.SelectorUtils.pfMuonSelector_cfi import pfMuonSelector
 
 shyftPFSelection = cms.PSet(
     electronIdPFTight = pfElectronSelector.clone(
+        electronIDused = cms.string('eidTight'),
         cutsToIgnore=cms.vstring()
         ),
     muonIdPFTight = pfMuonSelector.clone(
         cutsToIgnore=cms.vstring()
         ),
     electronIdPFLoose = pfElectronSelector.clone(
+        electronIDused = cms.string('eidTight'),
         cutsToIgnore = cms.vstring('D0', 'MaxMissingHits','electronID','ConversionRejection', "MVA")
         ),
     muonIdPFLoose = pfMuonSelector.clone(
