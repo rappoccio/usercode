@@ -8,4 +8,5 @@
   <use   name="FWCore/MessageService"/>
   <use   name="DataFormats/PatCandidates"/>
   <use   name="root"/>
+  <use   name="fastjet"/>
 </library>
