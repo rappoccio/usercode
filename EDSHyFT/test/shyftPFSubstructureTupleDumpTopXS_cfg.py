@@ -31,7 +31,7 @@ options.register('muOrEle',
 
 
 options.register('useData',
-                 1,
+                 0,
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.int,
                  "Use data (1) or MC (0)")
@@ -46,7 +46,8 @@ import sys
 #!!!Change PoolSource 'dcap...' to '/store/results/B2G/SingleElectron/StoreResults-Run2012D-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/SingleElectron/USER/StoreResults-Run2012D-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/0000/0219E2CF-3DE8-E211-B880-003048FFD754.root'
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/jdolen/TTJets_SemiLeptMGDecays_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A_ext-v1_TLBSM_53x_v3/99bd99199697666ff01397dad5652e9e/tlbsm_53x_v3_mc_1_2_Byw.root'
+                                'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/jdolen/TTJets_SemiLeptMGDecays_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A_ext-v1_TLBSM_53x_v3/99bd99199697666ff01397dad5652e9e/tlbsm_53x_v3_mc_1_2_Byw.root'
+                                #'dcap://cmsdca.fnal.gov:22125/pnfs/fnal.gov/usr/cms/WAX/11/store/results/B2G/SingleElectron/StoreResults-V2-Run2012A-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/SingleElectron/USER/StoreResults-V2-Run2012A-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/0000/D223C5AC-15D0-E211-9896-002618943975.root'
 #'/store/results/B2G/SingleMu/StoreResults-V2-Run2012B-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/SingleMu/USER/StoreResults-V2-Run2012B-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/0000/A28480F8-1ED0-E211-828A-0026189438C2.root'
 #'/store/results/B2G/SingleMu/StoreResults-Run2012D-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/SingleMu/USER/StoreResults-Run2012D-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/0000/0007D560-B5E2-E211-93AB-003048D15DB6.root'
 #'/store/results/B2G/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3-99bd99199697666ff01397dad5652e9e/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/USER/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3-99bd99199697666ff01397dad5652e9e/0001/FECD539B-6DAC-E211-A40C-0025905938D4.root'
@@ -693,7 +694,7 @@ process.p1 = cms.Path(
     process.pfShyftTupleMETLoose*
     process.topQuarks*
     process.pfShyftTupleTopQuarks*
-    process.pfShyftTupleCA8GenJets
+    process.pfShyftTupleCA8GenJets    
     )
 
 process.p2 = cms.Path(
@@ -705,8 +706,16 @@ process.p2 = cms.Path(
     process.pfShyftTupleMET*
     process.topQuarks*
     process.pfShyftTupleTopQuarks*
-    process.pfShyftTupleCA8GenJets
+    process.pfShyftTupleCA8GenJets    
     )
+
+if options.useData == 1 :
+    process.p1.remove( process.topQuarks )
+    process.p1.remove( process.pfShyftTupleTopQuarks )
+    process.p1.remove( process.pfShyftTupleCA8GenJets )
+    process.p2.remove( process.topQuarks )
+    process.p2.remove( process.pfShyftTupleTopQuarks )
+    process.p2.remove( process.pfShyftTupleCA8GenJets )
 
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
