@@ -24,6 +24,9 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   muEtaMax_          (params.getParameter<double>("muEtaMax")), 
   eleEtMin_          (params.getParameter<double>("eleEtMin")), 
   eleEtaMax_         (params.getParameter<double>("eleEtaMax")), 
+  eleMvaName_        (params.getParameter<std::string>("eleMvaName")), 
+  eleMvaCut_         (params.getParameter<double>("eleMvaCut")), 
+  eleMaxMissHits_    (params.getParameter<int>("eleMaxMissHits")), 
   muPtMinLoose_      (params.getParameter<double>("muPtMinLoose")), 
   muEtaMaxLoose_     (params.getParameter<double>("muEtaMaxLoose")), 
   eleEtMinLoose_     (params.getParameter<double>("eleEtMinLoose")), 
@@ -44,6 +47,8 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   useL1Corr_         (params.getParameter<bool>("useL1Corr")),
   jecPayloads_        (params.getParameter<std::vector<std::string> >("jecPayloads"))
 {
+
+  std::cout << "MEBUG: " << eleMvaName_ << " " << eleMvaCut_ << " " << eleMaxMissHits_ << std::endl;
 
   // make the bitset
   push_back( "Inclusive"      );
@@ -213,7 +218,12 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       // Tight cuts
       bool passTight = electronIdPFTight_(*ielectron);
       bool inTransition = fabs(ielectron->superCluster()->eta()) > 1.4442 && fabs(ielectron->superCluster()->eta()) < 1.5660;
-      if (  ielectron->pt() > eleEtMin_ && fabs(ielectron->eta()) < eleEtaMax_ && passTight && !inTransition ) {
+      double electronMVA = ielectron->electronID(eleMvaName_);
+      int missingHits = ielectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
+
+      std::cout << "MEBUG: " << electronMVA << " " << missingHits << std::endl; 
+
+      if (  ielectron->pt() > eleEtMin_ && fabs(ielectron->eta()) < eleEtaMax_ && passTight && !inTransition && electronMVA > eleMvaCut_ && missingHits <= eleMaxMissHits_) {
 	selectedTightElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
       } else {
 
