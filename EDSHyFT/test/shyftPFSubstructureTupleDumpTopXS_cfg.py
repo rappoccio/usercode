@@ -654,6 +654,39 @@ process.pfShyftTupleTopQuarks = cms.EDProducer(
         )
     )
 
+process.pfShyftTupleGenParticles = cms.EDProducer(
+    "CandViewNtpProducer",
+    src = cms.InputTag("prunedGenParticles"),
+    lazyParser = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
+    variables = cms.VPSet(
+        cms.PSet(
+            tag = cms.untracked.string("pt"),
+            quantity = cms.untracked.string("pt")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("eta"),
+            quantity = cms.untracked.string("eta")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("phi"),
+            quantity = cms.untracked.string("phi")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("mass"),
+            quantity = cms.untracked.string("mass")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("status"),
+            quantity = cms.untracked.string("status")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("pdgId"),
+            quantity = cms.untracked.string("pdgId")
+            )
+        )
+    )
+
 process.pfShyftTupleCA8GenJets = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("ca8GenJetsNoNu"),
@@ -694,6 +727,7 @@ process.p1 = cms.Path(
     process.pfShyftTupleMETLoose*
     process.topQuarks*
     process.pfShyftTupleTopQuarks*
+    process.pfShyftTupleGenParticles*
     process.pfShyftTupleCA8GenJets    
     )
 
@@ -706,15 +740,18 @@ process.p2 = cms.Path(
     process.pfShyftTupleMET*
     process.topQuarks*
     process.pfShyftTupleTopQuarks*
+    process.pfShyftTupleGenParticles*
     process.pfShyftTupleCA8GenJets    
     )
 
 if options.useData == 1 :
     process.p1.remove( process.topQuarks )
     process.p1.remove( process.pfShyftTupleTopQuarks )
+    process.p1.remove( process.pfShyftTupleGenParticles )
     process.p1.remove( process.pfShyftTupleCA8GenJets )
     process.p2.remove( process.topQuarks )
     process.p2.remove( process.pfShyftTupleTopQuarks )
+    process.p2.remove( process.pfShyftTupleGenParticles )
     process.p2.remove( process.pfShyftTupleCA8GenJets )
 
 
