@@ -48,7 +48,7 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   jecPayloads_        (params.getParameter<std::vector<std::string> >("jecPayloads"))
 {
 
-  std::cout << "MEBUG: " << eleMvaName_ << " " << eleMvaCut_ << " " << eleMaxMissHits_ << std::endl;
+  //  std::cout << "MEBUG: " << eleMvaName_ << " " << eleMvaCut_ << " " << eleMaxMissHits_ << std::endl;
 
   // make the bitset
   push_back( "Inclusive"      );
@@ -221,7 +221,7 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       double electronMVA = ielectron->electronID(eleMvaName_);
       int missingHits = ielectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
 
-      std::cout << "MEBUG: " << electronMVA << " " << missingHits << std::endl; 
+      //std::cout << "MEBUG: " << electronMVA << " " << missingHits << std::endl; 
 
       if (  ielectron->pt() > eleEtMin_ && fabs(ielectron->eta()) < eleEtaMax_ && passTight && !inTransition && electronMVA > eleMvaCut_ && missingHits <= eleMaxMissHits_) {
 	selectedTightElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
