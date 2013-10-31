@@ -88,6 +88,11 @@ parser.add_option('--htCut', metavar='F', type='float', action='store',
                   dest='htCut',
                   help='HT cut')
 
+parser.add_option('--makeResponse', metavar='M', action='store_true',
+                  default=False,
+                  dest='makeResponse',
+                  help='Make response for top pt unfolding')
+
 
 parser.add_option('--ptCut', metavar='F', type='float', action='store',
                   default=200.0,
@@ -261,6 +266,12 @@ ptTopCand = ROOT.TH1F("ptTopCand", "WCand+bJet p_{T};p_{T} (GeV/c);Number", 250,
 ptWFromTopCand = ROOT.TH1F("ptWFromTopCand", "WCand in Type-2 top cand p_{T};p_{T} (GeV/c);Number", 250, 0., 1000.)
 ptbFromTopCand = ROOT.TH1F("ptbFromTopCand", "bCand in Type-2 top cand p_{T};p_{T} (GeV/c);Number", 250, 0., 1000.)
 
+
+if options.makeResponse == True : 
+    response = ROOT.RooUnfoldResponse(50, 300., 1300., 50, 300., 1300.)
+    response.SetName('response_pt' + str(ibin))
+
+
 events = Events (files)
 
 postfix = ""
@@ -397,6 +408,20 @@ metLabel = ("pfShyftTupleMET" + postfix,   "pt" )
 
 metphiHandle = Handle( "std::vector<float>" )
 metphiLabel = ("pfShyftTupleMET" + postfix,   "phi" )
+
+if options.makeResponse == True : 
+    genParticlesPtHandle = Handle( "std::vector<float>")
+    genParticlesPtLabel = ( "pfShyftTupleGenParticles", "pt")
+    genParticlesEtaHandle = Handle( "std::vector<float>")
+    genParticlesEtaLabel = ( "pfShyftTupleGenParticles", "eta")
+    genParticlesPhiHandle = Handle( "std::vector<float>")
+    genParticlesPhiLabel = ( "pfShyftTupleGenParticles", "phi")
+    genParticlesMassHandle = Handle( "std::vector<float>")
+    genParticlesMassLabel = ( "pfShyftTupleGenParticles", "mass")
+    genParticlesPdgIdHandle = Handle( "std::vector<float>")
+    genParticlesPdgIdLabel = ( "pfShyftTupleGenParticles", "pdgId")
+    genParticlesStatusHandle = Handle( "std::vector<float>")
+    genParticlesStatusLabel = ( "pfShyftTupleGenParticles", "status")
 
 goodEvents = []
 goodEventst1 = []
@@ -700,19 +725,6 @@ for event in events:
     ##         highestMassJetIndex = ijet
             
 
-    ## # Find b-jet candidate
-    ## if options.useClosestForTopMass == True :
-    ##     # If we want the closest, grab it
-    ##     bJetCandIndex = findClosestJet( highestMassJetIndex, hadJets )
-    ## else :
-    ##     # If we want the b-jet candidate to b-tagged,
-    ##     # take the highest pt b-tagged jet
-    ##     for ijet in range(0,len(hadJets)):
-    ##         if ijet == highestMassJetIndex :
-    ##             continue
-    ##         if hadJetsBDisc[ijet] > options.bDiscCut :
-    ##             bJetCandIndex = ijet
-    ##             break
 
     if len(lepJets) < 1:
 	continue 
@@ -722,53 +734,6 @@ for event in events:
     Bin = weightPlot.FindBin(pt1)
     ttweight = weightPlot.GetBinContent(Bin)
 
-    ## if options.type2 == True:
-			
-    ##  if ak5JetPts[0] < 200 :
-    ##     continue	
-    ##  if options.ptWeight == True :
-    ##     	t1weight=weight*ttweight
-    ##  else:
-    ##     	t1weight=weight		
-    ##  if highestJetMass >= 0 : # and hadJets[highestMassJetIndex].Perp() > 200.0 :
-    ##     if bJetCandIndex >= 0 :
-    ##     	topCandP4 = hadJets[highestMassJetIndex] + hadJets[bJetCandIndex]
-    ##     	if topCandP4.Perp()>400.:
-    ##     		muHisthighpt.Fill( hadJetsMu[highestMassJetIndex],t1weight)
-    ##     		if hadJetsMu[highestMassJetIndex] < 0.4 :
-    ##             		mWCandhighpt.Fill( highestJetMass,t1weight )	 
-    ##             		if 60.0 < highestJetMass < 130.0 :  
-    ##                 			mTopCandhighpt.Fill( topCandP4.M(),t1weight )
-
-    ##     htLep3mu.Fill(htLepVal,t1weight)
-    ##     muHist.Fill( hadJetsMu[highestMassJetIndex],t1weight)
-    ##     mWCandVsMuCut.Fill( highestJetMass, hadJetsMu[highestMassJetIndex],t1weight)
-    ##     mWCandVsPtWCand.Fill( hadJets[highestMassJetIndex].Perp(), highestJetMass,t1weight )
-    ##     #if bJetCandIndex >= 0 :
-    ##     #    dRWbHist.Fill( hadJets[highestMassJetIndex].DeltaR(hadJets[bJetCandIndex] ) )
-    ##     if hadJetsMu[highestMassJetIndex] < 0.4 :
-    ##         htLep3w.Fill(htLepVal,t1weight)
-    ##         mWCand.Fill( highestJetMass,t1weight )
-    ##         scale = 1.0
-    ##         mWCandVsPtWCandMuCut.Fill( hadJets[highestMassJetIndex].Perp(), highestJetMass,t1weight )
-    ##         if bJetCandIndex >= 0 :
-    ##             hadJets[highestMassJetIndex] *= scale
-    ##             hadJets[bJetCandIndex] *= scale
-    ##             topCandP4 = hadJets[highestMassJetIndex] + hadJets[bJetCandIndex]
-    ##             mWCandVsMTopCand.Fill( highestJetMass, topCandP4.M(),t1weight )
-
-    ##             if 60.0 < highestJetMass < 130.0 :
-    ##     	    htLep3top.Fill(htLepVal,t1weight)
-    ##                 mTopCand.Fill( topCandP4.M(),t1weight )
-    ##                 ptTopCand.Fill( topCandP4.Perp(),t1weight )
-    ##                 ptWFromTopCand.Fill( hadJets[highestMassJetIndex].Perp(),t1weight )
-    ##                 ptbFromTopCand.Fill( hadJets[bJetCandIndex].Perp(),t1weight )
-    ##                 dRWbHist.Fill( hadJets[highestMassJetIndex].DeltaR(hadJets[bJetCandIndex]),t1weight)
-    ##                 #print 'w index = ' + str(highestMassJetIndex) + ', b index = ' + str(bJetCandIndex) + ', dR = ' + str(hadJets[highestMassJetIndex].DeltaR(hadJets[bJetCandIndex] ))
-    ##                 if hadJets[bJetCandIndex].Perp()>120.0:
-    ##     		goodEvents.append( [ event.object().id().run(), event.object().id().luminosityBlock(), event.object().id().event() ] )
-
-    ##  continue
 
     ntagslep=0
 
@@ -779,8 +744,6 @@ for event in events:
     sjphi = []
     sjpt = []
 
-    #if len(topTagPt) < 1:
-	#continue
 
     sjmass.append(Topsj0mass[0])
     sjpt.append(Topsj0pt[0])
@@ -861,66 +824,6 @@ for event in events:
     ugmass = topcomp.M()
 
 
-  #  WpairMass = 0.0   
-  #  TrueWMass = 80.4
-  #  tempwmass = 0.0
-  #  MassDiffMin = 500.0
-
-   # PtRelMax = 0.0
-   # tempPtRel = 0.0
-   # WpairMassptrel = 0.0
-
-   # tempDeltaR=0.0    
-   # DeltaRMin=10000.0
-   # WpairMassDeltaR = 0.0
-
-   # tempmu=0.0    
-   # muMin=10000.0
-   # WpairMassmu = 0.0
-
-
-    #for isjet in range(0,len(sjets)):
-    #	bc = sjets[isjet]
-	#numb = 0
-	#for jsjet in range(0,len(sjets)):
-	#	if isjet != jsjet:
-	#		if numb == 0:
-    	#			oj = sjets[jsjet]
-	#		else:
-	#			oj += sjets[jsjet]
-	#		tempDeltaR = sjets[isjet].DeltaR(sjets[jsjet])*sjets[isjet].Perp()
-#
-	#		PM = (sjets[isjet]+sjets[jsjet]).M()
-
-	#		if sjets[isjet].Perp()>sjets[jsjet].Perp():
-	#			maxindex = isjet
-	#		else:
-	#			maxindex = jsjet
-#
-#			tempmu = sjets[maxindex].M()/PM
-#			tempwmass = abs(TrueWMass-PM)
-#				
-#			if tempmu < muMin:
-#				muMin = tempmu
-#				WPairMassmu = PM
-#
-#			if tempDeltaR<DeltaRMin:
-#				DeltaRMin = tempDeltaR
-#				WpairMassDeltaR = PM
-#				
-#
-#			if tempwmass < MassDiffMin:
-#				MassDiffMin = tempwmass
-#				WpairMass = PM
-#				type1mu = sjets[maxindex].M()/WpairMass
-#			numb+=1
-#	tempPtRel = bc.Perp(oj.Vect())
-#
-#	if tempPtRel > PtRelMax:
-#		PtRelMax = tempPtRel
-#		WpairMassptrel = oj.M()
-
-    			   
     for lepcsv in lepcsvs :
         if lepcsv > options.bDiscCut :
             	ntagslep += 1
