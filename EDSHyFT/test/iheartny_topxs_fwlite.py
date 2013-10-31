@@ -1,18 +1,8 @@
 #! /usr/bin/env python
 import os
 import glob
+import time
 
-def findClosestJet( ijet, hadJets ) :
-    minDR = 9999.
-    ret = -1
-    for jjet in range(0,len(hadJets) ):
-        if ijet == jjet :
-            continue
-        dR = hadJets[ijet].DeltaR(hadJets[jjet])
-        if dR < minDR :
-            minDR = hadJets[ijet].DeltaR(hadJets[jjet])
-            ret = jjet
-    return ret
 
 from optparse import OptionParser
 
@@ -118,8 +108,60 @@ import ROOT
 ROOT.gROOT.Macro("rootlogon.C")
 
 
+if options.makeResponse :
+    ROOT.gSystem.Load("RooUnfold-1.1.1/libRooUnfold")
+
+
+# Define classes that use ROOT
+
+def findClosestJet( ijet, hadJets ) :
+    minDR = 9999.
+    ret = -1
+    for jjet in range(0,len(hadJets) ):
+        if ijet == jjet :
+            continue
+        dR = hadJets[ijet].DeltaR(hadJets[jjet])
+        if dR < minDR :
+            minDR = hadJets[ijet].DeltaR(hadJets[jjet])
+            ret = jjet
+    return ret
+
+
+def findClosestInList( p41, p4list ) :
+    minDR = 9999.
+    ret = None
+    for j in range(0,len(p4list) ):
+        dR = p4list[ijet].DeltaR(p41)
+        if dR < minDR :
+            minDR = dR
+            ret = p4list[ijet]
+    return ret
+
+
+class GenTopQuark :
+    pdgId = 6                    # 6 = top, -6 = antitop
+    p4 = ROOT.TLorentzVector()
+    decay = 0                    # 0 = hadronic, 1 = leptonic
+    def __init__( self, pdgId, p4, decay ) :
+        self.pdgId = pdgId
+        self.p4 = p4
+        self.decay = decay
+    def match( self, jets ) :
+        return findClosestInList( self.p4, jets )
+
+
+    
+
+
+
+
+
 import sys
 from DataFormats.FWLite import Events, Handle
+
+
+start_time = time.time()
+
 
 print 'Getting these files : ' + options.files
 
@@ -262,14 +304,14 @@ mWCandVsMTopCand = ROOT.TH2F("mWCandVsMTopCand","WCand+bJet Mass vs WCand mass",
 mWCandVsPtWCand = ROOT.TH2F("mWCandVsPtWCand", "Mass of W candidate versus p_{T} of W candidate", 100, 0, 1000, 20, 0, 200)
 mWCandVsPtWCandMuCut = ROOT.TH2F("mWCandVsPtWCandMuCut", "Mass of W candidate versus p_{T} of W candidate", 100, 0, 1000, 20, 0, 200)
 
-ptTopCand = ROOT.TH1F("ptTopCand", "WCand+bJet p_{T};p_{T} (GeV/c);Number", 250, 0., 1000.)
-ptWFromTopCand = ROOT.TH1F("ptWFromTopCand", "WCand in Type-2 top cand p_{T};p_{T} (GeV/c);Number", 250, 0., 1000.)
-ptbFromTopCand = ROOT.TH1F("ptbFromTopCand", "bCand in Type-2 top cand p_{T};p_{T} (GeV/c);Number", 250, 0., 1000.)
 
 
 if options.makeResponse == True : 
     response = ROOT.RooUnfoldResponse(50, 300., 1300., 50, 300., 1300.)
-    response.SetName('response_pt' + str(ibin))
+    response.SetName('response_pt')
+    ptTopCand = ROOT.TH1F("ptTopCand", "WCand+bJet p_{T};p_{T} (GeV/c);Number", 250, 0., 1000.)
+    ptWFromTopCand = ROOT.TH1F("ptWFromTopCand", "WCand in Type-2 top cand p_{T};p_{T} (GeV/c);Number", 250, 0., 1000.)
+    ptbFromTopCand = ROOT.TH1F("ptbFromTopCand", "bCand in Type-2 top cand p_{T};p_{T} (GeV/c);Number", 250, 0., 1000.)
 
 
 events = Events (files)
@@ -458,18 +500,114 @@ for event in events:
 
 
 
-    #Require exactly one lepton (e or mu)
+    # Find the top and antitop quarks.
+    # We also need to find the decay mode of the top and antitop quarks.
+    # To do so, we look for leptons, and use their charge to assign
+    # the correct decay mode to the correct quark. 
+    topQuarks = []
+    hadTop = None
+    lepTop = None
+    isSemiLeptonicGen = True
+    if options.makeResponse == True :
+        event.getByLabel( genParticlesPtLabel, genParticlesPtHandle )
+        event.getByLabel( genParticlesEtaLabel, genParticlesEtaHandle )
+        event.getByLabel( genParticlesPhiLabel, genParticlesPhiHandle )
+        event.getByLabel( genParticlesMassLabel, genParticlesMassHandle )
+        event.getByLabel( genParticlesPdgIdLabel, genParticlesPdgIdHandle )
+        event.getByLabel( genParticlesStatusLabel, genParticlesStatusHandle )
+
+        genParticlesPt = genParticlesPtHandle.product()
+        genParticlesEta = genParticlesEtaHandle.product()
+        genParticlesPhi = genParticlesPhiHandle.product()
+        genParticlesMass = genParticlesMassHandle.product()
+        genParticlesPdgId = genParticlesPdgIdHandle.product()
+        genParticlesStatus = genParticlesStatusHandle.product()
+        
+        #print '------------'
+        p4Top = ROOT.TLorentzVector()
+        p4Antitop = ROOT.TLorentzVector()
+        topDecay = 0        # 0 = hadronic, 1 = leptonic
+        antitopDecay = 0    # 0 = hadronic, 1 = leptonic
+
+
+
+        for igen in xrange( len(genParticlesPt) ) :
+            #print '{0:6.0f} {1:6.0f} {2:6.2f}'.format( genParticlesPdgId[igen],
+            #                                           genParticlesStatus[igen],
+            #                                           genParticlesPt[igen] )
+            # Figure out the top vs antitop from charge of decay products.
+            # Need to know which is the hadronic one (top or antitop) to do unfolding
+
+            if genParticlesStatus[igen] != 3 :
+                continue
+            if  abs(genParticlesPdgId[igen]) < 6 :
+                continue
+            if  abs(genParticlesPdgId[igen]) > 16 :
+                continue
+            
+
+            if genParticlesStatus[igen] == 3 and genParticlesPdgId[igen] == 6 :
+                gen = ROOT.TLorentzVector()
+                gen.SetPtEtaPhiM( genParticlesPt[igen],
+                                  genParticlesEta[igen],
+                                  genParticlesPhi[igen],
+                                  genParticlesMass[igen]
+                    )                    
+                p4Top = gen
+            elif genParticlesStatus[igen] == 3 and genParticlesPdgId[igen] == -6 :
+                gen = ROOT.TLorentzVector()
+                gen.SetPtEtaPhiM( genParticlesPt[igen],
+                                  genParticlesEta[igen],
+                                  genParticlesPhi[igen],
+                                  genParticlesMass[igen]
+                    )
+                p4Antitop = gen
+            # If there is a lepton (e-, mu-, tau-) then the top is leptonic
+            elif genParticlesStatus[igen] == 3 and \
+                ( genParticlesPdgId[igen] == -11 or genParticlesPdgId[igen] == -13 or genParticlesPdgId[igen] == -15) :
+                topDecay = 1
+            # If there is an antilepton (e+, mu+, tau+) then the antitop is leptonic
+            elif genParticlesStatus[igen] == 3 and \
+                ( genParticlesPdgId[igen] == 11 or genParticlesPdgId[igen] == 13 or genParticlesPdgId[igen] == 15) :                
+                antitopDecay = 1
+
+        #print 'I think the top quark decay mode is ' + str(topDecay)
+        topQuarks.append( GenTopQuark( 6, p4Top, topDecay) )
+        #print 'I think the top antiquark decay mode is ' + str(antitopDecay)
+        topQuarks.append( GenTopQuark( -6, p4Antitop, antitopDecay) )        
+        if topDecay + antitopDecay == 1 :
+            isSemiLeptonicGen = True
+        else :
+            isSemiLeptonicGen = False
+
+        # If we are filling the response matrix, don't
+        # consider "volunteer" events that pass the selection
+        # even though they aren't really semileptonic events. 
+        if isSemiLeptonicGen == False :
+            continue
+
+        if topDecay == 0 :
+            hadTop = topQuarks[0]
+            lepTop = topQuarks[1]
+        else :
+            hadTop = topQuarks[1]
+            lepTop = topQuarks[0]
+
 
     lepType = 0 # Let 0 = muon, 1 = electron    
     event.getByLabel (muonPtLabel, muonPtHandle)
     if not muonPtHandle.isValid():
 	mptv+=1
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight )
         continue
     muonPts = muonPtHandle.product()
 
     if True :
         event.getByLabel (muonPfisoLabel, muonPfisoHandle)
         if not muonPfisoHandle.isValid():
+            if options.makeResponse == True :
+                response.Miss( hadTop.p4.Perp(), weight )
             continue
         muonPfisos = muonPfisoHandle.product()
 
@@ -480,12 +618,16 @@ for event in events:
             if options.useLoose :
 #                print 'imu = ' + str(imuonPt) + ', iso/pt = ' + str( muonPfisos[imuonPt] ) + '/' + str(muonPt) + ' = ' + str(muonPfisos[imuonPt]/muonPt)
                 if muonPfisos[imuonPt] / muonPt < 0.12 :
+                    if options.makeResponse == True :
+                        response.Miss( hadTop.p4.Perp(), weight )
                     continue
                 else :
                     nMuonsVal += 1
                     lepType = 0
             else :
             	if muonPfisos[imuonPt] / muonPt > 0.12 :
+                    if options.makeResponse == True :
+                        response.Miss( hadTop.p4.Perp(), weight )
 		    continue
                 nMuonsVal += 1
                 lepType = 0                
@@ -512,7 +654,9 @@ for event in events:
     topTagEta = topTagEtaHandle.product()
     if not options.type2:
 	if len(topTagEta)<1:
-		continue 
+            if options.makeResponse == True :
+                response.Miss( hadTop.p4.Perp(), weight )
+	    continue 
     	if options.etabin != 'all':
 		if options.etabin == 'range1':
 			if abs(topTagEta[0])>1.0:
@@ -541,9 +685,13 @@ for event in events:
 
     if not options.muOnly :
         if nMuonsVal + nElectronsVal != 1 :
+            if options.makeResponse == True :
+                response.Miss( hadTop.p4.Perp(), weight )
             continue
     else :
         if nMuonsVal != 1:
+            if options.makeResponse == True :
+                response.Miss( hadTop.p4.Perp(), weight )
             continue
 
 
@@ -598,6 +746,8 @@ for event in events:
 
     # Require >= 2 AK5 jets above 30 GeV
     if nJetsVal < 2 :
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight )       
         continue
 
     htLep1.Fill( htLepVal,weight )
@@ -622,6 +772,8 @@ for event in events:
             ntags += 1
 
     if ntags < 1 :
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight )        
         continue
 
 
@@ -710,6 +862,8 @@ for event in events:
 
 
     if options.htCut is not None and ht < options.htCut :
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight )        
         continue
 
 
@@ -727,6 +881,8 @@ for event in events:
 
 
     if len(lepJets) < 1:
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight )        
 	continue 
 
     leptoppt = (metv+lepJets[0]+lepP4).Perp()
@@ -828,6 +984,8 @@ for event in events:
         if lepcsv > options.bDiscCut :
             	ntagslep += 1
     if ntagslep<1:
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight )        
 	continue
 	
     #print "weight " + str(weight)
@@ -914,15 +1072,13 @@ for event in events:
 	    else:
 		t1weight=weight
 
+            passSelection = False
             if (jet.DeltaR( lepP4) > ROOT.TMath.Pi() / 2.0) :
-                if (topTagPt[ijet] > 400.):
+                if (topTagPt[ijet] > 250.):
 		    topTagptHistprecuts.Fill(topTagPt[ijet],t1weight)
 		    htLep3t1kin.Fill(htLepVal,t1weight)
 		    nsj.Fill(topTagNSub[ijet],t1weight)
-
 		    nvtxvsnsj.Fill(nvtx,topTagNSub[ijet],t1weight)
-
-
  		    if topTagNSub[ijet] > 2:
 			minPairHist.Fill(topTagMinMass[ijet],t1weight)
 			nvtxvsminmass.Fill(nvtx,topTagMinMass[ijet],t1weight)
@@ -983,6 +1139,8 @@ for event in events:
 
 					nvtxvstau32.Fill(nvtx,TauDisc,t1weight)
 
+                                        passSelection = True
+
 					if TauDisc<0.6:
 						BDMax = max(Topsj0BDiscCSV[ijet],Topsj1BDiscCSV[ijet],Topsj2BDiscCSV[ijet])
 						topTagBMaxHist.Fill(BDMax,t1weight)
@@ -990,13 +1148,24 @@ for event in events:
 						topTagMassHistPostTau32.Fill(topTagMass[ijet],t1weight)
 						if BDMax>0.679:
 							topTagMassHistPostBDMax.Fill(topTagMass[ijet],t1weight)
+            if options.makeResponse == True : 
+                if passSelection == True :
+                    response.Fill(  topTagPt[ijet], hadTop.p4.Perp(), t1weight )
+                else :
+                    response.Miss( hadTop.p4.Perp(), t1weight )
+
 
 
 print  'Total Events: ' + str(count)
 print  'isvalid() cuts: ' + str(mptv)
 print  'percent cuts: ' + str((100*mptv)/count)+'%'
 f.cd()
+
+if options.makeResponse :
+    response.Write()
+
 f.Write()
+
 f.Close()
 
 if options.printEvents :
@@ -1023,3 +1192,6 @@ if options.printEvents :
         print '{0:12.0f}:{1:12.0f}:{2:12.0f}'.format(
             goodEvent[0], goodEvent[1], goodEvent[2]
         )
+
+
+print "Total time = " + str( time.time() - start_time) + " seconds"
