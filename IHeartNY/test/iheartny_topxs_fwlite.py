@@ -486,7 +486,7 @@ weightPlot = weightFile.Get("lepptweight")
 if options.ptWeight == False :
 	print "Turning pt reweighting off"
 for event in events:
-    print 'is this broken?'
+	#print 'is this broken?'
     weight = 1.0
     if count % 10000 == 0 :
       print  '--------- Processing Event ' + str(count)
