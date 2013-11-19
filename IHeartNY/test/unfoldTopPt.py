@@ -10,6 +10,29 @@
 #
 # ==============================================================================
 
+from optparse import OptionParser
+
+
+parser = OptionParser()
+
+
+
+parser.add_option('--closureTest', metavar='F', action='store_true',
+                  default=False,
+                  dest='closureTest',
+                  help='Run Closure Test')
+
+
+parser.add_option('--plotFullRange', metavar='F', action='store_true',
+                  default=False,
+                  dest='plotFullRange',
+                  help='Plot the full pt range (pt > 300 GeV)')
+
+
+(options, args) = parser.parse_args()
+
+argv = []
+
 from ROOT import gRandom, TH1, TH1D, cout, TFile, gSystem, TCanvas, TPad, gROOT, gStyle, THStack, TLegend, TLatex
 
 gROOT.Macro("rootlogon.C")
@@ -35,11 +58,18 @@ from ROOT import RooUnfoldSvd
 # from ROOT import RooUnfoldTUnfold
 
 # Constants
-lum = 19.7 # fb-1
-sigma_ttbar_NNLO = 245.8 * 1000. # fb, from http://arxiv.org/pdf/1303.6254.pdf
-Nmc = 21675970
-SF_b = 0.97
-SF_t = 0.94
+if options.closureTest == False : 
+    lum = 19.7 # fb-1
+    sigma_ttbar_NNLO = 245.8 * 1000. # fb, from http://arxiv.org/pdf/1303.6254.pdf
+    Nmc = 21675970
+    SF_b = 0.97
+    SF_t = 0.94
+else :
+    lum = 1.0
+    sigma_ttbar_NNLO = 1.0
+    Nmc = 1.0
+    SF_b = 1.0
+    SF_t = 1.0
 
 # ==============================================================================
 #  Example Unfolding
@@ -52,7 +82,10 @@ response= fmc.Get("response_pt")
 
 print "==================================== Get Hists ====================================="
 hTrue= fmc.Get("ptGenTop")
-hMeas= fdata.Get("ptRecoTop")
+if options.closureTest == False : 
+    hMeas= fdata.Get("ptRecoTop")
+else :
+    hMeas= fmc.Get("ptRecoTop")
 
 hTrue.Scale( sigma_ttbar_NNLO * lum / float(Nmc) * SF_b * SF_t  )
 
@@ -86,15 +119,19 @@ hMeas.Sumw2()
 hReco.SetMarkerStyle(21)
 hMeas.SetMarkerStyle( 25);
 
-hTrue.SetTitle(";;d #sigma / d p_{T} (fb / GeV)")
-hTrue.Draw('hist')
-hReco.Draw('same')
+hReco.SetTitle(";;d #sigma / d p_{T} (fb / GeV)")
+hReco.SetMinimum(0.0)
+hReco.Draw()
+hTrue.Draw('hist same')
 hMeas.Draw('same')
 hTrue.UseCurrentStyle()
 hTrue.SetLineColor(4);
 hTrue.GetYaxis().SetTitleSize(25)
 hTrue.GetXaxis().SetLabelSize(0)
-hTrue.GetXaxis().SetRangeUser(400., 10000.)
+
+if options.plotFullRange == False : 
+    hReco.GetXaxis().SetRangeUser(400., 10000.)
+
 
 
 # Correct for bin width
@@ -107,12 +144,20 @@ for ibin in range(1, hTrue.GetXaxis().GetNbins() ) :
     hMeas.SetBinError(ibin,  hMeas.GetBinError(ibin) / width )
     hReco.SetBinError(ibin,  hReco.GetBinError(ibin) / width )
 
-leg = TLegend(0.6, 0.6, 0.84, 0.84)
+leg = TLegend(0.4, 0.6, 0.84, 0.84)
 leg.SetFillColor(0)
 leg.SetBorderSize(0)
-leg.AddEntry( hReco, 'Unfolded data', 'p')
-leg.AddEntry( hTrue, 'Generated', 'l')
-leg.AddEntry( hMeas, 'Raw data', 'p')
+
+if options.closureTest == False : 
+    leg.AddEntry( hReco, 'Unfolded data', 'p')
+    leg.AddEntry( hTrue, 'Generated', 'l')
+    leg.AddEntry( hMeas, 'Raw data', 'p')
+else : 
+    leg.AddEntry( hReco, 'Unfolded MC : Closure test', 'p')
+    leg.AddEntry( hTrue, 'Generated', 'l')
+    leg.AddEntry( hMeas, 'Raw MC', 'p')
+
+
 leg.Draw()
 
 text1 = TLatex()
@@ -137,6 +182,17 @@ hFrac.GetXaxis().SetLabelSize(20)
 hFrac.GetYaxis().SetNdivisions(2,4,0,False)
 
 hFrac.Draw("e")
-hFrac.GetXaxis().SetRangeUser(400., 10000.)
+if options.plotFullRange == False : 
+    hFrac.GetXaxis().SetRangeUser(400., 10000.)
+    
 
 c1.Update()
+
+append = ""
+if options.closureTest :
+    append += "_closure"
+if options.plotFullRange :
+    append += "_fullrange"
+
+c1.Print("unfolded_ttbar_xs" + append + ".pdf", "pdf")
+c1.Print("unfolded_ttbar_xs" + append + ".png", "png")
