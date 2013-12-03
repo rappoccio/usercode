@@ -312,7 +312,9 @@ ptbFromTopCand = ROOT.TH1F("ptbFromTopCand", "bCand in Type-2 top cand p_{T};p_{
 if options.makeResponse == True : 
     response = ROOT.RooUnfoldResponse(10, 300., 1300., 10, 300., 1300.)
     response.SetName('response_pt')
-    ptRecoTop = ROOT.TH1F("ptRecoTop", "Reconstructed top p_{T};p_{T} (GeV/c);Number", 10, 300., 1300.)
+    ptGenTop = ROOT.TH1F("ptGenTop", "Generated top p_{T};p_{T} (GeV/c);Number", 10, 300., 1300.)
+
+ptRecoTop = ROOT.TH1F("ptRecoTop", "Reconstructed top p_{T};p_{T} (GeV/c);Number", 10, 300., 1300.)
 
 events = Events (files)
 
@@ -593,6 +595,9 @@ for event in events:
         else :
             hadTop = topQuarks[1]
             lepTop = topQuarks[0]
+	ptGenTop.Fill( hadTop.p4.Perp(), weight )
+    # endif (making response matrix)
+
 
 
     lepType = 0 # Let 0 = muon, 1 = electron    
@@ -1075,7 +1080,7 @@ for event in events:
 
             passSelection = False
             if (jet.DeltaR( lepP4) > ROOT.TMath.Pi() / 2.0) :
-                if (topTagPt[ijet] > 250.):
+                if (topTagPt[ijet] > 200.):
 		    topTagptHistprecuts.Fill(topTagPt[ijet],t1weight)
 		    htLep3t1kin.Fill(htLepVal,t1weight)
 		    nsj.Fill(topTagNSub[ijet],t1weight)
@@ -1151,7 +1156,7 @@ for event in events:
 							topTagMassHistPostBDMax.Fill(topTagMass[ijet],t1weight)
 	    if passSelection == True :
 		ptRecoTop.Fill( topTagPt[ijet], t1weight )
-            if options.makeResponse == True : 
+            if options.makeResponse == True :		
                 if passSelection == True :
                     response.Fill(  topTagPt[ijet], hadTop.p4.Perp(), t1weight )
                 else :
