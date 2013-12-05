@@ -49,11 +49,6 @@ parser.add_option('--pileup', metavar='F', type='string', action='store',
                   dest='pileup',
                   help='ttbar or wjets')
 
-parser.add_option('--isNew', metavar='F', action='store_true',
-                  default=False,
-                  dest='isNew',
-                  help='running on new ntuples')
-
 parser.add_option('--bDiscCut', metavar='F', type='float', action='store',
                   default=0.679,
                   dest='bDiscCut',
@@ -120,49 +115,26 @@ puHandle    	= 	Handle("int")
 puLabel     	= 	( "pileup", "npvRealTrue" )
 
 tightJetPtHandle         = Handle( "std::vector<float>" )
-tightJetPtLabel    = ( "pfShyftTupleJets",   "pt" )
+tightJetPtLabel    = ( "pfShyftTupleJetsAK5",   "pt" )
 tightJetEtaHandle         = Handle( "std::vector<float>" )
-tightJetEtaLabel    = ( "pfShyftTupleJets",   "eta" )
+tightJetEtaLabel    = ( "pfShyftTupleJetsAK5",   "eta" )
 tightJetPhiHandle         = Handle( "std::vector<float>" )
-tightJetPhiLabel    = ( "pfShyftTupleJets",   "phi" )
+tightJetPhiLabel    = ( "pfShyftTupleJetsAK5",   "phi" )
 tightJetMassHandle         = Handle( "std::vector<float>" )
-tightJetMassLabel    = ( "pfShyftTupleJets",   "mass" )
+tightJetMassLabel    = ( "pfShyftTupleJetsAK5",   "mass" )
 tightJetCSVHandle         = Handle( "std::vector<float>" )
-tightJetCSVLabel    = ( "pfShyftTupleJets",   "csv" )
+tightJetCSVLabel    = ( "pfShyftTupleJetsAK5",   "csv" )
 
 looseJetPtHandle         = Handle( "std::vector<float>" )
-looseJetPtLabel    = ( "pfShyftTupleJetsLoose",   "pt" )
+looseJetPtLabel    = ( "pfShyftTupleJetsLooseAK5",   "pt" )
 looseJetEtaHandle         = Handle( "std::vector<float>" )
-looseJetEtaLabel    = ( "pfShyftTupleJetsLoose",   "eta" )
+looseJetEtaLabel    = ( "pfShyftTupleJetsLooseAK5",   "eta" )
 looseJetPhiHandle         = Handle( "std::vector<float>" )
-looseJetPhiLabel    = ( "pfShyftTupleJetsLoose",   "phi" )
+looseJetPhiLabel    = ( "pfShyftTupleJetsLooseAK5",   "phi" )
 looseJetMassHandle         = Handle( "std::vector<float>" )
-looseJetMassLabel    = ( "pfShyftTupleJetsLoose",   "mass" )
+looseJetMassLabel    = ( "pfShyftTupleJetsLooseAK5",   "mass" )
 looseJetCSVHandle         = Handle( "std::vector<float>" )
-looseJetCSVLabel    = ( "pfShyftTupleJetsLoose",   "csv" )
-
-if options.isNew :
-    tightJetPtHandle         = Handle( "std::vector<float>" )
-    tightJetPtLabel    = ( "pfShyftTupleJetsAK5",   "pt" )
-    tightJetEtaHandle         = Handle( "std::vector<float>" )
-    tightJetEtaLabel    = ( "pfShyftTupleJetsAK5",   "eta" )
-    tightJetPhiHandle         = Handle( "std::vector<float>" )
-    tightJetPhiLabel    = ( "pfShyftTupleJetsAK5",   "phi" )
-    tightJetMassHandle         = Handle( "std::vector<float>" )
-    tightJetMassLabel    = ( "pfShyftTupleJetsAK5",   "mass" )
-    tightJetCSVHandle         = Handle( "std::vector<float>" )
-    tightJetCSVLabel    = ( "pfShyftTupleJetsAK5",   "csv" )
-
-    looseJetPtHandle         = Handle( "std::vector<float>" )
-    looseJetPtLabel    = ( "pfShyftTupleJetsLooseAK5",   "pt" )
-    looseJetEtaHandle         = Handle( "std::vector<float>" )
-    looseJetEtaLabel    = ( "pfShyftTupleJetsLooseAK5",   "eta" )
-    looseJetPhiHandle         = Handle( "std::vector<float>" )
-    looseJetPhiLabel    = ( "pfShyftTupleJetsLooseAK5",   "phi" )
-    looseJetMassHandle         = Handle( "std::vector<float>" )
-    looseJetMassLabel    = ( "pfShyftTupleJetsLooseAK5",   "mass" )
-    looseJetCSVHandle         = Handle( "std::vector<float>" )
-    looseJetCSVLabel    = ( "pfShyftTupleJetsLooseAK5",   "csv" )
+looseJetCSVLabel    = ( "pfShyftTupleJetsLooseAK5",   "csv" )
 
 topTagPtHandle         = Handle( "std::vector<float>" )
 topTagPtLabel    = ( "pfShyftTupleJetsLooseTopTag" ,   "pt" )

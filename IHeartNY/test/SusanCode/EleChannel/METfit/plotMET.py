@@ -256,6 +256,7 @@ for event in events:
     rho = rhoHandle.product()
 
     nElectronsVal = 0
+    goodEles = []
     for ielectronPt in range(0,len(electronPts)):
         electronPt = electronPts[ielectronPt]
         electronPfiso = electronPfisoCHs[ielectronPt] + max(0.0, electronPfisoNHs[ielectronPt] + electronPfisoPHs[ielectronPt] - rho[0] * getAeff(electronEtas[ielectronPt]))
@@ -266,10 +267,12 @@ for event in events:
                 if electronPfiso / electronPt < 0.1 :
                     continue
                 nElectronsVal += 1
+                goodEles.append(ielectronPt)
             else :
             	if electronPfiso / electronPt > 0.1 :
 		    continue
                 nElectronsVal += 1
+                goodEles.append(ielectronPt)
 
     if options.pileup != 'none':   
     	event.getByLabel (puLabel, puHandle)
@@ -327,9 +330,9 @@ for event in events:
     jetCSVs = jetCSVHandle.product()
 
     # First break the jets up by hemisphere
-    lepPt = electronPts[0]
-    lepEta = electronEtas[0]
-    lepPhi = electronPhis[0]
+    lepPt = electronPts[goodEles[0]]
+    lepEta = electronEtas[goodEles[0]]
+    lepPhi = electronPhis[goodEles[0]]
     lepMass = 0.0
 
     lepP4 = ROOT.TLorentzVector()
