@@ -28,6 +28,11 @@ parser.add_option('--plotFullRange', metavar='F', action='store_true',
                   dest='plotFullRange',
                   help='Plot the full pt range (pt > 300 GeV)')
 
+parser.add_option('--subtractBackgrounds', metavar='F', action='store_true',
+                  default=False,
+                  dest='subtractBackgrounds',
+                  help='Subtract off the backgrounds')
+
 
 (options, args) = parser.parse_args()
 
@@ -58,36 +63,122 @@ from ROOT import RooUnfoldSvd
 # from ROOT import RooUnfoldTUnfold
 
 # Constants
-if options.closureTest == False : 
-    lum = 19.7 # fb-1
-    sigma_ttbar_NNLO = 245.8 * 1000. # fb, from http://arxiv.org/pdf/1303.6254.pdf
-    Nmc = 21675970
-    SF_b = 0.97
-    SF_t = 0.94
-else :
-    lum = 1.0
-    sigma_ttbar_NNLO = 1.0
-    Nmc = 1.0
-    SF_b = 1.0
-    SF_t = 1.0
+
+# Performance numbers
+lum = 19.7 # fb-1
+SF_b = 0.97
+SF_t = 0.94
+
+# Cross sections (in fb) and the number of MC events
+sigma_ttbar_NNLO = 245.8 * 1000. # fb, from http://arxiv.org/pdf/1303.6254.pdf
+sigma_T_t_NNLO = 56.4 * 1000.
+sigma_Tbar_t_NNLO = 30.7 * 1000.
+sigma_T_s_NNLO = 3.79 * 1000.
+sigma_Tbar_s_NNLO = 1.76 * 1000.
+sigma_T_tW_NNLO = 11.1 * 1000.
+sigma_Tbar_tW_NNLO = 11.1 * 1000.
+sigma_WJets_NNLO = 37509 * 1000.
+
+# MC event counts from B2G twiki here :
+# https://twiki.cern.ch/twiki/bin/view/CMS/B2GTopLikeBSM53X#Backgrounds
+Nmc_ttbar = 21675970
+Nmc_T_t = 3758227
+Nmc_Tbar_t = 1935072
+Nmc_T_s = 259961
+Nmc_Tbar_s = 139974
+Nmc_T_tW = 497658
+Nmc_Tbar_tW = 493460
+Nmc_WJets = 57709905
+
+
 
 # ==============================================================================
 #  Example Unfolding
 # ==============================================================================
 
-fdata = TFile("TTSemilepAnalyzer_unfolding_data_type1.root")
-fmc = TFile("TTSemilepAnalyzer_antibtag_w_mucut_type1.root")
+fdata = TFile("histfiles/TTSemilepAnalyzer_unfolding_data_type1.root")
+fmc_ttbar = TFile("histfiles/TTSemilepAnalyzer_antibtag_w_mucut_type1.root")
+fT_t = TFile("histfiles/T_t_Histos_type1.root")
+fTbar_t = TFile("histfiles/Tbar_t_Histos_type1.root")
+fT_s = TFile("histfiles/T_S_Histos_type1.root")
+fTbar_s = TFile("histfiles/TB_S_Histos_type1.root")
+fT_tW = TFile("histfiles/T_tW-channel_hists_type1.root")
+fTbar_tW = TFile("histfiles/Tbar_tW-channel_hists_type1.root")
+fWJets = TFile("histfiles/WPlusJets_hists_type1.root")
 
-response= fmc.Get("response_pt")
+response= fmc_ttbar.Get("response_pt")
+
 
 print "==================================== Get Hists ====================================="
-hTrue= fmc.Get("ptGenTop")
+hTrue= fmc_ttbar.Get("ptGenTop")
+hRecoMC = fmc_ttbar.Get("ptRecoTop").Clone()
+hRecoData= fdata.Get("ptRecoTop").Clone()
+hRecoMC.SetName("hRecoMC")
+hRecoData.SetName("hRecoData")
+
 if options.closureTest == False : 
     hMeas= fdata.Get("ptRecoTop")
 else :
-    hMeas= fmc.Get("ptRecoTop")
+    hMeas= fmc_ttbar.Get("ptRecoTop")
 
-hTrue.Scale( sigma_ttbar_NNLO * lum / float(Nmc) * SF_b * SF_t  )
+
+
+
+hMeas.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
+hTrue.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
+
+
+
+# Get the histogram files
+hMeas_T_t     = fT_t.Get("ptRecoTop")
+hMeas_Tbar_t  = fTbar_t.Get("ptRecoTop")
+hMeas_T_s     = fT_s.Get("ptRecoTop")
+hMeas_Tbar_s  = fTbar_s.Get("ptRecoTop")
+hMeas_T_tW    = fT_tW.Get("ptRecoTop")
+hMeas_Tbar_tW = fTbar_tW.Get("ptRecoTop")
+hMeas_WJets   = fWJets.Get("ptRecoTop")
+
+# Scale to desired normalization
+# Options are :
+#  1. From MC
+#  2. From fit
+#
+# For now, we don't have the fit, so we do from MC
+hMeas_T_t.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_b * SF_t  )
+hMeas_Tbar_t.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) * SF_b * SF_t  )
+hMeas_T_s.Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) * SF_b * SF_t  )
+hMeas_Tbar_s.Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) * SF_b * SF_t  )
+hMeas_T_tW.Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) * SF_b * SF_t  )
+hMeas_Tbar_tW.Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) * SF_b * SF_t  )
+hMeas_WJets.Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_b * SF_t  )
+
+hMeas_SingleTop = hMeas_T_t.Clone()
+
+for hist in [hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
+    hMeas_SingleTop.Add( hist )
+
+
+# Make a stack plot of the MC to compare to data
+hMC_stack = THStack("hMC_stack", "hMC_stack")
+hMC_stack.Add( hMeas_WJets )
+hMC_stack.Add( hMeas_SingleTop )
+hMC_stack.Add( hRecoMC )
+
+c = TCanvas("datamc", "datamc")
+hRecoData.Draw('e')
+hMC_stack.Draw("hist same")
+
+# First plot RECO data-to-MC
+
+
+c2 = TCanvas("unfolding", "unfolding")
+
+if options.subtractBackgrounds :
+    for hist in [hMeas_T_t, hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
+        hMeas.Add( hist, -1.)
+
+    # Someday soon, we subtract QCD and W+Jets. For now, they are empty.
+    
 
 print "==================================== UNFOLD ==================================="
 unfold= RooUnfoldBayes     (response, hMeas, 10);    #  OR
