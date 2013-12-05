@@ -150,7 +150,8 @@ hMeas_WJets   = fWJets.Get("ptRecoTop")
 # For now, we don't have the fit, so we do from MC
 
 
-hMeas.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
+if options.closureTest == True : 
+    hMeas.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
 hTrue.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
 hRecoMC.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
 
@@ -191,7 +192,7 @@ hRecoData.Draw('e same')
 c2 = TCanvas("unfolding", "unfolding")
 
 if options.subtractBackgrounds :
-    for hist in [hMeas_T_t, hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW, hMeas_WJets,hMeas_QCD] :
+    for hist in [hMeas_SingleTop, hMeas_WJets,hMeas_QCD] :
         hMeas.Add( hist, -1.)
 
     # Someday soon, we subtract QCD and W+Jets. For now, they are empty.
