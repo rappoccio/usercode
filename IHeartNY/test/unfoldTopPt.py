@@ -90,13 +90,15 @@ Nmc_T_tW = 497658
 Nmc_Tbar_tW = 493460
 Nmc_WJets = 57709905
 
-
+# QCD Normalization from MET fits
+NQCD = 15.0
 
 # ==============================================================================
 #  Example Unfolding
 # ==============================================================================
 
 fdata = TFile("histfiles/TTSemilepAnalyzer_unfolding_data_type1.root")
+fQCD = TFile("histfiles/QCD_hists_pt_type1.root")
 fmc_ttbar = TFile("histfiles/TTSemilepAnalyzer_antibtag_w_mucut_type1.root")
 fT_t = TFile("histfiles/T_t_Histos_type1.root")
 fTbar_t = TFile("histfiles/Tbar_t_Histos_type1.root")
@@ -115,6 +117,12 @@ hRecoMC = fmc_ttbar.Get("ptRecoTop").Clone()
 hRecoMC.SetName("hRecoMC")
 hRecoData= fdata.Get("ptRecoTop").Clone()
 hRecoData.SetName("hRecoData")
+
+hRecoQCD = fQCD.Get("ptTopTagHist")
+hRecoQCD.Sumw2()
+hRecoQCD.Scale( NQCD / hRecoQCD.Integral() )
+hRecoQCD.SetFillColor(5)
+hRecoQCD.Rebin(2)
 
 if options.closureTest == False : 
     hMeas= fdata.Get("ptRecoTop")
@@ -169,6 +177,7 @@ for hist in [hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
 hMC_stack = THStack("hMC_stack", "hMC_stack")
 hMC_stack.Add( hMeas_WJets )
 hMC_stack.Add( hMeas_SingleTop )
+hMC_stack.Add( hRecoQCD )
 hMC_stack.Add( hRecoMC )
 
 c = TCanvas("datamc", "datamc")
@@ -182,7 +191,7 @@ hRecoData.Draw('e same')
 c2 = TCanvas("unfolding", "unfolding")
 
 if options.subtractBackgrounds :
-    for hist in [hMeas_T_t, hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW, hMeas_WJets] :
+    for hist in [hMeas_T_t, hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW, hMeas_WJets,hMeas_QCD] :
         hMeas.Add( hist, -1.)
 
     # Someday soon, we subtract QCD and W+Jets. For now, they are empty.
