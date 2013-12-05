@@ -112,8 +112,8 @@ response= fmc_ttbar.Get("response_pt")
 print "==================================== Get Hists ====================================="
 hTrue= fmc_ttbar.Get("ptGenTop")
 hRecoMC = fmc_ttbar.Get("ptRecoTop").Clone()
-hRecoData= fdata.Get("ptRecoTop").Clone()
 hRecoMC.SetName("hRecoMC")
+hRecoData= fdata.Get("ptRecoTop").Clone()
 hRecoData.SetName("hRecoData")
 
 if options.closureTest == False : 
@@ -122,10 +122,6 @@ else :
     hMeas= fmc_ttbar.Get("ptRecoTop")
 
 
-
-
-hMeas.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
-hTrue.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
 
 
 
@@ -144,6 +140,12 @@ hMeas_WJets   = fWJets.Get("ptRecoTop")
 #  2. From fit
 #
 # For now, we don't have the fit, so we do from MC
+
+
+hMeas.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
+hTrue.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
+hRecoMC.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
+
 hMeas_T_t.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_b * SF_t  )
 hMeas_Tbar_t.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) * SF_b * SF_t  )
 hMeas_T_s.Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) * SF_b * SF_t  )
@@ -153,6 +155,11 @@ hMeas_Tbar_tW.Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) * SF_b * SF_t
 hMeas_WJets.Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_b * SF_t  )
 
 hMeas_SingleTop = hMeas_T_t.Clone()
+
+hMeas_SingleTop.SetFillColor( 6 )
+hMeas_WJets.SetFillColor( 3 )
+hMeas.SetFillColor( 2 )
+hRecoMC.SetFillColor( 2 )
 
 for hist in [hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
     hMeas_SingleTop.Add( hist )
@@ -167,6 +174,7 @@ hMC_stack.Add( hRecoMC )
 c = TCanvas("datamc", "datamc")
 hRecoData.Draw('e')
 hMC_stack.Draw("hist same")
+hRecoData.Draw('e same')
 
 # First plot RECO data-to-MC
 
@@ -174,7 +182,7 @@ hMC_stack.Draw("hist same")
 c2 = TCanvas("unfolding", "unfolding")
 
 if options.subtractBackgrounds :
-    for hist in [hMeas_T_t, hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
+    for hist in [hMeas_T_t, hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW, hMeas_WJets] :
         hMeas.Add( hist, -1.)
 
     # Someday soon, we subtract QCD and W+Jets. For now, they are empty.
