@@ -13,19 +13,19 @@ import glob
 def getAeff(eleEta) :
     aEff = 0.0
     if abs(eleEta) < 1.0:
-        aEff = 0.21
+        aEff = 0.13
     if (abs(eleEta) > 1.0 and abs(eleEta) < 1.479):
-        aEff = 0.21
-    if (abs(eleEta) > 1.479 and abs(eleEta) < 2.0):
-        aEff = 0.11
-    if (abs(eleEta) > 2.0 and abs(eleEta) < 2.2):
         aEff = 0.14
+    if (abs(eleEta) > 1.479 and abs(eleEta) < 2.0):
+        aEff = 0.07
+    if (abs(eleEta) > 2.0 and abs(eleEta) < 2.2):
+        aEff = 0.09
     if (abs(eleEta) > 2.2 and abs(eleEta) < 2.3):
-        aEff = 0.18
+        aEff = 0.11
     if (abs(eleEta) > 2.3 and abs(eleEta) < 2.4):
-        aEff = 0.19
+        aEff = 0.11
     if abs(eleEta) > 2.4:
-        aEff = 0.26
+        aEff = 0.14
     return float(aEff) 
 
 from optparse import OptionParser
@@ -38,16 +38,10 @@ parser.add_option('--files', metavar='F', type='string', action='store',
                   dest='files',
                   help='Input files')
 
-
 parser.add_option('--outname', metavar='F', type='string', action='store',
                   default='TTSemilepAnalyzer_antibtag_w_mucut',
                   dest='outname',
                   help='output name')
-
-parser.add_option('--num', metavar='F', type='string', action='store',
-                  default	=	'all',
-                  dest		=	'num',
-                  help		=	'file number events in millions')
 
 parser.add_option('--pileup', metavar='F', type='string', action='store',
                   default='none',
@@ -58,11 +52,6 @@ parser.add_option('--useLoose', metavar='F', action='store_true',
                   default=False,
                   dest='useLoose',
                   help='use loose leptons (exclusive from tight)')
-
-parser.add_option('--isNew', metavar='F', action='store_true',
-                  default=False,
-                  dest='isNew',
-                  help='running on new ntuples')
 
 parser.add_option('--bDiscCut', metavar='F', type='float', action='store',
                   default=0.679,
@@ -76,16 +65,8 @@ parser.add_option('--htCut', metavar='F', type='float', action='store',
 
 (options, args) = parser.parse_args()
 
-argv = []
-
-eventsbegin = [1,10000001,20000001,30000001,40000001,50000001]
-eventsend = [10000000,20000000,30000000,40000000,50000000,60000000]
-if options.num != 'all':
-	ifile=int(options.num)
-
 import ROOT
 ROOT.gROOT.Macro("rootlogon.C")
-
 
 import sys
 from DataFormats.FWLite import Events, Handle
@@ -95,13 +76,8 @@ print 'Getting these files : ' + options.files
 files = glob.glob( options.files )
 print files
 
-if options.num != 'all':
-	f = ROOT.TFile( "partialfiles/"+options.outname +options.num+ ".root", "recreate" )
-	name = options.outname +options.num
-else:
-	f = ROOT.TFile(options.outname + ".root", "recreate")
-	name = options.outname
-
+f = ROOT.TFile(options.outname + ".root", "recreate")
+name = options.outname
 
 print "Creating histograms"
 
@@ -112,16 +88,16 @@ if options.pileup == 'ttbar':
 	PilePlot = PileFile.Get("pweightttbar")
 f.cd()
 
-histMET0 = ROOT.TH1F("histMET0", "MET", 40, 20., 420.)
-histMET1 = ROOT.TH1F("histMET1", "MET", 40, 20., 420.)
-histMET2 = ROOT.TH1F("histMET2", "MET", 40, 20., 420.)
-histMET3 = ROOT.TH1F("histMET3", "MET", 40, 20., 420.)
-histMET4 = ROOT.TH1F("histMET4", "MET", 40, 20., 420.)
-histMET5 = ROOT.TH1F("histMET5", "MET", 40, 20., 420.)
-histMET6 = ROOT.TH1F("histMET6", "MET", 40, 20., 420.)
-histMET7 = ROOT.TH1F("histMET7", "MET", 40, 20., 420.)
-histMET8 = ROOT.TH1F("histMET8", "MET", 40, 20., 420.)
-histMET9 = ROOT.TH1F("histMET9", "MET", 40, 20., 420.)
+histMET0 = ROOT.TH1F("histMET0", "MET", 40, 0., 400.)
+histMET1 = ROOT.TH1F("histMET1", "MET", 40, 0., 400.)
+histMET2 = ROOT.TH1F("histMET2", "MET", 40, 0., 400.)
+histMET3 = ROOT.TH1F("histMET3", "MET", 40, 0., 400.)
+histMET4 = ROOT.TH1F("histMET4", "MET", 40, 0., 400.)
+histMET5 = ROOT.TH1F("histMET5", "MET", 40, 0., 400.)
+histMET6 = ROOT.TH1F("histMET6", "MET", 40, 0., 400.)
+histMET7 = ROOT.TH1F("histMET7", "MET", 40, 0., 400.)
+histMET8 = ROOT.TH1F("histMET8", "MET", 40, 0., 400.)
+histMET9 = ROOT.TH1F("histMET9", "MET", 40, 0., 400.)
 
 events = Events (files)
 
@@ -133,27 +109,15 @@ puHandle    	= 	Handle("int")
 puLabel     	= 	( "pileup", "npvRealTrue" )
 
 jetPtHandle         = Handle( "std::vector<float>" )
-jetPtLabel    = ( "pfShyftTupleJets" + postfix,   "pt" )
+jetPtLabel    = ( "pfShyftTupleJets" + postfix + "AK5",   "pt" )
 jetEtaHandle         = Handle( "std::vector<float>" )
-jetEtaLabel    = ( "pfShyftTupleJets" + postfix,   "eta" )
+jetEtaLabel    = ( "pfShyftTupleJets" + postfix + "AK5",   "eta" )
 jetPhiHandle         = Handle( "std::vector<float>" )
-jetPhiLabel    = ( "pfShyftTupleJets" + postfix,   "phi" )
+jetPhiLabel    = ( "pfShyftTupleJets" + postfix + "AK5",   "phi" )
 jetMassHandle         = Handle( "std::vector<float>" )
-jetMassLabel    = ( "pfShyftTupleJets" + postfix,   "mass" )
+jetMassLabel    = ( "pfShyftTupleJets" + postfix + "AK5",   "mass" )
 jetCSVHandle         = Handle( "std::vector<float>" )
-jetCSVLabel    = ( "pfShyftTupleJets" + postfix,   "csv" )
-
-if options.isNew :
-    jetPtHandle         = Handle( "std::vector<float>" )
-    jetPtLabel    = ( "pfShyftTupleJets" + postfix + "AK5",   "pt" )
-    jetEtaHandle         = Handle( "std::vector<float>" )
-    jetEtaLabel    = ( "pfShyftTupleJets" + postfix + "AK5",   "eta" )
-    jetPhiHandle         = Handle( "std::vector<float>" )
-    jetPhiLabel    = ( "pfShyftTupleJets" + postfix + "AK5",   "phi" )
-    jetMassHandle         = Handle( "std::vector<float>" )
-    jetMassLabel    = ( "pfShyftTupleJets" + postfix + "AK5",   "mass" )
-    jetCSVHandle         = Handle( "std::vector<float>" )
-    jetCSVLabel    = ( "pfShyftTupleJets" + postfix + "AK5",   "csv" )
+jetCSVLabel    = ( "pfShyftTupleJets" + postfix + "AK5",   "csv" )
 
 topTagPtHandle         = Handle( "std::vector<float>" )
 topTagPtLabel    = ( "pfShyftTupleJetsLooseTopTag" ,   "pt" )
@@ -199,7 +163,6 @@ metLabel = ("pfShyftTupleMET" + postfix,   "pt" )
 metphiHandle = Handle( "std::vector<float>" )
 metphiLabel = ("pfShyftTupleMET" + postfix,   "phi" )
 
-mptv=0  #Counts number of times muonPtHandle.isValid() fails
 
 # loop over events
 count = 0
@@ -220,13 +183,9 @@ for event in events:
     count = count + 1
     if count % 10000 == 0 :
       print  '--------- Processing Event ' + str(count)
-    if options.num != 'all':
-	if not (eventsbegin[ifile-1] <= count <= eventsend[ifile-1]):
-		continue 
 
     event.getByLabel (electronPtLabel, electronPtHandle)
     if not electronPtHandle.isValid():
-	mptv+=1
         continue
     electronPts = electronPtHandle.product()
 
@@ -430,7 +389,6 @@ for event in events:
 # Print out cutflow results
 print  '*** Cutflow table ***'
 print  'Total Events: ' + str(count)
-print  'isvalid() cuts: ' + str(mptv)
 print  'Exactly one electron: ' + str(count0)
 print  'Exactly zero muons: ' + str(count1)
 print  'At least 2 jets: ' + str(count2)
