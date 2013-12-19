@@ -17,19 +17,19 @@ def findClosestObj( refObj, listOf ) :
 def getAeff(eleEta) :
     aEff = 0.0
     if abs(eleEta) < 1.0:
-        aEff = 0.21
+        aEff = 0.13
     if (abs(eleEta) > 1.0 and abs(eleEta) < 1.479):
-        aEff = 0.21
-    if (abs(eleEta) > 1.479 and abs(eleEta) < 2.0):
-        aEff = 0.11
-    if (abs(eleEta) > 2.0 and abs(eleEta) < 2.2):
         aEff = 0.14
+    if (abs(eleEta) > 1.479 and abs(eleEta) < 2.0):
+        aEff = 0.07
+    if (abs(eleEta) > 2.0 and abs(eleEta) < 2.2):
+        aEff = 0.09
     if (abs(eleEta) > 2.2 and abs(eleEta) < 2.3):
-        aEff = 0.18
+        aEff = 0.11
     if (abs(eleEta) > 2.3 and abs(eleEta) < 2.4):
-        aEff = 0.19
+        aEff = 0.11
     if abs(eleEta) > 2.4:
-        aEff = 0.26
+        aEff = 0.14
     return float(aEff) 
 
 from optparse import OptionParser
@@ -172,8 +172,6 @@ metLabel = ("pfShyftTupleMET" + postfix,   "pt" )
 metphiHandle = Handle( "std::vector<float>" )
 metphiLabel = ("pfShyftTupleMET" + postfix,   "phi" )
 
-mptv=0  #Counts number of times muonPtHandle.isValid() fails
-
 # loop over events
 count = 0
 count0 = 0
@@ -199,7 +197,6 @@ for event in events:
 
     event.getByLabel (muonPtLabel, muonPtHandle)
     if not muonPtHandle.isValid():
-	mptv+=1
         continue
     muonPts = muonPtHandle.product()
     if len(muonPts) <= 0:
@@ -217,6 +214,7 @@ for event in events:
 
     nMuonsVal = 0
     nGoodMuonsVal = 0
+    goodMuons = []
     for imuonPt in range(0,len(muonPts)):
         nMuonsVal += 1
         muonPt = muonPts[imuonPt]
@@ -225,10 +223,12 @@ for event in events:
                 if muonPfisos[imuonPt] / muonPt < 0.12 :
                     continue
                 nGoodMuonsVal += 1
+                goodMuons.append(imuonPt)
             else :
             	if muonPfisos[imuonPt] / muonPt > 0.12 :
 		    continue
                 nGoodMuonsVal += 1
+                goodMuons.append(imuonPt)
 
     if nGoodMuonsVal != 1:
         continue
@@ -280,9 +280,9 @@ for event in events:
     jetCSVs = jetCSVHandle.product()
 
     # First break the jets up by hemisphere
-    lepPt = muonPts[0]
-    lepEta = muonEtas[0]
-    lepPhi = muonPhis[0]
+    lepPt = muonPts[goodMuons[0]]
+    lepEta = muonEtas[goodMuons[0]]
+    lepPhi = muonPhis[goodMuons[0]]
     lepMass = 0.105
 
     lepP4 = ROOT.TLorentzVector()
@@ -430,7 +430,6 @@ for event in events:
 
 print  '*** Cutflow table ***'
 print  'Total Events: ' + str(count)
-print  'isvalid() cuts: ' + str(mptv)
 print  'Exactly one muon: ' + str(count0)
 print  'Exactly zero electrons: ' + str(count1)
 print  'At least 2 jets: ' + str(count2)

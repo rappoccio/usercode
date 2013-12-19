@@ -90,13 +90,15 @@ Nmc_T_tW = 497658
 Nmc_Tbar_tW = 493460
 Nmc_WJets = 57709905
 
-
+# QCD Normalization from MET fits
+NQCD = 15.0
 
 # ==============================================================================
 #  Example Unfolding
 # ==============================================================================
 
 fdata = TFile("histfiles/TTSemilepAnalyzer_unfolding_data_type1.root")
+fQCD = TFile("histfiles/QCD_hists_pt_type1.root")
 fmc_ttbar = TFile("histfiles/TTSemilepAnalyzer_antibtag_w_mucut_type1.root")
 fT_t = TFile("histfiles/T_t_Histos_type1.root")
 fTbar_t = TFile("histfiles/Tbar_t_Histos_type1.root")
@@ -112,9 +114,15 @@ response= fmc_ttbar.Get("response_pt")
 print "==================================== Get Hists ====================================="
 hTrue= fmc_ttbar.Get("ptGenTop")
 hRecoMC = fmc_ttbar.Get("ptRecoTop").Clone()
-hRecoData= fdata.Get("ptRecoTop").Clone()
 hRecoMC.SetName("hRecoMC")
+hRecoData= fdata.Get("ptRecoTop").Clone()
 hRecoData.SetName("hRecoData")
+
+hRecoQCD = fQCD.Get("ptTopTagHist")
+hRecoQCD.Sumw2()
+hRecoQCD.Scale( NQCD / hRecoQCD.Integral() )
+hRecoQCD.SetFillColor(5)
+hRecoQCD.Rebin(2)
 
 if options.closureTest == False : 
     hMeas= fdata.Get("ptRecoTop")
@@ -122,10 +130,6 @@ else :
     hMeas= fmc_ttbar.Get("ptRecoTop")
 
 
-
-
-hMeas.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
-hTrue.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
 
 
 
@@ -144,6 +148,13 @@ hMeas_WJets   = fWJets.Get("ptRecoTop")
 #  2. From fit
 #
 # For now, we don't have the fit, so we do from MC
+
+
+if options.closureTest == True : 
+    hMeas.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
+hTrue.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
+hRecoMC.Scale( sigma_ttbar_NNLO * lum / float(Nmc_ttbar) * SF_b * SF_t  )
+
 hMeas_T_t.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_b * SF_t  )
 hMeas_Tbar_t.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) * SF_b * SF_t  )
 hMeas_T_s.Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) * SF_b * SF_t  )
@@ -154,6 +165,11 @@ hMeas_WJets.Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_b * SF_t  )
 
 hMeas_SingleTop = hMeas_T_t.Clone()
 
+hMeas_SingleTop.SetFillColor( 6 )
+hMeas_WJets.SetFillColor( 3 )
+hMeas.SetFillColor( 2 )
+hRecoMC.SetFillColor( 2 )
+
 for hist in [hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
     hMeas_SingleTop.Add( hist )
 
@@ -162,11 +178,13 @@ for hist in [hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
 hMC_stack = THStack("hMC_stack", "hMC_stack")
 hMC_stack.Add( hMeas_WJets )
 hMC_stack.Add( hMeas_SingleTop )
+hMC_stack.Add( hRecoQCD )
 hMC_stack.Add( hRecoMC )
 
 c = TCanvas("datamc", "datamc")
 hRecoData.Draw('e')
 hMC_stack.Draw("hist same")
+hRecoData.Draw('e same')
 
 # First plot RECO data-to-MC
 
@@ -174,7 +192,7 @@ hMC_stack.Draw("hist same")
 c2 = TCanvas("unfolding", "unfolding")
 
 if options.subtractBackgrounds :
-    for hist in [hMeas_T_t, hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
+    for hist in [hMeas_SingleTop, hMeas_WJets,hMeas_QCD] :
         hMeas.Add( hist, -1.)
 
     # Someday soon, we subtract QCD and W+Jets. For now, they are empty.

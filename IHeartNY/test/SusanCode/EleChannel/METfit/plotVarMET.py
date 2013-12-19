@@ -13,19 +13,19 @@ import glob
 def getAeff(eleEta) :
     aEff = 0.0
     if abs(eleEta) < 1.0:
-        aEff = 0.21
+        aEff = 0.13
     if (abs(eleEta) > 1.0 and abs(eleEta) < 1.479):
-        aEff = 0.21
-    if (abs(eleEta) > 1.479 and abs(eleEta) < 2.0):
-        aEff = 0.11
-    if (abs(eleEta) > 2.0 and abs(eleEta) < 2.2):
         aEff = 0.14
+    if (abs(eleEta) > 1.479 and abs(eleEta) < 2.0):
+        aEff = 0.07
+    if (abs(eleEta) > 2.0 and abs(eleEta) < 2.2):
+        aEff = 0.09
     if (abs(eleEta) > 2.2 and abs(eleEta) < 2.3):
-        aEff = 0.18
+        aEff = 0.11
     if (abs(eleEta) > 2.3 and abs(eleEta) < 2.4):
-        aEff = 0.19
+        aEff = 0.11
     if abs(eleEta) > 2.4:
-        aEff = 0.26
+        aEff = 0.14
     return float(aEff) 
 
 from optparse import OptionParser
@@ -38,7 +38,6 @@ parser.add_option('--files', metavar='F', type='string', action='store',
                   dest='files',
                   help='Input files')
 
-
 parser.add_option('--outname', metavar='F', type='string', action='store',
                   default='TTSemilepAnalyzer_antibtag_w_mucut',
                   dest='outname',
@@ -48,11 +47,6 @@ parser.add_option('--pileup', metavar='F', type='string', action='store',
                   default='none',
                   dest='pileup',
                   help='ttbar or wjets')
-
-parser.add_option('--isNew', metavar='F', action='store_true',
-                  default=False,
-                  dest='isNew',
-                  help='running on new ntuples')
 
 parser.add_option('--bDiscCut', metavar='F', type='float', action='store',
                   default=0.679,
@@ -70,11 +64,6 @@ parser.add_option('--thisQCD', metavar='F', type='string', action='store',
                   help='old, loose, or btag')
 
 (options, args) = parser.parse_args()
-
-argv = []
-
-eventsbegin = [1,10000001,20000001,30000001,40000001,50000001]
-eventsend = [10000000,20000000,30000000,40000000,50000000,60000000]
 
 import ROOT
 ROOT.gROOT.Macro("rootlogon.C")
@@ -120,49 +109,26 @@ puHandle    	= 	Handle("int")
 puLabel     	= 	( "pileup", "npvRealTrue" )
 
 tightJetPtHandle         = Handle( "std::vector<float>" )
-tightJetPtLabel    = ( "pfShyftTupleJets",   "pt" )
+tightJetPtLabel    = ( "pfShyftTupleJetsAK5",   "pt" )
 tightJetEtaHandle         = Handle( "std::vector<float>" )
-tightJetEtaLabel    = ( "pfShyftTupleJets",   "eta" )
+tightJetEtaLabel    = ( "pfShyftTupleJetsAK5",   "eta" )
 tightJetPhiHandle         = Handle( "std::vector<float>" )
-tightJetPhiLabel    = ( "pfShyftTupleJets",   "phi" )
+tightJetPhiLabel    = ( "pfShyftTupleJetsAK5",   "phi" )
 tightJetMassHandle         = Handle( "std::vector<float>" )
-tightJetMassLabel    = ( "pfShyftTupleJets",   "mass" )
+tightJetMassLabel    = ( "pfShyftTupleJetsAK5",   "mass" )
 tightJetCSVHandle         = Handle( "std::vector<float>" )
-tightJetCSVLabel    = ( "pfShyftTupleJets",   "csv" )
+tightJetCSVLabel    = ( "pfShyftTupleJetsAK5",   "csv" )
 
 looseJetPtHandle         = Handle( "std::vector<float>" )
-looseJetPtLabel    = ( "pfShyftTupleJetsLoose",   "pt" )
+looseJetPtLabel    = ( "pfShyftTupleJetsLooseAK5",   "pt" )
 looseJetEtaHandle         = Handle( "std::vector<float>" )
-looseJetEtaLabel    = ( "pfShyftTupleJetsLoose",   "eta" )
+looseJetEtaLabel    = ( "pfShyftTupleJetsLooseAK5",   "eta" )
 looseJetPhiHandle         = Handle( "std::vector<float>" )
-looseJetPhiLabel    = ( "pfShyftTupleJetsLoose",   "phi" )
+looseJetPhiLabel    = ( "pfShyftTupleJetsLooseAK5",   "phi" )
 looseJetMassHandle         = Handle( "std::vector<float>" )
-looseJetMassLabel    = ( "pfShyftTupleJetsLoose",   "mass" )
+looseJetMassLabel    = ( "pfShyftTupleJetsLooseAK5",   "mass" )
 looseJetCSVHandle         = Handle( "std::vector<float>" )
-looseJetCSVLabel    = ( "pfShyftTupleJetsLoose",   "csv" )
-
-if options.isNew :
-    tightJetPtHandle         = Handle( "std::vector<float>" )
-    tightJetPtLabel    = ( "pfShyftTupleJetsAK5",   "pt" )
-    tightJetEtaHandle         = Handle( "std::vector<float>" )
-    tightJetEtaLabel    = ( "pfShyftTupleJetsAK5",   "eta" )
-    tightJetPhiHandle         = Handle( "std::vector<float>" )
-    tightJetPhiLabel    = ( "pfShyftTupleJetsAK5",   "phi" )
-    tightJetMassHandle         = Handle( "std::vector<float>" )
-    tightJetMassLabel    = ( "pfShyftTupleJetsAK5",   "mass" )
-    tightJetCSVHandle         = Handle( "std::vector<float>" )
-    tightJetCSVLabel    = ( "pfShyftTupleJetsAK5",   "csv" )
-
-    looseJetPtHandle         = Handle( "std::vector<float>" )
-    looseJetPtLabel    = ( "pfShyftTupleJetsLooseAK5",   "pt" )
-    looseJetEtaHandle         = Handle( "std::vector<float>" )
-    looseJetEtaLabel    = ( "pfShyftTupleJetsLooseAK5",   "eta" )
-    looseJetPhiHandle         = Handle( "std::vector<float>" )
-    looseJetPhiLabel    = ( "pfShyftTupleJetsLooseAK5",   "phi" )
-    looseJetMassHandle         = Handle( "std::vector<float>" )
-    looseJetMassLabel    = ( "pfShyftTupleJetsLooseAK5",   "mass" )
-    looseJetCSVHandle         = Handle( "std::vector<float>" )
-    looseJetCSVLabel    = ( "pfShyftTupleJetsLooseAK5",   "csv" )
+looseJetCSVLabel    = ( "pfShyftTupleJetsLooseAK5",   "csv" )
 
 topTagPtHandle         = Handle( "std::vector<float>" )
 topTagPtLabel    = ( "pfShyftTupleJetsLooseTopTag" ,   "pt" )
@@ -233,8 +199,6 @@ looseMetHandle = Handle( "std::vector<float>" )
 looseMetLabel = ("pfShyftTupleMETLoose",   "pt" )
 looseMetphiHandle = Handle( "std::vector<float>" )
 looseMetphiLabel = ("pfShyftTupleMETLoose",   "phi" )
-
-mptv=0  #Counts number of times muonPtHandle.isValid() fails
 
 # loop over events
 count = 0
@@ -827,7 +791,6 @@ for event in events:
 # Print out cutflow results
 print  '*** Cutflow table ***'
 print  'Total Events: ' + str(count)
-print  'isvalid() cuts: ' + str(mptv)
 print  'Exactly one electron: ' + str(count0)
 print  'Exactly zero muons: ' + str(count1)
 print  'At least 2 jets: ' + str(count2)
