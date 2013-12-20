@@ -33,8 +33,6 @@ shyftPFSelection = cms.PSet(
     muEtaMax       = cms.double( 2.1 ),
     eleEtMin       = cms.double( 20.0 ),
     eleEtaMax      = cms.double( 2.4 ),
-    eleMvaName     = cms.string( 'mvaTrigV0' ),
-    eleMvaCut      = cms.double( 0.5 ),
     eleMaxMissHits = cms.int32( 0 ),
     muPtMinLoose   = cms.double( 10.0 ),
     muEtaMaxLoose  = cms.double( 2.5 ),
@@ -51,13 +49,13 @@ shyftPFSelection = cms.PSet(
     useData        = cms.bool(False),
     removeLooseLep = cms.bool(False),
     looseLepRemovalDR=cms.double(0.5),
-    tightMuMinIso  = cms.double(0.15),
+    tightMuMinIso  = cms.double(0.12),
     tightEleMinIso = cms.double(0.20),
     useL1Corr      = cms.bool(True),
     jecPayloads    = cms.vstring([
-        'Jec11_V1_AK5PFchs_L1FastJet.txt',
-        'Jec11_V1_AK5PFchs_L2Relative.txt',
-        'Jec11_V1_AK5PFchs_L3Absolute.txt',
-        'Jec10V1_Uncertainty_AK5PF.txt']),
+        'START53_V27_AK5PFchs_L1FastJet.txt',
+        'START53_V27_AK5PFchs_L2Relative.txt',
+        'START53_V27_AK5PFchs_L3Absolute.txt',
+        'START53_V27_Uncertainty_AK5PF.txt']),
     cutsToIgnore   = cms.vstring( ['Trigger'] )
 )

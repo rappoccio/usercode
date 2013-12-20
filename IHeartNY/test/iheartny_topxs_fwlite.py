@@ -2,7 +2,7 @@
 import os
 import glob
 import time
-
+import math
 
 from optparse import OptionParser
 
@@ -94,6 +94,25 @@ parser.add_option('--bDiscCut', metavar='F', type='float', action='store',
                   dest='bDiscCut',
                   help='B discriminator cut')
 
+# JEC systematics
+parser.add_option('--jecSys', metavar='J', type='float', action='store',
+                  default=0.0,
+                  dest='jecSys',
+                  help='JEC Systematic variation. Options are +1. (up 1 sigma), 0. (nominal), -1. (down 1 sigma)')
+
+# JER systematics
+parser.add_option('--jerSys', metavar='J', type='float', action='store',
+                  default=0.1,
+                  dest='jerSys',
+                  help='JER Systematic variation in fraction')
+
+parser.add_option('--debug', metavar='D', action='store_true',
+                  default=False,
+                  dest='debug',
+                  help='Print debugging info')
+
+
+
 (options, args) = parser.parse_args()
 
 argv = []
@@ -111,6 +130,17 @@ ROOT.gROOT.Macro("rootlogon.C")
 if options.makeResponse :
     ROOT.gSystem.Load("RooUnfold-1.1.1/libRooUnfold")
 
+# Nominal JER smearing
+jerNom = 0.1
+# Additional JEC uncertainty for CA8 jets
+flatJecUnc = 0.03
+
+if abs( options.jecSys != 0 ) or abs( options.jerSys ) != jerNom :
+    ROOT.gSystem.Load('libCondFormatsJetMETObjects')
+    jecParStrAK5 = ROOT.std.string('START53_V27_Uncertainty_AK5PFchs.txt')
+    jecUncAK5 = ROOT.JetCorrectionUncertainty( jecParStrAK5 )
+    jecParStrAK7 = ROOT.std.string('START53_V27_Uncertainty_AK7PFchs.txt')
+    jecUncAK7 = ROOT.JetCorrectionUncertainty( jecParStrAK7 )    
 
 # Define classes that use ROOT
 
@@ -216,7 +246,6 @@ htLep3 = ROOT.TH1F("htLep3", "H_{T}^{Lep}", 300, 0., 600.)
 ptJet0 = ROOT.TH1F("ptJet0", "p_{T} Of Leading Jet", 300, 0., 600.)
 
 topTagMassHistpremass= ROOT.TH1F("topTagMassHistpremass",         "Mass of Top Candidate from Hadronic Jets type 1 pre mass cut;Mass;Number",  300, 0., 600. )
-topTagugMassHistpremass= ROOT.TH1F("topTagugMassHistpremass",         "Mass of Top Candidate from Hadronic Jets type 1 pre mass cut;Mass;Number",  300, 0., 600. )
 topTagMassHist= ROOT.TH1F("topTagMassHist",         "Mass of Top Candidate from Hadronic Jets type 1;Mass;Number",  300, 0., 600. )
 topTagMassHistPostTau32= ROOT.TH1F("topTagMassHistPostTau32",         "Mass of Top Candidate from Hadronic Jets type 1;Mass;Number",  300, 0., 600. )
 topTagMassHistPostBDMax= ROOT.TH1F("topTagMassHistPostBDMax",         "Mass of Top Candidate from Hadronic Jets type 1;Mass;Number",  300, 0., 600. )
@@ -224,10 +253,6 @@ topTagMassHistPostBDMax= ROOT.TH1F("topTagMassHistPostBDMax",         "Mass of T
 topTagptHist= ROOT.TH1F("topTagptHist",         "Pt of Top Candidate from Hadronic Jets type 1;Mass;Number",  375, 0., 1500. )
 topTagtau32Hist= ROOT.TH1F("topTagtau32Hist",         "tau32 of Top Candidate from Hadronic Jets type 1;Tau32;Number",  150, 0., 1.5 )
 topTagBMaxHist= ROOT.TH1F("topTagBMaxHist",         "BMax of Top Candidate from Hadronic Jets type 1;CSV;Number",  150, 0., 1.5 )
-
-
-topTagugmtau32Hist= ROOT.TH1F("topTagugmtau32Hist",         "tau32 of Top Candidate from Hadronic Jets type 1;Tau32;Number",  150, 0., 1.5 )
-topTagugmBMaxHist= ROOT.TH1F("topTagugmBMaxHist",         "BMax of Top Candidate from Hadronic Jets type 1;CSV;Number",  150, 0., 1.5 )
 
 
 ptlep= ROOT.TH1F("ptlep",         "Pt Leptonic top",  150, 0., 1500. )
@@ -257,14 +282,6 @@ topcandmasspostnsj =  ROOT.TH1F("topcandmasspostnsj",         "Mass of Top Candi
 topcandmasspostminmass =  ROOT.TH1F("topcandmasspostminmass",         "Mass of Top Candidate from Hadronic Jets type 1 pre mass cut;Mass;Number",  300, 0., 600. )
 topcandmassposttau32 =  ROOT.TH1F("topcandmassposttau32",         "Mass of Top Candidate from Hadronic Jets type 1 pre mass cut;Mass;Number",  300, 0., 600. )
 topcandmasspostbmax =  ROOT.TH1F("topcandmasspostbmax",         "Mass of Top Candidate from Hadronic Jets type 1 pre mass cut;Mass;Number",  300, 0., 600. )
-
-
-topcandugmassprekin =  ROOT.TH1F("topcandugmassprekin",         "Mass of Top Candidate from Hadronic Jets type 1 pre mass cut;Mass;Number",  300, 0., 600. )
-topcandugmasspostkin =  ROOT.TH1F("topcandugmasspostkin",         "Mass of Top Candidate from Hadronic Jets type 1 pre mass cut;Mass;Number",  300, 0., 600. )
-topcandugmasspostnsj =  ROOT.TH1F("topcandugmasspostnsj",         "Mass of Top Candidate from Hadronic Jets type 1 pre mass cut;Mass;Number",  300, 0., 600. )
-topcandugmasspostminmass =  ROOT.TH1F("topcandugmasspostminmass",         "Mass of Top Candidate from Hadronic Jets type 1 pre mass cut;Mass;Number",  300, 0., 600. )
-topcandugmassposttau32 =  ROOT.TH1F("topcandugmassposttau32",         "Mass of Top Candidate from Hadronic Jets type 1 pre mass cut;Mass;Number",  300, 0., 600. )
-topcandugmasspostbmax =  ROOT.TH1F("topcandugmasspostbmax",         "Mass of Top Candidate from Hadronic Jets type 1 pre mass cut;Mass;Number",  300, 0., 600. )
 
 
 
@@ -730,22 +747,91 @@ for event in events:
     lepP4.SetPtEtaPhiM( lepPt, lepEta, lepPhi, lepMass )
 
         
+
+    event.getByLabel (ak5JetPtLabel, ak5JetPtHandle)
+    ak5JetPts = ak5JetPtHandle.product()
+    event.getByLabel (ak5JetEtaLabel, ak5JetEtaHandle)
+    ak5JetEtas = ak5JetEtaHandle.product()
+    event.getByLabel (ak5JetPhiLabel, ak5JetPhiHandle)
+    ak5JetPhis = ak5JetPhiHandle.product()
+    event.getByLabel (ak5JetMassLabel, ak5JetMassHandle)
+    ak5JetMasss = ak5JetMassHandle.product()
+
+
     event.getByLabel (metLabel, metHandle)
     mets = metHandle.product()
-    met = mets[0]
+    metRaw = mets[0]
+    event.getByLabel (metphiLabel, metphiHandle)
+    metphis = metphiHandle.product()
+    metphi = metphis[0]
+    met_px = metRaw * math.cos( metphi )
+    met_py = metRaw * math.sin( metphi )
+    
 
+    ak5Jets = []
+    if abs( options.jecSys != 0 ) or abs( options.jerSys ) != jerNom :
+        if options.debug :
+            print '---------- jets ------------'
+        for ijet in xrange( len(ak5JetPts) ) :
+            if options.debug :            
+                print 'Uncorr {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet, ak5JetPts[ijet], ak5JetEtas[ijet], ak5JetPhis[ijet], ak5JetMasss[ijet] )
+            jecUncAK5.setJetEta( ak5JetEtas[ijet] )
+            jecUncAK5.setJetPt( ak5JetPts[ijet] )
+            jetScale = 1.0
+            if abs(options.jecSys) > 0.0001 :
+                upOrDown = bool(options.jecSys > 0.0)
+                unc = abs(jecUncAK5.getUncertainty(upOrDown))
+                #unc2 = flatJecUnc
+                #unc = math.sqrt(unc1*unc1 + unc2*unc2)
+                #print 'Correction = ' + str( 1 + unc * options.jecSys)
+                jetScale = 1 + unc * options.jecSys
+
+            ## ## also do Jet energy resolution variation 
+            ## if not options.useData and abs(options.jetSmear)>0.0001 and genJetPts[ijet]>15.0:
+            ##     scale = options.jetSmear
+            ##     recopt = jetPts[ijet]
+            ##     genpt = genJetPts[ijet]
+            ##     deltapt = (recopt-genpt)*scale
+            ##     ptscale = max(0.0, (recopt+deltapt)/recopt)
+            ##     jetScale*=ptscale
+
+            ## get the uncorrected jets
+            thisJet = ROOT.TLorentzVector()
+            thisJet.SetPtEtaPhiM( ak5JetPts[ijet],
+                                  ak5JetEtas[ijet],
+                                  ak5JetPhis[ijet],
+                                  ak5JetMasss[ijet] )
+
+            #remove the uncorrected jets
+            met_px = met_px + thisJet.Px()
+            met_py = met_py + thisJet.Py()
+
+
+            thisJet = thisJet * jetScale
+            ak5Jets.append( thisJet )
+            if options.debug :            
+                print 'Corr   {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet,
+                                                                                        ak5Jets[ijet].Perp(),
+                                                                                        ak5Jets[ijet].Eta(),
+                                                                                        ak5Jets[ijet].Phi(),
+                                                                                        ak5Jets[ijet].M() )
+
+            met_px = met_px - thisJet.Px()
+            met_py = met_py - thisJet.Py()
+
+
+    met = math.sqrt(met_px*met_px + met_py*met_py)
+
+    
     htLepVal = met + lepP4.Perp()
 
     htLep0.Fill( htLepVal,weight )
     ptMET0.Fill( met,weight )
 
-    event.getByLabel (ak5JetPtLabel, ak5JetPtHandle)
-    ak5JetPts = ak5JetPtHandle.product()
-
 
     nJetsVal = 0
-    for jetPt in ak5JetPts:
-        if jetPt > 30.0 :
+    for jet in ak5Jets :
+        if jet.Perp() > 30.0 :
             nJetsVal += 1
     
     nJets.Fill( nJetsVal,weight )
@@ -758,7 +844,7 @@ for event in events:
 
     htLep1.Fill( htLepVal,weight )
     ptMET1.Fill( met,weight )
-    ptJet0.Fill( ak5JetPts[0],weight )
+    ptJet0.Fill( ak5Jets[0].Perp(),weight )
     
     # Require leading jet pt to be pt > 200 GeV
 
@@ -787,13 +873,6 @@ for event in events:
 
     htLep3.Fill( htLepVal,weight )
     ptMET3.Fill( met,weight )
-    # Break the jets up by hemisphere
-    event.getByLabel (ak5JetEtaLabel, ak5JetEtaHandle)
-    ak5JetEtas = ak5JetEtaHandle.product()
-    event.getByLabel (ak5JetPhiLabel, ak5JetPhiHandle)
-    ak5JetPhis = ak5JetPhiHandle.product()
-    event.getByLabel (ak5JetMassLabel, ak5JetMassHandle)
-    ak5JetMasss = ak5JetMassHandle.product()
 
     ## event.getByLabel (ca8JetEtaLabel, ca8JetEtaHandle)
     ## ca8JetEtas = ca8JetEtaHandle.product()
@@ -842,9 +921,6 @@ for event in events:
     lepcsvs = []
     lepVtxMass = []
     ht = htLepVal
-    event.getByLabel (metphiLabel, metphiHandle)
-    metphis = metphiHandle.product()
-    metphi = metphis[0]
     #print metphi
     metv = ROOT.TLorentzVector()
     metv.SetPtEtaPhiM( met, 0.0, metphi, 0.0)
@@ -853,10 +929,9 @@ for event in events:
     # use CA8 jets for the hadronic side (below). This is
     # because we want to fit the secondary vertex
     # mass of the lepton-side b-jet. 
-    for ijet in range(0,len(ak5JetPts)) :
-        if ak5JetPts[ijet] > 30.0 :
-            jet = ROOT.TLorentzVector()
-            jet.SetPtEtaPhiM( ak5JetPts[ijet], ak5JetEtas[ijet], ak5JetPhis[ijet], ak5JetMasss[ijet] )
+    for ijet in range(0,len(ak5Jets)) :
+        if ak5Jets[ijet].Perp() > 30.0 :
+            jet = ak5Jets[ijet]
             ht += jet.Perp()
             if jet.DeltaR( lepP4 ) < ROOT.TMath.Pi() / 2.0 :
                 lepJets.append( jet )
@@ -899,7 +974,6 @@ for event in events:
 
     ntagslep=0
 
-    ugmass = -1
     
     sjmass = []
     sjeta = []
@@ -983,7 +1057,7 @@ for event in events:
 	sjets[isub].SetPtEtaPhiM( sjpt[isub], sjeta[isub], sjphi[isub], sjmass[isub] )
 	#print sj.M()
 	topcomp+=sj
-    ugmass = topcomp.M()
+
 
 
     for lepcsv in lepcsvs :
@@ -1005,73 +1079,21 @@ for event in events:
 	#if leptoppt > 400.0:
         jet1 = ROOT.TLorentzVector()
         jet1.SetPtEtaPhiM( topTagPt[0], topTagEta[0], topTagPhi[0], topTagMass[0] )
-        if ntagslep>0:
-        	if (jet1.DeltaR( lepP4) > ROOT.TMath.Pi() / 2.0) :
-			ptlep.Fill(leptoppt,t1weight)
-			topcandmassprekin.Fill(topTagMass[0],t1weight)
-
-			topcandugmassprekin.Fill(ugmass,t1weight)
-			leptopptvstopmassprekin.Fill(leptoppt,topTagMass[0],t1weight)
-                	if (topTagPt[0] > 400.):
-				
-				topcandmasspostkin.Fill(topTagMass[0],t1weight)
-				topcandugmasspostkin.Fill(ugmass,t1weight)
-				leptopptvstopmasspostkin.Fill(leptoppt,topTagMass[0],t1weight)		
- 		    		if topTagNSub[0] > 2:
-					leptopptvstopmasspostnsj.Fill(leptoppt,topTagMass[0],t1weight)
-					topcandmasspostnsj.Fill(topTagMass[0],t1weight)		
-					topcandugmasspostnsj.Fill(ugmass,t1weight)		
-					if topTagMinMass[0] > 50. :
-						leptopptvstopmasspostminmass.Fill(leptoppt,topTagMass[0],t1weight)
-						topcandmasspostminmass.Fill(topTagMass[0],t1weight)
-						topcandugmasspostminmass.Fill(ugmass,t1weight)
-    						event.getByLabel (nsubCA8Label, nsubCA8Handle)
-    						nsubCA8Jets 		= 	nsubCA8Handle.product() 
-
-    						event.getByLabel (topTagsj0csvLabel, topTagsj0csvHandle)
-    						Topsj0BDiscCSV 		= 	topTagsj0csvHandle.product() 
-
-    						event.getByLabel (topTagsj1csvLabel, topTagsj1csvHandle)
-    						Topsj1BDiscCSV 		= 	topTagsj1csvHandle.product() 
-
-    						event.getByLabel (topTagsj2csvLabel, topTagsj2csvHandle)
-    						Topsj2BDiscCSV 		= 	topTagsj2csvHandle.product() 
-
-
-    						event.getByLabel (TopTau2Label, TopTau2Handle)
-    						Tau2		= 	TopTau2Handle.product() 
-
-    						event.getByLabel (TopTau3Label, TopTau3Handle)
-    						Tau3		= 	TopTau3Handle.product() 
-
-						index = -1
-
-						for iCAjet in range(0,len(nsubCA8Jets)):
-        						CAjetTLV = ROOT.TLorentzVector()
-							CAjetTLV.SetPtEtaPhiM( nsubCA8Jets[iCAjet].pt(), nsubCA8Jets[iCAjet].eta(), nsubCA8Jets[iCAjet].phi(), nsubCA8Jets[iCAjet].mass() )
-							if (abs(jet1.DeltaR(CAjetTLV))<0.5):
-								index = iCAjet
-								break
-
-						TauDisc = Tau3[index]/Tau2[index]
-				
-						if TauDisc<0.6:
-							leptopptvstopmassposttau32.Fill(leptoppt,topTagMass[0],t1weight)
-							topcandmassposttau32.Fill(topTagMass[0],t1weight)	
-							topcandugmassposttau32.Fill(ugmass,t1weight)			
-							BDMax = max(Topsj0BDiscCSV[0],Topsj1BDiscCSV[0],Topsj2BDiscCSV[0])
-							if BDMax>0.679:
-								leptopptvstopmasspostbmax.Fill(leptoppt,topTagMass[0],t1weight)
-								topcandmasspostbmax.Fill(topTagMass[0],t1weight)
-								topcandugmasspostbmax.Fill(ugmass,t1weight)				
+        if abs( options.jecSys != 0 ) or abs( options.jerSys ) != jerNom :
+            jecUncAK7.setJetEta( topTagEta[0] )
+            jecUncAK7.setJetPt( topTagPt[0] )
+            jetScale = 1.0
+            if abs(options.jecSys) > 0.0001 :
+                upOrDown = bool(options.jecSys > 0.0)
+                unc1 = abs(jecUncAK5.getUncertainty(upOrDown))
+                unc2 = flatJecUnc
+                unc = math.sqrt(unc1*unc1 + unc2*unc2)
+                #print 'Correction = ' + str( 1 + unc * options.jecSys)
+                jetScale = 1 + unc * options.jecSys
 
 
 
-
-     #for ijet in range(0, len(topTagPt)) :
-        ijet=0
-        jet = ROOT.TLorentzVector()
-        jet.SetPtEtaPhiM( topTagPt[ijet], topTagEta[ijet], topTagPhi[ijet], topTagMass[ijet] )
+        jet = jet1
      	if not len(lepJets) == 0:
             if options.ptWeight == True :
 		t1weight=weight*ttweight
@@ -1099,7 +1121,6 @@ for event in events:
                         	topTagMassHistpremass.Fill(topTagMass[ijet],t1weight)
 				nvtxvstopmass.Fill(nvtx,topTagMass[ijet],t1weight)
 
-                        	topTagugMassHistpremass.Fill(topTagMass[ijet],t1weight)
 
    				event.getByLabel (nsubCA8Label, nsubCA8Handle)
     				nsubCA8Jets 		= 	nsubCA8Handle.product() 
@@ -1130,11 +1151,6 @@ for event in events:
 						break
 
 				TauDisc = Tau3[index]/Tau2[index]
-				if ugmass > 150. and ugmass < 230.:
-					topTagugmtau32Hist.Fill(TauDisc,t1weight)
-					if TauDisc<0.6:
-						BDMax = max(Topsj0BDiscCSV[ijet],Topsj1BDiscCSV[ijet],Topsj2BDiscCSV[ijet])
-						topTagugmBMaxHist.Fill(BDMax,t1weight)
 						
 				if topTagMass[ijet] > 140. and topTagMass[ijet] < 250.:
                                         goodEventst1.append( [ event.object().id().run(), event.object().id().luminosityBlock(), event.object().id().event() ] )

@@ -21,8 +21,11 @@ bool EDSHyFTPFSelector::filter( edm::Event & event, const edm::EventSetup& event
   for ( clone_iter ibegin = ijets.begin(), iend = ijets.end(), i = ibegin;
 	i != iend; ++i ) {
     pat::Jet const * ijet = dynamic_cast<pat::Jet const *>( i->masterClonePtr().get() );
-    if ( ijet != 0 )
-      jets->push_back( *ijet );
+    if ( ijet != 0 ) {
+      pat::Jet copyJet (*ijet);
+      copyJet.setP4( i->p4() );
+      jets->push_back( copyJet );
+    }
   }
 
 

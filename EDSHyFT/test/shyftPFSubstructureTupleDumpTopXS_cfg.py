@@ -64,18 +64,18 @@ process.source = cms.Source("PoolSource",
 
 
 payloadsData = [
-            'FT_53_V21_AN5_L1FastJet_AK7PFchs.txt',
-            'FT_53_V21_AN5_L2Relative_AK7PFchs.txt',
-            'FT_53_V21_AN5_L3Absolute_AK7PFchs.txt',
-            'FT_53_V21_AN5_L2L3Residual_AK7PFchs.txt',
-            'FT_53_V21_AN5_Uncertainty_AK7PFchs.txt'
+            'FT_53_V21_AN5_L1FastJet_AK5PFchs.txt',
+            'FT_53_V21_AN5_L2Relative_AK5PFchs.txt',
+            'FT_53_V21_AN5_L3Absolute_AK5PFchs.txt',
+            'FT_53_V21_AN5_L2L3Residual_AK5PFchs.txt',
+            'FT_53_V21_AN5_Uncertainty_AK5PFchs.txt'
                 ]
 
 payloadsMC = [
-    'START53_V27_L1FastJet_AK7PFchs.txt',
-    'START53_V27_L2Relative_AK7PFchs.txt',
-    'START53_V27_L3Absolute_AK7PFchs.txt',
-    'START53_V27_Uncertainty_AK7PFchs.txt'
+    'START53_V27_L1FastJet_AK5PFchs.txt',
+    'START53_V27_L2Relative_AK5PFchs.txt',
+    'START53_V27_L3Absolute_AK5PFchs.txt',
+    'START53_V27_Uncertainty_AK5PFchs.txt'
 ]
 
 if options.useData :
@@ -445,7 +445,7 @@ process.pfShyftTupleMuons = cms.EDProducer(
 	cms.PSet(
             tag = cms.untracked.string("pfisoPU"),
             quantity = cms.untracked.string("userIsolation('pat::PfChargedHadronIso') + " +
-                                            "max(0.0,  userIsolation('pat::PfNeutralHadronIso') + userIsolation('pat::PfGammaIso') - 0.5 * userIsolation('pat::TrackIso') )"
+                                            "max(0.0,  userIsolation('pat::PfNeutralHadronIso') + userIsolation('pat::PfGammaIso') - 0.5 * userIsolation('pat::PfPUChargedHadronIso') )"
                                             )
             ),
         )
@@ -494,7 +494,7 @@ process.pfShyftTupleMuonsLoose = cms.EDProducer(
         cms.PSet(
             tag = cms.untracked.string("pfisoPU"),
             quantity = cms.untracked.string("userIsolation('pat::PfChargedHadronIso') + " +
-                                            "max(0.0,  userIsolation('pat::PfNeutralHadronIso') + userIsolation('pat::PfGammaIso') - 0.5 * userIsolation('pat::TrackIso') )"
+                                            "max(0.0,  userIsolation('pat::PfNeutralHadronIso') + userIsolation('pat::PfGammaIso') - 0.5 * userIsolation('pat::PfPUChargedHadronIso') )"
                                             )
             ),
         )
@@ -713,6 +713,32 @@ process.pfShyftTupleCA8GenJets = cms.EDProducer(
     )
 
 
+process.pfShyftTupleAK5GenJets = cms.EDProducer(
+    "CandViewNtpProducer",
+    src = cms.InputTag("ak5GenJetsNoNu"),
+    lazyParser = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
+    variables = cms.VPSet(
+        cms.PSet(
+            tag = cms.untracked.string("pt"),
+            quantity = cms.untracked.string("pt")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("eta"),
+            quantity = cms.untracked.string("eta")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("phi"),
+            quantity = cms.untracked.string("phi")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("mass"),
+            quantity = cms.untracked.string("mass")
+            )
+        )
+    )
+
+
 process.p1 = cms.Path(
     process.hltSelection*
     process.pileup*
@@ -728,7 +754,8 @@ process.p1 = cms.Path(
     process.topQuarks*
     process.pfShyftTupleTopQuarks*
     process.pfShyftTupleGenParticles*
-    process.pfShyftTupleCA8GenJets    
+    process.pfShyftTupleCA8GenJets*
+    process.pfShyftTupleAK5GenJets
     )
 
 process.p2 = cms.Path(
@@ -741,7 +768,8 @@ process.p2 = cms.Path(
     process.topQuarks*
     process.pfShyftTupleTopQuarks*
     process.pfShyftTupleGenParticles*
-    process.pfShyftTupleCA8GenJets    
+    process.pfShyftTupleCA8GenJets*
+    process.pfShyftTupleAK5GenJets
     )
 
 if options.useData == 1 :
@@ -749,11 +777,12 @@ if options.useData == 1 :
     process.p1.remove( process.pfShyftTupleTopQuarks )
     process.p1.remove( process.pfShyftTupleGenParticles )
     process.p1.remove( process.pfShyftTupleCA8GenJets )
+    process.p1.remove( process.pfShyftTupleAK5GenJets )
     process.p2.remove( process.topQuarks )
     process.p2.remove( process.pfShyftTupleTopQuarks )
     process.p2.remove( process.pfShyftTupleGenParticles )
     process.p2.remove( process.pfShyftTupleCA8GenJets )
-
+    process.p2.remove( process.pfShyftTupleAK5GenJets )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
