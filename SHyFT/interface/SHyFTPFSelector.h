@@ -125,6 +125,7 @@ class SHyFTPFSelector : public EventSelector {
       /// Yes, you have to keep the "tightMuMinIso" and "tightEleMinIso"
       /// in sync with what you set in the PF2PAT sequence.
       bool removeLooseLep_;
+      bool removeTightLep_;
       double looseLepRemovalDR_;
       double tightMuMinIso_;
       double tightEleMinIso_;

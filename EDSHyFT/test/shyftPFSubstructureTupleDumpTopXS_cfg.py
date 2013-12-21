@@ -546,6 +546,10 @@ process.pfShyftTupleElectrons = cms.EDProducer(
             quantity = cms.untracked.string("pt")
             ),
         cms.PSet(
+            tag = cms.untracked.string("ptECAL"),
+            quantity = cms.untracked.string("ecalDrivenMomentum().pt()")
+            ),
+        cms.PSet(
             tag = cms.untracked.string("eta"),
             quantity = cms.untracked.string("eta")
             ),

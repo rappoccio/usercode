@@ -122,6 +122,14 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 {
   // std::cout << "" << std::endl;
 
+
+
+  // Do the SHyFT PF selection.
+  // Here there are two important issues : 
+  // 1. The "tight" and "loose" designations below related to "tight" and "loose" ID requirements. 
+  // 2. The PAT tuples have two collections called "tight" and "loose" related to ISO requirements. 
+  // So, you can have "loose iso" (from the PAT tuple" input into the "tight ID" collections below. 
+
   ret.set(false);
 
   selectedJets_.clear();
@@ -191,14 +199,14 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       allMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
       if ( !imuon->isGlobalMuon() ) continue;
 	
-      // Tight cuts
-      bool passTight = imuon->isTrackerMuon() && imuon->isGlobalMuon() && muonIdPFTight_(*imuon);
+      // Tight ID cuts : can also include isolation if the user sets it in the config.
+      bool passTight = muonIdPFTight_(*imuon);
       if (  imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && passTight ) {
 	selectedTightMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
       }
       else {
-	// Loose cuts
-	bool passLoose = imuon->isGlobalMuon() && muonIdPFLoose_(*imuon) ;
+	// Loose ID cuts : can also include isolation if the user sets it in the config.
+	bool passLoose = muonIdPFLoose_(*imuon) ;
 	if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ && passLoose ) {
 	  selectedLooseMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
 	}
@@ -213,7 +221,7 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 	  ielectron != electronEnd; ++ielectron ) {
       allElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
 	
-      // Tight cuts
+      // Tight ID cuts : can also include isolation if the user sets it in the config.
       bool passTight = electronIdPFTight_(*ielectron, event );
 
 
@@ -221,7 +229,7 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 	selectedTightElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
       } else {
 
-	// Loose cuts
+	// Loose ID cuts : can also include isolation if the user sets it in the config.
 	bool passLoose = electronIdPFLoose_(*ielectron);
 	if ( ielectron->pt() > eleEtMinLoose_ && fabs(ielectron->eta()) < eleEtaMaxLoose_ && passLoose ){
 	  selectedLooseElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
@@ -229,7 +237,12 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       }
     }
 
-    //Loop over jets and remove tight leptons within
+    //Loop over jets and remove tight leptons within.
+
+    // Here, "tight" refers to the "tight ID selection". 
+    // There can be confusion when running on the PAT-tuple collection called "PFlowLoose", 
+    // which is a "loose ISO selection". If the user inputs "PFlowLoose" into the "tight" collection,
+    // then the "tight" leptons below will contain "PFlowLoose" leptons. 
 
     event.getByLabel (jetTag_, jetHandle);
 
@@ -241,7 +254,10 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       reco::Candidate::LorentzVector uncorrJet = ijet->correctedP4(0);
 
       if ( removeLooseLep_ ) {
-	// Remove the 4-vectors from any tight leptons within the jet
+	// Remove the 4-vectors from any "tight" leptons within the jet as defined above for ID, but this is
+	// really only used for the "PFlowLoose" collections (hence the name "removeLooseLep_"). 
+	// In that case, the "tight" leptons as defined above for ID will contain the "PFlowLoose"
+	// collection leptons (i.e. no isolation selection). 
 	for ( SHyFTPFSelector::const_iterator imu = selectedTightMuons_.begin(),
 		imuEnd = selectedTightMuons_.end(); imu != imuEnd; ++imu ) {
 	  pat::Muon const * imuPtr = dynamic_cast<pat::Muon const *>( imu->masterClonePtr().get() );
