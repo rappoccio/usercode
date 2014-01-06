@@ -505,11 +505,11 @@ if options.jerSys != 0.0 :
 
 goodEvents = []
 goodEventst1 = []
-mptv=0
 # loop over events
 count = 0
 print "Start looping"
 nhptbj=0
+npassed = 0
 
 if options.set == 'mcatnlo':
 	print "Using MC@NLO Weights"
@@ -653,12 +653,15 @@ for event in events:
         muonPt = muonPts[imuonPt]
         if muonPt > 45.0 :
             if options.useLoose :
-#                print 'imu = ' + str(imuonPt) + ', iso/pt = ' + str( muonPfisos[imuonPt] ) + '/' + str(muonPt) + ' = ' + str(muonPfisos[imuonPt]/muonPt)
+		if options.debug : 
+			print 'imu = ' + str(imuonPt) + ', iso/pt = ' + str( muonPfisos[imuonPt] ) + '/' + str(muonPt) + ' = ' + str(muonPfisos[imuonPt]/muonPt)
                 if muonPfisos[imuonPt] / muonPt < 0.12 :
                     if options.makeResponse == True :
                         response.Miss( hadTop.p4.Perp(), weight )
                     continue
                 else :
+		    if options.debug :
+			    print 'PASSED LOOSE!'
                     nMuonsVal += 1
                     lepType = 0
             else :
@@ -1238,6 +1241,7 @@ for event in events:
 						if BDMax>0.679:
 							topTagMassHistPostBDMax.Fill(jet.M(),t1weight)
 	    if passSelection == True :
+		npassed += 1
 		ptRecoTop.Fill( topTagPt[ijet], t1weight )
             if options.makeResponse == True :		
                 if passSelection == True :
@@ -1248,8 +1252,8 @@ for event in events:
 
 
 print  'Total Events: ' + str(count)
-print  'isvalid() cuts: ' + str(mptv)
-print  'percent cuts: ' + str((100*mptv)/count)+'%'
+print  'Passed      : ' + str(npassed)
+print  '            = ' + str( (float(npassed)/float(count)) * 100. ) + '%'
 f.cd()
 
 if options.makeResponse :

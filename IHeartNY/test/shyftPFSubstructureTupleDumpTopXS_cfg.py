@@ -145,7 +145,8 @@ process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('0 other le
 process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('>=1 Jets')
 process.pfShyftProducerAK5Loose.shyftPFSelection.muonIdPFTight.cutsToIgnore.append('maxPfRelIso')
 process.pfShyftProducerAK5Loose.shyftPFSelection.electronIdPFTight.cutsToIgnore.append('PFIso')
-
+process.pfShyftProducerAK5Loose.shyftPFSelection.muonIdPFLoose.cutsToIgnore.append('maxPfRelIso')
+process.pfShyftProducerAK5Loose.shyftPFSelection.electronIdPFLoose.cutsToIgnore.append('PFIso')
 
 ## std sequence to produce the kinematic fit for semi-leptonic events
 process.load('TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Muons_cfi')
