@@ -102,7 +102,7 @@ parser.add_option('--jecSys', metavar='J', type='float', action='store',
 
 # JER systematics
 parser.add_option('--jerSys', metavar='J', type='float', action='store',
-                  default=0.1,
+                  default=0.0,
                   dest='jerSys',
                   help='JER Systematic variation in fraction')
 
@@ -484,6 +484,25 @@ if options.makeResponse == True :
     genParticlesStatusHandle = Handle( "std::vector<float>")
     genParticlesStatusLabel = ( "pfShyftTupleGenParticles", "status")
 
+if options.jerSys != 0.0 :
+    ak5GenJetPtHandle = Handle( "std::vector<float>")
+    ak5GenJetPtLabel = ("pfShyftTupleAK5GenJets", "pt")
+    ak5GenJetEtaHandle = Handle( "std::vector<float>")
+    ak5GenJetEtaLabel = ("pfShyftTupleAK5GenJets", "eta")
+    ak5GenJetPhiHandle = Handle( "std::vector<float>")
+    ak5GenJetPhiLabel = ("pfShyftTupleAK5GenJets", "phi")
+    ak5GenJetMassHandle = Handle( "std::vector<float>")
+    ak5GenJetMassLabel = ("pfShyftTupleAK5GenJets", "mass")
+
+    ca8GenJetPtHandle = Handle( "std::vector<float>")
+    ca8GenJetPtLabel = ("pfShyftTupleCA8GenJets", "pt")
+    ca8GenJetEtaHandle = Handle( "std::vector<float>")
+    ca8GenJetEtaLabel = ("pfShyftTupleCA8GenJets", "eta")
+    ca8GenJetPhiHandle = Handle( "std::vector<float>")
+    ca8GenJetPhiLabel = ("pfShyftTupleCA8GenJets", "phi")
+    ca8GenJetMassHandle = Handle( "std::vector<float>")
+    ca8GenJetMassLabel = ("pfShyftTupleCA8GenJets", "mass")
+
 goodEvents = []
 goodEventst1 = []
 mptv=0
@@ -506,19 +525,14 @@ if options.ptWeight == False :
 	print "Turning pt reweighting off"
 for event in events:
 	#print 'is this broken?'
+
     weight = 1.0
-    if count % 10000 == 0 :
+    if count % 10000 == 0 or options.debug :
       print  '--------- Processing Event ' + str(count)
     count = count + 1
     if options.num != 'all':
 	if not (eventsbegin[ifile-1] <= count <= eventsend[ifile-1]):
 		continue 
-   # if count > 900000:
-	#break
- #   if mptv % 100 == 0 :
-  #    print  '--------- mptv fail ' + str(mptv)
-
-
 
     # Find the top and antitop quarks.
     # We also need to find the decay mode of the top and antitop quarks.
@@ -758,6 +772,43 @@ for event in events:
     ak5JetMasss = ak5JetMassHandle.product()
 
 
+    if len(ak5JetPts) > 0 and options.jerSys != 0.0 :
+	ak5GenJets = []
+	ca8GenJets = []
+	event.getByLabel( ak5GenJetPtLabel, ak5GenJetPtHandle )
+	event.getByLabel( ak5GenJetEtaLabel, ak5GenJetEtaHandle )
+	event.getByLabel( ak5GenJetPhiLabel, ak5GenJetPhiHandle )
+	event.getByLabel( ak5GenJetMassLabel, ak5GenJetMassHandle )
+	event.getByLabel( ca8GenJetPtLabel, ca8GenJetPtHandle )
+	event.getByLabel( ca8GenJetEtaLabel, ca8GenJetEtaHandle )
+	event.getByLabel( ca8GenJetPhiLabel, ca8GenJetPhiHandle )
+	event.getByLabel( ca8GenJetMassLabel, ca8GenJetMassHandle )
+	ak5GenJetPt = ak5GenJetPtHandle.product()
+	ak5GenJetEta = ak5GenJetEtaHandle.product()
+	ak5GenJetPhi = ak5GenJetPhiHandle.product()
+	ak5GenJetMass = ak5GenJetMassHandle.product()
+	for iak5 in xrange( len(ak5GenJetPt) ) :
+		p4 = ROOT.TLorentzVector()
+		p4.SetPtEtaPhiM( ak5GenJetPt[iak5],
+				 ak5GenJetEta[iak5],
+				 ak5GenJetPhi[iak5],
+				 ak5GenJetMass[iak5],
+				 )
+		ak5GenJets.append(p4)
+
+	ca8GenJetPt = ca8GenJetPtHandle.product()
+	ca8GenJetEta = ca8GenJetEtaHandle.product()
+	ca8GenJetPhi = ca8GenJetPhiHandle.product()
+	ca8GenJetMass = ca8GenJetMassHandle.product()
+	for ica8 in xrange( len(ca8GenJetPt) ) :
+		p4 = ROOT.TLorentzVector()
+		p4.SetPtEtaPhiM( ca8GenJetPt[ica8],
+				 ca8GenJetEta[ica8],
+				 ca8GenJetPhi[ica8],
+				 ca8GenJetMass[ica8],
+				 )
+		ca8GenJets.append(p4)
+
     event.getByLabel (metLabel, metHandle)
     mets = metHandle.product()
     metRaw = mets[0]
@@ -777,6 +828,14 @@ for event in events:
                 print 'Uncorr {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet, ak5JetPts[ijet], ak5JetEtas[ijet], ak5JetPhis[ijet], ak5JetMasss[ijet] )
             jecUncAK5.setJetEta( ak5JetEtas[ijet] )
             jecUncAK5.setJetPt( ak5JetPts[ijet] )
+
+            ## get the uncorrected jets
+            thisJet = ROOT.TLorentzVector()
+            thisJet.SetPtEtaPhiM( ak5JetPts[ijet],
+                                  ak5JetEtas[ijet],
+                                  ak5JetPhis[ijet],
+                                  ak5JetMasss[ijet] )
+
             jetScale = 1.0
             if abs(options.jecSys) > 0.0001 :
                 upOrDown = bool(options.jecSys > 0.0)
@@ -786,21 +845,16 @@ for event in events:
                 #print 'Correction = ' + str( 1 + unc * options.jecSys)
                 jetScale = 1 + unc * options.jecSys
 
-            ## ## also do Jet energy resolution variation 
-            ## if not options.useData and abs(options.jetSmear)>0.0001 and genJetPts[ijet]>15.0:
-            ##     scale = options.jetSmear
-            ##     recopt = jetPts[ijet]
-            ##     genpt = genJetPts[ijet]
-            ##     deltapt = (recopt-genpt)*scale
-            ##     ptscale = max(0.0, (recopt+deltapt)/recopt)
-            ##     jetScale*=ptscale
+            ## also do Jet energy resolution variation 
+            if abs(options.jerSys)>0.0001 :
+		genJet = findClosestInList( thisJet, ak5GenJets )
+                scale = options.jerSys
+                recopt = thisJet.Perp()
+                genpt = genJet.Perp()
+                deltapt = (recopt-genpt)*scale
+                ptscale = max(0.0, (recopt+deltapt)/recopt)
+                jetScale*=ptscale
 
-            ## get the uncorrected jets
-            thisJet = ROOT.TLorentzVector()
-            thisJet.SetPtEtaPhiM( ak5JetPts[ijet],
-                                  ak5JetEtas[ijet],
-                                  ak5JetPhis[ijet],
-                                  ak5JetMasss[ijet] )
 
             #remove the uncorrected jets
             met_px = met_px + thisJet.Px()
@@ -1079,21 +1133,34 @@ for event in events:
 	#if leptoppt > 400.0:
         jet1 = ROOT.TLorentzVector()
         jet1.SetPtEtaPhiM( topTagPt[0], topTagEta[0], topTagPhi[0], topTagMass[0] )
-        if abs( options.jecSys != 0 ) or abs( options.jerSys ) != jerNom :
+	jetScale = 1.0
+        if abs( options.jecSys != 0 ) :
             jecUncAK7.setJetEta( topTagEta[0] )
             jecUncAK7.setJetPt( topTagPt[0] )
-            jetScale = 1.0
             if abs(options.jecSys) > 0.0001 :
                 upOrDown = bool(options.jecSys > 0.0)
-                unc1 = abs(jecUncAK5.getUncertainty(upOrDown))
+                unc1 = abs(jecUncAK7.getUncertainty(upOrDown))
                 unc2 = flatJecUnc
                 unc = math.sqrt(unc1*unc1 + unc2*unc2)
                 #print 'Correction = ' + str( 1 + unc * options.jecSys)
                 jetScale = 1 + unc * options.jecSys
 
-
+	## also do Jet energy resolution variation 
+	if abs(options.jerSys)>0.0001 :
+	    genJet = findClosestInList( jet1, ca8GenJets )
+	    scale = options.jerSys
+	    recopt = jet1.Perp()
+	    genpt = genJet.Perp()
+	    deltapt = (recopt-genpt)*scale
+	    ptscale = max(0.0, (recopt+deltapt)/recopt)
+	    jetScale*=ptscale
+		
+	jet1 *= jetScale 
+	    
+	    
 
         jet = jet1
+	ijet=0
      	if not len(lepJets) == 0:
             if options.ptWeight == True :
 		t1weight=weight*ttweight
@@ -1102,8 +1169,8 @@ for event in events:
 
             passSelection = False
             if (jet.DeltaR( lepP4) > ROOT.TMath.Pi() / 2.0) :
-                if (topTagPt[ijet] > 200.):
-		    topTagptHistprecuts.Fill(topTagPt[ijet],t1weight)
+                if (jet.Perp() > 200.):
+		    topTagptHistprecuts.Fill(jet.Perp(),t1weight)
 		    htLep3t1kin.Fill(htLepVal,t1weight)
 		    nsj.Fill(topTagNSub[ijet],t1weight)
 		    nvtxvsnsj.Fill(nvtx,topTagNSub[ijet],t1weight)
@@ -1118,8 +1185,8 @@ for event in events:
 			if topTagMinMass[ijet] > 50. :
 
 				htLep3t1minp.Fill(htLepVal,t1weight)
-                        	topTagMassHistpremass.Fill(topTagMass[ijet],t1weight)
-				nvtxvstopmass.Fill(nvtx,topTagMass[ijet],t1weight)
+                        	topTagMassHistpremass.Fill(jet.M(),t1weight)
+				nvtxvstopmass.Fill(nvtx,jet.M(),t1weight)
 
 
    				event.getByLabel (nsubCA8Label, nsubCA8Handle)
@@ -1152,11 +1219,11 @@ for event in events:
 
 				TauDisc = Tau3[index]/Tau2[index]
 						
-				if topTagMass[ijet] > 140. and topTagMass[ijet] < 250.:
+				if jet.M() > 140. and jet.M() < 250.:
                                         goodEventst1.append( [ event.object().id().run(), event.object().id().luminosityBlock(), event.object().id().event() ] )
 					htLep3t1topm.Fill(htLepVal,t1weight) 
-                        		topTagptHist.Fill(topTagPt[ijet],t1weight)					
-                        		topTagMassHist.Fill(topTagMass[ijet],t1weight)
+                        		topTagptHist.Fill(jet.Perp(),t1weight)					
+                        		topTagMassHist.Fill(jet.M(),t1weight)
 					topTagtau32Hist.Fill(TauDisc,t1weight)
 
 					nvtxvstau32.Fill(nvtx,TauDisc,t1weight)
@@ -1167,9 +1234,9 @@ for event in events:
 						BDMax = max(Topsj0BDiscCSV[ijet],Topsj1BDiscCSV[ijet],Topsj2BDiscCSV[ijet])
 						topTagBMaxHist.Fill(BDMax,t1weight)
 						nvtxvsbmax.Fill(nvtx,BDMax,t1weight)
-						topTagMassHistPostTau32.Fill(topTagMass[ijet],t1weight)
+						topTagMassHistPostTau32.Fill(jet.M(),t1weight)
 						if BDMax>0.679:
-							topTagMassHistPostBDMax.Fill(topTagMass[ijet],t1weight)
+							topTagMassHistPostBDMax.Fill(jet.M(),t1weight)
 	    if passSelection == True :
 		ptRecoTop.Fill( topTagPt[ijet], t1weight )
             if options.makeResponse == True :		

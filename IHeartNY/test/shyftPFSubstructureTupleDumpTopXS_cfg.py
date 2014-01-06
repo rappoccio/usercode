@@ -143,7 +143,7 @@ process.pfShyftProducerAK5Loose = cms.EDFilter('EDSHyFTPFSelector',
 process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('== 1 Tight Lepton')
 process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('0 other lepton')
 process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('>=1 Jets')
-process.pfShyftProducerAK5Loose.shyftPFSelection.muonIdPFTight.cutsToIgnore.append('PFIso')
+process.pfShyftProducerAK5Loose.shyftPFSelection.muonIdPFTight.cutsToIgnore.append('maxPfRelIso')
 process.pfShyftProducerAK5Loose.shyftPFSelection.electronIdPFTight.cutsToIgnore.append('PFIso')
 
 
