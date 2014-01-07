@@ -293,6 +293,13 @@ minPairHisthighpt= ROOT.TH1F("minPairHisthighpt",         "Minimum Pairwise mass
 
 ht3 = ROOT.TH1F("ht3", "HT", 200, 0., 2000.)
 ht4 = ROOT.TH1F("ht4", "HT", 200, 0., 2000.)
+ht5 = ROOT.TH1F("ht5", "HT", 200, 0., 2000.)
+ht6 = ROOT.TH1F("ht6", "HT", 200, 0., 2000.)
+
+vtxMass3 = ROOT.TH1F("vtxMass3", "Leptonic-side secondary vertex mass;Mass;Number",  50, 0., 5. )
+vtxMass4 = ROOT.TH1F("vtxMass4", "Leptonic-side secondary vertex mass;Mass;Number",  50, 0., 5. )
+vtxMass5 = ROOT.TH1F("vtxMass5", "Leptonic-side secondary vertex mass;Mass;Number",  50, 0., 5. )
+vtxMass6 = ROOT.TH1F("vtxMass6", "Leptonic-side secondary vertex mass;Mass;Number",  50, 0., 5. )
 
 muHist = ROOT.TH1F("muHist", "#mu", 300, 0, 1.0)
 muHisthighpt = ROOT.TH1F("muHisthighpt", "#mu", 300, 0, 1.0)
@@ -302,6 +309,9 @@ mWCand = ROOT.TH1F("mWCand",         "Mass of W Candidate from Hadronic Jets;Mas
 mWCandhighpt = ROOT.TH1F("mWCandhighpt",         "Mass of W Candidate from Hadronic Jets;Mass;Number",  200, 0., 200. )
 mTopCand = ROOT.TH1F("mTopCand",         "Mass of Top Candidate from Hadronic Jets;Mass;Number",  300, 0., 600. )
 mTopCandhighpt = ROOT.TH1F("mTopCandhighpt",         "Mass of Top Candidate from Hadronic Jets;Mass;Number",  300, 0., 600. )
+
+
+
 
 leptopptvstopmassprekin = ROOT.TH2F("leptopptvstopmassprekin","lep top pt vs topmass",150,0,1500,300, 0., 600. )
 leptopptvstopmasspostkin = ROOT.TH2F("leptopptvstopmasspostkin","lep top pt vs topmass",150,0,1500,300, 0., 600. )
@@ -634,7 +644,6 @@ for event in events:
     lepType = 0 # Let 0 = muon, 1 = electron    
     event.getByLabel (muonPtLabel, muonPtHandle)
     if not muonPtHandle.isValid():
-	mptv+=1
         if options.makeResponse == True :
             response.Miss( hadTop.p4.Perp(), weight )
         continue
@@ -996,8 +1005,14 @@ for event in events:
                 lepVtxMass.append( ak5JetSecvtxMasses[ijet] )
 
 
-    ht3.Fill( ht,weight )
 
+    if len(lepJets) < 1:
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight )        
+	continue
+	
+    ht3.Fill( ht,weight )
+    vtxMass3.Fill( lepVtxMass[0], weight)
 
     if options.htCut is not None and ht < options.htCut :
         if options.makeResponse == True :
@@ -1005,7 +1020,8 @@ for event in events:
         continue
 
 
-    ## ht4.Fill( ht,weight )
+    ht4.Fill( ht,weight )
+    vtxMass4.Fill( lepVtxMass[0], weight)
     ## highestMassJetIndex = -1
     ## highestJetMass = -1.0
     ## bJetCandIndex = -1
@@ -1017,11 +1033,6 @@ for event in events:
     ##         highestMassJetIndex = ijet
             
 
-
-    if len(lepJets) < 1:
-        if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight )        
-	continue 
 
     leptoppt = (metv+lepJets[0]+lepP4).Perp()
     pt1 = leptoppt 
@@ -1124,6 +1135,10 @@ for event in events:
         if options.makeResponse == True :
             response.Miss( hadTop.p4.Perp(), weight )        
 	continue
+
+
+    ht5.Fill( ht, weight )
+    vtxMass5.Fill( lepVtxMass[0], weight)
 	
     #print "weight " + str(weight)
     nvtx =float(numvert[0])
@@ -1232,6 +1247,10 @@ for event in events:
 					nvtxvstau32.Fill(nvtx,TauDisc,t1weight)
 
                                         passSelection = True
+				
+
+				        ht6.Fill( ht, weight )
+					vtxMass6.Fill( lepVtxMass[0], weight)
 
 					if TauDisc<0.6:
 						BDMax = max(Topsj0BDiscCSV[ijet],Topsj1BDiscCSV[ijet],Topsj2BDiscCSV[ijet])
