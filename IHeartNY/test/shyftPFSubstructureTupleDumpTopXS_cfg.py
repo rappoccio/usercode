@@ -37,10 +37,14 @@ options.register('useData',
                  "Use data (1) or MC (0)")
 
 
-
 options.parseArguments()
 
 #print options
+
+
+inputMuOrEle = False
+if options.muOrEle == 1 :
+    inputMuOrEle = True
 
 import sys
 #!!!Change PoolSource 'dcap...' to '/store/results/B2G/SingleElectron/StoreResults-Run2012D-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/SingleElectron/USER/StoreResults-Run2012D-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/0000/0219E2CF-3DE8-E211-B880-003048FFD754.root'
@@ -123,7 +127,7 @@ process.pfShyftProducerAK5 = cms.EDFilter('EDSHyFTPFSelector',
                                     shyftPFSelection = shyftPFSelectionInput.clone(
                                            jetSrc = cms.InputTag('goodPatJetsPFlow'),
     					   rhoSrc = cms.InputTag('kt6PFJets', 'rho'),
-					   doElectrons = cms.bool(options.muOrEle), # 0 = mu, 1 = ele
+					   doElectrons = cms.bool(inputMuOrEle), # 0 = mu, 1 = ele
                                            jecPayloads = cms.vstring( payloads )
                                         )
                                     )
@@ -133,7 +137,7 @@ process.pfShyftProducerAK5Loose = cms.EDFilter('EDSHyFTPFSelector',
                                                 jetSrc = cms.InputTag('goodPatJetsPFlow'),
                                                 muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose'),
                                                 electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose'),
-						doElectrons = cms.bool(options.muOrEle), # 0 = mu, 1 = ele
+						doElectrons = cms.bool(inputMuOrEle), # 0 = mu, 1 = ele
     					   	rhoSrc = cms.InputTag('kt6PFJets', 'rho'),
                                                 jecPayloads = cms.vstring( payloads ),
                                                 removeLooseLep = cms.bool(True)
