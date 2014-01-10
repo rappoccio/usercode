@@ -61,6 +61,7 @@ class SHyFTPFSelector : public EventSelector {
       edm::InputTag               trigTag_;
       edm::InputTag               rhoTag_;
       std::string                 trig_;
+      bool                        doElectrons_;
 
       std::vector<reco::ShallowClonePtrCandidate> selectedJets_;
       std::vector<reco::ShallowClonePtrCandidate> allMuons_;

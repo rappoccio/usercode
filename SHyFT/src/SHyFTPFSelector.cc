@@ -15,6 +15,7 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   pvTag_             (params.getParameter<edm::InputTag>("pvSrc") ),
   trigTag_           (params.getParameter<edm::InputTag>("trigSrc") ),
   rhoTag_            (params.getParameter<edm::InputTag>("rhoSrc") ),
+  doElectrons_       (params.getParameter<bool>("doElectrons")),
   muonIdPFTight_     (params.getParameter<edm::ParameterSet>("muonIdPFTight")),
   muonIdPFLoose_     (params.getParameter<edm::ParameterSet>("muonIdPFLoose")),
   electronIdPFTight_ (params.getParameter<edm::ParameterSet>("electronIdPFTight")),
@@ -427,8 +428,10 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 					   metP4 );
 
 
-
-    int nleptons = selectedTightMuons_.size() + selectedTightElectrons_.size();
+    int nmuons = selectedTightMuons_.size();
+    int nelectrons = selectedTightElectrons_.size();
+    
+    int nleptons = nmuons + nelectrons;
     // Check >= 1 Tight lepton
     if ( ignoreCut(lep1Index_) || 
 	 ( nleptons > 0 ) ){
@@ -436,7 +439,7 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 
       // Check == 1 Tight lepton
       if ( ignoreCut(lep2Index_) || 
-	   ( nleptons == 1 ) ){
+	   ( nleptons == 1 && ( (!doElectrons_&&nmuons==1) || (doElectrons_&&nelectrons==1) ) ) ){
 	passCut( ret, lep2Index_);
               
 	// Check == 1 Lepton (i.e. dilepton veto)

@@ -48,6 +48,7 @@ shyftPFSelection = cms.PSet(
     unclMetScale   = cms.double( 0.0 ),
     useData        = cms.bool(False),
     removeLooseLep = cms.bool(False),
+    doElectrons    = cms.bool(False), # 0 = mu, 1 = ele
     looseLepRemovalDR=cms.double(0.5),
     tightMuMinIso  = cms.double(0.12),
     tightEleMinIso = cms.double(0.20),

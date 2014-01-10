@@ -123,7 +123,7 @@ process.pfShyftProducerAK5 = cms.EDFilter('EDSHyFTPFSelector',
                                     shyftPFSelection = shyftPFSelectionInput.clone(
                                            jetSrc = cms.InputTag('goodPatJetsPFlow'),
     					   rhoSrc = cms.InputTag('kt6PFJets', 'rho'),
-					   doElectrons = cms.bool(False),
+					   doElectrons = cms.bool(options.muOrEle), # 0 = mu, 1 = ele
                                            jecPayloads = cms.vstring( payloads )
                                         )
                                     )
@@ -133,16 +133,16 @@ process.pfShyftProducerAK5Loose = cms.EDFilter('EDSHyFTPFSelector',
                                                 jetSrc = cms.InputTag('goodPatJetsPFlow'),
                                                 muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose'),
                                                 electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose'),
-						doElectrons = cms.bool(False),
+						doElectrons = cms.bool(options.muOrEle), # 0 = mu, 1 = ele
     					   	rhoSrc = cms.InputTag('kt6PFJets', 'rho'),
                                                 jecPayloads = cms.vstring( payloads ),
                                                 removeLooseLep = cms.bool(True)
                                                 )
                                             )
 
-process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('== 1 Tight Lepton')
-process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('0 other lepton')
-process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('>=1 Jets')
+#process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('== 1 Tight Lepton')
+#process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('0 other lepton')
+#process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('>=1 Jets')
 process.pfShyftProducerAK5Loose.shyftPFSelection.muonIdPFTight.cutsToIgnore.append('maxPfRelIso')
 process.pfShyftProducerAK5Loose.shyftPFSelection.electronIdPFTight.cutsToIgnore.append('PFIso')
 process.pfShyftProducerAK5Loose.shyftPFSelection.muonIdPFLoose.cutsToIgnore.append('maxPfRelIso')
