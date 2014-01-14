@@ -700,6 +700,11 @@ for event in events:
     electronPts = electronPtHandle.product()
 
     event.getByLabel (topTagEtaLabel, topTagEtaHandle)
+    if not topTagEtaHandle.isValid() :
+	if options.makeResponse == True :
+		response.Miss( hadTop.p4.Perp(), weight )
+	continue 
+	    
     topTagEta = topTagEtaHandle.product()
     if not options.type2:
 	if len(topTagEta)<1:
