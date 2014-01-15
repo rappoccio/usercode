@@ -36,6 +36,12 @@ options.register('useData',
                  VarParsing.varType.int,
                  "Use data (1) or MC (0)")
 
+options.register('addPdfs',
+                 0,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
+                 "Add PDF info (1) or not (0)")
+
 
 options.parseArguments()
 
@@ -777,6 +783,18 @@ process.p2 = cms.Path(
     process.pfShyftTupleAK5GenJets
     )
 
+
+
+if options.addPdfs == 1 : 
+    # PDF Information
+    from Analysis.PdfWeights.pdfWeightProducer_cfi import pdfWeightProducer
+    process.ct10weights = pdfWeightProducer.clone(pdfSet = cms.string("CT10.LHgrid"))
+    process.mstwweights = pdfWeightProducer.clone(pdfSet = cms.string("MSTW2008nlo68cl.LHgrid"))
+    process.nnpdfweights = pdfWeightProducer.clone(pdfSet = cms.string("NNPDF21_as_0118_100.LHgrid"))
+    process.pdfs = cms.Sequence( process.ct10weights*process.mstwweights*process.nnpdfweights )
+    process.p1 *= process.pdfs
+    process.p2 *= process.pdfs
+
 if options.useData == 1 :
     process.p1.remove( process.topQuarks )
     process.p1.remove( process.pfShyftTupleTopQuarks )
@@ -788,6 +806,8 @@ if options.useData == 1 :
     process.p2.remove( process.pfShyftTupleGenParticles )
     process.p2.remove( process.pfShyftTupleCA8GenJets )
     process.p2.remove( process.pfShyftTupleAK5GenJets )
+
+
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
@@ -803,7 +823,8 @@ process.out = cms.OutputModule("PoolOutputModule",
                                                                       'keep *_pfShyftTuple*_*_*',
                                                                       'keep *_nsub*_*_*',
                                                                       'keep *_generator_*_*',
-                                                                      'keep *_pileup*_*_*'
+                                                                      'keep *_pileup*_*_*',
+                                                                      'keep *_*weights*_*_*',
                                                                       #'keep *_kinFitTtSemiLepEvent_*_*'
                                                                       )
                                )
