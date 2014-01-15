@@ -10,9 +10,9 @@ To run the code, you will need lichen and iminuit.
 
 * iminuit is a python wrapper to the MINUIT minimization code.
 
-https://github.com/mattbellis/lichen
+https://github.com/iminuit/iminuit
 
-    git clone https://github.com/mattbellis/lichen
+    git clone https://github.com/iminuit/iminuit
     cd iminuit
     python setup.py install # May need to run this as root/sudo, depending on your setup.
 
