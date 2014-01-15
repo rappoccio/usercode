@@ -112,6 +112,14 @@ parser.add_option('--jerSys', metavar='J', type='float', action='store',
                   dest='jerSys',
                   help='JER Systematic variation in fraction')
 
+# PDF systematics
+parser.add_option('--pdfSys', metavar='J', type='float', action='store',
+                  default=0.0,
+                  dest='pdfSys',
+                  help='PDF Systematic variation. Options are +1. (up 1 sigma), 0. (nominal), -1. (down 1 sigma)')
+
+
+
 parser.add_option('--debug', metavar='D', action='store_true',
                   default=False,
                   dest='debug',
@@ -486,6 +494,17 @@ metLabel = ("pfShyftTupleMET" + postfix,   "pt" )
 metphiHandle = Handle( "std::vector<float>" )
 metphiLabel = ("pfShyftTupleMET" + postfix,   "phi" )
 
+if options.pdfSys != 0.0 : 
+	pdfWeightCT10Handle = Handle( "std::vector<double>" )
+	pdfWeightCT10Label = ("ct10weights",   "pdfWeights" )
+
+	pdfWeightMSTWHandle = Handle( "std::vector<double>" )
+	pdfWeightMSTWLabel = ("mstwweights",   "pdfWeights" )
+
+	pdfWeightNNPDFHandle = Handle( "std::vector<double>" )
+	pdfWeightNNPDFLabel = ("nnpdfweights",   "pdfWeights" )
+
+
 if options.makeResponse == True : 
     genParticlesPtHandle = Handle( "std::vector<float>")
     genParticlesPtLabel = ( "pfShyftTupleGenParticles", "pt")
@@ -550,11 +569,50 @@ for event in events:
 	if not (eventsbegin[ifile-1] <= count <= eventsend[ifile-1]):
 		continue 
 
+	    
+
     # Find the top and antitop quarks.
     # We also need to find the decay mode of the top and antitop quarks.
     # To do so, we look for leptons, and use their charge to assign
     # the correct decay mode to the correct quark. 
     topQuarks = []
+
+    if options.pdfSys != 0.0 :
+	event.getByLabel( pdfWeightCT10Label, pdfWeightCT10Handle )
+	event.getByLabel( pdfWeightMSTWLabel, pdfWeightMSTWHandle )
+	event.getByLabel( pdfWeightNNPDFLabel, pdfWeightNNPDFHandle )
+	pdfWeightCT10 = pdfWeightCT10Handle.product()
+	pdfWeightMSTW = pdfWeightMSTWHandle.product()
+	pdfWeightNNPDF = pdfWeightNNPDFHandle.product()
+
+	# Get the envelopes of the various PDF sets for this event.
+	# Use the max and min values of all of the eigenvectors as the
+	# envelope. 
+	if options.pdfSys > 0 :
+	    pdfWeights1 = [ i / pdfWeightCT10[0] for i in pdfWeightCT10[1::2] ]
+	    pdfWeights2 = [ i / pdfWeightMSTW[0] for i in pdfWeightMSTW[1::2] ]
+	    pdfWeights3 = [ i / pdfWeightNNPDF[0] for i in pdfWeightNNPDF[1::2] ]
+	    pdfWeights = pdfWeights1 + pdfWeights2 + pdfWeights3
+	    maxweight = 1.0
+	    for iweight in pdfWeights :
+		    if iweight > 0 and iweight > maxweight :
+			    maxweight = iweight
+
+	    weight *= maxweight
+	else : 
+	    pdfWeights1 = [ i / pdfWeightCT10[0] for i in pdfWeightCT10[2::2] ]
+	    pdfWeights2 = [ i / pdfWeightMSTW[0] for i in pdfWeightMSTW[2::2] ]
+	    pdfWeights3 = [ i / pdfWeightNNPDF[0] for i in pdfWeightNNPDF[2::2] ]
+	    pdfWeights = pdfWeights1 + pdfWeights2 + pdfWeights3
+	    minweight = 1.0
+	    for iweight in pdfWeights :
+		    if iweight > 0 and iweight < minweight :
+			    minweight = iweight
+
+	    weight *= minweight
+
+
+		
     hadTop = None
     lepTop = None
     isSemiLeptonicGen = True
