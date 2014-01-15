@@ -78,6 +78,12 @@ parser.add_option('--htCut', metavar='F', type='float', action='store',
                   dest='htCut',
                   help='HT cut')
 
+# Mttbar cut for sample stitching
+parser.add_option('--mttGenMax', metavar='J', type='float', action='store',
+                  default=None,
+                  dest='mttGenMax',
+                  help='Maximum generator-level m_ttbar. Use with --makeResponse')
+
 parser.add_option('--makeResponse', metavar='M', action='store_true',
                   default=False,
                   dest='makeResponse',
@@ -628,7 +634,7 @@ for event in events:
         # consider "volunteer" events that pass the selection
         # even though they aren't really semileptonic events. 
         if isSemiLeptonicGen == False :
-            continue
+            continue	
 
         if topDecay == 0 :
             hadTop = topQuarks[0]
@@ -636,6 +642,11 @@ for event in events:
         else :
             hadTop = topQuarks[1]
             lepTop = topQuarks[0]
+	if options.mttGenMax is not None :
+		ttbarGen = hadTop.p4 + lepTop.p4
+		mttbarGen = ttbarGen.M()
+		if mttbarGen > options.mttGenMax :
+			continue
 	ptGenTop.Fill( hadTop.p4.Perp(), weight )
     # endif (making response matrix)
 
