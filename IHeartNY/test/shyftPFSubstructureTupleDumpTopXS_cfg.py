@@ -5,30 +5,28 @@ process = cms.Process("ANA")
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
-
 ## Options and Output Report
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 
-###############################
-####### Parameters ############
-###############################
+#########################################################################
+## Input parameters that should be modified accordingly
+#########################################################################
+
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
 
-
 options.register('ignoreTrigger',
                  0,
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "Ignore trigger in selection")
-#!!!Change below 0 to 1
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
+                 "Ignore trigger in selection (1) or apply trigger (0)")
+
 options.register('muOrEle',
                  0,
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.int,
                  "Use muons (0) or electrons (1)")
-
 
 options.register('useData',
                  0,
@@ -42,19 +40,19 @@ options.register('addPdfs',
                  VarParsing.varType.int,
                  "Add PDF info (1) or not (0)")
 
+#########################################################################
 
 options.parseArguments()
-
 #print options
 
-
+## Electrons vs muons
 inputMuOrEle = False
 if options.muOrEle == 1 :
     inputMuOrEle = True
 
 import sys
-#!!!Change PoolSource 'dcap...' to '/store/results/B2G/SingleElectron/StoreResults-Run2012D-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/SingleElectron/USER/StoreResults-Run2012D-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/0000/0219E2CF-3DE8-E211-B880-003048FFD754.root'
 
+## Input source
 if options.useData == 0 : 
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
@@ -69,20 +67,21 @@ else :
         )
 
 
+## Jet corrections
 payloadsData = [
-            'FT_53_V21_AN6_L1FastJet_AK5PFchs.txt',
-            'FT_53_V21_AN6_L2Relative_AK5PFchs.txt',
-            'FT_53_V21_AN6_L3Absolute_AK5PFchs.txt',
-            'FT_53_V21_AN6_L2L3Residual_AK5PFchs.txt',
-            'FT_53_V21_AN6_Uncertainty_AK5PFchs.txt'
-                ]
+    'FT_53_V21_AN6_L1FastJet_AK5PFchs.txt',
+    'FT_53_V21_AN6_L2Relative_AK5PFchs.txt',
+    'FT_53_V21_AN6_L3Absolute_AK5PFchs.txt',
+    'FT_53_V21_AN6_L2L3Residual_AK5PFchs.txt',
+    'FT_53_V21_AN6_Uncertainty_AK5PFchs.txt'
+    ]
 
 payloadsMC = [
     'START53_V27_L1FastJet_AK5PFchs.txt',
     'START53_V27_L2Relative_AK5PFchs.txt',
     'START53_V27_L3Absolute_AK5PFchs.txt',
     'START53_V27_Uncertainty_AK5PFchs.txt'
-]
+    ]
 
 if options.useData :
     payloads = payloadsData
@@ -90,25 +89,13 @@ else :
     payloads = payloadsMC
 
 
-## process.source = cms.Source("PoolSource",
-##                             fileNames = cms.untracked.vstring(
-## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/TTJets_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_10_1_5eL.root',
-## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/TTJets_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_11_1_y36.root',
-## 'dcap:///pnfs/cms/WAX/11/store/user/lpctlbsm/vasquez/TTJets_TuneD6T_7TeV-madgraph-tauola/ttbsm_v7_Spring11-PU_S1_-START311_V1G1-v1/6a29f0fac22a95bcd534f59b8047bd70/ttbsm_41x_mc_12_1_RFD.root'
-
-## )
-## )
-
-
-
+## Trigger selection
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 if options.ignoreTrigger :
     process.hltSelection = cms.Sequence()
 else :
-    process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = ['HLT_Mu40_eta2p1_v*'
-                                                                                                       ])
-    process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths =  ['HLT_Ele30_CaloIdVT_TrkIdT_PFNoPUJet100_PFNoPUJet25_v*'
-                                                                                                          ])
+    process.hltSelectionMu = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = ['HLT_Mu40_eta2p1_v*'])
+    process.hltSelectionEle = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths =  ['HLT_Ele30_CaloIdVT_TrkIdT_PFNoPUJet100_PFNoPUJet25_v*'])
 
     process.hltSelectionMu.throw = False
     process.hltSelectionEle.throw = False
@@ -119,36 +106,36 @@ else :
         process.hltSelection = cms.Sequence( process.hltSelectionMu )
 
 
-## Maximal Number of Events
+## Maximum number of events ("-1" means all events)
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 from Analysis.SHyFT.shyftPFSelection_cfi import shyftPFSelection as shyftPFSelectionInput
 
 process.pileup = cms.EDFilter('PileUpProducer',
-                                pvSrc = cms.InputTag('goodOfflinePrimaryVertices')
+                              pvSrc = cms.InputTag('goodOfflinePrimaryVertices')
+                              )
 
-)
-#!!!Change below doElectrons .. False to True
+## Define various producers
 process.pfShyftProducerAK5 = cms.EDFilter('EDSHyFTPFSelector',
-                                    shyftPFSelection = shyftPFSelectionInput.clone(
-                                           jetSrc = cms.InputTag('goodPatJetsPFlow'),
-    					   rhoSrc = cms.InputTag('kt6PFJets', 'rho'),
-					   doElectrons = cms.bool(inputMuOrEle), # 0 = mu, 1 = ele
-                                           jecPayloads = cms.vstring( payloads )
-                                        )
-                                    )
+                                          shyftPFSelection = shyftPFSelectionInput.clone(
+                                          jetSrc = cms.InputTag('goodPatJetsPFlow'),
+                                          rhoSrc = cms.InputTag('kt6PFJets', 'rho'),
+                                          doElectrons = cms.bool(inputMuOrEle), # 0 = mu, 1 = ele
+                                          jecPayloads = cms.vstring( payloads )
+                                          )
+                                          )
 #!!!Change below doElectrons from False to True
 process.pfShyftProducerAK5Loose = cms.EDFilter('EDSHyFTPFSelector',
-                                            shyftPFSelection = shyftPFSelectionInput.clone(
-                                                jetSrc = cms.InputTag('goodPatJetsPFlow'),
-                                                muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose'),
-                                                electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose'),
-						doElectrons = cms.bool(inputMuOrEle), # 0 = mu, 1 = ele
-    					   	rhoSrc = cms.InputTag('kt6PFJets', 'rho'),
-                                                jecPayloads = cms.vstring( payloads ),
-                                                removeLooseLep = cms.bool(True)
-                                                )
-                                            )
+                                               shyftPFSelection = shyftPFSelectionInput.clone(
+                                               jetSrc = cms.InputTag('goodPatJetsPFlow'),
+                                               muonSrc = cms.InputTag('selectedPatMuonsPFlowLoose'),
+                                               electronSrc = cms.InputTag('selectedPatElectronsPFlowLoose'),
+                                               doElectrons = cms.bool(inputMuOrEle), # 0 = mu, 1 = ele
+                                               rhoSrc = cms.InputTag('kt6PFJets', 'rho'),
+                                               jecPayloads = cms.vstring( payloads ),
+                                               removeLooseLep = cms.bool(True)
+                                               )
+                                               )
 
 #process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('== 1 Tight Lepton')
 #process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('0 other lepton')
@@ -158,21 +145,7 @@ process.pfShyftProducerAK5Loose.shyftPFSelection.electronIdPFTight.cutsToIgnore.
 process.pfShyftProducerAK5Loose.shyftPFSelection.muonIdPFLoose.cutsToIgnore.append('maxPfRelIso')
 process.pfShyftProducerAK5Loose.shyftPFSelection.electronIdPFLoose.cutsToIgnore.append('PFIso')
 
-## std sequence to produce the kinematic fit for semi-leptonic events
-process.load('TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Muons_cfi')
-#!!!Uncomment below line and comment out above
-#process.load('TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Electrons_cfi')
-
-process.kinFitTtSemiLepEvent.jets = cms.InputTag("pfShyftProducerAK5", "jets")
-process.kinFitTtSemiLepEvent.mets = cms.InputTag("pfShyftProducerAK5", "MET")
-process.kinFitTtSemiLepEvent.leps = cms.InputTag("pfShyftProducerAK5", "muons")
-#!!!Uncomment below line and comment out above
-#process.kinFitTtSemiLepEvent.leps = cms.InputTag("pfShyftProducerAK5", "electrons")
-
-process.load("TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Muons_cfi")
-#!!!Uncomment below line and comment out above
-#process.load("TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Electrons_cfi")
-
+## AK5 jets producer
 process.pfShyftTupleJetsAK5 = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("pfShyftProducerAK5", "jets"),
@@ -210,13 +183,12 @@ process.pfShyftTupleJetsAK5 = cms.EDProducer(
         )
     )
 
+## Loose AK5 jets producer
 process.pfShyftTupleJetsLooseAK5 = process.pfShyftTupleJetsAK5.clone(
     src = cms.InputTag("pfShyftProducerAK5Loose", "jets"),
     )
 
-
-
-
+## CA8 pruned jets producer (input to top tagged jets)
 process.pfShyftTupleJetsLooseCA8Pruned = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("goodPatJetsCA8PrunedPFPacked"),
@@ -282,7 +254,7 @@ process.pfShyftTupleJetsLooseCA8Pruned = cms.EDProducer(
         )
     )
 
-
+## Top-tagged jets producer
 process.pfShyftTupleJetsLooseTopTag = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("goodPatJetsCATopTagPFPacked"),
@@ -408,7 +380,7 @@ process.pfShyftTupleJetsLooseTopTag = cms.EDProducer(
         )
     )
 
-
+## Muon producer
 process.pfShyftTupleMuons = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("pfShyftProducerAK5", "muons"),
@@ -458,6 +430,7 @@ process.pfShyftTupleMuons = cms.EDProducer(
         )
     )
 
+## Loose muons producer
 process.pfShyftTupleMuonsLoose = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("pfShyftProducerAK5Loose", "muons"),
@@ -507,6 +480,7 @@ process.pfShyftTupleMuonsLoose = cms.EDProducer(
         )
     )
 
+## MET producer
 process.pfShyftTupleMET = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("pfShyftProducerAK5", "MET"),
@@ -524,6 +498,7 @@ process.pfShyftTupleMET = cms.EDProducer(
         )
     )
 
+## Loose MET producer
 process.pfShyftTupleMETLoose = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("pfShyftProducerAK5Loose", "MET"),
@@ -541,7 +516,7 @@ process.pfShyftTupleMETLoose = cms.EDProducer(
         )
     )
 
-
+## Electron producer
 process.pfShyftTupleElectrons = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("pfShyftProducerAK5", "electrons"),
@@ -586,6 +561,7 @@ process.pfShyftTupleElectrons = cms.EDProducer(
         )
     )
 
+## Loose electrons producer
 process.pfShyftTupleElectronsLoose = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("pfShyftProducerAK5Loose", "electrons"),
@@ -626,15 +602,17 @@ process.pfShyftTupleElectronsLoose = cms.EDProducer(
         )
     )
 
+## Subjets
 process.nsub = cms.EDProducer("NjettinessAdder",
                               #src=cms.InputTag("goodPatJetsCA8PrunedPFPacked"),
                               src=cms.InputTag("goodPatJetsCA8PF"),
                               cone=cms.double(0.8)
                               )
 
- #################### keep generator-level products #####################
 
+#################### keep generator-level products #####################
 
+## Truth top quarks
 process.topQuarks = cms.EDFilter("CandViewSelector",
     src = cms.InputTag("prunedGenParticles"),
     cut = cms.string("status == 3 && abs(pdgId) == 6")
@@ -665,6 +643,7 @@ process.pfShyftTupleTopQuarks = cms.EDProducer(
         )
     )
 
+## Producer for gen particles
 process.pfShyftTupleGenParticles = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("prunedGenParticles"),
@@ -698,6 +677,7 @@ process.pfShyftTupleGenParticles = cms.EDProducer(
         )
     )
 
+## CA8 gen jets producer
 process.pfShyftTupleCA8GenJets = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("ca8GenJetsNoNu"),
@@ -723,7 +703,7 @@ process.pfShyftTupleCA8GenJets = cms.EDProducer(
         )
     )
 
-
+## AK5 gen jets producer
 process.pfShyftTupleAK5GenJets = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("ak5GenJetsNoNu"),
@@ -749,7 +729,7 @@ process.pfShyftTupleAK5GenJets = cms.EDProducer(
         )
     )
 
-
+## Define which process are to be run (one path for Loose objects and one for regular ones)
 process.p1 = cms.Path(
     process.hltSelection*
     process.pileup*
@@ -784,7 +764,6 @@ process.p2 = cms.Path(
     )
 
 
-
 if options.addPdfs == 1 : 
     # PDF Information
     from Analysis.PdfWeights.pdfWeightProducer_cfi import pdfWeightProducer
@@ -795,6 +774,7 @@ if options.addPdfs == 1 :
     process.p1 *= process.pdfs
     process.p2 *= process.pdfs
 
+## For data, remove the truth information from the paths
 if options.useData == 1 :
     process.p1.remove( process.topQuarks )
     process.p1.remove( process.pfShyftTupleTopQuarks )
@@ -808,24 +788,20 @@ if options.useData == 1 :
     process.p2.remove( process.pfShyftTupleAK5GenJets )
 
 
-
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
-
-
+## Define the output ROOT file
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string("shyft_ultraslim.root"),
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p1', 'p2') ),
                                outputCommands = cms.untracked.vstring('drop *',
-                                                                      #'keep *_pfShyftProducerAK5_*_*',
                                                                       'keep double_*_rho_*',
                                                                       'keep *_pfShyftTuple*_*_*',
                                                                       'keep *_nsub*_*_*',
                                                                       'keep *_generator_*_*',
                                                                       'keep *_pileup*_*_*',
-                                                                      'keep *_*weights*_*_*',
-                                                                      #'keep *_kinFitTtSemiLepEvent_*_*'
+                                                                      'keep *_*weights*_*_*'
                                                                       )
                                )
 process.outpath = cms.EndPath(process.out)
