@@ -175,10 +175,10 @@ def findClosestInList( p41, p4list ) :
     minDR = 9999.
     ret = None
     for j in range(0,len(p4list) ):
-        dR = p4list[ijet].DeltaR(p41)
+        dR = p4list[j].DeltaR(p41)
         if dR < minDR :
             minDR = dR
-            ret = p4list[ijet]
+            ret = p4list[j]
     return ret
 
 
