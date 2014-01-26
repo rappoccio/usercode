@@ -92,7 +92,7 @@ e_TT_Mtt_0_700 = 1.0 - e_TT_Mtt_700_1000 - e_TT_Mtt_1000_Inf
 # 
 
 names = [ 'Data', 'TTbar', 'WJets', 'SingleTop', 'QCD' ]
-plots = [ 'TT_Mtt_jecdown' , 'TT_Mtt_jecup' , ' TT_Mtt_jerdown' , 'TT_Mtt_jerup' , 'TT_Mtt_pdfdown' , 'TT_Mtt_pdfup' ]
+plots = [ 'TT_Mtt_jecdown' , 'TT_Mtt_jecup' , 'TT_Mtt_jerdown' , 'TT_Mtt_jerup' , 'TT_Mtt_pdfdown' , 'TT_Mtt_pdfup' ]
 canvs = []
 histsData = []
 
