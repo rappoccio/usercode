@@ -15,7 +15,7 @@ class Sample :
         self.extraFlags=extraFlags
         self.systs = []
         noms = [
-            SystVar(name='', val=extraFlags)
+            SystVar(name='_nom', val=extraFlags)
             ]
         jersysts = [
             SystVar(name='_jerup', val='--jerSys=0.2',extraFlags=extraFlags),
@@ -29,6 +29,7 @@ class Sample :
             SystVar(name='_pdfup', val='--pdfSys=1.0',extraFlags=extraFlags),
             SystVar(name='_pdfdn', val='--pdfSys=-1.0',extraFlags=extraFlags)
             ]
+        self.systs = noms
         if jersys == True :
             self.systs = self.systs + jersysts
         if jecsys == True :
@@ -39,8 +40,11 @@ class Sample :
         
 def run_iheartny( sample ) :
 
-    for isyst in sample.systs : 
-        s = ['python', 'iheartny_topxs_fwlite.py','--files=' + sample.directory + '/res/*.root', '--outname=' + sample.title + isyst.name, isyst.val, isyst.extraFlags ]
+    for isyst in sample.systs :
+        if isyst.extraFlags is not None : 
+            s = ['python', 'iheartny_topxs_fwlite.py','--files=' + sample.directory + '/res/*.root', '--outname=' + sample.title + isyst.name, isyst.val, isyst.extraFlags ]
+        else :
+            s = ['python', 'iheartny_topxs_fwlite.py','--files=' + sample.directory + '/res/*.root', '--outname=' + sample.title + isyst.name, isyst.val ]
         print 'Executing '
         print s
         subprocess.call ( s )
