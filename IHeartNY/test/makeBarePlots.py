@@ -23,6 +23,11 @@ parser.add_option('--outname', metavar='F', type='string', action='store',
                   dest='outname',
                   help='Output name for png and pdf files')
 
+parser.add_option('--ignoreData', metavar='F', action='store_true',
+                  default=False,
+                  dest='ignoreData',
+                  help='Ignore plotting data')
+
 
 (options, args) = parser.parse_args()
 
@@ -110,9 +115,12 @@ fout = [ fout_0 , fout_1 , fout_2 , fout_3 , fout_4 , fout_5  ]
 #  Example Unfolding
 # ==============================================================================
 
-fdata = TFile("histfiles/TTSemilepAnalyzer_unfolding_data_type1.root")
-fQCD = TFile("histfiles/QCD_hists_pt_type1.root")
-fmc_ttbar = TFile("histfiles/TTSemilepAnalyzer_antibtag_w_mucut_type1.root")
+
+if not options.ignoreData : 
+    fdata = TFile("histfiles/TTSemilepAnalyzer_unfolding_data_type1.root")
+    fQCD = TFile("histfiles/QCD_hists_pt_type1.root")
+
+
 fT_t = TFile("histfiles/T_t-channel_Histos_type1.root")
 fTbar_t = TFile("histfiles/Tbar_t-channel_Histos_type1.root")
 fT_s = TFile("histfiles/T_s-channel_Histos_type1.root")
@@ -145,24 +153,25 @@ fTT_Mtt_1000_Inf_pdfup = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-
 
 
 
-response= fmc_ttbar.Get("response_pt")
 
 
 print "==================================== Get Hists ====================================="
-#hTrue= fmc_ttbar.Get("ptGenTop")
-#hRecoMC = fmc_ttbar.Get("ptRecoTop").Clone()
 #hRecoMC.SetName("hRecoMC")
-hRecoData= fdata.Get("ptRecoTop").Clone()
-hRecoData.SetName("hRecoData")
+hRecoData = None
+hMeas = None
+hRecoQCD = None
+if not options.ignoreData : 
+    hRecoData= fdata.Get("ptRecoTop").Clone()
+    hRecoData.SetName("hRecoData")
 
-hRecoQCD = fQCD.Get("ptTopTagHist")
-hRecoQCD.Sumw2()
-hRecoQCD.Scale( NQCD / hRecoQCD.Integral() )
-hRecoQCD.SetFillColor(TColor.kYellow)
-hRecoQCD.Rebin(2)
+    hRecoQCD = fQCD.Get("ptTopTagHist")
+    hRecoQCD.Sumw2()
+    hRecoQCD.Scale( NQCD / hRecoQCD.Integral() )
+    hRecoQCD.SetFillColor(TColor.kYellow)
+    hRecoQCD.Rebin(2)
 
-    
-hMeas= fdata.Get("ptRecoTop")
+
+    hMeas= fdata.Get("ptRecoTop")
 
 
 
@@ -332,7 +341,7 @@ for m in xrange(6):
 
     hMeas_SingleTop.SetFillColor( TColor.kMagenta )
     hMeas_WJets.SetFillColor( TColor.kGreen )
-    hMeas.SetFillColor( TColor.kRed )
+    #hMeas.SetFillColor( TColor.kRed )
     #hRecoMC.SetFillColor( 2 )
 
     for hist in [hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
@@ -352,22 +361,30 @@ for m in xrange(6):
 
    
     c = TCanvas("datamc" + plots[m] , "datamc" + plots[m])
-    hRecoData.Draw('e')
-    hMC_stack.Draw("hist same")
-    hRecoData.Draw('e same')
-    hRecoData.SetMaximum( 500 )
+    if not options.ignoreData : 
+        hRecoData.Draw('e')
+        hMC_stack.Draw("hist same")
+        hRecoData.Draw('e same')
+        hRecoData.SetMaximum( 500 )
+    else :
+        hMC_stack.Draw("hist")
     canvs.append(c)
-    c.Print( plots[m] + options.outname + '.png' )
-    c.Print( plots[m] + options.outname + '.pdf' )
-
+    if not options.ignoreData : 
+        c.Print( plots[m] + options.outname + '.png' )
+        c.Print( plots[m] + options.outname + '.pdf' )
+    else : 
+        c.Print( plots[m] + options.outname + '_nodata.png' )
+        c.Print( plots[m] + options.outname + '_nodata.pdf' )
+        
     # write the histogram in a rootfile
 
     histsAll = [hRecoData, hMeas_TT_Mtt, hMeas_WJets, hMeas_SingleTop, hRecoQCD]
     fout[m].cd()
     for ihist in xrange(len(histsAll)) :
         hist = histsAll[ihist]
-        hist.SetName('ptRecoTop_' + names[ihist] + plots [m] )
-        hist.Write()
+        if hist is not None : 
+            hist.SetName('ptRecoTop_' + names[ihist] + plots [m] )
+            hist.Write()
     fout[m].Close()
    
     
