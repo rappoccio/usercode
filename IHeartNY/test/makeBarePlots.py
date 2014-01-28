@@ -115,13 +115,8 @@ histsData = []
 
 # Open the output file 
 
-fout_0 = TFile("normalized_jecdn_" + options.outname + ".root" , "RECREATE")
-fout_1 = TFile("normalized_jecup_" + options.outname + ".root" , "RECREATE")
-fout_2 = TFile("normalized_jerdn_" + options.outname + ".root" , "RECREATE")
-fout_3 = TFile("normalized_jerup_" + options.outname + ".root" , "RECREATE")
-fout_4 = TFile("normalized_pdfdn_" + options.outname + ".root" , "RECREATE")
-fout_5 = TFile("normalized_pdfup_" + options.outname + ".root" , "RECREATE")
-fout = [ fout_0 , fout_1 , fout_2 , fout_3 , fout_4 , fout_5  ]
+fout = TFile("normalized_" + options.outname + ".root" , "RECREATE")
+
 
 # ==============================================================================
 #  Example Unfolding
@@ -394,12 +389,13 @@ for m in xrange(6):
     # write the histogram in a rootfile
 
     histsAll = [hRecoData, hMeas_TT_Mtt, hMeas_WJets, hMeas_SingleTop, hRecoQCD]
-    fout[m].cd()
+    fout.cd()
     for ihist in xrange(len(histsAll)) :
         hist = histsAll[ihist]
         if hist is not None : 
             hist.SetName(options.hist + '__' + names[ihist] + '__' + plots [m] )
             hist.Write()
-    fout[m].Close()
+
+fout.Close()
    
     
