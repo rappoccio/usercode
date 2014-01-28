@@ -19,9 +19,15 @@ parser = OptionParser()
   
 
 parser.add_option('--outname', metavar='F', type='string', action='store',
-                  default='',
+                  default='mujets',
                   dest='outname',
                   help='Output name for png and pdf files')
+
+
+parser.add_option('--hist', metavar='F', type='string', action='store',
+                  default='ptRecoTop',
+                  dest='hist',
+                  help='Histogram to plot')
 
 parser.add_option('--ignoreData', metavar='F', action='store_true',
                   default=False,
@@ -103,18 +109,18 @@ e_TT_Mtt_0_700 = 1.0 - e_TT_Mtt_700_1000 - e_TT_Mtt_1000_Inf
 # 
 
 names = [ 'Data', 'TTbar', 'WJets', 'SingleTop', 'QCD' ]
-plots = [ 'TT_Mtt_jecdown' , 'TT_Mtt_jecup' , 'TT_Mtt_jerdown' , 'TT_Mtt_jerup' , 'TT_Mtt_pdfdown' , 'TT_Mtt_pdfup' ]
+plots = [ 'jec__down' , 'jec__up' , 'jer__down' , 'jer__up' , 'pdf__down' , 'pdf__up' ]
 canvs = []
 histsData = []
 
 # Open the output file 
 
-fout_0 = TFile("normalized_TT_Mtt_jecdn_entirephase.root" , "RECREATE")
-fout_1 = TFile("normalized_TT_Mtt_jecup_entirephase.root" , "RECREATE")
-fout_2 = TFile("normalized_TT_Mtt_jerdn_entirephase.root" , "RECREATE")
-fout_3 = TFile("normalized_TT_Mtt_jerup_entirephase.root" , "RECREATE")
-fout_4 = TFile("normalized_TT_Mtt_pdfdn_entirephase.root" , "RECREATE")
-fout_5 = TFile("normalized_TT_Mtt_pdfup_entirephase.root" , "RECREATE")
+fout_0 = TFile("normalized_jecdn_" + options.outname + ".root" , "RECREATE")
+fout_1 = TFile("normalized_jecup_" + options.outname + ".root" , "RECREATE")
+fout_2 = TFile("normalized_jerdn_" + options.outname + ".root" , "RECREATE")
+fout_3 = TFile("normalized_jerup_" + options.outname + ".root" , "RECREATE")
+fout_4 = TFile("normalized_pdfdn_" + options.outname + ".root" , "RECREATE")
+fout_5 = TFile("normalized_pdfup_" + options.outname + ".root" , "RECREATE")
 fout = [ fout_0 , fout_1 , fout_2 , fout_3 , fout_4 , fout_5  ]
 
 # ==============================================================================
@@ -169,7 +175,7 @@ hRecoData = None
 hMeas = None
 hRecoQCD = None
 if not options.ignoreData : 
-    hRecoData= fdata.Get("ptRecoTop").Clone()
+    hRecoData= fdata.Get(options.hist).Clone()
     hRecoData.SetName("hRecoData")
 
 if not options.ignoreQCD : 
@@ -187,36 +193,36 @@ if not options.ignoreQCD :
 
 
 # Get the histogram files
-hMeas_T_t     = fT_t.Get("ptRecoTop").Clone()
-hMeas_Tbar_t  = fTbar_t.Get("ptRecoTop").Clone()
-hMeas_T_s     = fT_s.Get("ptRecoTop").Clone()
-hMeas_Tbar_s  = fTbar_s.Get("ptRecoTop").Clone()
-hMeas_T_tW    = fT_tW.Get("ptRecoTop").Clone()
-hMeas_Tbar_tW = fTbar_tW.Get("ptRecoTop").Clone()
-hMeas_WJets   = fWJets.Get("ptRecoTop").Clone()
-#hMeas_TT_Mtt_700_1000 = fTT_Mtt_700_1000.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_less_700_jecdown = fTT_Mtt_less_700_jecdown.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_less_700_jecup = fTT_Mtt_less_700_jecup.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_less_700_jerdown = fTT_Mtt_less_700_jerdown.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_less_700_jerup = fTT_Mtt_less_700_jerup.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_less_700_pdfdown = fTT_Mtt_less_700_pdfdown.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_less_700_pdfup = fTT_Mtt_less_700_pdfup.Get("ptRecoTop").Clone()
+hMeas_T_t     = fT_t.Get(options.hist).Clone()
+hMeas_Tbar_t  = fTbar_t.Get(options.hist).Clone()
+hMeas_T_s     = fT_s.Get(options.hist).Clone()
+hMeas_Tbar_s  = fTbar_s.Get(options.hist).Clone()
+hMeas_T_tW    = fT_tW.Get(options.hist).Clone()
+hMeas_Tbar_tW = fTbar_tW.Get(options.hist).Clone()
+hMeas_WJets   = fWJets.Get(options.hist).Clone()
+#hMeas_TT_Mtt_700_1000 = fTT_Mtt_700_1000.Get(options.hist).Clone()
+hMeas_TT_Mtt_less_700_jecdown = fTT_Mtt_less_700_jecdown.Get(options.hist).Clone()
+hMeas_TT_Mtt_less_700_jecup = fTT_Mtt_less_700_jecup.Get(options.hist).Clone()
+hMeas_TT_Mtt_less_700_jerdown = fTT_Mtt_less_700_jerdown.Get(options.hist).Clone()
+hMeas_TT_Mtt_less_700_jerup = fTT_Mtt_less_700_jerup.Get(options.hist).Clone()
+hMeas_TT_Mtt_less_700_pdfdown = fTT_Mtt_less_700_pdfdown.Get(options.hist).Clone()
+hMeas_TT_Mtt_less_700_pdfup = fTT_Mtt_less_700_pdfup.Get(options.hist).Clone()
 
-hMeas_TT_Mtt_700_1000_jecdown = fTT_Mtt_700_1000_jecdown.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_700_1000_jecup = fTT_Mtt_700_1000_jecup.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_700_1000_jerdown = fTT_Mtt_700_1000_jerdown.Get("ptRecoTop").Clone()
-#hMeas_TT_Mtt_700_1000_jernom = fTT_Mtt_700_1000_jernom.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_700_1000_jerup = fTT_Mtt_700_1000_jerup.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_700_1000_pdfdown = fTT_Mtt_700_1000_pdfdown.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_700_1000_pdfup = fTT_Mtt_700_1000_pdfup.Get("ptRecoTop").Clone()
-#hMeas_TT_Mtt_1000_Inf = fTT_Mtt_1000_Inf.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_1000_Inf_jecdown = fTT_Mtt_1000_Inf_jecdown.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_1000_Inf_jecup = fTT_Mtt_1000_Inf_jecup.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_1000_Inf_jerdown = fTT_Mtt_1000_Inf_jerdown.Get("ptRecoTop").Clone()
-#hMeas_TT_Mtt_1000_Inf_jernom = fTT_Mtt_1000_Inf_jernom.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_1000_Inf_jerup = fTT_Mtt_1000_Inf_jerup.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_1000_Inf_pdfdown = fTT_Mtt_1000_Inf_pdfdown.Get("ptRecoTop").Clone()
-hMeas_TT_Mtt_1000_Inf_pdfup = fTT_Mtt_1000_Inf_pdfup.Get("ptRecoTop").Clone()
+hMeas_TT_Mtt_700_1000_jecdown = fTT_Mtt_700_1000_jecdown.Get(options.hist).Clone()
+hMeas_TT_Mtt_700_1000_jecup = fTT_Mtt_700_1000_jecup.Get(options.hist).Clone()
+hMeas_TT_Mtt_700_1000_jerdown = fTT_Mtt_700_1000_jerdown.Get(options.hist).Clone()
+#hMeas_TT_Mtt_700_1000_jernom = fTT_Mtt_700_1000_jernom.Get(options.hist).Clone()
+hMeas_TT_Mtt_700_1000_jerup = fTT_Mtt_700_1000_jerup.Get(options.hist).Clone()
+hMeas_TT_Mtt_700_1000_pdfdown = fTT_Mtt_700_1000_pdfdown.Get(options.hist).Clone()
+hMeas_TT_Mtt_700_1000_pdfup = fTT_Mtt_700_1000_pdfup.Get(options.hist).Clone()
+#hMeas_TT_Mtt_1000_Inf = fTT_Mtt_1000_Inf.Get(options.hist).Clone()
+hMeas_TT_Mtt_1000_Inf_jecdown = fTT_Mtt_1000_Inf_jecdown.Get(options.hist).Clone()
+hMeas_TT_Mtt_1000_Inf_jecup = fTT_Mtt_1000_Inf_jecup.Get(options.hist).Clone()
+hMeas_TT_Mtt_1000_Inf_jerdown = fTT_Mtt_1000_Inf_jerdown.Get(options.hist).Clone()
+#hMeas_TT_Mtt_1000_Inf_jernom = fTT_Mtt_1000_Inf_jernom.Get(options.hist).Clone()
+hMeas_TT_Mtt_1000_Inf_jerup = fTT_Mtt_1000_Inf_jerup.Get(options.hist).Clone()
+hMeas_TT_Mtt_1000_Inf_pdfdown = fTT_Mtt_1000_Inf_pdfdown.Get(options.hist).Clone()
+hMeas_TT_Mtt_1000_Inf_pdfup = fTT_Mtt_1000_Inf_pdfup.Get(options.hist).Clone()
 
 
 
@@ -227,7 +233,7 @@ hMeas_Tbar_s  .SetName( 'hMeas_Tbar_s')
 hMeas_T_tW    .SetName( 'hMeas_T_tW')
 hMeas_Tbar_tW .SetName( 'hMeas_Tbar_tW')
 hMeas_WJets   .SetName( 'hMeas_WJets')
-#hMeas_TT_Mtt_700_1000 .SetName( )fTT_Mtt_700_1000.Get("ptRecoTop").Clone()
+#hMeas_TT_Mtt_700_1000 .SetName( )fTT_Mtt_700_1000.Get(options.hist).Clone()
 hMeas_TT_Mtt_less_700_jecdown .SetName( 'hMeas_TT_Mtt_less_700_jecdown')
 hMeas_TT_Mtt_less_700_jecup   .SetName( 'hMeas_TT_Mtt_less_700_jecup')
 hMeas_TT_Mtt_less_700_jerdown .SetName( 'hMeas_TT_Mtt_less_700_jerdown')
@@ -379,11 +385,11 @@ for m in xrange(6):
         hMC_stack.Draw("hist")
     canvs.append(c)
     if not options.ignoreData : 
-        c.Print( plots[m] + options.outname + '.png' )
-        c.Print( plots[m] + options.outname + '.pdf' )
+        c.Print( 'normalized_' + plots[m] + options.outname + '.png' )
+        c.Print( 'normalized_' + plots[m] + options.outname + '.pdf' )
     else : 
-        c.Print( plots[m] + options.outname + '_nodata.png' )
-        c.Print( plots[m] + options.outname + '_nodata.pdf' )
+        c.Print( 'normalized_' + plots[m] + options.outname + '_nodata.png' )
+        c.Print( 'normalized_' + plots[m] + options.outname + '_nodata.pdf' )
         
     # write the histogram in a rootfile
 
@@ -392,7 +398,7 @@ for m in xrange(6):
     for ihist in xrange(len(histsAll)) :
         hist = histsAll[ihist]
         if hist is not None : 
-            hist.SetName('ptRecoTop_' + names[ihist] + plots [m] )
+            hist.SetName(options.hist + '__' + names[ihist] + '__' + plots [m] )
             hist.Write()
     fout[m].Close()
    
