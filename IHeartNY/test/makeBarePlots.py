@@ -28,6 +28,12 @@ parser.add_option('--ignoreData', metavar='F', action='store_true',
                   dest='ignoreData',
                   help='Ignore plotting data')
 
+parser.add_option('--ignoreQCD', metavar='F', action='store_true',
+                  default=False,
+                  dest='ignoreQCD',
+                  help='Ignore plotting QCD')
+
+
 
 (options, args) = parser.parse_args()
 
@@ -117,7 +123,9 @@ fout = [ fout_0 , fout_1 , fout_2 , fout_3 , fout_4 , fout_5  ]
 
 
 if not options.ignoreData : 
-    fdata = TFile("histfiles/TTSemilepAnalyzer_unfolding_data_type1.root")
+    fdata = TFile("histfiles/SingleMu_iheartNY_V1_mu_nom_type1.root")
+
+if not options.ignoreQCD :
     fQCD = TFile("histfiles/QCD_hists_pt_type1.root")
 
 
@@ -164,6 +172,7 @@ if not options.ignoreData :
     hRecoData= fdata.Get("ptRecoTop").Clone()
     hRecoData.SetName("hRecoData")
 
+if not options.ignoreQCD : 
     hRecoQCD = fQCD.Get("ptTopTagHist")
     hRecoQCD.Sumw2()
     hRecoQCD.Scale( NQCD / hRecoQCD.Integral() )
@@ -171,7 +180,7 @@ if not options.ignoreData :
     hRecoQCD.Rebin(2)
 
 
-    hMeas= fdata.Get("ptRecoTop")
+
 
 
 
