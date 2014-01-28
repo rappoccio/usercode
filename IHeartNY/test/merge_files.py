@@ -1,9 +1,10 @@
 #!/usr/bin/ python
 # ==============================================================================
 #  File and Version Information:
-#        Crosscheck.py 
+#        merge_files.py 
 #        01/16/14 
-#        Maral Alyari 
+#        Maral Alyari
+#  Purpose : Put all of the histograms from several files together into one.
 # ==============================================================================
 
 from ROOT import *
