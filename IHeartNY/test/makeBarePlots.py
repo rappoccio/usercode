@@ -91,7 +91,7 @@ e_TT_Mtt_1000_Inf = 0.014
 e_TT_Mtt_0_700 = 1.0 - e_TT_Mtt_700_1000 - e_TT_Mtt_1000_Inf
 # 
 
-names = [ 'Data', 'TTbar', 'WJets', 'SingleTop', 'QCD' ]
+names = [ 'DATA', 'TTbar', 'WJets', 'SingleTop', 'QCD' ]
 plots = [ 'jec__down' , 'jec__up' , 'jer__down' , 'jer__up' , 'pdf__down' , 'pdf__up' , 'nom' ]
 canvs = []
 histsData = []
@@ -531,11 +531,12 @@ for m in range(0,len(plots)):
     for ihist in xrange(len(histsAll)) :
         hist = histsAll[ihist]
         if hist is not None :
-            if plots[m] != 'nom' : 
-                hist.SetName(options.hist + '__' + names[ihist] + '__' + plots [m] )
-            else :
+            if plots[m] == 'nom'  : 
                 hist.SetName(options.hist + '__' + names[ihist]  )
-            hist.Write()
+                hist.Write()
+            elif ihist != 0 :
+                hist.SetName(options.hist + '__' + names[ihist] + '__' + plots [m] )
+                hist.Write()
 
 fout.Close()
    
