@@ -64,7 +64,7 @@ def build_model(type, jet1 = None, mcstat = True):
     if True :
 
         model = muplusjets(
-            files=['normalized_mujets.root'],
+            files=['normalized_mujets_vtxMass.root'],
             infilter=filterqcd,
             signal='TTbar',
             mcstat=mcstat

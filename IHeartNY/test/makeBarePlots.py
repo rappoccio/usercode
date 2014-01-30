@@ -61,13 +61,13 @@ SF_t = 0.94
 
 # Cross sections (in fb) and the number of MC events
 sigma_ttbar_NNLO = 245.8 * 1000. # fb, from http://arxiv.org/pdf/1303.6254.pdf
-sigma_T_t_NNLO = 56.4 * 1000.
-sigma_Tbar_t_NNLO = 30.7 * 1000.
-sigma_T_s_NNLO = 3.79 * 1000.
-sigma_Tbar_s_NNLO = 1.76 * 1000.
-sigma_T_tW_NNLO = 11.1 * 1000.
-sigma_Tbar_tW_NNLO = 11.1 * 1000.
-sigma_WJets_NNLO = 37509 * 1000.
+sigma_T_t_NNLO = 56.4 * 1000. * 3
+sigma_Tbar_t_NNLO = 30.7 * 1000. * 3
+sigma_T_s_NNLO = 3.79 * 1000. * 3
+sigma_Tbar_s_NNLO = 1.76 * 1000. * 3
+sigma_T_tW_NNLO = 11.1 * 1000. * 3
+sigma_Tbar_tW_NNLO = 11.1 * 1000. * 3
+sigma_WJets_NNLO = 36703.2 * 1000.
 
 # MC event counts from B2G twiki here :
 # https://twiki.cern.ch/twiki/bin/view/CMS/B2GTopLikeBSM53X#Backgrounds
