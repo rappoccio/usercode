@@ -520,6 +520,13 @@ for m in range(0,len(plots)):
     leg.AddEntry( hMeas_TT_Mtt[m], 't#bar{t}', 'f')
     leg.AddEntry( hMeas_SingleTop[m], 'single top', 'f')
     leg.AddEntry( hMeas_WJets[m], 'W+jets', 'f')
+
+    
+    if 'vtxMass' in  options.hist :
+        for zerohist in [hMeas_WJets[m], hMeas_SingleTop[m], hMeas_TT_Mtt[m] ] :
+            zerohist.SetBinContent(1, 0.0)
+        if options.ignoreData == False :
+            hRecoData.SetBinContent(1, 0.0)
     
     # Make a stack plot of the MC to compare to data
     hMC_stack = THStack("hMC_stack",
