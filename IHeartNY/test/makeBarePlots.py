@@ -22,6 +22,11 @@ parser.add_option('--hist', metavar='F', type='string', action='store',
                   dest='hist',
                   help='Histogram to plot')
 
+parser.add_option('--maxy', metavar='F', type='float', action='store',
+                  default=500,
+                  dest='maxy',
+                  help='Maximum y in histogram')
+
 parser.add_option('--ignoreData', metavar='F', action='store_true',
                   default=False,
                   dest='ignoreData',
@@ -33,6 +38,10 @@ parser.add_option('--ignoreQCD', metavar='F', action='store_true',
                   help='Ignore plotting QCD')
 
 
+parser.add_option('--drawLegend', metavar='F', action='store_true',
+                  default=False,
+                  dest='drawLegend',
+                  help='Draw a legend')
 
 (options, args) = parser.parse_args()
 
@@ -49,9 +58,10 @@ gStyle.SetTitleFont(43)
 #gStyle.SetTitleFontSize(0.05)
 gStyle.SetTitleFont(43, "XYZ")
 gStyle.SetTitleSize(30, "XYZ")
-gStyle.SetTitleOffset(3.5, "X")
+gStyle.SetTitleOffset(1.0, "X")
+gStyle.SetTitleOffset(1.0, "Y")
 gStyle.SetLabelFont(43, "XYZ")
-gStyle.SetLabelSize(24, "XYZ")
+gStyle.SetLabelSize(20, "XYZ")
 
 
 # Performance numbers
@@ -472,13 +482,21 @@ hMeas_WJets   = [ hMeas_WJets_jecdown   , hMeas_WJets_jecup   , hMeas_WJets_jerd
 hMeas_TT_Mtt = []
 hMeas_SingleTop = []
 
+
+legs = []
 #m = input(" Choose the distribution: 0) TT_Mtt_jecdown  1) TT_Mtt_jecup  2) TT_Mtt_jerdown  3) TT_Mtt_jerup  4) TT_Mtt_pdfdown  5) TT_Mtt_pdfup : #")
 for m in range(0,len(plots)):
+
+    leg = TLegend(0.5, 0.55, 0.84, 0.84)
+    leg.SetBorderSize(0)
+    leg.SetFillColor(0)
+
     hMeas_TT_Mtt.append(hMeas_TT_Mtt_less_700[m].Clone())
     hMeas_TT_Mtt[m].SetFillColor( TColor.kRed )
     for hist in [ hMeas_TT_Mtt_700_1000[m] , hMeas_TT_Mtt_1000_Inf[m] ] :
             print 'Adding mtt for' + plots[m]
             hMeas_TT_Mtt[m].Add( hist )
+
 
     hists.append( hMeas_TT_Mtt[m] )
     hMeas_SingleTop.append( hMeas_T_t[m].Clone())
@@ -490,13 +508,25 @@ for m in range(0,len(plots)):
     #hMeas.SetFillColor( TColor.kRed )
     #hRecoMC.SetFillColor( 2 )
 
+
+
+    
+
     for hist in [hMeas_Tbar_t[m], hMeas_T_s[m], hMeas_Tbar_s[m], hMeas_T_tW[m], hMeas_Tbar_tW[m]] :
         print 'adding hist ' + hist.GetName()
         hMeas_SingleTop[m].Add( hist )
 
+
+    leg.AddEntry( hMeas_TT_Mtt[m], 't#bar{t}', 'f')
+    leg.AddEntry( hMeas_SingleTop[m], 'single top', 'f')
+    leg.AddEntry( hMeas_WJets[m], 'W+jets', 'f')
     
     # Make a stack plot of the MC to compare to data
-    hMC_stack = THStack("hMC_stack", "hMC_stack")
+    hMC_stack = THStack("hMC_stack",
+                        hMeas_TT_Mtt[m].GetTitle() + ';' +
+                        hMeas_TT_Mtt[m].GetXaxis().GetTitle() + ';' +
+                        hMeas_TT_Mtt[m].GetYaxis().GetTitle()
+                        )
     print 'Making stack'
     hMC_stack.Add( hMeas_WJets[m] )
     hMC_stack.Add( hMeas_SingleTop[m] )
@@ -507,14 +537,21 @@ for m in range(0,len(plots)):
 
    
     c = TCanvas("datamc" + plots[m] , "datamc" + plots[m])
-    if not options.ignoreData : 
+    if not options.ignoreData :
+        leg.AddEntry( hRecoData, '19.6 fb^{-1}', 'p')
+        hRecoData.UseCurrentStyle()
         hRecoData.Draw('e')
         hMC_stack.Draw("hist same")
         hRecoData.Draw('e same')
-        hRecoData.SetMaximum( 500 )
+        hRecoData.SetMaximum( options.maxy )
     else :
+        hMC_stack.UseCurrentStyle()
         hMC_stack.Draw("hist")
+    if options.drawLegend :
+        leg.Draw()
+
     canvs.append(c)
+    legs.append(leg)
     if not options.ignoreData : 
         c.Print( 'normalized_' + plots[m] + options.outname + '.png' )
         c.Print( 'normalized_' + plots[m] + options.outname + '.pdf' )
