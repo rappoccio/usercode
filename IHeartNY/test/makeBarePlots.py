@@ -21,6 +21,13 @@ parser.add_option('--hist', metavar='F', type='string', action='store',
                   default='ptRecoTop',
                   dest='hist',
                   help='Histogram to plot')
+                  
+                  
+parser.add_option('--NQCD', metavar='F', type='float', action='store',
+                  default=15.0 ,
+                  dest='NQCD',
+                  help='QCD Normalization')
+                  
 
 parser.add_option('--maxy', metavar='F', type='float', action='store',
                   default=500,
@@ -93,7 +100,7 @@ Nmc_TT_Mtt_700_1000 = 3082812
 Nmc_TT_Mtt_1000_Inf = 1249111
 
 # QCD Normalization from MET fits
-NQCD = 15.0
+NQCD = options.NQCD
 
 # ttbar filter efficiencies
 e_TT_Mtt_700_1000 = 0.074
@@ -101,14 +108,14 @@ e_TT_Mtt_1000_Inf = 0.014
 e_TT_Mtt_0_700 = 1.0 - e_TT_Mtt_700_1000 - e_TT_Mtt_1000_Inf
 # 
 
-names = [ 'DATA', 'TTbar', 'WJets', 'SingleTop', 'QCD' ]
+names = [ 'DATA', 'TTbar', 'WJets', 'SingleTop', 'QCD_SingleMu' ]
 plots = [ 'jec__down' , 'jec__up' , 'jer__down' , 'jer__up' , 'pdf__down' , 'pdf__up' , 'nom' , 'scale__down' , 'scale__up']
 canvs = []
 histsData = []
 
 # Open the output file 
 
-fout = TFile("normalized_" + options.outname + ".root" , "RECREATE")
+fout = TFile("normalized_" + options.outname + '_' + options.hist + ".root" , "RECREATE")
 
 
 # ==============================================================================
@@ -121,7 +128,9 @@ if not options.ignoreData :
 
 if not options.ignoreQCD :
     fQCD = TFile("histfiles/QCD_hists_pt_type1.root")
+    
 
+fQCD_SingleMu = TFile("histfiles/SingleMu_Run2012_QCD_merged")
 
 fT_t_nom     = TFile("histfiles/T_t-channel_Histos_type1.root")
 fT_t_jecdown = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn_type1.root")
@@ -226,6 +235,8 @@ if not options.ignoreQCD :
 
 
 # Get the histogram files
+hMeas_QCD_SingleMu = fQCD_SingleMu.Get(options.hist).Clone()
+
 hMeas_T_t_nom     = fT_t_nom.Get(options.hist).Clone()
 hMeas_T_t_jecdown = fT_t_jecdown.Get(options.hist).Clone()
 hMeas_T_t_jecup   = fT_t_jecup.Get(options.hist).Clone()
@@ -311,7 +322,7 @@ hMeas_TT_Mtt_1000_Inf_scaleup   = fTT_Mtt_1000_Inf_scaleup.Get(options.hist).Clo
 
 
 
-
+hMeas_QCD_SingleMu.SetName('hMeas_fQCD_SingleMu')
 
 hMeas_T_t_nom     .SetName( 'hMeas_T_t')
 hMeas_T_t_jecdown .SetName( 'hMeas_T_t_jecdown' )
@@ -395,7 +406,7 @@ hMeas_TT_Mtt_1000_Inf_scaleup   .SetName( 'hMeas_TT_Mtt_1000_Inf_scaleup')
 #
 # For now, we don't have the fit, so we do from MC
 
-
+hMeas_QCD_SingleMu.Scale( NQCD / hMeas_QCD_SingleMu.Integral() )
 
 hMeas_T_t_nom    .Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_b * SF_t  )
 hMeas_T_t_jecdown.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_b * SF_t  )
@@ -500,7 +511,9 @@ hMeas_T_tW    = [ hMeas_T_t_jecdown     , hMeas_T_t_jecup     , hMeas_T_t_jerdow
 
 hMeas_Tbar_tW = [ hMeas_Tbar_tW_jecdown , hMeas_Tbar_tW_jecup , hMeas_Tbar_tW_jerdown , hMeas_Tbar_tW_jerup , hMeas_Tbar_tW_nom , hMeas_Tbar_tW_nom , hMeas_Tbar_tW_nom , hMeas_Tbar_tW_nom , hMeas_Tbar_tW_nom]
 
-hMeas_WJets   = [ hMeas_WJets_jecdown   , hMeas_WJets_jecup   , hMeas_WJets_jerdown   , hMeas_WJets_jerup   ,hMeas_WJets_nom    , hMeas_WJets_nom   , hMeas_WJets_nom   , hMeas_WJets_nom   , hMeas_WJets_nom]
+hMeas_WJets   = [ hMeas_WJets_jecdown   , hMeas_WJets_jecup   , hMeas_WJets_jerdown   , hMeas_WJets_jerup   , hMeas_WJets_nom   , hMeas_WJets_nom   , hMeas_WJets_nom   , hMeas_WJets_nom   , hMeas_WJets_nom]
+
+#hMeas_QCD     = [ hMeas_QCD_SingleMu    , hMeas_QCD_SingleMu  , hMeas_QCD_SingleMu    , hMeas_QCD_SingleMu  , hMeas_QCD_SingleMu, hMeas_QCD_SingleMu, hMeas_QCD_SingleMu, hMeas_QCD_SingleMu, hMeas_QCD_SingleMu]
 
 hMeas_TT_Mtt = []
 hMeas_SingleTop = []
@@ -522,31 +535,33 @@ for m in range(0,len(plots)):
 
 
     hists.append( hMeas_TT_Mtt[m] )
+    
     hMeas_SingleTop.append( hMeas_T_t[m].Clone())
-
-    hists.append( hMeas_SingleTop[m] )
-
+    #hists.append( hMeas_SingleTop[m] )
     hMeas_SingleTop[m].SetFillColor( TColor.kMagenta )
     hMeas_WJets[m].SetFillColor( TColor.kGreen )
+    hMeas_QCD_SingleMu.SetFillColor( TColor.kYellow )
     #hMeas.SetFillColor( TColor.kRed )
     #hRecoMC.SetFillColor( 2 )
-
-
-
     
-
     for hist in [hMeas_Tbar_t[m], hMeas_T_s[m], hMeas_Tbar_s[m], hMeas_T_tW[m], hMeas_Tbar_tW[m]] :
         print 'adding hist ' + hist.GetName()
         hMeas_SingleTop[m].Add( hist )
-
+    
+    hists.append( hMeas_SingleTop[m] )
+    
+    hists.append( hMeas_QCD_SingleMu.Clone() )
+    
+    hists.append( hMeas_WJets[m] )
 
     leg.AddEntry( hMeas_TT_Mtt[m], 't#bar{t}', 'f')
     leg.AddEntry( hMeas_SingleTop[m], 'single top', 'f')
     leg.AddEntry( hMeas_WJets[m], 'W+jets', 'f')
+    leg.AddEntry( hMeas_QCD_SingleMu, 'QCD' , 'f')
 
     
     if 'vtxMass' in  options.hist :
-        for zerohist in [hMeas_WJets[m], hMeas_SingleTop[m], hMeas_TT_Mtt[m] ] :
+        for zerohist in [hMeas_WJets[m], hMeas_SingleTop[m], hMeas_TT_Mtt[m], hMeas_QCD_SingleMu ] :
             zerohist.SetBinContent(1, 0.0)
         if options.ignoreData == False :
             hRecoData.SetBinContent(1, 0.0)
@@ -558,9 +573,11 @@ for m in range(0,len(plots)):
                         hMeas_TT_Mtt[m].GetYaxis().GetTitle()
                         )
     print 'Making stack'
+    hMC_stack.Add( hMeas_QCD_SingleMu.Clone() )
     hMC_stack.Add( hMeas_WJets[m] )
     hMC_stack.Add( hMeas_SingleTop[m] )
     hMC_stack.Add( hMeas_TT_Mtt[m] )
+    
     # TO DO : NEED TO FIX THE BINNING FOR QCD : 
     #MC_stack.Add( hRecoQCD )
     #hMC_stack.Add( hRecoMC )
@@ -583,17 +600,17 @@ for m in range(0,len(plots)):
     canvs.append(c)
     legs.append(leg)
     if not options.ignoreData : 
-        c.Print( 'normalized_' + plots[m] + options.outname + '.png' )
-        c.Print( 'normalized_' + plots[m] + options.outname + '.pdf' )
+        c.Print( 'normalized_' + plots[m] + options.outname + '_' + options.hist + '.png' )
+        c.Print( 'normalized_' + plots[m] + options.outname + '_' + options.hist + '.pdf' )
     else : 
-        c.Print( 'normalized_' + plots[m] + options.outname + '_nodata.png' )
-        c.Print( 'normalized_' + plots[m] + options.outname + '_nodata.pdf' )
+        c.Print( 'normalized_' + plots[m] + options.outname + '_' + options.hist + '_nodata.png' )
+        c.Print( 'normalized_' + plots[m] + options.outname + '_' + options.hist + '_nodata.pdf' )
 
 
         
     # write the histogram in a rootfile
 
-    histsAll = [hRecoData , hMeas_TT_Mtt[m], hMeas_WJets[m], hMeas_SingleTop[m], hRecoQCD]
+    histsAll = [hRecoData , hMeas_TT_Mtt[m], hMeas_WJets[m], hMeas_SingleTop[m], hMeas_QCD_SingleMu ]
     fout.cd()
     for ihist in xrange(len(histsAll)) :
         hist = histsAll[ihist]
