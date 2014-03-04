@@ -9,13 +9,16 @@ class SystVar :
         self.extraFlags = extraFlags
 
 class Sample :
-    def __init__(self, directory, title, jersys=True, jecsys=True, pdfsys=True, extraFlags='' ) :
+    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, qcd=False, extraFlags='' ) :
         self.directory=directory
         self.title=title
         self.extraFlags=extraFlags
         self.systs = []
         noms = [
             SystVar(name='_nom', val=extraFlags)
+            ]
+        qcds = [
+            SystVar(name='_qcd', val='--useLoose', extraFlags=extraFlags)
             ]
         jersysts = [
             SystVar(name='_jerup', val='--jerSys=0.2',extraFlags=extraFlags),
@@ -29,7 +32,11 @@ class Sample :
             SystVar(name='_pdfup', val='--pdfSys=1.0',extraFlags=extraFlags),
             SystVar(name='_pdfdn', val='--pdfSys=-1.0',extraFlags=extraFlags)
             ]
-        self.systs = noms
+        self.systs = []
+        if noms == True :
+            self.systs = self.systs + noms
+        if qcd == True :
+            self.systs = self.systs + qcds      
         if jersys == True :
             self.systs = self.systs + jersysts
         if jecsys == True :
