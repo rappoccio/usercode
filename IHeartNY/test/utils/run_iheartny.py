@@ -14,7 +14,7 @@ class Sample :
         self.title=title
         self.extraFlags=extraFlags
         self.systs = []
-        noms = [
+        nom = [
             SystVar(name='_nom', val=extraFlags)
             ]
         qcds = [
@@ -34,7 +34,7 @@ class Sample :
             ]
         self.systs = []
         if noms == True :
-            self.systs = self.systs + noms
+            self.systs = self.systs + nom
         if qcd == True :
             self.systs = self.systs + qcds      
         if jersys == True :

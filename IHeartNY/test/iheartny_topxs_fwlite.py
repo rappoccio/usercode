@@ -241,6 +241,13 @@ nJets = ROOT.TH1F("nJets",         "Number of Jets, p_{T} > 30 GeV;N_{Jets};Numb
 nMuons = ROOT.TH1F("nMuons",         "Number of Muons, p_{T} > 45 GeV;N_{Muons};Number",               5, -0.5, 4.5 )
 nElectrons = ROOT.TH1F("nElectrons",         "Number of Electrons, p_{T} > 60 GeV;N_{Jets};Number",               5, -0.5, 4.5 )
 
+pfIsoPre = ROOT.TH1F("pfIsoPre", "PF relative isolation", 200, 0., 2.)
+pfIsoPost = ROOT.TH1F("pfIsoPost", "PF relative isolation", 200, 0., 2.)
+pfIso0 = ROOT.TH1F("pfIso0", "MET", 200, 0., 2.)
+pfIso1 = ROOT.TH1F("pfIso1", "MET", 200, 0., 2.)
+pfIso2 = ROOT.TH1F("pfIso2", "MET", 200, 0., 2.)
+pfIso3 = ROOT.TH1F("pfIso3", "MET", 200, 0., 2.)
+
 ptMu = ROOT.TH1F("ptMu", "p_{T} of Muon", 200, 0., 200.)
 ptMET0 = ROOT.TH1F("ptMET0", "MET", 200, 0., 200.)
 ptMET1 = ROOT.TH1F("ptMET1", "MET", 200, 0., 200.)
@@ -730,6 +737,7 @@ for event in events:
     for imuonPt in range(0,len(muonPts)):
         muonPt = muonPts[imuonPt]
         if muonPt > 45.0 :
+            pfIsoPre.Fill( muonPfisos[imuonPt] / muonPt, weight )
             if options.useLoose :
 		if options.debug : 
 			print 'imu = ' + str(imuonPt) + ', iso/pt = ' + str( muonPfisos[imuonPt] ) + '/' + str(muonPt) + ' = ' + str(muonPfisos[imuonPt]/muonPt)
@@ -759,7 +767,7 @@ for event in events:
     event.getByLabel (npvLabel, npvHandle)
     numvert 		= 	npvHandle.product()
 	
-        
+    pfIsoPost.Fill( muonPfisos[imuonPt] / muonPt, weight )
     nMuons.Fill( nMuonsVal,weight )
     #print "Filling???"
     if nMuonsVal > 0 :
@@ -967,7 +975,7 @@ for event in events:
 
     htLep0.Fill( htLepVal,weight )
     ptMET0.Fill( met,weight )
-
+    pfIso0.Fill( muonPfisos[imuonPt] / muonPt, weight )
 
     nJetsVal = 0
     for jet in ak5Jets :
@@ -984,6 +992,7 @@ for event in events:
 
     htLep1.Fill( htLepVal,weight )
     ptMET1.Fill( met,weight )
+    pfIso1.Fill( muonPfisos[imuonPt] / muonPt, weight )
     ptJet0.Fill( ak5Jets[0].Perp(),weight )
     
     # Require leading jet pt to be pt > 200 GeV
@@ -991,6 +1000,7 @@ for event in events:
 
     htLep2.Fill( htLepVal,weight )
     ptMET2.Fill( met,weight )
+    pfIso2.Fill( muonPfisos[imuonPt] / muonPt, weight )
     event.getByLabel (ak5JetCSVLabel, ak5JetCSVHandle)
     ak5JetCSVs = ak5JetCSVHandle.product()
 
@@ -1013,6 +1023,7 @@ for event in events:
 
     htLep3.Fill( htLepVal,weight )
     ptMET3.Fill( met,weight )
+    pfIso3.Fill( muonPfisos[imuonPt] / muonPt, weight )
 
     ## event.getByLabel (ca8JetEtaLabel, ca8JetEtaHandle)
     ## ca8JetEtas = ca8JetEtaHandle.product()
