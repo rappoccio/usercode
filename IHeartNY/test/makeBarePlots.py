@@ -74,7 +74,8 @@ gStyle.SetLabelSize(20, "XYZ")
 # Performance numbers
 lum = 19.7 # fb-1
 SF_b = 0.97
-SF_t = 0.94
+SF_t = 1.0
+#SF_t = 0.94
 
 # Cross sections (in fb) and the number of MC events
 sigma_ttbar_NNLO = 245.8 * 1000. # fb, from http://arxiv.org/pdf/1303.6254.pdf
@@ -137,6 +138,7 @@ fT_t_jecdown = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheart
 fT_t_jecup   = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fT_t_jerdown = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
 fT_t_jerup   = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerup_type1.root")
+fT_t_qcd   = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 
 
 fTbar_t_nom     = TFile("histfiles/Tbar_t-channel_Histos_type1.root")
@@ -144,13 +146,14 @@ fTbar_t_jecdown = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_
 fTbar_t_jecup   = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fTbar_t_jerdown = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
 fTbar_t_jerup   = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerup_type1.root")
-
+fTbar_t_qcd   = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 
 fT_s_nom     = TFile("histfiles/T_s-channel_Histos_type1.root")
 fT_s_jecdown = TFile("histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn_type1.root")
 fT_s_jecup   = TFile("histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fT_s_jerdown = TFile("histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
 fT_s_jerup   = TFile("histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerup_type1.root")
+fT_s_qcd   = TFile("histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 
 
 fTbar_s_nom     = TFile("histfiles/Tbar_s-channel_Histos_type1.root")
@@ -158,6 +161,7 @@ fTbar_s_jecdown = TFile("histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_
 fTbar_s_jecup   = TFile("histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_muu_jecup_type1.root")
 fTbar_s_jerdown = TFile("histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_muu_jerdn_type1.root")
 fTbar_s_jerup   = TFile("histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_muu_jerup_type1.root")
+fTbar_s_qcd   = TFile("histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_muu_qcd_type1.root")
 
 
 fT_tW_nom     = TFile("histfiles/T_tW-channel_Histos_type1.root")
@@ -165,6 +169,7 @@ fT_tW_jecdown = TFile("histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_i
 fT_tW_jecup   = TFile("histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fT_tW_jerdown = TFile("histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
 fT_tW_jerup   = TFile("histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerup_type1.root")
+fT_tW_qcd   = TFile("histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 
 
 fTbar_tW_nom     = TFile("histfiles/Tbar_tW-channel_Histos_type1.root")
@@ -172,6 +177,7 @@ fTbar_tW_jecdown = TFile("histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-ta
 fTbar_tW_jecup   = TFile("histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fTbar_tW_jerdown = TFile("histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
 fTbar_tW_jerup   = TFile("histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerup_type1.root")
+fTbar_tW_qcd   = TFile("histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 
 
 fWJets_nom     = TFile("histfiles/WJetsToLNu_Histos_type1.root")
@@ -179,6 +185,7 @@ fWJets_jecdown = TFile("histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_ih
 fWJets_jecup   = TFile("histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_iheartNY_V1_mu_jecup_type1.root")
 fWJets_jerdown = TFile("histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_iheartNY_V1_mu_jerdn_type1.root")
 fWJets_jerup   = TFile("histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_iheartNY_V1_mu_jerup_type1.root")
+fWJets_qcd   = TFile("histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_iheartNY_V1_mu_qcd_type1.root")
 
 
 fTT_Mtt_less_700_nom       = TFile("histfiles/TT_Mtt-max700-channel_Histos_type1.root")
@@ -186,6 +193,7 @@ fTT_Mtt_less_700_jecdown   = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tau
 fTT_Mtt_less_700_jecup     = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fTT_Mtt_less_700_jerdown   = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
 fTT_Mtt_less_700_jerup     = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerup_type1.root")
+fTT_Mtt_less_700_qcd     = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 fTT_Mtt_less_700_pdfdown   = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfdn_type1.root")
 fTT_Mtt_less_700_pdfup     = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup_type1.root")
 fTT_Mtt_less_700_scaledown = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaledown_type1.root")
@@ -197,6 +205,7 @@ fTT_Mtt_700_1000_jecup     = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8
 fTT_Mtt_700_1000_jerdown   = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
 #fTT_Mtt_700_1000_jernom   = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jernom_type1.root")
 fTT_Mtt_700_1000_jerup     = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerup_type1.root")
+fTT_Mtt_700_1000_qcd     = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 fTT_Mtt_700_1000_pdfdown   = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfdn_type1.root")
 fTT_Mtt_700_1000_pdfup     = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup_type1.root")
 fTT_Mtt_700_1000_scaledown = TFile("histfiles/TT_700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaledown_type1.root")
@@ -208,6 +217,7 @@ fTT_Mtt_1000_Inf_jecup     = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8
 fTT_Mtt_1000_Inf_jerdown   = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
 #fTT_Mtt_1000_Inf_jernom   = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jernom_type1.root")
 fTT_Mtt_1000_Inf_jerup     = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerup_type1.root")
+fTT_Mtt_1000_Inf_qcd     = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 fTT_Mtt_1000_Inf_pdfdown   = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfdn_type1.root")
 fTT_Mtt_1000_Inf_pdfup     = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup_type1.root")
 fTT_Mtt_1000_Inf_scaledown = TFile("histfiles/TT_1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaledown_type1.root")
@@ -224,15 +234,6 @@ if not options.ignoreData :
     hRecoData= fdata.Get(options.hist).Clone()
     hRecoData.SetName("hRecoData")
 
-if not options.ignoreQCD : 
-    hRecoQCD = fQCD.Get("ptTopTagHist")
-    hRecoQCD.Sumw2()
-    hRecoQCD.Scale( NQCD / hRecoQCD.Integral() )
-    hRecoQCD.SetFillColor(TColor.kYellow)
-    hRecoQCD.Rebin(2)
-
-
-
 
 # Get the histogram files
 hMeas_QCD_SingleMu = fQCD_SingleMu.Get(options.hist).Clone()
@@ -242,6 +243,7 @@ hMeas_T_t_jecdown = fT_t_jecdown.Get(options.hist).Clone()
 hMeas_T_t_jecup   = fT_t_jecup.Get(options.hist).Clone()
 hMeas_T_t_jerdown = fT_t_jerdown.Get(options.hist).Clone()
 hMeas_T_t_jerup   = fT_t_jerup.Get(options.hist).Clone()
+hMeas_T_t_qcd   = fT_t_qcd.Get(options.hist).Clone()
 
 
 hMeas_Tbar_t_nom     = fTbar_t_nom.Get(options.hist).Clone()
@@ -249,6 +251,7 @@ hMeas_Tbar_t_jecdown = fTbar_t_jecdown.Get(options.hist).Clone()
 hMeas_Tbar_t_jecup   = fTbar_t_jecup.Get(options.hist).Clone()
 hMeas_Tbar_t_jerdown = fTbar_t_jerdown.Get(options.hist).Clone()
 hMeas_Tbar_t_jerup   = fTbar_t_jerup.Get(options.hist).Clone()
+hMeas_Tbar_t_qcd   = fTbar_t_qcd.Get(options.hist).Clone()
 
 
 hMeas_T_s_nom     = fT_s_nom.Get(options.hist).Clone()
@@ -256,6 +259,7 @@ hMeas_T_s_jecdown = fT_s_jecdown.Get(options.hist).Clone()
 hMeas_T_s_jecup   = fT_s_jecup.Get(options.hist).Clone()
 hMeas_T_s_jerdown = fT_s_jerdown.Get(options.hist).Clone()
 hMeas_T_s_jerup   = fT_s_jerup.Get(options.hist).Clone()
+hMeas_T_s_qcd   = fT_s_qcd.Get(options.hist).Clone()
 
 
 hMeas_Tbar_s_nom     = fTbar_s_nom.Get(options.hist).Clone()
@@ -263,6 +267,7 @@ hMeas_Tbar_s_jecdown = fTbar_s_jecdown.Get(options.hist).Clone()
 hMeas_Tbar_s_jecup   = fTbar_s_jecup.Get(options.hist).Clone()
 hMeas_Tbar_s_jerdown = fTbar_s_jerdown.Get(options.hist).Clone()
 hMeas_Tbar_s_jerup   = fTbar_s_jerup.Get(options.hist).Clone()
+hMeas_Tbar_s_qcd   = fTbar_s_qcd.Get(options.hist).Clone()
 
 
 hMeas_T_tW_nom     = fT_tW_nom.Get(options.hist).Clone()
@@ -270,6 +275,7 @@ hMeas_T_tW_jecdown = fT_tW_jecdown.Get(options.hist).Clone()
 hMeas_T_tW_jecup   = fT_tW_jecup.Get(options.hist).Clone()
 hMeas_T_tW_jerdown = fT_tW_jerdown.Get(options.hist).Clone()
 hMeas_T_tW_jerup   = fT_tW_jerup.Get(options.hist).Clone()
+hMeas_T_tW_qcd   = fT_tW_qcd.Get(options.hist).Clone()
 
 
 hMeas_Tbar_tW_nom     = fTbar_tW_nom.Get(options.hist).Clone()
@@ -277,6 +283,7 @@ hMeas_Tbar_tW_jecdown = fTbar_tW_jecdown.Get(options.hist).Clone()
 hMeas_Tbar_tW_jecup   = fTbar_tW_jecup.Get(options.hist).Clone()
 hMeas_Tbar_tW_jerdown = fTbar_tW_jerdown.Get(options.hist).Clone()
 hMeas_Tbar_tW_jerup   = fTbar_tW_jerup.Get(options.hist).Clone()
+hMeas_Tbar_tW_qcd   = fTbar_tW_qcd.Get(options.hist).Clone()
 
 
 hMeas_WJets_nom     = fWJets_nom.Get(options.hist).Clone()
@@ -284,6 +291,7 @@ hMeas_WJets_jecdown = fWJets_jecdown.Get(options.hist).Clone()
 hMeas_WJets_jecup   = fWJets_jecup.Get(options.hist).Clone()
 hMeas_WJets_jerdown = fWJets_jerdown.Get(options.hist).Clone()
 hMeas_WJets_jerup   = fWJets_jerup.Get(options.hist).Clone()
+hMeas_WJets_qcd   = fWJets_qcd.Get(options.hist).Clone()
 
 
 hMeas_TT_Mtt_less_700_nom       = fTT_Mtt_less_700_nom.Get(options.hist).Clone()
@@ -291,6 +299,7 @@ hMeas_TT_Mtt_less_700_jecdown   = fTT_Mtt_less_700_jecdown.Get(options.hist).Clo
 hMeas_TT_Mtt_less_700_jecup     = fTT_Mtt_less_700_jecup.Get(options.hist).Clone()
 hMeas_TT_Mtt_less_700_jerdown   = fTT_Mtt_less_700_jerdown.Get(options.hist).Clone()
 hMeas_TT_Mtt_less_700_jerup     = fTT_Mtt_less_700_jerup.Get(options.hist).Clone()
+hMeas_TT_Mtt_less_700_qcd     = fTT_Mtt_less_700_qcd.Get(options.hist).Clone()
 hMeas_TT_Mtt_less_700_pdfdown   = fTT_Mtt_less_700_pdfdown.Get(options.hist).Clone()
 hMeas_TT_Mtt_less_700_pdfup     = fTT_Mtt_less_700_pdfup.Get(options.hist).Clone()
 hMeas_TT_Mtt_less_700_scaledown = fTT_Mtt_less_700_scaledown.Get(options.hist).Clone()
@@ -303,6 +312,7 @@ hMeas_TT_Mtt_700_1000_jecup     = fTT_Mtt_700_1000_jecup.Get(options.hist).Clone
 hMeas_TT_Mtt_700_1000_jerdown   = fTT_Mtt_700_1000_jerdown.Get(options.hist).Clone()
 #hMeas_TT_Mtt_700_1000_jernom   = fTT_Mtt_700_1000_jernom.Get(options.hist).Clone()
 hMeas_TT_Mtt_700_1000_jerup     = fTT_Mtt_700_1000_jerup.Get(options.hist).Clone()
+hMeas_TT_Mtt_700_1000_qcd     = fTT_Mtt_700_1000_qcd.Get(options.hist).Clone()
 hMeas_TT_Mtt_700_1000_pdfdown   = fTT_Mtt_700_1000_pdfdown.Get(options.hist).Clone()
 hMeas_TT_Mtt_700_1000_pdfup     = fTT_Mtt_700_1000_pdfup.Get(options.hist).Clone()
 hMeas_TT_Mtt_700_1000_scaledown = fTT_Mtt_700_1000_scaledown.Get(options.hist).Clone()
@@ -315,6 +325,7 @@ hMeas_TT_Mtt_1000_Inf_jecup     = fTT_Mtt_1000_Inf_jecup.Get(options.hist).Clone
 hMeas_TT_Mtt_1000_Inf_jerdown   = fTT_Mtt_1000_Inf_jerdown.Get(options.hist).Clone()
 #hMeas_TT_Mtt_1000_Inf_jernom   = fTT_Mtt_1000_Inf_jernom.Get(options.hist).Clone()
 hMeas_TT_Mtt_1000_Inf_jerup     = fTT_Mtt_1000_Inf_jerup.Get(options.hist).Clone()
+hMeas_TT_Mtt_1000_Inf_qcd     = fTT_Mtt_1000_Inf_qcd.Get(options.hist).Clone()
 hMeas_TT_Mtt_1000_Inf_pdfdown   = fTT_Mtt_1000_Inf_pdfdown.Get(options.hist).Clone()
 hMeas_TT_Mtt_1000_Inf_pdfup     = fTT_Mtt_1000_Inf_pdfup.Get(options.hist).Clone()
 hMeas_TT_Mtt_1000_Inf_scaledown = fTT_Mtt_1000_Inf_scaledown.Get(options.hist).Clone()
@@ -329,48 +340,56 @@ hMeas_T_t_jecdown .SetName( 'hMeas_T_t_jecdown' )
 hMeas_T_t_jecup   .SetName( 'hMeas_T_t_jecup' )
 hMeas_T_t_jerdown .SetName( 'hMeas_T_t_jerdown' )
 hMeas_T_t_jerup   .SetName( 'hMeas_T_t_jerup' )
+hMeas_T_t_qcd   .SetName( 'hMeas_T_t_qcd' )
 
 hMeas_Tbar_t_nom     .SetName( 'hMeas_Tbar_t')
 hMeas_Tbar_t_jecdown .SetName( 'hMeas_Tbar_t_jecdown' )
 hMeas_Tbar_t_jecup   .SetName( 'hMeas_Tbar_t_jecup' )
 hMeas_Tbar_t_jerdown .SetName( 'hMeas_Tbar_t_jerdown' )
 hMeas_Tbar_t_jerup   .SetName( 'hMeas_Tbar_t_jerup' )
+hMeas_Tbar_t_qcd   .SetName( 'hMeas_Tbar_t_qcd' )
 
 hMeas_T_s_nom     .SetName( 'hMeas_T_s')
 hMeas_T_s_jecdown .SetName( 'hMeas_T_s_jecdown' )
 hMeas_T_s_jecup   .SetName( 'hMeas_T_s_jecup' )
 hMeas_T_s_jerdown .SetName( 'hMeas_T_s_jerdown' )
 hMeas_T_s_jerup   .SetName( 'hMeas_T_s_jerup' )
+hMeas_T_s_qcd   .SetName( 'hMeas_T_s_qcd' )
 
 hMeas_Tbar_s_nom     .SetName( 'hMeas_Tbar_s')
 hMeas_Tbar_s_jecdown .SetName( 'hMeas_Tbar_s_jecdown' )
 hMeas_Tbar_s_jecup   .SetName( 'hMeas_Tbar_s_jecup' )
 hMeas_Tbar_s_jerdown .SetName( 'hMeas_Tbar_s_jerdown' )
 hMeas_Tbar_s_jerup   .SetName( 'hMeas_Tbar_s_jerup' )
+hMeas_Tbar_s_qcd   .SetName( 'hMeas_Tbar_s_qcd' )
 
 hMeas_T_tW_nom     .SetName( 'hMeas_T_tW')
 hMeas_T_tW_jecdown .SetName( 'hMeas_T_tW_jecdow' )
 hMeas_T_tW_jecup   .SetName( 'hMeas_T_tW_jecup' )
 hMeas_T_tW_jerdown .SetName( 'hMeas_T_tW_jerdown' )
 hMeas_T_tW_jerup   .SetName( 'hMeas_T_tW_jerup' )
+hMeas_T_tW_qcd   .SetName( 'hMeas_T_tW_qcd' )
 
 hMeas_Tbar_tW_nom     .SetName( 'hMeas_Tbar_tW')
 hMeas_Tbar_tW_jecdown .SetName( 'hMeas_Tbar_tW_jecdown' )
 hMeas_Tbar_tW_jecup   .SetName( 'hMeas_Tbar_tW_jecup' )
 hMeas_Tbar_tW_jerdown .SetName( 'hMeas_Tbar_tW_jerdown' )
 hMeas_Tbar_tW_jerup   .SetName( 'hMeas_Tbar_tW_jerup ' )
+hMeas_Tbar_tW_qcd   .SetName( 'hMeas_Tbar_tW_qcd ' )
 
 hMeas_WJets_nom     .SetName( 'hMeas_WJets')
 hMeas_WJets_jecdown .SetName( 'hMeas_WJets_jecdown' )
 hMeas_WJets_jecup   .SetName( 'hMeas_WJets_jecup' )
 hMeas_WJets_jerdown .SetName( 'hMeas_WJets_jerdown' )
 hMeas_WJets_jerup   .SetName( 'hMeas_WJets_jerup' )
+hMeas_WJets_qcd   .SetName( 'hMeas_WJets_qcd' )
 
 hMeas_TT_Mtt_less_700_nom       .SetName( 'hMeas_TT_Mtt_less_70' )
 hMeas_TT_Mtt_less_700_jecdown   .SetName( 'hMeas_TT_Mtt_less_700_jecdown')
 hMeas_TT_Mtt_less_700_jecup     .SetName( 'hMeas_TT_Mtt_less_700_jecup')
 hMeas_TT_Mtt_less_700_jerdown   .SetName( 'hMeas_TT_Mtt_less_700_jerdown')
 hMeas_TT_Mtt_less_700_jerup     .SetName( 'hMeas_TT_Mtt_less_700_jerup')
+hMeas_TT_Mtt_less_700_qcd     .SetName( 'hMeas_TT_Mtt_less_700_qcd')
 hMeas_TT_Mtt_less_700_pdfdown   .SetName( 'hMeas_TT_Mtt_less_700_pdfdown')
 hMeas_TT_Mtt_less_700_pdfup     .SetName( 'hMeas_TT_Mtt_less_700_pdfup')
 hMeas_TT_Mtt_less_700_scaledown .SetName( 'hMeas_TT_Mtt_less_700_scaledown')
@@ -381,6 +400,7 @@ hMeas_TT_Mtt_700_1000_jecdown   .SetName( 'hMeas_TT_Mtt_700_1000_jecdown')
 hMeas_TT_Mtt_700_1000_jecup     .SetName( 'hMeas_TT_Mtt_700_1000_jecup')
 hMeas_TT_Mtt_700_1000_jerdown   .SetName( 'hMeas_TT_Mtt_700_1000_jerdown')
 hMeas_TT_Mtt_700_1000_jerup     .SetName( 'hMeas_TT_Mtt_700_1000_jerup')
+hMeas_TT_Mtt_700_1000_qcd     .SetName( 'hMeas_TT_Mtt_700_1000_qcd')
 hMeas_TT_Mtt_700_1000_pdfdown   .SetName( 'hMeas_TT_Mtt_700_1000_pdfdown')
 hMeas_TT_Mtt_700_1000_pdfup     .SetName( 'hMeas_TT_Mtt_700_1000_pdfup')
 hMeas_TT_Mtt_700_1000_scaledown .SetName( 'hMeas_TT_Mtt_700_1000_scaledown')
@@ -391,6 +411,7 @@ hMeas_TT_Mtt_1000_Inf_jecdown   .SetName( 'hMeas_TT_Mtt_1000_Inf_jecdown')
 hMeas_TT_Mtt_1000_Inf_jecup     .SetName( 'hMeas_TT_Mtt_1000_Inf_jecup')
 hMeas_TT_Mtt_1000_Inf_jerdown   .SetName( 'hMeas_TT_Mtt_1000_Inf_jerdown')
 hMeas_TT_Mtt_1000_Inf_jerup     .SetName( 'hMeas_TT_Mtt_1000_Inf_jerup')
+hMeas_TT_Mtt_1000_Inf_qcd     .SetName( 'hMeas_TT_Mtt_1000_Inf_qcd')
 hMeas_TT_Mtt_1000_Inf_pdfdown   .SetName( 'hMeas_TT_Mtt_1000_Inf_pdfdown')
 hMeas_TT_Mtt_1000_Inf_pdfup     .SetName( 'hMeas_TT_Mtt_1000_Inf_pdfup')
 hMeas_TT_Mtt_1000_Inf_scaledown .SetName( 'hMeas_TT_Mtt_1000_Inf_scaledown')
@@ -398,63 +419,61 @@ hMeas_TT_Mtt_1000_Inf_scaleup   .SetName( 'hMeas_TT_Mtt_1000_Inf_scaleup')
 
 
 
-
-# Scale to desired normalization
-# Options are :
-#  1. From MC
-#  2. From fit
-#
-# For now, we don't have the fit, so we do from MC
-
-hMeas_QCD_SingleMu.Scale( NQCD / hMeas_QCD_SingleMu.Integral() )
-
 hMeas_T_t_nom    .Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_b * SF_t  )
 hMeas_T_t_jecdown.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_b * SF_t  )
 hMeas_T_t_jecup  .Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_b * SF_t  )
 hMeas_T_t_jerdown.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_b * SF_t  )
 hMeas_T_t_jerup  .Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_b * SF_t  )
+hMeas_T_t_qcd  .Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_b * SF_t  )
 
 hMeas_Tbar_t_nom    .Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) * SF_b * SF_t  )
 hMeas_Tbar_t_jecdown.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) * SF_b * SF_t  )
 hMeas_Tbar_t_jecup  .Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) * SF_b * SF_t  )
 hMeas_Tbar_t_jerdown.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) * SF_b * SF_t  )
 hMeas_Tbar_t_jerup  .Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) * SF_b * SF_t  )
+hMeas_Tbar_t_qcd  .Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) * SF_b * SF_t  )
 
 hMeas_T_s_nom    .Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) * SF_b * SF_t  )
 hMeas_T_s_jecdown.Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) * SF_b * SF_t  )
 hMeas_T_s_jecup  .Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) * SF_b * SF_t  )
 hMeas_T_s_jerdown.Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) * SF_b * SF_t  )
 hMeas_T_s_jerup  .Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) * SF_b * SF_t  )
+hMeas_T_s_qcd  .Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) * SF_b * SF_t  )
 
 hMeas_Tbar_s_nom    .Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) * SF_b * SF_t  )
 hMeas_Tbar_s_jecdown.Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) * SF_b * SF_t  )
 hMeas_Tbar_s_jecup  .Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) * SF_b * SF_t  )
 hMeas_Tbar_s_jerdown.Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) * SF_b * SF_t  )
 hMeas_Tbar_s_jerup  .Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) * SF_b * SF_t  )
+hMeas_Tbar_s_qcd  .Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) * SF_b * SF_t  )
 
 hMeas_T_tW_nom    .Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) * SF_b * SF_t  )
 hMeas_T_tW_jecdown.Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) * SF_b * SF_t  )
 hMeas_T_tW_jecup  .Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) * SF_b * SF_t  )
 hMeas_T_tW_jerdown.Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) * SF_b * SF_t  )
 hMeas_T_tW_jerup  .Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) * SF_b * SF_t  )
+hMeas_T_tW_qcd  .Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) * SF_b * SF_t  )
 
 hMeas_Tbar_tW_nom    .Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) * SF_b * SF_t  )
 hMeas_Tbar_tW_jecdown.Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) * SF_b * SF_t  )
 hMeas_Tbar_tW_jecup  .Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) * SF_b * SF_t  )
 hMeas_Tbar_tW_jerdown.Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) * SF_b * SF_t  )
 hMeas_Tbar_tW_jerup  .Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) * SF_b * SF_t  )
+hMeas_Tbar_tW_qcd  .Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) * SF_b * SF_t  )
 
 hMeas_WJets_nom    .Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_b * SF_t  )
 hMeas_WJets_jecdown.Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_b * SF_t  )
 hMeas_WJets_jecup  .Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_b * SF_t  )
 hMeas_WJets_jerdown.Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_b * SF_t  )
 hMeas_WJets_jerup  .Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_b * SF_t  )
+hMeas_WJets_qcd  .Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_b * SF_t  )
 
 hMeas_TT_Mtt_less_700_nom      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * SF_b * SF_t)
 hMeas_TT_Mtt_less_700_jecdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * SF_b * SF_t)
 hMeas_TT_Mtt_less_700_jecup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * SF_b * SF_t)
 hMeas_TT_Mtt_less_700_jerdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * SF_b * SF_t)
 hMeas_TT_Mtt_less_700_jerup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * SF_b * SF_t)
+hMeas_TT_Mtt_less_700_qcd    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * SF_b * SF_t)
 hMeas_TT_Mtt_less_700_pdfdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * SF_b * SF_t)
 hMeas_TT_Mtt_less_700_pdfup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * SF_b * SF_t)
 hMeas_TT_Mtt_less_700_scaledown.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * SF_b * SF_t)
@@ -466,6 +485,7 @@ hMeas_TT_Mtt_700_1000_jecup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lu
 hMeas_TT_Mtt_700_1000_jerdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) * SF_b * SF_t)
 #hMeas_TT_Mtt_700_1000_jernom  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) * SF_b * SF_t)
 hMeas_TT_Mtt_700_1000_jerup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) * SF_b * SF_t)
+hMeas_TT_Mtt_700_1000_qcd    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) * SF_b * SF_t)
 hMeas_TT_Mtt_700_1000_pdfdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) * SF_b * SF_t)
 hMeas_TT_Mtt_700_1000_pdfup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) * SF_b * SF_t)
 hMeas_TT_Mtt_700_1000_scaledown.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) * SF_b * SF_t)
@@ -477,6 +497,7 @@ hMeas_TT_Mtt_1000_Inf_jecup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lu
 hMeas_TT_Mtt_1000_Inf_jerdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_b * SF_t )
 #hMeas_TT_Mtt_1000_Inf_jernom  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_b * SF_t )
 hMeas_TT_Mtt_1000_Inf_jerup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_b * SF_t )
+hMeas_TT_Mtt_1000_Inf_qcd    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_b * SF_t )
 hMeas_TT_Mtt_1000_Inf_pdfdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_b * SF_t )
 hMeas_TT_Mtt_1000_Inf_pdfup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_b * SF_t )
 hMeas_TT_Mtt_1000_Inf_scaledown.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_b * SF_t )
@@ -517,6 +538,49 @@ hMeas_WJets   = [ hMeas_WJets_jecdown   , hMeas_WJets_jecup   , hMeas_WJets_jerd
 
 hMeas_TT_Mtt = []
 hMeas_SingleTop = []
+
+
+qcdcanvs = []
+
+# First, we need to correct the QCD estimate with the known MC backgrounds.
+iiqcd = 0
+qcdstack = THStack("qcdstack", "qcdstack")
+hMeas_QCD_SingleMu_ToPlot = hMeas_QCD_SingleMu.Clone()
+qcdcolors = [TColor.kMagenta, TColor.kMagenta,
+             TColor.kMagenta, TColor.kMagenta,
+             TColor.kMagenta, TColor.kMagenta,
+             TColor.kGreen, TColor.kRed, TColor.kRed, TColor.kRed
+             ]
+hMeas_QCD_SingleMu_ToPlot.SetName("hmeas_QCD_SingleMu_ToPlot")
+
+
+
+# Scale to desired normalization
+# Options are :
+#  1. From MC
+#  2. From fit
+#
+# For now, we don't have the fit, so we do from MC
+
+hMeas_QCD_SingleMu.Scale( NQCD / hMeas_QCD_SingleMu.Integral() )
+
+
+for iqcdHist in [ hMeas_T_t_qcd, hMeas_Tbar_t_qcd,
+                  hMeas_T_s_qcd, hMeas_Tbar_s_qcd,
+                  hMeas_T_tW_qcd, hMeas_Tbar_tW_qcd,
+                  hMeas_WJets_qcd,
+                  hMeas_TT_Mtt_less_700_qcd, hMeas_TT_Mtt_700_1000_qcd,
+                  hMeas_TT_Mtt_1000_Inf_qcd] :
+    iqcdHist.SetFillColor(qcdcolors[iiqcd])
+    hMeas_QCD_SingleMu.Add( iqcdHist, -1.0 )
+    qcdstack.Add( iqcdHist )
+    iiqcd += 1
+
+qcdcanv = TCanvas( "qcddatamc", "qcddatamc")
+hMeas_QCD_SingleMu_ToPlot.Draw("e")
+qcdstack.Draw("same hist")
+hMeas_QCD_SingleMu_ToPlot.Draw("e same")
+
 
 
 legs = []
