@@ -110,20 +110,8 @@ e_TT_Mtt_1000_Inf = 0.014
 e_TT_Mtt_0_700 = 1.0 - e_TT_Mtt_700_1000 - e_TT_Mtt_1000_Inf
 # 
 
-
-thetaNamingDict = {
-    'nom':'',
-    'qcd':'qcd',
-    'jecdn':'jec__down',
-    'jecup':'jec__up',
-    'jerdn':'jer__down',
-    'jerup':'jer__up',
-    'pdfdn':'pdf__down',
-    'pdfup':'pdf__up',
-    'scaledown':'scale__down',
-    'scaleup':'scale__up'
-    }
-plots = [ 'nom', 'jecdn' , 'jecup' , 'jerdn' , 'jerup' , 'pdfdn' , 'pdfup']# , 'scaledown' , 'scaleup']
+names = [ 'DATA', 'TTbar', 'WJets', 'SingleTop', 'QCD_SingleMu' ]
+plots = [ 'jec__down' , 'jec__up' , 'jer__down' , 'jer__up' , 'pdf__down' , 'pdf__up' , 'nom' , 'scale__down' , 'scale__up']
 canvs = []
 histsData = []
 
@@ -137,15 +125,15 @@ fout = TFile("normalized_" + options.outname + '_' + options.hist + ".root" , "R
 # ==============================================================================
 
 if not options.ignoreData : 
-    fdata = TFile("histfiles/SingleMu_iheartNY_V1_mu_nom_type1.root")
+    fdata = TFile("histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom_type1.root")
 
 if not options.ignoreQCD :
-    fQCD = TFile("histfiles/QCD_hists_pt_type1.root")
+    fQCD = TFile("histfiles/SingleMu_iheartNY_V1_mu_Run2012_qcd_type1.root")
     
 
-fQCD_SingleMu = TFile("histfiles/SingleMu_Run2012_QCD_merged")
+fQCD_SingleMu = TFile("histfiles/SingleMu_iheartNY_V1_mu_Run2012_qcd_type1.root")
 
-fT_t_nom     = TFile("histfiles/T_t-channel_Histos_type1.root")
+fT_t_nom     = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_type1.root")
 fT_t_jecdown = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn_type1.root")
 fT_t_jecup   = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fT_t_jerdown = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
@@ -153,14 +141,14 @@ fT_t_jerup   = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheart
 fT_t_qcd   = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 
 
-fTbar_t_nom     = TFile("histfiles/Tbar_t-channel_Histos_type1.root")
+fTbar_t_nom     = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_type1.root")
 fTbar_t_jecdown = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn_type1.root")
 fTbar_t_jecup   = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fTbar_t_jerdown = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
 fTbar_t_jerup   = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerup_type1.root")
 fTbar_t_qcd   = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 
-fT_s_nom     = TFile("histfiles/T_s-channel_Histos_type1.root")
+fT_s_nom     = TFile("histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_type1.root")
 fT_s_jecdown = TFile("histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn_type1.root")
 fT_s_jecup   = TFile("histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fT_s_jerdown = TFile("histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
@@ -168,7 +156,7 @@ fT_s_jerup   = TFile("histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheart
 fT_s_qcd   = TFile("histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 
 
-fTbar_s_nom     = TFile("histfiles/Tbar_s-channel_Histos_type1.root")
+fTbar_s_nom     = TFile("histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_muu_nom_type1.root")
 fTbar_s_jecdown = TFile("histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_muu_jecdn_type1.root")
 fTbar_s_jecup   = TFile("histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_muu_jecup_type1.root")
 fTbar_s_jerdown = TFile("histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_muu_jerdn_type1.root")
@@ -176,7 +164,7 @@ fTbar_s_jerup   = TFile("histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_
 fTbar_s_qcd   = TFile("histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_muu_qcd_type1.root")
 
 
-fT_tW_nom     = TFile("histfiles/T_tW-channel_Histos_type1.root")
+fT_tW_nom     = TFile("histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_type1.root")
 fT_tW_jecdown = TFile("histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn_type1.root")
 fT_tW_jecup   = TFile("histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fT_tW_jerdown = TFile("histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
@@ -184,7 +172,7 @@ fT_tW_jerup   = TFile("histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_i
 fT_tW_qcd   = TFile("histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 
 
-fTbar_tW_nom     = TFile("histfiles/Tbar_tW-channel_Histos_type1.root")
+fTbar_tW_nom     = TFile("histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_type1.root")
 fTbar_tW_jecdown = TFile("histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn_type1.root")
 fTbar_tW_jecup   = TFile("histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fTbar_tW_jerdown = TFile("histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
@@ -192,7 +180,7 @@ fTbar_tW_jerup   = TFile("histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-ta
 fTbar_tW_qcd   = TFile("histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 
 
-fWJets_nom     = TFile("histfiles/WJetsToLNu_Histos_type1.root")
+fWJets_nom     = TFile("histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_iheartNY_V1_mu_nom_type1.root")
 fWJets_jecdown = TFile("histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_iheartNY_V1_mu_jecdn_type1.root")
 fWJets_jecup   = TFile("histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_iheartNY_V1_mu_jecup_type1.root")
 fWJets_jerdown = TFile("histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_iheartNY_V1_mu_jerdn_type1.root")
@@ -200,7 +188,7 @@ fWJets_jerup   = TFile("histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_ih
 fWJets_qcd   = TFile("histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_iheartNY_V1_mu_qcd_type1.root")
 
 
-fTT_Mtt_less_700_nom       = TFile("histfiles/TT_Mtt-max700-channel_Histos_type1.root")
+fTT_Mtt_less_700_nom       = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_type1.root")
 fTT_Mtt_less_700_jecdown   = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn_type1.root")
 fTT_Mtt_less_700_jecup     = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fTT_Mtt_less_700_jerdown   = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
@@ -208,10 +196,10 @@ fTT_Mtt_less_700_jerup     = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tau
 fTT_Mtt_less_700_qcd     = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 fTT_Mtt_less_700_pdfdown   = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfdn_type1.root")
 fTT_Mtt_less_700_pdfup     = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup_type1.root")
-fTT_Mtt_less_700_scaledown = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaledown_type1.root")
-fTT_Mtt_less_700_scaleup   = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaleup_type1.root")
+fTT_Mtt_less_700_scaledown = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaledown_type1.root")
+fTT_Mtt_less_700_scaleup   = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaleup_type1.root")
 
-fTT_Mtt_700_1000_nom       = TFile("histfiles/TT_Mtt-700to1000-channel_Histos_type1.root")
+fTT_Mtt_700_1000_nom       = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_type1.root")
 fTT_Mtt_700_1000_jecdown   = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn_type1.root")
 fTT_Mtt_700_1000_jecup     = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fTT_Mtt_700_1000_jerdown   = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
@@ -220,10 +208,10 @@ fTT_Mtt_700_1000_jerup     = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8
 fTT_Mtt_700_1000_qcd     = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 fTT_Mtt_700_1000_pdfdown   = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfdn_type1.root")
 fTT_Mtt_700_1000_pdfup     = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup_type1.root")
-fTT_Mtt_700_1000_scaledown = TFile("histfiles/TT_700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaledown_type1.root")
-fTT_Mtt_700_1000_scaleup   = TFile("histfiles/TT_700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaleup_type1.root")
+fTT_Mtt_700_1000_scaledown = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaledown_type1.root")
+fTT_Mtt_700_1000_scaleup   = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaleup_type1.root")
 
-fTT_Mtt_1000_Inf_nom       = TFile("histfiles/TT_Mtt-1000toInf-channel_Histos_type1.root")
+fTT_Mtt_1000_Inf_nom       = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_type1.root")
 fTT_Mtt_1000_Inf_jecdown   = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn_type1.root")
 fTT_Mtt_1000_Inf_jecup     = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup_type1.root")
 fTT_Mtt_1000_Inf_jerdown   = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn_type1.root")
@@ -232,8 +220,8 @@ fTT_Mtt_1000_Inf_jerup     = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8
 fTT_Mtt_1000_Inf_qcd     = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 fTT_Mtt_1000_Inf_pdfdown   = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfdn_type1.root")
 fTT_Mtt_1000_Inf_pdfup     = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup_type1.root")
-fTT_Mtt_1000_Inf_scaledown = TFile("histfiles/TT_1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaledown_type1.root")
-fTT_Mtt_1000_Inf_scaleup   = TFile("histfiles/TT_1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaleup_type1.root")
+fTT_Mtt_1000_Inf_scaledown = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaledown_type1.root")
+fTT_Mtt_1000_Inf_scaleup   = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaleup_type1.root")
 
 
 
@@ -579,70 +567,67 @@ hMeas_QCD_SingleMu_ToPlot.SetName("hmeas_QCD_SingleMu_ToPlot")
 hMeas_QCD_SingleMu.Scale( NQCD / hMeas_QCD_SingleMu.Integral() )
 
 
-for iqcdHist in [ hMeas_T_t_qcd, hMeas_Tbar_t_qcd,
-                  hMeas_T_s_qcd, hMeas_Tbar_s_qcd,
-                  hMeas_T_tW_qcd, hMeas_Tbar_tW_qcd,
-                  hMeas_WJets_qcd,
-                  hMeas_TT_Mtt_less_700_qcd, hMeas_TT_Mtt_700_1000_qcd,
-                  hMeas_TT_Mtt_1000_Inf_qcd] :
-    iqcdHist.SetFillColor(qcdcolors[iiqcd])
-    hMeas_QCD_SingleMu.Add( iqcdHist, -1.0 )
-    qcdstack.Add( iqcdHist )
-    iiqcd += 1
-
-qcdcanv = TCanvas( "qcddatamc", "qcddatamc")
-hMeas_QCD_SingleMu_ToPlot.Draw("e")
-qcdstack.Draw("same hist")
-hMeas_QCD_SingleMu_ToPlot.Draw("e same")
-
 
 
 legs = []
-
+#m = input(" Choose the distribution: 0) TT_Mtt_jecdown  1) TT_Mtt_jecup  2) TT_Mtt_jerdown  3) TT_Mtt_jerup  4) TT_Mtt_pdfdown  5) TT_Mtt_pdfup : #")
 for m in range(0,len(plots)):
-
-    
 
     leg = TLegend(0.5, 0.55, 0.84, 0.84)
     leg.SetBorderSize(0)
     leg.SetFillColor(0)
 
-    hMeas_TTbar     = TTbar.get(plots[m])
-    hMeas_SingleTop = SingleTop.get(plots[m])
-    hMeas_WJets     = WJets.get(plots[m])
-    hMeas_QCD       = QCD.get(plots[m])
+    hMeas_TT_Mtt.append(hMeas_TT_Mtt_less_700[m])
+    hMeas_TT_Mtt[m].SetFillColor( TColor.kRed )
+    for hist in [ hMeas_TT_Mtt_700_1000[m] , hMeas_TT_Mtt_1000_Inf[m] ] :
+            print 'Adding mtt for' + plots[m]
+            hMeas_TT_Mtt[m].Add( hist )
 
-    hRecoData       = Data.get(plots[m])
-     
-    leg.AddEntry( hMeas_TTbar, 't#bar{t}', 'f')
-    leg.AddEntry( hMeas_SingleTop, 'single top', 'f')
-    leg.AddEntry( hMeas_WJets, 'W+jets', 'f')
-    leg.AddEntry( hMeas_QCD, 'QCD' , 'f')
+
+    hists.append( hMeas_TT_Mtt[m] )
+    
+    hMeas_SingleTop.append( hMeas_T_t[m])
+    #hists.append( hMeas_SingleTop[m] )
+    hMeas_SingleTop[m].SetFillColor( TColor.kMagenta )
+    hMeas_WJets[m].SetFillColor( TColor.kGreen )
+    hMeas_QCD_SingleMu.SetFillColor( TColor.kYellow )
+    #hMeas.SetFillColor( TColor.kRed )
+    #hRecoMC.SetFillColor( 2 )
+    
+    for hist in [hMeas_Tbar_t[m], hMeas_T_s[m], hMeas_Tbar_s[m], hMeas_T_tW[m], hMeas_Tbar_tW[m]] :
+        print 'adding hist ' + hist.GetName()
+        hMeas_SingleTop[m].Add( hist )
+    
+    hists.append( hMeas_SingleTop[m] )
+    
+    hists.append( hMeas_QCD_SingleMu )
+    
+    hists.append( hMeas_WJets[m] )
+
+    leg.AddEntry( hMeas_TT_Mtt[m], 't#bar{t}', 'f')
+    leg.AddEntry( hMeas_SingleTop[m], 'single top', 'f')
+    leg.AddEntry( hMeas_WJets[m], 'W+jets', 'f')
+    leg.AddEntry( hMeas_QCD_SingleMu, 'QCD' , 'f')
 
     
     if 'vtxMass' in  options.hist :
-        for zerohist in [hMeas_WJets, hMeas_SingleTop, hMeas_TTbar, hMeas_QCD ] :
+        for zerohist in [hMeas_WJets[m], hMeas_SingleTop[m], hMeas_TT_Mtt[m], hMeas_QCD_SingleMu ] :
             zerohist.SetBinContent(1, 0.0)
         if options.ignoreData == False :
             hRecoData.SetBinContent(1, 0.0)
     
     # Make a stack plot of the MC to compare to data
     hMC_stack = THStack("hMC_stack",
-                        hMeas_TTbar.GetTitle() + ';' +
-                        hMeas_TTbar.GetXaxis().GetTitle() + ';' +
-                        hMeas_TTbar.GetYaxis().GetTitle()
+                        hMeas_TT_Mtt[m].GetTitle() + ';' +
+                        hMeas_TT_Mtt[m].GetXaxis().GetTitle() + ';' +
+                        hMeas_TT_Mtt[m].GetYaxis().GetTitle()
                         )
-    hMC_stack.Add( hMeas_QCD )
-    hMC_stack.Add( hMeas_WJets )
-    hMC_stack.Add( hMeas_SingleTop )
-    hMC_stack.Add( hMeas_TTbar )
-
-
-    print 'Normalizations : ttbar = {0:10.2f}, single top = {1:10.2f}, wjets = {2:10.2f}, qcd = {3:10.2f}   ===== data = {4:10.2f}'.format(
-        hMeas_TTbar.Integral(), hMeas_SingleTop.Integral(), hMeas_WJets.Integral(), hMeas_QCD.Integral(), hRecoData.Integral()
-            )
-
-    stacks.append( hMC_stack )
+    print 'Making stack'
+    hMC_stack.Add( hMeas_QCD_SingleMu )
+    hMC_stack.Add( hMeas_WJets[m] )
+    hMC_stack.Add( hMeas_SingleTop[m] )
+    hMC_stack.Add( hMeas_TT_Mtt[m] )
+    
     # TO DO : NEED TO FIX THE BINNING FOR QCD : 
     #MC_stack.Add( hRecoQCD )
     #hMC_stack.Add( hRecoMC )
@@ -665,21 +650,26 @@ for m in range(0,len(plots)):
     canvs.append(c)
     legs.append(leg)
     if not options.ignoreData : 
-        c.Print( 'normalized_' + plots[m] + '_' + options.outname + '_' + options.hist + '.png' )
-        c.Print( 'normalized_' + plots[m] + '_' + options.outname + '_' + options.hist + '.pdf' )
+        c.Print( 'normalized_' + plots[m] + options.outname + '_' + options.hist + '.png' )
+        c.Print( 'normalized_' + plots[m] + options.outname + '_' + options.hist + '.pdf' )
     else : 
-        c.Print( 'normalized_' + plots[m] + '_' + options.outname + '_' + options.hist + '_nodata.png' )
-        c.Print( 'normalized_' + plots[m] + '_' + options.outname + '_' + options.hist + '_nodata.pdf' )
+        c.Print( 'normalized_' + plots[m] + options.outname + '_' + options.hist + '_nodata.png' )
+        c.Print( 'normalized_' + plots[m] + options.outname + '_' + options.hist + '_nodata.pdf' )
 
 
         
     # write the histogram in a rootfile
 
-
-
-for sample in [Data, QCD, TTbar, SingleTop, WJets]:
-    sample.writeForTheta(fout)
+    histsAll = [hRecoData , hMeas_TT_Mtt[m], hMeas_WJets[m], hMeas_SingleTop[m], hMeas_QCD_SingleMu ]
+    fout.cd()
+    for ihist in xrange(len(histsAll)) :
+        hist = histsAll[ihist]
+        if hist is not None :
+            if plots[m] == 'nom'  : 
+                hist.SetName(options.hist + '__' + names[ihist]  )
+                hist.Write()
+            elif ihist != 0 :
+                hist.SetName(options.hist + '__' + names[ihist] + '__' + plots [m] )
+                hist.Write()
 
 fout.Close()
-   
-    
