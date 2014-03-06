@@ -101,12 +101,12 @@ Nmc_WJets = 57709905
 Nmc_TT_Mtt_700_1000 = 3082812
 Nmc_TT_Mtt_1000_Inf = 1249111
 
-Nmc_ttbar_scaledown = 5387181
-Nmc_ttbar_scaleup   = 5009488
-Nmc_TT_Mtt_700_1000_scaledown = 2146989
-Nmc_TT_Mtt_700_1000_scaleup = 2212832
+Nmc_ttbar_scaledown = 14998606
+Nmc_ttbar_scaleup   = 14998720
+Nmc_TT_Mtt_700_1000_scaledown = 2170074
+Nmc_TT_Mtt_700_1000_scaleup = 2243672
 Nmc_TT_Mtt_1000_Inf_scaledown = 1308090
-Nmc_TT_Mtt_1000_Inf_scaleup = 1233938
+Nmc_TT_Mtt_1000_Inf_scaleup = 1241650
 
 # QCD Normalization from MET fits
 NQCD = options.NQCD
@@ -114,7 +114,7 @@ NQCD = options.NQCD
 # ttbar filter efficiencies
 e_TT_Mtt_700_1000 = 0.074
 e_TT_Mtt_1000_Inf = 0.014
-e_TT_Mtt_0_700 = 1.0 - e_TT_Mtt_700_1000 - e_TT_Mtt_1000_Inf
+e_TT_Mtt_0_700 = 1.0   #   No efficiency here, we applied the cut at gen level
 # 
 
 names = [ 'DATA', 'TTbar', 'WJets', 'SingleTop', 'QCD_SingleMu' ]
