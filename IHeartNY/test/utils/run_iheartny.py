@@ -1,36 +1,48 @@
 #!/usr/bin/env python
 
+import time
+import Queue
 import subprocess
+import threading
 
 class SystVar :
-    def __init__(self,name,val,extraFlags=None) :
+    def __init__(self,name,flags) :
         self.name = name
-        self.val = val
-        self.extraFlags = extraFlags
+        self.flags = flags
 
 class Sample :
-    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, qcd=False, extraFlags='' ) :
+    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, qcd=False, pu='ttbar', flags='' ) :
         self.directory=directory
         self.title=title
-        self.extraFlags=extraFlags
+        if flags != '' : 
+            self.flags=flags.split(' ')
+        else :
+            self.flags = []
         self.systs = []
+        if pu is not None :
+            self.flags.append('--pileup=' + pu )
+        if jersys == True :
+            self.jerflag = ['--jerSys=0.1']
+        else :
+            self.jerflag = []
+            
         nom = [
-            SystVar(name='_nom', val=extraFlags)
+            SystVar(name='_nom', flags=self.flags + self.jerflag)
             ]
         qcds = [
-            SystVar(name='_qcd', val='--useLoose', extraFlags=extraFlags)
+            SystVar(name='_qcd', flags=['--useLoose'] + self.flags + self.jerflag)
             ]
         jersysts = [
-            SystVar(name='_jerup', val='--jerSys=0.2',extraFlags=extraFlags),
-            SystVar(name='_jerdn', val='--jerSys=0.0',extraFlags=extraFlags)
+            SystVar(name='_jerup', flags=['--jerSys=0.2']+self.flags),
+            SystVar(name='_jerdn', flags=['--jerSys=0.0']+self.flags)
             ]
         jecsysts = [
-            SystVar(name='_jecup', val='--jecSys=1.0',extraFlags=extraFlags),
-            SystVar(name='_jecdn', val='--jecSys=-1.0', extraFlags=extraFlags)
+            SystVar(name='_jecup', flags=['--jecSys=1.0']+self.flags + self.jerflag),
+            SystVar(name='_jecdn', flags=['--jecSys=-1.0']+self.flags + self.jerflag)
             ]
         pdfsysts = [
-            SystVar(name='_pdfup', val='--pdfSys=1.0',extraFlags=extraFlags),
-            SystVar(name='_pdfdn', val='--pdfSys=-1.0',extraFlags=extraFlags)
+            SystVar(name='_pdfup', flags=['--pdfSys=1.0']+self.flags + self.jerflag),
+            SystVar(name='_pdfdn', flags=['--pdfSys=-1.0']+self.flags + self.jerflag)
             ]
         self.systs = []
         if noms == True :
@@ -44,14 +56,49 @@ class Sample :
         if pdfsys == True :
             self.systs = self.systs + pdfsysts
 
-        
-def run_iheartny( sample ) :
 
-    for isyst in sample.systs :
-        if isyst.extraFlags is not None : 
-            s = ['python', 'iheartny_topxs_fwlite.py','--files=' + sample.directory + '/res/*.root', '--outname=' + sample.title + isyst.name, isyst.val, isyst.extraFlags ]
-        else :
-            s = ['python', 'iheartny_topxs_fwlite.py','--files=' + sample.directory + '/res/*.root', '--outname=' + sample.title + isyst.name, isyst.val ]
-        print 'Executing '
-        print s
-        subprocess.call ( s )
+def test( s ) :
+    print 'hello from test!'
+    print s
+    print 'test done!'
+    time.sleep(3)
+
+def work( s ) :
+    print 'processing command : '
+    print s
+    subprocess.call(s)
+    print 'work done!'
+
+
+def worker(q):
+    while True:
+        args = q.get()
+        #test(args)
+        work(args)
+        q.task_done()
+
+
+def run_threads ( samples ) :
+    print 'running threads'
+    q = Queue.Queue()
+    num_worker_threads = 8
+    print 'making threads'
+    for i in range(num_worker_threads):        
+         t = threading.Thread(target=worker, args=(q,))
+         t.daemon = True
+         t.start()
+
+    print 'adding samples to queue'
+    for sample in samples : 
+        for isyst in sample.systs :
+            flags = isyst.flags
+            s = ['python', 'iheartny_topxs_fwlite.py','--files=' + sample.directory + '/res/*.root', '--outname=' + sample.title + isyst.name]
+            for flag in flags :
+                s.append(flag)
+            #print 'adding to queue : '
+            #print s
+            q.put(s)
+
+    q.join()       # block until all tasks are done
+
+
