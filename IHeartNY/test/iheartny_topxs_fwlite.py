@@ -149,7 +149,7 @@ jerNom = 0.1
 # Additional JEC uncertainty for CA8 jets
 flatJecUnc = 0.03
 
-if abs( options.jecSys != 0 ) or abs( options.jerSys ) != jerNom :
+if abs( options.jecSys != 0 ) or options.jerSys > 0.0 :
     ROOT.gSystem.Load('libCondFormatsJetMETObjects')
     jecParStrAK5 = ROOT.std.string('START53_V27_Uncertainty_AK5PFchs.txt')
     jecUncAK5 = ROOT.JetCorrectionUncertainty( jecParStrAK5 )
@@ -716,6 +716,8 @@ for event in events:
     # endif (making response matrix)
 
 
+    if options.debug :
+        print 'Getting muons'
 
     lepType = 0 # Let 0 = muon, 1 = electron    
     event.getByLabel (muonPtLabel, muonPtHandle)
@@ -733,6 +735,11 @@ for event in events:
             continue
         muonPfisos = muonPfisoHandle.product()
 
+
+
+
+    if options.debug :
+        print 'nmu = ' + str(len(muonPts))
     nMuonsVal = 0
     for imuonPt in range(0,len(muonPts)):
         muonPt = muonPts[imuonPt]
@@ -756,13 +763,16 @@ for event in events:
                         response.Miss( hadTop.p4.Perp(), weight )
 		    continue
                 nMuonsVal += 1
-                lepType = 0                
+                lepType = 0
+                if options.debug :
+                    print 'PASSED TIGHT!'
     if options.pileup != 'none':   
     	event.getByLabel (puLabel, puHandle)
     	PileUp 		= 	puHandle.product()
     	bin1 = PilePlot.FindBin(PileUp[0]) 
     	weight *= PilePlot.GetBinContent(bin1)
-	#print "weight is " + str(weight)
+        if options.debug : 
+            print "PU weight is " + str(weight)
 
     event.getByLabel (npvLabel, npvHandle)
     numvert 		= 	npvHandle.product()
@@ -781,7 +791,10 @@ for event in events:
 	if options.makeResponse == True :
 		response.Miss( hadTop.p4.Perp(), weight )
 	continue 
-	    
+
+    if options.debug :
+        print 'toptag eta handle is valid'
+        print 'toptag etabin is ' + options.etabin	    
     topTagEta = topTagEtaHandle.product()
     if not options.type2:
 	if len(topTagEta)<1:
@@ -826,6 +839,8 @@ for event in events:
             continue
 
 
+    if options.debug :
+        print 'Passed muon selection, onward!'
     # Now look at the rest of the lepton information.
     # We will classify jets based on hemispheres, defined
     # by the lepton.
@@ -866,8 +881,11 @@ for event in events:
     ak5JetMasss = ak5JetMassHandle.product()
 
 
+
     if len(ak5JetPts) > 0 and options.jerSys != 0.0 :
-	ak5GenJets = []
+        if options.debug :
+            print 'getting gen jets'
+        ak5GenJets = []
 	ca8GenJets = []
 	event.getByLabel( ak5GenJetPtLabel, ak5GenJetPtHandle )
 	event.getByLabel( ak5GenJetEtaLabel, ak5GenJetEtaHandle )
@@ -914,7 +932,9 @@ for event in events:
     
 
     ak5Jets = []
-    if abs( options.jecSys != 0 ) or abs( options.jerSys ) != jerNom :
+    if options.debug :
+        print 'Smearing jets'
+    if abs( options.jecSys != 0 ) or options.jerSys > 0.0 :
         if options.debug :
             print '---------- jets ------------'
         for ijet in xrange( len(ak5JetPts) ) :
@@ -994,7 +1014,8 @@ for event in events:
     ptMET1.Fill( met,weight )
     pfIso1.Fill( muonPfisos[imuonPt] / muonPt, weight )
     ptJet0.Fill( ak5Jets[0].Perp(),weight )
-    
+    if options.debug :
+        print 'Have at least two jets with pt > 30 GeV'
     # Require leading jet pt to be pt > 200 GeV
 
 
@@ -1019,7 +1040,8 @@ for event in events:
         continue
 
 
-
+    if options.debug :
+        print 'Have at least one b-tag'
 
     htLep3.Fill( htLepVal,weight )
     ptMET3.Fill( met,weight )
@@ -1104,7 +1126,8 @@ for event in events:
             response.Miss( hadTop.p4.Perp(), weight )        
         continue
 
-
+    if options.debug :
+        print 'Passed HT cut'
     ht4.Fill( ht,weight )
     vtxMass4.Fill( lepVtxMass[0], weight)
     ## highestMassJetIndex = -1
@@ -1221,7 +1244,8 @@ for event in events:
             response.Miss( hadTop.p4.Perp(), weight )        
 	continue
 
-
+    if options.debug :
+        print 'Have a leptonic-side btag'
     ht5.Fill( ht, weight )
     vtxMass5.Fill( lepVtxMass[0], weight)
 	
@@ -1229,6 +1253,8 @@ for event in events:
     nvtx =float(numvert[0])
 
     if len(topTagPt) > 0:
+        if options.debug :
+            print 'Have a CA8 jet'
         if options.ptWeight == True :
 		t1weight=weight*ttweight
 	else:

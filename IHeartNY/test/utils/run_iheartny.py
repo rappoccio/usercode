@@ -92,11 +92,13 @@ def run_threads ( samples ) :
     for sample in samples : 
         for isyst in sample.systs :
             flags = isyst.flags
-            s = ['python', 'iheartny_topxs_fwlite.py','--files=' + sample.directory + '/res/*.root', '--outname=' + sample.title + isyst.name]
+            s = ['python', 'iheartny_topxs_fwlite.py','--files=' + sample.directory + '/res/*.root', '--outname=' + sample.title + isyst.name]            
             for flag in flags :
                 s.append(flag)
-            #print 'adding to queue : '
-            #print s
+            print 'adding to queue : '
+            for tok in s :
+                print tok + ' ',
+            print ''
             q.put(s)
 
     q.join()       # block until all tasks are done
