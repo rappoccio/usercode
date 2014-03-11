@@ -21,7 +21,7 @@ class Sample :
         self.systs = []
         if pu is not None :
             self.flags.append('--pileup=' + pu )
-        if jersys == True :
+        if jersys is not None :
             self.jerflag = ['--jerSys=0.1']
         else :
             self.jerflag = []
