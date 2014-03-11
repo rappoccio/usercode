@@ -202,8 +202,8 @@ fTT_Mtt_less_700_jerup     = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tau
 fTT_Mtt_less_700_qcd     = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 fTT_Mtt_less_700_pdfdown   = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfdn_type1.root")
 fTT_Mtt_less_700_pdfup     = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup_type1.root")
-fTT_Mtt_less_700_scaledown = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaledown_type1.root")
-fTT_Mtt_less_700_scaleup   = TFile("histfiles/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaleup_type1.root")
+fTT_Mtt_less_700_scaledown = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaledown_nom_type1.root")
+fTT_Mtt_less_700_scaleup   = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaleup_nom_type1.root")
 
 fTT_Mtt_700_1000_nom       = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_type1.root")
 fTT_Mtt_700_1000_jecdown   = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn_type1.root")
@@ -214,8 +214,8 @@ fTT_Mtt_700_1000_jerup     = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8
 fTT_Mtt_700_1000_qcd     = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 fTT_Mtt_700_1000_pdfdown   = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfdn_type1.root")
 fTT_Mtt_700_1000_pdfup     = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup_type1.root")
-fTT_Mtt_700_1000_scaledown = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaledown_type1.root")
-fTT_Mtt_700_1000_scaleup   = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaleup_type1.root")
+fTT_Mtt_700_1000_scaledown = TFile("histfiles/TT_700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaledown_nom_type1.root")
+fTT_Mtt_700_1000_scaleup   = TFile("histfiles/TT_700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaleup_nom_type1.root")
 
 fTT_Mtt_1000_Inf_nom       = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_type1.root")
 fTT_Mtt_1000_Inf_jecdown   = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn_type1.root")
@@ -226,8 +226,8 @@ fTT_Mtt_1000_Inf_jerup     = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8
 fTT_Mtt_1000_Inf_qcd     = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd_type1.root")
 fTT_Mtt_1000_Inf_pdfdown   = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfdn_type1.root")
 fTT_Mtt_1000_Inf_pdfup     = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup_type1.root")
-fTT_Mtt_1000_Inf_scaledown = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaledown_type1.root")
-fTT_Mtt_1000_Inf_scaleup   = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaleup_type1.root")
+fTT_Mtt_1000_Inf_scaledown = TFile("histfiles/TT_1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaledown_nom_type1.root")
+fTT_Mtt_1000_Inf_scaleup   = TFile("histfiles/TT_1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_1_mu_scaleup_nom_type1.root")
 
 
 
@@ -736,21 +736,61 @@ for m in range(0,len(hMeas_TTbar)):
     canvs.append(c)
     legs.append(leg)
     if not options.ignoreData : 
-        c.Print( 'normalized_' + plots[m] + options.outname + '_' + options.hist + '.png' )
-        c.Print( 'normalized_' + plots[m] + options.outname + '_' + options.hist + '.pdf' )
+        c.Print( 'normalized_' + plots[m] + '_' +  options.outname + '_' + options.hist + '.png' )
+        c.Print( 'normalized_' + plots[m] + '_' +  options.outname + '_' + options.hist + '.pdf' )
     else : 
-        c.Print( 'normalized_' + plots[m] + options.outname + '_' + options.hist + '_nodata.png' )
-        c.Print( 'normalized_' + plots[m] + options.outname + '_' + options.hist + '_nodata.pdf' )
+        c.Print( 'normalized_' + plots[m] + '_' +  options.outname + '_' + options.hist + '_nodata.png' )
+        c.Print( 'normalized_' + plots[m] + '_' +  options.outname + '_' + options.hist + '_nodata.pdf' )
 
 
         
-    # write the histogram in a rootfile
+# write the histogram in a rootfile
 
-    histsAll = [hRecoData , hMeas_TTbar[m], hMeas_WJets[m], hMeas_SingleTop[m], hMeas_QCD[m] ]
-    fout.cd()
-    for ihist in xrange(len(histsAll)) :
-        hist = histsAll[ihist]
-        if hist is not None :
-            hist.Write()
+hMeas_TTbar = [ hMeas_TTbar_jecdown   , hMeas_TTbar_jecup   , 
+                hMeas_TTbar_jerdown   , hMeas_TTbar_jerup   , 
+                hMeas_TTbar_pdfdown   , hMeas_TTbar_pdfup   , 
+                hMeas_TTbar_scaledown , hMeas_TTbar_scaleup,
+                hMeas_TTbar_nom ]
+
+hMeas_SingleTop = [ hMeas_SingleTop_jecdown   , hMeas_SingleTop_jecup   , 
+                    hMeas_SingleTop_jerdown   , hMeas_SingleTop_jerup   , 
+                    hMeas_SingleTop_nom       , hMeas_SingleTop_nom   , 
+                    hMeas_SingleTop_nom       , hMeas_SingleTop_nom,
+                    hMeas_SingleTop_nom ]
+
+
+hMeas_WJets = [ hMeas_WJets_jecdown   , hMeas_WJets_jecup   , 
+                hMeas_WJets_jerdown   , hMeas_WJets_jerup   , 
+                hMeas_WJets_nom       , hMeas_WJets_nom   , 
+                hMeas_WJets_nom       , hMeas_WJets_nom,
+                hMeas_WJets_nom ]
+    
+        
+hMeas_QCD    = [ hMeas_QCD_SingleMu    , hMeas_QCD_SingleMu  ,
+                 hMeas_QCD_SingleMu    , hMeas_QCD_SingleMu  ,
+                 hMeas_QCD_SingleMu    , hMeas_QCD_SingleMu,
+                 hMeas_QCD_SingleMu    , hMeas_QCD_SingleMu,
+                 hMeas_QCD_SingleMu]
+    
+
+histsAll = [hRecoData                 , hMeas_QCD_SingleMu    ,
+            hMeas_TTbar_jecdown       , hMeas_TTbar_jecup     , 
+            hMeas_TTbar_jerdown       , hMeas_TTbar_jerup     , 
+            hMeas_TTbar_pdfdown       , hMeas_TTbar_pdfup     ,
+            hMeas_TTbar_scaledown     , hMeas_TTbar_scaleup   ,
+            hMeas_TTbar_nom           ,
+            hMeas_SingleTop_jecdown   , hMeas_SingleTop_jecup , 
+            hMeas_SingleTop_jerdown   , hMeas_SingleTop_jerup , 
+            hMeas_SingleTop_nom       ,
+            hMeas_WJets_jecdown       , hMeas_WJets_jecup     , 
+            hMeas_WJets_jerdown       , hMeas_WJets_jerup     , 
+            hMeas_WJets_nom
+            ]
+
+fout.cd()
+for ihist in xrange(len(histsAll)) :
+    hist = histsAll[ihist]
+    if hist is not None :
+        hist.Write()
 
 fout.Close()
