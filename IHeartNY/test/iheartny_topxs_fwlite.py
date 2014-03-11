@@ -108,7 +108,7 @@ parser.add_option('--jecSys', metavar='J', type='float', action='store',
 
 # JER systematics
 parser.add_option('--jerSys', metavar='J', type='float', action='store',
-                  default=0.0,
+                  default=None,
                   dest='jerSys',
                   help='JER Systematic variation in fraction')
 
@@ -149,7 +149,7 @@ jerNom = 0.1
 # Additional JEC uncertainty for CA8 jets
 flatJecUnc = 0.03
 
-if abs( options.jecSys != 0 ) or options.jerSys > 0.0 :
+if abs( options.jecSys) != 0 or options.jerSys != None :
     ROOT.gSystem.Load('libCondFormatsJetMETObjects')
     jecParStrAK5 = ROOT.std.string('START53_V27_Uncertainty_AK5PFchs.txt')
     jecUncAK5 = ROOT.JetCorrectionUncertainty( jecParStrAK5 )
@@ -526,7 +526,7 @@ if options.makeResponse == True :
     genParticlesStatusHandle = Handle( "std::vector<float>")
     genParticlesStatusLabel = ( "pfShyftTupleGenParticles", "status")
 
-if options.jerSys != 0.0 :
+if options.jerSys != None :
     ak5GenJetPtHandle = Handle( "std::vector<float>")
     ak5GenJetPtLabel = ("pfShyftTupleAK5GenJets", "pt")
     ak5GenJetEtaHandle = Handle( "std::vector<float>")
@@ -882,7 +882,7 @@ for event in events:
 
 
 
-    if len(ak5JetPts) > 0 and options.jerSys != 0.0 :
+    if len(ak5JetPts) > 0 and options.jerSys != None :
         if options.debug :
             print 'getting gen jets'
         ak5GenJets = []
@@ -934,7 +934,7 @@ for event in events:
     ak5Jets = []
     if options.debug :
         print 'Smearing jets'
-    if abs( options.jecSys != 0 ) or options.jerSys > 0.0 :
+    if abs( options.jecSys) != 0 or options.jerSys != None :
         if options.debug :
             print '---------- jets ------------'
         for ijet in xrange( len(ak5JetPts) ) :
@@ -960,7 +960,7 @@ for event in events:
                 jetScale = 1 + unc * options.jecSys
 
             ## also do Jet energy resolution variation 
-            if abs(options.jerSys)>0.0001 :
+            if options.jerSys != None :
 		genJet = findClosestInList( thisJet, ak5GenJets )
                 scale = options.jerSys
                 recopt = thisJet.Perp()
@@ -1275,7 +1275,7 @@ for event in events:
                 jetScale = 1 + unc * options.jecSys
 
 	## also do Jet energy resolution variation 
-	if abs(options.jerSys)>0.0001 :
+	if options.jerSys != None :
 	    genJet = findClosestInList( jet1, ca8GenJets )
 	    scale = options.jerSys
 	    recopt = jet1.Perp()
