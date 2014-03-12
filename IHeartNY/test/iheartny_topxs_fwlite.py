@@ -6,6 +6,25 @@ import glob
 import time
 import math
 
+#Helper function to find electron relative isolation
+def getAeff(eleEta) :
+    aEff = 0.0
+    if abs(eleEta) < 1.0:
+        aEff = 0.13
+    if (abs(eleEta) > 1.0 and abs(eleEta) < 1.479):
+        aEff = 0.14
+    if (abs(eleEta) > 1.479 and abs(eleEta) < 2.0):
+        aEff = 0.07
+    if (abs(eleEta) > 2.0 and abs(eleEta) < 2.2):
+        aEff = 0.09
+    if (abs(eleEta) > 2.2 and abs(eleEta) < 2.3):
+        aEff = 0.11
+    if (abs(eleEta) > 2.3 and abs(eleEta) < 2.4):
+        aEff = 0.11
+    if abs(eleEta) > 2.4:
+        aEff = 0.14
+    return float(aEff) 
+
 from optparse import OptionParser
 
 
@@ -75,7 +94,7 @@ parser.add_option('--printEvents', metavar='F', action='store_true',
 
 
 parser.add_option('--htCut', metavar='F', type='float', action='store',
-                  default=150.,
+                  default=None,
                   dest='htCut',
                   help='HT cut')
 
@@ -109,7 +128,7 @@ parser.add_option('--jecSys', metavar='J', type='float', action='store',
 
 # JER systematics
 parser.add_option('--jerSys', metavar='J', type='float', action='store',
-                  default=0.0,
+                  default=None,
                   dest='jerSys',
                   help='JER Systematic variation in fraction')
 
@@ -495,9 +514,15 @@ electronEtaHandle         = Handle( "std::vector<float>" )
 electronEtaLabel    = ( "pfShyftTupleElectrons" + postfix,   "eta" )
 electronPhiHandle         = Handle( "std::vector<float>" )
 electronPhiLabel    = ( "pfShyftTupleElectrons" + postfix,   "phi" )
-electronPfisoHandle         = Handle( "std::vector<float>" )
-#Incorrect but using to check code
-electronPfisoLabel    = ( "pfShyftTupleElectrons" + postfix,   "pfiso" )
+electronPfisoCHHandle         = Handle( "std::vector<float>" )
+electronPfisoCHLabel    = ( "pfShyftTupleElectrons" + postfix,   "pfisoCH" )
+electronPfisoNHHandle         = Handle( "std::vector<float>" )
+electronPfisoNHLabel    = ( "pfShyftTupleElectrons" + postfix,   "pfisoNH" )
+electronPfisoPHHandle         = Handle( "std::vector<float>" )
+electronPfisoPHLabel    = ( "pfShyftTupleElectrons" + postfix,   "pfisoPH" )
+
+rhoHandle         = Handle( "double" )
+rhoLabel    = ( "kt6PFJets",   "rho" )
 
 metHandle = Handle( "std::vector<float>" )
 metLabel = ("pfShyftTupleMET" + postfix,   "pt" )
@@ -529,7 +554,7 @@ if options.makeResponse == True :
     genParticlesStatusHandle = Handle( "std::vector<float>")
     genParticlesStatusLabel = ( "pfShyftTupleGenParticles", "status")
 
-if options.jerSys != 0.0 :
+if options.jerSys != None :
     ak5GenJetPtHandle = Handle( "std::vector<float>")
     ak5GenJetPtLabel = ("pfShyftTupleAK5GenJets", "pt")
     ak5GenJetEtaHandle = Handle( "std::vector<float>")
@@ -769,15 +794,22 @@ for event in events:
 	event.getByLabel (electronPtLabel, electronPtHandle)
 	if electronPtHandle.isValid() :
             electronPts = electronPtHandle.product()
-	    event.getByLabel (electronPfisoLabel, electronPfisoHandle)
-	    electronPfisos = electronPfisoHandle.product()
+	    event.getByLabel (electronPfisoCHLabel, electronPfisoCHHandle)
+	    electronPfisoCHs = electronPfisoCHHandle.product()
+	    event.getByLabel (electronPfisoNHLabel, electronPfisoNHHandle)
+	    electronPfisoNHs = electronPfisoNHHandle.product()
+	    event.getByLabel (electronPfisoPHLabel, electronPfisoPHHandle)
+	    electronPfisoPHs = electronPfisoPHHandle.product()
 	    event.getByLabel (electronEtaLabel, electronEtaHandle)
 	    electronEtas = electronEtaHandle.product()
+
+	    event.getByLabel (rhoLabel, rhoHandle)
+	    rho = rhoHandle.product()
 	    
 	    for ielectronPt in range(0,len(electronPts)) :
 		electronPt = electronPts[ielectronPt]
 		electronEta = electronEtas[ielectronPt]
-		electronPfiso = electronPfisos[ielectronPt]
+		electronPfiso = electronPfisoCHs[ielectronPt] + max(0.0, electronPfisoNHs[ielectronPt] + electronPfisoPHs[ielectronPt] - rho[0] * getAeff(electronEtas[ielectronPt]))
 		if (electronPt > 35.0 and abs(electronEta) < 2.5 and electronPfiso / electronPt < 0.1) :
 		    nElectronsVal += 1
 
@@ -789,23 +821,38 @@ for event in events:
 	    continue
 	electronPts = electronPtHandle.product()
 
-	event.getByLabel (electronPfisoLabel, electronPfisoHandle)
-	if not electronPfisoHandle.isValid():
+	event.getByLabel (electronPfisoCHLabel, electronPfisoCHHandle)
+	if not electronPfisoCHHandle.isValid():
             if options.makeResponse == True :
                 response.Miss( hadTop.p4.Perp(), weight )
 	    continue
-	electronPfisos = electronPfisoHandle.product()
+	electronPfisoCHs = electronPfisoCHHandle.product()
+
+	event.getByLabel (electronPfisoNHLabel, electronPfisoNHHandle)
+	if not electronPfisoNHHandle.isValid():
+            if options.makeResponse == True :
+                response.Miss( hadTop.p4.Perp(), weight )
+	    continue
+	electronPfisoNHs = electronPfisoNHHandle.product()
+
+	event.getByLabel (electronPfisoPHLabel, electronPfisoPHHandle)
+	if not electronPfisoPHHandle.isValid():
+            if options.makeResponse == True :
+                response.Miss( hadTop.p4.Perp(), weight )
+	    continue
+	electronPfisoPHs = electronPfisoPHHandle.product()
 
 	event.getByLabel (electronEtaLabel, electronEtaHandle)
 	electronEtas = electronEtaHandle.product()
 
 	for ielectronPt in range(0,len(electronPts)):
             electronPt = electronPts[ielectronPt]
+	    electronPfiso = electronPfisoCHs[ielectronPt] + max(0.0, electronPfisoNHs[ielectronPt] + electronPfisoPHs[ielectronPt] - rho[0] * getAeff(electronEtas[ielectronPt]))
 	    if electronPt > 35.0 and abs(electronEtas[ielectronPt]) < 2.5 :
                 if options.useLoose :
                     if options.debug : 
-			print 'imu = ' + str(ielectronPt) + ', iso/pt = ' + str( electronPfisos[ielectronPt] ) + '/' + str(electronPt) + ' = ' + str(electronPfisos[ielectronPt]/electronPt)
-		    if electronPfisos[ielectronPt] / electronPt < 0.1 :
+			print 'imu = ' + str(ielectronPt) + ', iso/pt = ' + str( electronPfiso ) + '/' + str(electronPt) + ' = ' + str(electronPfiso/electronPt)
+		    if electronPfiso / electronPt < 0.1 :
                         if options.makeResponse == True :
                             response.Miss( hadTop.p4.Perp(), weight )
 			continue
@@ -815,7 +862,7 @@ for event in events:
 			nElectronsVal += 1
 			igoodEle = ielectronPt
 		else :
-                    if electronPfisos[ielectronPt] / electronPt > 0.1 :
+                    if electronPfiso / electronPt > 0.1 :
                         if options.makeResponse == True :
                             response.Miss( hadTop.p4.Perp(), weight )
 			continue
@@ -934,7 +981,7 @@ for event in events:
     ak5JetMasss = ak5JetMassHandle.product()
 
 
-    if len(ak5JetPts) > 0 and options.jerSys != 0.0 :
+    if len(ak5JetPts) > 0 and options.jerSys != None :
 	ak5GenJets = []
 	ca8GenJets = []
 	event.getByLabel( ak5GenJetPtLabel, ak5GenJetPtHandle )
@@ -1007,7 +1054,7 @@ for event in events:
 	    jetScale = 1 + unc * options.jecSys
 
 	## also do Jet energy resolution variation 
-	if abs(options.jerSys)>0.0001 :
+	if options.jerSys != None :
             genJet = findClosestInList( thisJet, ak5GenJets )
 	    scale = options.jerSys
 	    recopt = thisJet.Perp()
@@ -1045,7 +1092,8 @@ for event in events:
     if options.lepType == "muon":
 	    pfIso0.Fill( muonPfisos[igoodMu] / muonPts[igoodMu], weight )
     if options.lepType == "ele":
-	    pfIso0.Fill( electronPfisos[igoodEle] / electronPts[igoodEle], weight )
+	    electronPfiso = electronPfisoCHs[igoodEle] + max(0.0, electronPfisoNHs[igoodEle] + electronPfisoPHs[igoodEle] - rho[0] * getAeff(electronEtas[igoodEle]))
+	    pfIso0.Fill( electronPfiso / electronPts[igoodEle], weight )
 
 
     nJetsVal = 0
@@ -1067,7 +1115,8 @@ for event in events:
     if options.lepType == "muon":
 	    pfIso1.Fill( muonPfisos[igoodMu] / muonPts[igoodMu], weight )
     if options.lepType == "ele":
-	    pfIso1.Fill( electronPfisos[igoodEle] / electronPts[igoodEle], weight )
+	    electronPfiso = electronPfisoCHs[igoodEle] + max(0.0, electronPfisoNHs[igoodEle] + electronPfisoPHs[igoodEle] - rho[0] * getAeff(electronEtas[igoodEle]))
+	    pfIso1.Fill( electronPfiso / electronPts[igoodEle], weight )
     
     # Require leading jet pt to be pt > 200 GeV
 
@@ -1077,7 +1126,8 @@ for event in events:
     if options.lepType == "muon":
 	    pfIso2.Fill( muonPfisos[igoodMu] / muonPts[igoodMu], weight )
     if options.lepType == "ele":
-	    pfIso2.Fill( electronPfisos[igoodEle] / electronPts[igoodEle], weight )
+	    electronPfiso = electronPfisoCHs[igoodEle] + max(0.0, electronPfisoNHs[igoodEle] + electronPfisoPHs[igoodEle] - rho[0] * getAeff(electronEtas[igoodEle]))
+	    pfIso2.Fill( electronPfiso / electronPts[igoodEle], weight )
     event.getByLabel (ak5JetCSVLabel, ak5JetCSVHandle)
     ak5JetCSVs = ak5JetCSVHandle.product()
 
@@ -1103,7 +1153,8 @@ for event in events:
     if options.lepType == "muon":
 	    pfIso3.Fill( muonPfisos[igoodMu] / muonPts[igoodMu], weight )
     if options.lepType == "ele":
-	    pfIso3.Fill( electronPfisos[igoodEle] / electronPts[igoodEle], weight )
+	    electronPfiso = electronPfisoCHs[igoodEle] + max(0.0, electronPfisoNHs[igoodEle] + electronPfisoPHs[igoodEle] - rho[0] * getAeff(electronEtas[igoodEle]))
+	    pfIso3.Fill( electronPfiso / electronPts[igoodEle], weight )
 
     ## event.getByLabel (ca8JetEtaLabel, ca8JetEtaHandle)
     ## ca8JetEtas = ca8JetEtaHandle.product()
@@ -1179,15 +1230,15 @@ for event in events:
     ht3.Fill( ht,weight )
     vtxMass3.Fill( lepVtxMass[0], weight)
 
-    if ht < options.htCut :
+    if if options.htCut is not None and ht < options.htCut :
         if options.makeResponse == True :
             response.Miss( hadTop.p4.Perp(), weight )        
         continue
 
-    if met < 20. :
-        if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight )        
-        continue
+    #if met < 20. :
+    #    if options.makeResponse == True :
+    #        response.Miss( hadTop.p4.Perp(), weight )        
+    #    continue
 
     ht4.Fill( ht,weight )
     vtxMass4.Fill( lepVtxMass[0], weight)
@@ -1335,7 +1386,7 @@ for event in events:
                 jetScale = 1 + unc * options.jecSys
 
 	## also do Jet energy resolution variation 
-	if abs(options.jerSys)>0.0001 :
+	if options.jerSys != None :
 	    genJet = findClosestInList( jet1, ca8GenJets )
 	    scale = options.jerSys
 	    recopt = jet1.Perp()
