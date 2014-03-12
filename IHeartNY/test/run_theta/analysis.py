@@ -1,17 +1,14 @@
 from ROOT import *
 
-def filterqcd( hname ) :
-    if 'QCD' not in hname :
-        return True
-    else :
-        return False
+def histfilter( hname ) :
+    return True
 
 def muplusjets(files, infilter, signal, mcstat):
     model = build_model_from_rootfile(files, histogram_filter=infilter, include_mc_uncertainties = mcstat)
     model.fill_histogram_zerobins()
     model.set_signal_processes(signal)
     for p in model.processes:
-        model.add_lognormal_uncertainty('lumi', math.log(1.044), p)
+        model.add_lognormal_uncertainty('lumi', math.log(1.026), p)
         model.add_lognormal_uncertainty('subjet_scalefactor', math.log(1.084), p)
 
 
@@ -66,8 +63,8 @@ def build_model(type, jet1 = None, mcstat = True):
     if type == 'ttbar_xs' :
 
         model = muplusjets(
-            files=['normalized_vtxMass6.root', 'normalized_vtxMass3.root'],
-            infilter=filterqcd,
+            files=['normalized_mujets_vtxMass6.root', 'normalized_mujets_ht3.root'],
+            infilter=histfilter,
             signal='TTbar',
             mcstat=mcstat
         )

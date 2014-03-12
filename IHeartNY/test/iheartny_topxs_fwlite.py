@@ -1,4 +1,13 @@
 # Updated 1/16/14 with electron selection, added MET cut, etc.
+# Updated 3/12/14 to update the definition of HT (was previously jet-HT, need ALL HT)
+# Updated 3/12/14 to redefine the cut flow.
+#     0 : Valid muon or electron passing ("!useLoose") or failing ("useLoose") isolation
+#     1 : >= 2 jets with pt > 30 GeV
+#     2 : HTLEP > htLepCut (default 0)
+#     3 : >= 1 leptonic-side jets with pt > 30 GeV, >= 1 hadronic side jet with pt > jetPtCut (default 200 GeV)
+#     4 : HT > htCut (default 0)
+#     5 : >= 1 b-tag on the leading leptonic jet
+#     6 : >= 1 t-tag on the leading hadronic jet
 
 #! /usr/bin/env python
 import os
@@ -92,11 +101,21 @@ parser.add_option('--printEvents', metavar='F', action='store_true',
                   dest='printEvents',
                   help='Print events that pass selection (run:lumi:event)')
 
+parser.add_option('--htLepCut', metavar='F', type='float', action='store',
+                  default=None,
+                  dest='htLepCut',
+                  help='HTLEP cut')
 
 parser.add_option('--htCut', metavar='F', type='float', action='store',
                   default=None,
                   dest='htCut',
                   help='HT cut')
+
+
+parser.add_option('--jetPtCut', metavar='F', type='float', action='store',
+                  default=200.0,
+                  dest='jetPtCut',
+                  help='CA8 hadronic-side PT cut of leading jet')
 
 # Mttbar cut for sample stitching
 parser.add_option('--mttGenMax', metavar='J', type='float', action='store',
@@ -110,10 +129,6 @@ parser.add_option('--makeResponse', metavar='M', action='store_true',
                   help='Make response for top pt unfolding')
 
 
-parser.add_option('--ptCut', metavar='F', type='float', action='store',
-                  default=200.0,
-                  dest='ptCut',
-                  help='Leading jet PT cut')
 
 parser.add_option('--bDiscCut', metavar='F', type='float', action='store',
                   default=0.679,
@@ -122,7 +137,7 @@ parser.add_option('--bDiscCut', metavar='F', type='float', action='store',
 
 # JEC systematics
 parser.add_option('--jecSys', metavar='J', type='float', action='store',
-                  default=0.0,
+                  default=None,
                   dest='jecSys',
                   help='JEC Systematic variation. Options are +1. (up 1 sigma), 0. (nominal), -1. (down 1 sigma)')
 
@@ -168,7 +183,7 @@ jerNom = 0.1
 flatJecUnc = 0.03
 
 
-if abs( options.jecSys) != 0.0 or options.jerSys != None :
+if options.jecSys != None or options.jerSys != None :
     ROOT.gSystem.Load('libCondFormatsJetMETObjects')
     jecParStrAK5 = ROOT.std.string('START53_V27_Uncertainty_AK5PFchs.txt')
     jecUncAK5 = ROOT.JetCorrectionUncertainty( jecParStrAK5 )
@@ -221,6 +236,18 @@ class GenTopQuark :
 
 import sys
 from DataFormats.FWLite import Events, Handle
+
+
+cutflow = {
+    'Stage 0: ':0,
+    'Stage 1: ':0,
+    'Stage 2: ':0,
+    'Stage 3: ':0,
+    'Stage 4: ':0,
+    'Stage 5: ':0,
+    'Stage 6: ':0,
+    }
+
 
 
 start_time = time.time()
@@ -287,7 +314,7 @@ htLep0 = ROOT.TH1F("htLep0", "H_{T}^{Lep}", 300, 0., 600.)
 htLep1 = ROOT.TH1F("htLep1", "H_{T}^{Lep}", 300, 0., 600.)
 htLep2 = ROOT.TH1F("htLep2", "H_{T}^{Lep}", 300, 0., 600.)
 htLep3 = ROOT.TH1F("htLep3", "H_{T}^{Lep}", 300, 0., 600.)
-ptJet0 = ROOT.TH1F("ptJet0", "p_{T} Of Leading Jet", 300, 0., 600.)
+
 
 topTagMassHistpremass= ROOT.TH1F("topTagMassHistpremass",         "Mass of Top Candidate from Hadronic Jets type 1 pre mass cut;Mass;Number",  300, 0., 600. )
 topTagMassHist= ROOT.TH1F("topTagMassHist",         "Mass of Top Candidate from Hadronic Jets type 1;Mass;Number",  300, 0., 600. )
@@ -334,7 +361,9 @@ nsj= ROOT.TH1F("nsj",         "number of subjets",  11, -0.5, 10.5 )
 #topTagMassHisthighpt= ROOT.TH1F("topTagMassHisthighpt",         "Mass of Top Candidate from Hadronic Jets type 1;Mass;Number",  300, 0., 600. )
 #topTagptHisthighpt= ROOT.TH1F("topTagptHisthighpt",         "Pt of Top Candidate from Hadronic Jets type 1;Mass;Number",  375, 0., 1500. )
 #minPairHisthighpt= ROOT.TH1F("minPairHisthighpt",         "Minimum Pairwise mass",  150, 0., 150. )
-
+ht0 = ROOT.TH1F("ht0", "HT", 200, 0., 2000.)
+ht1 = ROOT.TH1F("ht1", "HT", 200, 0., 2000.)
+ht2 = ROOT.TH1F("ht2", "HT", 200, 0., 2000.)
 ht3 = ROOT.TH1F("ht3", "HT", 200, 0., 2000.)
 ht4 = ROOT.TH1F("ht4", "HT", 200, 0., 2000.)
 ht5 = ROOT.TH1F("ht5", "HT", 200, 0., 2000.)
@@ -932,28 +961,6 @@ for event in events:
                 response.Miss( hadTop.p4.Perp(), weight )
             continue
 
-    event.getByLabel (topTagEtaLabel, topTagEtaHandle)
-    if not topTagEtaHandle.isValid() :
-	if options.makeResponse == True :
-		response.Miss( hadTop.p4.Perp(), weight )
-	continue 
-
-    if options.debug :
-        print 'toptag eta handle is valid'
-        print 'toptag etabin is ' + options.etabin	    
-    topTagEta = topTagEtaHandle.product()
-    if not options.type2:
-	if len(topTagEta)<1:
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
-	    continue 
-    	if options.etabin != 'all':
-		if options.etabin == 'range1':
-			if abs(topTagEta[0])>1.0:
-				continue
-		if options.etabin == 'range2':
-			if abs(topTagEta[0])<=1.0:
-				continue 
 
     # Now look at the rest of the lepton information.
     # We will classify jets based on hemispheres, defined
@@ -992,10 +999,12 @@ for event in events:
     ak5JetMasss = ak5JetMassHandle.product()
 
 
-
+    ak5GenJets = []
+    ca8GenJets = []
     if len(ak5JetPts) > 0 and options.jerSys != None :
-	ak5GenJets = []
-	ca8GenJets = []
+        if options.debug :
+            print 'Getting gen jets'
+
 	event.getByLabel( ak5GenJetPtLabel, ak5GenJetPtHandle )
 	event.getByLabel( ak5GenJetEtaLabel, ak5GenJetEtaHandle )
 	event.getByLabel( ak5GenJetPhiLabel, ak5GenJetPhiHandle )
@@ -1041,70 +1050,73 @@ for event in events:
     
 
     ak5Jets = []
+    ht = 0.0
     if options.debug :
-        print 'Smearing jets'
-    if abs( options.jecSys) != 0 or options.jerSys != None :
+        print '---------- AK5 jets ------------'
+    for ijet in xrange( len(ak5JetPts) ) :
         if options.debug :
-            print '---------- jets ------------'
-        for ijet in xrange( len(ak5JetPts) ) :
-            if options.debug :            
-                print 'Uncorr {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet, ak5JetPts[ijet], ak5JetEtas[ijet], ak5JetPhis[ijet], ak5JetMasss[ijet] )
+            print 'Orig   {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet, ak5JetPts[ijet], ak5JetEtas[ijet], ak5JetPhis[ijet], ak5JetMasss[ijet] )
+        ## get the uncorrected jets
+        thisJet = ROOT.TLorentzVector()
+        thisJet.SetPtEtaPhiM( ak5JetPts[ijet],
+                              ak5JetEtas[ijet],
+                              ak5JetPhis[ijet],
+                              ak5JetMasss[ijet] )
+        jetScale = 1.0
+        # First smear the jets
+        if options.jerSys != None :
+            genJet = findClosestInList( thisJet, ak5GenJets )
+            scale = options.jerSys
+            recopt = thisJet.Perp()
+            genpt = genJet.Perp()
+            deltapt = (recopt-genpt)*scale
+            ptscale = max(0.0, (recopt+deltapt)/recopt)
+            jetScale*=ptscale
+        # Then do the jet corrections
+        if options.jecSys != None :
             jecUncAK5.setJetEta( ak5JetEtas[ijet] )
-            jecUncAK5.setJetPt( ak5JetPts[ijet] )
+            jecUncAK5.setJetPt( ak5JetPts[ijet] )                    
+            upOrDown = bool(options.jecSys > 0.0)
+            unc = abs(jecUncAK5.getUncertainty(upOrDown))
+            #unc2 = flatJecUnc
+            #unc = math.sqrt(unc1*unc1 + unc2*unc2)
+            #print 'Correction = ' + str( 1 + unc * options.jecSys)
+            jetScale = 1 + unc * options.jecSys
 
-            ## get the uncorrected jets
-            thisJet = ROOT.TLorentzVector()
-            thisJet.SetPtEtaPhiM( ak5JetPts[ijet],
-                                  ak5JetEtas[ijet],
-                                  ak5JetPhis[ijet],
-                                  ak5JetMasss[ijet] )
-
-            jetScale = 1.0
-            if abs(options.jecSys) > 0.0001 :
-                upOrDown = bool(options.jecSys > 0.0)
-                unc = abs(jecUncAK5.getUncertainty(upOrDown))
-                #unc2 = flatJecUnc
-                #unc = math.sqrt(unc1*unc1 + unc2*unc2)
-                #print 'Correction = ' + str( 1 + unc * options.jecSys)
-                jetScale = 1 + unc * options.jecSys
-
-            ## also do Jet energy resolution variation 
-            if options.jerSys != None :
-		genJet = findClosestInList( thisJet, ak5GenJets )
-                scale = options.jerSys
-                recopt = thisJet.Perp()
-                genpt = genJet.Perp()
-                deltapt = (recopt-genpt)*scale
-                ptscale = max(0.0, (recopt+deltapt)/recopt)
-                jetScale*=ptscale
-
-
-
-	#remove the uncorrected jets
-	met_px = met_px + thisJet.Px()
-	met_py = met_py + thisJet.Py()
-
-
-	thisJet = thisJet * jetScale
-	ak5Jets.append( thisJet )
-	if options.debug :            
+        #remove the uncorrected/smeared jets from MET
+        met_px = met_px + thisJet.Px()
+        met_py = met_py + thisJet.Py()
+        # Scale the jet
+        thisJet = thisJet * jetScale
+        # Add to the list
+        ak5Jets.append( thisJet )
+        # add back the corrected jets to MET
+        met_px = met_px - thisJet.Px()
+        met_py = met_py - thisJet.Py()
+        # Calculate the HT correctly
+        if thisJet.Perp() > 30.0 :
+            ht += thisJet.Perp()
+        if options.debug :
             print 'Corr   {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet,
-										    ak5Jets[ijet].Perp(),
-										    ak5Jets[ijet].Eta(),
-										    ak5Jets[ijet].Phi(),
-										    ak5Jets[ijet].M() )
+                                                                                    ak5Jets[ijet].Perp(),
+                                                                                    ak5Jets[ijet].Eta(),
+                                                                                    ak5Jets[ijet].Phi(),
+                                                                                    ak5Jets[ijet].M() )
 
-	met_px = met_px - thisJet.Px()
-	met_py = met_py - thisJet.Py()
-
+                
 
     met = math.sqrt(met_px*met_px + met_py*met_py)
 
-    
     htLepVal = met + lepP4.Perp()
+    ht += htLepVal
 
+    if options.debug :
+        print 'Passed stage0'
+    cutflow['Stage 0: '] += 1
+    
     htLep0.Fill( htLepVal,weight )
     ptMET0.Fill( met,weight )
+    ht0.Fill   ( ht, weight )
 
     if options.lepType == "muon":
 	    pfIso0.Fill( muonPfisos[igoodMu] / muonPts[igoodMu], weight )
@@ -1125,23 +1137,30 @@ for event in events:
         if options.makeResponse == True :
             response.Miss( hadTop.p4.Perp(), weight )       
         continue
-
+    if options.debug :
+        print 'Passed stage1'
+    cutflow['Stage 1: '] += 1
+    
     htLep1.Fill( htLepVal,weight )
     ptMET1.Fill( met,weight )
+    ht1.Fill( ht, weight )
     pfIso1.Fill( muonPfisos[imuonPt] / muonPt, weight )
-    ptJet0.Fill( ak5Jets[0].Perp(),weight )
+
 
     if options.lepType == "muon":
 	    pfIso1.Fill( muonPfisos[igoodMu] / muonPts[igoodMu], weight )
     if options.lepType == "ele":
 	    electronPfiso = electronPfisoCHs[igoodEle] + max(0.0, electronPfisoNHs[igoodEle] + electronPfisoPHs[igoodEle] - rho[0] * getAeff(electronEtas[igoodEle]))
 	    pfIso1.Fill( electronPfiso / electronPts[igoodEle], weight )
-    
-    # Require leading jet pt to be pt > 200 GeV
-
-
+        
+    if options.htLepCut is not None and htLepVal < options.htLepCut :
+        continue
+    if options.debug :
+        print 'Passed stage2'
+    cutflow['Stage 2: '] += 1
     htLep2.Fill( htLepVal,weight )
     ptMET2.Fill( met,weight )
+    ht2.Fill( ht, weight )
 
     if options.lepType == "muon":
 	    pfIso2.Fill( muonPfisos[igoodMu] / muonPts[igoodMu], weight )
@@ -1161,39 +1180,14 @@ for event in events:
         if csv > options.bDiscCut :
             ntags += 1
 
-    if ntags < 1 :
-        if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight )        
-        continue
-
-
-    if options.debug :
-        print 'Have at least one b-tag'
-
-    htLep3.Fill( htLepVal,weight )
-    ptMET3.Fill( met,weight )
-
-    if options.lepType == "muon":
-	    pfIso3.Fill( muonPfisos[igoodMu] / muonPts[igoodMu], weight )
-    if options.lepType == "ele":
-	    electronPfiso = electronPfisoCHs[igoodEle] + max(0.0, electronPfisoNHs[igoodEle] + electronPfisoPHs[igoodEle] - rho[0] * getAeff(electronEtas[igoodEle]))
-	    pfIso3.Fill( electronPfiso / electronPts[igoodEle], weight )
-
-
-    ## event.getByLabel (ca8JetEtaLabel, ca8JetEtaHandle)
-    ## ca8JetEtas = ca8JetEtaHandle.product()
-    ## event.getByLabel (ca8JetPhiLabel, ca8JetPhiHandle)
-    ## ca8JetPhis = ca8JetPhiHandle.product()
-    ## event.getByLabel (ca8JetMassLabel, ca8JetMassHandle)
-    ## ca8JetMasss = ca8JetMassHandle.product()
-    ## event.getByLabel (ca8JetDa0MassLabel, ca8JetDa0MassHandle)
-    ## ca8JetDa0Masses = ca8JetDa0MassHandle.product()
-    ## event.getByLabel (ca8JetDa1MassLabel, ca8JetDa1MassHandle)
-    ## ca8JetDa1Masses = ca8JetDa1MassHandle.product()
-    
+            
 
     event.getByLabel (topTagPtLabel, topTagPtHandle)
-    topTagPt = topTagPtHandle.product()
+    if topTagPtHandle.isValid() == False :
+        if options.debug :
+            print 'No CA8 top tag jets in this event'
+        continue
+    topTagPt = topTagPtHandle.product()    
 
     event.getByLabel (topTagPhiLabel, topTagPhiHandle)
     topTagPhi = topTagPhiHandle.product()
@@ -1220,9 +1214,56 @@ for event in events:
     Topsj0mass 		= 	topTagsj0massHandle.product() 
 
 
+
+
+
+    ca8Jets = []
+    if options.debug :
+        print '---------- CA8 jets ------------'
+    for ijet in xrange( len(topTagPt) ) :
+        if options.debug :
+            print 'Orig   {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet, topTagPt[ijet], topTagEta[ijet], topTagPhi[ijet], topTagMass[ijet] )
+        ## get the uncorrected jets
+        thisJet = ROOT.TLorentzVector()
+        thisJet.SetPtEtaPhiM( topTagPt[ijet],
+                              topTagEta[ijet],
+                              topTagPhi[ijet],
+                              topTagMass[ijet] )
+        jetScale = 1.0
+        # First smear the jets
+        if options.jerSys != None :
+            genJet = findClosestInList( thisJet, ak5GenJets )
+            scale = options.jerSys
+            recopt = thisJet.Perp()
+            genpt = genJet.Perp()
+            deltapt = (recopt-genpt)*scale
+            ptscale = max(0.0, (recopt+deltapt)/recopt)
+            jetScale*=ptscale
+        # Then do the jet corrections
+        if options.jecSys != None :
+            jecUncAK7.setJetEta( topTagEta[ijet] )
+            jecUncAK7.setJetPt( topTagPt[ijet] )                    
+            upOrDown = bool(options.jecSys > 0.0)
+            unc = abs(jecUncAK7.getUncertainty(upOrDown))
+            #unc2 = flatJecUnc
+            #unc = math.sqrt(unc1*unc1 + unc2*unc2)
+            #print 'Correction = ' + str( 1 + unc * options.jecSys)
+            jetScale = 1 + unc * options.jecSys
+
+        # Scale the jet
+        thisJet = thisJet * jetScale
+        # Add to the list
+        ca8Jets.append( thisJet )
+        if options.debug :
+            print 'Corr   {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet,
+                                                                                    ca8Jets[ijet].Perp(),
+                                                                                    ca8Jets[ijet].Eta(),
+                                                                                    ca8Jets[ijet].Phi(),
+                                                                                    ca8Jets[ijet].M() )
+               
+
     hadJets = []
-    hadJetsMu = []
-    hadJetsBDisc = []
+    hadJetsIndex = []
     lepJets = []
     lepcsvs = []
     lepVtxMass = []
@@ -1238,40 +1279,51 @@ for event in events:
     for ijet in range(0,len(ak5Jets)) :
         if ak5Jets[ijet].Perp() > 30.0 :
             jet = ak5Jets[ijet]
-            ht += jet.Perp()
             if jet.DeltaR( lepP4 ) < ROOT.TMath.Pi() / 2.0 :
                 lepJets.append( jet )
 		lepcsvs.append(ak5JetCSVs[ijet])
                 lepVtxMass.append( ak5JetSecvtxMasses[ijet] )
 
+    for ijet in range(0,len(ca8Jets)) :
+        if ca8Jets[ijet].Perp() > 30.0 :
+            jet = ca8Jets[ijet]
+            if jet.DeltaR( lepP4 ) > ROOT.TMath.Pi() / 2.0 :
+                hadJets.append( jet )
+                hadJetsIndex.append( ijet )
 
 
-    if len(lepJets) < 1:
+    if len(lepJets) < 1 or len(hadJets) < 1 or hadJets[0].Perp() < options.jetPtCut :
         if options.makeResponse == True :
             response.Miss( hadTop.p4.Perp(), weight )        
 	continue
-	
+
+
+
+    if options.lepType == "muon":
+	    pfIso3.Fill( muonPfisos[igoodMu] / muonPts[igoodMu], weight )
+    if options.lepType == "ele":
+	    electronPfiso = electronPfisoCHs[igoodEle] + max(0.0, electronPfisoNHs[igoodEle] + electronPfisoPHs[igoodEle] - rho[0] * getAeff(electronEtas[igoodEle]))
+	    pfIso3.Fill( electronPfiso / electronPts[igoodEle], weight )
+    if options.debug :
+        print 'Passed stage3'
+    cutflow['Stage 3: '] += 1
+            
+    htLep3.Fill( htLepVal,weight )
     ht3.Fill( ht,weight )
     vtxMass3.Fill( lepVtxMass[0], weight)
+    ptMET3.Fill( met,weight )
 
     if options.htCut is not None and ht < options.htCut :
         if options.makeResponse == True :
             response.Miss( hadTop.p4.Perp(), weight )        
         continue
 
-
+    if options.debug :
+        print 'Passed stage4'
+    cutflow['Stage 4: '] += 1
     ht4.Fill( ht,weight )
     vtxMass4.Fill( lepVtxMass[0], weight)
     ptMET4.Fill( met,weight )
-    ## highestMassJetIndex = -1
-    ## highestJetMass = -1.0
-    ## bJetCandIndex = -1
-    ## # Find highest mass jet for W-candidate
-    ## for ijet in range(0,len(hadJets)):
-    ##     antitagged = hadJetsBDisc[ijet] < options.bDiscCut or options.bDiscCut < 0.0 
-    ##     if hadJets[ijet].M() > highestJetMass and antitagged :
-    ##         highestJetMass = hadJets[ijet].M()
-    ##         highestMassJetIndex = ijet
             
 
 
@@ -1379,6 +1431,9 @@ for event in events:
 
     if options.debug :
         print 'Have a leptonic-side btag'
+    if options.debug :
+        print 'Passed stage5'
+    cutflow['Stage 5: '] += 1        
     ht5.Fill( ht, weight )
     vtxMass5.Fill( lepVtxMass[0], weight)
     ptMET5.Fill( met,weight )
@@ -1386,44 +1441,19 @@ for event in events:
     #print "weight " + str(weight)
     nvtx =float(numvert[0])
 
-    if len(topTagPt) > 0:
+    if len(hadJets) > 0:
         if options.debug :
             print 'Have a CA8 jet'
         if options.ptWeight == True :
 		t1weight=weight*ttweight
 	else:
 		t1weight=weight
-	#if leptoppt > 400.0:
-        jet1 = ROOT.TLorentzVector()
-        jet1.SetPtEtaPhiM( topTagPt[0], topTagEta[0], topTagPhi[0], topTagMass[0] )
-	jetScale = 1.0
-        if abs(options.jecSys) != 0 :
-            jecUncAK7.setJetEta( topTagEta[0] )
-            jecUncAK7.setJetPt( topTagPt[0] )
-            if abs(options.jecSys) > 0.0001 :
-                upOrDown = bool(options.jecSys > 0.0)
-                unc1 = abs(jecUncAK7.getUncertainty(upOrDown))
-                unc2 = flatJecUnc
-                unc = math.sqrt(unc1*unc1 + unc2*unc2)
-                #print 'Correction = ' + str( 1 + unc * options.jecSys)
-                jetScale = 1 + unc * options.jecSys
 
-	## also do Jet energy resolution variation 
-	if options.jerSys != None :
-	    genJet = findClosestInList( jet1, ca8GenJets )
-	    scale = options.jerSys
-	    recopt = jet1.Perp()
-	    genpt = genJet.Perp()
-	    deltapt = (recopt-genpt)*scale
-	    ptscale = max(0.0, (recopt+deltapt)/recopt)
-	    jetScale*=ptscale
-		
-	jet1 *= jetScale 
 	    
 	    
 
-        jet = jet1
-	ijet=0
+        jet = hadJets[0]        
+	ijet=hadJetsIndex[0]
      	if not len(lepJets) == 0:
             if options.ptWeight == True :
 		t1weight=weight*ttweight
@@ -1508,6 +1538,9 @@ for event in events:
 	    if passSelection == True :
 		npassed += 1
 		ptRecoTop.Fill( topTagPt[ijet], t1weight )
+                if options.debug :
+                    print 'Passed stage6'
+                cutflow['Stage 6: '] += 1                
             if options.makeResponse == True :		
                 if passSelection == True :
                     response.Fill(  topTagPt[ijet], hadTop.p4.Perp(), t1weight )
@@ -1515,7 +1548,9 @@ for event in events:
                     response.Miss( hadTop.p4.Perp(), t1weight )
 
 
-
+for stage, count in sorted(cutflow.iteritems()) :
+    print '{0} {1:15.0f}'.format( stage, count )
+                    
 print  'Total Events: ' + str(count)
 print  'Passed      : ' + str(npassed)
 print  '            = ' + str( (float(npassed)/float(count)) * 100. ) + '%'
