@@ -1013,10 +1013,14 @@ for event in events:
 	event.getByLabel( ca8GenJetEtaLabel, ca8GenJetEtaHandle )
 	event.getByLabel( ca8GenJetPhiLabel, ca8GenJetPhiHandle )
 	event.getByLabel( ca8GenJetMassLabel, ca8GenJetMassHandle )
+        if ak5GenJetPtHandle.isValid() == False :
+            continue
 	ak5GenJetPt = ak5GenJetPtHandle.product()
 	ak5GenJetEta = ak5GenJetEtaHandle.product()
 	ak5GenJetPhi = ak5GenJetPhiHandle.product()
 	ak5GenJetMass = ak5GenJetMassHandle.product()
+        if len(ak5GenJetPt) == 0 :
+            continue
 	for iak5 in xrange( len(ak5GenJetPt) ) :
 		p4 = ROOT.TLorentzVector()
 		p4.SetPtEtaPhiM( ak5GenJetPt[iak5],
@@ -1025,6 +1029,8 @@ for event in events:
 				 ak5GenJetMass[iak5],
 				 )
 		ak5GenJets.append(p4)
+                if options.debug :
+                    print 'AK5Gen {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( iak5, ak5GenJetPt[iak5], ak5GenJetEta[iak5], ak5GenJetPhi[iak5], ak5GenJetMass[iak5] )
 
 	ca8GenJetPt = ca8GenJetPtHandle.product()
 	ca8GenJetEta = ca8GenJetEtaHandle.product()
@@ -1038,6 +1044,8 @@ for event in events:
 				 ca8GenJetMass[ica8],
 				 )
 		ca8GenJets.append(p4)
+                if options.debug :
+                    print 'CA8Gen {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ica8, ca8GenJetPt[ica8], ca8GenJetEta[ica8], ca8GenJetPhi[ica8], ca8GenJetMass[ica8] )
 
     event.getByLabel (metLabel, metHandle)
     mets = metHandle.product()
@@ -1054,6 +1062,8 @@ for event in events:
     if options.debug :
         print '---------- AK5 jets ------------'
     for ijet in xrange( len(ak5JetPts) ) :
+        if ak5JetPts[ijet] < 30.0 :
+            continue
         if options.debug :
             print 'Orig   {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet, ak5JetPts[ijet], ak5JetEtas[ijet], ak5JetPhis[ijet], ak5JetMasss[ijet] )
         ## get the uncorrected jets
@@ -1221,6 +1231,8 @@ for event in events:
     if options.debug :
         print '---------- CA8 jets ------------'
     for ijet in xrange( len(topTagPt) ) :
+        if topTagPt[ijet] < 30.0 :
+            continue        
         if options.debug :
             print 'Orig   {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet, topTagPt[ijet], topTagEta[ijet], topTagPhi[ijet], topTagMass[ijet] )
         ## get the uncorrected jets
@@ -1232,7 +1244,7 @@ for event in events:
         jetScale = 1.0
         # First smear the jets
         if options.jerSys != None :
-            genJet = findClosestInList( thisJet, ak5GenJets )
+            genJet = findClosestInList( thisJet, ca8GenJets )
             scale = options.jerSys
             recopt = thisJet.Perp()
             genpt = genJet.Perp()
@@ -1553,7 +1565,6 @@ for stage, count in sorted(cutflow.iteritems()) :
                     
 print  'Total Events: ' + str(count)
 print  'Passed      : ' + str(npassed)
-print  '            = ' + str( (float(npassed)/float(count)) * 100. ) + '%'
 f.cd()
 
 if options.makeResponse :
