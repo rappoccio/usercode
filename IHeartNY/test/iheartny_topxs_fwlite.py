@@ -296,13 +296,13 @@ pfIso3 = ROOT.TH1F("pfIso3", "PF relative isolation", 200, 0., 2.)
 
 ptMu = ROOT.TH1F("ptMu", "p_{T} of Muon", 200, 0., 200.)
 ptEle = ROOT.TH1F("ptEle", "p_{T} of Electron", 200, 0., 200.)
-ptMET0 = ROOT.TH1F("ptMET0", "MET", 200, 0., 200.)
-ptMET1 = ROOT.TH1F("ptMET1", "MET", 200, 0., 200.)
-ptMET2 = ROOT.TH1F("ptMET2", "MET", 200, 0., 200.)
-ptMET3 = ROOT.TH1F("ptMET3", "MET", 200, 0., 200.)
-ptMET4 = ROOT.TH1F("ptMET4", "MET", 200, 0., 200.)
-ptMET5 = ROOT.TH1F("ptMET5", "MET", 200, 0., 200.)
-ptMET6 = ROOT.TH1F("ptMET6", "MET", 200, 0., 200.)
+ptMET0 = ROOT.TH1F("ptMET0", "MET", 200, 0., 400.)
+ptMET1 = ROOT.TH1F("ptMET1", "MET", 200, 0., 400.)
+ptMET2 = ROOT.TH1F("ptMET2", "MET", 200, 0., 400.)
+ptMET3 = ROOT.TH1F("ptMET3", "MET", 200, 0., 400.)
+ptMET4 = ROOT.TH1F("ptMET4", "MET", 200, 0., 400.)
+ptMET5 = ROOT.TH1F("ptMET5", "MET", 200, 0., 400.)
+ptMET6 = ROOT.TH1F("ptMET6", "MET", 200, 0., 400.)
 #htLep3mu = ROOT.TH1F("htlep3mu", "H_{T}^{Lep}", 300, 0., 600.)
 htLep3t1kin = ROOT.TH1F("htlep3t1kin", "H_{T}^{Lep}", 300, 0., 600.)
 htLep3t1minp = ROOT.TH1F("htlep3t1minp", "H_{T}^{Lep}", 300, 0., 600.)
@@ -915,7 +915,7 @@ for event in events:
 	        muonPt = muonPts[imuonPt]
 		muonEta = muonEtas[imuonPt]
 		muonPfiso = muonPfisos[imuonPt]
-		if (muonPt > 35.0 and abs(muonEta) < 2.5 and muonPfiso / muonPt < 0.1) :
+		if (muonPt > 35.0 and abs(muonEta) < 2.5 and muonPfiso / muonPt < 0.12) :
                     nMuonsVal += 1
     if options.pileup != 'none':   
     	event.getByLabel (puLabel, puHandle)
@@ -1279,7 +1279,7 @@ for event in events:
     lepJets = []
     lepcsvs = []
     lepVtxMass = []
-    ht = htLepVal
+    #ht = htLepVal
     #print metphi
     metv = ROOT.TLorentzVector()
     metv.SetPtEtaPhiM( met, 0.0, metphi, 0.0)
