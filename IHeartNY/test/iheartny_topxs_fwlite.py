@@ -1091,7 +1091,7 @@ for event in events:
             #unc2 = flatJecUnc
             #unc = math.sqrt(unc1*unc1 + unc2*unc2)
             #print 'Correction = ' + str( 1 + unc * options.jecSys)
-            jetScale = 1 + unc * options.jecSys
+            jetScale += unc * options.jecSys
 
         #remove the uncorrected/smeared jets from MET
         met_px = met_px + thisJet.Px()
@@ -1260,7 +1260,7 @@ for event in events:
             #unc2 = flatJecUnc
             #unc = math.sqrt(unc1*unc1 + unc2*unc2)
             #print 'Correction = ' + str( 1 + unc * options.jecSys)
-            jetScale = 1 + unc * options.jecSys
+            jetScale += unc * options.jecSys
 
         # Scale the jet
         thisJet = thisJet * jetScale
