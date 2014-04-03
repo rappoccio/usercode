@@ -8,7 +8,7 @@ import shlex
 
 samples = [
     Sample(directory='/uscms/home/rappocc/nobackup/analysis/B2G/CMSSW_5_3_14_patch1_TOPXS/src/Analysis/IHeartNY/test/TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu',
-           title='TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu',
+           title='TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu',
            flags='--mttGenMax=700.', 
            pdfsys=False, noms=False, jersys=False, jecsys=False, qcd=True
     ),
