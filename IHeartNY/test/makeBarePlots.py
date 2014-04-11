@@ -50,6 +50,11 @@ parser.add_option('--drawLegend', metavar='F', action='store_true',
                   dest='drawLegend',
                   help='Draw a legend')
 
+parser.add_option('--rebin', metavar='R', type='int', action='store',
+                  default=None,
+                  dest='rebin',
+                  help='Rebin histogram?')
+
 (options, args) = parser.parse_args()
 
 argv = []
@@ -139,7 +144,7 @@ hMeas_SingleTop = []
 if options.hist2 is None:
 	fout = TFile("normalized_" + options.outname + '_' + options.hist1  + ".root" , "RECREATE")
 elif options.hist2 is not None:
-	fout = TFile("normalized_" + options.outname + '_' + options.hist2 + '_subtracted from_' + options.hist1 + ".root" , "RECREATE")
+	fout = TFile("normalized_" + options.outname + '_' + options.hist2 + '_subtracted_from_' + options.hist1 + ".root" , "RECREATE")
 
 
 # ==============================================================================
@@ -1389,7 +1394,40 @@ for thehist in hMeas_SingleTop :
 for thehist in hMeas_QCD :
     thehist.SetFillColor( TColor.kYellow )
 
+if options.rebin != None :
+
+    hMeas_TTbar_jecdown.Rebin( options.rebin )
+    hMeas_TTbar_jecup.Rebin( options.rebin )
+    hMeas_TTbar_jerdown.Rebin( options.rebin )
+    hMeas_TTbar_jerup.Rebin( options.rebin )
+    hMeas_TTbar_pdfdown.Rebin( options.rebin )
+    hMeas_TTbar_pdfup.Rebin( options.rebin )
+    hMeas_TTbar_scaledown.Rebin( options.rebin )
+    hMeas_TTbar_scaleup.Rebin( options.rebin )
+    hMeas_TTbar_nom.Rebin( options.rebin )
+
+
+    hMeas_SingleTop_jecdown.Rebin( options.rebin )
+    hMeas_SingleTop_jecup.Rebin( options.rebin )
+    hMeas_SingleTop_jerdown.Rebin( options.rebin )
+    hMeas_SingleTop_jerup.Rebin( options.rebin )
+    hMeas_SingleTop_nom.Rebin( options.rebin )
+
+
+    hMeas_WJets_jecdown.Rebin( options.rebin )
+    hMeas_WJets_jecup.Rebin( options.rebin )
+    hMeas_WJets_jerdown.Rebin( options.rebin )
+    hMeas_WJets_jerup.Rebin( options.rebin )
+    hMeas_WJets_nom.Rebin( options.rebin )
+
+
+    hMeas_QCD_SingleMu.Rebin ( options.rebin )
+    hRecoData.Rebin( options.rebin )
+    
+    
 legs = []
+
+summedhists = []
 
 for m in range(0,len(hMeas_TTbar)):
 
@@ -1400,7 +1438,6 @@ for m in range(0,len(hMeas_TTbar)):
             zerohist.SetBinContent(1, 0.0)
         if options.ignoreData == False :
             hRecoData.SetBinContent(1, 0.0)
-
 
                 
     leg = TLegend(0.5, 0.55, 0.84, 0.84)
@@ -1427,12 +1464,40 @@ for m in range(0,len(hMeas_TTbar)):
     hMC_stack.Add( hMeas_WJets[m] )
     hMC_stack.Add( hMeas_SingleTop[m] )
     hMC_stack.Add( hMeas_TTbar[m] )
+
+    summedhist = hMeas_TTbar[m].Clone()
+    summedhist.SetName( 'summed_' + plots[m] )
+    summedhist.Add( hMeas_WJets[m] )
+    summedhist.Add( hMeas_SingleTop[m] )
+    summedhist.Add( hMeas_QCD_SingleMu )
+    summedhist.Sumw2()
+
+    ratiohist = hRecoData.Clone()
+    ratiohist.SetName( 'ratio_' + plots[m] )
+    ratiohist.Sumw2()
+    ratiohist.Divide( summedhist )
+
+    summedhists.append( [ratiohist,summedhist] )
     
    
-    c = TCanvas("datamc" + plots[m] , "datamc" + plots[m])
+    c = TCanvas("datamc" + plots[m] , "datamc" + plots[m],200,10,960,800)
+    p1 = TPad("datamcp1" + plots[m] , "datamc" + plots[m],0.0,0.3,1.0,0.97)
+    p1.SetBottomMargin(0.05)
+    p1.SetNumber(1)
+    p2 = TPad("datamcp2" + plots[m] , "datamc" + plots[m],0.0,0.00,1.0,0.3)
+    p2.SetNumber(2)
+    p2.SetTopMargin(0.05)
+    p2.SetBottomMargin(0.30)
+
+
+    c.cd()
+    p1.Draw()
+    p1.cd()
+
     if not options.ignoreData :
         leg.AddEntry( hRecoData, '19.6 fb^{-1}', 'p')
         hRecoData.UseCurrentStyle()
+        hRecoData.GetXaxis().SetTitle('')        
         hRecoData.Draw('e')
         hMC_stack.Draw("hist same")
         hRecoData.Draw('e same')
@@ -1440,10 +1505,26 @@ for m in range(0,len(hMeas_TTbar)):
     else :
         hMC_stack.UseCurrentStyle()
         hMC_stack.Draw("hist")
+        hMC_stack.GetXaxis().SetTitle('')
     if options.drawLegend :
         leg.Draw()
 
-    canvs.append(c)
+
+
+
+    c.cd()
+    p2.Draw()
+    p2.cd()
+    ratiohist.UseCurrentStyle()
+    ratiohist.Draw('e')
+    ratiohist.SetMaximum(2.0)
+    ratiohist.SetMinimum(0.0)
+    ratiohist.GetYaxis().SetNdivisions(2,4,0,False)
+    ratiohist.GetYaxis().SetTitle( 'Data/MC' )
+    ratiohist.GetXaxis().SetTitle( hMeas_TTbar[m].GetXaxis().GetTitle() )
+    ratiohist.GetXaxis().SetTitleOffset( 3.0 )
+    
+    canvs.append( [c, p1, p2] )
     legs.append(leg)
     if options.hist2 is None:
     	if not options.ignoreData : 
