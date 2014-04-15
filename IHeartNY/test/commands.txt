@@ -2,6 +2,6 @@ python makeBarePlots.py --hist1=ptMET1 --maxy=400000. --NQCD=4.5e5 --rebin=4
 python makeBarePlots.py --hist1=ptMET1 --hist2=ptMET3 --maxy=400000. --NQCD=4.5e5 --rebin=4
 python makeBarePlots.py --hist1=ptMET3 --maxy=10000. --NQCD=4.5e2 --rebin=4
 python makeBarePlots.py --hist1=ptMET3 --hist2=ptMET5 --maxy=10000. --NQCD=4.5e2 --rebin=4
-python makeBarePlots.py --hist1=vtxMass5 --maxy=2000. --NQCD=4.5e2
+python makeBarePlots.py --hist1=vtxMass5 --maxy=2000. --NQCD=4.5e2 --ignoreData
 python makeBarePlots.py --hist1=vtxMass5 --hist2=vtxMass6 --maxy=2000. --NQCD=4.5e2
-python makeBarePlots.py --hist1=vtxMass6 --maxy=200. --NQCD=32.8
+python makeBarePlots.py --hist1=vtxMass6 --maxy=200. --NQCD=32.8 --ignoreData
