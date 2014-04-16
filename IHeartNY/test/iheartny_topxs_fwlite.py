@@ -870,6 +870,28 @@ if options.ptWeight == False :
 
 
 # -------------------------------------------------------------------------------------
+# need to fill response matrix with weights already from the beginning!
+# -------------------------------------------------------------------------------------
+weight_response = 1.0
+
+lum = 19.7
+sigma_ttbar_NNLO = 245.8 * 1000.
+Nmc_ttbar = 21675970
+Nmc_TT_Mtt_700_1000 = 3082812
+Nmc_TT_Mtt_1000_Inf = 1249111
+e_TT_Mtt_0_700 = 1.0
+e_TT_Mtt_700_1000 = 0.074
+e_TT_Mtt_1000_Inf = 0.014
+
+if "TT_max700" in options.outname:
+    weight_response = sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar)
+elif "TT_Mtt-700to1000" in options.outname:
+    weight_response = sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000)
+elif "TT_Mtt-1000toInf" in options.outname:
+    weight_response = sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf)
+    
+
+# -------------------------------------------------------------------------------------
 # reset various counters
 # -------------------------------------------------------------------------------------
 
@@ -1067,14 +1089,14 @@ for event in events :
         event.getByLabel (muonPtLabel, muonPtHandle)
         if not muonPtHandle.isValid():
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
         muonPts = muonPtHandle.product()
 
         event.getByLabel (muonPfisoLabel, muonPfisoHandle)
         if not muonPfisoHandle.isValid():
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
         muonPfisos = muonPfisoHandle.product()
 
@@ -1136,28 +1158,28 @@ for event in events :
         event.getByLabel (electronPtLabel, electronPtHandle)
         if not electronPtHandle.isValid():
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
         electronPts = electronPtHandle.product()
 
         event.getByLabel (electronPfisoCHLabel, electronPfisoCHHandle)
         if not electronPfisoCHHandle.isValid():
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
         electronPfisoCHs = electronPfisoCHHandle.product()
         
         event.getByLabel (electronPfisoNHLabel, electronPfisoNHHandle)
         if not electronPfisoNHHandle.isValid():
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
         electronPfisoNHs = electronPfisoNHHandle.product()
 
         event.getByLabel (electronPfisoPHLabel, electronPfisoPHHandle)
         if not electronPfisoPHHandle.isValid():
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
         electronPfisoPHs = electronPfisoPHHandle.product()
 
@@ -1213,23 +1235,23 @@ for event in events :
     if options.lepType == "muon" :
         if nMuons != 1 : #Require ==1 muon
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
         if nElectrons != 0 : #Require ==0 electrons
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 	
     if options.lepType == "ele" :
         if nElectrons != 1 : #Require ==1 electron
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
         if nMuons != 0 : #Require ==0 muons
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
 
@@ -1299,7 +1321,7 @@ for event in events :
 
         if ak5GenJetPtHandle.isValid() == False :
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
         ak5GenJetPt   = ak5GenJetPtHandle.product()
@@ -1309,7 +1331,7 @@ for event in events :
 
         if len(ak5GenJetPt) == 0 :
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
         # loop over AK5 gen jets
@@ -1323,7 +1345,7 @@ for event in events :
 
         if ca8GenJetPtHandle.isValid() == False :
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
         ca8GenJetPt   = ca8GenJetPtHandle.product()
@@ -1333,7 +1355,7 @@ for event in events :
         
         if len(ca8GenJetPt) == 0 :
             if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight )
+                response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
         # loop over CA8 gen jets
@@ -1515,7 +1537,7 @@ for event in events :
 
     if nJets < 2 :
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight )       
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )       
         continue
     if options.debug :
         print 'Passed stage1'
@@ -1566,7 +1588,7 @@ for event in events :
 
     if options.metCut is not None and met < options.metCut :
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight )
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -1723,7 +1745,7 @@ for event in events :
 
     if len(lepJets) < 1 or len(hadJets) < 1 or hadJets[0].Perp() < options.jetPtCut :
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight )        
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )        
         continue
 
     if options.debug :
@@ -1788,12 +1810,12 @@ for event in events :
 
     if options.htLepCut is not None and htLep < options.htLepCut :
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight )        
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )        
         continue
 
     if options.htCut is not None and ht < options.htCut :
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight )        
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )        
         continue
 
     if options.debug :
@@ -1860,7 +1882,7 @@ for event in events :
     # require a b-tagged jet
     if ntagslep < 1:
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight )        
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )        
         continue
 
     if options.debug :
@@ -2169,9 +2191,9 @@ for event in events :
 
     if options.makeResponse == True :		
         if passSelection == True :
-            response.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight)
+            response.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
         else :
-            response.Miss(hadTop.p4.Perp(), top_weight)
+            response.Miss(hadTop.p4.Perp(), top_weight*weight_response)
     
     
     # -------------------------------------------------------------------------------------
