@@ -1238,7 +1238,7 @@ hMeas_QCD_SingleMu_ToPlot = hMeas_QCD_SingleMu.Clone()
 qcdcolors = [TColor.kMagenta, TColor.kMagenta,
              TColor.kMagenta, TColor.kMagenta,
              TColor.kMagenta, TColor.kMagenta,
-             TColor.kGreen, TColor.kRed, TColor.kRed, TColor.kRed
+             TColor.kGreen-3, TColor.kRed+1, TColor.kRed+1, TColor.kRed+1
              ]
 hMeas_QCD_SingleMu_ToPlot.SetName("hmeas_QCD_SingleMu_ToPlot")
 
@@ -1390,10 +1390,10 @@ stacks = []
 
 
 for thehist in hMeas_TTbar :
-    thehist.SetFillColor( TColor.kRed )
+    thehist.SetFillColor( TColor.kRed+1 )
 
 for thehist in hMeas_WJets :
-    thehist.SetFillColor( TColor.kGreen )
+    thehist.SetFillColor( TColor.kGreen-3 )
 
 for thehist in hMeas_SingleTop :
     thehist.SetFillColor( TColor.kMagenta )
