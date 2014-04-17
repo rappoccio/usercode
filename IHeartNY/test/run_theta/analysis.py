@@ -9,14 +9,11 @@ def muplusjets(files, infilter, signal, mcstat):
     model.set_signal_processes(signal)
     for p in model.processes:
         model.add_lognormal_uncertainty('lumi', math.log(1.026), p)
-        model.add_lognormal_uncertainty('subjet_scalefactor', math.log(1.084), p)
+        #model.add_lognormal_uncertainty('subjet_scalefactor', math.log(1.084), p)
 
 
     #model.add_lognormal_uncertainty('ttbar_rate', math.log(1.15), 'ttbar')
     model.add_lognormal_uncertainty('st_rate', math.log(1.5), 'SingleTop')
-    model.add_lognormal_uncertainty('st_rate', math.log(1.5), 'SingleTop')
-
-
     model.add_lognormal_uncertainty('rate_vjets', math.log(1.5), 'WJets')
     #    model.add_asymmetric_lognormal_uncertainty('scale_vjets', -math.log(1.577), math.log(0.710), 'WJets', obs)
     #    model.add_asymmetric_lognormal_uncertainty('matching_vjets', -math.log(1.104), math.log(1.052), 'WJets', obs)
@@ -63,7 +60,9 @@ def build_model(type, jet1 = None, mcstat = True):
     if type == 'ttbar_xs' :
 
         model = muplusjets(
-            files=['normalized_mujets_vtxMass6.root', 'normalized_mujets_ht3.root'],
+            files=[#'normalized_mujets_ptMET3_subtracted_from_ptMET1.root', 'normalized_mujets_ptMET5_subtracted_from_ptMET3.root',
+                   'normalized_mujets_vtxMass6_subtracted_from_vtxMass5.root',
+                   'normalized_mujets_vtxMass6.root'],
             infilter=histfilter,
             signal='TTbar',
             mcstat=mcstat
@@ -104,12 +103,12 @@ print parameters
 
 print '------------- MLE RESULTS ---------------'
 
-#args = {}
+args = {}
 
-#results1 = mle(model, input='toys:1.', n=1000 , with_covariance=True, **args)
-#results2 = mle(model, input='data', n=1 , with_covariance=True, **args)
+results1 = mle(model, input='toys:1.', n=10 , with_covariance=True, **args)
+results2 = mle(model, input='data', n=1 , with_covariance=True, **args)
 
-#print results2
+print results2
 
 
 print '------------- PL RESULTS ---------------'
@@ -117,7 +116,7 @@ print '------------- PL RESULTS ---------------'
 
 args = {}
 
-results3 = pl_interval(model, input='toys:1.', n=1000 ,  **args)
+results3 = pl_interval(model, input='toys:1.', n=10 ,  **args)
 results4 = pl_interval(model, input='data', n=1 , **args)
 
 print results4
