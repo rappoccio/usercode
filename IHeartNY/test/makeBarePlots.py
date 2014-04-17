@@ -1552,10 +1552,18 @@ for m in range(0,len(hMeas_TTbar)):
 
 # Print event counts
 
+if options.hist2 is None : 
+    print '------------ Cut Flow Stage ' + options.hist1 + ' -----------------'
+else :
+    print '------------ Cut Flow Stage ' + options.hist1 + ' minus Stage ' + options.hist2 + ' -----------------'
+print '{0:21s} '.format( 'Variation' ),
+for name in ['TTbar', 'WJets', 'S.T.', 'QCD', 'Data'] :
+    print '{0:8s} '.format(name),
+print ''
 for count in eventcounts :
     print '{0:20s} '.format( count[0] ),    
     for val in count[1:] :
-        print '{0:6.1f} '.format( val ),
+        print '{0:8.1f} '.format( val ),
     print ''
         
 # write the histogram in a rootfile
