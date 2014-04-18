@@ -1064,10 +1064,11 @@ for event in events :
         ttbarGen = hadTop.p4 + lepTop.p4
         mttbarGen = ttbarGen.M()
 
-        h_mttbarGen.Fill( mttbarGen )
         if options.mttGenMax is not None :
             if mttbarGen > options.mttGenMax :
                 continue
+
+        h_mttbarGen.Fill( mttbarGen )
 
         if options.makeResponse == True:
             h_ptGenTop.Fill( hadTop.p4.Perp(), weight )
