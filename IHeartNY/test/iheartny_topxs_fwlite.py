@@ -353,8 +353,10 @@ PilePlot = PileFile.Get("pweight" + options.pileup)
 
 f.cd()
 
-h_nvtx_pre  = ROOT.TH1F("nvtx_pre",  ";Number of PV (pre reweighting);Events / 1",  50,-0.5,49.5)
-h_nvtx_post = ROOT.TH1F("nvtx_post", ";Number of PV (post reweighting);Events / 1", 50,-0.5,49.5)
+h_nvtx_pre   = ROOT.TH1F("nvtx_pre",   ";Number of PV (pre reweighting);Events / 1",  50,-0.5,49.5)
+h_nvtx_post  = ROOT.TH1F("nvtx_post",  ";Number of PV (post reweighting);Events / 1", 50,-0.5,49.5)
+h_nvtx0_pre  = ROOT.TH1F("nvtx0_pre",  ";Number of PV (pre reweighting);Events / 1",  50,-0.5,49.5)
+h_nvtx0_post = ROOT.TH1F("nvtx0_post", ";Number of PV (post reweighting);Events / 1", 50,-0.5,49.5)
 
 
 # numbers of different objects
@@ -935,8 +937,8 @@ for event in events :
     numvert = npvHandle.product()
     nvtx = float(numvert[0])
 
-    h_nvtx_pre.Fill(nvtx)
-    h_nvtx_post.Fill(nvtx, weight)
+    h_nvtx0_pre.Fill(nvtx)
+    h_nvtx0_post.Fill(nvtx, weight)
     
     
     # -------------------------------------------------------------------------------------
@@ -1469,6 +1471,9 @@ for event in events :
     h_pfIso0.Fill(lepPfIso/lepPt, weight)
     h_ptLep0.Fill(lepPt, weight)
     h_etaLep0.Fill(lepEta, weight)
+
+    h_nvtx0_pre.Fill(nvtx)
+    h_nvtx0_post.Fill(nvtx, weight)
 
     # -------------------------------------------------------------------------------------
     # read CSV value and secondary vertex mass
