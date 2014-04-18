@@ -356,6 +356,7 @@ f.cd()
 h_nvtx_pre  = ROOT.TH1F("nvtx_pre",  ";Number of PV (pre reweighting);Events / 1",  50,-0.5,49.5)
 h_nvtx_post = ROOT.TH1F("nvtx_post", ";Number of PV (post reweighting);Events / 1", 50,-0.5,49.5)
 
+h_mttbarGen = ROOT.TH1F("mttbarGen", "mttbarGen", 150, 0, 1500)
 
 # numbers of different objects
 h_nMuons     = ROOT.TH1F("nMuons",     "Number of muons, p_{T} > 45 GeV;N_{Muons};Number / event",         5, -0.5, 4.5)
@@ -1059,10 +1060,12 @@ for event in events :
             lepTop = topQuarks[0]
 
     
-        # cut on generated m(ttbar) if stitching sample 
+        # cut on generated m(ttbar) if stitching sample
+        ttbarGen = hadTop.p4 + lepTop.p4
+        mttbarGen = ttbarGen.M()
+
+        h_mttbarGen.Fill( mttbarGen )
         if options.mttGenMax is not None :
-            ttbarGen = hadTop.p4 + lepTop.p4
-            mttbarGen = ttbarGen.M()
             if mttbarGen > options.mttGenMax :
                 continue
 
