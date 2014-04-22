@@ -55,6 +55,11 @@ parser.add_option('--rebin', metavar='R', type='int', action='store',
                   dest='rebin',
                   help='Rebin histogram?')
 
+parser.add_option('--plotNom', metavar='F', action='store_true',
+                  default=False,
+                  dest='plotNom',
+                  help='Only plot the Nominal')
+
 (options, args) = parser.parse_args()
 
 argv = []
@@ -1477,12 +1482,14 @@ eventcounts = []
 
 for m in range(0,len(hMeas_TTbar)):
 
-
+    if options.plotNom == True and plots[m] != 'nom' :
+        continue
 
     if 'vtxMass' in  options.hist1 or options.hist2 :
         for zerohist in [hMeas_WJets[m], hMeas_SingleTop[m], hMeas_TTbar[m], hMeas_QCD[m] ] :
-            zerohist.SetBinContent(1, 0.0)
-        if options.ignoreData == False :
+            if zerohist.GetBinContent(1) > 0.0 : 
+                zerohist.SetBinContent(1, 0.0)
+        if options.ignoreData == False and hRecoData.GetBinContent(1) > 0.0 :
             hRecoData.SetBinContent(1, 0.0)
 
                 
