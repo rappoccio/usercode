@@ -1,3 +1,21 @@
+
+
+IHeartNY/test/event_counts_all.py       Runs event_flow_crab on a bunch of input directories
+IHeartNY/test/event_counts_all_ana.py   Runs event_flow_selectors on a bunch of input directories
+IHeartNY/test/event_flow_crab.py        Counts events from Framework Job Report to get selection before SHyFT software
+IHeartNY/test/event_flow_selectors.py   Counts events from output of SHyFT selector
+
+For "event_flow_selectors" it spits out one line for each of the selectors (so, AK5Loose, AK5, etc). For instance : 
+
+         Inclusive  0  :     171114   <--- AK5 Loose
+         Inclusive  1  :     171114   <--- AK5
+         Inclusive  2  :          0   <--- I think there's a bug in the script but don't have time to find it. 
+
+
+
+
+
+
 At ntuple-making : 
 
 -------------------------------TT_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu---------------------------------
@@ -61,3 +79,20 @@ At selection stage :
           >=1 Jets  0  :     112610
           >=1 Jets  1  :      97460
           >=1 Jets  2  :          0
+
+
+
+Properly normalized : 
+
+
+Sample                TTbar     W+Jets     Single Top QCD   Data
+jec__down             278460.4  1470970.9  48315.5  450000.0  2317928.0  
+jec__up               279484.8  1510527.4  48908.9  450000.0  2317928.0  
+jer__down             279627.9  1514947.4  48969.8  450000.0  2317928.0  
+jer__up               278770.7  1486861.9  48520.6  450000.0  2317928.0  
+pdf__down             270195.1  1500424.4  48750.6  450000.0  2317928.0  
+pdf__up               368397.8  1500424.4  48750.6  450000.0  2317928.0  
+scale__down           241393.0  1500424.4  48750.6  450000.0  2317928.0  
+scale__up             244390.0  1500424.4  48750.6  450000.0  2317928.0  
+nom                   279205.0  1500424.4  48750.6  450000.0  2317928.0  
+

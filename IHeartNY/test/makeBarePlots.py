@@ -87,7 +87,13 @@ SF_t = 1.0
 #SF_t = 0.94
 
 # Cross sections (in fb) and the number of MC events
-sigma_ttbar_NNLO = 245.8 * 1000.    # fb, from http://arxiv.org/pdf/1303.6254.pdf
+sigma_ttbar_NNLO           = [    # fb, from http://arxiv.org/pdf/1303.6254.pdf
+    245.8 * 1000., # nom
+    237.4 * 1000., # scaledown
+    252.0 * 1000., # scaleup
+    239.4 * 1000., # pdfdown
+    252.0 * 1000., # pdfup
+    ]
 sigma_T_t_NNLO = 56.4 * 1000.       # 
 sigma_Tbar_t_NNLO = 30.7 * 1000.    # All single-top approx NNLO cross sections from
 sigma_T_s_NNLO = 3.79 * 1000.       # https://twiki.cern.ch/twiki/bin/viewauth/CMS/SingleTopSigma8TeV
@@ -119,11 +125,20 @@ Nmc_TT_Mtt_1000_Inf_scaleup = 1241650
 # QCD Normalization from MET fits
 NQCD = options.NQCD
 
+
+#
+# NEW ttbar filter efficiencies
+# These were determined "by eye" to make the generated mttbar spectrum smooth in the "makeMttGenPlots.py" script
+#                    nom      scaledown scaleup
+e_TT_Mtt_700_1000 = [0.074,   0.081,    0.074]
+e_TT_Mtt_1000_Inf = [0.015,   0.016,    0.014]
+e_TT_Mtt_0_700 =    [1.0  ,   1.0,      1.0  ] #   No efficiency here, we applied the cut at gen level
+
 # ttbar filter efficiencies
 #                    nom      scaledown scaleup
-e_TT_Mtt_700_1000 = [0.074,   0.078,    0.069]
-e_TT_Mtt_1000_Inf = [0.014,   0.016,    0.013]
-e_TT_Mtt_0_700 =    [1.0  ,   1.0,      1.0  ] #   No efficiency here, we applied the cut at gen level
+#e_TT_Mtt_700_1000 = [0.074,   0.078,    0.069]
+#e_TT_Mtt_1000_Inf = [0.014,   0.016,    0.013]
+#e_TT_Mtt_0_700 =    [1.0  ,   1.0,      1.0  ] #   No efficiency here, we applied the cut at gen level
 
 
 # 
@@ -488,38 +503,38 @@ if options.hist2 is None:
 	hMeas_WJets_jerup  .Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_t  )
 	hMeas_WJets_qcd    .Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_t  )
 
-	hMeas_TT_Mtt_less_700_nom      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_jecdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_jecup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_jerdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_jerup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_qcd      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_pdfdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_pdfup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_scaledown.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[1] * lum / float(Nmc_ttbar_scaledown) * SF_t)
-	hMeas_TT_Mtt_less_700_scaleup  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[2] * lum / float(Nmc_ttbar_scaleup) * SF_t)
+	hMeas_TT_Mtt_less_700_nom      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_jecdown  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_jecup    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_jerdown  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_jerup    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_qcd      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_pdfdown  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_pdfup    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_scaledown.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_0_700[1] * lum / float(Nmc_ttbar_scaledown) * SF_t)
+	hMeas_TT_Mtt_less_700_scaleup  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_0_700[2] * lum / float(Nmc_ttbar_scaleup) * SF_t)
 
-	hMeas_TT_Mtt_700_1000_nom      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_jecdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_jecup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_jerdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_jerup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_qcd      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_pdfdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_pdfup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_scaledown.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[1] * lum / float(Nmc_TT_Mtt_700_1000_scaledown) * SF_t)
-	hMeas_TT_Mtt_700_1000_scaleup  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[2] * lum / float(Nmc_TT_Mtt_700_1000_scaleup) * SF_t)
+	hMeas_TT_Mtt_700_1000_nom      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_jecdown  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_jecup    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_jerdown  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_jerup    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_qcd      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_pdfdown  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_pdfup    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_scaledown.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_700_1000[1] * lum / float(Nmc_TT_Mtt_700_1000_scaledown) * SF_t)
+	hMeas_TT_Mtt_700_1000_scaleup  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_700_1000[2] * lum / float(Nmc_TT_Mtt_700_1000_scaleup) * SF_t)
 
-	hMeas_TT_Mtt_1000_Inf_nom      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_jecdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_jecup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_jerdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_jerup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_qcd      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_pdfdown  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_pdfup    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_scaledown.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[1] * lum / float(Nmc_TT_Mtt_1000_Inf_scaledown) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_scaleup  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[2] * lum / float(Nmc_TT_Mtt_1000_Inf_scaleup) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_nom      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_jecdown  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_jecup    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_jerdown  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_jerup    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_qcd      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_pdfdown  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_pdfup    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_scaledown.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_1000_Inf[1] * lum / float(Nmc_TT_Mtt_1000_Inf_scaledown) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_scaleup  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_1000_Inf[2] * lum / float(Nmc_TT_Mtt_1000_Inf_scaleup) * SF_t )
 
 
 #Getting histogram files and scaling to plot histogram2 subtracted from histogram1
@@ -749,38 +764,38 @@ elif options.hist2 is not None:
 	hMeas_WJets_jerup_1  .Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_t  )
 	hMeas_WJets_qcd_1    .Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_t  )
 
-	hMeas_TT_Mtt_less_700_nom_1      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_jecdown_1  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_jecup_1    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_jerdown_1  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_jerup_1    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_qcd_1      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_pdfdown_1  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_pdfup_1    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_scaledown_1.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[1] * lum / float(Nmc_ttbar_scaledown) * SF_t)
-	hMeas_TT_Mtt_less_700_scaleup_1  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[2] * lum / float(Nmc_ttbar_scaleup) * SF_t)
+	hMeas_TT_Mtt_less_700_nom_1      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_jecdown_1  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_jecup_1    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_jerdown_1  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_jerup_1    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_qcd_1      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_pdfdown_1  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_pdfup_1    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_scaledown_1.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_0_700[1] * lum / float(Nmc_ttbar_scaledown) * SF_t)
+	hMeas_TT_Mtt_less_700_scaleup_1  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_0_700[2] * lum / float(Nmc_ttbar_scaleup) * SF_t)
 
-	hMeas_TT_Mtt_700_1000_nom_1      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_jecdown_1  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_jecup_1    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_jerdown_1  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_jerup_1    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_qcd_1      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_pdfdown_1  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_pdfup_1    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_scaledown_1.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[1] * lum / float(Nmc_TT_Mtt_700_1000_scaledown) * SF_t)
-	hMeas_TT_Mtt_700_1000_scaleup_1  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[2] * lum / float(Nmc_TT_Mtt_700_1000_scaleup) * SF_t)
+	hMeas_TT_Mtt_700_1000_nom_1      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_jecdown_1  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_jecup_1    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_jerdown_1  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_jerup_1    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_qcd_1      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_pdfdown_1  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_pdfup_1    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_scaledown_1.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_700_1000[1] * lum / float(Nmc_TT_Mtt_700_1000_scaledown) * SF_t)
+	hMeas_TT_Mtt_700_1000_scaleup_1  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_700_1000[2] * lum / float(Nmc_TT_Mtt_700_1000_scaleup) * SF_t)
 
-	hMeas_TT_Mtt_1000_Inf_nom_1      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_jecdown_1  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_jecup_1    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_jerdown_1  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_jerup_1    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_qcd_1      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_pdfdown_1  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_pdfup_1    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_scaledown_1.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[1] * lum / float(Nmc_TT_Mtt_1000_Inf_scaledown) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_scaleup_1  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[2] * lum / float(Nmc_TT_Mtt_1000_Inf_scaleup) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_nom_1      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_jecdown_1  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_jecup_1    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_jerdown_1  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_jerup_1    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_qcd_1      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_pdfdown_1  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_pdfup_1    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_scaledown_1.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_1000_Inf[1] * lum / float(Nmc_TT_Mtt_1000_Inf_scaledown) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_scaleup_1  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_1000_Inf[2] * lum / float(Nmc_TT_Mtt_1000_Inf_scaleup) * SF_t )
 
 
 
@@ -1001,38 +1016,38 @@ elif options.hist2 is not None:
 	hMeas_WJets_jerup_2  .Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_t  )
 	hMeas_WJets_qcd_2    .Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_t  )
 
-	hMeas_TT_Mtt_less_700_nom_2      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_jecdown_2  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_jecup_2    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_jerdown_2  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_jerup_2    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_qcd_2      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_pdfdown_2  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_pdfup_2    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
-	hMeas_TT_Mtt_less_700_scaledown_2.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[1] * lum / float(Nmc_ttbar_scaledown) * SF_t)
-	hMeas_TT_Mtt_less_700_scaleup_2  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700[2] * lum / float(Nmc_ttbar_scaleup) * SF_t)
+	hMeas_TT_Mtt_less_700_nom_2      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_jecdown_2  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_jecup_2    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_jerdown_2  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_jerup_2    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_qcd_2      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_pdfdown_2  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_pdfup_2    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_Mtt_less_700_scaledown_2.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_0_700[1] * lum / float(Nmc_ttbar_scaledown) * SF_t)
+	hMeas_TT_Mtt_less_700_scaleup_2  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_0_700[2] * lum / float(Nmc_ttbar_scaleup) * SF_t)
 
-	hMeas_TT_Mtt_700_1000_nom_2      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_jecdown_2  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_jecup_2    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_jerdown_2  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_jerup_2    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_qcd_2      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_pdfdown_2  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_pdfup_2    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
-	hMeas_TT_Mtt_700_1000_scaledown_2.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[1] * lum / float(Nmc_TT_Mtt_700_1000_scaledown) * SF_t)
-	hMeas_TT_Mtt_700_1000_scaleup_2  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000[2] * lum / float(Nmc_TT_Mtt_700_1000_scaleup) * SF_t)
+	hMeas_TT_Mtt_700_1000_nom_2      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_jecdown_2  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_jecup_2    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_jerdown_2  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_jerup_2    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_qcd_2      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_pdfdown_2  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_pdfup_2    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_Mtt_700_1000_scaledown_2.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_700_1000[1] * lum / float(Nmc_TT_Mtt_700_1000_scaledown) * SF_t)
+	hMeas_TT_Mtt_700_1000_scaleup_2  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_700_1000[2] * lum / float(Nmc_TT_Mtt_700_1000_scaleup) * SF_t)
 
-	hMeas_TT_Mtt_1000_Inf_nom_2      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_jecdown_2  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_jecup_2    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_jerdown_2  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_jerup_2    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_qcd_2      .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_pdfdown_2  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_pdfup_2    .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_scaledown_2.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[1] * lum / float(Nmc_TT_Mtt_1000_Inf_scaledown) * SF_t )
-	hMeas_TT_Mtt_1000_Inf_scaleup_2  .Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf[2] * lum / float(Nmc_TT_Mtt_1000_Inf_scaleup) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_nom_2      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_jecdown_2  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_jecup_2    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_jerdown_2  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_jerup_2    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_qcd_2      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_pdfdown_2  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_pdfup_2    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_scaledown_2.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_1000_Inf[1] * lum / float(Nmc_TT_Mtt_1000_Inf_scaledown) * SF_t )
+	hMeas_TT_Mtt_1000_Inf_scaleup_2  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_1000_Inf[2] * lum / float(Nmc_TT_Mtt_1000_Inf_scaleup) * SF_t )
 
 
 
