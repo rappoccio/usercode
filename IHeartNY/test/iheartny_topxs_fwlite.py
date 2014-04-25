@@ -358,7 +358,15 @@ h_nvtx_post  = ROOT.TH1F("nvtx_post",  ";Number of PV (post reweighting);Events 
 h_nvtx0_pre  = ROOT.TH1F("nvtx0_pre",  ";Number of PV (pre reweighting);Events / 1",  50,-0.5,49.5)
 h_nvtx0_post = ROOT.TH1F("nvtx0_post", ";Number of PV (post reweighting);Events / 1", 50,-0.5,49.5)
 
-h_mttbarGen = ROOT.TH1F("mttbarGen", "mttbarGen", 150, 0, 1500)
+h_mttbarGen0 = ROOT.TH1F("mttbarGen0", "mttbarGen0", 150, 0, 1500)
+h_mttbarGen1 = ROOT.TH1F("mttbarGen1", "mttbarGen1", 150, 0, 1500)
+h_mttbarGen2 = ROOT.TH1F("mttbarGen2", "mttbarGen2", 150, 0, 1500)
+h_mttbarGen3 = ROOT.TH1F("mttbarGen3", "mttbarGen3", 150, 0, 1500)
+h_mttbarGen4 = ROOT.TH1F("mttbarGen4", "mttbarGen4", 150, 0, 1500)
+h_mttbarGen5 = ROOT.TH1F("mttbarGen5", "mttbarGen5", 150, 0, 1500)
+h_mttbarGen6 = ROOT.TH1F("mttbarGen6", "mttbarGen6", 150, 0, 1500)
+h_mttbarGen7 = ROOT.TH1F("mttbarGen7", "mttbarGen7", 150, 0, 1500)
+
 
 # numbers of different objects
 h_nMuons     = ROOT.TH1F("nMuons",     "Number of muons, p_{T} > 45 GeV;N_{Muons};Number / event",         5, -0.5, 4.5)
@@ -912,6 +920,8 @@ print "Start looping over events!"
 for event in events :
 
     weight = 1.0 #event weight
+
+    mttbarGen = -1.0
     
     if ntotal % 10000 == 0 or options.debug :
       print  '--------- Processing Event ' + str(ntotal)
@@ -1070,7 +1080,7 @@ for event in events :
             if mttbarGen > options.mttGenMax :
                 continue
 
-        h_mttbarGen.Fill( mttbarGen )
+        h_mttbarGen0.Fill( mttbarGen )
 
         if options.makeResponse == True:
             h_ptGenTop.Fill( hadTop.p4.Perp(), weight )
@@ -1551,7 +1561,8 @@ for event in events :
     if options.debug :
         print 'Passed stage1'
     cutflow['Stage 1: '] += 1
-    
+
+    h_mttbarGen1.Fill( mttbarGen )
     h_ht1.Fill(ht, weight)
     h_htLep1.Fill(htLep, weight)
     h_lepMET1.Fill(lepMET, weight)
@@ -1604,6 +1615,7 @@ for event in events :
         print 'Passed stage2'
     cutflow['Stage 2: '] += 1
 
+    h_mttbarGen2.Fill( mttbarGen )
     h_ht2.Fill(ht, weight)
     h_htLep2.Fill(htLep, weight)
     h_lepMET2.Fill(lepMET, weight)
@@ -1760,7 +1772,8 @@ for event in events :
     if options.debug :
         print 'Passed stage3'
     cutflow['Stage 3: '] += 1
-            
+
+    h_mttbarGen3.Fill( mttbarGen )
     h_ht3.Fill(ht, weight)
     h_htLep3.Fill(htLep, weight)
     h_lepMET3.Fill(lepMET, weight)
@@ -1831,6 +1844,7 @@ for event in events :
         print 'Passed stage4'
     cutflow['Stage 4: '] += 1
 
+    h_mttbarGen4.Fill( mttbarGen )
     h_ht4.Fill(ht, weight)
     h_htLep4.Fill(htLep, weight)
     h_lepMET4.Fill(lepMET, weight)
@@ -1911,7 +1925,8 @@ for event in events :
             else :
                 btagSF -= btagSFerr
         weight *= btagSF
-        
+
+    h_mttbarGen5.Fill( mttbarGen )
     h_ht5.Fill(ht, weight)
     h_htLep5.Fill(htLep, weight)
     h_lepMET5.Fill(lepMET, weight)
@@ -2111,6 +2126,7 @@ for event in events :
         h_hadtop_mass6.Fill(goodtop.M(), top_weight)
         h_hadtop_y6.Fill(goodtop.Rapidity(), top_weight)
 
+        h_mttbarGen6.Fill( mttbarGen )
         h_ht6.Fill(ht, weight)
         h_htLep6.Fill(htLep, weight)
         h_lepMET6.Fill(lepMET, weight)
@@ -2215,7 +2231,8 @@ for event in events :
             if options.debug :
                 print 'Passed stage7'
             cutflow['Stage 7: '] += 1
-            
+
+            h_mttbarGen7.Fill( mttbarGen )
             h_wboson_pt7.Fill(wboson_pt, weight)
             h_wboson_mt7.Fill(wboson_mt, weight)
             

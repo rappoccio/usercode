@@ -61,7 +61,7 @@ def build_model(type, jet1 = None, mcstat = True):
 
         model = muplusjets(
             files=[#'normalized_mujets_ptMET3_subtracted_from_ptMET1.root', 'normalized_mujets_ptMET5_subtracted_from_ptMET3.root',
-                   'normalized_mujets_vtxMass6_subtracted_from_vtxMass5.root',
+                   #'normalized_mujets_vtxMass6_subtracted_from_vtxMass5.root',
                    'normalized_mujets_vtxMass6.root'],
             infilter=histfilter,
             signal='TTbar',
