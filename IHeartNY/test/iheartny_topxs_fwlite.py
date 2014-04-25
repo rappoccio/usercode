@@ -948,8 +948,8 @@ for event in events :
     numvert = npvHandle.product()
     nvtx = float(numvert[0])
 
-    h_nvtx0_pre.Fill(nvtx)
-    h_nvtx0_post.Fill(nvtx, weight)
+    h_nvtx_pre.Fill(nvtx)
+    h_nvtx_post.Fill(nvtx, weight)
     
     
     # -------------------------------------------------------------------------------------
