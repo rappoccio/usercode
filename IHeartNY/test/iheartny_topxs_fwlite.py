@@ -9,6 +9,15 @@
 #     5 : >= 1 b-tag on the leading leptonic jet
 #     6 : >= 1 t-tag on the leading hadronic jet
 # Update 4/2/14: various bug fixes and cleanup of code, details here: http://hep.pha.jhu.edu:8080/top/982
+# Update 5/5/14: redefine cut flow
+#     0 : Valid muon or electron passing ("!useLoose") or failing ("useLoose") isolation
+#     1 : >= 2 jets with pt > 30 GeV
+#     2 : HTLEP > htLepCut (default 0)
+#     3 : >= 1 leptonic-side jets with pt > 30 GeV, >= 1 hadronic side jet with pt > jetPtCut (default 200 GeV)
+#     4 : >= 1 hadronic side jet with pt > 400 GeV
+#     5 : HT > htCut (default 0)
+#     6 : >= 1 t-tag on the leading hadronic jet
+#     7 : >= 1 b-tag on the leading leptonic jet with vtxMass > 0
 
 
 #! /usr/bin/env python
@@ -199,6 +208,11 @@ parser.add_option('--makeResponse', metavar='M', action='store_true',
                   default=False,
                   dest='makeResponse',
                   help='Make response matrix for top pt unfolding')
+
+parser.add_option('--semilep', metavar='J', type='float',action='store',
+                  default=None,
+                  dest='semilep',
+                  help='Select only semileptonic ttbar decays (1) or only non-semileptonic ttbar decays (-1) or no such cut (None)')
 
 parser.add_option('--bDiscCut', metavar='F', type='float', action='store',
                   default=0.679,
@@ -556,11 +570,7 @@ h_vtxMass2LepJet7 = ROOT.TH1F("vtxMass2LepJet7", ";2nd leading lep.side jet vert
 
 
 # b-jet quantities
-h_ptBJet5 = ROOT.TH1F("ptBJet5", ";B-tagged jet p_{T} [GeV]; B-jets / 10 GeV", 50, 0., 500.)
-h_ptBJet6 = ROOT.TH1F("ptBJet6", ";B-tagged jet p_{T} [GeV]; B-jets / 10 GeV", 50, 0., 500.)
-h_ptBJet7 = ROOT.TH1F("ptBJet7", ";B-tagged jet p_{T} [GeV]; B-jets / 10 GeV", 50, 0., 500.)
-h_etaBJet5 = ROOT.TH1F("etaBJet5", ";B-tagged jet #eta; B-jets / 0.1", 50, -2.5, 2.5)
-h_etaBJet6 = ROOT.TH1F("etaBJet6", ";B-tagged jet #eta; B-jets / 0.1", 50, -2.5, 2.5)
+h_ptBJet7  = ROOT.TH1F("ptBJet7",  ";B-tagged jet p_{T} [GeV]; B-jets / 10 GeV", 50, 0., 500.)
 h_etaBJet7 = ROOT.TH1F("etaBJet7", ";B-tagged jet #eta; B-jets / 0.1", 50, -2.5, 2.5)
 
 h_vtxMass3 = ROOT.TH1F("vtxMass3", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
@@ -824,7 +834,7 @@ if options.pdfSys != 0.0 :
 
 
 # if making response matrix, need generated particles (truth-level)
-if options.makeResponse == True or options.mttGenMax is not None: 
+if options.makeResponse == True or options.mttGenMax is not None or options.semilep is not None: 
     genParticlesPtHandle     = Handle("std::vector<float>")
     genParticlesPtLabel      = ("pfShyftTupleGenParticles", "pt")
     genParticlesEtaHandle    = Handle("std::vector<float>")
@@ -996,14 +1006,15 @@ for event in events :
     # We also need to find the decay mode of the top and antitop quarks.
     # To do so, we look for leptons, and use their charge to assign
     # the correct decay mode to the correct quark. 
-    # the below is also run if mttGenMax cut is to be applied
+    # the below is also run if mttGenMax cut is to be applied 
+    # or if splitting semileponic vs non-semileptonic ttbar decays
     # -------------------------------------------------------------------------------------
 
     topQuarks = []
     hadTop = None
     lepTop = None
     isSemiLeptonicGen = True
-    if options.makeResponse == True or options.mttGenMax is not None:
+    if options.makeResponse == True or options.mttGenMax is not None or options.semilep is not None:
         event.getByLabel( genParticlesPtLabel, genParticlesPtHandle )
         event.getByLabel( genParticlesEtaLabel, genParticlesEtaHandle )
         event.getByLabel( genParticlesPhiLabel, genParticlesPhiHandle )
@@ -1023,7 +1034,7 @@ for event in events :
         topDecay = 0        # 0 = hadronic, 1 = leptonic
         antitopDecay = 0    # 0 = hadronic, 1 = leptonic
 
-
+        
         # loop over gen particles
         for igen in xrange( len(genParticlesPt) ) :
 
@@ -1061,9 +1072,15 @@ for event in events :
         # If we are filling the response matrix, don't
         # consider "volunteer" events that pass the selection
         # even though they aren't really semileptonic events. 
-        if options.makeResponse == True and isSemiLeptonicGen == False :
+
+        if options.makeResponse == True and not (options.semilep < 0) and isSemiLeptonicGen == False :
             continue	
 
+        if options.semilep > 0 and isSemiLeptonicGen == False:
+            continue
+        if options.semilep < 0 and isSemiLeptonicGen == True:
+            continue
+        
         if topDecay == 0 :
             hadTop = topQuarks[0]
             lepTop = topQuarks[1]
@@ -1086,6 +1103,7 @@ for event in events :
             h_ptGenTop.Fill( hadTop.p4.Perp(), weight )
     # endif (making response matrix)
 
+        
     
     # -------------------------------------------------------------------------------------
     # find & count leptons
@@ -1801,7 +1819,6 @@ for event in events :
     h_wboson_mt3.Fill(wboson_mt, weight)
 
 
-
     # define leptonic top pt & find weight for possibly applying top pt reweighting
     v_leptop = (metv+lepJets[0]+lepP4)
     leptop_pt   = v_leptop.Perp()
@@ -1825,17 +1842,12 @@ for event in events :
     h_hadtop_mass3.Fill(hadJets[0].M(), top_weight)
  
     
-        
+
     # -------------------------------------------------------------------------------------
-    # STEP (4): cut on HT or leptonic HT?
+    # STEP (4): require CA8 jet > 400 GeV
     # -------------------------------------------------------------------------------------
 
-    if options.htLepCut is not None and htLep < options.htLepCut :
-        if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight*weight_response )        
-        continue
-
-    if options.htCut is not None and ht < options.htCut :
+    if hadJets[0].Perp() < 400.0 :
         if options.makeResponse == True :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )        
         continue
@@ -1870,7 +1882,6 @@ for event in events :
     h_wboson_pt4.Fill(wboson_pt, weight)
     h_wboson_mt4.Fill(wboson_mt, weight)
 
-
     h_leptop_pt4.Fill(leptop_pt, top_weight)
     h_leptop_y4.Fill(leptop_y, top_weight)
     h_leptop_mass4.Fill(leptop_mass, top_weight)
@@ -1881,56 +1892,29 @@ for event in events :
 
 
     # -------------------------------------------------------------------------------------
-    # STEP (5): require a leptonic-side b-tagged jet
+    # STEP (5): cut on HT or leptonic HT?
     # -------------------------------------------------------------------------------------
 
-    ntagslep = 0      # number of b-tagged jets
-    i_leadbtag = -1   # identifier for finding leading b-tagged jet
-    bjet_pt = 0       # pt of leading b-tagged jet
-    bjet_vtxmass = 0  # secondary vertex mass of leading b-tagged jet
-    bjet_eta = 0      # eta of leading b-tagged jet
-    
-    # loop over CSV discriminator values of leptonic-side AK5 jets
-    for ijet in range(0,len(lepcsvs)) :
-        lepjet = lepJets[ijet]
-        lepcsv = lepcsvs[ijet]
-        if lepcsv > options.bDiscCut :
-            ntagslep += 1
-            if (lepjet.Perp() > bjet_pt) :
-                bjet_pt = lepjet.Perp()
-                bjet_eta = lepjet.Eta()
-                bjet_vtxmass = lepVtxMass[ijet]
-                i_leadbtag = ijet
-    
-    # require a b-tagged jet
-    if ntagslep < 1:
+    if options.htLepCut is not None and htLep < options.htLepCut :
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )        
+        continue
+
+    if options.htCut is not None and ht < options.htCut :
         if options.makeResponse == True :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )        
         continue
 
     if options.debug :
-        print 'Have a leptonic-side b-tagged AK5 jet'
-    if options.debug :
         print 'Passed stage5'
     cutflow['Stage 5: '] += 1
 
-    
-    # apply b-tagging SF 
-    if options.isData == False :
-        btagSF = getBtagSF(bjet_pt)
-        if options.btagSys != None :
-            btagSFerr = getBtagSFerror(bjet_pt)
-            if options.btagSys > 0 :
-                btagSF += btagSFerr
-            else :
-                btagSF -= btagSFerr
-        weight *= btagSF
 
     h_mttbarGen5.Fill( mttbarGen )
     h_ht5.Fill(ht, weight)
     h_htLep5.Fill(htLep, weight)
     h_lepMET5.Fill(lepMET, weight)
-    h_vtxMass5.Fill(bjet_vtxmass, weight)
+    h_vtxMass5.Fill(this_vtxmass, weight)
     h_ptLep5.Fill(lepPt, weight)
     h_etaLep5.Fill(lepEta, weight)
     h_ptMET5.Fill(met, weight)
@@ -1952,9 +1936,6 @@ for event in events :
     h_wboson_pt5.Fill(wboson_pt, weight)
     h_wboson_mt5.Fill(wboson_mt, weight)
 
-    h_ptBJet5.Fill(bjet_pt, weight)
-    h_etaBJet5.Fill(bjet_eta, weight)
-        
     h_leptop_pt5.Fill(leptop_pt, top_weight)
     h_leptop_y5.Fill(leptop_y, top_weight)
     h_leptop_mass5.Fill(leptop_mass, top_weight)
@@ -1963,6 +1944,7 @@ for event in events :
     h_hadtop_y5.Fill(hadJets[0].Rapidity(), top_weight)
     h_hadtop_mass5.Fill(hadJets[0].M(), top_weight)
 
+    
     
     # -------------------------------------------------------------------------------------
     # get variables for subjets of top-tagged jet 
@@ -2067,7 +2049,7 @@ for event in events :
         itop = hadJetsIndex[ijet]
 
         # top-tagged jet pt > 400 GeV
-        if topjet.Perp() < options.jetPtCut: 
+        if topjet.Perp() < 400.: 
             continue
         if itop_pt < 0: 
             itop_pt = ijet
@@ -2114,157 +2096,190 @@ for event in events :
 
 
     # -------------------------------------------------------------------------------------
-    # STEP (6): we now have an event with top-tagged jet passing full selection!
+    # STEP (6): we now have an event with top-tagged jet passing full selection (minus b-tagging!)
     # -------------------------------------------------------------------------------------
 
-    if passSelection:
+    if not passSelection:
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )       
+        continue
+    if options.debug :
+        print 'Passed stage6'
+    cutflow['Stage 6: '] += 1
+    
 
-        goodtop = hadJets[itop_mass]
-        igoodtop = hadJetsIndex[itop_mass]
+    goodtop = hadJets[itop_mass]
+    igoodtop = hadJetsIndex[itop_mass]
+    
+    h_hadtop_pt6.Fill(goodtop.Perp(), top_weight)
+    h_hadtop_mass6.Fill(goodtop.M(), top_weight)
+    h_hadtop_y6.Fill(goodtop.Rapidity(), top_weight)
+    
+    h_mttbarGen6.Fill( mttbarGen )
+    h_ht6.Fill(ht, weight)
+    h_htLep6.Fill(htLep, weight)
+    h_lepMET6.Fill(lepMET, weight)
+    h_vtxMass6.Fill(this_vtxmass, weight)
+    h_ptMET6.Fill(met, weight)
+    h_ptLep6.Fill(lepPt, weight)
+    h_etaLep6.Fill(lepEta, weight)
+    h_nJets6.Fill(nJets, weight)
+    h_nBJets6.Fill(nBJets, weight)
+    h_nLepJets6.Fill(len(lepJets), weight)
+    
+    if len(lepJets) > 0:
+        h_pt1LepJet6.Fill(lepJets[0].Perp(), weight)
+        h_eta1LepJet6.Fill(lepJets[0].Eta(), weight)
+        h_csv1LepJet6.Fill(lepcsvs[0], weight)
+        h_vtxMass1LepJet6.Fill(lepVtxMass[0], weight)
+    if len(lepJets) > 1:
+        h_pt2LepJet6.Fill(lepJets[1].Perp(), weight)
+        h_eta2LepJet6.Fill(lepJets[1].Eta(), weight)
+        h_csv2LepJet6.Fill(lepcsvs[1], weight)
+        h_vtxMass2LepJet6.Fill(lepVtxMass[1], weight)
+    
+    h_wboson_pt6.Fill(wboson_pt, weight)
+    h_wboson_mt6.Fill(wboson_mt, weight)
+    
+    h_leptop_pt6.Fill(leptop_pt, top_weight)
+    h_leptop_y6.Fill(leptop_y, top_weight)
+    h_leptop_mass6.Fill(leptop_mass, top_weight)
+    
 
-        h_hadtop_pt6.Fill(goodtop.Perp(), top_weight)
-        h_hadtop_mass6.Fill(goodtop.M(), top_weight)
-        h_hadtop_y6.Fill(goodtop.Rapidity(), top_weight)
-
-        h_mttbarGen6.Fill( mttbarGen )
-        h_ht6.Fill(ht, weight)
-        h_htLep6.Fill(htLep, weight)
-        h_lepMET6.Fill(lepMET, weight)
-        h_vtxMass6.Fill(bjet_vtxmass, weight)
-        h_ptMET6.Fill(met, weight)
-        h_ptLep6.Fill(lepPt, weight)
-        h_etaLep6.Fill(lepEta, weight)
-        h_nJets6.Fill(nJets, weight)
-        h_nBJets6.Fill(nBJets, weight)
-        h_nLepJets6.Fill(len(lepJets), weight)
-
-        if len(lepJets) > 0:
-            h_pt1LepJet6.Fill(lepJets[0].Perp(), weight)
-            h_eta1LepJet6.Fill(lepJets[0].Eta(), weight)
-            h_csv1LepJet6.Fill(lepcsvs[0], weight)
-            h_vtxMass1LepJet6.Fill(lepVtxMass[0], weight)
-        if len(lepJets) > 1:
-            h_pt2LepJet6.Fill(lepJets[1].Perp(), weight)
-            h_eta2LepJet6.Fill(lepJets[1].Eta(), weight)
-            h_csv2LepJet6.Fill(lepcsvs[1], weight)
-            h_vtxMass2LepJet6.Fill(lepVtxMass[1], weight)
-
-        h_wboson_pt6.Fill(wboson_pt, weight)
-        h_wboson_mt6.Fill(wboson_mt, weight)
-        
-        h_ptBJet6.Fill(bjet_pt, weight)
-        h_etaBJet6.Fill(bjet_eta, weight)
-
-        
-        h_leptop_pt6.Fill(leptop_pt, top_weight)
-        h_leptop_y6.Fill(leptop_y, top_weight)
-        h_leptop_mass6.Fill(leptop_mass, top_weight)
-
-        goodEvents.append( [ event.object().id().run(), event.object().id().luminosityBlock(), event.object().id().event() ] )
-        
-        h_ptRecoTop.Fill( goodtop.Perp(), top_weight )
-
-        if options.debug :
-            print 'Passed stage6'
-        cutflow['Stage 6: '] += 1
-        npassed += 1
-
-
-        # look at more variables for top-tagged subjets, even though we're not cutting on them at the moment
-        event.getByLabel (nsubCA8Label, nsubCA8Handle)
-        nsubCA8Jets = nsubCA8Handle.product() 
-        event.getByLabel (topTagsj0csvLabel, topTagsj0csvHandle)
-        Topsj0BDiscCSV = topTagsj0csvHandle.product() 
-        event.getByLabel (topTagsj1csvLabel, topTagsj1csvHandle)
-        Topsj1BDiscCSV = topTagsj1csvHandle.product() 
-        event.getByLabel (topTagsj2csvLabel, topTagsj2csvHandle)
-        Topsj2BDiscCSV = topTagsj2csvHandle.product() 
-        event.getByLabel (TopTau2Label, TopTau2Handle)
-        Tau2 = TopTau2Handle.product() 
-        event.getByLabel (TopTau3Label, TopTau3Handle)
-        Tau3 = TopTau3Handle.product() 
-        
-        # loop over CA8 subjets
-        index = -1
-        for iCAjet in range(0,len(nsubCA8Jets)):
-            CAjetTLV = ROOT.TLorentzVector()
-            CAjetTLV.SetPtEtaPhiM( nsubCA8Jets[iCAjet].pt(), nsubCA8Jets[iCAjet].eta(), nsubCA8Jets[iCAjet].phi(), nsubCA8Jets[iCAjet].mass() )
-            if (abs(goodtop.DeltaR(CAjetTLV))<0.5):
-                index = iCAjet
-                break
+    # look at more variables for top-tagged subjets, even though we're not cutting on them at the moment
+    event.getByLabel (nsubCA8Label, nsubCA8Handle)
+    nsubCA8Jets = nsubCA8Handle.product() 
+    event.getByLabel (topTagsj0csvLabel, topTagsj0csvHandle)
+    Topsj0BDiscCSV = topTagsj0csvHandle.product() 
+    event.getByLabel (topTagsj1csvLabel, topTagsj1csvHandle)
+    Topsj1BDiscCSV = topTagsj1csvHandle.product() 
+    event.getByLabel (topTagsj2csvLabel, topTagsj2csvHandle)
+    Topsj2BDiscCSV = topTagsj2csvHandle.product() 
+    event.getByLabel (TopTau2Label, TopTau2Handle)
+    Tau2 = TopTau2Handle.product() 
+    event.getByLabel (TopTau3Label, TopTau3Handle)
+    Tau3 = TopTau3Handle.product() 
+    
+    # loop over CA8 subjets
+    index = -1
+    for iCAjet in range(0,len(nsubCA8Jets)):
+        CAjetTLV = ROOT.TLorentzVector()
+        CAjetTLV.SetPtEtaPhiM( nsubCA8Jets[iCAjet].pt(), nsubCA8Jets[iCAjet].eta(), nsubCA8Jets[iCAjet].phi(), nsubCA8Jets[iCAjet].mass() )
+        if (abs(goodtop.DeltaR(CAjetTLV))<0.5):
+            index = iCAjet
+            break
             
-        tau32 = Tau3[index]/Tau2[index]
+    tau32 = Tau3[index]/Tau2[index]
+    
+    h_hadtop_precut_tau32.Fill(tau32, top_weight)
+    h_hadtop_precut_nvtx_tau32.Fill(nvtx, tau32, top_weight)
+
+    # this is selection beyond our standard selection, only as a check!!
+    if tau32 < 0.6:
+        subjet_csv = max(Topsj0BDiscCSV[igoodtop],Topsj1BDiscCSV[igoodtop],Topsj2BDiscCSV[igoodtop])
+        h_hadtop_precut_csv.Fill(subjet_csv, top_weight)
+        h_hadtop_precut_nvtx_csv.Fill(nvtx, subjet_csv, top_weight)
+        h_hadtop_pt_tau32.Fill(goodtop.Perp(), top_weight) 
         
-        h_hadtop_precut_tau32.Fill(tau32, top_weight)
-        h_hadtop_precut_nvtx_tau32.Fill(nvtx, tau32, top_weight)
+        if subjet_csv > options.bDiscCut:
+            h_hadtop_pt_csv.Fill(goodtop.Perp(), top_weight) 
+    
 
-        # this is selection beyond our standard selection, only as a check!!
-        if tau32 < 0.6:
-            subjet_csv = max(Topsj0BDiscCSV[igoodtop],Topsj1BDiscCSV[igoodtop],Topsj2BDiscCSV[igoodtop])
-            h_hadtop_precut_csv.Fill(subjet_csv, top_weight)
-            h_hadtop_precut_nvtx_csv.Fill(nvtx, subjet_csv, top_weight)
-            h_hadtop_pt_tau32.Fill(goodtop.Perp(), top_weight) 
+
+    # -------------------------------------------------------------------------------------
+    # STEP (7): require a leptonic-side b-tagged jet
+    # -------------------------------------------------------------------------------------
+
+    ntagslep = 0      # number of b-tagged jets
+    i_leadbtag = -1   # identifier for finding leading b-tagged jet
+    bjet_pt = 0       # pt of leading b-tagged jet
+    bjet_vtxmass = 0  # secondary vertex mass of leading b-tagged jet
+    bjet_eta = 0      # eta of leading b-tagged jet
+    
+    # loop over CSV discriminator values of leptonic-side AK5 jets
+    for ijet in range(0,len(lepcsvs)) :
+        lepjet = lepJets[ijet]
+        lepcsv = lepcsvs[ijet]
+        lep_vtxmass = lepVtxMass[ijet]
+        if lepcsv > options.bDiscCut and lep_vtxmass > 0.0:
+            ntagslep += 1
+            if (lepjet.Perp() > bjet_pt) :
+                bjet_pt = lepjet.Perp()
+                bjet_eta = lepjet.Eta()
+                bjet_vtxmass = lep_vtxmass
+                i_leadbtag = ijet
+    
+    # require a b-tagged jet
+    if ntagslep < 1:
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )        
+        continue
+
+    if options.debug :
+        print 'Have a leptonic-side b-tagged AK5 jet'
+    if options.debug :
+        print 'Passed stage7'
+    cutflow['Stage 7: '] += 1
+    npassed += 1
+
+    goodEvents.append( [ event.object().id().run(), event.object().id().luminosityBlock(), event.object().id().event() ] )
+    
+    # apply b-tagging SF 
+    if options.isData == False :
+        btagSF = getBtagSF(bjet_pt)
+        if options.btagSys != None :
+            btagSFerr = getBtagSFerror(bjet_pt)
+            if options.btagSys > 0 :
+                btagSF += btagSFerr
+            else :
+                btagSF -= btagSFerr
+        weight *= btagSF
+
+        
+    h_mttbarGen7.Fill( mttbarGen )
+    h_wboson_pt7.Fill(wboson_pt, weight)
+    h_wboson_mt7.Fill(wboson_mt, weight)
+    
+    h_pt1LepJet7.Fill(lepJets[0].Perp(), weight)
+    h_eta1LepJet7.Fill(lepJets[0].Eta(), weight)
+    h_csv1LepJet7.Fill(lepcsvs[0], weight)
+    h_vtxMass1LepJet7.Fill(lepVtxMass[0], weight)
+    
+    if len(lepJets) > 1:
+        h_pt2LepJet7.Fill(lepJets[1].Perp(), weight)
+        h_eta2LepJet7.Fill(lepJets[1].Eta(), weight)
+        h_csv2LepJet7.Fill(lepcsvs[1], weight)
+        h_vtxMass2LepJet7.Fill(lepVtxMass[1], weight)
+        
+    h_ptBJet7.Fill(bjet_pt, weight)
+    h_etaBJet7.Fill(bjet_eta, weight)
+    h_vtxMass7.Fill(bjet_vtxmass, weight)
             
-            if subjet_csv > options.bDiscCut:
-                h_hadtop_pt_csv.Fill(goodtop.Perp(), top_weight) 
-
+    h_ht7.Fill(ht, weight)
+    h_htLep7.Fill(htLep, weight)
+    h_lepMET7.Fill(lepMET, weight)
+    h_ptMET7.Fill(met, weight)
+    
+    h_leptop_pt7.Fill(leptop_pt, top_weight)
+    h_leptop_y7.Fill(leptop_y, top_weight)
+    h_leptop_mass7.Fill(leptop_mass, top_weight)
+    
+    h_hadtop_pt7.Fill(goodtop.Perp(), top_weight)
+    h_hadtop_mass7.Fill(goodtop.M(), top_weight)
+    h_hadtop_y7.Fill(goodtop.Rapidity(), top_weight)
 
     
     # -------------------------------------------------------------------------------------
     # finally fill response matrix if doing unfolding
     # -------------------------------------------------------------------------------------
 
+    h_ptRecoTop.Fill( goodtop.Perp(), top_weight )
+    
     if options.makeResponse == True :		
-        if passSelection == True :
-            response.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
-        else :
-            response.Miss(hadTop.p4.Perp(), top_weight*weight_response)
+        response.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
     
     
-    # -------------------------------------------------------------------------------------
-    # STEP (7): require top-tagged jet pt > 400 GeV
-    # -------------------------------------------------------------------------------------
-    
-    if passSelection:
-        
-        if goodtop.Perp() > 400.0 :
-            if options.debug :
-                print 'Passed stage7'
-            cutflow['Stage 7: '] += 1
 
-            h_mttbarGen7.Fill( mttbarGen )
-            h_wboson_pt7.Fill(wboson_pt, weight)
-            h_wboson_mt7.Fill(wboson_mt, weight)
-            
-            h_pt1LepJet7.Fill(lepJets[0].Perp(), weight)
-            h_eta1LepJet7.Fill(lepJets[0].Eta(), weight)
-            h_csv1LepJet7.Fill(lepcsvs[0], weight)
-            h_vtxMass1LepJet7.Fill(lepVtxMass[0], weight)
-
-            if len(lepJets) > 1:
-                h_pt2LepJet7.Fill(lepJets[1].Perp(), weight)
-                h_eta2LepJet7.Fill(lepJets[1].Eta(), weight)
-                h_csv2LepJet7.Fill(lepcsvs[1], weight)
-                h_vtxMass2LepJet7.Fill(lepVtxMass[1], weight)
-
-            h_ptBJet7.Fill(bjet_pt, weight)
-            h_etaBJet7.Fill(bjet_eta, weight)
-            h_vtxMass7.Fill(bjet_vtxmass, weight)
-            
-            h_ht7.Fill(ht, weight)
-            h_htLep7.Fill(htLep, weight)
-            h_lepMET7.Fill(lepMET, weight)
-            h_ptMET7.Fill(met, weight)
-            
-            h_leptop_pt7.Fill(leptop_pt, top_weight)
-            h_leptop_y7.Fill(leptop_y, top_weight)
-            h_leptop_mass7.Fill(leptop_mass, top_weight)
-            
-            h_hadtop_pt7.Fill(goodtop.Perp(), top_weight)
-            h_hadtop_mass7.Fill(goodtop.M(), top_weight)
-            h_hadtop_y7.Fill(goodtop.Rapidity(), top_weight)
-            
-    
 
  
 # -------------------------------------------------------------------------------------
