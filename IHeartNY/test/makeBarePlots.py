@@ -142,7 +142,7 @@ e_TT_Mtt_0_700 =    [1.0  ,   1.0,      1.0  ] #   No efficiency here, we applie
 
 
 # 
-names = [ 'DATA', 'TTbar', 'WJets', 'SingleTop', 'QCD_SingleMu' ]
+names = [ 'DATA', 'TTbar', 'TTbarOther', 'WJets', 'SingleTop', 'QCD_SingleMu' ]
 plots = [ 'jec__down' , 'jec__up' , 'jer__down' , 'jer__up' , 'pdf__down' , 'pdf__up' , 'nom' , 'scale__down' , 'scale__up']
 canvs = []
 histsData = []
@@ -150,6 +150,9 @@ hists = []
 hMeas_TT_Mtt_less_700 = []
 hMeas_TT_Mtt_700_1000 = []
 hMeas_TT_Mtt_1000_Inf = []
+hMeas_TT_nonSemiLep_Mtt_less_700 = []
+hMeas_TT_nonSemiLep_Mtt_700_1000 = []
+hMeas_TT_nonSemiLep_Mtt_1000_Inf = []
 hMeas_T_t = []
 hMeas_Tbar_t = []
 hMeas_T_s = []
@@ -159,6 +162,7 @@ hMeas_Tbar_tW = []
 hMeas_WJets = []
 hMeas_qcd = []
 hMeas_TT_Mtt = []
+hMeas_TT_nonSemiLep_Mtt = []
 hMeas_SingleTop = []
 
 # Open the output file 
@@ -262,6 +266,40 @@ fTT_Mtt_1000_Inf_pdfdown   = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8
 fTT_Mtt_1000_Inf_pdfup     = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup.root")
 fTT_Mtt_1000_Inf_scaledown = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaledown_nom.root")
 fTT_Mtt_1000_Inf_scaleup   = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaleup_nom.root")
+
+# non-semileptonic ttbar 
+fTT_nonSemiLep_Mtt_less_700_nom       = TFile("histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
+fTT_nonSemiLep_Mtt_less_700_qcd       = TFile("histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd.root")
+fTT_nonSemiLep_Mtt_less_700_jecdown   = TFile("histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn.root")
+fTT_nonSemiLep_Mtt_less_700_jecup     = TFile("histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup.root")
+fTT_nonSemiLep_Mtt_less_700_jerdown   = TFile("histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn.root")
+fTT_nonSemiLep_Mtt_less_700_jerup     = TFile("histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerup.root")
+fTT_nonSemiLep_Mtt_less_700_pdfdown   = TFile("histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfdn.root")
+fTT_nonSemiLep_Mtt_less_700_pdfup     = TFile("histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup.root")
+fTT_nonSemiLep_Mtt_less_700_scaledown = TFile("histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaledown_nom.root")
+fTT_nonSemiLep_Mtt_less_700_scaleup   = TFile("histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaleup_nom.root")
+
+fTT_nonSemiLep_Mtt_700_1000_nom       = TFile("histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
+fTT_nonSemiLep_Mtt_700_1000_qcd       = TFile("histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd.root")
+fTT_nonSemiLep_Mtt_700_1000_jecdown   = TFile("histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn.root")
+fTT_nonSemiLep_Mtt_700_1000_jecup     = TFile("histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup.root")
+fTT_nonSemiLep_Mtt_700_1000_jerdown   = TFile("histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn.root")
+fTT_nonSemiLep_Mtt_700_1000_jerup     = TFile("histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerup.root")
+fTT_nonSemiLep_Mtt_700_1000_pdfdown   = TFile("histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfdn.root")
+fTT_nonSemiLep_Mtt_700_1000_pdfup     = TFile("histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup.root")
+fTT_nonSemiLep_Mtt_700_1000_scaledown = TFile("histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaledown_nom.root")
+fTT_nonSemiLep_Mtt_700_1000_scaleup   = TFile("histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaleup_nom.root")
+
+fTT_nonSemiLep_Mtt_1000_Inf_nom       = TFile("histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
+fTT_nonSemiLep_Mtt_1000_Inf_qcd       = TFile("histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd.root")
+fTT_nonSemiLep_Mtt_1000_Inf_jecdown   = TFile("histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecdn.root")
+fTT_nonSemiLep_Mtt_1000_Inf_jecup     = TFile("histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jecup.root")
+fTT_nonSemiLep_Mtt_1000_Inf_jerdown   = TFile("histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerdn.root")
+fTT_nonSemiLep_Mtt_1000_Inf_jerup     = TFile("histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_jerup.root")
+fTT_nonSemiLep_Mtt_1000_Inf_pdfdown   = TFile("histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfdn.root")
+fTT_nonSemiLep_Mtt_1000_Inf_pdfup     = TFile("histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_pdfup.root")
+fTT_nonSemiLep_Mtt_1000_Inf_scaledown = TFile("histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaledown_nom.root")
+fTT_nonSemiLep_Mtt_1000_Inf_scaleup   = TFile("histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_scaleup_nom.root")
 
 
 
@@ -452,7 +490,74 @@ if options.hist2 is None:
 	hMeas_TT_Mtt_1000_Inf_scaledown .SetName( options.hist1 + '__TTbar_Mtt_1000_Inf__scale__down')
 	hMeas_TT_Mtt_1000_Inf_scaleup   = fTT_Mtt_1000_Inf_scaleup.Get(options.hist1).Clone()
 	hMeas_TT_Mtt_1000_Inf_scaleup   .SetName( options.hist1 + '__TTbar_Mtt_1000_Inf__scale__up')
+    
+    
+	hMeas_TT_nonSemiLep_Mtt_less_700_nom       = fTT_nonSemiLep_Mtt_less_700_nom.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_nom       .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700' )
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecdown   = fTT_nonSemiLep_Mtt_less_700_jecdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecdown   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__jec__down')
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecup     = fTT_nonSemiLep_Mtt_less_700_jecup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecup     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__jec__up')
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerdown   = fTT_nonSemiLep_Mtt_less_700_jerdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerdown   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__jer__down')
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerup     = fTT_nonSemiLep_Mtt_less_700_jerup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerup     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__jer__up')
+	hMeas_TT_nonSemiLep_Mtt_less_700_qcd       = fTT_nonSemiLep_Mtt_less_700_qcd.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_qcd       .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__qcd')
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown   = fTT_nonSemiLep_Mtt_less_700_pdfdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__pdf__down')
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfup     = fTT_nonSemiLep_Mtt_less_700_pdfup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfup     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__pdf__up')
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaledown = fTT_nonSemiLep_Mtt_less_700_scaledown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaledown .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__scale__down')
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaleup   = fTT_nonSemiLep_Mtt_less_700_scaleup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaleup   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__scale__up')
+    
+    
+	hMeas_TT_nonSemiLep_Mtt_700_1000_nom       = fTT_nonSemiLep_Mtt_700_1000_nom.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_nom       .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000' ) 
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown   = fTT_nonSemiLep_Mtt_700_1000_jecdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__jec__down')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecup     = fTT_nonSemiLep_Mtt_700_1000_jecup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecup     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__jec__up')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown   = fTT_nonSemiLep_Mtt_700_1000_jerdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__jer__down')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerup     = fTT_nonSemiLep_Mtt_700_1000_jerup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerup     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__jer__up')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_qcd       = fTT_nonSemiLep_Mtt_700_1000_qcd.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_qcd       .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__qcd')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown   = fTT_nonSemiLep_Mtt_700_1000_pdfdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__pdf__down')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup     = fTT_nonSemiLep_Mtt_700_1000_pdfup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__pdf__up')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown = fTT_nonSemiLep_Mtt_700_1000_scaledown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__scale__down')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup   = fTT_nonSemiLep_Mtt_700_1000_scaleup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__scale__up')
 
+	
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom       = fTT_nonSemiLep_Mtt_1000_Inf_nom.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom       .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000' )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown   = fTT_nonSemiLep_Mtt_1000_Inf_jecdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__jec__down')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup     = fTT_nonSemiLep_Mtt_1000_Inf_jecup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__jec__up')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown   = fTT_nonSemiLep_Mtt_1000_Inf_jerdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__jer__down')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup     = fTT_nonSemiLep_Mtt_1000_Inf_jerup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__jer__up')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd       = fTT_nonSemiLep_Mtt_1000_Inf_qcd.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd       .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__qcd')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown   = fTT_nonSemiLep_Mtt_1000_Inf_pdfdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__pdf__down')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup     = fTT_nonSemiLep_Mtt_1000_Inf_pdfup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__pdf__up')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown = fTT_nonSemiLep_Mtt_1000_Inf_scaledown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__scale__down')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup   = fTT_nonSemiLep_Mtt_1000_Inf_scaleup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__scale__up')
+
+    
 
 	hMeas_T_t_nom    .Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_t  )
 	hMeas_T_t_jecdown.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_t  )
@@ -535,6 +640,39 @@ if options.hist2 is None:
 	hMeas_TT_Mtt_1000_Inf_pdfup    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
 	hMeas_TT_Mtt_1000_Inf_scaledown.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_1000_Inf[1] * lum / float(Nmc_TT_Mtt_1000_Inf_scaledown) * SF_t )
 	hMeas_TT_Mtt_1000_Inf_scaleup  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_1000_Inf[2] * lum / float(Nmc_TT_Mtt_1000_Inf_scaleup) * SF_t )
+
+	hMeas_TT_nonSemiLep_Mtt_less_700_nom      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecdown  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecup    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerdown  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerup    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_qcd      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfup    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaledown.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_0_700[1] * lum / float(Nmc_ttbar_scaledown) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaleup  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_0_700[2] * lum / float(Nmc_ttbar_scaleup) * SF_t)
+
+	hMeas_TT_nonSemiLep_Mtt_700_1000_nom      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecup    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerup    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_qcd      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_700_1000[1] * lum / float(Nmc_TT_Mtt_700_1000_scaledown) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_700_1000[2] * lum / float(Nmc_TT_Mtt_700_1000_scaleup) * SF_t)
+
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_1000_Inf[1] * lum / float(Nmc_TT_Mtt_1000_Inf_scaledown) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_1000_Inf[2] * lum / float(Nmc_TT_Mtt_1000_Inf_scaleup) * SF_t )
 
 
 #Getting histogram files and scaling to plot histogram2 subtracted from histogram1
@@ -713,8 +851,75 @@ elif options.hist2 is not None:
 	hMeas_TT_Mtt_1000_Inf_scaledown_1 .SetName( options.hist1 + '__TTbar_Mtt_1000_Inf__scale__down__1')
 	hMeas_TT_Mtt_1000_Inf_scaleup_1   = fTT_Mtt_1000_Inf_scaleup.Get(options.hist1).Clone()
 	hMeas_TT_Mtt_1000_Inf_scaleup_1   .SetName( options.hist1 + '__TTbar_Mtt_1000_Inf__scale__up__1')
+	
+	
+	hMeas_TT_nonSemiLep_Mtt_less_700_nom_1       = fTT_nonSemiLep_Mtt_less_700_nom.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_nom_1       .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__1' )
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecdown_1   = fTT_nonSemiLep_Mtt_less_700_jecdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecdown_1   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__jec__down__1')
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecup_1     = fTT_nonSemiLep_Mtt_less_700_jecup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecup_1     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__jec__up__1')
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerdown_1   = fTT_nonSemiLep_Mtt_less_700_jerdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerdown_1   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__jer__down__1')
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerup_1     = fTT_nonSemiLep_Mtt_less_700_jerup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerup_1     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__jer__up__1')
+	hMeas_TT_nonSemiLep_Mtt_less_700_qcd_1       = fTT_nonSemiLep_Mtt_less_700_qcd.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_qcd_1       .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__qcd__1')
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown_1   = fTT_nonSemiLep_Mtt_less_700_pdfdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown_1   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__pdf__down__1')
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfup_1     = fTT_nonSemiLep_Mtt_less_700_pdfup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfup_1     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__pdf__up__1')
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaledown_1 = fTT_nonSemiLep_Mtt_less_700_scaledown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaledown_1 .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__scale__down__1')
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaleup_1   = fTT_nonSemiLep_Mtt_less_700_scaleup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaleup_1   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_less_700__scale__up__1')
 
 
+	hMeas_TT_nonSemiLep_Mtt_700_1000_nom_1       = fTT_nonSemiLep_Mtt_700_1000_nom.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_nom_1       .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__1' ) 
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown_1   = fTT_nonSemiLep_Mtt_700_1000_jecdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown_1   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__jec__down__1')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecup_1     = fTT_nonSemiLep_Mtt_700_1000_jecup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecup_1     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__jec__up__1')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown_1   = fTT_nonSemiLep_Mtt_700_1000_jerdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown_1   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__jer__down__1')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerup_1     = fTT_nonSemiLep_Mtt_700_1000_jerup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerup_1     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__jer__up__1')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_qcd_1       = fTT_nonSemiLep_Mtt_700_1000_qcd.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_qcd_1       .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__qcd__1')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown_1   = fTT_nonSemiLep_Mtt_700_1000_pdfdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown_1   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__pdf__down__1')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup_1     = fTT_nonSemiLep_Mtt_700_1000_pdfup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup_1     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__pdf__up__1')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown_1 = fTT_nonSemiLep_Mtt_700_1000_scaledown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown_1 .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__scale__down__1')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup_1   = fTT_nonSemiLep_Mtt_700_1000_scaleup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup_1   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000__scale__up__1')
+
+	
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom_1       = fTT_nonSemiLep_Mtt_1000_Inf_nom.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom_1       .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000__1' )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown_1   = fTT_nonSemiLep_Mtt_1000_Inf_jecdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown_1   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__jec__down__1')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup_1     = fTT_nonSemiLep_Mtt_1000_Inf_jecup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup_1     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__jec__up__1')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown_1   = fTT_nonSemiLep_Mtt_1000_Inf_jerdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown_1   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__jer__down__1')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup_1     = fTT_nonSemiLep_Mtt_1000_Inf_jerup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup_1     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__jer__up__1')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd_1       = fTT_nonSemiLep_Mtt_1000_Inf_qcd.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd_1       .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__qcd__1')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown_1   = fTT_nonSemiLep_Mtt_1000_Inf_pdfdown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown_1   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__pdf__down__1')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup_1     = fTT_nonSemiLep_Mtt_1000_Inf_pdfup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup_1     .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__pdf__up__1')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown_1 = fTT_nonSemiLep_Mtt_1000_Inf_scaledown.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown_1 .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__scale__down__1')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup_1   = fTT_nonSemiLep_Mtt_1000_Inf_scaleup.Get(options.hist1).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup_1   .SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf__scale__up__1')
+
+
+    
 	hMeas_T_t_nom_1    .Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_t  )
 	hMeas_T_t_jecdown_1.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_t  )
 	hMeas_T_t_jecup_1  .Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_t  )	
@@ -796,6 +1001,40 @@ elif options.hist2 is not None:
 	hMeas_TT_Mtt_1000_Inf_pdfup_1    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
 	hMeas_TT_Mtt_1000_Inf_scaledown_1.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_1000_Inf[1] * lum / float(Nmc_TT_Mtt_1000_Inf_scaledown) * SF_t )
 	hMeas_TT_Mtt_1000_Inf_scaleup_1  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_1000_Inf[2] * lum / float(Nmc_TT_Mtt_1000_Inf_scaleup) * SF_t )
+
+
+	hMeas_TT_nonSemiLep_Mtt_less_700_nom_1      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecdown_1  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecup_1    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerdown_1  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerup_1    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_qcd_1      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown_1  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfup_1    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaledown_1.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_0_700[1] * lum / float(Nmc_ttbar_scaledown) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaleup_1  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_0_700[2] * lum / float(Nmc_ttbar_scaleup) * SF_t)
+
+	hMeas_TT_nonSemiLep_Mtt_700_1000_nom_1      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown_1  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecup_1    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown_1  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerup_1    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_qcd_1      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown_1  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup_1    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown_1.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_700_1000[1] * lum / float(Nmc_TT_Mtt_700_1000_scaledown) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup_1  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_700_1000[2] * lum / float(Nmc_TT_Mtt_700_1000_scaleup) * SF_t)
+
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom_1      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown_1  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup_1    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown_1  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup_1    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd_1      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown_1  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup_1    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown_1.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_1000_Inf[1] * lum / float(Nmc_TT_Mtt_1000_Inf_scaledown) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup_1  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_1000_Inf[2] * lum / float(Nmc_TT_Mtt_1000_Inf_scaleup) * SF_t )
 
 
 
@@ -965,8 +1204,75 @@ elif options.hist2 is not None:
 	hMeas_TT_Mtt_1000_Inf_scaledown_2 .SetName( options.hist2 + '__TTbar_Mtt_1000_Inf__scale__down__2')
 	hMeas_TT_Mtt_1000_Inf_scaleup_2   = fTT_Mtt_1000_Inf_scaleup.Get(options.hist2).Clone()
 	hMeas_TT_Mtt_1000_Inf_scaleup_2   .SetName( options.hist2 + '__TTbar_Mtt_1000_Inf__scale__up__2')
+	
+	
+	hMeas_TT_nonSemiLep_Mtt_less_700_nom_2       = fTT_nonSemiLep_Mtt_less_700_nom.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_nom_2       .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_less_700__2' )
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecdown_2   = fTT_nonSemiLep_Mtt_less_700_jecdown.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecdown_2   .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_less_700__jec__down__2')
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecup_2     = fTT_nonSemiLep_Mtt_less_700_jecup.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecup_2     .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_less_700__jec__up__2')
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerdown_2   = fTT_nonSemiLep_Mtt_less_700_jerdown.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerdown_2   .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_less_700__jer__down__2')
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerup_2     = fTT_nonSemiLep_Mtt_less_700_jerup.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerup_2     .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_less_700__jer__up__2')
+	hMeas_TT_nonSemiLep_Mtt_less_700_qcd_2       = fTT_nonSemiLep_Mtt_less_700_qcd.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_qcd_2       .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_less_700__qcd__2')
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown_2   = fTT_nonSemiLep_Mtt_less_700_pdfdown.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown_2   .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_less_700__pdf__down__2')
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfup_2     = fTT_nonSemiLep_Mtt_less_700_pdfup.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfup_2     .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_less_700__pdf__up__2')
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaledown_2 = fTT_nonSemiLep_Mtt_less_700_scaledown.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaledown_2 .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_less_700__scale__down__2')
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaleup_2   = fTT_nonSemiLep_Mtt_less_700_scaleup.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaleup_2   .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_less_700__scale__up__2')
 
 
+	hMeas_TT_nonSemiLep_Mtt_700_1000_nom_2       = fTT_nonSemiLep_Mtt_700_1000_nom.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_nom_2       .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_700_1000__2' ) 
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown_2   = fTT_nonSemiLep_Mtt_700_1000_jecdown.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown_2   .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_700_1000__jec__down__2')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecup_2     = fTT_nonSemiLep_Mtt_700_1000_jecup.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecup_2     .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_700_1000__jec__up__2')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown_2   = fTT_nonSemiLep_Mtt_700_1000_jerdown.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown_2   .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_700_1000__jer__down__2')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerup_2     = fTT_nonSemiLep_Mtt_700_1000_jerup.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerup_2     .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_700_1000__jer__up__2')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_qcd_2       = fTT_nonSemiLep_Mtt_700_1000_qcd.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_qcd_2       .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_700_1000__qcd__2')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown_2   = fTT_nonSemiLep_Mtt_700_1000_pdfdown.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown_2   .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_700_1000__pdf__down__2')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup_2     = fTT_nonSemiLep_Mtt_700_1000_pdfup.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup_2     .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_700_1000__pdf__up__2')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown_2 = fTT_nonSemiLep_Mtt_700_1000_scaledown.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown_2 .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_700_1000__scale__down__2')
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup_2   = fTT_nonSemiLep_Mtt_700_1000_scaleup.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup_2   .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_700_1000__scale__up__2')
+
+	
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom_2       = fTT_nonSemiLep_Mtt_1000_Inf_nom.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom_2       .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_1000__2' )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown_2   = fTT_nonSemiLep_Mtt_1000_Inf_jecdown.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown_2   .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_1000_Inf__jec__down__2')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup_2     = fTT_nonSemiLep_Mtt_1000_Inf_jecup.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup_2     .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_1000_Inf__jec__up__2')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown_2   = fTT_nonSemiLep_Mtt_1000_Inf_jerdown.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown_2   .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_1000_Inf__jer__down__2')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup_2     = fTT_nonSemiLep_Mtt_1000_Inf_jerup.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup_2     .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_1000_Inf__jer__up__2')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd_2       = fTT_nonSemiLep_Mtt_1000_Inf_qcd.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd_2       .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_1000_Inf__qcd__2')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown_2   = fTT_nonSemiLep_Mtt_1000_Inf_pdfdown.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown_2   .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_1000_Inf__pdf__down__2')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup_2     = fTT_nonSemiLep_Mtt_1000_Inf_pdfup.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup_2     .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_1000_Inf__pdf__up__2')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown_2 = fTT_nonSemiLep_Mtt_1000_Inf_scaledown.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown_2 .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_1000_Inf__scale__down__2')
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup_2   = fTT_nonSemiLep_Mtt_1000_Inf_scaleup.Get(options.hist2).Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup_2   .SetName( options.hist2 + '__TTbar_nonSemiLep_Mtt_1000_Inf__scale__up__2')
+
+
+    
 	hMeas_T_t_nom_2    .Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_t  )
 	hMeas_T_t_jecdown_2.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_t  )
 	hMeas_T_t_jecup_2  .Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_t  )	
@@ -1050,16 +1356,50 @@ elif options.hist2 is not None:
 	hMeas_TT_Mtt_1000_Inf_scaleup_2  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_1000_Inf[2] * lum / float(Nmc_TT_Mtt_1000_Inf_scaleup) * SF_t )
 
 
+	hMeas_TT_nonSemiLep_Mtt_less_700_nom_2      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecdown_2  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecup_2    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerdown_2  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerup_2    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_qcd_2      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown_2  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfup_2    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaledown_2.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_0_700[1] * lum / float(Nmc_ttbar_scaledown) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaleup_2  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_0_700[2] * lum / float(Nmc_ttbar_scaleup) * SF_t)
+
+	hMeas_TT_nonSemiLep_Mtt_700_1000_nom_2      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown_2  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecup_2    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown_2  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerup_2    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_qcd_2      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown_2  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup_2    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown_2.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_700_1000[1] * lum / float(Nmc_TT_Mtt_700_1000_scaledown) * SF_t)
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup_2  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_700_1000[2] * lum / float(Nmc_TT_Mtt_700_1000_scaleup) * SF_t)
+
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom_2      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown_2  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup_2    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown_2  .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup_2    .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd_2      .Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown_2  .Scale( sigma_ttbar_NNLO[3] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup_2    .Scale( sigma_ttbar_NNLO[4] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown_2.Scale( sigma_ttbar_NNLO[1] * e_TT_Mtt_1000_Inf[1] * lum / float(Nmc_TT_Mtt_1000_Inf_scaledown) * SF_t )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup_2  .Scale( sigma_ttbar_NNLO[2] * e_TT_Mtt_1000_Inf[2] * lum / float(Nmc_TT_Mtt_1000_Inf_scaleup) * SF_t )
+
+
 
 	#Subtract hist2 from hist1
 	hMeas_TT_Mtt_less_700_1 = [ hMeas_TT_Mtt_less_700_jecdown_1 , hMeas_TT_Mtt_less_700_jecup_1   , 
                          	    hMeas_TT_Mtt_less_700_jerdown_1   , hMeas_TT_Mtt_less_700_jerup_1   , 
                          	    hMeas_TT_Mtt_less_700_pdfdown_1   , hMeas_TT_Mtt_less_700_pdfup_1   , hMeas_TT_Mtt_less_700_nom_1 , 
-                          	  	hMeas_TT_Mtt_less_700_scaledown_1 , hMeas_TT_Mtt_less_700_scaleup_1 ]
+				    hMeas_TT_Mtt_less_700_scaledown_1 , hMeas_TT_Mtt_less_700_scaleup_1 ]
 	hMeas_TT_Mtt_less_700_2 = [ hMeas_TT_Mtt_less_700_jecdown_2 , hMeas_TT_Mtt_less_700_jecup_2   , 
-                          		hMeas_TT_Mtt_less_700_jerdown_2   , hMeas_TT_Mtt_less_700_jerup_2   , 
-                          		hMeas_TT_Mtt_less_700_pdfdown_2   , hMeas_TT_Mtt_less_700_pdfup_2   , hMeas_TT_Mtt_less_700_nom_2 , 
-                          		hMeas_TT_Mtt_less_700_scaledown_2 , hMeas_TT_Mtt_less_700_scaleup_2 ]
+				    hMeas_TT_Mtt_less_700_jerdown_2   , hMeas_TT_Mtt_less_700_jerup_2   , 
+				    hMeas_TT_Mtt_less_700_pdfdown_2   , hMeas_TT_Mtt_less_700_pdfup_2   , hMeas_TT_Mtt_less_700_nom_2 , 
+				    hMeas_TT_Mtt_less_700_scaledown_2 , hMeas_TT_Mtt_less_700_scaleup_2 ]
 	for isubtract in range(len(hMeas_TT_Mtt_less_700_1)):
 		hMeas_TT_Mtt_less_700.append(hMeas_TT_Mtt_less_700_1[isubtract])
 		hMeas_TT_Mtt_less_700[isubtract].Add( hMeas_TT_Mtt_less_700_2[isubtract], -1.0 )
@@ -1071,13 +1411,13 @@ elif options.hist2 is not None:
 	
 
 	hMeas_TT_Mtt_700_1000_1 = [ hMeas_TT_Mtt_700_1000_jecdown_1 , hMeas_TT_Mtt_700_1000_jecup_1   , 
-                          		hMeas_TT_Mtt_700_1000_jerdown_1   , hMeas_TT_Mtt_700_1000_jerup_1   , 
-                          		hMeas_TT_Mtt_700_1000_pdfdown_1   , hMeas_TT_Mtt_700_1000_pdfup_1   , hMeas_TT_Mtt_700_1000_nom_1 ,
-                          		hMeas_TT_Mtt_700_1000_scaledown_1 , hMeas_TT_Mtt_700_1000_scaleup_1 ]
+				    hMeas_TT_Mtt_700_1000_jerdown_1   , hMeas_TT_Mtt_700_1000_jerup_1   , 
+				    hMeas_TT_Mtt_700_1000_pdfdown_1   , hMeas_TT_Mtt_700_1000_pdfup_1   , hMeas_TT_Mtt_700_1000_nom_1 ,
+				    hMeas_TT_Mtt_700_1000_scaledown_1 , hMeas_TT_Mtt_700_1000_scaleup_1 ]
 	hMeas_TT_Mtt_700_1000_2 = [ hMeas_TT_Mtt_700_1000_jecdown_2 , hMeas_TT_Mtt_700_1000_jecup_2   , 
-                          		hMeas_TT_Mtt_700_1000_jerdown_2   , hMeas_TT_Mtt_700_1000_jerup_2   , 
-                         		hMeas_TT_Mtt_700_1000_pdfdown_2   , hMeas_TT_Mtt_700_1000_pdfup_2   , hMeas_TT_Mtt_700_1000_nom_2 ,
-                          		hMeas_TT_Mtt_700_1000_scaledown_2 , hMeas_TT_Mtt_700_1000_scaleup_2 ]
+				    hMeas_TT_Mtt_700_1000_jerdown_2   , hMeas_TT_Mtt_700_1000_jerup_2   , 
+				    hMeas_TT_Mtt_700_1000_pdfdown_2   , hMeas_TT_Mtt_700_1000_pdfup_2   , hMeas_TT_Mtt_700_1000_nom_2 ,
+				    hMeas_TT_Mtt_700_1000_scaledown_2 , hMeas_TT_Mtt_700_1000_scaleup_2 ]
 	for isubtract in range(len(hMeas_TT_Mtt_700_1000_1)):
 		hMeas_TT_Mtt_700_1000.append(hMeas_TT_Mtt_700_1000_1[isubtract])
 		hMeas_TT_Mtt_700_1000[isubtract].Add( hMeas_TT_Mtt_700_1000_2[isubtract], -1.0 )
@@ -1090,13 +1430,13 @@ elif options.hist2 is not None:
 
 
 	hMeas_TT_Mtt_1000_Inf_1 = [ hMeas_TT_Mtt_1000_Inf_jecdown_1 , hMeas_TT_Mtt_1000_Inf_jecup_1   , 
-                          		hMeas_TT_Mtt_1000_Inf_jerdown_1   , hMeas_TT_Mtt_1000_Inf_jerup_1   , 
-                          		hMeas_TT_Mtt_1000_Inf_pdfdown_1   , hMeas_TT_Mtt_1000_Inf_pdfup_1   , hMeas_TT_Mtt_1000_Inf_nom_1 ,
-                          		hMeas_TT_Mtt_1000_Inf_scaledown_1 , hMeas_TT_Mtt_1000_Inf_scaleup_1 ]
+				    hMeas_TT_Mtt_1000_Inf_jerdown_1   , hMeas_TT_Mtt_1000_Inf_jerup_1   , 
+				    hMeas_TT_Mtt_1000_Inf_pdfdown_1   , hMeas_TT_Mtt_1000_Inf_pdfup_1   , hMeas_TT_Mtt_1000_Inf_nom_1 ,
+				    hMeas_TT_Mtt_1000_Inf_scaledown_1 , hMeas_TT_Mtt_1000_Inf_scaleup_1 ]
 	hMeas_TT_Mtt_1000_Inf_2 = [ hMeas_TT_Mtt_1000_Inf_jecdown_2 , hMeas_TT_Mtt_1000_Inf_jecup_2   , 
-                          		hMeas_TT_Mtt_1000_Inf_jerdown_2   , hMeas_TT_Mtt_1000_Inf_jerup_2   , 
-                          		hMeas_TT_Mtt_1000_Inf_pdfdown_2   , hMeas_TT_Mtt_1000_Inf_pdfup_2   , hMeas_TT_Mtt_1000_Inf_nom_2 ,
-                          		hMeas_TT_Mtt_1000_Inf_scaledown_2 , hMeas_TT_Mtt_1000_Inf_scaleup_2 ]
+				    hMeas_TT_Mtt_1000_Inf_jerdown_2   , hMeas_TT_Mtt_1000_Inf_jerup_2   , 
+				    hMeas_TT_Mtt_1000_Inf_pdfdown_2   , hMeas_TT_Mtt_1000_Inf_pdfup_2   , hMeas_TT_Mtt_1000_Inf_nom_2 ,
+				    hMeas_TT_Mtt_1000_Inf_scaledown_2 , hMeas_TT_Mtt_1000_Inf_scaleup_2 ]
 	for isubtract in range(len(hMeas_TT_Mtt_1000_Inf_1)):
 		hMeas_TT_Mtt_1000_Inf.append(hMeas_TT_Mtt_1000_Inf_1[isubtract])
 		hMeas_TT_Mtt_1000_Inf[isubtract].Add( hMeas_TT_Mtt_1000_Inf_2[isubtract], -1.0 )
@@ -1108,6 +1448,62 @@ elif options.hist2 is not None:
 	
 
 
+	hMeas_TT_nonSemiLep_Mtt_less_700_1 = [ hMeas_TT_nonSemiLep_Mtt_less_700_jecdown_1 , hMeas_TT_nonSemiLep_Mtt_less_700_jecup_1   , 
+					       hMeas_TT_nonSemiLep_Mtt_less_700_jerdown_1   , hMeas_TT_nonSemiLep_Mtt_less_700_jerup_1   , 
+					       hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown_1   , hMeas_TT_nonSemiLep_Mtt_less_700_pdfup_1   , hMeas_TT_nonSemiLep_Mtt_less_700_nom_1 , 
+					       hMeas_TT_nonSemiLep_Mtt_less_700_scaledown_1 , hMeas_TT_nonSemiLep_Mtt_less_700_scaleup_1 ]
+	hMeas_TT_nonSemiLep_Mtt_less_700_2 = [ hMeas_TT_nonSemiLep_Mtt_less_700_jecdown_2 , hMeas_TT_nonSemiLep_Mtt_less_700_jecup_2   , 
+					       hMeas_TT_nonSemiLep_Mtt_less_700_jerdown_2   , hMeas_TT_nonSemiLep_Mtt_less_700_jerup_2   , 
+					       hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown_2   , hMeas_TT_nonSemiLep_Mtt_less_700_pdfup_2   , hMeas_TT_nonSemiLep_Mtt_less_700_nom_2 , 
+					       hMeas_TT_nonSemiLep_Mtt_less_700_scaledown_2 , hMeas_TT_nonSemiLep_Mtt_less_700_scaleup_2 ]
+	for isubtract in range(len(hMeas_TT_nonSemiLep_Mtt_less_700_1)):
+		hMeas_TT_nonSemiLep_Mtt_less_700.append(hMeas_TT_nonSemiLep_Mtt_less_700_1[isubtract])
+		hMeas_TT_nonSemiLep_Mtt_less_700[isubtract].Add( hMeas_TT_nonSemiLep_Mtt_less_700_2[isubtract], -1.0 )
+	hMeas_TT_nonSemiLep_Mtt_less_700_jecdown , hMeas_TT_nonSemiLep_Mtt_less_700_jecup = hMeas_TT_nonSemiLep_Mtt_less_700[0] , hMeas_TT_nonSemiLep_Mtt_less_700[1]
+	hMeas_TT_nonSemiLep_Mtt_less_700_jerdown , hMeas_TT_nonSemiLep_Mtt_less_700_jerup = hMeas_TT_nonSemiLep_Mtt_less_700[2] , hMeas_TT_nonSemiLep_Mtt_less_700[3]
+	hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown , hMeas_TT_nonSemiLep_Mtt_less_700_pdfup = hMeas_TT_nonSemiLep_Mtt_less_700[4] , hMeas_TT_nonSemiLep_Mtt_less_700[5]
+	hMeas_TT_nonSemiLep_Mtt_less_700_nom = hMeas_TT_nonSemiLep_Mtt_less_700[6]
+	hMeas_TT_nonSemiLep_Mtt_less_700_scaledown , hMeas_TT_nonSemiLep_Mtt_less_700_scaleup = hMeas_TT_nonSemiLep_Mtt_less_700[7] , hMeas_TT_nonSemiLep_Mtt_less_700[8]
+	
+
+	hMeas_TT_nonSemiLep_Mtt_700_1000_1 = [ hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown_1 , hMeas_TT_nonSemiLep_Mtt_700_1000_jecup_1   , 
+					       hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown_1   , hMeas_TT_nonSemiLep_Mtt_700_1000_jerup_1   , 
+					       hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown_1   , hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup_1   , hMeas_TT_nonSemiLep_Mtt_700_1000_nom_1 ,
+					       hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown_1 , hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup_1 ]
+	hMeas_TT_nonSemiLep_Mtt_700_1000_2 = [ hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown_2 , hMeas_TT_nonSemiLep_Mtt_700_1000_jecup_2   , 
+					       hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown_2   , hMeas_TT_nonSemiLep_Mtt_700_1000_jerup_2   , 
+					       hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown_2   , hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup_2   , hMeas_TT_nonSemiLep_Mtt_700_1000_nom_2 ,
+					       hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown_2 , hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup_2 ]
+	for isubtract in range(len(hMeas_TT_nonSemiLep_Mtt_700_1000_1)):
+		hMeas_TT_nonSemiLep_Mtt_700_1000.append(hMeas_TT_nonSemiLep_Mtt_700_1000_1[isubtract])
+		hMeas_TT_nonSemiLep_Mtt_700_1000[isubtract].Add( hMeas_TT_nonSemiLep_Mtt_700_1000_2[isubtract], -1.0 )
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown , hMeas_TT_nonSemiLep_Mtt_700_1000_jecup = hMeas_TT_nonSemiLep_Mtt_700_1000[0] , hMeas_TT_nonSemiLep_Mtt_700_1000[1]
+	hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown , hMeas_TT_nonSemiLep_Mtt_700_1000_jerup = hMeas_TT_nonSemiLep_Mtt_700_1000[2] , hMeas_TT_nonSemiLep_Mtt_700_1000[3]
+	hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown , hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup = hMeas_TT_nonSemiLep_Mtt_700_1000[4] , hMeas_TT_nonSemiLep_Mtt_700_1000[5]
+	hMeas_TT_nonSemiLep_Mtt_700_1000_nom = hMeas_TT_nonSemiLep_Mtt_700_1000[6]
+	hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown , hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup = hMeas_TT_nonSemiLep_Mtt_700_1000[7] , hMeas_TT_nonSemiLep_Mtt_700_1000[8]
+	
+
+
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_1 = [ hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown_1 , hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup_1   , 
+					       hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown_1   , hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup_1   , 
+					       hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown_1   , hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup_1   , hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom_1 ,
+					       hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown_1 , hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup_1 ]
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_2 = [ hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown_2 , hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup_2   , 
+					       hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown_2   , hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup_2   , 
+					       hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown_2   , hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup_2   , hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom_2 ,
+					       hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown_2 , hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup_2 ]
+	for isubtract in range(len(hMeas_TT_nonSemiLep_Mtt_1000_Inf_1)):
+		hMeas_TT_nonSemiLep_Mtt_1000_Inf.append(hMeas_TT_nonSemiLep_Mtt_1000_Inf_1[isubtract])
+		hMeas_TT_nonSemiLep_Mtt_1000_Inf[isubtract].Add( hMeas_TT_nonSemiLep_Mtt_1000_Inf_2[isubtract], -1.0 )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown , hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup = hMeas_TT_nonSemiLep_Mtt_1000_Inf[0] , hMeas_TT_nonSemiLep_Mtt_1000_Inf[1]
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown , hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup = hMeas_TT_nonSemiLep_Mtt_1000_Inf[2] , hMeas_TT_nonSemiLep_Mtt_1000_Inf[3]
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown , hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup = hMeas_TT_nonSemiLep_Mtt_1000_Inf[4] , hMeas_TT_nonSemiLep_Mtt_1000_Inf[5]
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom = hMeas_TT_nonSemiLep_Mtt_1000_Inf[6]
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown , hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup = hMeas_TT_nonSemiLep_Mtt_1000_Inf[7] , hMeas_TT_nonSemiLep_Mtt_1000_Inf[8]
+    
+
+    
 	hMeas_T_t_1     = [ hMeas_T_t_jecdown_1     , hMeas_T_t_jecup_1     , hMeas_T_t_jerdown_1     , hMeas_T_t_jerup_1     , hMeas_T_t_nom_1 ]
 	hMeas_T_t_2     = [ hMeas_T_t_jecdown_2     , hMeas_T_t_jecup_2     , hMeas_T_t_jerdown_2     , hMeas_T_t_jerup_2     , hMeas_T_t_nom_2 ]
 	for isubtract in range(len(hMeas_T_t_1)):
@@ -1198,6 +1594,12 @@ elif options.hist2 is not None:
 	hMeas_TT_Mtt_700_1000_qcd.Add( hMeas_TT_Mtt_700_1000_qcd_2 , -1.0 )
 	hMeas_TT_Mtt_1000_Inf_qcd = hMeas_TT_Mtt_1000_Inf_qcd_1.Clone()
 	hMeas_TT_Mtt_1000_Inf_qcd.Add( hMeas_TT_Mtt_1000_Inf_qcd_2 , -1.0 )
+	hMeas_TT_nonSemiLep_Mtt_less_700_qcd = hMeas_TT_nonSemiLep_Mtt_less_700_qcd_1.Clone()
+	hMeas_TT_nonSemiLep_Mtt_less_700_qcd.Add( hMeas_TT_nonSemiLep_Mtt_less_700_qcd_2 , -1.0 )
+	hMeas_TT_nonSemiLep_Mtt_700_1000_qcd = hMeas_TT_nonSemiLep_Mtt_700_1000_qcd_1.Clone()
+	hMeas_TT_nonSemiLep_Mtt_700_1000_qcd.Add( hMeas_TT_nonSemiLep_Mtt_700_1000_qcd_2 , -1.0 )
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd = hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd_1.Clone()
+	hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd.Add( hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd_2 , -1.0 )
 
 	hMeas_QCD_SingleMu = hMeas_QCD_SingleMu_1.Clone()
 	hMeas_QCD_SingleMu.Add( hMeas_QCD_SingleMu_2 , -1.0 )
@@ -1213,7 +1615,8 @@ hMeas_QCD_SingleMu_ToPlot = hMeas_QCD_SingleMu.Clone()
 qcdcolors = [TColor.kMagenta, TColor.kMagenta,
              TColor.kMagenta, TColor.kMagenta,
              TColor.kMagenta, TColor.kMagenta,
-             TColor.kGreen-3, TColor.kRed+1, TColor.kRed+1, TColor.kRed+1
+             TColor.kGreen-3, TColor.kRed+1, TColor.kRed+1, TColor.kRed+1,
+             TColor.kRed-7, TColor.kRed-7, TColor.kRed-7
              ]
 hMeas_QCD_SingleMu_ToPlot.SetName("hmeas_QCD_SingleMu_ToPlot")
 
@@ -1233,7 +1636,9 @@ for iqcdHist in [ hMeas_T_t_qcd, hMeas_Tbar_t_qcd,
                   hMeas_T_tW_qcd, hMeas_Tbar_tW_qcd,
                   hMeas_WJets_qcd,
                   hMeas_TT_Mtt_less_700_qcd, hMeas_TT_Mtt_700_1000_qcd,
-                  hMeas_TT_Mtt_1000_Inf_qcd] :
+                  hMeas_TT_Mtt_1000_Inf_qcd,
+                  hMeas_TT_nonSemiLep_Mtt_less_700_qcd, hMeas_TT_nonSemiLep_Mtt_700_1000_qcd,
+                  hMeas_TT_nonSemiLep_Mtt_1000_Inf_qcd] :
     iqcdHist.SetFillColor(qcdcolors[iiqcd])
     hMeas_QCD_SingleMu.Add( iqcdHist, -1.0 )
     qcdstack.Add( iqcdHist )
@@ -1334,6 +1739,54 @@ for hist in [hMeas_TT_Mtt_700_1000_scaleup, hMeas_TT_Mtt_1000_Inf_scaleup] :
 
 
 
+######### Combine non-semileptonic ttbar samples #############
+hMeas_TTbar_nonSemiLep_nom = hMeas_TT_nonSemiLep_Mtt_less_700_nom.Clone()
+hMeas_TTbar_nonSemiLep_nom.SetName(histname + '__TTbar_nonSemiLep'  )
+for hist in [hMeas_TT_nonSemiLep_Mtt_700_1000_nom, hMeas_TT_nonSemiLep_Mtt_1000_Inf_nom] :
+    hMeas_TTbar_nonSemiLep_nom.Add( hist )
+
+hMeas_TTbar_nonSemiLep_jecdown = hMeas_TT_nonSemiLep_Mtt_less_700_jecdown.Clone()
+hMeas_TTbar_nonSemiLep_jecdown.SetName(histname + '__TTbar_nonSemiLep__jec__down'  )
+for hist in [hMeas_TT_nonSemiLep_Mtt_700_1000_jecdown, hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecdown] :
+    hMeas_TTbar_nonSemiLep_jecdown.Add( hist )
+
+hMeas_TTbar_nonSemiLep_jecup = hMeas_TT_nonSemiLep_Mtt_less_700_jecup.Clone()
+hMeas_TTbar_nonSemiLep_jecup.SetName(histname + '__TTbar_nonSemiLep__jec__up'  )
+for hist in [hMeas_TT_nonSemiLep_Mtt_700_1000_jecup, hMeas_TT_nonSemiLep_Mtt_1000_Inf_jecup] :
+    hMeas_TTbar_nonSemiLep_jecup.Add( hist )
+
+hMeas_TTbar_nonSemiLep_jerdown = hMeas_TT_nonSemiLep_Mtt_less_700_jerdown.Clone()
+hMeas_TTbar_nonSemiLep_jerdown.SetName(histname + '__TTbar_nonSemiLep__jer__down'  )
+for hist in [hMeas_TT_nonSemiLep_Mtt_700_1000_jerdown, hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerdown] :
+    hMeas_TTbar_nonSemiLep_jerdown.Add( hist )
+
+hMeas_TTbar_nonSemiLep_jerup = hMeas_TT_nonSemiLep_Mtt_less_700_jerup.Clone()
+hMeas_TTbar_nonSemiLep_jerup.SetName(histname + '__TTbar_nonSemiLep__jer__up'  )
+for hist in [hMeas_TT_nonSemiLep_Mtt_700_1000_jerup, hMeas_TT_nonSemiLep_Mtt_1000_Inf_jerup] :
+    hMeas_TTbar_nonSemiLep_jerup.Add( hist )
+
+hMeas_TTbar_nonSemiLep_pdfdown = hMeas_TT_nonSemiLep_Mtt_less_700_pdfdown.Clone()
+hMeas_TTbar_nonSemiLep_pdfdown.SetName(histname + '__TTbar_nonSemiLep__pdf__down'  )
+for hist in [hMeas_TT_nonSemiLep_Mtt_700_1000_pdfdown, hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfdown] :
+    hMeas_TTbar_nonSemiLep_pdfdown.Add( hist )
+
+hMeas_TTbar_nonSemiLep_pdfup = hMeas_TT_nonSemiLep_Mtt_less_700_pdfup.Clone()
+hMeas_TTbar_nonSemiLep_pdfup.SetName(histname + '__TTbar_nonSemiLep__pdf__up'  )
+for hist in [hMeas_TT_nonSemiLep_Mtt_700_1000_pdfup, hMeas_TT_nonSemiLep_Mtt_1000_Inf_pdfup] :
+    hMeas_TTbar_nonSemiLep_pdfup.Add( hist )
+
+hMeas_TTbar_nonSemiLep_scaledown = hMeas_TT_nonSemiLep_Mtt_less_700_scaledown.Clone()    
+hMeas_TTbar_nonSemiLep_scaledown.SetName(histname + '__TTbar_nonSemiLep__scale__down'  )
+for hist in [hMeas_TT_nonSemiLep_Mtt_700_1000_scaledown, hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaledown] :
+    hMeas_TTbar_nonSemiLep_scaledown.Add( hist )
+
+hMeas_TTbar_nonSemiLep_scaleup = hMeas_TT_nonSemiLep_Mtt_less_700_scaleup.Clone()    
+hMeas_TTbar_nonSemiLep_scaleup.SetName(histname + '__TTbar_nonSemiLep__scale__up'  )
+for hist in [hMeas_TT_nonSemiLep_Mtt_700_1000_scaleup, hMeas_TT_nonSemiLep_Mtt_1000_Inf_scaleup] :
+    hMeas_TTbar_nonSemiLep_scaleup.Add( hist )
+
+
+
 ######### Combine Single Top samples #############
 hMeas_SingleTop_nom = hMeas_T_t_nom.Clone()
 hMeas_SingleTop_nom.SetName(histname + '__SingleTop'  )
@@ -1379,6 +1832,12 @@ hMeas_TTbar = [ hMeas_TTbar_jecdown   , hMeas_TTbar_jecup   ,
                 hMeas_TTbar_scaledown , hMeas_TTbar_scaleup,
                 hMeas_TTbar_nom ]
 
+hMeas_TTbar_nonSemiLep = [ hMeas_TTbar_nonSemiLep_jecdown   , hMeas_TTbar_nonSemiLep_jecup   , 
+                           hMeas_TTbar_nonSemiLep_jerdown   , hMeas_TTbar_nonSemiLep_jerup   , 
+                           hMeas_TTbar_nonSemiLep_pdfdown   , hMeas_TTbar_nonSemiLep_pdfup   , 
+                           hMeas_TTbar_nonSemiLep_scaledown , hMeas_TTbar_nonSemiLep_scaleup,
+                           hMeas_TTbar_nonSemiLep_nom ]
+
 hMeas_SingleTop = [ hMeas_SingleTop_jecdown   , hMeas_SingleTop_jecup   , 
                     hMeas_SingleTop_jerdown   , hMeas_SingleTop_jerup   , 
                     hMeas_SingleTop_nom       , hMeas_SingleTop_nom   , 
@@ -1405,6 +1864,9 @@ stacks = []
 for thehist in hMeas_TTbar :
     thehist.SetFillColor( TColor.kRed+1 )
 
+for thehist in hMeas_TTbar_nonSemiLep :
+    thehist.SetFillColor( TColor.kRed-7 )
+
 for thehist in hMeas_WJets :
     thehist.SetFillColor( TColor.kGreen-3 )
 
@@ -1427,6 +1889,17 @@ if options.rebin != None :
     hMeas_TTbar_nom.Rebin( options.rebin )
 
 
+    hMeas_TTbar_nonSemiLep_jecdown.Rebin( options.rebin )
+    hMeas_TTbar_nonSemiLep_jecup.Rebin( options.rebin )
+    hMeas_TTbar_nonSemiLep_jerdown.Rebin( options.rebin )
+    hMeas_TTbar_nonSemiLep_jerup.Rebin( options.rebin )
+    hMeas_TTbar_nonSemiLep_pdfdown.Rebin( options.rebin )
+    hMeas_TTbar_nonSemiLep_pdfup.Rebin( options.rebin )
+    hMeas_TTbar_nonSemiLep_scaledown.Rebin( options.rebin )
+    hMeas_TTbar_nonSemiLep_scaleup.Rebin( options.rebin )
+    hMeas_TTbar_nonSemiLep_nom.Rebin( options.rebin )
+
+    
     hMeas_SingleTop_jecdown.Rebin( options.rebin )
     hMeas_SingleTop_jecup.Rebin( options.rebin )
     hMeas_SingleTop_jerdown.Rebin( options.rebin )
@@ -1455,12 +1928,13 @@ for m in range(0,len(hMeas_TTbar)):
     if options.plotNom == True and plots[m] != 'nom' :
         continue
 
-    if 'vtxMass' in  options.hist1 or options.hist2 :
-        for zerohist in [hMeas_WJets[m], hMeas_SingleTop[m], hMeas_TTbar[m], hMeas_QCD[m] ] :
-            if zerohist.GetBinContent(1) > 0.0 : 
-                zerohist.SetBinContent(1, 0.0)
-        if options.ignoreData == False and hRecoData.GetBinContent(1) > 0.0 :
-            hRecoData.SetBinContent(1, 0.0)
+    # **** this is now part of the b-tagging selection ****
+    #if 'vtxMass' in  options.hist1 or options.hist2 :
+    #    for zerohist in [hMeas_WJets[m], hMeas_SingleTop[m], hMeas_TTbar[m], hMeas_QCD[m] ] :
+    #        if zerohist.GetBinContent(1) > 0.0 : 
+    #            zerohist.SetBinContent(1, 0.0)
+    #    if options.ignoreData == False and hRecoData.GetBinContent(1) > 0.0 :
+    #        hRecoData.SetBinContent(1, 0.0)
 
                 
     leg = TLegend(0.5, 0.55, 0.84, 0.84)
@@ -1468,8 +1942,9 @@ for m in range(0,len(hMeas_TTbar)):
     leg.SetFillColor(0)
 
     
-    leg.AddEntry( hMeas_TTbar[m], 't#bar{t}', 'f')
-    leg.AddEntry( hMeas_SingleTop[m], 'single top', 'f')
+    leg.AddEntry( hMeas_TTbar[m], 't#bar{t} Signal', 'f')
+    leg.AddEntry( hMeas_TTbar_nonSemiLep[m], 't#bar{t} Other', 'f')
+    leg.AddEntry( hMeas_SingleTop[m], 'Single Top', 'f')
     leg.AddEntry( hMeas_WJets[m], 'W+jets', 'f')
     leg.AddEntry( hMeas_QCD[m], 'QCD' , 'f')
 
@@ -1485,10 +1960,12 @@ for m in range(0,len(hMeas_TTbar)):
     hMC_stack.Add( hMeas_QCD[m] )
     hMC_stack.Add( hMeas_WJets[m] )
     hMC_stack.Add( hMeas_SingleTop[m] )
+    hMC_stack.Add( hMeas_TTbar_nonSemiLep[m] )
     hMC_stack.Add( hMeas_TTbar[m] )
 
     summedhist = hMeas_TTbar[m].Clone()
     summedhist.SetName( 'summed_' + plots[m] )
+    summedhist.Add( hMeas_TTbar_nonSemiLep[m] )
     summedhist.Add( hMeas_WJets[m] )
     summedhist.Add( hMeas_SingleTop[m] )
     summedhist.Add( hMeas_QCD_SingleMu )
@@ -1517,7 +1994,7 @@ for m in range(0,len(hMeas_TTbar)):
     p1.cd()
 
     if not options.ignoreData :
-        leg.AddEntry( hRecoData, '19.6 fb^{-1}', 'p')
+        leg.AddEntry( hRecoData, '19.7 fb^{-1}', 'p')
         hRecoData.UseCurrentStyle()
         hRecoData.GetXaxis().SetTitle('')        
         hRecoData.Draw('e')
@@ -1531,7 +2008,7 @@ for m in range(0,len(hMeas_TTbar)):
     if options.drawLegend :
         leg.Draw()
 
-    eventcounts.append( [plots[m], hMeas_TTbar[m].Integral(), hMeas_WJets[m].Integral(), hMeas_SingleTop[m].Integral(), hMeas_QCD_SingleMu.Integral(), hRecoData.Integral() ] )
+    eventcounts.append( [plots[m], hMeas_TTbar[m].GetSum(), hMeas_TTbar_nonSemiLep[m].GetSum(), hMeas_WJets[m].GetSum(), hMeas_SingleTop[m].GetSum(), hMeas_QCD_SingleMu.GetSum(), hRecoData.GetSum() ] )
 
 
     c.cd()
@@ -1572,7 +2049,7 @@ if options.hist2 is None :
 else :
     print '------------ Cut Flow Stage ' + options.hist1 + ' minus Stage ' + options.hist2 + ' -----------------'
 print '{0:21s} '.format( 'Variation' ),
-for name in ['TTbar', 'WJets', 'S.T.', 'QCD', 'Data'] :
+for name in ['TTbar', 'TTbar_nonSemiLep', 'WJets', 'S.T.', 'QCD', 'Data'] :
     print '{0:8s} '.format(name),
 print ''
 for count in eventcounts :
@@ -1588,6 +2065,12 @@ hMeas_TTbar = [ hMeas_TTbar_jecdown   , hMeas_TTbar_jecup   ,
                 hMeas_TTbar_pdfdown   , hMeas_TTbar_pdfup   , 
                 hMeas_TTbar_scaledown , hMeas_TTbar_scaleup,
                 hMeas_TTbar_nom ]
+
+hMeas_TTbar_nonSemiLep = [ hMeas_TTbar_nonSemiLep_jecdown   , hMeas_TTbar_nonSemiLep_jecup   , 
+                           hMeas_TTbar_nonSemiLep_jerdown   , hMeas_TTbar_nonSemiLep_jerup   , 
+                           hMeas_TTbar_nonSemiLep_pdfdown   , hMeas_TTbar_nonSemiLep_pdfup   , 
+                           hMeas_TTbar_nonSemiLep_scaledown , hMeas_TTbar_nonSemiLep_scaleup,
+                           hMeas_TTbar_nonSemiLep_nom ]
 
 hMeas_SingleTop = [ hMeas_SingleTop_jecdown   , hMeas_SingleTop_jecup   , 
                     hMeas_SingleTop_jerdown   , hMeas_SingleTop_jerup   , 
@@ -1616,6 +2099,11 @@ histsAll = [hRecoData                 , hMeas_QCD_SingleMu    ,
             hMeas_TTbar_pdfdown       , hMeas_TTbar_pdfup     ,
             hMeas_TTbar_scaledown     , hMeas_TTbar_scaleup   ,
             hMeas_TTbar_nom           ,
+            hMeas_TTbar_nonSemiLep_jecdown       , hMeas_TTbar_nonSemiLep_jecup     , 
+            hMeas_TTbar_nonSemiLep_jerdown       , hMeas_TTbar_nonSemiLep_jerup     , 
+            hMeas_TTbar_nonSemiLep_pdfdown       , hMeas_TTbar_nonSemiLep_pdfup     ,
+            hMeas_TTbar_nonSemiLep_scaledown     , hMeas_TTbar_nonSemiLep_scaleup   ,
+            hMeas_TTbar_nonSemiLep_nom           ,
             hMeas_SingleTop_jecdown   , hMeas_SingleTop_jecup , 
             hMeas_SingleTop_jerdown   , hMeas_SingleTop_jerup , 
             hMeas_SingleTop_nom       ,
