@@ -1315,7 +1315,7 @@ for event in events :
     if cut == False or cut == None: 
         if options.makeResponse == True :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
+        continue
 
     # -------------------------------------------------------------------------------------
     # Now look at the rest of the lepton information.
