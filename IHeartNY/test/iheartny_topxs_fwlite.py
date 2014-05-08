@@ -18,7 +18,12 @@
 #     5 : HT > htCut (default 0)
 #     6 : >= 1 t-tag on the leading hadronic jet
 #     7 : >= 1 b-tag on the leading leptonic jet with vtxMass > 0
-
+# Update 5/8/14: fix lepton selecton :
+#          --> First get all lepton information
+#          --> Then calculate isolation info
+#          --> Next loop over jets :
+#              >> If lepton was already cleaned (non-pu isolation satisfied), do nothing.
+#              >> If lepton was NOT cleaned (non-pu isolation failed, pu-corrected iso satisfied), remove p4 from jet
 
 #! /usr/bin/env python
 import os
@@ -35,15 +40,55 @@ import math
 MIN_MU_PT  = 45.0
 MAX_MU_ETA = 2.1
 MAX_MU_ISO = 0.12
+MAX_MU_ISO_FOR_CLEANING = 0.20
 
 # electrons
 MIN_EL_PT  = 35.0
 MAX_EL_ETA = 2.5
 MAX_EL_ISO = 0.1
+MAX_EL_ISO_FOR_CLEANING = 0.15
 
 # jets
 MIN_JET_PT  = 30.0
 MAX_JET_ETA = 2.4
+
+
+# -------------------------------------------------------------------------------------
+# helper class for leptons and different isolations
+# -------------------------------------------------------------------------------------
+class Lepton :
+    def __init__(self, p4, leptype, isoForCleaning, isoPU ) :
+        self.p4_ = p4
+        self.leptype_ = leptype
+        self.isoForCleaning_ = isoForCleaning
+        self.isoPU_ = isoPU
+        self.wasCleaned_ = None
+        self.goodForVeto_ = None
+        self.goodForPrimary_ = None
+    def __str__(self) :
+        s = 'Lep    {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f}), iso {5:6.2f}, cleaning iso {6:6.2f}'.format( 0, self.p4().Perp(), self.p4().Eta(), self.p4().Phi(), self.p4().M(), self.isoPU_, self.isoForCleaning_ )
+        return s
+    def p4(self) :
+        return self.p4_
+    def leptype(self) :
+        return self.leptype_
+    def getIsoForCleaning(self) :
+        return self.isoForCleaning_
+    def getIsoPU(self ):
+        return self.isoPU_
+    def setAsCleaned ( self, value = True ) :
+        self.wasCleaned_ = value
+    def setGoodForVeto( self, value = True ) :
+        self.goodForVeto_ = value
+    def setGoodForPrimary ( self, value = True ) :
+        self.goodForPrimary_ = value
+    def wasCleaned(self) :
+        return self.wasCleaned_
+    def goodForVeto(self) :
+        return self.goodForVeto_
+    def goodForPrimary (self) :
+        return self.goodForPrimary_
+
 
 
 # -------------------------------------------------------------------------------------
@@ -694,9 +739,9 @@ h_ptRecoTop = ROOT.TH1F("ptRecoTop", ";p_{T}(reconstructed top) [GeV]; Events / 
 events = Events (files)
 
 # use the "loose" collections for QCD studies
-postfix = ""
-if options.useLoose :
-    postfix = "Loose"
+#postfix = ""
+#if options.useLoose :
+postfix = "Loose"
 
 
 # event-level variables 
@@ -722,6 +767,9 @@ muonPhiHandle   = Handle( "std::vector<float>")
 muonPhiLabel    = ("pfShyftTupleMuons" + postfix, "phi")
 muonPfisoHandle = Handle( "std::vector<float>")
 muonPfisoLabel  = ("pfShyftTupleMuons" + postfix, "pfisoPU")
+muonPfisoHandleFromCleaning = Handle( "std::vector<float>")
+muonPfisoLabelFromCleaning  = ("pfShyftTupleMuons" + postfix, "pfiso")
+
 
 electronPtHandle      = Handle( "std::vector<float>")
 electronPtLabel       = ("pfShyftTupleElectrons" + postfix, "pt")
@@ -735,6 +783,8 @@ electronPfisoNHHandle = Handle( "std::vector<float>")
 electronPfisoNHLabel  = ("pfShyftTupleElectrons" + postfix, "pfisoNH")
 electronPfisoPHHandle = Handle( "std::vector<float>")
 electronPfisoPHLabel  = ("pfShyftTupleElectrons" + postfix, "pfisoPH")
+electronPfisoHandleFromCleaning = Handle( "std::vector<float>")
+electronPfisoLabelFromCleaning  = ("pfShyftTupleElectrons" + postfix, "pfiso")
 
 # AK5 jet collection
 ak5JetPtHandle   = Handle( "std::vector<float>" )
@@ -1106,219 +1156,180 @@ for event in events :
         
     
     # -------------------------------------------------------------------------------------
-    # find & count leptons
+    # find, categorize & count leptons
     # -------------------------------------------------------------------------------------
     
     nMuons = 0
+    nMuonsForVeto = 0
     nElectrons = 0
+    nElectronsForVeto = 0
     igoodMu = -1
     igoodEle = -1
 
 
+    # Loop through the leptons.
+    # We have several categories :
+    #    1. Already cleaned via PF2PAT/PFBRECO top projection
+    #    2. "Good enough" for a dilepton veto
+    #    3. "Good" for primary lepton selection
+
+    muons = []
+    electrons = []
+    leptons = []
+    
+    event.getByLabel (electronPtLabel, electronPtHandle)
+    if electronPtHandle.isValid() :
+        electronPts = electronPtHandle.product()
+        event.getByLabel (electronPfisoCHLabel, electronPfisoCHHandle)
+        electronPfisoCHs = electronPfisoCHHandle.product()
+        event.getByLabel (electronPfisoNHLabel, electronPfisoNHHandle)
+        electronPfisoNHs = electronPfisoNHHandle.product()
+        event.getByLabel (electronPfisoPHLabel, electronPfisoPHHandle)
+        electronPfisoPHs = electronPfisoPHHandle.product()
+        event.getByLabel (electronPfisoLabelFromCleaning, electronPfisoHandleFromCleaning)
+        electronPfisosFromCleaning = electronPfisoHandleFromCleaning.product()
+        event.getByLabel (electronEtaLabel, electronEtaHandle)
+        electronEtas = electronEtaHandle.product()
+        event.getByLabel (electronPhiLabel, electronPhiHandle)
+        electronPhis = electronPhiHandle.product()
+        event.getByLabel (rhoLabel, rhoHandle)
+        rho = rhoHandle.product()
+
+        for ielectronPt in range(0,len(electronPts)) :
+            electronPt = electronPts[ielectronPt]
+            electronEta = electronEtas[ielectronPt]
+            electronPhi = electronPhis[ielectronPt]
+            electronPfisoFromCleaning = electronPfisosFromCleaning[ielectronPt]
+            electronPfiso = electronPfisoCHs[ielectronPt] + max(0.0, electronPfisoNHs[ielectronPt] + electronPfisoPHs[ielectronPt] - rho[0] * getAeff(electronEtas[ielectronPt]))
+            electronMass = 0.0
+            p4 = ROOT.TLorentzVector()
+            p4.SetPtEtaPhiM( electronPt, electronEta, electronPhi, electronMass )
+            electron = Lepton( p4, 1, electronPfisoFromCleaning / electronPt, electronPfiso / electronPt)
+
+            # Lepton with "pileup unsafe" isolation as was done
+            # upstream in PF2PAT / PFBRECO top projection
+            # to flag if it is already removed from the jet inputs.
+            if electron.getIsoForCleaning() > MAX_MU_ISO_FOR_CLEANING :
+                electron.setAsCleaned()
+
+            # Lepton with pileup safe isolation, and check if we want
+            # signal or control region (for ABCD QCD estimate)
+            if (electronPt > MIN_EL_PT and abs(electronEta) < MAX_EL_ETA ) :
+                if electronPfiso / electronPt < MAX_EL_ISO :
+                    electron.setGoodForVeto()
+                    nElectronsForVeto += 1
+                if not options.useLoose and electronPfiso / electronPt < MAX_EL_ISO :
+                    nElectrons += 1
+                    igoodEle = ielectronPt
+                    electron.setGoodForPrimary()
+                elif options.useLoose and electronPfiso / electronPt > MAX_EL_ISO :
+                    nElectrons += 1
+                    igoodEle = ielectronPt
+                    electron.setGoodForPrimary()
+
+            electrons.append(electron)
+
+
+        
+    event.getByLabel (muonPtLabel, muonPtHandle)
+    if muonPtHandle.isValid() : 
+        muonPts = muonPtHandle.product()
+        event.getByLabel (muonPfisoLabel, muonPfisoHandle)
+        muonPfisos = muonPfisoHandle.product()
+        event.getByLabel (muonPfisoLabelFromCleaning, muonPfisoHandleFromCleaning)
+        muonPfisosFromCleaning = muonPfisoHandleFromCleaning.product()
+        event.getByLabel (muonEtaLabel, muonEtaHandle)
+        muonEtas = muonEtaHandle.product()
+        event.getByLabel (muonPhiLabel, muonPhiHandle)
+        muonPhis = muonPhiHandle.product()
+
+        for imuonPt in range(0,len(muonPts)) :
+            muonPt = muonPts[imuonPt]
+            muonEta = muonEtas[imuonPt]
+            muonPhi = muonPhis[imuonPt]
+            muonPfisoFromCleaning = muonPfisosFromCleaning[imuonPt]
+            muonPfiso = muonPfisos[imuonPt]
+            muonMass = 0.105
+            p4 = ROOT.TLorentzVector()
+            p4.SetPtEtaPhiM( muonPt, muonEta, muonPhi, muonMass )
+            muon = Lepton( p4, 0, muonPfisoFromCleaning / muonPt, muonPfiso / muonPt)
+            h_pfIsoPre.Fill( muonPfisos[imuonPt] / muonPt, weight )
+
+            # Lepton with "pileup unsafe" isolation as was done
+            # upstream in PF2PAT / PFBRECO top projection
+            # to flag if it is already removed from the jet inputs.
+            if muon.getIsoForCleaning() > MAX_MU_ISO_FOR_CLEANING :
+                muon.setAsCleaned()
+
+            # Lepton with pileup safe isolation, and check if we want
+            # signal or control region (for ABCD QCD estimate)
+            if (muonPt > MIN_MU_PT and abs(muonEta) < MAX_MU_ETA ) :
+                if muonPfiso / muonPt < MAX_MU_ISO :
+                    muon.setGoodForVeto()
+                    nMuonsForVeto += 1
+                if not options.useLoose and muonPfiso / muonPt < MAX_MU_ISO :
+                    muon.setGoodForPrimary()
+                    nMuons += 1
+                    igoodMu = imuonPt
+                elif options.useLoose and muonPfiso / muonPt > MAX_MU_ISO :
+                    muon.setGoodForPrimary()
+                    nMuons += 1
+                    igoodMu = imuonPt
+            muons.append(muon)
+
+
+                    
     # -------------------------------------------------------------------------------------
     # muon channel
     # -------------------------------------------------------------------------------------
 
-    if options.lepType == "muon":
-        event.getByLabel (muonPtLabel, muonPtHandle)
-        if not muonPtHandle.isValid():
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-        muonPts = muonPtHandle.product()
 
-        event.getByLabel (muonPfisoLabel, muonPfisoHandle)
-        if not muonPfisoHandle.isValid():
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-        muonPfisos = muonPfisoHandle.product()
-
-        event.getByLabel (muonEtaLabel, muonEtaHandle)
-        muonEtas = muonEtaHandle.product()
-
-        # loop over muons and make selection
-        for imuonPt in range(0,len(muonPts)):
-            muonPt = muonPts[imuonPt]
-            if muonPt > MIN_MU_PT and abs(muonEtas[imuonPt]) < MAX_MU_ETA :
-                h_pfIsoPre.Fill( muonPfisos[imuonPt] / muonPt, weight )
-                if options.useLoose :
-                    if options.debug : 
-                        print 'imu = ' + str(imuonPt) + ', iso/pt = ' + str( muonPfisos[imuonPt] ) + '/' + str(muonPt) + ' = ' + str(muonPfisos[imuonPt]/muonPt)
-                    if muonPfisos[imuonPt] / muonPt < MAX_MU_ISO :
-                        continue  #we don't fill response matrix as a "miss" here because it's breaking the lepton loop, not the event loop!
-                    else :
-                        if options.debug :
-                            print 'PASSED LOOSE!'
-                        nMuons += 1
-                        igoodMu = imuonPt
-                else :
-                    if muonPfisos[imuonPt] / muonPt > MAX_MU_ISO :
-                        continue
-                    nMuons += 1
-                    igoodMu = imuonPt
-
-
-        # get information for electron veto
-        event.getByLabel (electronPtLabel, electronPtHandle)
-        if electronPtHandle.isValid() :
-            electronPts = electronPtHandle.product()
-            event.getByLabel (electronPfisoCHLabel, electronPfisoCHHandle)
-            electronPfisoCHs = electronPfisoCHHandle.product()
-            event.getByLabel (electronPfisoNHLabel, electronPfisoNHHandle)
-            electronPfisoNHs = electronPfisoNHHandle.product()
-            event.getByLabel (electronPfisoPHLabel, electronPfisoPHHandle)
-            electronPfisoPHs = electronPfisoPHHandle.product()
-            event.getByLabel (electronEtaLabel, electronEtaHandle)
-            electronEtas = electronEtaHandle.product()
-
-            event.getByLabel (rhoLabel, rhoHandle)
-            rho = rhoHandle.product()
-
-            # loop over electrons
-            for ielectronPt in range(0,len(electronPts)) :
-                electronPt = electronPts[ielectronPt]
-                electronEta = electronEtas[ielectronPt]
-                electronPfiso = electronPfisoCHs[ielectronPt] + max(0.0, electronPfisoNHs[ielectronPt] + electronPfisoPHs[ielectronPt] - rho[0] * getAeff(electronEtas[ielectronPt]))
-                if (electronPt > MIN_EL_PT and abs(electronEta) < MAX_EL_ETA and electronPfiso / electronPt < MAX_EL_ISO) :
-                    nElectrons += 1
-
+    cut1 = nMuons == 1 and nElectronsForVeto <= 0
+    if options.debug == True and cut1 == True :
+        print '----- event good for muons ----'
 
     # -------------------------------------------------------------------------------------
     # electron channel
     # -------------------------------------------------------------------------------------
-
-    if options.lepType == "ele" :
-        event.getByLabel (electronPtLabel, electronPtHandle)
-        if not electronPtHandle.isValid():
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-        electronPts = electronPtHandle.product()
-
-        event.getByLabel (electronPfisoCHLabel, electronPfisoCHHandle)
-        if not electronPfisoCHHandle.isValid():
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-        electronPfisoCHs = electronPfisoCHHandle.product()
-        
-        event.getByLabel (electronPfisoNHLabel, electronPfisoNHHandle)
-        if not electronPfisoNHHandle.isValid():
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-        electronPfisoNHs = electronPfisoNHHandle.product()
-
-        event.getByLabel (electronPfisoPHLabel, electronPfisoPHHandle)
-        if not electronPfisoPHHandle.isValid():
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-        electronPfisoPHs = electronPfisoPHHandle.product()
-
-        event.getByLabel (electronEtaLabel, electronEtaHandle)
-        electronEtas = electronEtaHandle.product()
-
-        # loop over electrons and make selection
-        for ielectronPt in range(0,len(electronPts)):
-            electronPt = electronPts[ielectronPt]
-            electronPfiso = electronPfisoCHs[ielectronPt] + max(0.0, electronPfisoNHs[ielectronPt] + electronPfisoPHs[ielectronPt] - rho[0] * getAeff(electronEtas[ielectronPt]))
-            if electronPt > MIN_EL_PT and abs(electronEtas[ielectronPt]) < MAX_EL_ETA :
-                if options.useLoose :
-                    if options.debug : 
-                        print 'imu = ' + str(ielectronPt) + ', iso/pt = ' + str( electronPfiso ) + '/' + str(electronPt) + ' = ' + str(electronPfiso/electronPt)
-                    if electronPfiso / electronPt < MAX_EL_ETA :
-                        continue
-                    else :
-                        if options.debug :
-                            print 'PASSED LOOSE!'
-                        nElectrons += 1
-                        igoodEle = ielectronPt
-                else :
-                    if electronPfiso / electronPt > MAX_EL_ETA :
-                        continue
-                    nElectrons += 1
-                    igoodEle = ielectronPt
-
-        # get information for muon veto
-        event.getByLabel (muonPtLabel, muonPtHandle)
-        if muonPts.isValid() :
-            muonPts = muonPtHandle.product()
-            event.getByLabel (muonPfisoLabel, muonPfisoHandle)
-            muonPfisos = muonPfisoHandle.product()
-            event.getByLabel (muonEtaLabel, muonEtaHandle)
-            muonEtas = muonEtaHandle.product()
-
-            # loop over muons
-            for imuonPt in range(0,len(muonPts)) :
-                muonPt = muonPts[imuonPt]
-                muonEta = muonEtas[imuonPt]
-                muonPfiso = muonPfisos[imuonPt]
-                if (muonPt > MIN_MU_PT and abs(muonEta) < MAX_MU_ETA and muonPfiso / muonPt < MAX_MU_ISO) :
-                    nMuons += 1
+    cut2 = nElectrons == 1 and nMuonsForVeto <= 0
+    if options.debug == True and cut2 == True :
+        print '----- event good for electrons ----'
 
     
     # -------------------------------------------------------------------------------------
     # fill nbr of leptons plots & require exactly one lepton
     # -------------------------------------------------------------------------------------
-    
+    cut = None
+    if options.lepType == "muon":
+        cut = cut1
+        if options.debug == True and cut == True :
+            print '----- Counting as muon event -----'
+    else :
+        cut = cut2
+        if options.debug == True and cut == True :
+            print '----- Counting as electron event -----'
+    leptons = muons + electrons
     h_nMuons.Fill( nMuons, weight )
     h_nElectrons.Fill( nElectrons, weight )
         
-    if options.lepType == "muon" :
-        if nMuons != 1 : #Require ==1 muon
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
+    if cut == False or cut == None: 
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
-
-        if nElectrons != 0 : #Require ==0 electrons
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-	
-    if options.lepType == "ele" :
-        if nElectrons != 1 : #Require ==1 electron
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-
-        if nMuons != 0 : #Require ==0 muons
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-
 
     # -------------------------------------------------------------------------------------
     # Now look at the rest of the lepton information.
     # We will classify jets based on hemispheres, defined by the lepton.
     # -------------------------------------------------------------------------------------
 
-    if options.lepType == "muon" :
-        event.getByLabel (muonPhiLabel, muonPhiHandle)
-        muonPhis = muonPhiHandle.product()
-
-        lepPt  = muonPts[igoodMu]
-        lepEta = muonEtas[igoodMu]
-        lepPhi = muonPhis[igoodMu]
-        lepMass = 0.105
-        lepPfIso = muonPfisos[igoodMu]
-
     if options.lepType == "ele" :
-        event.getByLabel (electronPhiLabel, electronPhiHandle)
-        electronPhis = electronPhiHandle.product()
+        lepton = electrons[igoodEle]
+    else :
+        lepton = muons[igoodMu]
 
-        electronPfiso = electronPfisoCHs[igoodEle] + max(0.0, electronPfisoNHs[igoodEle] + electronPfisoPHs[igoodEle] - rho[0] * getAeff(electronEtas[igoodEle]))
 
-        lepPt  = electronPts[igoodEle]
-        lepEta = electronEtas[igoodEle]
-        lepPhi = electronPhis[igoodEle]
-        lepMass = 0.0
-        lepPfIso = electronPfiso
-
-    lepP4 = ROOT.TLorentzVector()
-    lepP4.SetPtEtaPhiM( lepPt, lepEta, lepPhi, lepMass )
-
+    if options.debug :
+        print lepton
         
     # -------------------------------------------------------------------------------------
     # read AK5 jet information
@@ -1431,12 +1442,21 @@ for event in events :
         if options.debug :
             print 'Orig   {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet, ak5JetPts[ijet], ak5JetEtas[ijet], ak5JetPhis[ijet], ak5JetMasss[ijet] )
             
-        # get the uncorrected jets
+        # get the jets
         thisJet = ROOT.TLorentzVector()
         thisJet.SetPtEtaPhiM( ak5JetPts[ijet], ak5JetEtas[ijet], ak5JetPhis[ijet], ak5JetMasss[ijet] )
+
         jetScale = 1.0
 
-        # first smear the jets
+        # first check if there are leptons that were not cleaned
+        for ilepton in leptons :
+            if ilepton.p4().DeltaR( thisJet ) < 0.5 and ilepton.wasCleaned() == False and ilepton.goodForPrimary() == True :
+                print 'LEPTON WAS NOT CLEANED : '
+                print ilepton
+                thisJet = thisJet - ilepton.p4()
+                
+
+        # next smear the jets
         if options.jerSys != None :
             genJet = findClosestInList( thisJet, ak5GenJets )
             scale = options.jerSys  #JER nominal=0.1, up=0.2, down=0.0
@@ -1446,7 +1466,7 @@ for event in events :
             ptscale = max(0.0, (recopt+deltapt)/recopt)
             jetScale *= ptscale
         
-        # then do the jet corrections
+        # then apply any jet corrections uncertainty variations
         if options.jecSys != None :
             jecUncAK5.setJetEta( ak5JetEtas[ijet] )
             jecUncAK5.setJetPt( ak5JetPts[ijet] )                    
@@ -1489,8 +1509,8 @@ for event in events :
     metv = ROOT.TLorentzVector()
     metv.SetPtEtaPhiM( met, 0.0, metphi, 0.0)
 
-    htLep = ht + lepP4.Perp()
-    lepMET = lepP4.Perp() + met
+    htLep = ht + lepton.p4().Perp()
+    lepMET = lepton.p4().Perp() + met
     
     if options.debug :
         print 'Passed stage0'
@@ -1500,9 +1520,9 @@ for event in events :
     h_htLep0.Fill(htLep, weight)
     h_lepMET0.Fill(lepMET, weight)
     h_ptMET0.Fill(met, weight)
-    h_pfIso0.Fill(lepPfIso/lepPt, weight)
-    h_ptLep0.Fill(lepPt, weight)
-    h_etaLep0.Fill(lepEta, weight)
+    h_pfIso0.Fill(lepton.getIsoPU() / lepton.p4().Perp(), weight)
+    h_ptLep0.Fill(lepton.p4().Perp(), weight)
+    h_etaLep0.Fill(lepton.p4().Eta(), weight)
 
     h_nvtx0_pre.Fill(nvtx)
     h_nvtx0_post.Fill(nvtx, weight)
@@ -1559,7 +1579,7 @@ for event in events :
     # define W boson from MET and lepton
     # -------------------------------------------------------------------------------------
 
-    v_wboson = metv + lepP4
+    v_wboson = metv + lepton.p4()
     wboson_mt = v_wboson.Mt()
     wboson_pt = v_wboson.Mt()
 
@@ -1585,9 +1605,9 @@ for event in events :
     h_htLep1.Fill(htLep, weight)
     h_lepMET1.Fill(lepMET, weight)
     h_ptMET1.Fill(met, weight)
-    h_pfIso1.Fill(lepPfIso/lepPt, weight)
-    h_ptLep1.Fill(lepPt, weight)
-    h_etaLep1.Fill(lepEta, weight)
+    h_pfIso1.Fill(lepton.getIsoPU() / lepton.p4().Perp(), weight)
+    h_ptLep1.Fill(lepton.p4().Perp(), weight)
+    h_etaLep1.Fill(lepton.p4().Eta(), weight)
     h_nJets1.Fill(nJets, weight)
     h_nBJets1.Fill(nBJets, weight)
 
@@ -1638,9 +1658,9 @@ for event in events :
     h_htLep2.Fill(htLep, weight)
     h_lepMET2.Fill(lepMET, weight)
     h_ptMET2.Fill(met, weight)
-    h_pfIso2.Fill(lepPfIso/lepPt, weight)
-    h_ptLep2.Fill(lepPt, weight)
-    h_etaLep2.Fill(lepEta, weight)
+    h_pfIso2.Fill(lepton.getIsoPU() / lepton.p4().Perp(), weight)
+    h_ptLep2.Fill(lepton.p4().Perp(), weight)
+    h_etaLep2.Fill(lepton.p4().Eta(), weight)
     h_nJets2.Fill(nJets, weight)
     h_nBJets2.Fill(nBJets, weight)
 
@@ -1687,7 +1707,15 @@ for event in events :
         thisJet.SetPtEtaPhiM( topTagPt[ijet], topTagEta[ijet], topTagPhi[ijet], topTagMass[ijet] )
         jetScale = 1.0
 
-        # first smear the jets
+        # first check if there are leptons that were not cleaned
+        for ilepton in leptons :
+            if ilepton.p4().DeltaR( thisJet ) < 0.5 and ilepton.wasCleaned() == False and ilepton.goodForPrimary() :
+                print 'LEPTON WAS NOT CLEANED : '
+                print ilepton
+                thisJet = thisJet - ilepton.p4()
+
+        
+        # next smear the jets
         if options.jerSys != None :
             genJet = findClosestInList( thisJet, ca8GenJets )
             scale = options.jerSys
@@ -1718,7 +1746,7 @@ for event in events :
         ca8Jets.append( thisJet )
         
         if options.debug :
-            print 'Corr   {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet, ca8Jets[ijet].Perp(), ca8Jets[ijet].Eta(), ca8Jets[ijet].Phi(), ca8Jets[ijet].M() )
+            print 'Corr   {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ijet, thisJet.Perp(), thisJet.Eta(), thisJet.Phi(), thisJet.M() )
                
 
 
@@ -1735,26 +1763,22 @@ for event in events :
     i_leadBjet = -1   # identifier of leading b-tagged jet if there is one
     pt_leadBjet = -1  # pt of leading b-tagged jet if there is one
 
-    lead_vtxmass = 0  # leading-pt jet with non-zero vertex mass
     
     # loop over AK5 jets (leptonic side)
     for ijet in range(0,len(ak5Jets)) :
         if ak5Jets[ijet].Perp() > MIN_JET_PT and abs(ak5Jets[ijet].Eta()) < MAX_JET_ETA:
             jet = ak5Jets[ijet]
-            if jet.DeltaR(lepP4) < ROOT.TMath.Pi() / 2.0 :
+            if jet.DeltaR(lepton.p4()) < ROOT.TMath.Pi() / 2.0 :
                 lepJets.append(jet)
                 lepcsvs.append(ak5JetCSVs[ijet])
                 lepVtxMass.append(ak5JetSecvtxMasses[ijet])
-
-                if ak5JetSecvtxMasses[ijet] > 0:
-                    lead_vtxmass = ak5JetSecvtxMasses[ijet]
-
-                if ak5Jets[ijet].Perp() > pt_leadBjet and ak5JetCSVs[ijet] > options.bDiscCut and ak5JetSecvtxMasses[ijet] > 0 :
+                
+                if ak5Jets[ijet].Perp() > pt_leadBjet and ak5JetCSVs[ijet] > options.bDiscCut :
                     i_leadBjet = ijet
                     pt_leadBjet = ak5Jets[ijet].Perp()
                     
 
-    this_vtxmass = lead_vtxmass
+    this_vtxmass = 0
     if pt_leadBjet > 0 :
         this_vtxmass = ak5JetSecvtxMasses[i_leadBjet]
     
@@ -1763,7 +1787,7 @@ for event in events :
     for ijet in range(0,len(ca8Jets)) :
         if ca8Jets[ijet].Perp() > MIN_JET_PT :
             jet = ca8Jets[ijet]
-            if jet.DeltaR( lepP4 ) > ROOT.TMath.Pi() / 2.0 :
+            if jet.DeltaR( lepton.p4() ) > ROOT.TMath.Pi() / 2.0 :
                 hadJets.append( jet )
                 hadJetsIndex.append( ijet )
 
@@ -1801,9 +1825,9 @@ for event in events :
     h_lepMET3.Fill(lepMET, weight)
     h_vtxMass3.Fill(this_vtxmass, weight)
     h_ptMET3.Fill(met, weight)
-    h_pfIso3.Fill(lepPfIso/lepPt, weight)
-    h_ptLep3.Fill(lepPt, weight)
-    h_etaLep3.Fill(lepEta, weight)
+    h_pfIso3.Fill(lepton.getIsoPU() / lepton.p4().Perp(), weight)
+    h_ptLep3.Fill(lepton.p4().Perp(), weight)
+    h_etaLep3.Fill(lepton.p4().Eta(), weight)
     h_nJets3.Fill(nJets, weight)
     h_nBJets3.Fill(nBJets, weight)
     h_nLepJets3.Fill(len(lepJets), weight)
@@ -1824,7 +1848,7 @@ for event in events :
 
 
     # define leptonic top pt & find weight for possibly applying top pt reweighting
-    v_leptop = (metv+lepJets[0]+lepP4)
+    v_leptop = (metv+lepJets[0]+lepton.p4())
     leptop_pt   = v_leptop.Perp()
     leptop_y    = v_leptop.Rapidity()
     leptop_mass = v_leptop.M()
@@ -1866,8 +1890,8 @@ for event in events :
     h_lepMET4.Fill(lepMET, weight)
     h_ptMET4.Fill(met, weight)
     h_vtxMass4.Fill(this_vtxmass, weight)
-    h_ptLep4.Fill(lepPt, weight)
-    h_etaLep4.Fill(lepEta, weight)
+    h_ptLep4.Fill(lepton.p4().Perp(), weight)
+    h_etaLep4.Fill(lepton.p4().Eta(), weight)
     h_nJets4.Fill(nJets, weight)
     h_nBJets4.Fill(nBJets, weight)
     h_nLepJets4.Fill(len(lepJets), weight)
@@ -1919,8 +1943,8 @@ for event in events :
     h_htLep5.Fill(htLep, weight)
     h_lepMET5.Fill(lepMET, weight)
     h_vtxMass5.Fill(this_vtxmass, weight)
-    h_ptLep5.Fill(lepPt, weight)
-    h_etaLep5.Fill(lepEta, weight)
+    h_ptLep5.Fill(lepton.p4().Perp(), weight)
+    h_etaLep5.Fill(lepton.p4().Eta(), weight)
     h_ptMET5.Fill(met, weight)
     h_nJets5.Fill(nJets, weight)
     h_nBJets5.Fill(nBJets, weight)
@@ -2125,8 +2149,8 @@ for event in events :
     h_lepMET6.Fill(lepMET, weight)
     h_vtxMass6.Fill(this_vtxmass, weight)
     h_ptMET6.Fill(met, weight)
-    h_ptLep6.Fill(lepPt, weight)
-    h_etaLep6.Fill(lepEta, weight)
+    h_ptLep6.Fill(lepton.p4().Perp(), weight)
+    h_etaLep6.Fill(lepton.p4().Eta(), weight)
     h_nJets6.Fill(nJets, weight)
     h_nBJets6.Fill(nBJets, weight)
     h_nLepJets6.Fill(len(lepJets), weight)
