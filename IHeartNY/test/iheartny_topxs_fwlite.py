@@ -1763,6 +1763,7 @@ for event in events :
     i_leadBjet = -1   # identifier of leading b-tagged jet if there is one
     pt_leadBjet = -1  # pt of leading b-tagged jet if there is one
 
+    lead_vtxmass = 0  # leading-pt jet with non-zero vertex mass
     
     # loop over AK5 jets (leptonic side)
     for ijet in range(0,len(ak5Jets)) :
@@ -1773,12 +1774,15 @@ for event in events :
                 lepcsvs.append(ak5JetCSVs[ijet])
                 lepVtxMass.append(ak5JetSecvtxMasses[ijet])
                 
+                if ak5JetSecvtxMasses[ijet] > 0:
+                    lead_vtxmass = ak5JetSecvtxMasses[ijet]
+
                 if ak5Jets[ijet].Perp() > pt_leadBjet and ak5JetCSVs[ijet] > options.bDiscCut :
                     i_leadBjet = ijet
                     pt_leadBjet = ak5Jets[ijet].Perp()
                     
 
-    this_vtxmass = 0
+    this_vtxmass = lead_vtxmass
     if pt_leadBjet > 0 :
         this_vtxmass = ak5JetSecvtxMasses[i_leadBjet]
     
