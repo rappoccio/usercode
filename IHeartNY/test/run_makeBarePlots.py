@@ -25,9 +25,12 @@ class Plot :
 def main() :
     outname = 'mujets'
     plots = [
-        Plot( outname=outname, hist1='etaLep4', hist2=None, NQCD=0.0, maxy=3000, rebin=5),
-        Plot( outname=outname, hist1='etaLep4', hist2='etaLep6', NQCD=0.0, maxy=3000, rebin=5),
-        Plot( outname=outname, hist1='etaLep6', hist2=None, NQCD=0.0, maxy=300, rebin=5),
+        #Plot( outname=outname, hist1='etaLep4', hist2=None, NQCD=0.0, maxy=3000, rebin=5),
+        #Plot( outname=outname, hist1='etaLep4', hist2='etaLep6', NQCD=0.0, maxy=3000, rebin=5),
+        #Plot( outname=outname, hist1='etaLep6', hist2=None, NQCD=0.0, maxy=300, rebin=5),
+        Plot( outname=outname, hist1='ht4', hist2=None, NQCD=0.0, maxy=3000, rebin=10),
+        Plot( outname=outname, hist1='ht4', hist2='ht7', NQCD=0.0, maxy=3000, rebin=10),
+        Plot( outname=outname, hist1='ht7', hist2=None, NQCD=0.0, maxy=300, rebin=10),
         Plot( outname=outname, hist1='vtxMass7', hist2=None, NQCD=0.0, maxy=30, rebin=1),
         ]
 
