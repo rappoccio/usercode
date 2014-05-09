@@ -30,7 +30,7 @@ parser.add_option('--hist2', metavar='F', type='string', action='store',
                   
                   
 parser.add_option('--NQCD', metavar='F', type='float', action='store',
-                  default=15.0 ,
+                  default=0.0 ,
                   dest='NQCD',
                   help='QCD Normalization')
                   
@@ -680,7 +680,9 @@ elif options.hist2 is not None:
 
 	if not options.ignoreData : 
             hRecoData1= fdata.Get(options.hist1).Clone()
+            hRecoData1.SetName(histname + "__DATA1"  )
             hRecoData2= fdata.Get(options.hist2).Clone()
+            hRecoData2.SetName(histname + "__DATA2"  )
             hRecoData = hRecoData1.Clone()
             hRecoData.Add( hRecoData2 , -1.0 )	
             hRecoData.SetName(histname + "__DATA"  )
@@ -1395,7 +1397,7 @@ elif options.hist2 is not None:
 	hMeas_TT_Mtt_less_700_1 = [ hMeas_TT_Mtt_less_700_jecdown_1 , hMeas_TT_Mtt_less_700_jecup_1   , 
                          	    hMeas_TT_Mtt_less_700_jerdown_1   , hMeas_TT_Mtt_less_700_jerup_1   , 
                          	    hMeas_TT_Mtt_less_700_pdfdown_1   , hMeas_TT_Mtt_less_700_pdfup_1   , hMeas_TT_Mtt_less_700_nom_1 , 
-				    hMeas_TT_Mtt_less_700_scaledown_1 , hMeas_TT_Mtt_less_700_scaleup_1 ]
+                                hMeas_TT_Mtt_less_700_scaledown_1 , hMeas_TT_Mtt_less_700_scaleup_1 ]
 	hMeas_TT_Mtt_less_700_2 = [ hMeas_TT_Mtt_less_700_jecdown_2 , hMeas_TT_Mtt_less_700_jecup_2   , 
 				    hMeas_TT_Mtt_less_700_jerdown_2   , hMeas_TT_Mtt_less_700_jerup_2   , 
 				    hMeas_TT_Mtt_less_700_pdfdown_2   , hMeas_TT_Mtt_less_700_pdfup_2   , hMeas_TT_Mtt_less_700_nom_2 , 
@@ -1650,8 +1652,10 @@ qcdstack.Draw("same hist")
 hMeas_QCD_SingleMu_ToPlot.Draw("e same")
 
 
-hMeas_QCD_SingleMu.Scale( NQCD / hMeas_QCD_SingleMu.Integral() )
-
+if hMeas_QCD_SingleMu.Integral() > 0.0 : 
+    hMeas_QCD_SingleMu.Scale( NQCD / hMeas_QCD_SingleMu.Integral() )
+else : 
+    hMeas_QCD_SingleMu.Scale( 0.0 )
 
 ######### Combine ttbar samples #############
 ttbar_canv = TCanvas( "ttbar", "ttbar", 2000, 600 )
