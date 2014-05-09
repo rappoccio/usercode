@@ -75,8 +75,8 @@ gStyle.SetTitleFont(43)
 #gStyle.SetTitleFontSize(0.05)
 gStyle.SetTitleFont(43, "XYZ")
 gStyle.SetTitleSize(30, "XYZ")
-gStyle.SetTitleOffset(1.0, "X")
-gStyle.SetTitleOffset(1.0, "Y")
+gStyle.SetTitleOffset(2.0, "X")
+gStyle.SetTitleOffset(1.25, "Y")
 gStyle.SetLabelFont(43, "XYZ")
 gStyle.SetLabelSize(20, "XYZ")
 
@@ -1961,6 +1961,7 @@ for m in range(0,len(hMeas_TTbar)):
                         hMeas_TTbar[m].GetXaxis().GetTitle() + ';' +
                         hMeas_TTbar[m].GetYaxis().GetTitle()
                         )
+    
     hMC_stack.Add( hMeas_QCD[m] )
     hMC_stack.Add( hMeas_WJets[m] )
     hMC_stack.Add( hMeas_SingleTop[m] )
@@ -1990,7 +1991,7 @@ for m in range(0,len(hMeas_TTbar)):
     p2 = TPad("datamcp2" + plots[m] , "datamc" + plots[m],0.0,0.00,1.0,0.3)
     p2.SetNumber(2)
     p2.SetTopMargin(0.05)
-    p2.SetBottomMargin(0.30)
+    p2.SetBottomMargin(0.50)
 
 
     c.cd()
@@ -2026,6 +2027,7 @@ for m in range(0,len(hMeas_TTbar)):
     ratiohist.GetYaxis().SetTitle( 'Data/MC' )
     ratiohist.GetXaxis().SetTitle( hMeas_TTbar[m].GetXaxis().GetTitle() )
     ratiohist.GetXaxis().SetTitleOffset( 3.0 )
+    
     
     canvs.append( [c, p1, p2] )
     legs.append(leg)
