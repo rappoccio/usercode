@@ -105,9 +105,9 @@ NQCD = 32.8
 f_data = TFile("histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root")
 f_QCD  = TFile("histfiles/SingleMu_iheartNY_V1_mu_Run2012_qcd.root")
 
-f_ttbar_max700    = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_response.root")
-f_ttbar_700to1000 = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_response.root")
-f_ttbar_1000toInf = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom_response.root")
+f_ttbar_max700    = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
+f_ttbar_700to1000 = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
+f_ttbar_1000toInf = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
 
 f_T_t     = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
 f_Tbar_t  = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
