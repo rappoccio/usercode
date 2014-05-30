@@ -1,17 +1,26 @@
 /*
-QCDminfit_sub.cc performs a maximum likelihood fit in the MET distribution to determine the amount of QCD background. The fit parameters
-are the number of ttbar, single top, w+jets, and QCD events in the sample. These are used to normalize the respective templates in order
-to fit the MET distribution in data. Templates are taken from the MET histograms produced by plotMET.py, normalized to 1. The QCD template
-is further modified by subtracting the ttbar and w+jets sidebands before the normalization. The fit may be performed for any of the njets
-bins, or njets inclusive.
+QCDminfit_3.cc performs a maximum likelihood fit in the MET distribution to determine the 
+amount of QCD background. The fit parameters are the number of top (ttbar + single top), 
+w+jets, and QCD events in the sample. These are used to normalize the respective templates
+in order to fit the MET distribution in data. Templates are taken from the MET histograms 
+produced by iheartny_topxs_fwlite.py, scaled and combined as necessary, and normalized 
+to 1. The QCD template may be further modified by subtracting the MC sidebands. The fit 
+may be performed for any of the ptMET plots.
 
-The fit is performed using a direct interface with TMinuit, where the function TMinuit minimizes is fcn = -2*log(L). The factor of -2
-allows for easy insertion of constraints, through adding quadratic terms to fcn.
+The fit is performed using a direct interface with TMinuit, where the function TMinuit 
+minimizes is fcn = -2*log(L). The factor of -2 allows for easy insertion of constraints, 
+through adding quadratic terms to fcn.
 For more info on TMinuit see root.cern.ch/root/html/TMinuit.html .
 
-The inputs to be changed when running the program are found in lines 60, 78, and 79. Line 60 gives the rebinning factor (number of bins
-in the original histogram to be combined before the fit) and 78, 79 give the njets bin and cutflow stage used to select the histograms
-for the fit.
+The inputs to be changed when running the program are found in lines 68, 69, 70, 88, 
+and 89. 
+Line 68 gives the rebinning factor (number of bins in the original histogram to be 
+combined before the fit)
+Line 69 gives the new binsize (in GeV)
+Line 70 gives the new number of bins
+Line 88 specifies which ptMET histogram to fit
+Line 89 specifies whether MC sidebands are subtracted from the data sideband to give the
+QCD template.
 
 */
 
@@ -57,8 +66,8 @@ double xmax = 400.;
 
 // Rebinning factor, giving number of bins to combine into one (1 means no rebinning).
 int binfac = 10;
-TString binsize = "20";
-TString numberofbins = "20";
+TString binsize  = "20";      //binfac * 2
+TString numberofbins  = "20"; //200 / binfac
 
 double numEvent[3]; //set it global use to set limit in fcn
 
@@ -515,6 +524,46 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   canvasTop->Update();
   canvasTop->SaveAs("TopComp_"+numberofbins+"b_"+temp_num+".png");
 
+  TCanvas* canvasTopNorm = new TCanvas("canvasTopNorm", "canvasTopNorm", 700, 500);
+  gStyle->SetOptStat(0);
+
+  double tempmax = 0.;
+  for (int i = 0; i<3; i++){
+    if (top_cont_array[i]->Integral() > 0.){
+      top_cont_array[i]->Scale(1./top_cont_array[i]->Integral());
+    }
+    top_cont_array[i]->SetLineColor(colors[i+1]);
+    top_cont_array[i]->SetLineWidth(5);
+    if (top_cont_array[i]->GetMaximum() > tempmax){
+      tempmax = top_cont_array[i]->GetMaximum();
+    }
+  }
+
+  top_cont_array[0]->Draw();
+  top_cont_array[0]->GetXaxis()->SetTitleSize(0.05);
+  top_cont_array[0]->SetMaximum(1.2 * tempmax);
+  top_cont_array[0]->SetTitle("Contributions to top template");
+  top_cont_array[1]->Draw("same");
+  top_cont_array[2]->Draw("same");
+
+  TLegend* leg2 = new TLegend(0.56, 0.5, 0.86, 0.82);
+  leg2->SetBorderSize(0);
+  leg2->SetTextFont(42);
+  leg2->SetFillColor(0);
+  leg2->AddEntry(top_cont_array[0], " TTJets semilep", "L");
+  leg2->AddEntry(top_cont_array[1], " TTJets nonsemilep", "L");
+  leg2->AddEntry(top_cont_array[2], " Single top", "L");
+  leg2->SetTextSize(0.04);
+  leg2->Draw("same");
+
+  TText* textPrelim2 = doPrelim(L/1000, 0.52, 0.92);
+  textPrelim2->Draw();
+  textPrelim2->SetTextFont(42);
+  gPad->RedrawAxis();
+
+  canvasTopNorm->Update();
+  canvasTopNorm->SaveAs("TopTemp_"+numberofbins+"b_"+temp_num+".png");
+
   if (dosub) {
     TH1F** qcd_cont_array = new TH1F*[5];
     TString qcd_cont_names[5] = {"qcdraw", "qcdttbarsig", "qcdttbarbkg", "qcdstop", "qcdwjets"};
@@ -569,7 +618,49 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
     canvasQCD->Update();
     canvasQCD->SaveAs("QCDComp_"+numberofbins+"b_"+temp_num+".png");
     
+    TCanvas* canvasQCDNorm = new TCanvas("canvasQCDNorm", "canvasQCDNorm", 700, 500);
+    gStyle->SetOptStat(0);
 
+    double tempmax2 = 0.;
+    for (int i = 0; i<5; i++){
+      if (qcd_cont_array[i]->Integral() > 0.){
+	qcd_cont_array[i]->Scale(1./qcd_cont_array[i]->Integral());
+      }
+      qcd_cont_array[i]->SetLineColor(colors[i]);
+      qcd_cont_array[i]->SetLineWidth(5);
+	if (qcd_cont_array[i]->GetMaximum() > tempmax2){
+	  tempmax2 = qcd_cont_array[i]->GetMaximum();
+	}
+    }
+
+    qcd_cont_array[0]->Draw();
+    qcd_cont_array[0]->GetXaxis()->SetTitleSize(0.05);
+    qcd_cont_array[0]->SetMaximum(1.2 * tempmax2);
+    qcd_cont_array[0]->SetTitle("Contributions to qcd template");
+    qcd_cont_array[1]->Draw("same");
+    qcd_cont_array[2]->Draw("same");
+    qcd_cont_array[3]->Draw("same");
+    qcd_cont_array[4]->Draw("same");
+
+    TLegend* leg4 = new TLegend(0.56, 0.5, 0.86, 0.82);
+    leg4->SetBorderSize(0);
+    leg4->SetTextFont(42);
+    leg4->SetFillColor(0);
+    leg4->AddEntry(qcd_cont_array[0], " Data sideband", "L");
+    leg4->AddEntry(qcd_cont_array[1], " TTJets semilep sb", "L");
+    leg4->AddEntry(qcd_cont_array[2], " TTJets nonsemilep sb", "L");
+    leg4->AddEntry(qcd_cont_array[3], " Single top sb", "L");
+    leg4->AddEntry(qcd_cont_array[4], " W+Jets sb", "L");
+    leg4->SetTextSize(0.04);
+    leg4->Draw("same");
+
+    TText* textPrelim4 = doPrelim(L/1000, 0.525, 0.915);
+    textPrelim4->Draw();
+    textPrelim4->SetTextFont(42);
+    gPad->RedrawAxis();
+
+    canvasQCDNorm->Update();
+    canvasQCDNorm->SaveAs("QCDTemp_"+numberofbins+"b_"+temp_num+".png");
   }
 
   // Normalize histograms to 1 (but first determine Nexp)

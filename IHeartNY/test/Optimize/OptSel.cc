@@ -1,4 +1,18 @@
-// Code to do selection optimization
+/*
+ * Code to perform selection optimization
+ *
+ * Histograms produced: 
+ *     2D correlation plots between cut quantities
+ *     Significance plots of S/sqrt(S+B+dB) for each cut quantity
+ *
+ * User inputs
+ *     L50: Option to subtract MC sideband from data sideband when making QCD distributions
+ *     L51: # of QCD events in 0tag category
+ *     L52: Uncertainty on # of QCD events in 0tag category
+ *     L53: # of QCD events in 0tag category
+ *     L54: Uncertainty on # of QCD events in 0tag category
+ *     L55: Option to make only 2D correlation plots (TH2F), significance plots (TH1F) or both (all)
+ */ 
 
 #include <iostream>
 #include <cstdlib>
