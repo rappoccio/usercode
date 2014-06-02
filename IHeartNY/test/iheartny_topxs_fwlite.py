@@ -1536,15 +1536,15 @@ for event in events :
     event.getByLabel (ak5JetSecvtxMassLabel, ak5JetSecvtxMassHandle)
     ak5JetSecvtxMasses = ak5JetSecvtxMassHandle.product()
 
-    nJets = 0
-    nBJets = 0
+    nJets = 0.0
+    nBJets = 0.0
     i_goodjets = []
     for ijet in range(0,len(ak5Jets)) :
         if ak5Jets[ijet].Perp() > MIN_JET_PT and abs(ak5Jets[ijet].Eta()) < MAX_JET_ETA:
-            nJets += 1
+            nJets += 1.0
             i_goodjets.append(ijet)
             if ak5JetCSVs[ijet] > options.bDiscCut :
-                nBJets += 1
+                nBJets += 1.0
 
     h_nJets0.Fill(nJets, weight)
     h_nBJets0.Fill(nBJets, weight)

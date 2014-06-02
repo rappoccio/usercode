@@ -1652,8 +1652,8 @@ qcdstack.Draw("same hist")
 hMeas_QCD_SingleMu_ToPlot.Draw("e same")
 
 
-if hMeas_QCD_SingleMu.Integral() > 0.0 : 
-    hMeas_QCD_SingleMu.Scale( NQCD / hMeas_QCD_SingleMu.Integral() )
+if hMeas_QCD_SingleMu.GetSum() > 0.0 : 
+    hMeas_QCD_SingleMu.Scale( NQCD / hMeas_QCD_SingleMu.GetSum() )
 else : 
     hMeas_QCD_SingleMu.Scale( 0.0 )
 
