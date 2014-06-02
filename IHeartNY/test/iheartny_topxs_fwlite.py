@@ -1209,7 +1209,7 @@ for event in events :
             # Lepton with "pileup unsafe" isolation as was done
             # upstream in PF2PAT / PFBRECO top projection
             # to flag if it is already removed from the jet inputs.
-            if electron.getIsoForCleaning() > MAX_MU_ISO_FOR_CLEANING :
+            if electron.getIsoForCleaning() > MAX_EL_ISO_FOR_CLEANING :
                 electron.setAsCleaned()
 
             # Lepton with pileup safe isolation, and check if we want
