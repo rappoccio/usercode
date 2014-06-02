@@ -1581,7 +1581,7 @@ for event in events :
 
     v_wboson = metv + lepton.p4()
     wboson_mt = v_wboson.Mt()
-    wboson_pt = v_wboson.Mt()
+    wboson_pt = v_wboson.Perp()
 
     h_wboson_pt0.Fill(wboson_pt, weight)
     h_wboson_mt0.Fill(wboson_mt, weight)
