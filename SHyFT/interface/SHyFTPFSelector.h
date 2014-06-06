@@ -50,6 +50,20 @@ class SHyFTPFSelector : public EventSelector {
          out << "Electron ID Loose Selector: " << std::endl;
          electronIdPFLoose_.print(out);
       }
+
+      double getAeff(double eleEta) {
+	double aEff = 0.0;
+	
+	if (fabs(eleEta) < 1.0) aEff = 0.13;
+	else if (fabs(eleEta) < 1.479) aEff = 0.14;
+	else if (fabs(eleEta) < 2.0) aEff = 0.07;
+	else if (fabs(eleEta) < 2.2) aEff = 0.09;
+	else if (fabs(eleEta) < 2.4) aEff = 0.11;
+	else aEff = 0.14;
+	
+	return aEff;
+      } 
+
  
    protected: 
 
