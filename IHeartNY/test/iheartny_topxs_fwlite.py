@@ -739,9 +739,10 @@ h_ptRecoTop = ROOT.TH1F("ptRecoTop", ";p_{T}(reconstructed top) [GeV]; Events / 
 events = Events (files)
 
 # use the "loose" collections for QCD studies
-#postfix = ""
-#if options.useLoose :
-postfix = "Loose"
+postfix = ""
+postfixLepton = "Loose"
+if options.useLoose :
+	postfix = "Loose"
 
 
 # event-level variables 
@@ -760,31 +761,31 @@ metphiLabel  = ("pfShyftTupleMET" + postfix, "phi")
 
 # lepton variables
 muonPtHandle    = Handle("std::vector<float>")
-muonPtLabel     = ("pfShyftTupleMuons" + postfix, "pt")
+muonPtLabel     = ("pfShyftTupleMuons" + postfixLepton, "pt")
 muonEtaHandle   = Handle( "std::vector<float>")
-muonEtaLabel    = ("pfShyftTupleMuons" + postfix, "eta")
+muonEtaLabel    = ("pfShyftTupleMuons" + postfixLepton, "eta")
 muonPhiHandle   = Handle( "std::vector<float>")
-muonPhiLabel    = ("pfShyftTupleMuons" + postfix, "phi")
+muonPhiLabel    = ("pfShyftTupleMuons" + postfixLepton, "phi")
 muonPfisoHandle = Handle( "std::vector<float>")
-muonPfisoLabel  = ("pfShyftTupleMuons" + postfix, "pfisoPU")
+muonPfisoLabel  = ("pfShyftTupleMuons" + postfixLepton, "pfisoPU")
 muonPfisoHandleFromCleaning = Handle( "std::vector<float>")
-muonPfisoLabelFromCleaning  = ("pfShyftTupleMuons" + postfix, "pfiso")
+muonPfisoLabelFromCleaning  = ("pfShyftTupleMuons" + postfixLepton, "pfiso")
 
 
 electronPtHandle      = Handle( "std::vector<float>")
-electronPtLabel       = ("pfShyftTupleElectrons" + postfix, "pt")
+electronPtLabel       = ("pfShyftTupleElectrons" + postfixLepton, "pt")
 electronEtaHandle     = Handle( "std::vector<float>")
-electronEtaLabel      = ("pfShyftTupleElectrons" + postfix, "eta")
+electronEtaLabel      = ("pfShyftTupleElectrons" + postfixLepton, "eta")
 electronPhiHandle     = Handle( "std::vector<float>")
-electronPhiLabel      = ("pfShyftTupleElectrons" + postfix, "phi")
+electronPhiLabel      = ("pfShyftTupleElectrons" + postfixLepton, "phi")
 electronPfisoCHHandle = Handle( "std::vector<float>")
-electronPfisoCHLabel  = ("pfShyftTupleElectrons" + postfix, "pfisoCH")
+electronPfisoCHLabel  = ("pfShyftTupleElectrons" + postfixLepton, "pfisoCH")
 electronPfisoNHHandle = Handle( "std::vector<float>")
-electronPfisoNHLabel  = ("pfShyftTupleElectrons" + postfix, "pfisoNH")
+electronPfisoNHLabel  = ("pfShyftTupleElectrons" + postfixLepton, "pfisoNH")
 electronPfisoPHHandle = Handle( "std::vector<float>")
-electronPfisoPHLabel  = ("pfShyftTupleElectrons" + postfix, "pfisoPH")
+electronPfisoPHLabel  = ("pfShyftTupleElectrons" + postfixLepton, "pfisoPH")
 electronPfisoHandleFromCleaning = Handle( "std::vector<float>")
-electronPfisoLabelFromCleaning  = ("pfShyftTupleElectrons" + postfix, "pfiso")
+electronPfisoLabelFromCleaning  = ("pfShyftTupleElectrons" + postfixLepton, "pfiso")
 
 # AK5 jet collection
 ak5JetPtHandle   = Handle( "std::vector<float>" )
@@ -1209,7 +1210,11 @@ for event in events :
             # Lepton with "pileup unsafe" isolation as was done
             # upstream in PF2PAT / PFBRECO top projection
             # to flag if it is already removed from the jet inputs.
-            if electron.getIsoForCleaning() > MAX_EL_ISO_FOR_CLEANING :
+            if electron.getIsoForCleaning() < MAX_EL_ISO_FOR_CLEANING :
+                electron.setAsCleaned()
+
+            # additional cleaning was done at SHyFT-making level for leptons for QCD studies
+            if options.useLoose and electron.getIsoForCleaning() > MAX_EL_ISO_FOR_CLEANING :
                 electron.setAsCleaned()
 
             # Lepton with pileup safe isolation, and check if we want
@@ -1222,7 +1227,7 @@ for event in events :
                     nElectrons += 1
                     igoodEle = ielectronPt
                     electron.setGoodForPrimary()
-                elif options.useLoose and electronPfiso / electronPt > MAX_EL_ISO :
+                elif options.useLoose and electron.getIsoForCleaning() > MAX_EL_ISO_FOR_CLEANING : #for now, use leptons with PU-unsafe iso > 0.15 for QCD
                     nElectrons += 1
                     igoodEle = ielectronPt
                     electron.setGoodForPrimary()
@@ -1254,11 +1259,15 @@ for event in events :
             p4.SetPtEtaPhiM( muonPt, muonEta, muonPhi, muonMass )
             muon = Lepton( p4, 0, muonPfisoFromCleaning / muonPt, muonPfiso / muonPt)
             h_pfIsoPre.Fill( muonPfisos[imuonPt] / muonPt, weight )
-
+            
             # Lepton with "pileup unsafe" isolation as was done
             # upstream in PF2PAT / PFBRECO top projection
             # to flag if it is already removed from the jet inputs.
-            if muon.getIsoForCleaning() > MAX_MU_ISO_FOR_CLEANING :
+            if muon.getIsoForCleaning() < MAX_MU_ISO_FOR_CLEANING :
+                muon.setAsCleaned()
+
+            # additional cleaning was done at SHyFT-making level for leptons for QCD studies
+            if options.useLoose and muon.getIsoForCleaning() > MAX_MU_ISO_FOR_CLEANING :
                 muon.setAsCleaned()
 
             # Lepton with pileup safe isolation, and check if we want
@@ -1271,7 +1280,7 @@ for event in events :
                     muon.setGoodForPrimary()
                     nMuons += 1
                     igoodMu = imuonPt
-                elif options.useLoose and muonPfiso / muonPt > MAX_MU_ISO :
+                elif options.useLoose and muon.getIsoForCleaning() > MAX_MU_ISO_FOR_CLEANING : #for now, use leptons with PU-unsafe iso > 0.20 for QCD
                     muon.setGoodForPrimary()
                     nMuons += 1
                     igoodMu = imuonPt
@@ -1336,6 +1345,11 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     event.getByLabel (ak5JetPtLabel, ak5JetPtHandle)
+    if ak5JetPtHandle.isValid() == False : 
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+        continue
+    
     ak5JetPts = ak5JetPtHandle.product()
     event.getByLabel (ak5JetEtaLabel, ak5JetEtaHandle)
     ak5JetEtas = ak5JetEtaHandle.product()
