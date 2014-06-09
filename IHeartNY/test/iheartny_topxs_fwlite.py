@@ -269,6 +269,11 @@ parser.add_option('--btagSys', metavar='J', type='float', action='store',
                   dest='btagSys',
                   help='Systematic variation on b-tagging SF. Options are +1. (up 1 sigma), 0. (nominal), -1. (down 1 sigma). Default is None.')
 
+parser.add_option('--toptagSys', metavar='J', type='float', action='store',
+                  default=None,
+                  dest='toptagSys',
+                  help='Systematic variation on top-tagging efficiency. Default is None.')
+
 parser.add_option('--jecSys', metavar='J', type='float', action='store',
                   default=None,
                   dest='jecSys',
@@ -2152,8 +2157,20 @@ for event in events :
     if options.debug :
         print 'Passed stage6'
     cutflow['Stage 6: '] += 1
-    
 
+    
+    ## apply top-tagging systematic variation up/down
+    if options.isData == False :
+        toptagSF = 1.0
+        if options.toptagSys != None :
+            if options.toptagSys > 0 :
+                toptagSF += toptagSys
+            else :
+                toptagSF -= toptagSys
+        weight *= toptagSF
+        top_weight *= toptagSF
+
+    
     goodtop = hadJets[itop_mass]
     igoodtop = hadJetsIndex[itop_mass]
     
@@ -2280,8 +2297,8 @@ for event in events :
             else :
                 btagSF -= btagSFerr
         weight *= btagSF
-
-        
+        top_weight *= btagSF
+    
     h_mttbarGen7.Fill( mttbarGen )
     h_wboson_pt7.Fill(wboson_pt, weight)
     h_wboson_mt7.Fill(wboson_mt, weight)
