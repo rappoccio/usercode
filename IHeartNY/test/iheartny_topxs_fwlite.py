@@ -1259,7 +1259,7 @@ for event in events :
             p4.SetPtEtaPhiM( muonPt, muonEta, muonPhi, muonMass )
             muon = Lepton( p4, 0, muonPfisoFromCleaning / muonPt, muonPfiso / muonPt)
             h_pfIsoPre.Fill( muonPfisos[imuonPt] / muonPt, weight )
-
+            
             # Lepton with "pileup unsafe" isolation as was done
             # upstream in PF2PAT / PFBRECO top projection
             # to flag if it is already removed from the jet inputs.
@@ -1345,6 +1345,11 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     event.getByLabel (ak5JetPtLabel, ak5JetPtHandle)
+    if ak5JetPtHandle.isValid() == False : 
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+        continue
+    
     ak5JetPts = ak5JetPtHandle.product()
     event.getByLabel (ak5JetEtaLabel, ak5JetEtaHandle)
     ak5JetEtas = ak5JetEtaHandle.product()
