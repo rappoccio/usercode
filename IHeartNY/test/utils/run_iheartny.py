@@ -11,7 +11,7 @@ class SystVar :
         self.flags = flags
 
 class Sample :
-    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, btagsys=False, qcd=False, pu='ttbar', flags='' ) :
+    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, btagsys=False, toptagsys=False, qcd=False, pu='ttbar', flags='' ) :
         self.directory=directory
         self.title=title
         if flags != '' : 
@@ -48,6 +48,10 @@ class Sample :
             SystVar(name='_btagup', flags=['--btagSys=1.0']+self.flags + self.jerflag),
             SystVar(name='_btagdn', flags=['--btagSys=-1.0']+self.flags + self.jerflag)
             ]
+        toptagsysts = [
+            SystVar(name='_toptagup', flags=['--toptagSys=0.25']+self.flags + self.jerflag),
+            SystVar(name='_toptagdn', flags=['--toptagSys=-0.25']+self.flags + self.jerflag)
+            ]
 
         self.systs = []
         if noms == True :
@@ -62,6 +66,8 @@ class Sample :
             self.systs = self.systs + pdfsysts
         if btagsys == True :
             self.systs = self.systs + btagsysts
+        if toptagsys == True :
+            self.systs = self.systs + toptagsysts
 
 
 def test( s ) :

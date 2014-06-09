@@ -2163,10 +2163,7 @@ for event in events :
     if options.isData == False :
         toptagSF = 1.0
         if options.toptagSys != None :
-            if options.toptagSys > 0 :
-                toptagSF += toptagSys
-            else :
-                toptagSF -= toptagSys
+            toptagSF += toptagSys
         weight *= toptagSF
         top_weight *= toptagSF
 
