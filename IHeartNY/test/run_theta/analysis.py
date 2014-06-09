@@ -220,7 +220,7 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
 
     print '------------- MLE RESULTS ' + ex_to_in_name + ' ---------------'
 
-    results1 = mle(model, input='toys:1.', n=1000)
+    results1 = mle(model, input='toys:1.', n=10000)
 
 
     bs = []
@@ -233,15 +233,15 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
         pulls.append((1 - b)/db)
 
     pdbs = plotdata()
-    pdbs.histogram(bs, 0.0, 2.0, 30, include_uoflow = True)
+    pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
     plot(pdbs, 'bs', 'ntoys', 'beta_signal_' + ex_to_in_name + '.pdf')
 
     pdd = plotdata()
-    pdd.histogram(delta_bs, 0.0, 1.0, 30, include_uoflow = True)
+    pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
     plot(pdd, 'dbs', 'ntoys', 'delta_beta_signal_' + ex_to_in_name + '.pdf')
 
     pdp = plotdata()
-    pdp.histogram(pulls, -3.0, 3.0, 100, include_uoflow = True)
+    pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
     plot(pdp, 'pull', 'ntoys', 'pull_' + ex_to_in_name + '.pdf')
 
 
@@ -265,8 +265,13 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
     ## write_histograms_to_rootfile(histos, 'histos_mle.root')
 
 
-    print results2
-
+    #print results2
+    ivals = results2['TTbar']
+    for ikey, ival in ivals.iteritems() :
+        if ikey != "__nll" :
+            print '{0:20s} : {1:6.2f} +- {2:6.2f}'.format(
+                ikey, ival[0][0], ival[0][1]
+            )
 
     #print '------------- PL RESULTS ---------------'
 
