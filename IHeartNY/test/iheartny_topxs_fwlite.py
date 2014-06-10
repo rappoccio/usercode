@@ -689,9 +689,9 @@ h_leptop_y7 = ROOT.TH1F("leptop_y7", ";y(leptonic top); Events / 0.1", 100, -5, 
 h_lepVShad_pt3 = ROOT.TH2F("lepVShad_pt3", ";p_{T}(hadronic top) [GeV]; p_{T}(leptonic top) [GeV]", 150, 0., 1500., 150, 0., 1500.)
 
 # hadronic top variables
-h_hadtop_pt3 = ROOT.TH1F("hadtop_pt3", ";p_{T}(hadronic top) [GeV]; Events / 4 GeV", 300, 0., 1500.)
-h_hadtop_pt4 = ROOT.TH1F("hadtop_pt4", ";p_{T}(hadronic top) [GeV]; Events / 4 GeV", 300, 0., 1500.)
-h_hadtop_pt5 = ROOT.TH1F("hadtop_pt5", ";p_{T}(hadronic top) [GeV]; Events / 4 GeV", 300, 0., 1500.)
+h_hadtop_pt3 = ROOT.TH1F("hadtop_pt3", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
+h_hadtop_pt4 = ROOT.TH1F("hadtop_pt4", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
+h_hadtop_pt5 = ROOT.TH1F("hadtop_pt5", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 
 h_hadtop_pt_pt      = ROOT.TH1F("hadtop_pt_pt",      ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # pass pt > 200 GeV
 h_hadtop_pt_nsub    = ROOT.TH1F("hadtop_pt_nsub",    ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass nsub >= 3

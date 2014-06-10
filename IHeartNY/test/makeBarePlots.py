@@ -1,16 +1,9 @@
-
 #!/usr/bin/env python
-# ==============================================================================
-# January 2014
-# ==============================================================================
 
 import time
 from optparse import OptionParser
-
-
 parser = OptionParser()
 
-  
 
 parser.add_option('--outname', metavar='F', type='string', action='store',
                   default='mujets',
@@ -27,26 +20,20 @@ parser.add_option('--hist2', metavar='F', type='string', action='store',
                   default= None ,
                   dest= None ,
                   help='Histogram2 to be subtracted form Histogram1')
-                  
-                  
+                                    
+
 parser.add_option('--NQCD', metavar='F', type='float', action='store',
                   default=0.0 ,
                   dest='NQCD',
                   help='QCD Normalization')
                   
-
-parser.add_option('--maxy', metavar='F', type='float', action='store',
-                  default=500,
-                  dest='maxy',
-                  help='Maximum y in histogram')
-
 parser.add_option('--ignoreData', metavar='F', action='store_true',
                   default=False,
                   dest='ignoreData',
                   help='Ignore plotting data')
 
 parser.add_option('--drawLegend', metavar='F', action='store_true',
-                  default=False,
+                  default=True,
                   dest='drawLegend',
                   help='Draw a legend')
 
@@ -54,6 +41,11 @@ parser.add_option('--rebin', metavar='R', type='int', action='store',
                   default=None,
                   dest='rebin',
                   help='Rebin histogram?')
+
+parser.add_option('--newYlabel', metavar='F', type='string', action='store',
+                  default= None ,
+                  dest= None ,
+                  help='Fixed y-label is needed if rebinning the histogram')
 
 parser.add_option('--plotNom', metavar='F', action='store_true',
                   default=False,
@@ -68,6 +60,9 @@ from ROOT import gRandom, TH1, TH1D, cout, TFile, gSystem, TCanvas, TPad, gROOT,
 
 gROOT.Macro("rootlogon.C")
 
+gStyle.SetOptTitle(0);
+gStyle.SetOptStat(0);
+gStyle.SetOptFit(0);
 
 gStyle.SetOptStat(000000)
 
@@ -2218,55 +2213,59 @@ for iqcdHist in [ hMeas_T_t_qcd, hMeas_Tbar_t_qcd,
     qcdstack.Add( iqcdHist )
     iiqcd += 1
 
-qcdcanv = TCanvas( "qcddatamc", "qcddatamc")
-hMeas_QCD_SingleMu_ToPlot.Draw("e")
-qcdstack.Draw("same hist")
-hMeas_QCD_SingleMu_ToPlot.Draw("e same")
+#qcdcanv = TCanvas( "qcddatamc", "qcddatamc")
+#hMeas_QCD_SingleMu_ToPlot.Draw("e")
+#qcdstack.Draw("same hist")
+#hMeas_QCD_SingleMu_ToPlot.Draw("e same")
+#hMeas_QCD_SingleMu_ToPlot.Draw("e same axis")
 
-
+# scale the QCD
 if hMeas_QCD_SingleMu.GetSum() > 0.0 : 
     hMeas_QCD_SingleMu.Scale( NQCD / hMeas_QCD_SingleMu.GetSum() )
 else : 
     hMeas_QCD_SingleMu.Scale( 0.0 )
 
+    
 ######### Combine ttbar samples #############
-ttbar_canv = TCanvas( "ttbar", "ttbar", 2000, 600 )
-ttbar_canv.Divide(3,1)
-ttbar_canv.cd(1)
-ttbar_nom_stack = THStack("ttbar_nom", "ttbar_nom")
-hMeas_TT_Mtt_less_700_nom .SetLineColor( 2 )
-hMeas_TT_Mtt_700_1000_nom .SetLineColor( 3 )
-hMeas_TT_Mtt_1000_Inf_nom .SetLineColor( 4 )
-ttbar_nom_stack.Add( hMeas_TT_Mtt_less_700_nom )
-ttbar_nom_stack.Add( hMeas_TT_Mtt_700_1000_nom )
-ttbar_nom_stack.Add( hMeas_TT_Mtt_1000_Inf_nom )
-ttbar_nom_stack.Draw("nostack hist")
-ttbar_nom_stack.SetMaximum(500.)
+if 1==0 :
+    ttbar_canv = TCanvas( "ttbar", "ttbar", 2000, 600 )
+    ttbar_canv.Divide(3,1)
+    ttbar_canv.cd(1)
+    ttbar_nom_stack = THStack("ttbar_nom", "ttbar_nom")
+    hMeas_TT_Mtt_less_700_nom .SetLineColor( 2 )
+    hMeas_TT_Mtt_700_1000_nom .SetLineColor( 3 )
+    hMeas_TT_Mtt_1000_Inf_nom .SetLineColor( 4 )
+    ttbar_nom_stack.Add( hMeas_TT_Mtt_less_700_nom )
+    ttbar_nom_stack.Add( hMeas_TT_Mtt_700_1000_nom )
+    ttbar_nom_stack.Add( hMeas_TT_Mtt_1000_Inf_nom )
+    ttbar_nom_stack.Draw("nostack hist")
+    ttbar_nom_stack.SetMaximum(500.)
+    
+    ttbar_canv.cd(2)
+    ttbar_scaleup_stack = THStack("ttbar_scaleup", "ttbar_scaleup")
+    hMeas_TT_Mtt_less_700_scaleup .SetLineColor( 2 )
+    hMeas_TT_Mtt_700_1000_scaleup .SetLineColor( 3 )
+    hMeas_TT_Mtt_1000_Inf_scaleup .SetLineColor( 4 )
+    ttbar_scaleup_stack.Add( hMeas_TT_Mtt_less_700_scaleup )
+    ttbar_scaleup_stack.Add( hMeas_TT_Mtt_700_1000_scaleup )
+    ttbar_scaleup_stack.Add( hMeas_TT_Mtt_1000_Inf_scaleup )
+    ttbar_scaleup_stack.Draw("nostack hist")
+    ttbar_scaleup_stack.SetMaximum(500.)
+    
+    ttbar_canv.cd(3)
+    ttbar_scaledown_stack = THStack("ttbar_scaledown", "ttbar_scaledown")
+    hMeas_TT_Mtt_less_700_scaledown .SetLineColor( 2 )
+    hMeas_TT_Mtt_700_1000_scaledown .SetLineColor( 3 )
+    hMeas_TT_Mtt_1000_Inf_scaledown .SetLineColor( 4 )
+    ttbar_scaledown_stack.Add( hMeas_TT_Mtt_less_700_scaledown )
+    ttbar_scaledown_stack.Add( hMeas_TT_Mtt_700_1000_scaledown )
+    ttbar_scaledown_stack.Add( hMeas_TT_Mtt_1000_Inf_scaledown )
+    ttbar_scaledown_stack.Draw("nostack hist")
+    ttbar_scaledown_stack.SetMaximum(500.)
+    
+    ttbar_canv.Print("q2woes.pdf", "pdf")
+    ttbar_canv.Print("q2woes.png", "png")
 
-ttbar_canv.cd(2)
-ttbar_scaleup_stack = THStack("ttbar_scaleup", "ttbar_scaleup")
-hMeas_TT_Mtt_less_700_scaleup .SetLineColor( 2 )
-hMeas_TT_Mtt_700_1000_scaleup .SetLineColor( 3 )
-hMeas_TT_Mtt_1000_Inf_scaleup .SetLineColor( 4 )
-ttbar_scaleup_stack.Add( hMeas_TT_Mtt_less_700_scaleup )
-ttbar_scaleup_stack.Add( hMeas_TT_Mtt_700_1000_scaleup )
-ttbar_scaleup_stack.Add( hMeas_TT_Mtt_1000_Inf_scaleup )
-ttbar_scaleup_stack.Draw("nostack hist")
-ttbar_scaleup_stack.SetMaximum(500.)
-
-ttbar_canv.cd(3)
-ttbar_scaledown_stack = THStack("ttbar_scaledown", "ttbar_scaledown")
-hMeas_TT_Mtt_less_700_scaledown .SetLineColor( 2 )
-hMeas_TT_Mtt_700_1000_scaledown .SetLineColor( 3 )
-hMeas_TT_Mtt_1000_Inf_scaledown .SetLineColor( 4 )
-ttbar_scaledown_stack.Add( hMeas_TT_Mtt_less_700_scaledown )
-ttbar_scaledown_stack.Add( hMeas_TT_Mtt_700_1000_scaledown )
-ttbar_scaledown_stack.Add( hMeas_TT_Mtt_1000_Inf_scaledown )
-ttbar_scaledown_stack.Draw("nostack hist")
-ttbar_scaledown_stack.SetMaximum(500.)
-
-ttbar_canv.Print("q2woes.pdf", "pdf")
-ttbar_canv.Print("q2woes.png", "png")
 
 hMeas_TTbar_nom = hMeas_TT_Mtt_less_700_nom.Clone()
 hMeas_TTbar_nom.SetName(histname + '__TTbar'  )
@@ -2525,7 +2524,7 @@ for thehist in hMeas_SingleTop :
 for thehist in hMeas_QCD :
     thehist.SetFillColor( TColor.kYellow )
 
-if options.rebin != None :
+if options.rebin != None and options.rebin != 1:
 
     hMeas_TTbar_jecdown.Rebin( options.rebin )
     hMeas_TTbar_jecup.Rebin( options.rebin )
@@ -2581,6 +2580,9 @@ if options.rebin != None :
 
     hMeas_QCD_SingleMu.Rebin ( options.rebin )
     hRecoData.Rebin( options.rebin )
+
+    if options.newYlabel is not 'None':
+        hRecoData.GetYaxis().SetTitle(options.newYlabel)
     
     
 legs = []
@@ -2588,20 +2590,55 @@ legs = []
 summedhists = []
 eventcounts = []
 
+
+# plotting options
+hRecoData.SetLineWidth(1)
+
+if 'csv1LepJet' in options.hist1 or 'csv2LepJet' in options.hist1 :
+    hRecoData.SetAxisRange(0,1.05,"X")
+if 'hadtop_mass3' in options.hist1 or 'hadtop_mass4' in options.hist1 :
+    hRecoData.SetAxisRange(0,250,"X")
+if 'hadtop_pt3' in options.hist1 or 'leptop_pt3' in options.hist1 :
+    hRecoData.SetAxisRange(150,700,"X")
+if 'hadtop_pt4' in options.hist1  or 'leptop_pt4' in options.hist1 :
+    hRecoData.SetAxisRange(350,900,"X")
+if 'hadtop_pt6' in options.hist1 or 'hadtop_pt7' in options.hist1  or 'leptop_pt6' in options.hist1 or 'leptop_pt7' in options.hist1 :
+    hRecoData.SetAxisRange(350,1200,"X")
+if 'hadtop_y' in options.hist1 :
+    hRecoData.SetAxisRange(-3,3,"X")
+if 'ht2' in options.hist1 or 'htLep2' in options.hist1:
+    hRecoData.SetAxisRange(0,800,"X")
+if 'ht3' in options.hist1 or 'htLep3' in options.hist1 :
+    hRecoData.SetAxisRange(0,1400,"X")
+if 'ht4' in options.hist1 or 'ht6' in options.hist1 or 'ht7' in options.hist1 :
+    hRecoData.SetAxisRange(0,2500,"X")
+if 'htLep4' in options.hist1 or 'htLep6' in options.hist1 or 'htLep7' in options.hist1 :
+    hRecoData.SetAxisRange(0,2500,"X")
+if 'pt1LepJet2' in options.hist1 :
+    hRecoData.SetAxisRange(0,250,"X")
+if 'ptLep0' in options.hist1 or 'ptLep2' in options.hist1 :
+    hRecoData.SetAxisRange(0,200,"X")
+
+
 for m in range(0,len(hMeas_TTbar)):
 
     if options.plotNom == True and plots[m] != 'nom' :
         continue
 
-    leg = TLegend(0.5, 0.55, 0.84, 0.84)
+    if 'csv' in options.hist1 :
+        leg = TLegend(0.6,0.55,0.85,0.85)
+    else :
+        leg = TLegend(0.68,0.55,0.93,0.85)
     leg.SetBorderSize(0)
-    leg.SetFillColor(0)
+    leg.SetFillStyle(0)
+    leg.SetTextFont(42)
 
     
+    leg.AddEntry( hRecoData, 'Data', 'pel')
     leg.AddEntry( hMeas_TTbar[m], 't#bar{t} Signal', 'f')
     leg.AddEntry( hMeas_TTbar_nonSemiLep[m], 't#bar{t} Other', 'f')
     leg.AddEntry( hMeas_SingleTop[m], 'Single Top', 'f')
-    leg.AddEntry( hMeas_WJets[m], 'W+jets', 'f')
+    leg.AddEntry( hMeas_WJets[m], 'W#rightarrow#mu#nu', 'f')
     leg.AddEntry( hMeas_QCD[m], 'QCD' , 'f')
 
     
@@ -2634,7 +2671,17 @@ for m in range(0,len(hMeas_TTbar)):
 
     summedhists.append( [ratiohist,summedhist] )
     
-   
+
+    # automatically set y-range
+    max = summedhist.GetMaximum();
+    if not options.ignoreData and hRecoData.GetMaximum() > max :
+        max = hRecoData.GetMaximum()
+    if "eta" in options.hist1 or "_y" in options.hist1 :
+        max = max*1.5
+
+    hRecoData.SetAxisRange(0,max*1.05,"Y");
+
+  
     c = TCanvas("datamc" + plots[m] , "datamc" + plots[m],200,10,960,800)
     p1 = TPad("datamcp1" + plots[m] , "datamc" + plots[m],0.0,0.3,1.0,0.97)
     p1.SetBottomMargin(0.05)
@@ -2649,20 +2696,34 @@ for m in range(0,len(hMeas_TTbar)):
     p1.Draw()
     p1.cd()
 
+
     if not options.ignoreData :
-        leg.AddEntry( hRecoData, '19.7 fb^{-1}', 'p')
         hRecoData.UseCurrentStyle()
         hRecoData.GetXaxis().SetTitle('')        
         hRecoData.Draw('e')
         hMC_stack.Draw("hist same")
         hRecoData.Draw('e same')
-        hRecoData.SetMaximum( options.maxy )
+        hRecoData.Draw('e same axis')
     else :
         hMC_stack.UseCurrentStyle()
         hMC_stack.Draw("hist")
         hMC_stack.GetXaxis().SetTitle('')
     if options.drawLegend :
         leg.Draw()
+        
+        l = TLatex()
+        l.SetTextSize(0.044) 
+        l.SetTextFont(42) 
+        l.SetNDC()
+        l.SetTextColor(1)
+        if 'csv' in options.hist1 :
+            l.DrawLatex(0.43,0.78,"#intLdt = 19.7 fb^{-1}")
+            l.DrawLatex(0.43,0.70,"#sqrt{s} = 8 TeV")
+        else :
+            l.DrawLatex(0.51,0.78,"#intLdt = 19.7 fb^{-1}")
+            l.DrawLatex(0.51,0.70,"#sqrt{s} = 8 TeV")
+        
+
 
     eventcounts.append( [plots[m], hMeas_TTbar[m].GetSum(), hMeas_TTbar_nonSemiLep[m].GetSum(), hMeas_WJets[m].GetSum(), hMeas_SingleTop[m].GetSum(), hMeas_QCD_SingleMu.GetSum(), hRecoData.GetSum() ] )
 
@@ -2670,6 +2731,7 @@ for m in range(0,len(hMeas_TTbar)):
     c.cd()
     p2.Draw()
     p2.cd()
+    p2.SetGridy()
     ratiohist.UseCurrentStyle()
     ratiohist.Draw('e')
     ratiohist.SetMaximum(2.0)
