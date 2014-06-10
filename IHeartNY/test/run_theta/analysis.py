@@ -160,11 +160,12 @@ import exceptions
 def build_model(type, jet1 = None, mcstat = True, ex_to_in = None, infilter = None):
     model = None
 
+    
     if type == 'ttbar_xs' :
 
         model = muplusjets(
             files=[#'normalized_mujets_ptMET3_subtracted_from_ptMET1.root', 'normalized_mujets_ptMET5_subtracted_from_ptMET3.root',
-                    #'normalized_mujets_ht7_subtracted_from_ht4.root',
+                    'normalized_mujets_ht7_subtracted_from_ht4.root',
                     'normalized_mujets_vtxMass7.root'],
             infilter=infilter,
             signal='TTbar',
@@ -195,6 +196,11 @@ def build_model(type, jet1 = None, mcstat = True, ex_to_in = None, infilter = No
 # Here is the "main" part of the script. 
 ####################################################################################
 
+
+
+useMLE = False
+usePL = True
+
 # Building the statistical model :
 # These are the bits that need for externalizing pdf and q2 uncertainties.
 # Thus, we run nominal, pdfup, pdfdown, q2up, q2 down separately. 
@@ -218,71 +224,114 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
 
     parameters = model.get_parameters(['TTbar'])
 
-    print '------------- MLE RESULTS ' + ex_to_in_name + ' ---------------'
-
-    results1 = mle(model, input='toys:1.', n=10000)
-
-
-    bs = []
-    delta_bs = []
-    pulls = []
-
-    for b, db in results1['TTbar']['beta_signal']:
-        bs.append(b)
-        delta_bs.append(db)
-        pulls.append((1 - b)/db)
-
-    pdbs = plotdata()
-    pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-    plot(pdbs, 'bs', 'ntoys', 'beta_signal_' + ex_to_in_name + '.pdf')
-
-    pdd = plotdata()
-    pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-    plot(pdd, 'dbs', 'ntoys', 'delta_beta_signal_' + ex_to_in_name + '.pdf')
-
-    pdp = plotdata()
-    pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-    plot(pdp, 'pull', 'ntoys', 'pull_' + ex_to_in_name + '.pdf')
-
-
-    # to write the data to a file, use e.g.:
-    pdp.write_txt('pull_' + ex_to_in_name + '.txt')
-
-    # to write it to a root file:
-    write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_mle_' + ex_to_in_name + '.root')
 
 
 
+    if useMLE == True : 
+
+        print '------------- MLE RESULTS ' + ex_to_in_name + ' ---------------'
+
+        results1 = mle(model, input='toys:1.', n=10000)
 
 
-    results2 = mle(model, input='data', n=1)
+        bs = []
+        delta_bs = []
+        pulls = []
+
+        for b, db in results1['TTbar']['beta_signal']:
+            bs.append(b)
+            delta_bs.append(db)
+            pulls.append((1 - b)/db)
+
+        pdbs = plotdata()
+        pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
+        plot(pdbs, 'bs', 'ntoys', 'beta_signal_' + ex_to_in_name + '.pdf')
+
+        pdd = plotdata()
+        pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
+        plot(pdd, 'dbs', 'ntoys', 'delta_beta_signal_' + ex_to_in_name + '.pdf')
+
+        pdp = plotdata()
+        pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
+        plot(pdp, 'pull', 'ntoys', 'pull_' + ex_to_in_name + '.pdf')
 
 
-    ## parameter_values = {}
-    ## for p in model.get_parameters([]):
-    ##     parameter_values[p] = results2['TTbar'][p][0][0]
-    ## histos = evaluate_prediction(model, parameter_values, include_signal = True)
-    ## write_histograms_to_rootfile(histos, 'histos_mle.root')
+        # to write the data to a file, use e.g.:
+        pdp.write_txt('pull_' + ex_to_in_name + '.txt')
+
+        # to write it to a root file:
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_mle_' + ex_to_in_name + '.root')
 
 
-    #print results2
-    ivals = results2['TTbar']
-    for ikey, ival in ivals.iteritems() :
-        if ikey != "__nll" :
-            print '{0:20s} : {1:6.2f} +- {2:6.2f}'.format(
-                ikey, ival[0][0], ival[0][1]
-            )
-
-    #print '------------- PL RESULTS ---------------'
 
 
-    #args = {}
 
-    #results3 = pl_interval(model, input='toys:1.', n=1000 ,  **args)
-    #results4 = pl_interval(model, input='data', n=1 , **args)
-
-    #print results4
+        results2 = mle(model, input='data', n=1)
 
 
-    if ex_to_in_name == "Nominal" : 
-        report.write_html('htmlout_' + ex_to_in_name)
+        ## parameter_values = {}
+        ## for p in model.get_parameters([]):
+        ##     parameter_values[p] = results2['TTbar'][p][0][0]
+        ## histos = evaluate_prediction(model, parameter_values, include_signal = True)
+        ## write_histograms_to_rootfile(histos, 'histos_mle.root')
+
+
+        #print results2
+        ivals = results2['TTbar']
+        for ikey, ival in ivals.iteritems() :
+            if ikey != "__nll" :
+                print '{0:20s} : {1:6.2f} +- {2:6.2f}'.format(
+                    ikey, ival[0][0], ival[0][1]
+                )
+
+        if ex_to_in_name == "Nominal" : 
+            report.write_html('htmlout_' + ex_to_in_name)
+
+    if usePL == True :
+
+        print '------------- PL RESULTS ' + ex_to_in_name + ' ---------------'
+
+
+        args = {}
+
+        results3 = pl_interval(model, input='toys:1.', n=1000 ,  **args)
+
+        bs = []
+        delta_bs = []
+        pulls = []
+
+        for ival in results3['TTbar'][0.0] :
+            bs.append( ival )
+        ii = 0
+        for ival in results3['TTbar'][0.68268949213708585] :
+            delta_bs.append( 0.5 * ( abs( bs[ii] - ival[0] ) + abs(ival[1] - bs[ii])  ) )
+            ii += 1
+            
+        for ii in xrange(len(bs)) :
+            pulls.append( (1 - bs[ii]) / delta_bs[ii] )
+            
+        pdbs = plotdata()
+        pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
+        plot(pdbs, 'bs', 'ntoys', 'pl_beta_signal_' + ex_to_in_name + '.pdf')
+
+        pdd = plotdata()
+        pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
+        plot(pdd, 'dbs', 'ntoys', 'pl_delta_beta_signal_' + ex_to_in_name + '.pdf')
+
+        pdp = plotdata()
+        pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
+        plot(pdp, 'pull', 'ntoys', 'pl_pull_' + ex_to_in_name + '.pdf')
+
+
+        # to write the data to a file, use e.g.:
+        pdd.write_txt('pl_dbs_' + ex_to_in_name + '.txt')
+        pdp.write_txt('pl_pull_' + ex_to_in_name + '.txt')
+
+        # to write it to a root file:
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_pl_' + ex_to_in_name + '.root')
+
+        
+        results4 = pl_interval(model, input='data', n=1 , **args)
+
+        print results4
+        
