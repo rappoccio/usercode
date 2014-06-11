@@ -2618,6 +2618,8 @@ if 'pt1LepJet2' in options.hist1 :
     hRecoData.SetAxisRange(0,250,"X")
 if 'ptLep0' in options.hist1 or 'ptLep2' in options.hist1 :
     hRecoData.SetAxisRange(0,200,"X")
+if 'ptMET0' in options.hist1 or 'ptMET2' in options.hist1 :
+    hRecoData.SetAxisRange(0,200,"X")
 
 
 for m in range(0,len(hMeas_TTbar)):
@@ -2674,8 +2676,8 @@ for m in range(0,len(hMeas_TTbar)):
 
     # automatically set y-range
     max = summedhist.GetMaximum();
-    if not options.ignoreData and hRecoData.GetMaximum() > max :
-        max = hRecoData.GetMaximum()
+    if not options.ignoreData and (hRecoData.GetMaximum() + hRecoData.GetBinError(hRecoData.GetMaximumBin())) > max :
+        max = (hRecoData.GetMaximum() + hRecoData.GetBinError(hRecoData.GetMaximumBin()))
     if "eta" in options.hist1 or "_y" in options.hist1 :
         max = max*1.5
 
@@ -2700,10 +2702,10 @@ for m in range(0,len(hMeas_TTbar)):
     if not options.ignoreData :
         hRecoData.UseCurrentStyle()
         hRecoData.GetXaxis().SetTitle('')        
-        hRecoData.Draw('e')
+        hRecoData.Draw('lep')
         hMC_stack.Draw("hist same")
-        hRecoData.Draw('e same')
-        hRecoData.Draw('e same axis')
+        hRecoData.Draw('lep same')
+        hRecoData.Draw('lep same axis')
     else :
         hMC_stack.UseCurrentStyle()
         hMC_stack.Draw("hist")
@@ -2733,7 +2735,7 @@ for m in range(0,len(hMeas_TTbar)):
     p2.cd()
     p2.SetGridy()
     ratiohist.UseCurrentStyle()
-    ratiohist.Draw('e')
+    ratiohist.Draw('lep')
     ratiohist.SetMaximum(2.0)
     ratiohist.SetMinimum(0.0)
     ratiohist.GetYaxis().SetNdivisions(2,4,0,False)
