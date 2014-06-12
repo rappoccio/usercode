@@ -2593,6 +2593,8 @@ eventcounts = []
 
 # plotting options
 hRecoData.SetLineWidth(1)
+hRecoData.SetMarkerStyle(8)
+
 
 if 'csv1LepJet' in options.hist1 or 'csv2LepJet' in options.hist1 :
     hRecoData.SetAxisRange(0,1.05,"X")
@@ -2628,19 +2630,20 @@ for m in range(0,len(hMeas_TTbar)):
         continue
 
     if 'csv' in options.hist1 :
-        leg = TLegend(0.6,0.55,0.85,0.85)
+        leg = TLegend(0.59,0.56,0.84,0.9)
     else :
-        leg = TLegend(0.68,0.55,0.93,0.85)
+        leg = TLegend(0.67,0.56,0.92,0.9)
     leg.SetBorderSize(0)
     leg.SetFillStyle(0)
     leg.SetTextFont(42)
+    leg.SetTextSize(0.05)
 
     
     leg.AddEntry( hRecoData, 'Data', 'pel')
     leg.AddEntry( hMeas_TTbar[m], 't#bar{t} Signal', 'f')
     leg.AddEntry( hMeas_TTbar_nonSemiLep[m], 't#bar{t} Other', 'f')
     leg.AddEntry( hMeas_SingleTop[m], 'Single Top', 'f')
-    leg.AddEntry( hMeas_WJets[m], 'W#rightarrow#mu#nu', 'f')
+    leg.AddEntry( hMeas_WJets[m], 'W #rightarrow #mu#nu', 'f')
     leg.AddEntry( hMeas_QCD[m], 'QCD' , 'f')
 
     
@@ -2684,14 +2687,16 @@ for m in range(0,len(hMeas_TTbar)):
     hRecoData.SetAxisRange(0,max*1.05,"Y");
 
   
-    c = TCanvas("datamc" + plots[m] , "datamc" + plots[m],200,10,960,800)
+    c = TCanvas("datamc" + plots[m] , "datamc" + plots[m],200,10,900,800)
     p1 = TPad("datamcp1" + plots[m] , "datamc" + plots[m],0.0,0.3,1.0,0.97)
+    p1.SetTopMargin(0.05)
     p1.SetBottomMargin(0.05)
     p1.SetNumber(1)
     p2 = TPad("datamcp2" + plots[m] , "datamc" + plots[m],0.0,0.00,1.0,0.3)
     p2.SetNumber(2)
     p2.SetTopMargin(0.05)
-    p2.SetBottomMargin(0.50)
+    #p2.SetBottomMargin(0.50)
+    p2.SetBottomMargin(0.40)
 
 
     c.cd()
@@ -2702,6 +2707,8 @@ for m in range(0,len(hMeas_TTbar)):
     if not options.ignoreData :
         hRecoData.UseCurrentStyle()
         hRecoData.GetXaxis().SetTitle('')        
+        hRecoData.GetXaxis().SetLabelSize(24);
+        hRecoData.GetYaxis().SetLabelSize(24);
         hRecoData.Draw('lep')
         hMC_stack.Draw("hist same")
         hRecoData.Draw('lep same')
@@ -2714,16 +2721,16 @@ for m in range(0,len(hMeas_TTbar)):
         leg.Draw()
         
         l = TLatex()
-        l.SetTextSize(0.044) 
+        l.SetTextSize(0.05) 
         l.SetTextFont(42) 
         l.SetNDC()
         l.SetTextColor(1)
         if 'csv' in options.hist1 :
-            l.DrawLatex(0.43,0.78,"#intLdt = 19.7 fb^{-1}")
-            l.DrawLatex(0.43,0.70,"#sqrt{s} = 8 TeV")
+            l.DrawLatex(0.40,0.81,"#intLdt = 19.7 fb^{-1}")
+            l.DrawLatex(0.40,0.72,"#sqrt{s} = 8 TeV")
         else :
-            l.DrawLatex(0.51,0.78,"#intLdt = 19.7 fb^{-1}")
-            l.DrawLatex(0.51,0.70,"#sqrt{s} = 8 TeV")
+            l.DrawLatex(0.48,0.81,"#intLdt = 19.7 fb^{-1}")
+            l.DrawLatex(0.48,0.72,"#sqrt{s} = 8 TeV")
         
 
 
@@ -2741,8 +2748,11 @@ for m in range(0,len(hMeas_TTbar)):
     ratiohist.GetYaxis().SetNdivisions(2,4,0,False)
     ratiohist.GetYaxis().SetTitle( 'Data/MC' )
     ratiohist.GetXaxis().SetTitle( hMeas_TTbar[m].GetXaxis().GetTitle() )
-    ratiohist.GetXaxis().SetTitleOffset( 3.0 )
-    
+    #ratiohist.GetXaxis().SetTitleOffset( 3.0 )
+    ratiohist.GetXaxis().SetTitleOffset( 4.0 )
+    ratiohist.GetXaxis().SetLabelSize(24);
+    ratiohist.GetYaxis().SetLabelSize(24);
+
     
     canvs.append( [c, p1, p2] )
     legs.append(leg)
@@ -2750,6 +2760,7 @@ for m in range(0,len(hMeas_TTbar)):
     	if not options.ignoreData : 
         	c.Print( 'normalized_' + plots[m] + '_' + options.outname + '_' + options.hist1 + '.png' )
         	c.Print( 'normalized_' + plots[m] + '_' + options.outname + '_' + options.hist1 + '.pdf' )
+        	c.Print( 'normalized_' + plots[m] + '_' + options.outname + '_' + options.hist1 + '.eps' )
     	else : 
         	c.Print( 'normalized_' + plots[m] + '_' + options.outname + '_' + options.hist1 + '_nodata.png' )
         	c.Print( 'normalized_' + plots[m] + '_' + options.outname + '_' + options.hist1 + '_nodata.pdf' )

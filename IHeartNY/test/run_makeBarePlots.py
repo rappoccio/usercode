@@ -123,15 +123,15 @@ def main() :
         
         Plot( outname=outname, hist1='pt1LepJet2', hist2=None, NQCD=143202.7, rebin=1, newYlabel=''),
         Plot( outname=outname, hist1='pt1LepJet3', hist2=None, NQCD=3321.1  , rebin=1, newYlabel=''),
-        Plot( outname=outname, hist1='pt1LepJet4', hist2=None, NQCD=384.1   , rebin=2, newYlabel='Events\ /\ 10\ GeV'),
-        Plot( outname=outname, hist1='pt1LepJet6', hist2=None, NQCD=91.3    , rebin=2, newYlabel='Events\ /\ 10\ GeV'),
-        Plot( outname=outname, hist1='pt1LepJet7', hist2=None, NQCD=2       , rebin=2, newYlabel='Events\ /\ 10\ GeV'),
+        Plot( outname=outname, hist1='pt1LepJet4', hist2=None, NQCD=384.1   , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='pt1LepJet6', hist2=None, NQCD=91.3    , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='pt1LepJet7', hist2=None, NQCD=2       , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
         
         Plot( outname=outname, hist1='pt2LepJet2', hist2=None, NQCD=143202.7*0.12, rebin=1, newYlabel=''),
         Plot( outname=outname, hist1='pt2LepJet3', hist2=None, NQCD=3321.1*0.30  , rebin=1, newYlabel=''),
-        Plot( outname=outname, hist1='pt2LepJet4', hist2=None, NQCD=384.1*0.48   , rebin=2, newYlabel='Events\ /\ 10\ GeV'),
-        Plot( outname=outname, hist1='pt2LepJet6', hist2=None, NQCD=91.3*0.52    , rebin=2, newYlabel='Events\ /\ 10\ GeV'),
-        Plot( outname=outname, hist1='pt2LepJet7', hist2=None, NQCD=2*0.62       , rebin=2, newYlabel='Events\ /\ 10\ GeV'),
+        Plot( outname=outname, hist1='pt2LepJet4', hist2=None, NQCD=384.1*0.48   , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='pt2LepJet6', hist2=None, NQCD=91.3*0.52    , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='pt2LepJet7', hist2=None, NQCD=2*0.62       , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
         
         Plot( outname=outname, hist1='ptLep0', hist2=None, NQCD=1520239.0, rebin=1, newYlabel=''),
         Plot( outname=outname, hist1='ptLep2', hist2=None, NQCD=143202.7 , rebin=1, newYlabel=''),
