@@ -467,6 +467,7 @@ if options.lepType == "muon":
     h_ptLep4  = ROOT.TH1F("ptLep4",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
     h_ptLep5  = ROOT.TH1F("ptLep5",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
     h_ptLep6  = ROOT.TH1F("ptLep6",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
+    h_ptLep7  = ROOT.TH1F("ptLep7",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
 
     h_etaLep0 = ROOT.TH1F("etaLep0", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
     h_etaLep1 = ROOT.TH1F("etaLep1", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
@@ -475,6 +476,7 @@ if options.lepType == "muon":
     h_etaLep4 = ROOT.TH1F("etaLep4", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
     h_etaLep5 = ROOT.TH1F("etaLep5", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
     h_etaLep6 = ROOT.TH1F("etaLep6", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
+    h_etaLep7 = ROOT.TH1F("etaLep7", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
     
     h_pfIsoPre  = ROOT.TH1F("pfIsoPre",  ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
     h_pfIso0    = ROOT.TH1F("pfIso0",    ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
@@ -489,6 +491,7 @@ else:
     h_ptLep4  = ROOT.TH1F("ptLep4",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
     h_ptLep5  = ROOT.TH1F("ptLep5",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
     h_ptLep6  = ROOT.TH1F("ptLep6",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
+    h_ptLep7  = ROOT.TH1F("ptLep7",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
 
     h_etaLep0 = ROOT.TH1F("etaLep0", ";Electron #eta; Electrons / 0.1", 50, -2.5, 2.5)
     h_etaLep1 = ROOT.TH1F("etaLep1", ";Electron #eta; Electrons / 0.1", 50, -2.5, 2.5)
@@ -497,6 +500,7 @@ else:
     h_etaLep4 = ROOT.TH1F("etaLep4", ";Electron #eta; Electrons / 0.1", 50, -2.5, 2.5)
     h_etaLep5 = ROOT.TH1F("etaLep5", ";Electron #eta; Electrons / 0.1", 50, -2.5, 2.5)
     h_etaLep6 = ROOT.TH1F("etaLep6", ";Electron #eta; Electrons / 0.1", 50, -2.5, 2.5)
+    h_etaLep7 = ROOT.TH1F("etaLep7", ";Electron #eta; Electrons / 0.1", 50, -2.5, 2.5)
     
     h_pfIsoPre  = ROOT.TH1F("pfIsoPre",  ";PF-isolation/p_{T}; Electrons / 0.01", 200, 0., 2.)
     h_pfIso0    = ROOT.TH1F("pfIso0",    ";PF-isolation/p_{T}; Electrons / 0.01", 200, 0., 2.)
@@ -1539,7 +1543,7 @@ for event in events :
     h_htLep0.Fill(htLep, weight)
     h_lepMET0.Fill(lepMET, weight)
     h_ptMET0.Fill(met, weight)
-    h_pfIso0.Fill(lepton.getIsoPU() / lepton.p4().Perp(), weight)
+    h_pfIso0.Fill(lepton.getIsoPU(), weight)
     h_ptLep0.Fill(lepton.p4().Perp(), weight)
     h_etaLep0.Fill(lepton.p4().Eta(), weight)
 
@@ -1624,7 +1628,7 @@ for event in events :
     h_htLep1.Fill(htLep, weight)
     h_lepMET1.Fill(lepMET, weight)
     h_ptMET1.Fill(met, weight)
-    h_pfIso1.Fill(lepton.getIsoPU() / lepton.p4().Perp(), weight)
+    h_pfIso1.Fill(lepton.getIsoPU(), weight)
     h_ptLep1.Fill(lepton.p4().Perp(), weight)
     h_etaLep1.Fill(lepton.p4().Eta(), weight)
     h_nJets1.Fill(nJets, weight)
@@ -1677,7 +1681,7 @@ for event in events :
     h_htLep2.Fill(htLep, weight)
     h_lepMET2.Fill(lepMET, weight)
     h_ptMET2.Fill(met, weight)
-    h_pfIso2.Fill(lepton.getIsoPU() / lepton.p4().Perp(), weight)
+    h_pfIso2.Fill(lepton.getIsoPU(), weight)
     h_ptLep2.Fill(lepton.p4().Perp(), weight)
     h_etaLep2.Fill(lepton.p4().Eta(), weight)
     h_nJets2.Fill(nJets, weight)
@@ -1848,7 +1852,7 @@ for event in events :
     h_lepMET3.Fill(lepMET, weight)
     h_vtxMass3.Fill(this_vtxmass, weight)
     h_ptMET3.Fill(met, weight)
-    h_pfIso3.Fill(lepton.getIsoPU() / lepton.p4().Perp(), weight)
+    h_pfIso3.Fill(lepton.getIsoPU(), weight)
     h_ptLep3.Fill(lepton.p4().Perp(), weight)
     h_etaLep3.Fill(lepton.p4().Eta(), weight)
     h_nJets3.Fill(nJets, weight)
@@ -2304,6 +2308,8 @@ for event in events :
     h_eta1LepJet7.Fill(lepJets[0].Eta(), weight)
     h_csv1LepJet7.Fill(lepcsvs[0], weight)
     h_vtxMass1LepJet7.Fill(lepVtxMass[0], weight)
+    h_ptLep7.Fill(lepton.p4().Perp(), weight)
+    h_etaLep7.Fill(lepton.p4().Eta(), weight)
     
     if len(lepJets) > 1:
         h_pt2LepJet7.Fill(lepJets[1].Perp(), weight)
