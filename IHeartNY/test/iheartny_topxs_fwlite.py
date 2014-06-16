@@ -477,7 +477,16 @@ if options.lepType == "muon":
     h_etaLep5 = ROOT.TH1F("etaLep5", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
     h_etaLep6 = ROOT.TH1F("etaLep6", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
     h_etaLep7 = ROOT.TH1F("etaLep7", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
-    
+
+    h_etaAbsLep0 = ROOT.TH1F("etaAbsLep0", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep1 = ROOT.TH1F("etaAbsLep1", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep2 = ROOT.TH1F("etaAbsLep2", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep3 = ROOT.TH1F("etaAbsLep3", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4 = ROOT.TH1F("etaAbsLep4", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
+
     h_pfIsoPre  = ROOT.TH1F("pfIsoPre",  ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
     h_pfIso0    = ROOT.TH1F("pfIso0",    ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
     h_pfIso1    = ROOT.TH1F("pfIso1",    ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
@@ -502,6 +511,15 @@ else:
     h_etaLep6 = ROOT.TH1F("etaLep6", ";Electron #eta; Electrons / 0.1", 50, -2.5, 2.5)
     h_etaLep7 = ROOT.TH1F("etaLep7", ";Electron #eta; Electrons / 0.1", 50, -2.5, 2.5)
     
+    h_etaAbsLep0 = ROOT.TH1F("etaAbsLep0", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep1 = ROOT.TH1F("etaAbsLep1", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep2 = ROOT.TH1F("etaAbsLep2", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep3 = ROOT.TH1F("etaAbsLep3", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4 = ROOT.TH1F("etaAbsLep4", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
+
     h_pfIsoPre  = ROOT.TH1F("pfIsoPre",  ";PF-isolation/p_{T}; Electrons / 0.01", 200, 0., 2.)
     h_pfIso0    = ROOT.TH1F("pfIso0",    ";PF-isolation/p_{T}; Electrons / 0.01", 200, 0., 2.)
     h_pfIso1    = ROOT.TH1F("pfIso1",    ";PF-isolation/p_{T}; Electrons / 0.01", 200, 0., 2.)
@@ -1546,6 +1564,7 @@ for event in events :
     h_pfIso0.Fill(lepton.getIsoPU(), weight)
     h_ptLep0.Fill(lepton.p4().Perp(), weight)
     h_etaLep0.Fill(lepton.p4().Eta(), weight)
+    h_etaAbsLep0.Fill(abs(lepton.p4().Eta()), weight)
 
     h_nvtx0_pre.Fill(nvtx)
     h_nvtx0_post.Fill(nvtx, weight)
@@ -1631,6 +1650,7 @@ for event in events :
     h_pfIso1.Fill(lepton.getIsoPU(), weight)
     h_ptLep1.Fill(lepton.p4().Perp(), weight)
     h_etaLep1.Fill(lepton.p4().Eta(), weight)
+    h_etaAbsLep1.Fill(abs(lepton.p4().Eta()), weight)
     h_nJets1.Fill(nJets, weight)
     h_nBJets1.Fill(nBJets, weight)
 
@@ -1684,6 +1704,7 @@ for event in events :
     h_pfIso2.Fill(lepton.getIsoPU(), weight)
     h_ptLep2.Fill(lepton.p4().Perp(), weight)
     h_etaLep2.Fill(lepton.p4().Eta(), weight)
+    h_etaAbsLep2.Fill(abs(lepton.p4().Eta()), weight)
     h_nJets2.Fill(nJets, weight)
     h_nBJets2.Fill(nBJets, weight)
 
@@ -1855,6 +1876,7 @@ for event in events :
     h_pfIso3.Fill(lepton.getIsoPU(), weight)
     h_ptLep3.Fill(lepton.p4().Perp(), weight)
     h_etaLep3.Fill(lepton.p4().Eta(), weight)
+    h_etaAbsLep3.Fill(abs(lepton.p4().Eta()), weight)
     h_nJets3.Fill(nJets, weight)
     h_nBJets3.Fill(nBJets, weight)
     h_nLepJets3.Fill(len(lepJets), weight)
@@ -1919,6 +1941,7 @@ for event in events :
     h_vtxMass4.Fill(this_vtxmass, weight)
     h_ptLep4.Fill(lepton.p4().Perp(), weight)
     h_etaLep4.Fill(lepton.p4().Eta(), weight)
+    h_etaAbsLep4.Fill(abs(lepton.p4().Eta()), weight)
     h_nJets4.Fill(nJets, weight)
     h_nBJets4.Fill(nBJets, weight)
     h_nLepJets4.Fill(len(lepJets), weight)
@@ -1972,6 +1995,7 @@ for event in events :
     h_vtxMass5.Fill(this_vtxmass, weight)
     h_ptLep5.Fill(lepton.p4().Perp(), weight)
     h_etaLep5.Fill(lepton.p4().Eta(), weight)
+    h_etaAbsLep5.Fill(abs(lepton.p4().Eta()), weight)
     h_ptMET5.Fill(met, weight)
     h_nJets5.Fill(nJets, weight)
     h_nBJets5.Fill(nBJets, weight)
@@ -2187,6 +2211,7 @@ for event in events :
     h_ptMET6.Fill(met, weight)
     h_ptLep6.Fill(lepton.p4().Perp(), weight)
     h_etaLep6.Fill(lepton.p4().Eta(), weight)
+    h_etaAbsLep6.Fill(abs(lepton.p4().Eta()), weight)
     h_nJets6.Fill(nJets, weight)
     h_nBJets6.Fill(nBJets, weight)
     h_nLepJets6.Fill(len(lepJets), weight)
@@ -2310,6 +2335,7 @@ for event in events :
     h_vtxMass1LepJet7.Fill(lepVtxMass[0], weight)
     h_ptLep7.Fill(lepton.p4().Perp(), weight)
     h_etaLep7.Fill(lepton.p4().Eta(), weight)
+    h_etaAbsLep7.Fill(abs(lepton.p4().Eta()), weight)
     
     if len(lepJets) > 1:
         h_pt2LepJet7.Fill(lepJets[1].Perp(), weight)
