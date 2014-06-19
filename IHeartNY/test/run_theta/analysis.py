@@ -165,7 +165,7 @@ def build_model(type, jet1 = None, mcstat = True, ex_to_in = None, infilter = No
 
         model = muplusjets(
             files=[#'normalized_mujets_ptMET3_subtracted_from_ptMET1.root', 'normalized_mujets_ptMET5_subtracted_from_ptMET3.root',
-                    'normalized_mujets_ht7_subtracted_from_ht4.root',
+                    'normalized_mujets_etaAbsLep7_subtracted_from_etaAbsLep4.root',
                     'normalized_mujets_vtxMass7.root'],
             infilter=infilter,
             signal='TTbar',
@@ -264,8 +264,6 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
 
 
 
-
-
         results2 = mle(model, input='data', n=1)
 
 
@@ -284,9 +282,10 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
                     ikey, ival[0][0], ival[0][1]
                 )
 
-        if ex_to_in_name == "Nominal" : 
-            report.write_html('htmlout_' + ex_to_in_name)
 
+        if ex_to_in_name == "Nominal" : 
+            report.write_html('htmlout')
+            
     if usePL == True :
 
         print '------------- PL RESULTS ' + ex_to_in_name + ' ---------------'
@@ -335,3 +334,5 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
 
         print results4
         
+        if ex_to_in_name == "Nominal" : 
+            report.write_html('htmlout')
