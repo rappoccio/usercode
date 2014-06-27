@@ -11,7 +11,7 @@ gr2sig = TGraphErrors()
 nPoint = -1
 for systematic in sorted(signal_list.keys()):
 
-	if systematic is '__nll':
+	if systematic is '__nll' or systematic is "beta_signal":
 		continue
 
 	nPoint += 1
@@ -50,7 +50,7 @@ gr2sig.GetXaxis().Set(10,-4.5,4.5)
 
 nBin = 0
 for systematic in sorted(signal_list.keys()):
-	if systematic is '__nll':
+	if systematic is '__nll' or systematic is 'beta_signal':
 		continue
 	gr2sig.GetYaxis().SetBinLabel(nBin+1, systematic)
 	nBin += 1
