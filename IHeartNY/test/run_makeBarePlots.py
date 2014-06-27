@@ -157,6 +157,11 @@ def main() :
         Plot( outname=outname, hist1='etaAbsLep6', hist2=None, NQCD=91.3     , rebin=5, newYlabel='Events'),
         Plot( outname=outname, hist1='etaAbsLep7', hist2=None, NQCD=2        , rebin=10, newYlabel='Events'),
 
+
+        Plot( outname=outname, hist1='etaAbsLep4', hist2='etaAbsLep6', NQCD=384.1-91.3   , rebin=5, newYlabel='Events'),
+        Plot( outname=outname, hist1='etaAbsLep6', hist2='etaAbsLep7', NQCD=91.3-2.0     , rebin=5, newYlabel='Events'),
+
+        
         #Plot( outname=outname, hist1='vtxMass1LepJet2', hist2=None, NQCD=143202.7, rebin=1, newYlabel=''),
         #Plot( outname=outname, hist1='vtxMass1LepJet3', hist2=None, NQCD=3321.1  , rebin=1, newYlabel=''),
         #Plot( outname=outname, hist1='vtxMass1LepJet4', hist2=None, NQCD=384.1   , rebin=1, newYlabel=''),
