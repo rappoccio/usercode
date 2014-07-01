@@ -91,4 +91,5 @@ for variable in variables :
     f_datas.append(f_data)
     h_datas.append(h_data)
     stacks.append(hs)
-    
+    c.Print(variable + '.png')
+    c.Print(variable + '.pdf')
