@@ -57,7 +57,8 @@ class PdfWeightProducer : public edm::EDProducer {
       virtual void produce(edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
 
-  std::string               pdfSet_; /// lhapdf string
+  std::string pdfSet_; /// lhapdf string
+  int nMembers_; // number of eigenvector variations for the given PDF set  
 
 
 };
@@ -76,6 +77,7 @@ class PdfWeightProducer : public edm::EDProducer {
 //
 PdfWeightProducer::PdfWeightProducer(const edm::ParameterSet& iConfig) :
   pdfSet_       (iConfig.getParameter<std::string> ("pdfSet") )
+  nMembers_     (iConfig.getParameter<int> ("nMembers") )
 {
 
   produces<std::vector<double> > ("pdfWeights");
@@ -102,11 +104,15 @@ PdfWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::auto_ptr<std::vector<double> > pdf_weights( new std::vector<double>() );
 
+
   if ( ! iEvent.isRealData() && pdfSet_ != "" ) {
 
     edm::Handle<GenEventInfoProduct> pdfstuff;
     if (iEvent.getByLabel("generator", pdfstuff)) {
 
+      if (nMembers < 1) {
+	std::cout << "WARNING: nMembers == 0 for PDF set, can't get eigenvector variations..." << std::endl;
+      }
 
       LHAPDF::usePDFMember(1,0);
 
@@ -123,13 +129,14 @@ PdfWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       double xpdf1 = LHAPDF::xfx(1, x1, q, id1);
       double xpdf2 = LHAPDF::xfx(1, x2, q, id2);
       double w0 = xpdf1 * xpdf2;
-      for(int i=1; i <=44; ++i){
+      for(int i=1; i <=nMembers; ++i){
 	LHAPDF::usePDFMember(1,i);
 	double xpdf1_new = LHAPDF::xfx(1, x1, q, id1);
 	double xpdf2_new = LHAPDF::xfx(1, x2, q, id2);
 	double weight = xpdf1_new * xpdf2_new / w0;
 	pdf_weights->push_back(weight);
       }
+
     }
   }
 

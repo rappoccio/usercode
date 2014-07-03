@@ -284,10 +284,15 @@ parser.add_option('--jerSys', metavar='J', type='float', action='store',
                   dest='jerSys',
                   help='JER Systematic variation in fraction. Default is None.')
 
+parser.add_option('--pdfSet', metavar='J', type='float', action='store',
+                  default=0.0,
+                  dest='pdfSet',
+                  help='which PDF set is used for ttbar? Options are 0 (CT10), 1 (MSTW), 2 (NNPDF). Default is 0.')
+
 parser.add_option('--pdfSys', metavar='J', type='float', action='store',
                   default=0.0,
                   dest='pdfSys',
-                  help='PDF Systematic variation. Options are +1. (up 1 sigma), 0. (nominal), -1. (down 1 sigma). Default is 0.0.')
+                  help='PDF Systematic variation. Options are +1 (scale up 1 sigma), 0 (nominal), -1 (down 1 sigma for 3 PDF sets). Default is 0.0')
 
 parser.add_option('--debug', metavar='D', action='store_true',
                   default=False,
@@ -1007,6 +1012,9 @@ print "Start looping over events!"
 
 for event in events :
 
+    if ntotal > 5:
+        break
+    
     weight = 1.0 #event weight
 
     mttbarGen = -1.0
@@ -1046,38 +1054,49 @@ for event in events :
     # Use the max and min values of all of the eigenvectors as the envelope. 
     # -------------------------------------------------------------------------------------
 
-    if options.pdfSys != 0.0 :
-        event.getByLabel( pdfWeightCT10Label, pdfWeightCT10Handle )
-        event.getByLabel( pdfWeightMSTWLabel, pdfWeightMSTWHandle )
-        event.getByLabel( pdfWeightNNPDFLabel, pdfWeightNNPDFHandle )
-        pdfWeightCT10  = pdfWeightCT10Handle.product()
-        pdfWeightMSTW  = pdfWeightMSTWHandle.product()
-        pdfWeightNNPDF = pdfWeightNNPDFHandle.product()
+    if options.pdfSys != 0.0:
 
-        if options.pdfSys > 0 :
-            pdfWeights1 = [ i / pdfWeightCT10[0] for i in pdfWeightCT10[1::2] ]
-            pdfWeights2 = [ i / pdfWeightMSTW[0] for i in pdfWeightMSTW[1::2] ]
-            pdfWeights3 = [ i / pdfWeightNNPDF[0] for i in pdfWeightNNPDF[1::2] ]
-            pdfWeights = pdfWeights1 + pdfWeights2 + pdfWeights3
-            maxweight = 1.0
-            for iweight in pdfWeights :
-                if iweight > 0 and iweight > maxweight :
-                    maxweight = iweight
-            weight *= maxweight
+        if options.pdfSet == 1.0 :
+            event.getByLabel( pdfWeightMSTWLabel, pdfWeightMSTWHandle )
+            pdfWeight  = pdfWeightMSTWHandle.product()
+        elif options.pdfSet == 2.0 :
+            event.getByLabel( pdfWeightNNPDFLabel, pdfWeightNNPDFHandle )
+            pdfWeight = pdfWeightNNPDFHandle.product()
+        else :
+            event.getByLabel( pdfWeightCT10Label, pdfWeightCT10Handle )
+            pdfWeight  = pdfWeightCT10Handle.product()
 
-        else : 
-            pdfWeights1 = [ i / pdfWeightCT10[0] for i in pdfWeightCT10[2::2] ]
-            pdfWeights2 = [ i / pdfWeightMSTW[0] for i in pdfWeightMSTW[2::2] ]
-            pdfWeights3 = [ i / pdfWeightNNPDF[0] for i in pdfWeightNNPDF[2::2] ]
-            pdfWeights = pdfWeights1 + pdfWeights2 + pdfWeights3
-            minweight = 1.0
-            for iweight in pdfWeights :
-                if iweight > 0 and iweight < minweight :
-                    minweight = iweight
-            weight *= minweight
-    #endof if doing pdfSys
+
+        nMembers = len(pdfWeight)
+        nEigenVec = int(nMembers/2)
+
+        if options.pdfSys > 0 :   # upward PDF uncertainty
+            upweight = 0.0
+            for iw in range(0,nEigenVec) :
+                tmpweight = 0.0
+                if (pdfWeight[0+2*iw] - 1.0) > tmpweight :
+                    tmpweight = pdfWeight[0+2*iw] - 1.0
+                if (pdfWeight[1+2*iw] - 1.0) > tmpweight :
+                    tmpweight = pdfWeight[1+2*iw] - 1.0
+                upweight += tmpweight*tmpweight
+            upweight = 1.0 + math.sqrt(upweight)
+            weight *= upweight
+        else :   # downward PDF uncertainty
+            dnweight = 0.0
+            for iw in range(0,nEigenVec) :
+                tmpweight = 0.0
+                if (1.0 - pdfWeight[0+2*iw]) > tmpweight :
+                    tmpweight = 1.0 - pdfWeight[0+2*iw]
+                if (1.0 - pdfWeight[1+2*iw]) > tmpweight :
+                    tmpweight = 1.0 - pdfWeight[1+2*iw]
+                dnweight += tmpweight*tmpweight
+            dnweight = 1.0 - math.sqrt(dnweight)
+            weight *= upweight
     
+    #endof if doing pdfSys
+  
 
+    
     # -------------------------------------------------------------------------------------
     # For unfolding stuides (i.e. if makeResponse = True):
     # Find the top and antitop quarks.

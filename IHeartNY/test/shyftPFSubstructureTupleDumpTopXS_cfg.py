@@ -767,9 +767,9 @@ process.p2 = cms.Path(
 if options.addPdfs == 1 : 
     # PDF Information
     from Analysis.PdfWeights.pdfWeightProducer_cfi import pdfWeightProducer
-    process.ct10weights = pdfWeightProducer.clone(pdfSet = cms.string("CT10.LHgrid"))
-    process.mstwweights = pdfWeightProducer.clone(pdfSet = cms.string("MSTW2008nlo68cl.LHgrid"))
-    process.nnpdfweights = pdfWeightProducer.clone(pdfSet = cms.string("NNPDF21_as_0118_100.LHgrid"))
+    process.ct10weights = pdfWeightProducer.clone(pdfSet = cms.string("CT10nnlo.LHgrid"), nMembers = cms.int32(50))
+    process.mstwweights = pdfWeightProducer.clone(pdfSet = cms.string("MSTW2008nnlo68cl.LHgrid"), nMembers = cms.int32(40))
+    process.nnpdfweights = pdfWeightProducer.clone(pdfSet = cms.string("NNPDF23_nnlo_as_0118.LHgrid"), nMembers = cms.int32(100))
     process.pdfs = cms.Sequence( process.ct10weights*process.mstwweights*process.nnpdfweights )
     process.p1 *= process.pdfs
     process.p2 *= process.pdfs

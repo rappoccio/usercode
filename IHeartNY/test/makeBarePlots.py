@@ -80,7 +80,6 @@ gStyle.SetLabelSize(20, "XYZ")
 lum = 19.7 # fb-1
 SF_t = 1.0
 #SF_t = 0.94
-SF_t_sys = 0.25 #for top-tagging, do scaling SF_t +/- SF_t_sys
 
 # Cross sections (in fb) and the number of MC events
 sigma_ttbar_NNLO           = [    # fb, from http://arxiv.org/pdf/1303.6254.pdf

@@ -41,8 +41,12 @@ class Sample :
             SystVar(name='_jecdn', flags=['--jecSys=-1.0']+self.flags + self.jerflag)
             ]
         pdfsysts = [
-            SystVar(name='_pdfup', flags=['--pdfSys=1.0']+self.flags + self.jerflag),
-            SystVar(name='_pdfdn', flags=['--pdfSys=-1.0']+self.flags + self.jerflag)
+            SystVar(name='_pdfup_CT10', flags=['--pdfSys=1.0 --pdfSet=0.0']+self.flags + self.jerflag),
+            SystVar(name='_pdfdn_CT10', flags=['--pdfSys=-1.0 --pdfSet=0.0']+self.flags + self.jerflag)
+            SystVar(name='_pdfup_MSTW', flags=['--pdfSys=1.0 --pdfSet=1.0']+self.flags + self.jerflag),
+            SystVar(name='_pdfdn_MSTW', flags=['--pdfSys=-1.0 --pdfSet=1.0']+self.flags + self.jerflag)
+            SystVar(name='_pdfup_NNPDF', flags=['--pdfSys=1.0 --pdfSet=2.0']+self.flags + self.jerflag),
+            SystVar(name='_pdfdn_NNPDF', flags=['--pdfSys=-1.0 --pdfSet=2.0']+self.flags + self.jerflag)
             ]
         btagsysts = [
             SystVar(name='_btagup', flags=['--btagSys=1.0']+self.flags + self.jerflag),
