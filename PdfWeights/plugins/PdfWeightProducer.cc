@@ -76,7 +76,7 @@ class PdfWeightProducer : public edm::EDProducer {
 // constructors and destructor
 //
 PdfWeightProducer::PdfWeightProducer(const edm::ParameterSet& iConfig) :
-  pdfSet_       (iConfig.getParameter<std::string> ("pdfSet") )
+  pdfSet_       (iConfig.getParameter<std::string> ("pdfSet") ),
   nMembers_     (iConfig.getParameter<int> ("nMembers") )
 {
 
