@@ -1011,9 +1011,6 @@ goodEvents = []  # vector for storing events passing full selection
 print "Start looping over events!"
 
 for event in events :
-
-    if ntotal > 5:
-        break
     
     weight = 1.0 #event weight
 
