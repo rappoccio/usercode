@@ -1088,7 +1088,7 @@ for event in events :
                     tmpweight = 1.0 - pdfWeight[1+2*iw]
                 dnweight += tmpweight*tmpweight
             dnweight = 1.0 - math.sqrt(dnweight)
-            weight *= upweight
+            weight *= dnweight
     
     #endof if doing pdfSys
   
