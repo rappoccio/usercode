@@ -11,9 +11,14 @@ class SystVar :
         self.flags = flags
 
 class Sample :
-    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, btagsys=False, toptagsys=False, qcd=False, pu='ttbar', flags='' ) :
+    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, btagsys=False, toptagsys=False, qcd=False, pu='ttbar', newiso=False, flags='' ) :
         self.directory=directory
-        self.title=title
+
+        if newiso :
+            self.title=title+'_2Dcut'
+        else : 
+            self.title=title
+		
         if flags != '' : 
             self.flags=flags.split(' ')
         else :
@@ -21,6 +26,9 @@ class Sample :
         self.systs = []
         if pu is not None :
             self.flags.append('--pileup=' + pu )
+        if newiso :
+            self.flags.append('--use2Dcut')
+        
         if jersys is not None :
             self.jerflag = ['--jerSys=0.1']
         else :
@@ -30,7 +38,7 @@ class Sample :
             SystVar(name='_nom', flags=self.flags + self.jerflag)
             ]
         qcds = [
-            SystVar(name='_qcd', flags=['--useLoose'] + self.flags + self.jerflag)
+            SystVar(name='_qcd', flags=['--doQCD'] + self.flags + self.jerflag)
             ]
         jersysts = [
             SystVar(name='_jerup', flags=['--jerSys=0.2']+self.flags),

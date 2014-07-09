@@ -214,10 +214,15 @@ parser.add_option('--lepType', metavar='F', type='string', action='store',
                   dest='lepType',
                   help='Lepton type (ele or muon)')
 
-parser.add_option('--useLoose', metavar='F', action='store_true',
+parser.add_option('--doQCD', metavar='F', action='store_true',
                   default=False,
-                  dest='useLoose',
+                  dest='doQCD',
                   help='Use loose leptons (exclusive from tight), for QCD studies')
+
+parser.add_option('--use2Dcut', metavar='F', action='store_true',
+                  default=False,
+                  dest='use2Dcut',
+                  help='Use 2D cut instead of relative isolation')
 
 parser.add_option('--printEvents', metavar='F', action='store_true',
                   default=False,
@@ -492,6 +497,12 @@ if options.lepType == "muon":
     h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
 
+    h_dRvspTPre  = ROOT.TH2F("dRvspTPre",  ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT0    = ROOT.TH2F("dRvspT0",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT1    = ROOT.TH2F("dRvspT1",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT2    = ROOT.TH2F("dRvspT2",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT3    = ROOT.TH2F("dRvspT3",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+
     h_pfIsoPre  = ROOT.TH1F("pfIsoPre",  ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
     h_pfIso0    = ROOT.TH1F("pfIso0",    ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
     h_pfIso1    = ROOT.TH1F("pfIso1",    ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
@@ -524,6 +535,12 @@ else:
     h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
+
+    h_dRvspTPre  = ROOT.TH2F("dRvspTPre",  ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT0    = ROOT.TH2F("dRvspT0",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT1    = ROOT.TH2F("dRvspT1",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT2    = ROOT.TH2F("dRvspT2",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT3    = ROOT.TH2F("dRvspT3",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
 
     h_pfIsoPre  = ROOT.TH1F("pfIsoPre",  ";PF-isolation/p_{T}; Electrons / 0.01", 200, 0., 2.)
     h_pfIso0    = ROOT.TH1F("pfIso0",    ";PF-isolation/p_{T}; Electrons / 0.01", 200, 0., 2.)
@@ -773,7 +790,7 @@ events = Events (files)
 # use the "loose" collections for QCD studies
 postfix = ""
 postfixLepton = "Loose"
-if options.useLoose :
+if options.doQCD or options.use2Dcut :
 	postfix = "Loose"
 
 
@@ -1198,6 +1215,31 @@ for event in events :
     # endif (making response matrix)
 
         
+    # -------------------------------------------------------------------------------------
+    # read AK5 jet information
+    # -------------------------------------------------------------------------------------
+
+    event.getByLabel (ak5JetPtLabel, ak5JetPtHandle)
+    if ak5JetPtHandle.isValid() == False : 
+        if options.makeResponse == True :
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+        continue
+    
+    ak5JetPts = ak5JetPtHandle.product()
+    event.getByLabel (ak5JetEtaLabel, ak5JetEtaHandle)
+    ak5JetEtas = ak5JetEtaHandle.product()
+    event.getByLabel (ak5JetPhiLabel, ak5JetPhiHandle)
+    ak5JetPhis = ak5JetPhiHandle.product()
+    event.getByLabel (ak5JetMassLabel, ak5JetMassHandle)
+    ak5JetMasss = ak5JetMassHandle.product()
+    
+    jetsFor2D = []
+    for ijet in xrange( len(ak5JetPts) ) :
+        if ak5JetPts[ijet] > 25 :
+            theJet = ROOT.TLorentzVector()
+            theJet.SetPtEtaPhiM( ak5JetPts[ijet], ak5JetEtas[ijet], ak5JetPhis[ijet], ak5JetMasss[ijet] )
+            jetsFor2D.append(theJet)
+
     
     # -------------------------------------------------------------------------------------
     # find, categorize & count leptons
@@ -1257,24 +1299,46 @@ for event in events :
                 electron.setAsCleaned()
 
             # additional cleaning was done at SHyFT-making level for leptons for QCD studies
-            if options.useLoose and electron.getIsoForCleaning() > MAX_EL_ISO_FOR_CLEANING :
+            if (options.doQCD or options.use2Dcut) and electron.getIsoForCleaning() > MAX_EL_ISO_FOR_CLEANING :
                 electron.setAsCleaned()
 
             # Lepton with pileup safe isolation, and check if we want
             # signal or control region (for ABCD QCD estimate)
             if (electronPt > MIN_EL_PT and abs(electronEta) < MAX_EL_ETA ) :
-                if electronPfiso / electronPt < MAX_EL_ISO :
-                    electron.setGoodForVeto()
-                    nElectronsForVeto += 1
-                if not options.useLoose and electronPfiso / electronPt < MAX_EL_ISO :
-                    nElectrons += 1
-                    igoodEle = ielectronPt
-                    electron.setGoodForPrimary()
-                elif options.useLoose and electron.getIsoForCleaning() > MAX_EL_ISO_FOR_CLEANING : #for now, use leptons with PU-unsafe iso > 0.15 for QCD
-                    nElectrons += 1
-                    igoodEle = ielectronPt
-                    electron.setGoodForPrimary()
 
+                eleJet = findClosestInList( electron.p4(), jetsFor2D )
+
+                # relative isolation cut
+                if not options.use2Dcut :
+                    if electronPfiso / electronPt < MAX_EL_ISO :
+                        electron.setGoodForVeto()
+                        nElectronsForVeto += 1
+                    if not options.doQCD and electronPfiso / electronPt < MAX_EL_ISO :
+                        nElectrons += 1
+                        igoodEle = ielectronPt
+                        electron.setGoodForPrimary()
+                    elif options.doQCD and electron.getIsoForCleaning() > MAX_EL_ISO_FOR_CLEANING : #for now, use leptons with PU-unsafe iso > 0.15 for QCD
+                        nElectrons += 1
+                        igoodEle = ielectronPt
+                        electron.setGoodForPrimary()
+                # 2D isolation cut 
+                else :
+                    if electron.p4().DeltaR(eleJet) > 0.5 or electron.p4().Perp(eleJet.Vect()) > 25 :
+                        electron.setGoodForVeto()
+                        nElectronsForVeto += 1
+                    if not options.doQCD and (electron.p4().DeltaR(eleJet) > 0.5 or electron.p4().Perp(eleJet.Vect()) > 25) :
+                        nElectrons += 1
+                        igoodEle = ielectronPt
+                        electron.setGoodForPrimary()
+                    elif options.doQCD and electron.p4().DeltaR(eleJet) < 0.5 and electron.p4().Perp(eleJet.Vect()) < 25 : 
+                        nElectrons += 1
+                        igoodEle = ielectronPt
+                        electron.setGoodForPrimary()
+                        
+                if options.lepType == "ele":
+                    h_dRvspTPre.Fill( electron.p4().DeltaR(eleJet), electron.p4().Perp(eleJet.Vect()), weight )
+                    h_pfIsoPre.Fill(electron.getIsoPU(), weight)
+            
             electrons.append(electron)
 
 
@@ -1301,7 +1365,6 @@ for event in events :
             p4 = ROOT.TLorentzVector()
             p4.SetPtEtaPhiM( muonPt, muonEta, muonPhi, muonMass )
             muon = Lepton( p4, 0, muonPfisoFromCleaning / muonPt, muonPfiso / muonPt)
-            h_pfIsoPre.Fill( muonPfisos[imuonPt] / muonPt, weight )
             
             # Lepton with "pileup unsafe" isolation as was done
             # upstream in PF2PAT / PFBRECO top projection
@@ -1310,23 +1373,46 @@ for event in events :
                 muon.setAsCleaned()
 
             # additional cleaning was done at SHyFT-making level for leptons for QCD studies
-            if options.useLoose and muon.getIsoForCleaning() > MAX_MU_ISO_FOR_CLEANING :
+            if (options.doQCD or options.use2Dcut) and muon.getIsoForCleaning() > MAX_MU_ISO_FOR_CLEANING :
                 muon.setAsCleaned()
 
             # Lepton with pileup safe isolation, and check if we want
             # signal or control region (for ABCD QCD estimate)
             if (muonPt > MIN_MU_PT and abs(muonEta) < MAX_MU_ETA ) :
-                if muonPfiso / muonPt < MAX_MU_ISO :
-                    muon.setGoodForVeto()
-                    nMuonsForVeto += 1
-                if not options.useLoose and muonPfiso / muonPt < MAX_MU_ISO :
-                    muon.setGoodForPrimary()
-                    nMuons += 1
-                    igoodMu = imuonPt
-                elif options.useLoose and muon.getIsoForCleaning() > MAX_MU_ISO_FOR_CLEANING : #for now, use leptons with PU-unsafe iso > 0.20 for QCD
-                    muon.setGoodForPrimary()
-                    nMuons += 1
-                    igoodMu = imuonPt
+
+                muJet = findClosestInList( muon.p4(), jetsFor2D )
+                
+                # relative isolation cut
+                if not options.use2Dcut :
+                    if muonPfiso / muonPt < MAX_MU_ISO :
+                        muon.setGoodForVeto()
+                        nMuonsForVeto += 1
+                    if not options.doQCD and muonPfiso / muonPt < MAX_MU_ISO :
+                        muon.setGoodForPrimary()
+                        nMuons += 1
+                        igoodMu = imuonPt
+                    elif options.doQCD and muon.getIsoForCleaning() > MAX_MU_ISO_FOR_CLEANING : #for now, use leptons with PU-unsafe iso > 0.20 for QCD
+                        muon.setGoodForPrimary()
+                        nMuons += 1
+                        igoodMu = imuonPt
+                # 2D isolation cut
+                else :
+                    if muon.p4().DeltaR(muJet) > 0.5 or muon.p4().Perp(muJet.Vect()) > 25 :
+                        muon.setGoodForVeto()
+                        nMuonsForVeto += 1
+                    if not options.doQCD and (muon.p4().DeltaR(muJet) > 0.5 or muon.p4().Perp(muJet.Vect()) > 25) :
+                        muon.setGoodForPrimary()
+                        nMuons += 1
+                        igoodMu = imuonPt
+                    elif options.doQCD and muon.p4().DeltaR(muJet) < 0.5 and muon.p4().Perp(muJet.Vect()) < 25 :
+                        muon.setGoodForPrimary()
+                        nMuons += 1
+                        igoodMu = imuonPt
+
+                if options.lepType == "muon":
+                    h_dRvspTPre.Fill( muon.p4().DeltaR(muJet), muon.p4().Perp(muJet.Vect()), weight )
+                    h_pfIsoPre.Fill(muon.getIsoPU(), weight)
+
             muons.append(muon)
 
 
@@ -1379,28 +1465,11 @@ for event in events :
     else :
         lepton = muons[igoodMu]
 
+    closestFor2D = findClosestInList( lepton.p4(), jetsFor2D )
 
     if options.debug :
         print lepton
         
-    # -------------------------------------------------------------------------------------
-    # read AK5 jet information
-    # -------------------------------------------------------------------------------------
-
-    event.getByLabel (ak5JetPtLabel, ak5JetPtHandle)
-    if ak5JetPtHandle.isValid() == False : 
-        if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight*weight_response )
-        continue
-    
-    ak5JetPts = ak5JetPtHandle.product()
-    event.getByLabel (ak5JetEtaLabel, ak5JetEtaHandle)
-    ak5JetEtas = ak5JetEtaHandle.product()
-    event.getByLabel (ak5JetPhiLabel, ak5JetPhiHandle)
-    ak5JetPhis = ak5JetPhiHandle.product()
-    event.getByLabel (ak5JetMassLabel, ak5JetMassHandle)
-    ak5JetMasss = ak5JetMassHandle.product()
-
 
     # -------------------------------------------------------------------------------------
     # read gen jets if doing JER systematics
@@ -1578,6 +1647,7 @@ for event in events :
     h_lepMET0.Fill(lepMET, weight)
     h_ptMET0.Fill(met, weight)
     h_pfIso0.Fill(lepton.getIsoPU(), weight)
+    h_dRvspT0.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     h_ptLep0.Fill(lepton.p4().Perp(), weight)
     h_etaLep0.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep0.Fill(abs(lepton.p4().Eta()), weight)
@@ -1664,6 +1734,7 @@ for event in events :
     h_lepMET1.Fill(lepMET, weight)
     h_ptMET1.Fill(met, weight)
     h_pfIso1.Fill(lepton.getIsoPU(), weight)
+    h_dRvspT1.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     h_ptLep1.Fill(lepton.p4().Perp(), weight)
     h_etaLep1.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep1.Fill(abs(lepton.p4().Eta()), weight)
@@ -1718,6 +1789,7 @@ for event in events :
     h_lepMET2.Fill(lepMET, weight)
     h_ptMET2.Fill(met, weight)
     h_pfIso2.Fill(lepton.getIsoPU(), weight)
+    h_dRvspT2.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     h_ptLep2.Fill(lepton.p4().Perp(), weight)
     h_etaLep2.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep2.Fill(abs(lepton.p4().Eta()), weight)
@@ -1890,6 +1962,7 @@ for event in events :
     h_vtxMass3.Fill(this_vtxmass, weight)
     h_ptMET3.Fill(met, weight)
     h_pfIso3.Fill(lepton.getIsoPU(), weight)
+    h_dRvspT3.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     h_ptLep3.Fill(lepton.p4().Perp(), weight)
     h_etaLep3.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep3.Fill(abs(lepton.p4().Eta()), weight)
