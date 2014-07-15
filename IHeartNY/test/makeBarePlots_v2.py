@@ -1152,7 +1152,7 @@ for thehist in hMeas_QCD :
 if options.rebin != None and options.rebin != 1:
 
     for i in xrange(len(hMeas_TTbar)):
-    	hMeas_ttbar[i].Rebin( options.rebin )
+    	hMeas_TTbar[i].Rebin( options.rebin )
     
     for i in xrange(len(hMeas_TTbar_nonSemiLep)):
     	hMeas_TTbar_nonSemiLep[i].Rebin( options.rebin )
@@ -1163,8 +1163,8 @@ if options.rebin != None and options.rebin != 1:
 	for i in xrange(len(hMeas_WJets)):
 		hMeas_WJets[i].Rebin( options.rebin )
     
-    for i in xrange(len(hMeas_QCD_SingleMu)):
-    	hMeas_QCD_SingleMu[i].Rebin( options.rebin )    
+    for i in xrange(len(hMeas_QCD)):
+    	hMeas_QCD[i].Rebin( options.rebin )    
     
     if options.newYlabel is not 'None':
     	hRecoData.GetYaxis().SetTitle(options.newYlabel)
