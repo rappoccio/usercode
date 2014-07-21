@@ -455,6 +455,11 @@ if options.hist2 is None:
 			hMeas_W3Jets[ihist].SetName( options.hist1 + '__W3Jets' + name )
 			hMeas_W4Jets       .append(fW4Jets[ihist].Get(options.hist1).Clone())
 			hMeas_W4Jets[ihist].SetName( options.hist1 + '__W4Jets' + name )
+			
+			#print "number of Single top" , name , hMeas_T_t[ihist].GetSum() + hMeas_Tbar_t[ihist].GetSum() + hMeas_T_s[ihist].GetSum() + hMeas_Tbar_s[ihist].GetSum() + hMeas_T_tW[ihist].GetSum() + hMeas_Tbar_tW[ihist].GetSum()
+			#print "number of WJets" , name , hMeas_W1Jets[ihist].GetSum() + hMeas_W2Jets[ihist].GetSum() + hMeas_W3Jets[ihist].GetSum() + hMeas_W4Jets[ihist].GetSum() 
+			#print ""
+			
 		TTjets_nonSemilepTT_Names = [ "__qcd" , "" , "__jec__down" , "__jec__up" , "__jer__down" , "__jer__up" , "__toptag__down" , "__toptag__up" , "__btag__down" , "__btag__up" , "__pdf__down" , "__pdf__up" , "__scale__down" , "__scale__up" ]
 		for ihist in xrange(len(TTjets_nonSemilepTT_Names)) : 
 			name = TTjets_nonSemilepTT_Names[ihist]
@@ -471,7 +476,11 @@ if options.hist2 is None:
 			hMeas_TT_nonSemiLep_Mtt_700_1000[ihist].SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_700_1000' + name ) 
 			hMeas_TT_nonSemiLep_Mtt_1000_Inf       .append(fTT_nonSemiLep_Mtt_1000_Inf[ihist].Get(options.hist1).Clone())
 			hMeas_TT_nonSemiLep_Mtt_1000_Inf[ihist].SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf' + name )
-
+			
+			#print "number of TTbar " , name , hMeas_TT_Mtt_less_700[ihist].GetSum() + hMeas_TT_Mtt_700_1000[ihist].GetSum() + hMeas_TT_Mtt_1000_Inf[ihist].GetSum()
+			#print "number of non semilep TTbar " , name , hMeas_TT_nonSemiLep_Mtt_less_700[ihist].GetSum() + hMeas_TT_nonSemiLep_Mtt_700_1000[ihist].GetSum() + hMeas_TT_nonSemiLep_Mtt_1000_Inf[ihist].GetSum()
+			#print ""
+			
 	if not options.RunAllSyst :
 		if "pdfdn" in options.systVariation or "pdfup" in options.systVariation or "scaledown_nom" in options.systVariation or "scaleup_nom" in options.systVariation :			
 			ST_Wjets_Names = [ "__qcd" , "" ]
@@ -557,6 +566,11 @@ if options.hist2 is None:
 				hMeas_TT_nonSemiLep_Mtt_1000_Inf       .append(fTT_nonSemiLep_Mtt_1000_Inf[ihist].Get(options.hist1).Clone())
 				hMeas_TT_nonSemiLep_Mtt_1000_Inf[ihist].SetName( options.hist1 + '__TTbar_nonSemiLep_Mtt_1000_Inf' + name )
 
+				#print "number of Single top" , name , hMeas_T_t[ihist].GetSum() + hMeas_Tbar_t[ihist].GetSum() + hMeas_T_s[ihist].GetSum() + hMeas_Tbar_s[ihist].GetSum() + hMeas_T_tW[ihist].GetSum() + hMeas_Tbar_tW[ihist].GetSum()
+				#print "number of WJets" , name , hMeas_W1Jets[ihist].GetSum() + hMeas_W2Jets[ihist].GetSum() + hMeas_W3Jets[ihist].GetSum() + hMeas_W4Jets[ihist].GetSum() 
+				#print "number of TTbar " , name , hMeas_TT_Mtt_less_700[ihist].GetSum() + hMeas_TT_Mtt_700_1000[ihist].GetSum() + hMeas_TT_Mtt_1000_Inf[ihist].GetSum()
+				#print "number of non semilep TTbar " , name , hMeas_TT_nonSemiLep_Mtt_less_700[ihist].GetSum() + hMeas_TT_nonSemiLep_Mtt_700_1000[ihist].GetSum() + hMeas_TT_nonSemiLep_Mtt_1000_Inf[ihist].GetSum()
+				#print ""
 
 # Scale to desired normalization
 # Options are :
@@ -565,29 +579,29 @@ if options.hist2 is None:
 #
 # For now, we don't have the fit, so we do from MC	
 	
-		##Scale
-		for i in xrange(len(hMeas_T_t)) :
-			hMeas_T_t[i]     .Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) )
-			hMeas_Tbar_t[i]  .Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) )
-			hMeas_T_s[i]     .Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) )
-			hMeas_Tbar_s[i]  .Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) )
-			hMeas_T_tW[i]    .Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) )
-			hMeas_Tbar_tW[i] .Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) )
-	
-			hMeas_W1Jets[i].Scale( sigma_WJets_NNLO[0] * lum / float(Nmc_WJets[0]) )
-			hMeas_W2Jets[i].Scale( sigma_WJets_NNLO[1] * lum / float(Nmc_WJets[1]) )
-			hMeas_W3Jets[i].Scale( sigma_WJets_NNLO[2] * lum / float(Nmc_WJets[2]) )
-			hMeas_W4Jets[i].Scale( sigma_WJets_NNLO[3] * lum / float(Nmc_WJets[3]) )
-	
-			hMeas_TT_Mtt_less_700[i].Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar))
-			hMeas_TT_Mtt_700_1000[i].Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000))
-			hMeas_TT_Mtt_1000_Inf[i].Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) )
-	
-			hMeas_TT_nonSemiLep_Mtt_less_700[i].Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar))
-			hMeas_TT_nonSemiLep_Mtt_700_1000[i].Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000))
-			hMeas_TT_nonSemiLep_Mtt_1000_Inf[i].Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) )
-	
-	
+	##Scale
+	for i in xrange(len(hMeas_T_t)) :
+		hMeas_T_t[i]     .Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) )
+		hMeas_Tbar_t[i]  .Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) )
+		hMeas_T_s[i]     .Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) )
+		hMeas_Tbar_s[i]  .Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) )
+		hMeas_T_tW[i]    .Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) )
+		hMeas_Tbar_tW[i] .Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) )
+
+		hMeas_W1Jets[i].Scale( sigma_WJets_NNLO[0] * lum / float(Nmc_WJets[0]) )
+		hMeas_W2Jets[i].Scale( sigma_WJets_NNLO[1] * lum / float(Nmc_WJets[1]) )
+		hMeas_W3Jets[i].Scale( sigma_WJets_NNLO[2] * lum / float(Nmc_WJets[2]) )
+		hMeas_W4Jets[i].Scale( sigma_WJets_NNLO[3] * lum / float(Nmc_WJets[3]) )
+
+		hMeas_TT_Mtt_less_700[i].Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar))
+		hMeas_TT_Mtt_700_1000[i].Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000))
+		hMeas_TT_Mtt_1000_Inf[i].Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) )
+
+		hMeas_TT_nonSemiLep_Mtt_less_700[i].Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_0_700[0] * lum / float(Nmc_ttbar))
+		hMeas_TT_nonSemiLep_Mtt_700_1000[i].Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_700_1000[0] * lum / float(Nmc_TT_Mtt_700_1000))
+		hMeas_TT_nonSemiLep_Mtt_1000_Inf[i].Scale( sigma_ttbar_NNLO[0] * e_TT_Mtt_1000_Inf[0] * lum / float(Nmc_TT_Mtt_1000_Inf) )
+
+
 	
 
 #Getting histogram files and scaling to plot histogram2 subtracted from histogram1
@@ -1009,36 +1023,36 @@ if 1==0 :
 		ttbar_canv = TCanvas( "ttbar", "ttbar", 2000, 600 )
 		ttbar_canv.Divide(3,1)
 		ttbar_nom_stack = THStack("ttbar_nom", "ttbar_nom")
-		hMeas_TT_Mtt_less_700_nom .SetLineColor( 2 )
-		hMeas_TT_Mtt_700_1000_nom .SetLineColor( 3 )
-		hMeas_TT_Mtt_1000_Inf_nom .SetLineColor( 4 )
-		ttbar_nom_stack.Add( hMeas_TT_Mtt_less_700_nom )
-		ttbar_nom_stack.Add( hMeas_TT_Mtt_700_1000_nom )
-		ttbar_nom_stack.Add( hMeas_TT_Mtt_1000_Inf_nom )
+		hMeas_TT_Mtt_less_700[1] .SetLineColor( 2 )
+		hMeas_TT_Mtt_700_1000[1] .SetLineColor( 3 )
+		hMeas_TT_Mtt_1000_Inf[1] .SetLineColor( 4 )
+		ttbar_nom_stack.Add( hMeas_TT_Mtt_less_700[1] )
+		ttbar_nom_stack.Add( hMeas_TT_Mtt_700_1000[1] )
+		ttbar_nom_stack.Add( hMeas_TT_Mtt_1000_Inf[1] )
 		ttbar_nom_stack.Draw("nostack hist")
 		ttbar_nom_stack.SetMaximum(500.)
 	
 	if options.RunAllSyst or "scaleup_nom" in options.systVariation :
 		ttbar_canv.cd(2)
 		ttbar_scaleup_stack = THStack("ttbar_scaleup", "ttbar_scaleup")
-		hMeas_TT_Mtt_less_700_scaleup .SetLineColor( 2 )
-		hMeas_TT_Mtt_700_1000_scaleup .SetLineColor( 3 )
-		hMeas_TT_Mtt_1000_Inf_scaleup .SetLineColor( 4 )
-		ttbar_scaleup_stack.Add( hMeas_TT_Mtt_less_700_scaleup )
-		ttbar_scaleup_stack.Add( hMeas_TT_Mtt_700_1000_scaleup )
-		ttbar_scaleup_stack.Add( hMeas_TT_Mtt_1000_Inf_scaleup )
+		hMeas_TT_Mtt_less_700[14] .SetLineColor( 2 )
+		hMeas_TT_Mtt_700_1000[14] .SetLineColor( 3 )
+		hMeas_TT_Mtt_1000_Inf[14] .SetLineColor( 4 )
+		ttbar_scaleup_stack.Add( hMeas_TT_Mtt_less_700[14] )
+		ttbar_scaleup_stack.Add( hMeas_TT_Mtt_700_1000[14] )
+		ttbar_scaleup_stack.Add( hMeas_TT_Mtt_1000_Inf[14] )
 		ttbar_scaleup_stack.Draw("nostack hist")
 		ttbar_scaleup_stack.SetMaximum(500.)
 
 	if options.RunAllSyst or "scaledown_nom" in options.systVariation :
 		ttbar_canv.cd(3)
 		ttbar_scaledown_stack = THStack("ttbar_scaledown", "ttbar_scaledown")
-		hMeas_TT_Mtt_less_700_scaledown .SetLineColor( 2 )
-		hMeas_TT_Mtt_700_1000_scaledown .SetLineColor( 3 )
-		hMeas_TT_Mtt_1000_Inf_scaledown .SetLineColor( 4 )
-		ttbar_scaledown_stack.Add( hMeas_TT_Mtt_less_700_scaledown )
-		ttbar_scaledown_stack.Add( hMeas_TT_Mtt_700_1000_scaledown )
-		ttbar_scaledown_stack.Add( hMeas_TT_Mtt_1000_Inf_scaledown )
+		hMeas_TT_Mtt_less_700[13] .SetLineColor( 2 )
+		hMeas_TT_Mtt_700_1000[13] .SetLineColor( 3 )
+		hMeas_TT_Mtt_1000_Inf[13] .SetLineColor( 4 )
+		ttbar_scaledown_stack.Add( hMeas_TT_Mtt_less_700[13] )
+		ttbar_scaledown_stack.Add( hMeas_TT_Mtt_700_1000[13] )
+		ttbar_scaledown_stack.Add( hMeas_TT_Mtt_1000_Inf[13] )
 		ttbar_scaledown_stack.Draw("nostack hist")
 		ttbar_scaledown_stack.SetMaximum(500.)
 
@@ -1058,7 +1072,7 @@ if options.RunAllSyst :
 			hMeas_SingleTop[ihist].Add( hist )
 		for hist in [ hMeas_W2Jets[ihist], hMeas_W3Jets[ihist], hMeas_W4Jets[ihist] ] :
 			hMeas_WJets[ihist].Add( hist )
-	
+		
 	TTjets_nonSemilepTT_Names = [ "__qcd" , "" , "__jec__down" , "__jec__up" , "__jer__down" , "__jer__up" , "__toptag__down" , "__toptag__up" , "__btag__down" , "__btag__up" , "__pdf__down" , "__pdf__up" , "__scale__down" , "__scale__up" ]
 	for ihist in xrange(len(TTjets_nonSemilepTT_Names)):
 		name = TTjets_nonSemilepTT_Names[ihist]
@@ -1071,8 +1085,8 @@ if options.RunAllSyst :
 		hMeas_TTbar_nonSemiLep[ihist].SetName(histname + '__TTbar_nonSemiLep' +name )
 		for hist in [hMeas_TT_nonSemiLep_Mtt_700_1000[ihist], hMeas_TT_nonSemiLep_Mtt_1000_Inf[ihist]] :
 			hMeas_TTbar_nonSemiLep[ihist].Add( hist )
-			
-
+	
+	
 if not options.RunAllSyst :
 	if "pdfdn" in options.systVariation or "pdfup" in options.systVariation or "scaledown_nom" in options.systVariation or "scaleup_nom" in options.systVariation :			
 			ST_Wjets_Names = [ "__qcd" , "" ]
@@ -1119,7 +1133,7 @@ if not options.RunAllSyst :
 			hMeas_TTbar_nonSemiLep[ihist].SetName(histname + '__TTbar_nonSemiLep' +name )
 			for hist in [hMeas_TT_nonSemiLep_Mtt_700_1000[ihist], hMeas_TT_nonSemiLep_Mtt_1000_Inf[ihist]] :
 				hMeas_TTbar_nonSemiLep[ihist].Add( hist )
-
+			
 
 ########## Make some easy-access lists ##########
 if options.RunAllSyst :
@@ -1157,14 +1171,16 @@ if options.rebin != None and options.rebin != 1:
     for i in xrange(len(hMeas_TTbar_nonSemiLep)):
     	hMeas_TTbar_nonSemiLep[i].Rebin( options.rebin )
     
-	for i in xrange(len(hMeas_SingleTop)):
-		hMeas_SingleTop[i].Rebin( options.rebin )
+    for i in xrange(len(hMeas_SingleTop)):
+	    hMeas_SingleTop[i].Rebin( options.rebin )
 
-	for i in xrange(len(hMeas_WJets)):
-		hMeas_WJets[i].Rebin( options.rebin )
+    for i in xrange(len(hMeas_WJets)):
+	    hMeas_WJets[i].Rebin( options.rebin )
     
     for i in xrange(len(hMeas_QCD)):
-    	hMeas_QCD[i].Rebin( options.rebin )    
+    	hMeas_QCD[i].Rebin( options.rebin )  
+    	
+    hRecoData.Rebin( options.rebin )   
     
     if options.newYlabel is not 'None':
     	hRecoData.GetYaxis().SetTitle(options.newYlabel)
@@ -1242,13 +1258,13 @@ for m in range(1,len(plots)):
     hMC_stack.Add( hMeas_SingleTop[m] )
     hMC_stack.Add( hMeas_TTbar_nonSemiLep[m] )
     hMC_stack.Add( hMeas_TTbar[m] )
-
+	
     summedhist = hMeas_TTbar[m].Clone()
     summedhist.SetName( 'summed_' + plots[m] )
     summedhist.Add( hMeas_TTbar_nonSemiLep[m] )
     summedhist.Add( hMeas_WJets[m] )
     summedhist.Add( hMeas_SingleTop[m] )
-    summedhist.Add( hMeas_QCD_SingleMu )
+    summedhist.Add( hMeas_QCD[m] )
     summedhist.Sumw2()
 
     ratiohist = hRecoData.Clone()
@@ -1316,7 +1332,7 @@ for m in range(1,len(plots)):
         
 
 
-    eventcounts.append( [plots[m], hMeas_TTbar[m].GetSum(), hMeas_TTbar_nonSemiLep[m].GetSum(), hMeas_WJets[m].GetSum(), hMeas_SingleTop[m].GetSum(), hMeas_QCD_SingleMu.GetSum(), hRecoData.GetSum() ] )
+    eventcounts.append( [plots[m], hMeas_TTbar[m].GetSum(), hMeas_TTbar_nonSemiLep[m].GetSum(), hMeas_WJets[m].GetSum(), hMeas_SingleTop[m].GetSum(), hMeas_QCD[m].GetSum(), hRecoData.GetSum() ] )
 
 
     c.cd()
@@ -1369,7 +1385,7 @@ print ''
 for count in eventcounts :
     print '{0:20s} '.format( count[0] ),    
     for val in count[1:] :
-        print '{0:8.1f} '.format( val ),
+        print '{0:8.5f} '.format( val ),
     print ''
               
 # write the histogram in a rootfile
@@ -1379,7 +1395,7 @@ if options.RunAllSyst :
 ##  For Single Top and W+jets we have : 0->qcd , 1->nom , 2->jecdown , 3->jecup , 4->jerdown , 5->jerup , 6->toptagdown , 7->toptagup , 8->btagdown , 9->btagup
 ## For TTbar and TTnonSemilep we have : 0->qcd , 1->nom , 2->jecdown , 3->jecup , 4->jerdown , 5->jerup , 6->toptagdown , 7->toptagup , 8->btagdown , 9->btagup , 10->pdfdown , 11->pdfup , 12->scaledown , 13->scaleup 
 
-	histsAll = [hRecoData            , hMeas_QCD_SingleMu ,
+	histsAll = [hRecoData            , hMeas_QCD[1] ,
 				hMeas_TTbar[1]       , hMeas_TTbar[2]     , 
 				hMeas_TTbar[3]       , hMeas_TTbar[4]     , 
 				hMeas_TTbar[5]       , hMeas_TTbar[6]     ,
@@ -1414,7 +1430,7 @@ if not options.RunAllSyst :
 ## else:
 ##  For Single Top and W+jets we have : 0->qcd , 1->chosen systematic
 ## For TTbar and TTnonSemilep we have : 0->qcd , 1->chosen systematic
-	histsAll = [hRecoData                 , hMeas_QCD_SingleMu ,
+	histsAll = [hRecoData                 , hMeas_QCD[1] ,
 				hMeas_TTbar[1]            ,
 				hMeas_TTbar_nonSemiLep[1] , 
 				hMeas_SingleTop[1]        ,
