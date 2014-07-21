@@ -10,12 +10,12 @@ class Plot :
         self.newYlabel = newYlabel
     def draw(self) :
         if self.hist2 != None : 
-            s = 'python makeBarePlots_v2.py --outname=' + self.outname + \
+            s = 'python makeBarePlots_v3.py --outname=' + self.outname + \
                 ' --hist1=' + self.hist1 + ' --hist2=' + self.hist2 + \
                 ' --NQCD=' + str(self.NQCD) + \
                 ' --rebin=' + str(self.rebin) + ' --newYlabel=' + self.newYlabel + ' --systVariation=nom'
         else : 
-            s = 'python makeBarePlots_v2.py --outname=' + self.outname + \
+            s = 'python makeBarePlots_v3.py --outname=' + self.outname + \
                 ' --hist1=' + self.hist1 + \
                 ' --NQCD=' + str(self.NQCD) + \
                 ' --rebin=' + str(self.rebin) + ' --newYlabel=' + self.newYlabel + ' --systVariation=nom'
@@ -64,8 +64,8 @@ def main() :
                 
         Plot( outname=outname, hist1='hadtop_pt3', hist2=None, NQCD=3321.1, rebin=1, newYlabel='Events\ /\ 10\ GeV'),
         Plot( outname=outname, hist1='hadtop_pt4', hist2=None, NQCD=384.1 , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
-        Plot( outname=outname, hist1='hadtop_pt6', hist2=None, NQCD=91.3  , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
-        Plot( outname=outname, hist1='hadtop_pt7', hist2=None, NQCD=2     , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='hadtop_pt6', hist2=None, NQCD=91.3  , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='hadtop_pt7', hist2=None, NQCD=2     , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
         
         #Plot( outname=outname, hist1='hadtop_y3', hist2=None, NQCD=3321.1, rebin=1, newYlabel=''),
         Plot( outname=outname, hist1='hadtop_y4', hist2=None, NQCD=384.1 , rebin=1, newYlabel='Events\ /\ 0.2'),
@@ -74,30 +74,30 @@ def main() :
         
         Plot( outname=outname, hist1='ht2', hist2=None, NQCD=143202.7, rebin=1, newYlabel='Events\ /\ 20\ GeV'),
         Plot( outname=outname, hist1='ht3', hist2=None, NQCD=3321.1  , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
-        Plot( outname=outname, hist1='ht4', hist2=None, NQCD=384.1   , rebin=1, newYlabel='Events\ /\ 50\ GeV'),
-        Plot( outname=outname, hist1='ht6', hist2=None, NQCD=91.3    , rebin=1, newYlabel='Events\ /\ 50\ GeV'),
-        Plot( outname=outname, hist1='ht7', hist2=None, NQCD=2       , rebin=1, newYlabel='Events\ /\ 50\ GeV'),
+        Plot( outname=outname, hist1='ht4', hist2=None, NQCD=384.1   , rebin=4, newYlabel='Events\ /\ 50\ GeV'),
+        Plot( outname=outname, hist1='ht6', hist2=None, NQCD=91.3    , rebin=4, newYlabel='Events\ /\ 50\ GeV'),
+        Plot( outname=outname, hist1='ht7', hist2=None, NQCD=2       , rebin=4, newYlabel='Events\ /\ 50\ GeV'),
         
         Plot( outname=outname, hist1='htLep2', hist2=None, NQCD=143202.7, rebin=1, newYlabel='Events\ /\ 50\ GeV'),
     	Plot( outname=outname, hist1='htLep3', hist2=None, NQCD=3321.1  , rebin=1, newYlabel='Events\ /\ 50\ GeV'),
-        Plot( outname=outname, hist1='htLep4', hist2=None, NQCD=384.1   , rebin=1, newYlabel='Events\ /\ 50\ GeV'),
-        Plot( outname=outname, hist1='htLep6', hist2=None, NQCD=91.3    , rebin=1, newYlabel='Events\ /\ 50\ GeV'),
-        Plot( outname=outname, hist1='htLep7', hist2=None, NQCD=2       , rebin=1, newYlabel='Events\ /\ 50\ GeV'),
+        Plot( outname=outname, hist1='htLep4', hist2=None, NQCD=384.1   , rebin=4, newYlabel='Events\ /\ 50\ GeV'),
+        Plot( outname=outname, hist1='htLep6', hist2=None, NQCD=91.3    , rebin=4, newYlabel='Events\ /\ 50\ GeV'),
+        Plot( outname=outname, hist1='htLep7', hist2=None, NQCD=2       , rebin=4, newYlabel='Events\ /\ 50\ GeV'),
         
         Plot( outname=outname, hist1='lepMET2', hist2=None, NQCD=143202.7, rebin=1, newYlabel='Events\ /\ 10\ GeV'),
         Plot( outname=outname, hist1='lepMET3', hist2=None, NQCD=3321.1  , rebin=1, newYlabel='Events\ /\ 10\ GeV'),
-        Plot( outname=outname, hist1='lepMET4', hist2=None, NQCD=384.1   , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
-        Plot( outname=outname, hist1='lepMET6', hist2=None, NQCD=91.3    , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
-        Plot( outname=outname, hist1='lepMET7', hist2=None, NQCD=2       , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='lepMET4', hist2=None, NQCD=384.1   , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='lepMET6', hist2=None, NQCD=91.3    , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='lepMET7', hist2=None, NQCD=2       , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
         
-        Plot( outname=outname, hist1='leptop_mass3', hist2=None, NQCD=3321.1, rebin=1, newYlabel='Events\ /\ 10\ GeV'),
-        Plot( outname=outname, hist1='leptop_mass4', hist2=None, NQCD=384.1 , rebin=1, newYlabel='Events\ /\ 10\ GeV'),
-        Plot( outname=outname, hist1='leptop_mass6', hist2=None, NQCD=91.3  , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
-        Plot( outname=outname, hist1='leptop_mass7', hist2=None, NQCD=2     , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='leptop_mass3', hist2=None, NQCD=3321.1, rebin=4, newYlabel='Events\ /\ 10\ GeV'),
+        Plot( outname=outname, hist1='leptop_mass4', hist2=None, NQCD=384.1 , rebin=4, newYlabel='Events\ /\ 10\ GeV'),
+        Plot( outname=outname, hist1='leptop_mass6', hist2=None, NQCD=91.3  , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='leptop_mass7', hist2=None, NQCD=2     , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
         
-        Plot( outname=outname, hist1='leptop_pt3', hist2=None, NQCD=3321.1, rebin=1, newYlabel='Events\ /\ 10\ GeV'),
-        Plot( outname=outname, hist1='leptop_pt4', hist2=None, NQCD=384.1 , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
-        Plot( outname=outname, hist1='leptop_pt6', hist2=None, NQCD=91.3  , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='leptop_pt3', hist2=None, NQCD=3321.1, rebin=4, newYlabel='Events\ /\ 10\ GeV'),
+        Plot( outname=outname, hist1='leptop_pt4', hist2=None, NQCD=384.1 , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='leptop_pt6', hist2=None, NQCD=91.3  , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
         #Plot( outname=outname, hist1='leptop_pt7', hist2=None, NQCD=2     , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
         
         #Plot( outname=outname, hist1='leptop_y3', hist2=None, NQCD=3321.1, rebin=1, newYlabel=''),
@@ -123,9 +123,9 @@ def main() :
         
         #Plot( outname=outname, hist1='pt1LepJet2', hist2=None, NQCD=143202.7, rebin=1, newYlabel=''),
         #Plot( outname=outname, hist1='pt1LepJet3', hist2=None, NQCD=3321.1  , rebin=1, newYlabel=''),
-        Plot( outname=outname, hist1='pt1LepJet4', hist2=None, NQCD=384.1   , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
-        Plot( outname=outname, hist1='pt1LepJet6', hist2=None, NQCD=91.3    , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
-        Plot( outname=outname, hist1='pt1LepJet7', hist2=None, NQCD=2       , rebin=1, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='pt1LepJet4', hist2=None, NQCD=384.1   , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='pt1LepJet6', hist2=None, NQCD=91.3    , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
+        Plot( outname=outname, hist1='pt1LepJet7', hist2=None, NQCD=2       , rebin=4, newYlabel='Events\ /\ 20\ GeV'),
         
         #Plot( outname=outname, hist1='pt2LepJet2', hist2=None, NQCD=143202.7*0.12, rebin=1, newYlabel=''),
         #Plot( outname=outname, hist1='pt2LepJet3', hist2=None, NQCD=3321.1*0.30  , rebin=1, newYlabel=''),
@@ -152,14 +152,14 @@ def main() :
 
         #Plot( outname=outname, hist1='etaAbsLep0', hist2=None, NQCD=1520239.0, rebin=1, newYlabel=''),
         #Plot( outname=outname, hist1='etaAbsLep2', hist2=None, NQCD=143202.7 , rebin=1, newYlabel=''),
-        Plot( outname=outname, hist1='etaAbsLep3', hist2=None, NQCD=3321.1   , rebin=1, newYlabel='Events'),
-        Plot( outname=outname, hist1='etaAbsLep4', hist2=None, NQCD=384.1    , rebin=1, newYlabel='Events'),
-        Plot( outname=outname, hist1='etaAbsLep6', hist2=None, NQCD=91.3     , rebin=1, newYlabel='Events'),
-        Plot( outname=outname, hist1='etaAbsLep7', hist2=None, NQCD=2        , rebin=1, newYlabel='Events'),
+        Plot( outname=outname, hist1='etaAbsLep3', hist2=None, NQCD=3321.1   , rebin=2, newYlabel='Events'),
+        Plot( outname=outname, hist1='etaAbsLep4', hist2=None, NQCD=384.1    , rebin=2, newYlabel='Events'),
+        Plot( outname=outname, hist1='etaAbsLep6', hist2=None, NQCD=91.3     , rebin=2, newYlabel='Events'),
+        Plot( outname=outname, hist1='etaAbsLep7', hist2=None, NQCD=2        , rebin=2, newYlabel='Events'),
 
 
-        Plot( outname=outname, hist1='etaAbsLep4', hist2='etaAbsLep6', NQCD=384.1-91.3   , rebin=1, newYlabel='Events'),
-        Plot( outname=outname, hist1='etaAbsLep6', hist2='etaAbsLep7', NQCD=91.3-2.0     , rebin=1, newYlabel='Events'),
+        Plot( outname=outname, hist1='etaAbsLep4', hist2='etaAbsLep6', NQCD=384.1-91.3   , rebin=2, newYlabel='Events'),
+        Plot( outname=outname, hist1='etaAbsLep6', hist2='etaAbsLep7', NQCD=91.3-2.0     , rebin=2, newYlabel='Events'),
 
         
         #Plot( outname=outname, hist1='vtxMass1LepJet2', hist2=None, NQCD=143202.7, rebin=1, newYlabel=''),
