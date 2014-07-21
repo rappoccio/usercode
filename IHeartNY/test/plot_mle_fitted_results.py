@@ -75,7 +75,11 @@ f_datas = []
 h_datas = []
 ivar = 0
 
+maxes = [70, 70, 1000]
+
+i=0
 for variable in variables :
+    imax = maxes[i]
     f_data = TFile( options.pattern + variable + '.root' )
     h_data = f_data.Get( variable + '__DATA' )
     c = TCanvas(variable, variable)
@@ -88,8 +92,10 @@ for variable in variables :
     h_data.Draw('e')
     hs.Draw('hist same')
     h_data.Draw('e same')
+    h_data.SetMaximum(imax)
     f_datas.append(f_data)
     h_datas.append(h_data)
     stacks.append(hs)
     c.Print(variable + '.png')
     c.Print(variable + '.pdf')
+    i+= 1
