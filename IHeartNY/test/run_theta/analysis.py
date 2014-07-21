@@ -165,9 +165,9 @@ def build_model(type, jet1 = None, mcstat = True, ex_to_in = None, infilter = No
 
         model = muplusjets(
             files=[#'normalized_mujets_ptMET3_subtracted_from_ptMET1.root',
-                   'normalized_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
-                   'normalized_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
-                   'normalized_mujets_vtxMass7.root'],
+                   'normalized_mujets_nom_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'normalized_mujets_nom_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+                   'normalized_mujets_nom_vtxMass7.root'],
             infilter=infilter,
             signal='TTbar',
             mcstat=mcstat,
@@ -206,8 +206,8 @@ usePL = False
 # These are the bits that need for externalizing pdf and q2 uncertainties.
 # Thus, we run nominal, pdfup, pdfdown, q2up, q2 down separately. 
 filters = [histfilter, pdf_up_histfilter, pdf_down_histfilter, scale_up_histfilter, scale_down_histfilter]
-ex_to_in_variations = [None, pdf_unc_up_modifier, pdf_unc_down_modifier, scale_unc_up_modifier, scale_unc_down_modifier ]
-ex_to_in_names = ['Nominal', 'pdfup', 'pdfdown', 'scaleup', 'scaledown']
+ex_to_in_variations = [None] #, pdf_unc_up_modifier, pdf_unc_down_modifier, scale_unc_up_modifier, scale_unc_down_modifier ]
+ex_to_in_names = ['Nominal'] #, 'pdfup', 'pdfdown', 'scaleup', 'scaledown']
 
 ivar = -1
 for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
