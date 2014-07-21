@@ -1,24 +1,29 @@
 import subprocess
 
 class Plot :
-    def __init__( self, outname, hist1, hist2, NQCD, rebin, newYlabel ) :
+    def __init__( self, outname, hist1, hist2, NQCD, rebin, newYlabel, runAllSyst=False ) :
         self.outname = outname
         self.hist1 = hist1
         self.hist2 = hist2
         self.NQCD = NQCD
         self.rebin = rebin
         self.newYlabel = newYlabel
+        self.runAllSyst = runAllSyst
+        if self.runAllSyst == False :
+            self.sysStr = ' --systVariation=nom'
+        else :
+            self.sysStr = ' --RunAllSyst'
     def draw(self) :
         if self.hist2 != None : 
             s = 'python makeBarePlots_v3.py --outname=' + self.outname + \
                 ' --hist1=' + self.hist1 + ' --hist2=' + self.hist2 + \
                 ' --NQCD=' + str(self.NQCD) + \
-                ' --rebin=' + str(self.rebin) + ' --newYlabel=' + self.newYlabel + ' --systVariation=nom'
+                ' --rebin=' + str(self.rebin) + ' --newYlabel=' + self.newYlabel + self.sysStr
         else : 
             s = 'python makeBarePlots_v3.py --outname=' + self.outname + \
                 ' --hist1=' + self.hist1 + \
                 ' --NQCD=' + str(self.NQCD) + \
-                ' --rebin=' + str(self.rebin) + ' --newYlabel=' + self.newYlabel + ' --systVariation=nom'
+                ' --rebin=' + str(self.rebin) + ' --newYlabel=' + self.newYlabel + self.sysStr
         print 'executing ' + s
         subprocess.call( [s], shell=True )
 
@@ -148,7 +153,7 @@ def main() :
         #Plot( outname=outname, hist1='vtxMass3', hist2=None, NQCD=3321.1  , rebin=1, newYlabel=''),
         #Plot( outname=outname, hist1='vtxMass4', hist2=None, NQCD=384.1   , rebin=1, newYlabel=''),
         #Plot( outname=outname, hist1='vtxMass6', hist2=None, NQCD=91.3    , rebin=1, newYlabel=''),
-        Plot( outname=outname, hist1='vtxMass7', hist2=None, NQCD=2       , rebin=2, newYlabel='Events\ /\ 0.2\ GeV'),
+        Plot( outname=outname, hist1='vtxMass7', hist2=None, NQCD=2       , rebin=2, newYlabel='Events\ /\ 0.2\ GeV', runAllSyst=True),
 
         #Plot( outname=outname, hist1='etaAbsLep0', hist2=None, NQCD=1520239.0, rebin=1, newYlabel=''),
         #Plot( outname=outname, hist1='etaAbsLep2', hist2=None, NQCD=143202.7 , rebin=1, newYlabel=''),
@@ -158,8 +163,8 @@ def main() :
         Plot( outname=outname, hist1='etaAbsLep7', hist2=None, NQCD=2        , rebin=2, newYlabel='Events'),
 
 
-        Plot( outname=outname, hist1='etaAbsLep4', hist2='etaAbsLep6', NQCD=384.1-91.3   , rebin=2, newYlabel='Events'),
-        Plot( outname=outname, hist1='etaAbsLep6', hist2='etaAbsLep7', NQCD=91.3-2.0     , rebin=2, newYlabel='Events'),
+        Plot( outname=outname, hist1='etaAbsLep4', hist2='etaAbsLep6', NQCD=384.1-91.3   , rebin=2, newYlabel='Events', runAllSyst=True),
+        Plot( outname=outname, hist1='etaAbsLep6', hist2='etaAbsLep7', NQCD=91.3-2.0     , rebin=2, newYlabel='Events', runAllSyst=True),
 
         
         #Plot( outname=outname, hist1='vtxMass1LepJet2', hist2=None, NQCD=143202.7, rebin=1, newYlabel=''),
