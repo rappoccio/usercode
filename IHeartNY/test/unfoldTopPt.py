@@ -1,11 +1,16 @@
 #!/usr/bin/env python
-# ==============================================================================
+
+# -------------------------------------------------------------------------------------
 # Script for doing RooUnfold on the ttbar differential cross secion
-# ==============================================================================
+# -------------------------------------------------------------------------------------
 
 from optparse import OptionParser
 parser = OptionParser()
-  
+
+
+# -------------------------------------------------------------------------------------
+# input options
+# -------------------------------------------------------------------------------------
 
 parser.add_option('--closureTest', metavar='F', action='store_true',
                   default=False,
@@ -22,6 +27,15 @@ parser.add_option('--subtractBackgrounds', metavar='F', action='store_true',
                   dest='subtractBackgrounds',
                   help='Subtract off the backgrounds')
 
+parser.add_option('--systVariation', metavar='F', type='string', action='store',
+                  default='nom',
+                  dest='syst',
+                  help='Run nominal or systematic variation?')
+
+
+# -------------------------------------------------------------------------------------
+# load options & set plot style
+# -------------------------------------------------------------------------------------
 
 (options, args) = parser.parse_args()
 argv = []
@@ -59,14 +73,21 @@ from ROOT import RooUnfoldSvd
 # from ROOT import RooUnfoldTUnfold
 
 
-# Constants
+# -------------------------------------------------------------------------------------
+# cross sections, efficiencies, total number of events
+# -------------------------------------------------------------------------------------
 
 # Performance numbers
-lum = 19.7 # fb-1
-#SF_t = 0.94
-SF_t = 1.0
+lum = 19.7 #fb-1
 
 # Cross sections (in fb) and the number of MC events
+#sigma_ttbar_NNLO = [    # fb, from http://arxiv.org/pdf/1303.6254.pdf
+#    245.8 * 1000., # nom
+#    237.4 * 1000., # scaledown
+#    252.0 * 1000., # scaleup
+#    239.4 * 1000., # pdfdown
+#    252.0 * 1000., # pdfup
+#    ]
 sigma_ttbar_NNLO = 245.8 * 1000.    # fb, from http://arxiv.org/pdf/1303.6254.pdf
 sigma_T_t_NNLO = 56.4 * 1000.       # 
 sigma_Tbar_t_NNLO = 30.7 * 1000.    # All single-top approx NNLO cross sections from
@@ -79,8 +100,6 @@ sigma_WJets_NNLO = 36703.2 * 1000.  # from https://twiki.cern.ch/twiki/bin/viewa
 # MC event counts from B2G twiki here :
 # https://twiki.cern.ch/twiki/bin/view/CMS/B2GTopLikeBSM53X#Backgrounds
 Nmc_ttbar = 21675970
-Nmc_TT_Mtt_700_1000 = 3082812
-Nmc_TT_Mtt_1000_Inf = 1249111
 Nmc_T_t = 3758227
 Nmc_Tbar_t = 1935072
 Nmc_T_s = 259961
@@ -88,26 +107,46 @@ Nmc_Tbar_s = 139974
 Nmc_T_tW = 497658
 Nmc_Tbar_tW = 493460
 Nmc_WJets = 57709905
+Nmc_TT_Mtt_700_1000 = 3082812
+Nmc_TT_Mtt_1000_Inf = 1249111
 
-# ttbar filter efficiencies
+Nmc_ttbar_scaledown = 14998606
+Nmc_ttbar_scaleup   = 14998720
+Nmc_TT_Mtt_700_1000_scaledown = 2170074
+Nmc_TT_Mtt_700_1000_scaleup = 2243672
+Nmc_TT_Mtt_1000_Inf_scaledown = 1308090
+Nmc_TT_Mtt_1000_Inf_scaleup = 1241650
+
+
+# NEW ttbar filter efficiencies
+# These were determined "by eye" to make the generated mttbar spectrum smooth in the "makeMttGenPlots.py" script
+#                    nom      scaledown scaleup
+#e_TT_Mtt_700_1000 = [0.074,   0.081,    0.074]
+#e_TT_Mtt_1000_Inf = [0.015,   0.016,    0.014]
+#e_TT_Mtt_0_700 =    [1.0  ,   1.0,      1.0  ] #   No efficiency here, we applied the cut at gen level
 e_TT_Mtt_700_1000 = 0.074
-e_TT_Mtt_1000_Inf = 0.014
-e_TT_Mtt_0_700 = 1.0   #   No efficiency here, we applied the cut at gen level
+e_TT_Mtt_1000_Inf = 0.015
+e_TT_Mtt_0_700 =    1.0    # No efficiency here, we applied the cut at gen level
+
 
 # QCD Normalization from MET fits
-NQCD = 32.8 
+NQCD = 0.0
 
 
-# ==============================================================================
-#  Example Unfolding
-# ==============================================================================
+# -------------------------------------------------------------------------------------
+#  read histogram files
+# -------------------------------------------------------------------------------------
 
 f_data = TFile("histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root")
 f_QCD  = TFile("histfiles/SingleMu_iheartNY_V1_mu_Run2012_qcd.root")
 
-f_ttbar_max700    = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
-f_ttbar_700to1000 = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
-f_ttbar_1000toInf = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
+fnom_ttbar_max700    = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
+fnom_ttbar_700to1000 = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
+fnom_ttbar_1000toInf = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
+
+f_ttbar_max700    = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_700to1000 = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_1000toInf = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
 
 f_T_t     = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
 f_Tbar_t  = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
@@ -122,12 +161,25 @@ response_ttbar_max700    = f_ttbar_max700.Get("response_pt")
 response_ttbar_700to1000 = f_ttbar_700to1000.Get("response_pt")
 response_ttbar_1000toInf = f_ttbar_1000toInf.Get("response_pt")
 response = response_ttbar_max700.Clone()
+response.SetName("response_pt_"+options.syst)
 response.Add(response_ttbar_700to1000)
 response.Add(response_ttbar_1000toInf)
 
-gStyle.SetPadRightMargin(0.12);
 
+# -------------------------------------------------------------------------------------
+# output file for storing histograms to  
+# -------------------------------------------------------------------------------------
+
+fout = TFile("UnfoldingPlots/unfold_"+options.syst+".root","recreate");
+
+
+# -------------------------------------------------------------------------------------
+# plot response matrices 
+# -------------------------------------------------------------------------------------
+
+gStyle.SetPadRightMargin(0.12);
 cr = TCanvas("c_response", "", 800, 600)
+
 hEmpty2D = response.Hresponse().Clone()
 hEmpty2D.SetName("empty2D")
 hEmpty2D.Reset()
@@ -137,26 +189,32 @@ hEmpty2D.GetXaxis().SetLabelSize(0.045)
 hEmpty2D.Draw()
 response.Hresponse().Draw("colz,same")
 hEmpty2D.Draw("axis,same")
-cr.SaveAs("unfold_responseMatrix.png")
-cr.SaveAs("unfold_responseMatrix.eps")
+cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".png")
+cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".eps")
+
+response.Hresponse().SetName("responseMatrix_"+options.syst)
+response.Hresponse().Write()
 
 gPad.SetLogz()
-cr.SaveAs("unfold_responseMatrix_logz.png")
-cr.SaveAs("unfold_responseMatrix_logz.eps")
+cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_logz_"+options.syst+".png")
+cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_logz_"+options.syst+".eps")
 
 gStyle.SetPadRightMargin(0.05);
 
 
-print "==================================== Get Hists ====================================="
+# -------------------------------------------------------------------------------------
+# read actual histograms
+# -------------------------------------------------------------------------------------
+
 hTrue_max700    = f_ttbar_max700.Get("ptGenTop")
 hTrue_700to1000 = f_ttbar_700to1000.Get("ptGenTop")
 hTrue_1000toInf = f_ttbar_1000toInf.Get("ptGenTop")
 
 hRecoMC_max700    = f_ttbar_max700.Get("ptRecoTop").Clone()
-hRecoMC_700to1000 = f_ttbar_700to1000.Get("ptRecoTop").Clone()
-hRecoMC_1000toInf = f_ttbar_1000toInf.Get("ptRecoTop").Clone()
 hRecoMC_max700.SetName("hRecoMC_max700")
+hRecoMC_700to1000 = f_ttbar_700to1000.Get("ptRecoTop").Clone()
 hRecoMC_700to1000.SetName("hRecoMC_700to1000")
+hRecoMC_1000toInf = f_ttbar_1000toInf.Get("ptRecoTop").Clone()
 hRecoMC_1000toInf.SetName("hRecoMC_1000toInf")
 
 hRecoData = f_data.Get("ptRecoTop").Clone()
@@ -171,12 +229,11 @@ hRecoQCD.SetFillColor(TColor.kYellow)
 if options.closureTest == False : 
     hMeas = f_data.Get("ptRecoTop")
 else :
-    hMeas_max700    = f_ttbar_max700.Get("ptRecoTop")
-    hMeas_700to1000 = f_ttbar_700to1000.Get("ptRecoTop")
-    hMeas_1000toInf = f_ttbar_1000toInf.Get("ptRecoTop")
+    hMeas_max700    = fnom_ttbar_max700.Get("ptRecoTop")
+    hMeas_700to1000 = fnom_ttbar_700to1000.Get("ptRecoTop")
+    hMeas_1000toInf = fnom_ttbar_1000toInf.Get("ptRecoTop")
     
 
-# Get the histogram files
 hMeas_T_t     = f_T_t.Get("ptRecoTop")
 hMeas_Tbar_t  = f_Tbar_t.Get("ptRecoTop")
 hMeas_T_s     = f_T_s.Get("ptRecoTop")
@@ -185,56 +242,65 @@ hMeas_T_tW    = f_T_tW.Get("ptRecoTop")
 hMeas_Tbar_tW = f_Tbar_tW.Get("ptRecoTop")
 hMeas_WJets   = f_WJets.Get("ptRecoTop")
 
+
+# -------------------------------------------------------------------------------------
 # Scale to desired normalization
 # Options are :
 #  1. From MC
 #  2. From fit
-#
 # For now, we don't have the fit, so we do from MC
+# -------------------------------------------------------------------------------------
 
-
+# if doing closure test, use ttbar nominal as the "measured" distribution
 if options.closureTest == True : 
-    hMeas_max700.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * SF_t  )
-    hMeas_700to1000.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) * SF_t  )
-    hMeas_1000toInf.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t  )
+    hMeas_max700.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) )
+    hMeas_700to1000.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) )
+    hMeas_1000toInf.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) )
     hMeas = hMeas_max700.Clone()
+    hMeas.SetName("ptRecoTop_measured")
     hMeas.Add(hMeas_700to1000)
     hMeas.Add(hMeas_1000toInf)
     
-hTrue_max700.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * SF_t  )
-hTrue_700to1000.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) * SF_t  )
-hTrue_1000toInf.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t  )
+hTrue_max700.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) )
+hTrue_700to1000.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) )
+hTrue_1000toInf.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) )
 hTrue = hTrue_max700.Clone()
+hTrue.SetName("pt_genTop")
 hTrue.Add(hTrue_700to1000)
 hTrue.Add(hTrue_1000toInf)
 
-hRecoMC_max700.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * SF_t  )
-hRecoMC_700to1000.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) * SF_t  )
-hRecoMC_1000toInf.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) * SF_t  )
+hRecoMC_max700.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) )
+hRecoMC_700to1000.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) )
+hRecoMC_1000toInf.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) )
 hRecoMC = hRecoMC_max700.Clone()
+hRecoMC.SetName("ptRecoTop_ttbar")
 hRecoMC.Add(hRecoMC_700to1000)
 hRecoMC.Add(hRecoMC_1000toInf)
 
-hMeas_T_t.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * SF_t  )
-hMeas_Tbar_t.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) * SF_t  )
-hMeas_T_s.Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) * SF_t  )
-hMeas_Tbar_s.Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) * SF_t  )
-hMeas_T_tW.Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) * SF_t  )
-hMeas_Tbar_tW.Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) * SF_t  )
-hMeas_WJets.Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * SF_t  )
+hMeas_T_t.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) )
+hMeas_Tbar_t.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) )
+hMeas_T_s.Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) )
+hMeas_Tbar_s.Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) )
+hMeas_T_tW.Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) )
+hMeas_Tbar_tW.Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) )
+hMeas_WJets.Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) )
 
 hMeas_SingleTop = hMeas_T_t.Clone()
+hMeas_SingleTop.SetName("ptRecoTop_SingleTop")
+
+for hist in [hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
+    hMeas_SingleTop.Add( hist )
 
 hMeas_SingleTop.SetFillColor(TColor.kMagenta)
 hMeas_WJets.SetFillColor(TColor.kGreen-3)
 hMeas.SetFillColor(TColor.kRed+1)
 hRecoMC.SetFillColor(TColor.kRed+1)
 
-for hist in [hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
-    hMeas_SingleTop.Add( hist )
 
-
+# -------------------------------------------------------------------------------------
 # Make a stack plot of the MC to compare to data
+# -------------------------------------------------------------------------------------
+
 hEmpty = hMeas_WJets.Clone()
 hEmpty.SetName("empty")
 hEmpty.Reset()
@@ -256,8 +322,7 @@ l.SetTextFont(42)
 l.SetTextSize(0.045)
 l.SetBorderSize(0)
 
-#if options.closureTest == False:
-if False :  #for now make sure to not draw data / MC distribution
+if options.closureTest == False:
     hRecoData.Draw("e")
     hMC_stack.Draw("hist,same")
     hRecoData.Draw("e,same")
@@ -277,20 +342,22 @@ else:
     l.AddEntry(hMeas_WJets, "W #rightarrow #mu#nu","f")
 
 l.Draw()
-c.SaveAs("unfold_datamc.png")
-c.SaveAs("unfold_datamc.eps")
+c.SaveAs("UnfoldingPlots/unfold_datamc_"+options.syst+".png")
+c.SaveAs("UnfoldingPlots/unfold_datamc_"+options.syst+".eps")
 
 
-# First plot RECO data-to-MC
+# -------------------------------------------------------------------------------------
+# Now do the actual unfolding
+# -------------------------------------------------------------------------------------
+
 c2 = TCanvas("unfolding", "unfolding")
 
 if options.subtractBackgrounds :
     for hist in [hMeas_SingleTop, hMeas_WJets, hRecoQCD] :
         hMeas.Add(hist, -1.)
-    # Someday soon, we subtract QCD and W+Jets. For now, they are empty.
     
 
-print "==================================== UNFOLD ==================================="
+print "------------ UNFOLDING (" + options.syst + ") ------------"
 unfold= RooUnfoldBayes     (response, hMeas, 10);    #  OR
 #unfold= RooUnfoldSvd     (response, hMeas, 20);   #  OR
 #unfold= RooUnfoldTUnfold (response, hMeas);
@@ -299,13 +366,11 @@ unfold= RooUnfoldBayes     (response, hMeas, 10);    #  OR
 c1 = TCanvas("c", "c", 700, 700)
 pad1 =  TPad("pad1","pad1",0,0.3,1,1)
 pad1.SetBottomMargin(0.05);
-#pad1.SetLeftMargin(0.2)
 pad1.Draw();
 pad1.cd();
 
    
 hReco = unfold.Hreco();
-
 
 hFrac = hReco.Clone()
 hFrac.SetName("hFrac")
@@ -362,6 +427,17 @@ else :
 
 leg.Draw()
 
+# write histograms to file
+if options.closureTest:
+    hReco.SetName("UnfoldedMC")
+else:
+    hReco.SetName("UnfoldedData")
+
+hReco.Write()
+hTrue.Write()
+hMeas.Write()
+
+
 text1 = TLatex()
 text1.SetNDC()
 text1.SetTextFont(42)
@@ -400,6 +476,9 @@ if options.closureTest :
 if options.plotFullRange :
     append += "_fullrange"
 
-c1.Print("unfolded_ttbar_xs" + append + ".pdf", "pdf")
-c1.Print("unfolded_ttbar_xs" + append + ".png", "png")
-c1.Print("unfolded_ttbar_xs" + append + ".eps", "eps")
+c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+append+"_"+options.syst+".pdf", "pdf")
+c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+append+"_"+options.syst+".png", "png")
+c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+append+"_"+options.syst+".eps", "eps")
+
+
+fout.Close()
