@@ -11,7 +11,7 @@ from ROOT import *
 ####################################################################################
 
 def histfilter( hname ) :
-    if hname == None or 'qcd' in hname or 'pdf' in hname or 'scale' in hname :
+    if hname == None or 'pdf' in hname or 'scale' in hname :
         return False
     else :
         return True
@@ -24,7 +24,7 @@ def pdf_up_histfilter( hname ) :
     isPDFDown = 'pdf__down' in hname
     isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
     isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isQCD or isScaleUp or isScaleDown or isPDFDown or isTTbarNonSemiLepNominal or isTTbarNominal :
+    if hname == None or isScaleUp or isScaleDown or isPDFDown or isTTbarNonSemiLepNominal or isTTbarNominal :
         return False
     else :
         return True
@@ -37,7 +37,7 @@ def pdf_down_histfilter( hname ) :
     isPDFDown = 'pdf__down' in hname
     isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
     isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isQCD or isScaleUp or isScaleDown or isPDFUp or isTTbarNonSemiLepNominal or isTTbarNominal :
+    if hname == None or isScaleUp or isScaleDown or isPDFUp or isTTbarNonSemiLepNominal or isTTbarNominal :
         return False
     else :
         return True
@@ -52,7 +52,7 @@ def scale_up_histfilter( hname ) :
     isPDFDown = 'pdf__down' in hname
     isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
     isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isQCD  or isScaleDown or isPDFUp or isPDFDown or isTTbarNonSemiLepNominal or isTTbarNominal :
+    if hname == None or isScaleDown or isPDFUp or isPDFDown or isTTbarNonSemiLepNominal or isTTbarNominal :
         return False
     else :
         return True
@@ -65,7 +65,7 @@ def scale_down_histfilter( hname ) :
     isPDFDown = 'pdf__down' in hname
     isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
     isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isQCD or isScaleUp or isPDFUp or isPDFDown or isTTbarNonSemiLepNominal or isTTbarNominal :
+    if hname == None or isScaleUp or isPDFUp or isPDFDown or isTTbarNonSemiLepNominal or isTTbarNominal :
         return False
     else :
         return True
@@ -119,7 +119,7 @@ def muplusjets(files, infilter, signal, mcstat, ex_to_in):
     model.add_lognormal_uncertainty('rate_st', math.log(1.5), 'SingleTop')
     model.add_lognormal_uncertainty('rate_vjets', math.log(1.5), 'WJets')
     model.add_lognormal_uncertainty('rate_nonsemi', math.log(1.5), 'TTbar_nonSemiLep')
-    #model.add_lognormal_uncertainty('rate_qcd', math.log(1.5), 'QCD')
+    model.add_lognormal_uncertainty('rate_qcd', math.log(1.5), 'QCD')
 
     #    model.add_asymmetric_lognormal_uncertainty('scale_vjets', -math.log(1.577), math.log(0.710), 'WJets', obs)
     #    model.add_asymmetric_lognormal_uncertainty('matching_vjets', -math.log(1.104), math.log(1.052), 'WJets', obs)
@@ -206,8 +206,8 @@ usePL = False
 # These are the bits that need for externalizing pdf and q2 uncertainties.
 # Thus, we run nominal, pdfup, pdfdown, q2up, q2 down separately. 
 filters = [histfilter, pdf_up_histfilter, pdf_down_histfilter, scale_up_histfilter, scale_down_histfilter]
-ex_to_in_variations = [None] #, pdf_unc_up_modifier, pdf_unc_down_modifier, scale_unc_up_modifier, scale_unc_down_modifier ]
-ex_to_in_names = ['Nominal'] #, 'pdfup', 'pdfdown', 'scaleup', 'scaledown']
+ex_to_in_variations = [None]#, pdf_unc_up_modifier, pdf_unc_down_modifier, scale_unc_up_modifier, scale_unc_down_modifier ]
+ex_to_in_names = ['Nominal']#, 'pdfup', 'pdfdown', 'scaleup', 'scaledown']
 
 ivar = -1
 for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
@@ -233,9 +233,9 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
     if useMLE == True :        
 
         print '------------- MLE RESULTS ' + ex_to_in_name + ' ---------------'
-        if ivar > 0 :
-            print 'For MLE, skipping ' + ex_to_in_name
-            continue
+        #if ivar > 0 :
+        #    print 'For MLE, skipping ' + ex_to_in_name
+        #    continue
 
         results1 = mle(model, input='toys:1.', n=10000)
 
