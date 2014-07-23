@@ -1,0 +1,37 @@
+--------------------------------------------------------------
+This is to describe what scripts do what, and how to use them!  
+--------------------------------------------------------------
+
+--------------------
+shyftPFSubstructureTupleDumpTopXS_cfg.py
+--------------------
+
+This script is the master ntuple maker script, to make shyft ntuples. Use as 'cmsRun ...' for testing purposes, or with on the grid (using scripts in the folder crab_cfgs/)
+
+--------------------
+iheartny_topxs_fwlite.py
+--------------------
+
+Python script for producing the main histogram files. Easiest to use with the running scripts in folder utils/ (e.g. python run_all_iheartny.py) 
+
+--------------------
+unfoldTopPt.py
+--------------------
+
+Script for running the unfolding. Typical usage is: 
+     python unfoldTopPt.py --closureTest --subtractBackgrounds --systVariation='nom'
+
+The script can be run for nominal (nom) or for a systematic variation (btagup, btagdn, jecup, jecdn, jerup, jerdn, ...)
+
+--------------------
+plotUnfold.C
+--------------------
+
+This is a little C script for making a pretty plot, combining the outputs from unfoldTopPt.py. The unfoldTopPt.py produces a root file containing a few histograms: 2D response matrix, 1D histograms for the generator-level top pt distribution, the measured top pt, and the unfolded top pt. plotUnfold.C uses these to produce a plot which combines these to give an error band for the unfolded systematics. 
+
+Usage is: 
+     root -b -q plotUnfold.C
+
+--------------------
+??
+--------------------
