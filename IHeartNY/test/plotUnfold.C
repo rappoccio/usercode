@@ -207,14 +207,20 @@ void plotUnfold() {
   //gr->Draw("ep,same");
   h_dummy->Draw("hist,axis,same"); 
     
+  TH1F* h_exp = new TH1F("exp","",1,0,1);
+  h_exp->SetMarkerSize(0);
+  h_exp->SetFillColor(18);
+  h_exp->SetLineColor(18);
+  h_exp->SetFillStyle(1001);
 
   // ----------------------------------------------------------------------------------------------------------------
-  TLegend* leg = new TLegend(0.5,0.7,0.9,0.9);  
+  TLegend* leg = new TLegend(0.45,0.6,0.9,0.9);  
   leg->AddEntry(h_true,"Generated","l");
   leg->AddEntry(h_unfolded[0],"Unfolded MC: Closure test","pel");
+  leg->AddEntry(h_exp,"Experimental uncertainties","f");
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);
-  leg->SetTextSize(0.045);
+  leg->SetTextSize(0.05);
   leg->SetTextFont(42);
   leg->Draw();
 
@@ -334,7 +340,7 @@ void plotUnfold() {
   //grr->Draw("p,same");
   //bla2->Draw("same,e2");
   blaEXP->Draw("same,e2");
-  blaTH->Draw("same,e2");
+  //blaTH->Draw("same,e2");
   line->Draw("same");
   h_ratio->Draw("pe,same,hist");
   //grr->Draw("p,same");
@@ -344,6 +350,7 @@ void plotUnfold() {
     
   
   c->SaveAs("unfoldWithError.png");
+  c->SaveAs("unfoldWithError.eps");
 
   
 }

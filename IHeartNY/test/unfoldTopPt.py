@@ -132,6 +132,12 @@ e_TT_Mtt_0_700 =    1.0    # No efficiency here, we applied the cut at gen level
 # QCD Normalization from MET fits
 NQCD = 0.0
 
+# Scaling of the various backgrounds from the theta fit
+theta_nonsemilep = 0.98
+theta_wjets = 0.64
+theta_singletop = 0.63
+theta_QCD = 0.4
+ 
 
 # -------------------------------------------------------------------------------------
 #  read histogram files
@@ -147,6 +153,10 @@ fnom_ttbar_1000toInf = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-po
 f_ttbar_max700    = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
 f_ttbar_700to1000 = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
 f_ttbar_1000toInf = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+
+f_ttbar_nonsemilep_max700    = TFile("histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_nonsemilep_700to1000 = TFile("histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_nonsemilep_1000toInf = TFile("histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
 
 f_T_t     = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
 f_Tbar_t  = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
@@ -241,6 +251,9 @@ hMeas_Tbar_s  = f_Tbar_s.Get("ptRecoTop")
 hMeas_T_tW    = f_T_tW.Get("ptRecoTop")
 hMeas_Tbar_tW = f_Tbar_tW.Get("ptRecoTop")
 hMeas_WJets   = f_WJets.Get("ptRecoTop")
+hMeas_tt0_nonsemi = f_ttbar_nonsemilep_max700.Get("ptRecoTop")
+hMeas_tt700_nonsemi = f_ttbar_nonsemilep_700to1000.Get("ptRecoTop")
+hMeas_tt1000_nonsemi = f_ttbar_nonsemilep_1000toInf.Get("ptRecoTop")
 
 
 # -------------------------------------------------------------------------------------
@@ -253,7 +266,7 @@ hMeas_WJets   = f_WJets.Get("ptRecoTop")
 
 # if doing closure test, use ttbar nominal as the "measured" distribution
 if options.closureTest == True : 
-    hMeas_max700.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) )
+    hMeas_max700.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar))
     hMeas_700to1000.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) )
     hMeas_1000toInf.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) )
     hMeas = hMeas_max700.Clone()
@@ -277,13 +290,13 @@ hRecoMC.SetName("ptRecoTop_ttbar")
 hRecoMC.Add(hRecoMC_700to1000)
 hRecoMC.Add(hRecoMC_1000toInf)
 
-hMeas_T_t.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) )
-hMeas_Tbar_t.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) )
-hMeas_T_s.Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) )
-hMeas_Tbar_s.Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) )
-hMeas_T_tW.Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) )
-hMeas_Tbar_tW.Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) )
-hMeas_WJets.Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) )
+hMeas_T_t.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * theta_singletop)
+hMeas_Tbar_t.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) * theta_singletop)
+hMeas_T_s.Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) * theta_singletop)
+hMeas_Tbar_s.Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) * theta_singletop)
+hMeas_T_tW.Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) * theta_singletop)
+hMeas_Tbar_tW.Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) * theta_singletop)
+hMeas_WJets.Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * theta_wjets)
 
 hMeas_SingleTop = hMeas_T_t.Clone()
 hMeas_SingleTop.SetName("ptRecoTop_SingleTop")
@@ -291,10 +304,20 @@ hMeas_SingleTop.SetName("ptRecoTop_SingleTop")
 for hist in [hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
     hMeas_SingleTop.Add( hist )
 
+hMeas_tt0_nonsemi.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * theta_nonsemilep)
+hMeas_tt700_nonsemi.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) * theta_nonsemilep)
+hMeas_tt1000_nonsemi.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) * theta_nonsemilep)
+
+hMeas_TTNonSemi = hMeas_tt0_nonsemi.Clone()
+hMeas_TTNonSemi.SetName("ptRecoTop_TTNonSemilep")
+hMeas_TTNonSemi.Add( hMeas_tt700_nonsemi )
+hMeas_TTNonSemi.Add( hMeas_tt1000_nonsemi )
+
 hMeas_SingleTop.SetFillColor(TColor.kMagenta)
 hMeas_WJets.SetFillColor(TColor.kGreen-3)
 hMeas.SetFillColor(TColor.kRed+1)
 hRecoMC.SetFillColor(TColor.kRed+1)
+hMeas_TTNonSemi.SetFillColor(TColor.kRed-7)
 
 
 # -------------------------------------------------------------------------------------
@@ -309,6 +332,7 @@ hEmpty.GetYaxis().SetTitle("Events / 100 GeV")
 hMC_stack = THStack("hMC_stack", "")
 hMC_stack.Add( hMeas_WJets )
 hMC_stack.Add( hMeas_SingleTop )
+hMC_stack.Add( hMeas_TTNonSemi )
 hMC_stack.Add( hRecoQCD )
 hMC_stack.Add( hRecoMC )
 max = hMC_stack.GetMaximum()
@@ -330,6 +354,7 @@ if options.closureTest == False:
     l.AddEntry(hRecoData, "Data","pel")
     l.AddEntry(hRecoMC, "t#bar{t} ","f")
     l.AddEntry(hRecoQCD, "QCD","f")
+    l.AddEntry(hMeas_TTNonSemi, "Non-semilep t#bar{t}","f")
     l.AddEntry(hMeas_SingleTop, "Single Top","f")
     l.AddEntry(hMeas_WJets, "W #rightarrow #mu#nu","f")
 else:
@@ -338,6 +363,7 @@ else:
     hEmpty.Draw("axis,same")
     l.AddEntry(hRecoMC, "t#bar{t} ","f")
     l.AddEntry(hRecoQCD, "QCD","f")
+    l.AddEntry(hMeas_TTNonSemi, "Non-semilep t#bar{t}","f")
     l.AddEntry(hMeas_SingleTop, "Single Top","f")
     l.AddEntry(hMeas_WJets, "W #rightarrow #mu#nu","f")
 
@@ -353,7 +379,7 @@ c.SaveAs("UnfoldingPlots/unfold_datamc_"+options.syst+".eps")
 c2 = TCanvas("unfolding", "unfolding")
 
 if options.subtractBackgrounds :
-    for hist in [hMeas_SingleTop, hMeas_WJets, hRecoQCD] :
+    for hist in [hMeas_SingleTop, hMeas_WJets, hRecoQCD, hMeas_TTNonSemi] :
         hMeas.Add(hist, -1.)
     
 
