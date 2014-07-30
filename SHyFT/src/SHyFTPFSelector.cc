@@ -265,11 +265,11 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 	  double chIso = imuPtr->userIsolation(pat::PfChargedHadronIso);
 	  double nhIso = imuPtr->userIsolation(pat::PfNeutralHadronIso);
 	  double gIso  = imuPtr->userIsolation(pat::PfGammaIso);
-	  double chIsoPU = imuPtr->userIsolation(pat::PfPUChargedHadronIso);
+	  //double chIsoPU = imuPtr->userIsolation(pat::PfPUChargedHadronIso);
 	  double pt    = imuPtr->pt() ;
-	  //double pfIso = (chIso + nhIso + gIso) / pt;  //this is PU-unsafe isolation quantity
-	  double pfIsoPU = (chIso + max(0.0, (nhIso + gIso - 0.5*chIsoPU)) ) / pt; 
-	  if ( pfIsoPU >= tightMuMinIso_ && reco::deltaR<reco::Candidate,reco::Candidate>( *ijet, *imu ) < looseLepRemovalDR_ ) {
+	  double pfIso = (chIso + nhIso + gIso) / pt;  //this is PU-unsafe isolation quantity
+	  //double pfIsoPU = (chIso + max(0.0, (nhIso + gIso - 0.5*chIsoPU)) ) / pt; 
+	  if ( pfIso >= tightMuMinIso_ && reco::deltaR<reco::Candidate,reco::Candidate>( *ijet, *imu ) < looseLepRemovalDR_ ) {
 	    uncorrJet -= imu->p4();
 	  }
 	}
@@ -280,10 +280,10 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 	  double nhIso = ielePtr->userIsolation(pat::PfNeutralHadronIso);
 	  double gIso  = ielePtr->userIsolation(pat::PfGammaIso);
 	  double pt    = ielePtr->pt() ;
-	  //double pfIso = (chIso + nhIso + gIso) / pt;  //this is PU-unsafe isolation quantity
-	  double aeff = getAeff(ielePtr->eta());
-	  double pfIsoPU = (chIso + max(0.0, (nhIso + gIso - rho*aeff)) ) / pt;
-	  if ( pfIsoPU >= tightEleMinIso_ && reco::deltaR<reco::Candidate,reco::Candidate>( *ijet, *iele ) < looseLepRemovalDR_  ) {
+	  double pfIso = (chIso + nhIso + gIso) / pt;  //this is PU-unsafe isolation quantity
+	  //double aeff = getAeff(ielePtr->eta());
+	  //double pfIsoPU = (chIso + max(0.0, (nhIso + gIso - rho*aeff)) ) / pt;
+	  if ( pfIso >= tightEleMinIso_ && reco::deltaR<reco::Candidate,reco::Candidate>( *ijet, *iele ) < looseLepRemovalDR_  ) {
 	    uncorrJet -= iele->p4();
 	  }
 	}

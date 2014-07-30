@@ -50,8 +50,8 @@ shyftPFSelection = cms.PSet(
     removeLooseLep = cms.bool(False),
     doElectrons    = cms.bool(False), # 0 = mu, 1 = ele
     looseLepRemovalDR=cms.double(0.5),
-    tightMuMinIso  = cms.double(0.12),
-    tightEleMinIso = cms.double(0.10),
+    tightMuMinIso  = cms.double(0.20), ## the cut values here are the ones used for top projections at PF2PAT level
+    tightEleMinIso = cms.double(0.15),
     useL1Corr      = cms.bool(True),
     jecPayloads    = cms.vstring([
         'START53_V27_AK5PFchs_L1FastJet.txt',
