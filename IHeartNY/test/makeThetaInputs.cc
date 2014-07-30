@@ -378,11 +378,9 @@ TH1::AddDirectory(kFALSE);
 
 	qcd->hist() ->Add(qcd_2->hist() , -1.0);
 	TString name_qcd (var2); name_qcd+="__subtracted__from__"; name_qcd+=var1 ; name_qcd+="__QCD";
-	qcd->hist() ->SetName (name_qcd);
 
 	data ->Add(data_2 , -1.0);
 	TString name_data (var2); name_data+="__subtracted__from__" ;name_data+=var1 ; name_data+="__DATA";
-	data ->SetName (name_data);
 
 	
 	TString outname ("normalized_mujets_");
