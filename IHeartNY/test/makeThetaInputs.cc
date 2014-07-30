@@ -322,147 +322,59 @@ TH1::AddDirectory(kFALSE);
 	singletop_nom->hist() ->Add(singletop_nom_2->hist() , -1.0);
 	ttbar_nom->hist()     ->Add(ttbar_nom_2->hist() , -1.0);
 	ttbar_nonSemiLep_nom->hist() ->Add(ttbar_nonSemiLep_nom_2->hist() , -1.0);
-	TString name_wjets     (var2); name_wjets +="__subtracted__from__" ; name_wjets+= var1; name_wjets+= "__WJets" ;
-	TString name_singletop (var2); name_singletop +="__subtracted__from__" ; name_singletop+= var1; name_singletop+= "__SingleTop" ;
-	TString name_ttbar     (var2); name_ttbar +="__subtracted__from__" ; name_ttbar += var1; name_ttbar += "__TTbar" ;
-	TString name_ttbar_nonSemiLep (var2); name_ttbar_nonSemiLep +="__subtracted__from__" ; name_ttbar_nonSemiLep += var1; name_ttbar_nonSemiLep += "__TTbar__nonSemiLep" ;
-	wjets_nom->hist()     ->SetName( name_wjets );
-	singletop_nom->hist() ->SetName( name_singletop );
-	ttbar_nom->hist()     ->SetName( name_ttbar );
-	ttbar_nonSemiLep_nom->hist() ->SetName( name_ttbar_nonSemiLep );
 	
 	wjets_btagdn->hist()     ->Add(wjets_btagdn_2->hist() , -1.0);
 	singletop_btagdn->hist() ->Add(singletop_btagdn_2->hist() , -1.0);
 	ttbar_btagdn->hist()     ->Add(ttbar_btagdn_2->hist() , -1.0);
 	ttbar_nonSemiLep_btagdn->hist() ->Add(ttbar_nonSemiLep_btagdn_2->hist() , -1.0);
-	TString name_wjets_btagdn     (var2); name_wjets_btagdn+= "__subtracted__from__" ; name_wjets_btagdn+= var1; name_wjets_btagdn+= "__WJets__btag__dn" ;
-	TString name_singletop_btagdn (var2); name_singletop_btagdn+= "__subtracted__from__" ; name_singletop_btagdn+= var1; name_singletop_btagdn+= "__SingleTop__btag__dn" ;
-	TString name_ttbar_btagdn     (var2); name_ttbar_btagdn+= "__subtracted__from__" ; name_ttbar_btagdn+= var1; name_ttbar_btagdn+= "__TTbar__btag__dn" ;
-	TString name_ttbar_nonSemiLep_btagdn (var2); name_ttbar_nonSemiLep_btagdn +="__subtracted__from__" ; name_ttbar_nonSemiLep_btagdn+= var1; name_ttbar_nonSemiLep_btagdn+= "__TTbar__nonSemiLep__btag__dn" ;
-	wjets_btagdn->hist()     ->SetName( name_wjets_btagdn );
-	singletop_btagdn->hist() ->SetName( name_singletop_btagdn );
-	ttbar_btagdn->hist()     ->SetName( name_ttbar_btagdn );
-	ttbar_nonSemiLep_btagdn->hist() ->SetName( name_ttbar_nonSemiLep_btagdn );
 
 	wjets_btagup->hist()     ->Add(wjets_btagup_2->hist() , -1.0);
 	singletop_btagup->hist() ->Add(singletop_btagup_2->hist() , -1.0);
 	ttbar_btagup->hist()     ->Add(ttbar_btagup_2->hist() , -1.0);
 	ttbar_nonSemiLep_btagup->hist() ->Add(ttbar_nonSemiLep_btagup_2->hist() , -1.0);
-	TString name_wjets_btagup     (var2); name_wjets_btagup+= "__subtracted__from__" ; name_wjets_btagup+= var1; name_wjets_btagup+= "__WJets__btag__dn" ;
-	TString name_singletop_btagup (var2); name_singletop_btagup+= "__subtracted__from__" ; name_singletop_btagup+= var1; name_singletop_btagup+= "__SingleTop__btag__dn" ;
-	TString name_ttbar_btagup     (var2); name_ttbar_btagup+= "__subtracted__from__" ; name_ttbar_btagup+= var1; name_ttbar_btagup+= "__TTbar__btag__dn" ;
-	TString name_ttbar_nonSemiLep_btagup (var2); name_ttbar_nonSemiLep_btagup +="__subtracted__from__" ; name_ttbar_nonSemiLep_btagup+= var1; name_ttbar_nonSemiLep_btagup+= "__TTbar__nonSemiLep__btag__dn" ;
-	wjets_btagup->hist()     ->SetName( name_wjets_btagup );
-	singletop_btagup->hist() ->SetName( name_singletop_btagup );
-	ttbar_btagup->hist()     ->SetName( name_ttbar_btagup );
-	ttbar_nonSemiLep_btagup->hist() ->SetName( name_ttbar_nonSemiLep_btagup );
 
 	wjets_jecdn->hist()     ->Add(wjets_jecdn_2->hist() , -1.0);
 	singletop_jecdn->hist() ->Add(singletop_jecdn_2->hist() , -1.0);
 	ttbar_jecdn->hist()     ->Add(ttbar_jecdn_2->hist() , -1.0);
 	ttbar_nonSemiLep_jecdn->hist() ->Add(ttbar_nonSemiLep_jecdn_2->hist() , -1.0);
-	TString name_wjets_jecdn     (var2); name_wjets_jecdn+= "__subtracted__from__" ; name_wjets_jecdn+= var1; name_wjets_jecdn+= "__WJets__btag__dn" ;
-	TString name_singletop_jecdn (var2); name_singletop_jecdn+= "__subtracted__from__" ; name_singletop_jecdn+= var1; name_singletop_jecdn+= "__SingleTop__btag__dn" ;
-	TString name_ttbar_jecdn     (var2); name_ttbar_jecdn+= "__subtracted__from__" ; name_ttbar_jecdn+= var1; name_ttbar_jecdn+= "__TTbar__btag__dn" ;
-	TString name_ttbar_nonSemiLep_jecdn (var2); name_ttbar_nonSemiLep_jecdn +="__subtracted__from__" ; name_ttbar_nonSemiLep_jecdn+= var1; name_ttbar_nonSemiLep_jecdn+= "__TTbar__nonSemiLep__btag__dn" ;
-	wjets_jecdn->hist()     ->SetName( name_wjets_jecdn );
-	singletop_jecdn->hist() ->SetName( name_singletop_jecdn );
-	ttbar_jecdn->hist()     ->SetName( name_ttbar_jecdn );
-	ttbar_nonSemiLep_jecdn->hist() ->SetName( name_ttbar_nonSemiLep_jecdn );
 
 	wjets_jecup->hist()     ->Add(wjets_jecup_2->hist() , -1.0);
 	singletop_jecup->hist() ->Add(singletop_jecup_2->hist() , -1.0);
 	ttbar_jecup->hist()     ->Add(ttbar_jecup_2->hist() , -1.0);
 	ttbar_nonSemiLep_jecup->hist() ->Add(ttbar_nonSemiLep_jecup_2->hist() , -1.0);
-	TString name_wjets_jecup     (var2); name_wjets_jecup+= "__subtracted__from__" ; name_wjets_jecup+= var1; name_wjets_jecup+= "__WJets__btag__dn" ;
-	TString name_singletop_jecup (var2); name_singletop_jecup+= "__subtracted__from__" ; name_singletop_jecup+= var1; name_singletop_jecup+= "__SingleTop__btag__dn" ;
-	TString name_ttbar_jecup     (var2); name_ttbar_jecup+= "__subtracted__from__" ; name_ttbar_jecup+= var1; name_ttbar_jecup+= "__TTbar__btag__dn" ;
-	TString name_ttbar_nonSemiLep_jecup (var2); name_ttbar_nonSemiLep_jecup +="__subtracted__from__" ; name_ttbar_nonSemiLep_jecup+= var1; name_ttbar_nonSemiLep_jecup+= "__TTbar__nonSemiLep__btag__dn" ;
-	wjets_jecup->hist()     ->SetName( name_wjets_jecup );
-	singletop_jecup->hist() ->SetName( name_singletop_jecup );
-	ttbar_jecup->hist()     ->SetName( name_ttbar_jecup );
-	ttbar_nonSemiLep_jecup->hist() ->SetName( name_ttbar_nonSemiLep_jecup );
 
 
 	wjets_jerdn->hist()     ->Add(wjets_jerdn_2->hist() , -1.0);
 	singletop_jerdn->hist() ->Add(singletop_jerdn_2->hist() , -1.0);
 	ttbar_jerdn->hist()     ->Add(ttbar_jerdn_2->hist() , -1.0);
 	ttbar_nonSemiLep_jerdn->hist() ->Add(ttbar_nonSemiLep_jerdn_2->hist() , -1.0);
-	TString name_wjets_jerdn     (var2); name_wjets_jerdn+= "__subtracted__from__" ; name_wjets_jerdn+= var1; name_wjets_jerdn+= "__WJets__btag__dn" ;
-	TString name_singletop_jerdn (var2); name_singletop_jerdn+= "__subtracted__from__" ; name_singletop_jerdn+= var1; name_singletop_jerdn+= "__SingleTop__btag__dn" ;
-	TString name_ttbar_jerdn     (var2); name_ttbar_jerdn+= "__subtracted__from__" ; name_ttbar_jerdn+= var1; name_ttbar_jerdn+= "__TTbar__btag__dn" ;
-	TString name_ttbar_nonSemiLep_jerdn (var2); name_ttbar_nonSemiLep_jerdn +="__subtracted__from__" ; name_ttbar_nonSemiLep_jerdn+= var1; name_ttbar_nonSemiLep_jerdn+= "__TTbar__nonSemiLep__btag__dn" ;
-	wjets_jerdn->hist()     ->SetName( name_wjets_jerdn );
-	singletop_jerdn->hist() ->SetName( name_singletop_jerdn );
-	ttbar_jerdn->hist()     ->SetName( name_ttbar_jerdn );
-	ttbar_nonSemiLep_jerdn->hist() ->SetName( name_ttbar_nonSemiLep_jerdn );
 
 	wjets_jerup->hist()     ->Add(wjets_jerup_2->hist() , -1.0);
 	singletop_jerup->hist() ->Add(singletop_jerup_2->hist() , -1.0);
 	ttbar_jerup->hist()     ->Add(ttbar_jerup_2->hist() , -1.0);
 	ttbar_nonSemiLep_jerup->hist() ->Add(ttbar_nonSemiLep_jerup_2->hist() , -1.0);
-	TString name_wjets_jerup     (var2); name_wjets_jerup+= "__subtracted__from__" ; name_wjets_jerup+= var1; name_wjets_jerup+= "__WJets__btag__dn" ;
-	TString name_singletop_jerup (var2); name_singletop_jerup+= "__subtracted__from__" ; name_singletop_jerup+= var1; name_singletop_jerup+= "__SingleTop__btag__dn" ;
-	TString name_ttbar_jerup     (var2); name_ttbar_jerup+= "__subtracted__from__" ; name_ttbar_jerup+= var1; name_ttbar_jerup+= "__TTbar__btag__dn" ;
-	TString name_ttbar_nonSemiLep_jerup (var2); name_ttbar_nonSemiLep_jerup +="__subtracted__from__" ; name_ttbar_nonSemiLep_jerup+= var1; name_ttbar_nonSemiLep_jerup+= "__TTbar__nonSemiLep__btag__dn" ;
-	wjets_jerup->hist()     ->SetName( name_wjets_jerup );
-	singletop_jerup->hist() ->SetName( name_singletop_jerup );
-	ttbar_jerup->hist()     ->SetName( name_ttbar_jerup );
-	ttbar_nonSemiLep_jerup->hist() ->SetName( name_ttbar_nonSemiLep_jerup );
 
 	wjets_toptagdn->hist()     ->Add(wjets_toptagdn_2->hist() , -1.0);
 	singletop_toptagdn->hist() ->Add(singletop_toptagdn_2->hist() , -1.0);
 	ttbar_toptagdn->hist()     ->Add(ttbar_toptagdn_2->hist() , -1.0);
 	ttbar_nonSemiLep_toptagdn->hist() ->Add(ttbar_nonSemiLep_toptagdn_2->hist() , -1.0);
-	TString name_wjets_toptagdn     (var2); name_wjets_toptagdn+= "__subtracted__from__" ; name_wjets_toptagdn+= var1; name_wjets_toptagdn+= "__WJets__toptag__dn" ;
-	TString name_singletop_toptagdn (var2); name_singletop_toptagdn+= "__subtracted__from__" ; name_singletop_toptagdn+= var1; name_singletop_toptagdn+= "__SingleTop__toptag__dn" ;
-	TString name_ttbar_toptagdn     (var2); name_ttbar_toptagdn+= "__subtracted__from__" ; name_ttbar_toptagdn+= var1; name_ttbar_toptagdn+= "__TTbar__toptag__dn" ;
-	TString name_ttbar_nonSemiLep_toptagdn (var2); name_ttbar_nonSemiLep_toptagdn +="__subtracted__from__" ; name_ttbar_nonSemiLep_toptagdn+= var1; name_ttbar_nonSemiLep_toptagdn+= "__TTbar__nonSemiLep__toptag__dn" ;
-	wjets_toptagdn->hist()     ->SetName( name_wjets_toptagdn );
-	singletop_toptagdn->hist() ->SetName( name_singletop_toptagdn );
-	ttbar_toptagdn->hist()     ->SetName( name_ttbar_toptagdn );
-	ttbar_nonSemiLep_toptagdn->hist() ->SetName( name_ttbar_nonSemiLep_toptagdn );
 
 	wjets_toptagup->hist()     ->Add(wjets_toptagup_2->hist() , -1.0);
 	singletop_toptagup->hist() ->Add(singletop_toptagup_2->hist() , -1.0);
 	ttbar_toptagup->hist()     ->Add(ttbar_toptagup_2->hist() , -1.0);
 	ttbar_nonSemiLep_toptagup->hist() ->Add(ttbar_nonSemiLep_toptagup_2->hist() , -1.0);
-	TString name_wjets_toptagup     (var2); name_wjets_toptagup+= "__subtracted__from__" ; name_wjets_toptagup+= var1; name_wjets_toptagup+= "__WJets__toptag__dn" ;
-	TString name_singletop_toptagup (var2); name_singletop_toptagup+= "__subtracted__from__" ; name_singletop_toptagup+= var1; name_singletop_toptagup+= "__SingleTop__toptag__dn" ;
-	TString name_ttbar_toptagup     (var2); name_ttbar_toptagup+= "__subtracted__from__" ; name_ttbar_toptagup+= var1; name_ttbar_toptagup+= "__TTbar__toptag__dn" ;
-	TString name_ttbar_nonSemiLep_toptagup (var2); name_ttbar_nonSemiLep_toptagup +="__subtracted__from__" ; name_ttbar_nonSemiLep_toptagup+= var1; name_ttbar_nonSemiLep_toptagup+= "__TTbar__nonSemiLep__toptag__dn" ;
-	wjets_toptagup->hist()     ->SetName( name_wjets_toptagup );
-	singletop_toptagup->hist() ->SetName( name_singletop_toptagup );
-	ttbar_toptagup->hist()     ->SetName( name_ttbar_toptagup );
-	ttbar_nonSemiLep_toptagup->hist() ->SetName( name_ttbar_nonSemiLep_toptagup );
 
 	ttbar_pdfup_CT10->hist() ->Add(ttbar_pdfup_CT10_2->hist() , -1.0);
 	ttbar_pdfdn_CT10->hist() ->Add(ttbar_pdfdn_CT10_2->hist() , -1.0);
-	TString name_ttbar_pdfup_CT10 (var2); name_ttbar_pdfup_CT10+="__subtracted__from__" ;name_ttbar_pdfup_CT10+=var1 ; name_ttbar_pdfup_CT10+="__TTbar__pdf__up__CT10";
-	TString name_ttbar_pdfdn_CT10 (var2); name_ttbar_pdfdn_CT10+="__subtracted__from__" ;name_ttbar_pdfdn_CT10+=var1 ; name_ttbar_pdfdn_CT10+="__TTbar__pdf__dn__CT10";
-	ttbar_pdfup_CT10->hist() ->SetName( name_ttbar_pdfup_CT10 );
-	ttbar_pdfdn_CT10->hist() ->SetName( name_ttbar_pdfdn_CT10 );
 	
 	ttbar_pdfup_MSTW->hist() ->Add(ttbar_pdfup_MSTW_2->hist() , -1.0);
 	ttbar_pdfdn_MSTW->hist() ->Add(ttbar_pdfdn_MSTW_2->hist() , -1.0);
-	TString name_ttbar_pdfup_MSTW (var2); name_ttbar_pdfup_MSTW+="__subtracted__from__" ;name_ttbar_pdfup_MSTW+=var1 ; name_ttbar_pdfup_MSTW+="__TTbar__pdf__up__MSTW";
-	TString name_ttbar_pdfdn_MSTW (var2); name_ttbar_pdfdn_MSTW+="__subtracted__from__" ;name_ttbar_pdfdn_MSTW+=var1 ; name_ttbar_pdfdn_MSTW+="__TTbar__pdf__dn__MSTW";
-	ttbar_pdfup_MSTW->hist() ->SetName( name_ttbar_pdfup_MSTW );
-	ttbar_pdfdn_MSTW->hist() ->SetName( name_ttbar_pdfdn_MSTW );
 
 	ttbar_pdfup_NNPDF->hist() ->Add(ttbar_pdfup_NNPDF_2->hist() , -1.0);
 	ttbar_pdfdn_NNPDF->hist() ->Add(ttbar_pdfdn_NNPDF_2->hist() , -1.0);
-	TString name_ttbar_pdfup_NNPDF (var2); name_ttbar_pdfup_NNPDF+="__subtracted__from__" ;name_ttbar_pdfup_NNPDF+=var1 ; name_ttbar_pdfup_NNPDF+="__TTbar__pdf__up__NNPDF";
-	TString name_ttbar_pdfdn_NNPDF (var2); name_ttbar_pdfdn_NNPDF+="__subtracted__from__" ;name_ttbar_pdfdn_NNPDF+=var1 ; name_ttbar_pdfdn_NNPDF+="__TTbar__pdf__dn__NNPDF";
-	ttbar_pdfup_NNPDF->hist() ->SetName( name_ttbar_pdfup_NNPDF );
-	ttbar_pdfdn_NNPDF->hist() ->SetName( name_ttbar_pdfdn_NNPDF );
 		
 	ttbar_scaleup->hist()   ->Add(ttbar_scaleup_2->hist() , -1.0);
 	ttbar_scaledown->hist() ->Add(ttbar_scaledown_2->hist() , -1.0);
-	TString name_ttbar_scaleup (var2); name_ttbar_scaleup+="__subtracted__from__" ; name_ttbar_scaleup+=var1 ; name_ttbar_scaleup+="__TTbar__Scale__up";
-	TString name_ttbar_scaledn (var2); name_ttbar_scaledn+="__subtracted__from__" ; name_ttbar_scaledn+=var1 ; name_ttbar_scaledn+="__TTbar__Scale__dn";
-	ttbar_scaleup->hist()   ->SetName( name_ttbar_scaleup );
-	ttbar_scaledown->hist() ->SetName( name_ttbar_scaledn );
 
 	qcd->hist() ->Add(qcd_2->hist() , -1.0);
 	TString name_qcd (var2); name_qcd+="__subtracted__from__"; name_qcd+=var1 ; name_qcd+="__QCD";
