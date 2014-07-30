@@ -108,8 +108,9 @@ SummedHist * getWJets( TString name, TString histname ){
 	for ( int i = 0 ; i < nwjets; ++i ) {
 		TString iname = wjets_names[i] + name + TString(".root");
 		TFile * infile = TFile::Open( iname );
-		TH1F * hist = (TH1F*) infile->Get(histname);
+		TH1F * hist = (TH1F*) infile->Get(histname)->Clone();
 		wjets->push_back( hist, wjets_norms[i] );
+		delete infile;
 	}
 	return wjets;
 }
@@ -142,6 +143,7 @@ SummedHist * getSingleTop( TString name, TString histname ){
 		TFile * infile = TFile::Open( iname );
 		TH1F * hist = (TH1F*) infile->Get(histname);
 		singletop->push_back( hist, singletop_norms[i] );
+		delete infile;
 	}
 	return singletop;
 }
@@ -187,6 +189,7 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname ){
 		TFile * infile = TFile::Open( iname );
 		TH1F * hist = (TH1F*) infile->Get(histname);
 		ttbar->push_back( hist, ttbar_norms[i] );
+		delete infile;
 	}
 	return ttbar;
 }
@@ -231,6 +234,7 @@ SummedHist * getTTbar( TString name, TString histname ){
 		TFile * infile = TFile::Open( iname );
 		TH1F * hist = (TH1F*) infile->Get(histname);
 		ttbar->push_back( hist, ttbar_norms[i] );
+		delete infile;
 	}
 	return ttbar;
 }

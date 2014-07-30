@@ -27,6 +27,8 @@ void setStyle() {
 
 void makeThetaInputs_Singlestage() {
 
+  TH1::AddDirectory(kFALSE); 
+
 	setStyle();
 
 	double nqcd; TString var;
@@ -174,6 +176,8 @@ void makeThetaInputs_Singlestage() {
 }
 
 void makeThetaInputs_subhist() {
+
+TH1::AddDirectory(kFALSE); 
 
 	setStyle();
 
