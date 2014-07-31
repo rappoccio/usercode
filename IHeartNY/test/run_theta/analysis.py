@@ -19,12 +19,12 @@ def histfilter( hname ) :
 def pdf_up_histfilter( hname ) :
     isQCD = 'qcd' in hname
     isScaleUp = 'scale__up' in hname
-    isPDFUp = 'pdf__up' in hname
+    isPDFUp = 'pdf_CT10__up' in hname
     isScaleDown = 'scale__down' in hname
-    isPDFDown = 'pdf__down' in hname
-    isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
+    isPDFDown = 'pdf_CT10__down' in hname
+    #isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
     isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isScaleUp or isScaleDown or isPDFDown or isTTbarNonSemiLepNominal or isTTbarNominal :
+    if hname == None or isScaleUp or isScaleDown or isPDFDown or isTTbarNominal :
         return False
     else :
         return True
@@ -32,12 +32,12 @@ def pdf_up_histfilter( hname ) :
 def pdf_down_histfilter( hname ) :
     isQCD = 'qcd' in hname
     isScaleUp = 'scale__up' in hname
-    isPDFUp = 'pdf__up' in hname
+    isPDFUp = 'pdf_CT10__up' in hname
     isScaleDown = 'scale__down' in hname
-    isPDFDown = 'pdf__down' in hname
-    isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
+    isPDFDown = 'pdf_CT10__down' in hname
+    #isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
     isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isScaleUp or isScaleDown or isPDFUp or isTTbarNonSemiLepNominal or isTTbarNominal :
+    if hname == None or isScaleUp or isScaleDown or isPDFUp or isTTbarNominal :
         return False
     else :
         return True
@@ -47,12 +47,12 @@ def pdf_down_histfilter( hname ) :
 def scale_up_histfilter( hname ) :
     isQCD = 'qcd' in hname
     isScaleUp = 'scale__up' in hname
-    isPDFUp = 'pdf__up' in hname
+    isPDFUp = 'pdf_CT10__up' in hname
     isScaleDown = 'scale__down' in hname
-    isPDFDown = 'pdf__down' in hname
-    isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
+    isPDFDown = 'pdf_CT10__down' in hname
+    #isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
     isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isScaleDown or isPDFUp or isPDFDown or isTTbarNonSemiLepNominal or isTTbarNominal :
+    if hname == None or isScaleDown or isPDFUp or isPDFDown or isTTbarNominal :
         return False
     else :
         return True
@@ -60,41 +60,41 @@ def scale_up_histfilter( hname ) :
 def scale_down_histfilter( hname ) :
     isQCD = 'qcd' in hname
     isScaleUp = 'scale__up' in hname
-    isPDFUp = 'pdf__up' in hname
+    isPDFUp = 'pdf_CT10__up' in hname
     isScaleDown = 'scale__down' in hname
-    isPDFDown = 'pdf__down' in hname
-    isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
+    isPDFDown = 'pdf_CT10__down' in hname
+    #isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
     isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isScaleUp or isPDFUp or isPDFDown or isTTbarNonSemiLepNominal or isTTbarNominal :
+    if hname == None or isScaleUp or isPDFUp or isPDFDown or isTTbarNominal :
         return False
     else :
         return True
 
         
 def pdf_unc_up_modifier( hname ) :
-    if 'pdf__up' in hname :
-        outhname = hname.replace( '__pdf__up', '')
+    if 'TTbar__pdf_CT10__up' in hname :
+        outhname = hname.replace( 'TTbar__pdf_CT10__up', 'TTbar')
         return outhname
     else :
         return hname
 
 def pdf_unc_down_modifier( hname ) :
-    if 'pdf__down' in hname :
-        outhname = hname.replace( '__pdf__down', '')
+    if 'TTbar__pdf_CT10__down' in hname :
+        outhname = hname.replace( 'TTbar__pdf_CT10__down', 'TTbar')
         return outhname
     else :
         return hname
 
 def scale_unc_up_modifier( hname ) :
-    if 'scale__up' in hname :
-        outhname = hname.replace( '__scale__up', '')
+    if 'TTbar__scale__up' in hname :
+        outhname = hname.replace( 'TTbar__scale__up', '')
         return outhname
     else :
         return hname
 
 def scale_unc_down_modifier( hname ) :
-    if 'scale__down' in hname :
-        outhname = hname.replace( '__scale__down', '')
+    if 'TTbar__scale__down' in hname :
+        outhname = hname.replace( 'TTbar__scale__down', '')
         return outhname
     else :
         return hname
@@ -165,9 +165,9 @@ def build_model(type, jet1 = None, mcstat = True, ex_to_in = None, infilter = No
 
         model = muplusjets(
             files=[#'normalized_mujets_ptMET3_subtracted_from_ptMET1.root',
-                   'normalized_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
-                   'normalized_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
-                   'normalized_mujets_vtxMass7.root'],
+                   'normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+                   'normalized2d_mujets_vtxMass7.root'],
             infilter=infilter,
             signal='TTbar',
             mcstat=mcstat,
@@ -206,8 +206,8 @@ usePL = False
 # These are the bits that need for externalizing pdf and q2 uncertainties.
 # Thus, we run nominal, pdfup, pdfdown, q2up, q2 down separately. 
 filters = [histfilter, pdf_up_histfilter, pdf_down_histfilter, scale_up_histfilter, scale_down_histfilter]
-ex_to_in_variations = [None]#, pdf_unc_up_modifier, pdf_unc_down_modifier, scale_unc_up_modifier, scale_unc_down_modifier ]
-ex_to_in_names = ['Nominal']#, 'pdfup', 'pdfdown', 'scaleup', 'scaledown']
+ex_to_in_variations = [None] #, pdf_unc_up_modifier, pdf_unc_down_modifier, scale_unc_up_modifier, scale_unc_down_modifier ]
+ex_to_in_names = ['Nominal'] #, 'pdfup', 'pdfdown', 'scaleup', 'scaledown']
 
 ivar = -1
 for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
@@ -228,7 +228,8 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
     parameters = model.get_parameters(['TTbar'])
 
 
-
+    if ivar == 0 :
+        model_summary(model)
 
     if useMLE == True :        
 
@@ -290,9 +291,9 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
         for p in parameters :
             parameter_values[p] = results2['TTbar'][p][0][0]
         histos = evaluate_prediction(model, parameter_values, include_signal = True)
-        write_histograms_to_rootfile(histos, 'histos-mle.root')
+        write_histograms_to_rootfile(histos, 'histos-mle-2d.root')
         
-        if ex_to_in_name == "Nominal" : 
+        if ex_to_in_name == "Nominal" :
             report.write_html('htmlout')
             
     if usePL == True :
