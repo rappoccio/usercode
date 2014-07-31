@@ -57,9 +57,9 @@ class PdfWeightProducer : public edm::EDProducer {
       virtual void produce(edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
 
-  std::string pdfSet_; /// lhapdf string
-  int nMembers_; // number of eigenvector variations for the given PDF set  
-
+  std::vector<std::string> pdfSet_;  // lhapdf string
+  std::vector<std::string> pdfName_; // short name for output collection identifier
+  std::vector<int> nMembers_;        // number of eigenvector variations for the given PDF set  
 
 };
 
@@ -76,15 +76,27 @@ class PdfWeightProducer : public edm::EDProducer {
 // constructors and destructor
 //
 PdfWeightProducer::PdfWeightProducer(const edm::ParameterSet& iConfig) :
-  pdfSet_       (iConfig.getParameter<std::string> ("pdfSet") ),
-  nMembers_     (iConfig.getParameter<int> ("nMembers") )
+  pdfSet_   (iConfig.getParameter<std::vector<std::string> > ("pdfSet") ),
+  pdfName_  (iConfig.getParameter<std::vector<std::string> > ("pdfName") ),
+  nMembers_ (iConfig.getParameter<std::vector<int> > ("nMembers") )
 {
 
-  produces<std::vector<double> > ("pdfWeights");
+  if (pdfSet_.size()>3) {
+    std::cout << "WARNING! Can handle max 3 PDF sets!";
+    pdfSet_.erase(pdfSet_.begin()+3,pdfSet_.end());
+    pdfName_.erase(pdfName_.begin()+3,pdfName_.end());
+    nMembers_.erase(nMembers_.begin()+3,nMembers_.end());
+  }
 
 
-  if ( pdfSet_ != "" )
-    LHAPDF::initPDFSet(1, pdfSet_.c_str());
+  for (unsigned int ipdf=0; ipdf<pdfSet_.size(); ipdf++) {
+    // output collection
+    produces<std::vector<double> > (pdfName_.at(ipdf)+"weights");
+
+    // initialize LHAPDF
+    if (pdfSet_.at(ipdf) != "") LHAPDF::initPDFSet(ipdf+1, pdfSet_.at(ipdf).c_str());
+  }
+
 }
 
 
@@ -102,46 +114,64 @@ void
 PdfWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
-  std::auto_ptr<std::vector<double> > pdf_weights( new std::vector<double>() );
+  if (iEvent.isRealData()) return;
 
-
-  if ( ! iEvent.isRealData() && pdfSet_ != "" ) {
-
-    edm::Handle<GenEventInfoProduct> pdfstuff;
-    if (iEvent.getByLabel("generator", pdfstuff)) {
-
-      if (nMembers_ < 1) {
-	std::cout << "WARNING: nMembers == 0 for PDF set, can't get eigenvector variations..." << std::endl;
-      }
-
-      LHAPDF::usePDFMember(1,0);
-
-      float q = pdfstuff->pdf()->scalePDF;
- 
-      int id1 = pdfstuff->pdf()->id.first;
-      double x1 = pdfstuff->pdf()->x.first;
-      // double pdf1 = pdfstuff->pdf()->xPDF.first;
-      
-      int id2 = pdfstuff->pdf()->id.second;
-      double x2 = pdfstuff->pdf()->x.second;
-      // double pdf2 = pdfstuff->pdf()->xPDF.second; 
-
-      double xpdf1 = LHAPDF::xfx(1, x1, q, id1);
-      double xpdf2 = LHAPDF::xfx(1, x2, q, id2);
-      double w0 = xpdf1 * xpdf2;
-      for(int i=1; i <=nMembers_; ++i){
-	LHAPDF::usePDFMember(1,i);
-	double xpdf1_new = LHAPDF::xfx(1, x1, q, id1);
-	double xpdf2_new = LHAPDF::xfx(1, x2, q, id2);
-	double weight = xpdf1_new * xpdf2_new / w0;
-	pdf_weights->push_back(weight);
-      }
-
-    }
+  edm::Handle<GenEventInfoProduct> pdfstuff;
+  if (!iEvent.getByLabel("generator", pdfstuff)) {
+    std::cout << "WARNING: GenEventInfoProduct collection not found!" << std::endl;
+    return;
   }
 
-  iEvent.put( pdf_weights, "pdfWeights");
+  // nominal PDF set
+  LHAPDF::usePDFMember(1,0);
+  
+  float q = pdfstuff->pdf()->scalePDF;
+  
+  int id1 = pdfstuff->pdf()->id.first;
+  double x1 = pdfstuff->pdf()->x.first;      
+  int id2 = pdfstuff->pdf()->id.second;
+  double x2 = pdfstuff->pdf()->x.second;
+  
+  double xpdf1 = LHAPDF::xfx(1, x1, q, id1);
+  double xpdf2 = LHAPDF::xfx(1, x2, q, id2);
+  double w0 = xpdf1 * xpdf2;
 
+  // loop over the PDF sets
+  for (unsigned int ipdf=0; ipdf<pdfSet_.size(); ipdf++) {
+
+    std::auto_ptr<std::vector<double> > pdf_weights( new std::vector<double>() );
+
+    if (pdfSet_.at(ipdf) == "") continue;
+    if (nMembers_.at(ipdf) < 1) {
+      std::cout << "WARNING: nMembers == 0 for PDF set, can't get eigenvector variations..." << std::endl;
+      continue;
+    }
+
+    // need this to get the central value for other PDF sets, i.e. rescaling it from CT10 to a different pdf set
+    // for the nominal PDF, this first weight will be == 1
+
+    LHAPDF::usePDFMember(ipdf+1,0);
+    double central_xpdf1 = LHAPDF::xfx(1, x1, q, id1);
+    double central_xpdf2 = LHAPDF::xfx(1, x2, q, id2);
+    double central_weight = central_xpdf1 * central_xpdf2 / w0;
+    pdf_weights->push_back(central_weight); 
+    
+
+    // PDF eigenvector variations for the different PDF sets
+
+    for(int i=1; i <=nMembers_.at(ipdf); ++i){
+      LHAPDF::usePDFMember(ipdf+1,i);
+      double xpdf1_new = LHAPDF::xfx(ipdf+1, x1, q, id1);
+      double xpdf2_new = LHAPDF::xfx(ipdf+1, x2, q, id2);
+      double weight = xpdf1_new * xpdf2_new / w0;
+      pdf_weights->push_back(weight);
+    }
+    
+    iEvent.put( pdf_weights, pdfName_.at(ipdf)+"weights");
+
+  }//end loop over PDF sets
+
+  
 }
 
 // ------------ method called once each job just before starting event loop  ------------

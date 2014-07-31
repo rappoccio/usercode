@@ -56,7 +56,8 @@ import sys
 if options.useData == 0 : 
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    '/store/results/B2G/TT_CT10_TuneZ2star_8TeV-powheg-tauola/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/TT_CT10_TuneZ2star_8TeV-powheg-tauola/USER/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/0000/002079E2-81CD-E211-B071-002590593878.root'
+                                    'file:pattuple.root'
+    #'/store/results/B2G/TT_CT10_TuneZ2star_8TeV-powheg-tauola/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/TT_CT10_TuneZ2star_8TeV-powheg-tauola/USER/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/0000/002079E2-81CD-E211-B071-002590593878.root'
                                     )
         )
 else : 
@@ -765,14 +766,14 @@ process.p2 = cms.Path(
 
 
 if options.addPdfs == 1 : 
-    # PDF Information
+    # PDF Information (first in list has to be the central one!!!)
     from Analysis.PdfWeights.pdfWeightProducer_cfi import pdfWeightProducer
-    process.ct10weights = pdfWeightProducer.clone(pdfSet = cms.string("CT10nnlo.LHgrid"), nMembers = cms.int32(50))
-    process.mstwweights = pdfWeightProducer.clone(pdfSet = cms.string("MSTW2008nnlo68cl.LHgrid"), nMembers = cms.int32(40))
-    process.nnpdfweights = pdfWeightProducer.clone(pdfSet = cms.string("NNPDF23_nnlo_as_0118.LHgrid"), nMembers = cms.int32(100))
-    process.pdfs = cms.Sequence( process.ct10weights*process.mstwweights*process.nnpdfweights )
-    process.p1 *= process.pdfs
-    process.p2 *= process.pdfs
+    process.pdfWeights = pdfWeightProducer.clone(pdfSet = cms.vstring("CT10nnlo.LHgrid","MSTW2008nnlo68cl.LHgrid","NNPDF23_nnlo_as_0118.LHgrid"), 
+                                           pdfName = cms.vstring("ct10","mstw","nnpdf"), 
+                                           nMembers = cms.vint32(50,40,100)
+                                           )
+    process.p1 *= process.pdfWeights
+    process.p2 *= process.pdfWeights
 
 ## For data, remove the truth information from the paths
 if options.useData == 1 :
@@ -801,7 +802,7 @@ process.out = cms.OutputModule("PoolOutputModule",
                                                                       'keep *_nsub*_*_*',
                                                                       'keep *_generator_*_*',
                                                                       'keep *_pileup*_*_*',
-                                                                      'keep *_*weights*_*_*'
+                                                                      'keep *_pdfWeights_*_*'
                                                                       )
                                )
 process.outpath = cms.EndPath(process.out)
