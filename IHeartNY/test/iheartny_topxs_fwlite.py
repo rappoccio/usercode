@@ -922,7 +922,7 @@ topTagsj3massLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj3mass")
 
 
 # variables for PDF systematics (three different PDF sets)
-if options.pdfSys != 0.0 : 
+if options.pdfSys != 0.0 or options.pdfSet != 0.0: 
     pdfWeightCT10Handle  = Handle("std::vector<double>")
     pdfWeightCT10Label   = ("pdfWeights", "ct10weights")
     
