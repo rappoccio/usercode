@@ -90,10 +90,10 @@ const double LUM = 19.7;
 
 SummedHist * getWJets( TString name, TString histname ){
 	TString wjets_names[] = {
-		"histfiles/W1JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_",
-		"histfiles/W2JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_",
-		"histfiles/W3JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_",
-		"histfiles/W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_",
+		"histfiles/2Dhist/W1JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_2Dcut_",
+		"histfiles/2Dhist/W2JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_2Dcut_",
+		"histfiles/2Dhist/W3JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_2Dcut_",
+		"histfiles/2Dhist/W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_2Dcut_",
 	};
 	double wjets_norms[] = {
 		5400. * 1.207 * 1000. * LUM / 23141598.,       // W+1 jets
@@ -119,12 +119,12 @@ SummedHist * getWJets( TString name, TString histname ){
 
 SummedHist * getSingleTop( TString name, TString histname ){
 	TString singletop_names[] = {
-		"histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-		"histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-		"histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-		"histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-		"histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-		"histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
+		"histfiles/2Dhist/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_",
+		"histfiles/2Dhist/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_",
+		"histfiles/2Dhist/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_",
+		"histfiles/2Dhist/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_",
+		"histfiles/2Dhist/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_",
+		"histfiles/2Dhist/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_",
 	};
 	double singletop_norms[] = {
 		3.79 * 1000. * LUM    / 259961.  , // https://twiki.cern.ch/twiki/bin/viewauth/CMS/SingleTopSigma8TeV
@@ -152,9 +152,9 @@ SummedHist * getSingleTop( TString name, TString histname ){
 
 SummedHist * getTTbarNonSemiLep( TString name, TString histname ){
 	TString ttbar_names[] = {
-		"histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-		"histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-		"histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"
+		"histfiles/2Dhist/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_",
+		"histfiles/2Dhist/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_",
+		"histfiles/2Dhist/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_"
 	};
 	double ttbar_xs[] = {
 		245.8 * 1000. * LUM,  // nominal
@@ -197,9 +197,9 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname ){
 
 SummedHist * getTTbar( TString name, TString histname ){
 	TString ttbar_names[] = {
-		"histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-		"histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-		"histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"
+		"histfiles/2Dhist/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_",
+		"histfiles/2Dhist/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_",
+		"histfiles/2Dhist/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_"
 	};
 	double ttbar_xs[] = {
 		245.8 * 1000. * LUM,  // nominal
@@ -246,7 +246,7 @@ SummedHist * getQCD( TString var, double norm ){
 
 	SummedHist * qcd = new SummedHist( var + "__QCD", 5 );
 
-	TFile * qcdFile = TFile::Open("histfiles/SingleMu_iheartNY_V1_mu_Run2012_qcd.root");
+	TFile * qcdFile = TFile::Open("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root");
 	TH1F * qcdHistRaw = (TH1F*)qcdFile->Get(var);
 
 	qcdHistRaw->Add( wjets_qcd->hist(), -1.0 );

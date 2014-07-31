@@ -96,11 +96,11 @@ void makeThetaInputs_Singlestage() {
 	SummedHist * qcd = getQCD( var, nqcd );
 
 
-	TFile * dataFile = TFile::Open("histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root");
+	TFile * dataFile = TFile::Open("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root");
 	TH1F * data = (TH1F*)dataFile->Get( var );
 	data->SetName( var + "__DATA" );
 
-	TString outname ("normalized_mujets_");
+	TString outname ("normalized2d_mujets_");
 	outname += var; outname += ".root";
 	TFile * fout = new TFile( outname.Data() , "RECREATE");
 
@@ -249,7 +249,7 @@ TH1::AddDirectory(kFALSE);
 
 	SummedHist * qcd = getQCD( var1 , nqcd1 );
 
-	TFile * dataFile = TFile::Open("histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root");
+	TFile * dataFile = TFile::Open("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root");
 	TH1F * data = (TH1F*)dataFile->Get( var1 );
 	data->SetName( var1 + "__DATA" );
 	
@@ -313,7 +313,7 @@ TH1::AddDirectory(kFALSE);
 
 	SummedHist * qcd_2 = getQCD( var2 , nqcd2 );
 
-	TFile * dataFile_2 = TFile::Open("histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root");
+	TFile * dataFile_2 = TFile::Open("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root");
 	TH1F * data_2 = (TH1F*)dataFile_2->Get( var2 );
 	data_2->SetName( var2 + "__DATA_2" );
 	
@@ -383,7 +383,7 @@ TH1::AddDirectory(kFALSE);
 	TString name_data (var2); name_data+="__subtracted__from__" ;name_data+=var1 ; name_data+="__DATA";
 
 	
-	TString outname ("normalized_mujets_");
+	TString outname ("normalized2d_mujets_");
 	outname += var2; outname +="_subtracted_from_" ;outname += var1 ;outname += ".root";
 	TFile * fout = new TFile( outname.Data() , "RECREATE");
 
