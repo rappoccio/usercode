@@ -922,15 +922,15 @@ topTagsj3massLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj3mass")
 
 
 # variables for PDF systematics (three different PDF sets)
-if options.pdfSys != 0.0 : 
+if options.pdfSys != 0.0 or options.pdfSet != 0.0: 
     pdfWeightCT10Handle  = Handle("std::vector<double>")
-    pdfWeightCT10Label   = ("ct10weights", "pdfWeights")
+    pdfWeightCT10Label   = ("pdfWeights", "ct10weights")
     
     pdfWeightMSTWHandle  = Handle("std::vector<double>")
-    pdfWeightMSTWLabel   = ("mstwweights", "pdfWeights")
+    pdfWeightMSTWLabel   = ("pdfWeights", "mstwweights")
 
     pdfWeightNNPDFHandle = Handle("std::vector<double>")
-    pdfWeightNNPDFLabel  = ("nnpdfweights", "pdfWeights")
+    pdfWeightNNPDFLabel  = ("pdfWeights", "nnpdfweights")
 
 
 # if making response matrix, need generated particles (truth-level)
@@ -1068,7 +1068,7 @@ for event in events :
     # Use the max and min values of all of the eigenvectors as the envelope. 
     # -------------------------------------------------------------------------------------
 
-    if options.pdfSys != 0.0:
+    if options.pdfSys != 0.0 or options.pdfSet != 0.0:
 
         if options.pdfSet == 1.0 :
             event.getByLabel( pdfWeightMSTWLabel, pdfWeightMSTWHandle )
@@ -1079,18 +1079,22 @@ for event in events :
         else :
             event.getByLabel( pdfWeightCT10Label, pdfWeightCT10Handle )
             pdfWeight  = pdfWeightCT10Handle.product()
-
+        
 
         nMembers = len(pdfWeight)
-        nEigenVec = int(nMembers/2)
+        nEigenVec = int((nMembers-1)/2) #the list of PDF weights is w0 (==1 for CT10), w1+, w1-, w2+, w2-, ...
 
-        if options.pdfSys > 0 :   # upward PDF uncertainty
+        
+        if options.pdfSys == 0 :   # reweight to a different PDF set
+            newweight = pdfWeight[0] 
+            weight *= newweight
+        elif options.pdfSys > 0 :   # upward PDF uncertainty
             upweight = 0.0
             for iw in range(0,nEigenVec) :
                 tmpweight = 0.0
-                if (pdfWeight[0+2*iw] - 1.0) > tmpweight :
-                    tmpweight = pdfWeight[0+2*iw] - 1.0
                 if (pdfWeight[1+2*iw] - 1.0) > tmpweight :
+                    tmpweight = pdfWeight[0+2*iw] - 1.0
+                if (pdfWeight[2+2*iw] - 1.0) > tmpweight :
                     tmpweight = pdfWeight[1+2*iw] - 1.0
                 upweight += tmpweight*tmpweight
             upweight = 1.0 + math.sqrt(upweight)
@@ -1099,9 +1103,9 @@ for event in events :
             dnweight = 0.0
             for iw in range(0,nEigenVec) :
                 tmpweight = 0.0
-                if (1.0 - pdfWeight[0+2*iw]) > tmpweight :
-                    tmpweight = 1.0 - pdfWeight[0+2*iw]
                 if (1.0 - pdfWeight[1+2*iw]) > tmpweight :
+                    tmpweight = 1.0 - pdfWeight[0+2*iw]
+                if (1.0 - pdfWeight[2+2*iw]) > tmpweight :
                     tmpweight = 1.0 - pdfWeight[1+2*iw]
                 dnweight += tmpweight*tmpweight
             dnweight = 1.0 - math.sqrt(dnweight)
