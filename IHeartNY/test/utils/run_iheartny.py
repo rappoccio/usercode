@@ -51,8 +51,10 @@ class Sample :
         pdfsysts = [
             SystVar(name='_pdfup_CT10', flags=['--pdfSys=1.0']+['--pdfSet=0.0']+self.flags + self.jerflag),
             SystVar(name='_pdfdn_CT10', flags=['--pdfSys=-1.0']+['--pdfSet=0.0']+self.flags + self.jerflag),
+            SystVar(name='_nom_MSTW',   flags=['--pdfSys=0.0']+['--pdfSet=1.0']+self.flags + self.jerflag),
             SystVar(name='_pdfup_MSTW', flags=['--pdfSys=1.0']+['--pdfSet=1.0']+self.flags + self.jerflag),
             SystVar(name='_pdfdn_MSTW', flags=['--pdfSys=-1.0']+['--pdfSet=1.0']+self.flags + self.jerflag),
+            SystVar(name='_nom_NNPDF',   flags=['--pdfSys=0.0']+['--pdfSet=2.0']+self.flags + self.jerflag),
             SystVar(name='_pdfup_NNPDF', flags=['--pdfSys=1.0']+['--pdfSet=2.0']+self.flags + self.jerflag),
             SystVar(name='_pdfdn_NNPDF', flags=['--pdfSys=-1.0']+['--pdfSet=2.0']+self.flags + self.jerflag)
             ]
