@@ -151,8 +151,8 @@ PdfWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     // for the nominal PDF, this first weight will be == 1
 
     LHAPDF::usePDFMember(ipdf+1,0);
-    double central_xpdf1 = LHAPDF::xfx(1, x1, q, id1);
-    double central_xpdf2 = LHAPDF::xfx(1, x2, q, id2);
+    double central_xpdf1 = LHAPDF::xfx(ipdf+1, x1, q, id1);
+    double central_xpdf2 = LHAPDF::xfx(ipdf+1, x2, q, id2);
     double central_weight = central_xpdf1 * central_xpdf2 / w0;
     pdf_weights->push_back(central_weight); 
     
