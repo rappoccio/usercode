@@ -11,7 +11,7 @@ from ROOT import *
 ####################################################################################
 
 def histfilter( hname ) :
-    if hname == None or 'pdf' in hname or 'scale' in hname :
+    if hname == None or 'NNPDF' in hname or 'MSTW' in hname : #or 'pdf' in hname or 'scale' in hname :
         return False
     else :
         return True
@@ -22,9 +22,10 @@ def pdf_up_histfilter( hname ) :
     isPDFUp = 'pdf_CT10__up' in hname
     isScaleDown = 'scale__down' in hname
     isPDFDown = 'pdf_CT10__down' in hname
+    isNonCT10 = 'NNPDF' in hname or 'MSTW' in hname 
     #isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
     isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isScaleUp or isScaleDown or isPDFDown or isTTbarNominal :
+    if hname == None or isScaleUp or isScaleDown or isPDFDown or isTTbarNominal or isNonCT10 :
         return False
     else :
         return True
@@ -35,9 +36,10 @@ def pdf_down_histfilter( hname ) :
     isPDFUp = 'pdf_CT10__up' in hname
     isScaleDown = 'scale__down' in hname
     isPDFDown = 'pdf_CT10__down' in hname
+    isNonCT10 = 'NNPDF' in hname or 'MSTW' in hname 
     #isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
     isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isScaleUp or isScaleDown or isPDFUp or isTTbarNominal :
+    if hname == None or isScaleUp or isScaleDown or isPDFUp or isTTbarNominal or isNonCT10 :
         return False
     else :
         return True
@@ -47,12 +49,11 @@ def pdf_down_histfilter( hname ) :
 def scale_up_histfilter( hname ) :
     isQCD = 'qcd' in hname
     isScaleUp = 'scale__up' in hname
-    isPDFUp = 'pdf_CT10__up' in hname
+    isPDF = 'pdf' in hname
     isScaleDown = 'scale__down' in hname
-    isPDFDown = 'pdf_CT10__down' in hname
     #isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
     isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isScaleDown or isPDFUp or isPDFDown or isTTbarNominal :
+    if hname == None or isScaleDown or isPDF or isTTbarNominal :
         return False
     else :
         return True
@@ -60,12 +61,11 @@ def scale_up_histfilter( hname ) :
 def scale_down_histfilter( hname ) :
     isQCD = 'qcd' in hname
     isScaleUp = 'scale__up' in hname
-    isPDFUp = 'pdf_CT10__up' in hname
+    isPDF = 'pdf' in hname
     isScaleDown = 'scale__down' in hname
-    isPDFDown = 'pdf_CT10__down' in hname
     #isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
     isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isScaleUp or isPDFUp or isPDFDown or isTTbarNominal :
+    if hname == None or isScaleUp or isPDF or isTTbarNominal :
         return False
     else :
         return True
@@ -87,14 +87,14 @@ def pdf_unc_down_modifier( hname ) :
 
 def scale_unc_up_modifier( hname ) :
     if 'TTbar__scale__up' in hname :
-        outhname = hname.replace( 'TTbar__scale__up', '')
+        outhname = hname.replace( 'TTbar__scale__up', 'TTbar')
         return outhname
     else :
         return hname
 
 def scale_unc_down_modifier( hname ) :
     if 'TTbar__scale__down' in hname :
-        outhname = hname.replace( 'TTbar__scale__down', '')
+        outhname = hname.replace( 'TTbar__scale__down', 'TTbar')
         return outhname
     else :
         return hname
@@ -270,6 +270,8 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
         write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_mle_' + ex_to_in_name + '.root')
 
 
+        if ivar != 0 :
+            continue
 
         results2 = mle(model, input='data', n=1, with_covariance = True)
 

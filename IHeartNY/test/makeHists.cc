@@ -374,7 +374,7 @@ void makeTheta_single(TString var, int cut) {
   TString name_syst_theory[nSYST_THEORY] = {"pdfup_CT10", "pdfdn_CT10",
 					    "nom_MSTW", "pdfup_MSTW", "pdfdn_MSTW",
 					    "nom_NNPDF", "pdfup_NNPDF", "pdfup_NNPDF", 
-					    "scaleup_nom", "scaleup_nom"};
+					    "scaleup_nom", "scaledown_nom"};
   
   SummedHist* wjets[nSYST];
   SummedHist* singletop[nSYST];
@@ -474,7 +474,7 @@ void makeTheta_subtract(TString var, int cut1, int cut2) {
   TString name_syst_theory[nSYST_THEORY] = {"pdfup_CT10", "pdfdn_CT10",
 					    "nom_MSTW", "pdfup_MSTW", "pdfdn_MSTW",
 					    "nom_NNPDF", "pdfup_NNPDF", "pdfup_NNPDF", 
-					    "scaleup_nom", "scaleup_nom"};
+					    "scaleup_nom", "scaledown_nom"};
   
   SummedHist* wjets[nSYST][2];
   SummedHist* singletop[nSYST][2];
