@@ -1088,6 +1088,20 @@ for event in events :
         if options.pdfSys == 0 :   # reweight to a different PDF set
             newweight = pdfWeight[0] 
             weight *= newweight
+        elif options.pdfSet == 2.0 && options.pdfSys > 0 :   # upward PDF uncertainty for NNPDF (non-Hessian set...!!)
+            tmpweight = 0.0
+            for iw in range(1,nMembers) :
+                tmpweight += (1.0 - pdfWeight[iw])*(1.0 - pdfWeight[iw])
+            tmpweight = tmpweight/(nMembers-1)
+            tmpweight = 1.0 + math.sqrt(tmpweight)
+            weight *= tmpweight
+        elif options.pdfSet == 2.0 && options.pdfSys < 0 :   # downward PDF uncertainty for NNPDF (non-Hessian set...!!)
+            tmpweight = 0.0
+            for iw in range(1,nMembers) :
+                tmpweight += (1.0 - pdfWeight[iw])*(1.0 - pdfWeight[iw])
+            tmpweight = tmpweight/(nMembers-1)
+            tmpweight = 1.0 - math.sqrt(tmpweight)
+            weight *= tmpweight
         elif options.pdfSys > 0 :   # upward PDF uncertainty
             upweight = 0.0
             for iw in range(0,nEigenVec) :
