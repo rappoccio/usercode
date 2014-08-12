@@ -6,14 +6,9 @@ parser = OptionParser()
 
 
 parser.add_option('--file', metavar='F', type='string', action='store',
-                  default='histfiles/histos-mle.root',
+                  default='histfiles/histos-mle-2d.root',
                   dest='file',
                   help='Input file name')
-
-parser.add_option('--pattern', metavar='p', type='string', action='store',
-                  default='histfiles/normalized_mujets_',
-                  dest='pattern',
-                  help='Input file name patterns for root files containing data')
 
 
 (options, args) = parser.parse_args()
@@ -34,8 +29,8 @@ gStyle.SetTitleFont(43)
 #gStyle.SetTitleFontSize(0.05)
 gStyle.SetTitleFont(43, "XYZ")
 gStyle.SetTitleSize(30, "XYZ")
-gStyle.SetTitleOffset(2.0, "X")
-gStyle.SetTitleOffset(1.25, "Y")
+gStyle.SetTitleOffset(1.0, "X")
+gStyle.SetTitleOffset(1.3, "Y")
 gStyle.SetLabelFont(43, "XYZ")
 gStyle.SetLabelSize(20, "XYZ")
 
@@ -49,6 +44,13 @@ colors = {'TTbar':TColor.kRed,
           'SingleTop':TColor.kMagenta,
           'QCD':TColor.kYellow
           }
+
+files = {
+    'etaAbsLep4':'NormalizedHists/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',    
+    'etaAbsLep6':'NormalizedHists/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+    'vtxMass7':'NormalizedHists/normalized2d_mujets_vtxMass7.root'
+    }
+	
 
 hists = {}
 variables = []
@@ -75,12 +77,12 @@ f_datas = []
 h_datas = []
 ivar = 0
 
-maxes = [70, 70, 1000]
+maxes = [40, 40, 600]
 
 i=0
 for variable in variables :
     imax = maxes[i]
-    f_data = TFile( options.pattern + variable + '.root' )
+    f_data = TFile( files[ variable ] )
     h_data = f_data.Get( variable + '__DATA' )
     c = TCanvas(variable, variable)
     canvs.append(c)
@@ -89,6 +91,7 @@ for variable in variables :
         hist = hists[variable][sample]
         hs.Add( hist )
 
+    h_data.UseCurrentStyle()
     h_data.Draw('e')
     hs.Draw('hist same')
     h_data.Draw('e same')
