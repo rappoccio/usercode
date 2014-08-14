@@ -26,7 +26,7 @@ void setStyle() {
 
 }
 
-void myText(Double_t x,Double_t y,Color_t color,char *text) {
+void myText(Double_t x,Double_t y,Color_t color,char const *text) {
   TLatex l;
   l.SetTextSize(0.05); 
   l.SetTextFont(42); 
@@ -40,7 +40,7 @@ void myText(Double_t x,Double_t y,Color_t color,char *text) {
 // make pretty plots
 // -------------------------------------------------------------------------------------
 
-void makePlots_single(TString var, int cut) {
+void makePlots_single(TString var, int cut, TString pdfdir="_CT10") {
   
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -62,10 +62,10 @@ void makePlots_single(TString var, int cut) {
 
 
   // get histograms
-  SummedHist* wjets = getWJets( "nom", hist );
-  SummedHist* singletop = getSingleTop( "nom", hist );
-  SummedHist* ttbar = getTTbar( "nom", hist );
-  SummedHist* ttbar_nonSemiLep = getTTbarNonSemiLep( "nom", hist );
+  SummedHist* wjets = getWJets( "nom", hist  );
+  SummedHist* singletop = getSingleTop( "nom", hist  );
+  SummedHist* ttbar = getTTbar( "nom", hist, pdfdir  );
+  SummedHist* ttbar_nonSemiLep = getTTbarNonSemiLep( "nom", hist, pdfdir  );
   SummedHist* qcd = getQCD( hist, nqcd );
 
   TString filepath;
@@ -342,7 +342,7 @@ void makePlots_single(TString var, int cut) {
 // make theta histograms without subtracting
 // -------------------------------------------------------------------------------------
 
-void makeTheta_single(TString var, int cut) {
+void makeTheta_single(TString var, int cut, TString pdfdir="_CT10") {
   
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -368,30 +368,17 @@ void makeTheta_single(TString var, int cut) {
   const int nSYST = 9;
   TString name_syst[nSYST] = {"nom", "jecdn", "jecup", "jerdn", "jerup", 
 			      "btagdn", "btagup", "toptagdn", "toptagup"};
-
-  // additional systematics only for ttbar signal
-  const int nSYST_THEORY = 10;
-  TString name_syst_theory[nSYST_THEORY] = {"pdfup_CT10", "pdfdn_CT10",
-					    "nom_MSTW", "pdfup_MSTW", "pdfdn_MSTW",
-					    "nom_NNPDF", "pdfup_NNPDF", "pdfup_NNPDF", 
-					    "scaleup_nom", "scaledown_nom"};
-  
   SummedHist* wjets[nSYST];
   SummedHist* singletop[nSYST];
   SummedHist* ttbar[nSYST];
   SummedHist* ttbar_nonSemiLep[nSYST];
-  SummedHist* ttbar_theory[nSYST_THEORY];
 
   for (int is=0; is<nSYST; is++) {
-    wjets[is]     = getWJets( name_syst[is], hist );
-    singletop[is] = getSingleTop( name_syst[is], hist );
-    ttbar[is]     = getTTbar( name_syst[is], hist );
-    ttbar_nonSemiLep[is] = getTTbarNonSemiLep( name_syst[is], hist );
+    wjets[is]     = getWJets( name_syst[is], hist  );
+    singletop[is] = getSingleTop( name_syst[is], hist  );
+    ttbar[is]     = getTTbar( name_syst[is], hist, pdfdir  );
+    ttbar_nonSemiLep[is] = getTTbarNonSemiLep( name_syst[is], hist, pdfdir  );
   }
-  for (int is=0; is<nSYST_THEORY; is++) {
-    ttbar_theory[is] = getTTbar( name_syst_theory[is], hist );
-  }
-
 
   // QCD
   SummedHist* qcd = getQCD( hist, nqcd );
@@ -422,9 +409,6 @@ void makeTheta_single(TString var, int cut) {
     ttbar[is]->hist()->Write();
     ttbar_nonSemiLep[is]->hist()->Write();
   }
-  for (int is=0; is<nSYST_THEORY; is++) {
-    ttbar_theory[is]->hist()->Write();
-  }
 
   qcd->hist()->Write();
   data->Write();
@@ -438,7 +422,7 @@ void makeTheta_single(TString var, int cut) {
 // make histograms, subtract one from another
 // -------------------------------------------------------------------------------------
 
-void makeTheta_subtract(TString var, int cut1, int cut2) {
+void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10") {
 
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -469,28 +453,18 @@ void makeTheta_subtract(TString var, int cut1, int cut2) {
   TString name_syst[nSYST] = {"nom", "jecdn", "jecup", "jerdn", "jerup", 
 			      "btagdn", "btagup", "toptagdn", "toptagup"};
 
-  // additional systematics only for ttbar signal
-  const int nSYST_THEORY = 10;
-  TString name_syst_theory[nSYST_THEORY] = {"pdfup_CT10", "pdfdn_CT10",
-					    "nom_MSTW", "pdfup_MSTW", "pdfdn_MSTW",
-					    "nom_NNPDF", "pdfup_NNPDF", "pdfup_NNPDF", 
-					    "scaleup_nom", "scaledown_nom"};
   
   SummedHist* wjets[nSYST][2];
   SummedHist* singletop[nSYST][2];
   SummedHist* ttbar[nSYST][2];
   SummedHist* ttbar_nonSemiLep[nSYST][2];
-  SummedHist* ttbar_theory[nSYST_THEORY][2];
 
   for (int ih=0; ih<2; ih++) {
     for (int is=0; is<nSYST; is++) {
       wjets[is][ih]     = getWJets( name_syst[is], hist[ih] );
       singletop[is][ih] = getSingleTop( name_syst[is], hist[ih] );
-      ttbar[is][ih]     = getTTbar( name_syst[is], hist[ih] );
-      ttbar_nonSemiLep[is][ih] = getTTbarNonSemiLep( name_syst[is], hist[ih] );
-    }
-    for (int is=0; is<nSYST_THEORY; is++) {
-      ttbar_theory[is][ih] = getTTbar( name_syst_theory[is], hist[ih] );
+      ttbar[is][ih]     = getTTbar( name_syst[is], hist[ih], pdfdir );
+      ttbar_nonSemiLep[is][ih] = getTTbarNonSemiLep( name_syst[is], hist[ih], pdfdir );
     }
   }
 
@@ -521,9 +495,6 @@ void makeTheta_subtract(TString var, int cut1, int cut2) {
     ttbar[is][0]->hist() ->Add(ttbar[is][1]->hist(), -1);
     ttbar_nonSemiLep[is][0]->hist() ->Add(ttbar_nonSemiLep[is][1]->hist(), -1);
   }
-  for (int is=0; is<nSYST_THEORY; is++) {
-    ttbar_theory[is][0]->hist() ->Add(ttbar_theory[is][1]->hist(), -1);
-  }
   qcd[0]->hist() ->Add(qcd[1]->hist(), -1);
   data[0]->Add(data[1], -1);
 
@@ -542,9 +513,6 @@ void makeTheta_subtract(TString var, int cut1, int cut2) {
     singletop[is][0]->hist()->Write();
     ttbar[is][0]->hist()->Write();
     ttbar_nonSemiLep[is][0]->hist()->Write();
-  }
-  for (int is=0; is<nSYST_THEORY; is++) {
-    ttbar_theory[is][0]->hist()->Write();
   }
 
   qcd[0]->hist()->Write();

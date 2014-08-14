@@ -243,12 +243,12 @@ SummedHist * getSingleTop( TString name, TString histname ) {
 // non-semileptonic ttbar
 // -------------------------------------------------------------------------------------
 
-SummedHist * getTTbarNonSemiLep( TString name, TString histname ) {
+SummedHist * getTTbarNonSemiLep( TString name, TString histname, TString pdfdir = "_CT10" ) {
 
   const int nttbar = 3;
   const int nq2 = 3;
 
-  TString DIR = "histfiles/";
+  TString DIR = "histfiles" + pdfdir + "/";
   if (use2D) DIR += "2Dhist/";
 
   TString ttbar_names[nttbar] = {
@@ -308,12 +308,12 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname ) {
 // signal ttbar
 // -------------------------------------------------------------------------------------
 
-SummedHist * getTTbar( TString name, TString histname ) {
+SummedHist * getTTbar( TString name, TString histname, TString pdfdir = "_CT10" ) {
 
   const int nttbar = 3;
   const int nq2 = 3;
 
-  TString DIR = "histfiles/";
+  TString DIR = "histfiles" + pdfdir + "/";
   if (use2D) DIR += "2Dhist/";
 
   TString ttbar_names[nttbar] = {

@@ -17,9 +17,9 @@ void run(TString option) {
 
     cout << "make theta histograms..." << endl;
 
-    makeTheta_subtract("etaAbsLep",4,6);
-    makeTheta_subtract("etaAbsLep",6,7);
-    makeTheta_single("vtxMass",7);
+    makeTheta_subtract("etaAbsLep",4,6,"_CT10_nom");
+    makeTheta_subtract("etaAbsLep",6,7,"_CT10_nom");
+    makeTheta_single("vtxMass",7,"_CT10_nom");
 
   } 
   // various plots for kinematic checks
