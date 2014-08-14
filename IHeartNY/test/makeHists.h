@@ -243,13 +243,13 @@ SummedHist * getSingleTop( TString name, TString histname ) {
 // non-semileptonic ttbar
 // -------------------------------------------------------------------------------------
 
-SummedHist * getTTbarNonSemiLep( TString name, TString histname, TString pdfdir = "_CT10" ) {
+SummedHist * getTTbarNonSemiLep( TString name, TString histname, TString pdfdir = "CT10_nom" ) {
 
   const int nttbar = 3;
   const int nq2 = 3;
 
-  TString DIR = "histfiles" + pdfdir + "/";
-  if (use2D) DIR += "2Dhist/";
+  TString DIR = "histfiles_" + pdfdir + "/";
+  if (use2D) DIR += "2Dhists/";
 
   TString ttbar_names[nttbar] = {
     "TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
@@ -291,7 +291,7 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, TString pdfdir 
   if (use2D) name2d = "2Dcut_";
 
   for (int i=0; i<nttbar; i++) {
-    TString iname = DIR + ttbar_names[i] + name2d + name + ".root";
+    TString iname = DIR + ttbar_names[i] + pdfdir + "_" + name2d + name + ".root";
     TFile* infile = TFile::Open( iname );
     TH1F* hist = (TH1F*) infile->Get(histname);
     hist->Sumw2();
@@ -308,13 +308,13 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, TString pdfdir 
 // signal ttbar
 // -------------------------------------------------------------------------------------
 
-SummedHist * getTTbar( TString name, TString histname, TString pdfdir = "_CT10" ) {
+SummedHist * getTTbar( TString name, TString histname, TString pdfdir = "CT10_nom" ) {
 
   const int nttbar = 3;
   const int nq2 = 3;
 
-  TString DIR = "histfiles" + pdfdir + "/";
-  if (use2D) DIR += "2Dhist/";
+  TString DIR = "histfiles_" + pdfdir + "/";
+  if (use2D) DIR += "2Dhists/";
 
   TString ttbar_names[nttbar] = {
     "TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
@@ -356,7 +356,7 @@ SummedHist * getTTbar( TString name, TString histname, TString pdfdir = "_CT10" 
   if (use2D) name2d = "2Dcut_";
 
   for (int i=0; i<nttbar; i++) {
-    TString iname = DIR + ttbar_names[i] + name2d + name + TString(".root");
+    TString iname = DIR + ttbar_names[i] + pdfdir + "_" + name2d + name + TString(".root");
     TFile* infile = TFile::Open( iname );
     TH1F* hist = (TH1F*) infile->Get(histname);
     hist->Sumw2();

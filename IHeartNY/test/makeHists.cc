@@ -40,7 +40,7 @@ void myText(Double_t x,Double_t y,Color_t color,char const *text) {
 // make pretty plots
 // -------------------------------------------------------------------------------------
 
-void makePlots_single(TString var, int cut, TString pdfdir="_CT10") {
+void makePlots_single(TString var, int cut, TString pdfdir="CT10") {
   
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -280,8 +280,8 @@ void makePlots_single(TString var, int cut, TString pdfdir="_CT10") {
 
   // save output
   TString outname;
-  if (use2D) outname = "NicePlots/normalized2d_nom_mujets_";
-  else outname = "NicePlots/normalized_nom_mujets_";
+  if (use2D) outname = "NicePlots_" + pdfdir + "/normalized2d_nom_mujets_";
+  else outname = "NicePlots_" + pdfdir + "/normalized_nom_mujets_";
 
   c->SaveAs(outname+hist+".png");
   c->SaveAs(outname+hist+".eps");
@@ -342,7 +342,7 @@ void makePlots_single(TString var, int cut, TString pdfdir="_CT10") {
 // make theta histograms without subtracting
 // -------------------------------------------------------------------------------------
 
-void makeTheta_single(TString var, int cut, TString pdfdir="_CT10") {
+void makeTheta_single(TString var, int cut, TString pdfdir="CT10") {
   
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -396,8 +396,8 @@ void makeTheta_single(TString var, int cut, TString pdfdir="_CT10") {
 
   // write the histograms to a file
   TString outname;
-  if (use2D) outname = "NormalizedHists/normalized2d_mujets_"+hist+".root";
-  else outname = "NormalizedHists/normalized_mujets_"+hist+".root";
+  if (use2D) outname = "NormalizedHists_" + pdfdir + "/normalized2d_mujets_"+hist+".root";
+  else outname = "NormalizedHists_" + pdfdir + "/normalized_mujets_"+hist+".root";
 
   TFile* fout = new TFile(outname, "RECREATE");
 
@@ -501,8 +501,8 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10")
 
   // write the histograms to a file
   TString outname;
-  if (use2D) outname = "NormalizedHists/normalized2d_mujets_"+hist[1]+"_subtracted_from_"+hist[0]+".root";
-  else outname = "NormalizedHists/normalized_mujets_"+hist[1]+"_subtracted_from_"+hist[0]+".root";
+  if (use2D) outname = "NormalizedHists_" + pdfdir + "/normalized2d_mujets_"+hist[1]+"_subtracted_from_"+hist[0]+".root";
+  else outname = "NormalizedHists_" + pdfdir + "/normalized_mujets_"+hist[1]+"_subtracted_from_"+hist[0]+".root";
 
   TFile* fout = new TFile(outname, "RECREATE");
 

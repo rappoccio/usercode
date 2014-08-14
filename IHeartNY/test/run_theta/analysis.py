@@ -16,89 +16,6 @@ def histfilter( hname ) :
     else :
         return True
 
-def pdf_up_histfilter( hname ) :
-    isQCD = 'qcd' in hname
-    isScaleUp = 'scale__up' in hname
-    isPDFUp = 'pdf_CT10__up' in hname
-    isScaleDown = 'scale__down' in hname
-    isPDFDown = 'pdf_CT10__down' in hname
-    isNonCT10 = 'NNPDF' in hname or 'MSTW' in hname 
-    #isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
-    isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isScaleUp or isScaleDown or isPDFDown or isTTbarNominal or isNonCT10 :
-        return False
-    else :
-        return True
-
-def pdf_down_histfilter( hname ) :
-    isQCD = 'qcd' in hname
-    isScaleUp = 'scale__up' in hname
-    isPDFUp = 'pdf_CT10__up' in hname
-    isScaleDown = 'scale__down' in hname
-    isPDFDown = 'pdf_CT10__down' in hname
-    isNonCT10 = 'NNPDF' in hname or 'MSTW' in hname 
-    #isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
-    isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isScaleUp or isScaleDown or isPDFUp or isTTbarNominal or isNonCT10 :
-        return False
-    else :
-        return True
-
-
-
-def scale_up_histfilter( hname ) :
-    isQCD = 'qcd' in hname
-    isScaleUp = 'scale__up' in hname
-    isPDF = 'pdf' in hname
-    isScaleDown = 'scale__down' in hname
-    #isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
-    isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isScaleDown or isPDF or isTTbarNominal :
-        return False
-    else :
-        return True
-
-def scale_down_histfilter( hname ) :
-    isQCD = 'qcd' in hname
-    isScaleUp = 'scale__up' in hname
-    isPDF = 'pdf' in hname
-    isScaleDown = 'scale__down' in hname
-    #isTTbarNonSemiLepNominal = ('TTbar_nonSemiLep' in hname and 'TTbar_nonSemiLep__' not in hname)
-    isTTbarNominal = ('nonSemiLep' not in hname and 'TTbar' in hname and 'TTbar__' not in hname)
-    if hname == None or isScaleUp or isPDF or isTTbarNominal :
-        return False
-    else :
-        return True
-
-        
-def pdf_unc_up_modifier( hname ) :
-    if 'TTbar__pdf_CT10__up' in hname :
-        outhname = hname.replace( 'TTbar__pdf_CT10__up', 'TTbar')
-        return outhname
-    else :
-        return hname
-
-def pdf_unc_down_modifier( hname ) :
-    if 'TTbar__pdf_CT10__down' in hname :
-        outhname = hname.replace( 'TTbar__pdf_CT10__down', 'TTbar')
-        return outhname
-    else :
-        return hname
-
-def scale_unc_up_modifier( hname ) :
-    if 'TTbar__scale__up' in hname :
-        outhname = hname.replace( 'TTbar__scale__up', 'TTbar')
-        return outhname
-    else :
-        return hname
-
-def scale_unc_down_modifier( hname ) :
-    if 'TTbar__scale__down' in hname :
-        outhname = hname.replace( 'TTbar__scale__down', 'TTbar')
-        return outhname
-    else :
-        return hname
-
 
 ####################################################################################
 # Here is where we build the model for theta
@@ -157,7 +74,7 @@ import exceptions
 ####################################################################################
 # Here is where the constructed model is declared to theta
 ####################################################################################
-def build_model(type, jet1 = None, mcstat = True, ex_to_in = None, infilter = None):
+def build_model(type, indir='', mcstat = True, ex_to_in = None, infilter = None):
     model = None
 
     
@@ -165,9 +82,9 @@ def build_model(type, jet1 = None, mcstat = True, ex_to_in = None, infilter = No
 
         model = muplusjets(
             files=[#'normalized_mujets_ptMET3_subtracted_from_ptMET1.root',
-                   'normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
-                   'normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
-                   'normalized2d_mujets_vtxMass7.root'],
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root'],
             infilter=infilter,
             signal='TTbar',
             mcstat=mcstat,
@@ -203,23 +120,18 @@ useMLE = True
 usePL = False
 
 # Building the statistical model :
-# These are the bits that need for externalizing pdf and q2 uncertainties.
-# Thus, we run nominal, pdfup, pdfdown, q2up, q2 down separately. 
-filters = [histfilter, pdf_up_histfilter, pdf_down_histfilter, scale_up_histfilter, scale_down_histfilter]
-ex_to_in_variations = [None] #, pdf_unc_up_modifier, pdf_unc_down_modifier, scale_unc_up_modifier, scale_unc_down_modifier ]
-ex_to_in_names = ['Nominal'] #, 'pdfup', 'pdfdown', 'scaleup', 'scaledown']
+infilter = histfilter
+
+dirs = ['CT10_nom', 'CT10_pdfup', 'CT10_pdfdown']
 
 ivar = -1
-for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
+for idir in dirs :
     ivar += 1
-    ex_to_in_variation = ex_to_in_variations[ iex_to_in_variation ]
-    ex_to_in_name = ex_to_in_names[ iex_to_in_variation ]
-    infilter = filters[ iex_to_in_variation ]
 
     args = {'type': 'ttbar_xs',
             'mcstat':False,
-            'ex_to_in':ex_to_in_variation,
-            'infilter':infilter}
+            'infilter':infilter,
+            'indir':idir}
 
     model = build_model(**args)
 
@@ -233,12 +145,9 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
 
     if useMLE == True :        
 
-        print '------------- MLE RESULTS ' + ex_to_in_name + ' ---------------'
-        #if ivar > 0 :
-        #    print 'For MLE, skipping ' + ex_to_in_name
-        #    continue
+        print '------------- MLE RESULTS ' + idir + ' ---------------'
 
-        results1 = mle(model, input='toys:1.', n=10000)
+        results1 = mle(model, input='toys:1.', n=1000)
 
 
         bs = []
@@ -252,26 +161,23 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
 
         pdbs = plotdata()
         pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-        plot(pdbs, 'bs', 'ntoys', 'beta_signal_' + ex_to_in_name + '.pdf')
+        plot(pdbs, 'bs', 'ntoys', 'beta_signal_' + idir + '.pdf')
 
         pdd = plotdata()
         pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-        plot(pdd, 'dbs', 'ntoys', 'delta_beta_signal_' + ex_to_in_name + '.pdf')
+        plot(pdd, 'dbs', 'ntoys', 'delta_beta_signal_' + idir + '.pdf')
 
         pdp = plotdata()
         pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-        plot(pdp, 'pull', 'ntoys', 'pull_' + ex_to_in_name + '.pdf')
+        plot(pdp, 'pull', 'ntoys', 'pull_' + idir + '.pdf')
 
 
         # to write the data to a file, use e.g.:
-        pdp.write_txt('pull_' + ex_to_in_name + '.txt')
+        pdp.write_txt('pull_' + idir + '.txt')
 
         # to write it to a root file:
-        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_mle_' + ex_to_in_name + '.root')
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_mle_' + idir + '.root')
 
-
-        if ivar != 0 :
-            continue
 
         results2 = mle(model, input='data', n=1, with_covariance = True)
 
@@ -293,14 +199,14 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
         for p in parameters :
             parameter_values[p] = results2['TTbar'][p][0][0]
         histos = evaluate_prediction(model, parameter_values, include_signal = True)
-        write_histograms_to_rootfile(histos, 'histos-mle-2d.root')
+        write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '.root')
         
-        if ex_to_in_name == "Nominal" :
+        if idir == "CT10_nom" :
             report.write_html('htmlout')
             
     if usePL == True :
 
-        print '------------- PL RESULTS ' + ex_to_in_name + ' ---------------'
+        print '------------- PL RESULTS ' + idir + ' ---------------'
 
 
         args = {}
@@ -323,28 +229,28 @@ for iex_to_in_variation in xrange( len(ex_to_in_variations) ) :
             
         pdbs = plotdata()
         pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-        plot(pdbs, 'bs', 'ntoys', 'pl_beta_signal_' + ex_to_in_name + '.pdf')
+        plot(pdbs, 'bs', 'ntoys', 'pl_beta_signal_' + idir + '.pdf')
 
         pdd = plotdata()
         pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-        plot(pdd, 'dbs', 'ntoys', 'pl_delta_beta_signal_' + ex_to_in_name + '.pdf')
+        plot(pdd, 'dbs', 'ntoys', 'pl_delta_beta_signal_' + idir + '.pdf')
 
         pdp = plotdata()
         pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-        plot(pdp, 'pull', 'ntoys', 'pl_pull_' + ex_to_in_name + '.pdf')
+        plot(pdp, 'pull', 'ntoys', 'pl_pull_' + idir + '.pdf')
 
 
         # to write the data to a file, use e.g.:
-        pdd.write_txt('pl_dbs_' + ex_to_in_name + '.txt')
-        pdp.write_txt('pl_pull_' + ex_to_in_name + '.txt')
+        pdd.write_txt('pl_dbs_' + idir + '.txt')
+        pdp.write_txt('pl_pull_' + idir + '.txt')
 
         # to write it to a root file:
-        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_pl_' + ex_to_in_name + '.root')
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_pl_' + idir + '.root')
 
         
         results4 = pl_interval(model, input='data', n=1 , **args)
 
         print results4
         
-        if ex_to_in_name == "Nominal" : 
+        if idir == "CT10_nom" : 
             report.write_html('htmlout')
