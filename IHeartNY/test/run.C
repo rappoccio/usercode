@@ -31,6 +31,37 @@ void run(TString option) {
     makeTheta_subtract("etaAbsLep",6,7,"CT10_pdfdown");
     makeTheta_single("vtxMass",7,"CT10_pdfdown");
 
+
+
+    makeTheta_subtract("etaAbsLep",4,6,"MSTW_nom");
+    makeTheta_subtract("etaAbsLep",6,7,"MSTW_nom");
+    makeTheta_single("vtxMass",7,"MSTW_nom");
+
+
+    makeTheta_subtract("etaAbsLep",4,6,"MSTW_pdfup");
+    makeTheta_subtract("etaAbsLep",6,7,"MSTW_pdfup");
+    makeTheta_single("vtxMass",7,"MSTW_pdfup");
+
+
+    makeTheta_subtract("etaAbsLep",4,6,"MSTW_pdfdown");
+    makeTheta_subtract("etaAbsLep",6,7,"MSTW_pdfdown");
+    makeTheta_single("vtxMass",7,"MSTW_pdfdown");
+
+
+    makeTheta_subtract("etaAbsLep",4,6,"NNPDF_nom");
+    makeTheta_subtract("etaAbsLep",6,7,"NNPDF_nom");
+    makeTheta_single("vtxMass",7,"NNPDF_nom");
+
+
+    makeTheta_subtract("etaAbsLep",4,6,"NNPDF_pdfup");
+    makeTheta_subtract("etaAbsLep",6,7,"NNPDF_pdfup");
+    makeTheta_single("vtxMass",7,"NNPDF_pdfup");
+
+
+    makeTheta_subtract("etaAbsLep",4,6,"NNPDF_pdfdown");
+    makeTheta_subtract("etaAbsLep",6,7,"NNPDF_pdfdown");
+    makeTheta_single("vtxMass",7,"NNPDF_pdfdown");
+
   } 
   // various plots for kinematic checks
   else if (option=="plot") {
