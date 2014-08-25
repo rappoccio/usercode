@@ -6,7 +6,7 @@ parser = OptionParser()
 
 
 parser.add_option('--file', metavar='F', type='string', action='store',
-                  default='histfiles/histos-mle-2d.root',
+                  default='run_theta/histos-mle-2d-CT10_nom.root',
                   dest='file',
                   help='Input file name')
 
@@ -30,7 +30,7 @@ gStyle.SetTitleFont(43)
 gStyle.SetTitleFont(43, "XYZ")
 gStyle.SetTitleSize(30, "XYZ")
 gStyle.SetTitleOffset(1.0, "X")
-gStyle.SetTitleOffset(1.3, "Y")
+gStyle.SetTitleOffset(1.0, "Y")
 gStyle.SetLabelFont(43, "XYZ")
 gStyle.SetLabelSize(20, "XYZ")
 
@@ -46,9 +46,9 @@ colors = {'TTbar':TColor.kRed,
           }
 
 files = {
-    'etaAbsLep4':'NormalizedHists/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',    
-    'etaAbsLep6':'NormalizedHists/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
-    'vtxMass7':'NormalizedHists/normalized2d_mujets_vtxMass7.root'
+    'etaAbsLep4':'NormalizedHists_CT10_nom/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',    
+    'etaAbsLep6':'NormalizedHists_CT10_nom/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+    'vtxMass7':'NormalizedHists_CT10_nom/normalized2d_mujets_vtxMass7.root'
     }
 	
 
@@ -90,6 +90,7 @@ for variable in variables :
     for sample in samples :
         hist = hists[variable][sample]
         hs.Add( hist )
+        print '{0:40s} {1:20s} {2:6.2f}'.format( variable, sample, hist.Integral() )
 
     h_data.UseCurrentStyle()
     h_data.Draw('e')

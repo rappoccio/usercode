@@ -23,12 +23,18 @@ parser.add_option('--plotFullRange', metavar='F', action='store_true',
                   help='Plot the full pt range (pt > 300 GeV)')
 
 parser.add_option('--subtractBackgrounds', metavar='F', action='store_true',
-                  default=False,
+                  default=True,
                   dest='subtractBackgrounds',
                   help='Subtract off the backgrounds')
 
+
+parser.add_option('--normalize', metavar='F', action='store_true',
+                  default=False,
+                  dest='normalize',
+                  help='Normalize the cross section')
+
 parser.add_option('--systVariation', metavar='F', type='string', action='store',
-                  default='nom',
+                  default='CT10_nom_2Dcut_nom',
                   dest='syst',
                   help='Run nominal or systematic variation?')
 
@@ -96,6 +102,12 @@ sigma_Tbar_s_NNLO = 1.76 * 1000.    #
 sigma_T_tW_NNLO = 11.1 * 1000.      # 
 sigma_Tbar_tW_NNLO = 11.1 * 1000.   # 
 sigma_WJets_NNLO = 36703.2 * 1000.  # from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat8TeV
+sigma_WJets_1jet = 5400*1.207*1000. #
+sigma_WJets_2jet = 1750*1.207*1000. #
+sigma_WJets_3jet = 519 *1.207*1000. #
+sigma_WJets_4jet = 214 *1.207*1000. #
+
+
 
 # MC event counts from B2G twiki here :
 # https://twiki.cern.ch/twiki/bin/view/CMS/B2GTopLikeBSM53X#Backgrounds
@@ -107,6 +119,10 @@ Nmc_Tbar_s = 139974
 Nmc_T_tW = 497658
 Nmc_Tbar_tW = 493460
 Nmc_WJets = 57709905
+Nmc_WJets_1jet = 23141598
+Nmc_WJets_2jet = 34044921
+Nmc_WJets_3jet = 15539503
+Nmc_WJets_4jet = 13382803
 Nmc_TT_Mtt_700_1000 = 3082812
 Nmc_TT_Mtt_1000_Inf = 1249111
 
@@ -129,42 +145,50 @@ e_TT_Mtt_1000_Inf = 0.015
 e_TT_Mtt_0_700 =    1.0    # No efficiency here, we applied the cut at gen level
 
 
-# QCD Normalization from MET fits
-NQCD = 0.0
-
 # Scaling of the various backgrounds from the theta fit
-theta_nonsemilep = 0.98
-theta_wjets = 0.64
-theta_singletop = 0.63
-theta_QCD = 0.4
- 
+
+## vtxMass7                                 QCD                    9.63
+## vtxMass7                                 SingleTop              4.64
+## vtxMass7                                 WJets                  4.10
+## vtxMass7                                 TTbar_nonSemiLep      12.05
+## vtxMass7                                 TTbar                307.73
+
+fitted_qcd = 9.63
+fitted_singletop = 4.64
+fitted_wjets = 4.10
+fitted_ttbarnonsemilep = 12.05
+fitted_ttbar = 307.73
 
 # -------------------------------------------------------------------------------------
 #  read histogram files
 # -------------------------------------------------------------------------------------
 
-f_data = TFile("histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root")
-f_QCD  = TFile("histfiles/SingleMu_iheartNY_V1_mu_Run2012_qcd.root")
+f_data = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root")
+f_QCD  = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root")
 
-fnom_ttbar_max700    = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
-fnom_ttbar_700to1000 = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
-fnom_ttbar_1000toInf = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
+fnom_ttbar_max700    = TFile("histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_" + options.syst + ".root")
+fnom_ttbar_700to1000 = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_" + options.syst + ".root")
+fnom_ttbar_1000toInf = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_" + options.syst + ".root")
 
-f_ttbar_max700    = TFile("histfiles/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
-f_ttbar_700to1000 = TFile("histfiles/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
-f_ttbar_1000toInf = TFile("histfiles/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_max700    = TFile("histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_700to1000 = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_1000toInf = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
 
-f_ttbar_nonsemilep_max700    = TFile("histfiles/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
-f_ttbar_nonsemilep_700to1000 = TFile("histfiles/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
-f_ttbar_nonsemilep_1000toInf = TFile("histfiles/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_nonsemilep_max700    = TFile("histfiles_CT10_nom/2Dhists/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_nonsemilep_700to1000 = TFile("histfiles_CT10_nom/2Dhists/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_nonsemilep_1000toInf = TFile("histfiles_CT10_nom/2Dhists/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
 
-f_T_t     = TFile("histfiles/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
-f_Tbar_t  = TFile("histfiles/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
-f_T_s     = TFile("histfiles/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
-f_Tbar_s  = TFile("histfiles/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
-f_T_tW    = TFile("histfiles/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
-f_Tbar_tW = TFile("histfiles/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom.root")
-f_WJets   = TFile("histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_iheartNY_V1_mu_nom.root")
+f_T_t     = TFile("histfiles/2Dhist/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
+f_Tbar_t  = TFile("histfiles/2Dhist/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
+f_T_s     = TFile("histfiles/2Dhist/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
+f_Tbar_s  = TFile("histfiles/2Dhist/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
+f_T_tW    = TFile("histfiles/2Dhist/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
+f_Tbar_tW = TFile("histfiles/2Dhist/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
+
+f_WJets_1jet   = TFile("histfiles/2Dhist/W1JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root")
+f_WJets_2jet   = TFile("histfiles/2Dhist/W2JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root")
+f_WJets_3jet   = TFile("histfiles/2Dhist/W3JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root")
+f_WJets_4jet   = TFile("histfiles/2Dhist/W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root")
 
 # the response matrices are simply added here, but have been filled with the full event weights (taking sample size, efficiency, etx. into account)
 response_ttbar_max700    = f_ttbar_max700.Get("response_pt")
@@ -175,6 +199,8 @@ response.SetName("response_pt_"+options.syst)
 response.Add(response_ttbar_700to1000)
 response.Add(response_ttbar_1000toInf)
 
+
+TH1.AddDirectory(0)
 
 # -------------------------------------------------------------------------------------
 # output file for storing histograms to  
@@ -233,7 +259,6 @@ hRecoData.SetName("hRecoData")
 hRecoQCD = f_QCD.Get("ptRecoTop").Clone()
 hRecoQCD.SetName("hRecoQCD")
 hRecoQCD.Sumw2()
-hRecoQCD.Scale( NQCD / hRecoQCD.Integral() )
 hRecoQCD.SetFillColor(TColor.kYellow)
 
 if options.closureTest == False : 
@@ -250,7 +275,10 @@ hMeas_T_s     = f_T_s.Get("ptRecoTop")
 hMeas_Tbar_s  = f_Tbar_s.Get("ptRecoTop")
 hMeas_T_tW    = f_T_tW.Get("ptRecoTop")
 hMeas_Tbar_tW = f_Tbar_tW.Get("ptRecoTop")
-hMeas_WJets   = f_WJets.Get("ptRecoTop")
+hMeas_WJets_1jet   = f_WJets_1jet.Get("ptRecoTop")
+hMeas_WJets_2jet   = f_WJets_2jet.Get("ptRecoTop")
+hMeas_WJets_3jet   = f_WJets_3jet.Get("ptRecoTop")
+hMeas_WJets_4jet   = f_WJets_4jet.Get("ptRecoTop")
 hMeas_tt0_nonsemi = f_ttbar_nonsemilep_max700.Get("ptRecoTop")
 hMeas_tt700_nonsemi = f_ttbar_nonsemilep_700to1000.Get("ptRecoTop")
 hMeas_tt1000_nonsemi = f_ttbar_nonsemilep_1000toInf.Get("ptRecoTop")
@@ -282,6 +310,9 @@ hTrue.SetName("pt_genTop")
 hTrue.Add(hTrue_700to1000)
 hTrue.Add(hTrue_1000toInf)
 
+
+
+
 hRecoMC_max700.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) )
 hRecoMC_700to1000.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) )
 hRecoMC_1000toInf.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) )
@@ -290,23 +321,36 @@ hRecoMC.SetName("ptRecoTop_ttbar")
 hRecoMC.Add(hRecoMC_700to1000)
 hRecoMC.Add(hRecoMC_1000toInf)
 
-hMeas_T_t.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) * theta_singletop)
-hMeas_Tbar_t.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) * theta_singletop)
-hMeas_T_s.Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) * theta_singletop)
-hMeas_Tbar_s.Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) * theta_singletop)
-hMeas_T_tW.Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) * theta_singletop)
-hMeas_Tbar_tW.Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) * theta_singletop)
-hMeas_WJets.Scale( sigma_WJets_NNLO * lum / float(Nmc_WJets) * theta_wjets)
+
+
+hMeas_T_t.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) )
+hMeas_Tbar_t.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) )
+hMeas_T_s.Scale( sigma_T_s_NNLO * lum / float(Nmc_T_s) )
+hMeas_Tbar_s.Scale( sigma_Tbar_s_NNLO * lum / float(Nmc_Tbar_s) )
+hMeas_T_tW.Scale( sigma_T_tW_NNLO * lum / float(Nmc_T_tW) )
+hMeas_Tbar_tW.Scale( sigma_Tbar_tW_NNLO * lum / float(Nmc_Tbar_tW) )
+
+hMeas_WJets_1jet.Scale( sigma_WJets_1jet * lum / float(Nmc_WJets_1jet) )
+hMeas_WJets_2jet.Scale( sigma_WJets_2jet * lum / float(Nmc_WJets_2jet) )
+hMeas_WJets_3jet.Scale( sigma_WJets_3jet * lum / float(Nmc_WJets_3jet) )
+hMeas_WJets_4jet.Scale( sigma_WJets_4jet * lum / float(Nmc_WJets_4jet) )
+
 
 hMeas_SingleTop = hMeas_T_t.Clone()
 hMeas_SingleTop.SetName("ptRecoTop_SingleTop")
 
+hMeas_WJets = hMeas_WJets_1jet.Clone()
+hMeas_WJets.SetName("ptRecoTop_WJets")
+
 for hist in [hMeas_Tbar_t, hMeas_T_s, hMeas_Tbar_s, hMeas_T_tW, hMeas_Tbar_tW] :
     hMeas_SingleTop.Add( hist )
 
-hMeas_tt0_nonsemi.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) * theta_nonsemilep)
-hMeas_tt700_nonsemi.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) * theta_nonsemilep)
-hMeas_tt1000_nonsemi.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) * theta_nonsemilep)
+for hist in [hMeas_WJets_2jet,hMeas_WJets_3jet,hMeas_WJets_4jet] :
+    hMeas_WJets.Add( hist )
+
+hMeas_tt0_nonsemi.Scale( sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) )
+hMeas_tt700_nonsemi.Scale( sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) )
+hMeas_tt1000_nonsemi.Scale( sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) )
 
 hMeas_TTNonSemi = hMeas_tt0_nonsemi.Clone()
 hMeas_TTNonSemi.SetName("ptRecoTop_TTNonSemilep")
@@ -318,6 +362,18 @@ hMeas_WJets.SetFillColor(TColor.kGreen-3)
 hMeas.SetFillColor(TColor.kRed+1)
 hRecoMC.SetFillColor(TColor.kRed+1)
 hMeas_TTNonSemi.SetFillColor(TColor.kRed-7)
+
+
+#
+# Scale each sample to that fitted by theta
+#
+
+
+#hRecoMC.Scale( fitted_ttbar / hRecoMC.Integral() )
+hRecoQCD.Scale( fitted_qcd / hRecoQCD.Integral() )
+hMeas_SingleTop.Scale( fitted_singletop / hMeas_SingleTop.Integral() )
+hMeas_WJets.Scale( fitted_wjets / hMeas_WJets.Integral() )
+hMeas_TTNonSemi.Scale( fitted_ttbarnonsemilep / hMeas_TTNonSemi.Integral() )
 
 
 # -------------------------------------------------------------------------------------
@@ -335,7 +391,7 @@ hMC_stack.Add( hMeas_SingleTop )
 hMC_stack.Add( hMeas_TTNonSemi )
 hMC_stack.Add( hRecoQCD )
 hMC_stack.Add( hRecoMC )
-max = hMC_stack.GetMaximum()
+max = hTrue.GetMaximum()
 hEmpty.SetAxisRange(0, max*1.05, "Y")
 
 c = TCanvas("datamc", "", 800, 600)
@@ -351,6 +407,7 @@ if options.closureTest == False:
     hMC_stack.Draw("hist,same")
     hRecoData.Draw("e,same")
     hEmpty.Draw("axis,same")
+    hRecoData.SetMaximum( hMC_stack.GetMaximum() * 1.2 )
     l.AddEntry(hRecoData, "Data","pel")
     l.AddEntry(hRecoMC, "t#bar{t} ","f")
     l.AddEntry(hRecoQCD, "QCD","f")
@@ -361,6 +418,7 @@ else:
     hEmpty.Draw("hist")
     hMC_stack.Draw("hist,same")
     hEmpty.Draw("axis,same")
+    hEmpty.SetMaximum( hMC_stack.GetMaximum() * 1.2 )
     l.AddEntry(hRecoMC, "t#bar{t} ","f")
     l.AddEntry(hRecoQCD, "QCD","f")
     l.AddEntry(hMeas_TTNonSemi, "Non-semilep t#bar{t}","f")
@@ -372,20 +430,33 @@ c.SaveAs("UnfoldingPlots/unfold_datamc_"+options.syst+".png")
 c.SaveAs("UnfoldingPlots/unfold_datamc_"+options.syst+".eps")
 
 
+
+print 'Nwjets ' + str( hMeas_WJets.Integral() )
+print 'Nqcd   ' + str( hRecoQCD.Integral() )
+print 'Nt     ' + str( hMeas_SingleTop.Integral() )
+print 'Nttbar ' + str( hRecoMC.Integral() )
+print 'NData  ' + str( hRecoData.Integral() )
+                       
+
 # -------------------------------------------------------------------------------------
 # Now do the actual unfolding
 # -------------------------------------------------------------------------------------
+
+
 
 c2 = TCanvas("unfolding", "unfolding")
 
 if options.subtractBackgrounds :
     for hist in [hMeas_SingleTop, hMeas_WJets, hRecoQCD, hMeas_TTNonSemi] :
         hMeas.Add(hist, -1.)
-    
+
+for ibin in xrange( hMeas.GetNbinsX() ) :
+    if ( hMeas.GetBinContent( ibin ) < 0.0 ) :
+        hMeas.SetBinContent( ibin, 0.0 )
 
 print "------------ UNFOLDING (" + options.syst + ") ------------"
-unfold= RooUnfoldBayes     (response, hMeas, 10);    #  OR
-#unfold= RooUnfoldSvd     (response, hMeas, 20);   #  OR
+#unfold= RooUnfoldBayes     (response, hMeas, 10);    #  OR
+unfold= RooUnfoldSvd     (response, hMeas, 4);   #  OR
 #unfold= RooUnfoldTUnfold (response, hMeas);
 
 
@@ -405,12 +476,40 @@ hFrac.Divide(hTrue)
 hMeas.Sumw2()
 
 
+
+if options.normalize :
+    hTrue.Scale( 1.0 / hTrue.Integral() )
+    hMeas.Scale( 1.0 / hMeas.Integral() )
+    hReco.Scale( 1.0 / hReco.Integral() )
+else : 
+
+    # Correct for bin width
+    for ibin in range(1, hTrue.GetXaxis().GetNbins() ) :
+        width = hTrue.GetBinWidth(ibin)
+        hTrue.SetBinContent(ibin,  hTrue.GetBinContent(ibin) / width )
+        hMeas.SetBinContent(ibin,  hMeas.GetBinContent(ibin) / width )
+        hReco.SetBinContent(ibin,  hReco.GetBinContent(ibin) / width )
+        hTrue.SetBinError(ibin,  hTrue.GetBinError(ibin) / width )
+        hMeas.SetBinError(ibin,  hMeas.GetBinError(ibin) / width )
+        hReco.SetBinError(ibin,  hReco.GetBinError(ibin) / width )
+
+    
+
+print 'htrue = ' + str(hTrue.Integral() )
+print 'hmeas = ' + str(hMeas.Integral() )
+print 'hreco = ' + str(hReco.Integral() )
+
+
 #unfold.PrintTable (cout, hTrue);
 hReco.SetMarkerStyle(21)
 hMeas.SetMarkerStyle(25);
 
-hReco.SetTitle(";;d#sigma / dp_{T} [fb / GeV]")
+if options.normalize == False : 
+    hReco.SetTitle(";;#frac{d#sigma}{dp_{T}} [1/GeV]")
+else : 
+    hReco.SetTitle(";;#frac{1}{#sigma}#frac{d#sigma}{dp_{T}} [fb / GeV]")
 hReco.GetYaxis().SetTitleOffset(1.2)
+#hReco.SetMaximum( hTrue.GetMaximum() )
 hReco.SetMinimum(0.0)
 hReco.Draw()
 hTrue.Draw('hist same')
@@ -424,16 +523,6 @@ if options.plotFullRange == False :
     hReco.GetXaxis().SetRangeUser(400., 10000.)
 
 
-
-# Correct for bin width
-for ibin in range(1, hTrue.GetXaxis().GetNbins() ) :
-    width = hTrue.GetBinWidth(ibin)
-    hTrue.SetBinContent(ibin,  hTrue.GetBinContent(ibin) / width )
-    hMeas.SetBinContent(ibin,  hMeas.GetBinContent(ibin) / width )
-    hReco.SetBinContent(ibin,  hReco.GetBinContent(ibin) / width )
-    hTrue.SetBinError(ibin,  hTrue.GetBinError(ibin) / width )
-    hMeas.SetBinError(ibin,  hMeas.GetBinError(ibin) / width )
-    hReco.SetBinError(ibin,  hReco.GetBinError(ibin) / width )
 
 leg = TLegend(0.45, 0.55, 0.85, 0.75)
 leg.SetFillStyle(0)
