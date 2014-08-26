@@ -54,6 +54,7 @@ files = {
 
 hists = {}
 variables = []
+
 for key in keys :
     keyname = key.GetName()
     keyssplit = keyname.split('__')
@@ -86,20 +87,24 @@ for variable in variables :
     h_data = f_data.Get( variable + '__DATA' )
     c = TCanvas(variable, variable)
     canvs.append(c)
-    hs = THStack( variable, variable )    
+    hs = THStack( variable, variable )
+    isum = 0.0    
     for sample in samples :
         hist = hists[variable][sample]
         hs.Add( hist )
         print '{0:40s} {1:20s} {2:6.2f}'.format( variable, sample, hist.Integral() )
+        isum += hist.Integral()
+    print 'Total : {0:6.2f}'.format( isum )
 
     h_data.UseCurrentStyle()
     h_data.Draw('e')
     hs.Draw('hist same')
-    h_data.Draw('e same')
+    h_data.Draw('e same')    
     h_data.SetMaximum(imax)
     f_datas.append(f_data)
     h_datas.append(h_data)
     stacks.append(hs)
+    print 'Data : {0:6.2f}'.format( h_data.Integral() )
     c.Print(variable + '.png')
     c.Print(variable + '.pdf')
     i+= 1
