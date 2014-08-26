@@ -79,7 +79,7 @@ h_datas = []
 ivar = 0
 
 maxes = [40, 40, 600]
-
+# Post-fit plots
 i=0
 for variable in variables :
     imax = maxes[i]
@@ -108,3 +108,35 @@ for variable in variables :
     c.Print(variable + '.png')
     c.Print(variable + '.pdf')
     i+= 1
+
+
+# Pre-fit plots
+i=0
+for variable in variables :
+    imax = maxes[i]
+    f_data = TFile( files[ variable ] )
+    h_data = f_data.Get( variable + '__DATA' )
+    cpre = TCanvas(variable + 'pre', variable + 'pre')
+    canvs.append(cpre)
+    hs = THStack( variable+'pre', variable+'pre' )
+    isum = 0.0
+    for sample in samples :
+        hist = f_data.Get( variable + '__' + sample )
+        hs.Add( hist )
+        print '{0:40s} {1:20s} {2:6.2f}'.format( variable, sample, hist.Integral() )
+        isum += hist.Integral()
+    print 'Total : {0:6.2f}'.format( isum )
+
+    h_data.UseCurrentStyle()
+    h_data.Draw('e')
+    hs.Draw('hist same')
+    h_data.Draw('e same')    
+    h_data.SetMaximum(imax)
+    f_datas.append(f_data)
+    h_datas.append(h_data)
+    stacks.append(hs)
+    print 'Data : {0:6.2f}'.format( h_data.Integral() )
+    cpre.Print(variable + 'p_re.png')
+    cpre.Print(variable + '_pre.pdf')
+    i+= 1
+    
