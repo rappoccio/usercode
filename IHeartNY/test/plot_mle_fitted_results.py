@@ -136,7 +136,7 @@ for variable in variables :
     h_datas.append(h_data)
     stacks.append(hs)
     print 'Data : {0:6.2f}'.format( h_data.Integral() )
-    cpre.Print(variable + 'p_re.png')
+    cpre.Print(variable + '_pre.png')
     cpre.Print(variable + '_pre.pdf')
     i+= 1
     

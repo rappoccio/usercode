@@ -34,15 +34,28 @@ void plotUnfold() {
   // get files & histograms
   
   const int nSYST = 13;
-  TString name_syst[nSYST] = {"nom",
-			      "pdfup","pdfdn","scaleup_nom","scaledown_nom",
-			      "jecup","jecdn","jerup","jerdn",
-			      "btagup","btagdn","toptagup","toptagdn"};
+  TString name_syst[nSYST] = {"CT10_nom_2Dcut_nom",
+			      "scaleup_2Dcut_nom",
+			      "scaledown_2Dcut_nom",
+			      "CT10_nom_2Dcut_pdfup",
+			      "CT10_nom_2Dcut_pdfdown",
+			      "CT10_nom_2Dcut_jecup",
+			      "CT10_nom_2Dcut_jecdn",
+			      "CT10_nom_2Dcut_jerup",
+			      "CT10_nom_2Dcut_jerdn",			      
+			      "CT10_nom_2Dcut_btagup",
+			      "CT10_nom_2Dcut_btagdn",
+			      "CT10_nom_2Dcut_toptagup",
+			      "CT10_nom_2Dcut_toptagdn",
+
+  };
 
   TFile* f_syst[nSYST];
   TH1F* h_unfolded[nSYST];
   TH1F* h_true;
   TH1F* h_measured;
+
+  cout << "Getting files and hists" << endl;
 
   for (int is=0; is<nSYST; is++) {
     f_syst[is] = new TFile("UnfoldingPlots/unfold_"+name_syst[is]+".root");
@@ -79,6 +92,7 @@ void plotUnfold() {
 
   // ----------------------------------------------------------------------------------------------------------------
   // systematics for ratio plot
+  cout << "Making ratio plots" << endl;
   TH1F* h_systEXP_up = (TH1F*) h_measured->Clone("syst_up_exp");
   TH1F* h_systEXP_dn = (TH1F*) h_measured->Clone("syst_dn_exp");
   h_systEXP_up->Reset();
@@ -102,6 +116,7 @@ void plotUnfold() {
       sig[is]   = h_unfolded[is]->GetBinError(i+1);
     }
 
+    cout << "Accessing event counts" << endl;
     float this_systEXP_up = 0;
     this_systEXP_up += (count[5]-count[0])*(count[5]-count[0]);
     this_systEXP_up += (count[7]-count[0])*(count[7]-count[0]);
@@ -139,7 +154,10 @@ void plotUnfold() {
 
     h_systTH_up->SetBinContent(i+1,upTH);
     h_systTH_dn->SetBinContent(i+1,dnTH);  
+    cout << ".... done" << endl;
   }
+
+  cout << "Done with all bins" << endl;
 
   h_dummy->GetXaxis()->SetTitle("p_{T} [GeV]");
   h_dummy->GetYaxis()->SetTitle("d#sigma / dp_{T} [fb / GeV]");
@@ -148,6 +166,7 @@ void plotUnfold() {
 
 
 
+  cout << "Making ratio plots" << endl;
   // ----------------------------------------------------------------------------------------------------------------
   // RATIO PLOTS !!!!!!!
   // ----------------------------------------------------------------------------------------------------------------
@@ -200,7 +219,7 @@ void plotUnfold() {
   }
   gr->SetMarkerStyle(8);
   */
-
+  cout << "Plotting stuff" << endl;
   h_dummy->Draw("hist");
   h_true->Draw("hist,same");
   h_unfolded[0]->Draw("hist,ep,same");
@@ -225,6 +244,7 @@ void plotUnfold() {
   leg->Draw();
 
   
+
   // ----------------------------------------------------------------------------------------------------------------
   // making ratio part of plot
   

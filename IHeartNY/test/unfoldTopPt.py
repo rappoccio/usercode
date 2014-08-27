@@ -38,6 +38,12 @@ parser.add_option('--systVariation', metavar='F', type='string', action='store',
                   dest='syst',
                   help='Run nominal or systematic variation?')
 
+parser.add_option('--ttbarPDF', metavar='F', type='string', action='store',
+                  default='CT10_nom',
+                  dest='ttbarPDF',
+                  help='Run nominal or systematic variation?')
+
+
 
 # -------------------------------------------------------------------------------------
 # load options & set plot style
@@ -166,17 +172,17 @@ fitted_ttbar = 307.73
 f_data = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root")
 f_QCD  = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root")
 
-fnom_ttbar_max700    = TFile("histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_" + options.syst + ".root")
-fnom_ttbar_700to1000 = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_" + options.syst + ".root")
-fnom_ttbar_1000toInf = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_" + options.syst + ".root")
+fnom_ttbar_max700    = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_" + options.syst + ".root")
+fnom_ttbar_700to1000 = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_" + options.syst + ".root")
+fnom_ttbar_1000toInf = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_" + options.syst + ".root")
 
-f_ttbar_max700    = TFile("histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
-f_ttbar_700to1000 = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
-f_ttbar_1000toInf = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_max700    = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_700to1000 = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_1000toInf = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
 
-f_ttbar_nonsemilep_max700    = TFile("histfiles_CT10_nom/2Dhists/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
-f_ttbar_nonsemilep_700to1000 = TFile("histfiles_CT10_nom/2Dhists/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
-f_ttbar_nonsemilep_1000toInf = TFile("histfiles_CT10_nom/2Dhists/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_nonsemilep_max700    = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_nonsemilep_700to1000 = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
+f_ttbar_nonsemilep_1000toInf = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
 
 f_T_t     = TFile("histfiles/2Dhist/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
 f_Tbar_t  = TFile("histfiles/2Dhist/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
