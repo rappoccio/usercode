@@ -37,8 +37,8 @@ void plotUnfold() {
   TString name_syst[nSYST] = {"CT10_nom_2Dcut_nom",
 			      "scaleup_2Dcut_nom",
 			      "scaledown_2Dcut_nom",
-			      "CT10_nom_2Dcut_pdfup",
-			      "CT10_nom_2Dcut_pdfdown",
+			      "CT10_pdfup_2Dcut_nom",
+			      "CT10_pdfdown_2Dcut_nom",
 			      "CT10_nom_2Dcut_jecup",
 			      "CT10_nom_2Dcut_jecdn",
 			      "CT10_nom_2Dcut_jerup",
@@ -58,15 +58,16 @@ void plotUnfold() {
   cout << "Getting files and hists" << endl;
 
   for (int is=0; is<nSYST; is++) {
+    cout << "getting UnfoldingPlots/unfold_" << name_syst[is] << ".root" <<endl;
     f_syst[is] = new TFile("UnfoldingPlots/unfold_"+name_syst[is]+".root");
     
     if (is==0) {
-      h_true = (TH1F*) f_syst[is]->Get("pt_genTop");
-      h_measured = (TH1F*) f_syst[is]->Get("ptRecoTop_measured");
+      h_true = (TH1F*) f_syst[is]->Get("pt_genTop")->Clone();
+      h_measured = (TH1F*) f_syst[is]->Get("ptRecoTop")->Clone();
     }
 
-    h_unfolded[is] = (TH1F*) f_syst[is]->Get("UnfoldedMC");
-    h_unfolded[is]->SetName("UnfoldedMC_"+name_syst[is]);
+    h_unfolded[is] = (TH1F*) f_syst[is]->Get("UnfoldedData")->Clone();
+    h_unfolded[is]->SetName("UnfoldedData_"+name_syst[is]);
   }
 
   TH1F* h_dummy = (TH1F*) h_measured->Clone("dummy");
@@ -359,8 +360,8 @@ void plotUnfold() {
   line->Draw("same");
   //grr->Draw("p,same");
   //bla2->Draw("same,e2");
-  blaEXP->Draw("same,e2");
-  //blaTH->Draw("same,e2");
+  blaEXP->Draw("same,e3");
+  blaTH->Draw("same,e3");
   line->Draw("same");
   h_ratio->Draw("pe,same,hist");
   //grr->Draw("p,same");
@@ -371,6 +372,7 @@ void plotUnfold() {
   
   c->SaveAs("unfoldWithError.png");
   c->SaveAs("unfoldWithError.eps");
+  c->SaveAs("unfoldWithError.pdf");
 
   
 }
