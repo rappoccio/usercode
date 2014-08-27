@@ -369,7 +369,7 @@ hMeas_TTNonSemi.SetFillColor(TColor.kRed-7)
 #
 
 
-#hRecoMC.Scale( fitted_ttbar / hRecoMC.Integral() )
+hRecoMC.Scale( fitted_ttbar / hRecoMC.Integral() )
 hRecoQCD.Scale( fitted_qcd / hRecoQCD.Integral() )
 hMeas_SingleTop.Scale( fitted_singletop / hMeas_SingleTop.Integral() )
 hMeas_WJets.Scale( fitted_wjets / hMeas_WJets.Integral() )
@@ -467,7 +467,7 @@ pad1.Draw();
 pad1.cd();
 
    
-hReco = unfold.Hreco();
+hReco = unfold.Hreco()
 
 hFrac = hReco.Clone()
 hFrac.SetName("hFrac")
@@ -476,22 +476,24 @@ hFrac.Divide(hTrue)
 #hMeas.Sumw2()
 
 
+bin400 = hMeas.GetXaxis().FindBin(400.)
+binmax = hMeas.GetXaxis().FindBin(10000.)
 
 if options.normalize :
-    hTrue.Scale( 1.0 / hTrue.Integral() )
-    hMeas.Scale( 1.0 / hMeas.Integral() )
-    hReco.Scale( 1.0 / hReco.Integral() )
-else : 
+    hTrue.Scale( 1.0 / hTrue.Integral(bin400,binmax) )
+    hMeas.Scale( 1.0 / hMeas.Integral(bin400,binmax) )
+    hReco.Scale( 1.0 / hReco.Integral(bin400,binmax) )
 
-    # Correct for bin width
-    for ibin in range(1, hTrue.GetXaxis().GetNbins() ) :
-        width = hTrue.GetBinWidth(ibin)
-        hTrue.SetBinContent(ibin,  hTrue.GetBinContent(ibin) / width )
-        hMeas.SetBinContent(ibin,  hMeas.GetBinContent(ibin) / width )
-        hReco.SetBinContent(ibin,  hReco.GetBinContent(ibin) / width )
-        hTrue.SetBinError(ibin,  hTrue.GetBinError(ibin) / width )
-        hMeas.SetBinError(ibin,  hMeas.GetBinError(ibin) / width )
-        hReco.SetBinError(ibin,  hReco.GetBinError(ibin) / width )
+
+# Correct for bin width
+for ibin in range(1, hTrue.GetXaxis().GetNbins() ) :
+    width = hTrue.GetBinWidth(ibin)
+    hTrue.SetBinContent(ibin,  hTrue.GetBinContent(ibin) / width )
+    hMeas.SetBinContent(ibin,  hMeas.GetBinContent(ibin) / width )
+    hReco.SetBinContent(ibin,  hReco.GetBinContent(ibin) / width )
+    hTrue.SetBinError(ibin,  hTrue.GetBinError(ibin) / width )
+    hMeas.SetBinError(ibin,  hMeas.GetBinError(ibin) / width )
+    hReco.SetBinError(ibin,  hReco.GetBinError(ibin) / width )
 
     
 
@@ -505,9 +507,9 @@ hReco.SetMarkerStyle(21)
 hMeas.SetMarkerStyle(25);
 
 if options.normalize == False : 
-    hReco.SetTitle(";;#frac{d#sigma}{dp_{T}} [1/GeV]")
+    hReco.SetTitle(";;#frac{d#sigma}{dp_{T}} [fb/GeV]")
 else : 
-    hReco.SetTitle(";;#frac{1}{#sigma}#frac{d#sigma}{dp_{T}} [fb / GeV]")
+    hReco.SetTitle(";;#frac{1}{#sigma} #frac{d#sigma}{dp_{T}} [1 / GeV]")
 hReco.GetYaxis().SetTitleOffset(1.2)
 #hReco.SetMaximum( hTrue.GetMaximum() )
 hReco.SetMinimum(0.0)
