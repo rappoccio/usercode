@@ -473,7 +473,7 @@ hFrac = hReco.Clone()
 hFrac.SetName("hFrac")
 hFrac.SetTitle(";p_{T} [GeV];Measured/Truth")
 hFrac.Divide(hTrue)
-hMeas.Sumw2()
+#hMeas.Sumw2()
 
 
 
