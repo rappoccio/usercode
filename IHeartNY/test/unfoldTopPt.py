@@ -159,11 +159,11 @@ e_TT_Mtt_0_700 =    1.0    # No efficiency here, we applied the cut at gen level
 ## vtxMass7                                 TTbar_nonSemiLep      12.05
 ## vtxMass7                                 TTbar                307.73
 
-fitted_qcd = 9.63
-fitted_singletop = 4.64
-fitted_wjets = 4.10
-fitted_ttbarnonsemilep = 12.05
-fitted_ttbar = 307.73
+fitted_qcd = 9.32
+fitted_singletop = 4.65
+fitted_wjets = 4.13
+fitted_ttbarnonsemilep = 17.50
+fitted_ttbar = 337.09
 
 # -------------------------------------------------------------------------------------
 #  read histogram files

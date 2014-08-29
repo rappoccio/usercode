@@ -1,6 +1,7 @@
 from ROOT import *
+from array import array
 
-ttbar_list ={'TTbar': {'jer': [(1.2555039188063666, 0.73395168032538038)], 'toptag': [(0.51113668184353656, 0.42601720132335763)], 'btag': [(-0.004192920382770947, 0.95990133461049654)], 'rate_nonsemi': [(-0.21828931822708703, 0.93678620412455826)], 'beta_signal': [(0.68761271346628039, 0.098139730330166097)], 'jec': [(1.1721138105418469, 0.54699033314394796)], 'rate_vjets': [(-0.83608021981108305, 0.24346302882380663)], '__nll': [-32815.369813095567], 'lumi': [(-0.13026771562372652, 1.0051992627172162)], 'rate_qcd': [(-0.34123000788371921, 0.57083070760150767)], 'rate_st': [(-0.67189517497673434, 0.84692993339913147)]}}
+ttbar_list ={'TTbar': {'jer': [(1.2145311555799996, 0.74633809754164948)], 'toptag': [(0.58295180989031636, 0.41620014260599064)], 'btag': [(0.01889381785052521, 0.96081171761475648)], 'beta_signal': [(0.66311752567301108, 0.090867533851554438)], 'jec': [(1.1941626970888379, 0.5435916572143038)], 'rate_vjets': [(-0.859134728532992, 0.24239119178278748)], '__nll': [-32815.100585018146], 'lumi': [(-0.14723538155356494, 1.0048381685248242)], 'rate_qcd': [(-0.42293684412177157, 0.57488717516293952)], 'rate_st': [(-0.70496894480722472, 0.84208959829528718)]}}
 
 
 
@@ -13,7 +14,7 @@ gr2sig = TGraphErrors()
 nPoint = -1
 for systematic in sorted(signal_list.keys()):
 
-	if systematic is '__nll' or systematic is "beta_signal":
+	if systematic is '__nll' or systematic is "beta_signal" or systematic is '__cov':
 		continue
 
 	nPoint += 1
@@ -52,7 +53,7 @@ gr2sig.GetXaxis().Set(10,-4.5,4.5)
 
 nBin = 0
 for systematic in sorted(signal_list.keys()):
-	if systematic is '__nll' or systematic is 'beta_signal':
+	if systematic is '__nll' or systematic is 'beta_signal' or systematic is '__cov':
 		continue
 	gr2sig.GetYaxis().SetBinLabel(nBin+1, systematic)
 	nBin += 1
