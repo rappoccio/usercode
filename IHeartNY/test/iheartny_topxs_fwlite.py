@@ -166,7 +166,49 @@ def getBtagSFerror(jetPt) :
     return float(error)
 # -------------------------------------------------------------------------------------
 
-    
+
+# -------------------------------------------------------------------------------------
+# Lepton trigger * ID SF
+def getMuonSF(muEta) :
+
+    muSF = 1.0
+    if abs(muEta) < 0.9 :
+        muSF = 0.9815 * 0.9930
+    elif abs(muEta) < 1.2 :
+        muSF = 0.9622 * 0.9942
+    else :
+        muSF = 0.9906 * 0.9968
+
+    return float(muSF)
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Top-tagging SF
+def getToptagSF(jetEta) :
+
+    toptagSF = 1.0
+    if abs(jetEta) < 1.1 :
+        toptagSF = 1.173
+    else :
+        toptagSF = 0.704
+
+    return float(toptagSF)
+
+
+# Top-tagging SF error
+def getToptagSFerror(jetEta) :
+
+    toptagSFerr = 0.0
+    if abs(jetEta) < 1.1 :
+        toptagSF = 0.092
+    else :
+        toptagSF = 0.110
+
+    return float(toptagSF)
+# -------------------------------------------------------------------------------------
+
+
 
 # -------------------------------------------------------------------------------------
 # define input options
@@ -316,6 +358,9 @@ if options.num != 'all':
 
 import ROOT
 ROOT.gROOT.Macro("rootlogon.C")
+
+## array needed for response matrix binning
+from array import *
 
 if options.makeResponse :
     ROOT.gSystem.Load("RooUnfold-1.1.1/libRooUnfold")
@@ -772,13 +817,17 @@ h_hadtop_precut_nvtx_tau32   = ROOT.TH2F("hadtop_precut_nvtx_tau32",   ";Number 
 h_hadtop_precut_nvtx_csv     = ROOT.TH2F("hadtop_precut_nvtx_csv",     ";Number of PV; CSV discriminator(hadronic top)", 40, 0, 80, 110, 0., 1.1)
 
 
+# dummy histogram used only to specify dimensions for reponse matrix
+ptbins = array('d',[300.0,400.0,500.0,600.0,700.0,800.0,1300.0])
+h_bins = ROOT.TH1F("bins", ";;", len(ptbins)-1, ptbins)
+
 # histograms for doing the unfolding
 if options.makeResponse == True : 
-    response = ROOT.RooUnfoldResponse(10, 300., 1300., 10, 300., 1300.)
+    response = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response.SetName('response_pt')
-    h_ptGenTop = ROOT.TH1F("ptGenTop", ";p_{T}(generated top) [GeV]; Events / 10 GeV", 10, 300., 1300.)
+    h_ptGenTop = ROOT.TH1F("ptGenTop", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
-h_ptRecoTop = ROOT.TH1F("ptRecoTop", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", 10, 300., 1300.)
+h_ptRecoTop = ROOT.TH1F("ptRecoTop", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
 
 # -------------------------------------------------------------------------------------
@@ -1439,7 +1488,6 @@ for event in events :
     # muon channel
     # -------------------------------------------------------------------------------------
 
-
     cut1 = nMuons == 1 and nElectronsForVeto <= 0
     if options.debug == True and cut1 == True :
         print '----- event good for muons ----'
@@ -1447,6 +1495,7 @@ for event in events :
     # -------------------------------------------------------------------------------------
     # electron channel
     # -------------------------------------------------------------------------------------
+
     cut2 = nElectrons == 1 and nMuonsForVeto <= 0
     if options.debug == True and cut2 == True :
         print '----- event good for electrons ----'
@@ -1460,10 +1509,15 @@ for event in events :
         cut = cut1
         if options.debug == True and cut == True :
             print '----- Counting as muon event -----'
+        if nMuons == 1 :
+            muEta = muons[igoodMu].p4().Eta()
+            muonSF = getMuonSF(muEta)
+            weight = weight*muonSF
     else :
         cut = cut2
         if options.debug == True and cut == True :
-            print '----- Counting as electron event -----'
+            print '----- Counting as electron event -----'    
+    
     leptons = muons + electrons
     h_nMuons.Fill( nMuons, weight )
     h_nElectrons.Fill( nElectrons, weight )
@@ -2293,19 +2347,26 @@ for event in events :
         print 'Passed stage6'
     cutflow['Stage 6: '] += 1
 
-    
+    goodtop = hadJets[itop_mass]
+    igoodtop = hadJetsIndex[itop_mass]
+
     ## apply top-tagging systematic variation up/down
     if options.isData == False :
-        toptagSF = 1.0
+        topEta = goodtop.Eta()
+        toptagSF = getToptagSF(topEta)
         if options.toptagSys != None :
-            toptagSF += options.toptagSys
+            toptagSF *= (1.0 + options.toptagSys) ## scale up/down by 25%
+		
+        #if options.toptagSys != None :
+        #toptagSFerr = getToptagSFerror(topEta)
+        #if options.toptagSys > 0 :
+        #toptagSF += toptagSFerr
+        #else :
+        #toptagSF -= toptagSFerr
         weight *= toptagSF
         top_weight *= toptagSF
 
-    
-    goodtop = hadJets[itop_mass]
-    igoodtop = hadJetsIndex[itop_mass]
-    
+
     h_hadtop_pt6.Fill(goodtop.Perp(), top_weight)
     h_hadtop_mass6.Fill(goodtop.M(), top_weight)
     h_hadtop_y6.Fill(goodtop.Rapidity(), top_weight)
