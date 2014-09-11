@@ -163,7 +163,7 @@ fitted_qcd = 9.32
 fitted_singletop = 4.65
 fitted_wjets = 4.13
 fitted_ttbarnonsemilep = 17.50
-fitted_ttbar = 337.09
+fitted_ttbar = 301.50
 
 # -------------------------------------------------------------------------------------
 #  read histogram files
@@ -492,7 +492,7 @@ if options.normalize :
 
 
 # Correct for bin width
-for ibin in range(1, hTrue.GetXaxis().GetNbins() ) :
+for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
     width = hTrue.GetBinWidth(ibin)
     hTrue.SetBinContent(ibin,  hTrue.GetBinContent(ibin) / width )
     hMeas.SetBinContent(ibin,  hMeas.GetBinContent(ibin) / width )
