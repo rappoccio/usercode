@@ -1509,7 +1509,7 @@ for event in events :
         cut = cut1
         if options.debug == True and cut == True :
             print '----- Counting as muon event -----'
-        if nMuons == 1 :
+        if nMuons == 1 and options.isData == False :
             muEta = muons[igoodMu].p4().Eta()
             muonSF = getMuonSF(muEta)
             weight = weight*muonSF
