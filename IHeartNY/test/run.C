@@ -94,6 +94,12 @@ void run(TString option) {
     makePlots_single("vtxMass",7);
 
   }
+  // debug thing
+  else if (option=="debug") {
+
+    makePlots_single("hadtop_pt",7);
+
+  }
 
   cout << "... DONE! " << endl;
 
