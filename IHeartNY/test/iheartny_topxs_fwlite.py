@@ -802,6 +802,9 @@ h_hadtop_y5 = ROOT.TH1F("hadtop_y5", ";y(hadronic top); Events / 0.1", 100, -5, 
 h_hadtop_y6 = ROOT.TH1F("hadtop_y6", ";y(hadronic top); Events / 0.1", 100, -5, 5.)
 h_hadtop_y7 = ROOT.TH1F("hadtop_y7", ";y(hadronic top); Events / 0.1", 100, -5, 5.)
 
+h_hadtop_eta4 = ROOT.TH1F("hadtop_eta4", ";top-tagged jet #eta; Events / 0.1", 50, -2.5, 2.5)
+h_hadtop_eta6 = ROOT.TH1F("hadtop_eta6", ";top-tagged jet #eta; Events / 0.1", 50, -2.5, 2.5)
+h_hadtop_eta7 = ROOT.TH1F("hadtop_eta7", ";top-tagged jet #eta; Events / 0.1", 50, -2.5, 2.5)
 
 # plot various top-tagging variables, plot *before* cutting on the given variable
 h_hadtop_precut_nsub    = ROOT.TH1F("hadtop_precut_nsub",    ";Number of subjets; Events / 1.0",                11, -0.5, 10.5)
@@ -815,6 +818,10 @@ h_hadtop_precut_nvtx_minmass = ROOT.TH2F("hadtop_precut_nvtx_minmass", ";Number 
 h_hadtop_precut_nvtx_mass    = ROOT.TH2F("hadtop_precut_nvtx_mass",    ";Number of PV; m(hadronic top) [GeV]",           40, 0, 80, 100, 0., 500.)
 h_hadtop_precut_nvtx_tau32   = ROOT.TH2F("hadtop_precut_nvtx_tau32",   ";Number of PV; #tau_{32}(hadronic top)",         40, 0, 80, 70, 0., 1.4)
 h_hadtop_precut_nvtx_csv     = ROOT.TH2F("hadtop_precut_nvtx_csv",     ";Number of PV; CSV discriminator(hadronic top)", 40, 0, 80, 110, 0., 1.1)
+
+h_muonSF   = ROOT.TH1F("muonSF",   ";; Average muon trigger+ID SF", 1,0.5,1.5)
+h_btagSF   = ROOT.TH1F("btagSF",   ";; Average b-tagging SF", 1,0.5,1.5)
+h_toptagSF = ROOT.TH1F("toptagSF", ";; Average top-tagging SF", 1,0.5,1.5)
 
 
 # dummy histogram used only to specify dimensions for reponse matrix
@@ -1505,6 +1512,7 @@ for event in events :
     # fill nbr of leptons plots & require exactly one lepton
     # -------------------------------------------------------------------------------------
     cut = None
+    muonSF = 1.0
     if options.lepType == "muon":
         cut = cut1
         if options.debug == True and cut == True :
@@ -2128,8 +2136,9 @@ for event in events :
     h_hadtop_pt4.Fill(hadJets[0].Perp(), top_weight)
     h_hadtop_y4.Fill(hadJets[0].Rapidity(), top_weight)
     h_hadtop_mass4.Fill(hadJets[0].M(), top_weight)
+    h_hadtop_eta4.Fill(hadJets[0].Eta(), top_weight)
 
-
+    
     # -------------------------------------------------------------------------------------
     # STEP (5): cut on HT or leptonic HT?
     # -------------------------------------------------------------------------------------
@@ -2183,6 +2192,7 @@ for event in events :
     h_hadtop_pt5.Fill(hadJets[0].Perp(), top_weight)
     h_hadtop_y5.Fill(hadJets[0].Rapidity(), top_weight)
     h_hadtop_mass5.Fill(hadJets[0].M(), top_weight)
+    h_hadtop_eta5.Fill(hadJets[0].Eta(), top_weight)
 
     
     
@@ -2351,6 +2361,7 @@ for event in events :
     igoodtop = hadJetsIndex[itop_mass]
 
     ## apply top-tagging systematic variation up/down
+    toptagSF = 1.0
     if options.isData == False :
         topEta = goodtop.Eta()
         toptagSF = getToptagSF(topEta)
@@ -2370,7 +2381,8 @@ for event in events :
     h_hadtop_pt6.Fill(goodtop.Perp(), top_weight)
     h_hadtop_mass6.Fill(goodtop.M(), top_weight)
     h_hadtop_y6.Fill(goodtop.Rapidity(), top_weight)
-    
+    h_hadtop_eta6.Fill(goodtop.Eta(), top_weight)
+
     h_mttbarGen6.Fill( mttbarGen )
     h_ht6.Fill(ht, weight)
     h_htLep6.Fill(htLep, weight)
@@ -2482,6 +2494,7 @@ for event in events :
     goodEvents.append( [ event.object().id().run(), event.object().id().luminosityBlock(), event.object().id().event() ] )
     
     # apply b-tagging SF 
+    btagSF = 1.0
     if options.isData == False :
         btagSF = getBtagSF(bjet_pt)
         if options.btagSys != None :
@@ -2527,6 +2540,16 @@ for event in events :
     h_hadtop_pt7.Fill(goodtop.Perp(), top_weight)
     h_hadtop_mass7.Fill(goodtop.M(), top_weight)
     h_hadtop_y7.Fill(goodtop.Rapidity(), top_weight)
+    h_hadtop_eta7.Fill(goodtop.Eta(), top_weight)
+
+    # -------------------------------------------------------------------------------------
+    # fill histograms for average scale factors
+    # -------------------------------------------------------------------------------------
+
+    if options.isData == False :
+        h_muonSF.Fill(1.0,muonSF)
+        h_btagSF.Fill(1.0,btagSF)
+        h_toptagSF.Fill(1.0,toptagSF)
 
     
     # -------------------------------------------------------------------------------------

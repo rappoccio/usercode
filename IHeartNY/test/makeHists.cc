@@ -40,7 +40,7 @@ void myText(Double_t x,Double_t y,Color_t color,char const *text) {
 // make pretty plots
 // -------------------------------------------------------------------------------------
 
-void makePlots_single(TString var, int cut, TString pdfdir="CT10") {
+void makePlots_single(TString var, int cut, TString pdfdir="CT10_nom") {
   
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -131,7 +131,7 @@ void makePlots_single(TString var, int cut, TString pdfdir="CT10") {
   }
   else if (var=="ptLep") {
     rebin = 2;
-    newtitle = "Events / 10 GeV";
+    newtitle = "Muons / 10 GeV";
   }
   else if (hist=="ptMET4") {
     rebin = 5;
@@ -342,7 +342,7 @@ void makePlots_single(TString var, int cut, TString pdfdir="CT10") {
 // make theta histograms without subtracting
 // -------------------------------------------------------------------------------------
 
-void makeTheta_single(TString var, int cut, TString pdfdir="CT10") {
+void makeTheta_single(TString var, int cut, TString pdfdir="CT10_nom") {
   
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -422,7 +422,7 @@ void makeTheta_single(TString var, int cut, TString pdfdir="CT10") {
 // make histograms, subtract one from another
 // -------------------------------------------------------------------------------------
 
-void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10") {
+void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10_nom") {
 
   TH1::AddDirectory(kFALSE); 
   setStyle();
