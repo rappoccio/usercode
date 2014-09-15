@@ -26,15 +26,15 @@ bool use2D = true;
 
 std::pair<double, double> getQCDnorm(int cut) {
 
-  if ( !(cut==3||cut==4||cut==6||cut==7) ) {
-    std::cout << "Not a valid cut option! Options are cut == 3,4,6,7. Exiting..." << std::endl;
+  if ( !(cut==4||cut==6||cut==7) ) {
+    std::cout << "Not a valid cut option! Options are cut == 4,6,7. Exiting..." << std::endl;
     return std::make_pair(0,0);
   }
 
-  float qcd_reliso_norm[8] = {0.0, 147500.4, 147500.4, 3134.0, 409.3, 409.3, 28.8,  1.0};
-  float qcd_reliso_err[8]  = {0.0,   1755.6,   1755.6,  260.6,  71.5,  71.5, 21.5, 10.0};
-  float qcd_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 10693.5, 1303.7, 1303.7, 62.1,  11.1};
-  float qcd_2Dcut_err[8]   = {0.0, 0.0, 0.0,   287.3,   84.7,   84.7, 25.6,  14.6};
+  float qcd_reliso_norm[8] = {0.0, 0.0, 0.0, 0.0,  401.4, 0.0, 28.5,  1.0};
+  float qcd_reliso_err[8]  = {0.0, 0.0, 0.0, 0.0,   71.6, 0.0, 21.5, 10.0};
+  float qcd_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1255.5, 0.0, 50.0,  9.9};
+  float qcd_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   84.0, 0.0, 25.7, 14.6};
 
   float qcd_norm = 0;
   float qcd_err  = 0;
