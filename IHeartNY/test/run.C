@@ -88,16 +88,22 @@ void run(TString option) {
     
     for (int ih=0; ih<nHIST; ih++) {
       for (int ir=0; ir<nREGION; ir++) {
-	makePlots_single(hist[ih], region[ir]);
+	makePlots(hist[ih], region[ir]);
       }
     }  
-    makePlots_single("vtxMass",7);
+    makePlots("vtxMass",7);
 
   }
   // debug thing
   else if (option=="debug") {
 
-    makePlots_single("hadtop_pt",7);
+    makePlots("hadtop_pt",7);
+    makePlots("hadtop_pt",6,7);
+    makePlots("hadtop_pt",4,6);
+
+    makePlots("vtxMass",7);
+    makePlots("etaAbsLep",6,7);
+    makePlots("etaAbsLep",4,6);
 
   }
 

@@ -40,25 +40,47 @@ void myText(Double_t x,Double_t y,Color_t color,char const *text) {
 // make pretty plots
 // -------------------------------------------------------------------------------------
 
-void makePlots_single(TString var, int cut, TString pdfdir="CT10_nom") {
-  
+void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
+
   TH1::AddDirectory(kFALSE); 
   setStyle();
 
-  if ( !(cut==3||cut==4||cut==6||cut==7) ) {
+  if (cut2==0) { 
+    if ( !(cut==3||cut==4||cut==6||cut==7) ) {
+      std::cout << "Not a valid option! Syntax is: " << std::endl
+		<< "> makePlots(TString var, int cut)" << std::endl
+		<< "where cut == 3,4,6,7. Exiting..." << std::endl;
+      return;
+    }
+  }
+  else if ( !(cut==3||cut==4||cut==6||cut==7) ||
+	    !(cut2==3||cut2==4||cut2==6||cut2==7) ||
+	    cut2 <= cut ) {
     std::cout << "Not a valid option! Syntax is: " << std::endl
-	      << "> makePlots_single(TString var, int cut)" << std::endl
-	      << "where cut == 3,4,6,7. Exiting..." << std::endl;
+	      << "> makePlots(TString var, int cut1, int cut2)" << std::endl
+	      << "where cut1/2 == 3,4,6,7 and cut1 < cut2. Exiting..." << std::endl;
     return;
   }
+
  
   TString hist = var;
   hist += cut;
+  TString hist2 = var;
+  hist2 += cut2;
 
   // read QCD normalization
   std::pair<double, double> qcdnorm = getQCDnorm(cut);
   double nqcd = qcdnorm.first;
   double err_qcd = qcdnorm.second; 
+
+  std::pair<double, double> qcdnorm2;
+  double nqcd2 = 0;
+  double err_qcd2 = 0; 
+  if (cut2>0) {
+    qcdnorm2 = getQCDnorm(cut2);
+    nqcd2 = qcdnorm2.first;
+    err_qcd2 = qcdnorm2.second; 
+  }
 
 
   // get histograms
@@ -67,6 +89,19 @@ void makePlots_single(TString var, int cut, TString pdfdir="CT10_nom") {
   SummedHist* ttbar = getTTbar( "nom", hist, pdfdir  );
   SummedHist* ttbar_nonSemiLep = getTTbarNonSemiLep( "nom", hist, pdfdir  );
   SummedHist* qcd = getQCD( hist, nqcd );
+  
+  SummedHist* wjets2;
+  SummedHist* singletop2;
+  SummedHist* ttbar2;
+  SummedHist* ttbar_nonSemiLep2;
+  SummedHist* qcd2;
+  if (cut2>0) {
+    wjets2 = getWJets( "nom", hist2  );
+    singletop2 = getSingleTop( "nom", hist2  );
+    ttbar2 = getTTbar( "nom", hist2, pdfdir  );
+    ttbar_nonSemiLep2 = getTTbarNonSemiLep( "nom", hist2, pdfdir  );
+    qcd2 = getQCD( hist2, nqcd2 );
+  }
 
   TString filepath;
   if (use2D) filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
@@ -75,7 +110,25 @@ void makePlots_single(TString var, int cut, TString pdfdir="CT10_nom") {
   TFile* dataFile = TFile::Open(filepath);
   TH1F* h_data = (TH1F*) dataFile->Get( hist );
   h_data->SetName(hist + "__DATA");
-  
+
+  TH1F* h_data2;
+  if (cut2>0) {
+    h_data2 = (TH1F*) dataFile->Get( hist2 );
+    h_data2->SetName(hist + "__DATA_2");
+  } 
+ 
+
+  // -------------------------------------------------------------------------------------
+  // do the subtraction ?
+  if (cut2>0) {
+    wjets->hist() ->Add(wjets2->hist(), -1);
+    singletop->hist() ->Add(singletop2->hist(), -1);
+    ttbar->hist() ->Add(ttbar2->hist(), -1);
+    ttbar_nonSemiLep->hist() ->Add(ttbar_nonSemiLep2->hist(), -1);
+    qcd->hist() ->Add(qcd2->hist(), -1);
+    h_data->Add(h_data2, -1);
+  }
+
 
   // -------------------------------------------------------------------------------------
   // get the TH1F versions
@@ -283,9 +336,16 @@ void makePlots_single(TString var, int cut, TString pdfdir="CT10_nom") {
   if (use2D) outname = "NicePlots_" + pdfdir + "/normalized2d_nom_mujets_";
   else outname = "NicePlots_" + pdfdir + "/normalized_nom_mujets_";
 
-  c->SaveAs(outname+hist+".png");
-  c->SaveAs(outname+hist+".eps");
-  c->SaveAs(outname+hist+".pdf");
+  if (cut2==0) {
+    c->SaveAs(outname+hist+".png");
+    c->SaveAs(outname+hist+".eps");
+    c->SaveAs(outname+hist+".pdf");
+  }
+  else {
+    c->SaveAs(outname+hist2+"_subtracted_from_"+hist+".png");
+    c->SaveAs(outname+hist2+"_subtracted_from_"+hist+".eps");
+    c->SaveAs(outname+hist2+"_subtracted_from_"+hist+".pdf");
+  }
 
 
   // -------------------------------------------------------------------------------------
@@ -321,7 +381,8 @@ void makePlots_single(TString var, int cut, TString pdfdir="CT10_nom") {
   }
 
   std::cout << std::endl << "-------------------------------------------------------------------------------------" << std::endl;
-  std::cout << "hist: " << hist << std::endl;
+  if (cut2==0) std::cout << "hist: " << hist << std::endl;
+  else std::cout << "hist: " << hist2 << "_subtracted_from_" << hist << std::endl;
   std::cout << "-------------------------------------------------------------------------------------" << std::endl;
   std::cout << "QCD        = " << h_qcd->GetSum() << " + " << err_qcd << " / - " << err_qcd_dn << std::endl;
   std::cout << "ttbar      = " << h_ttbar->GetSum() << " +/- " << err_tt << std::endl;

@@ -503,9 +503,9 @@ for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
 
     
 
-print 'htrue = ' + str(hTrue.Integral() )
-print 'hmeas = ' + str(hMeas.Integral() )
-print 'hreco = ' + str(hReco.Integral() )
+print 'htrue = ' + str(hTrue.Integral(bin400,binmax) )
+print 'hmeas = ' + str(hMeas.Integral(bin400,binmax) )
+print 'hreco = ' + str(hReco.Integral(bin400,binmax) )
 
 
 #unfold.PrintTable (cout, hTrue);
