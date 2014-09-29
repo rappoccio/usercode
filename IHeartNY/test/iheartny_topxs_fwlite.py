@@ -341,6 +341,11 @@ parser.add_option('--pdfSys', metavar='J', type='float', action='store',
                   dest='pdfSys',
                   help='PDF Systematic variation. Options are +1 (scale up 1 sigma), 0 (nominal), -1 (down 1 sigma for 3 PDF sets). Default is 0.0')
 
+parser.add_option('--oddeven', metavar='J', type='float', action='store',
+                  default=None,
+                  dest='oddeven',
+                  help='Run on only odd (option==1) even (option==2) events (based on event ID) for unfolding closure test.')
+
 parser.add_option('--debug', metavar='D', action='store_true',
                   default=False,
                   dest='debug',
@@ -1093,6 +1098,14 @@ for event in events :
       print  '--------- Processing Event ' + str(ntotal)
     ntotal += 1
 
+    if options.oddeven != 'none':
+        # odd only
+        if options.oddeven == 1 and event.object().id().event()%2 == 1 :
+            continue
+        # event only
+        if options.oddeven == 2 and event.object().id().event()%2 == 0 :
+            continue
+    
     if options.num != 'all':
         if not (eventsbegin[ifile-1] <= ntotal <= eventsend[ifile-1]):
             continue 
@@ -2192,8 +2205,7 @@ for event in events :
     h_hadtop_pt5.Fill(hadJets[0].Perp(), top_weight)
     h_hadtop_y5.Fill(hadJets[0].Rapidity(), top_weight)
     h_hadtop_mass5.Fill(hadJets[0].M(), top_weight)
-    h_hadtop_eta5.Fill(hadJets[0].Eta(), top_weight)
-
+    
     
     
     # -------------------------------------------------------------------------------------
