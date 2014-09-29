@@ -1,0 +1,107 @@
+################################################################################
+# README
+################################################################################
+
+####################
+# Dependencies
+####################
+
+To run some of the code in this directory, you will need lichen and iminuit. 
+
+* iminuit is a python wrapper to the MINUIT minimization code.
+
+https://github.com/iminuit/iminuit
+
+    git clone https://github.com/iminuit/iminuit
+    cd iminuit
+    python setup.py install # May need to run this as root/sudo, depending on your setup.
+
+
+* lichen is a set of functions that enable easier use of matplotlib and iminuit. 
+
+https://github.com/mattbellis/lichen
+
+    git clone https://github.com/mattbellis/lichen
+    cd lichen
+    python setup.py install # May need to run this as root/sudo, depending on your setup.
+
+
+#################
+# Examples
+#################
+
+* Example 0
+   
+Fits a Gaussian and an exponential using binned templates.
+
+    python fit_example_0.py
+
+
+###########################################
+# ``Production" fitting code
+###########################################
+
+################
+# CMSDAS fit
+################
+
+This is the code that was actually used at the 2013 CMSDAS. We used data
+prepared for the school drawm from 5 ifb from the 8 TeV dataset and fit
+to the secondary vertex mass distribution. 
+
+*************************************************************************
+This code uses ROOT and Roofit, making use of the PyROOT implementation.
+
+It has been tested with ROOT 5.34, and does not make use of any CMSSW
+specific code or libraries.
+*************************************************************************
+
+We used binned templates drawn from the ROOT files produced by other scripts
+developed by the participants. The filenames and histograms from which the
+binned templates are drawn are hardcoded in the fitting script:
+
+    fit_from_CMSDAS_2013.py
+
+The ROOT files are in 
+
+    CMSDAS_root_files/*skim_plots.root
+
+The fitting script looks in these files for a histogram named
+
+    secvtxMass_btag_maxpt_njets4
+
+and uses this histogram for the fit templates as well as the data 
+to fit to.
+
+To run, simply type
+
+    python fit_from_CMSDAS_2013.py
+
+###################################################
+# iminuit version of CMSDAS fit
+###################################################
+
+This is a version of the CMSDAS code, written to be independent of ROOT.
+Instead, it uses iminuit and codes up the likelihood function
+and any uncertainty calculations by hand. 
+
+    fit_iminuit_version_of_CMSDAS_2013.py
+
+The binned templates can be found in 
+
+    templates_for_iminuit_fit_CMSDAS
+
+as text files named
+
+    output_<MC process/data>_njets<#>.dat
+
+These text files are two columns: the center of the histogram bin in 
+the first column and the occupancy (height) of that bin in the second 
+column. These files were actually produced from the ROOT files used
+at CMSDAS. The names of these files are hardcoded in the fitting
+script.
+
+To run, just type
+
+    python fit_iminuit_version_of_CMSDAS_2013.py
+

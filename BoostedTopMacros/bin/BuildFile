@@ -1,0 +1,99 @@
+<environment>
+
+
+<bin name=run_xchecks file=run_xchecks.cc,PredictedDistribution.cc,BinomialEff.cc>
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+</bin>
+
+<bin name=run_xchecks_photons file=run_xchecks_photons.cc,PredictedDistribution.cc,BinomialEff.cc>
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+</bin>
+
+<bin name=run_mistag_background file=run_mistag_background.cc,PredictedDistribution.cc,BinomialEff.cc>
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+</bin>
+
+<bin file="run_kinematics.cc">
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+</bin>
+
+<bin file="run_mistag_parameterization.cc">
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+</bin>
+
+<bin file="run_subjetstudies.cc">
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+</bin>
+
+<bin file="run_subjetstudies_jec.cc">
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+ <use name=CondFormats/JetMETObjects>
+</bin>
+
+<bin file="run_subjet_event_display_fwlite.cc">
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/PatCandidates>
+ <use name=DataFormats/HepMCCandidate>
+</bin>
+
+
+<bin file="run_gen.cc">
+ <use name=root>
+ <use name=rootcintex>
+ <use name=boost>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/FWLite>
+ <use name=DataFormats/HepMCCandidate>
+ <use name=DataFormats/PatCandidates>
+</bin>
+
+</environment>
+

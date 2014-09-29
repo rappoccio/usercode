@@ -1,0 +1,11 @@
+<use   name="AnalysisDataFormats/TopObjects"/>
+<use   name="DataFormats/PatCandidates"/>
+<use   name="FWCore/Framework"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="FWCore/ServiceRegistry"/>
+<use   name="FWCore/Utilities"/>
+<use   name="CommonTools/UtilAlgos"/>
+<use   name="Analysis/BoostedTopAnalysis"/>
+<use   name="clhep"/>
+<export>
+</export>
