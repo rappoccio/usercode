@@ -1,0 +1,10 @@
+<export>
+</export>
+<library   name="AnalysisPionPFAnalyzer_plugins" file="*.cc">
+  <use   name="Analysis/PionPFAnalyzer"/>
+  <use   name="FWCore/Framework"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/MessageLogger"/>
+  <use   name="FWCore/MessageService"/>
+  <use   name="root"/>
+</library>
