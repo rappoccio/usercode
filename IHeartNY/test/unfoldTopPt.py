@@ -485,12 +485,17 @@ hFrac.Divide(hTrue)
 bin400 = hMeas.GetXaxis().FindBin(400.)
 binmax = hMeas.GetXaxis().FindBin(10000.)
 
+# Translate to cross section (not events) in bins of pt N/L/BR)
+hTrue.Scale(1.0/(lum*4/27))
+hMeas.Scale(1.0/(lum*4/27))
+hReco.Scale(1.0/(lum*4/27))
+
 if options.normalize :
     hTrue.Scale( 1.0 / hTrue.Integral(bin400,binmax) )
     hMeas.Scale( 1.0 / hMeas.Integral(bin400,binmax) )
     hReco.Scale( 1.0 / hReco.Integral(bin400,binmax) )
 
-
+ 
 # Correct for bin width
 for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
     width = hTrue.GetBinWidth(ibin)

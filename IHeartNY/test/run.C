@@ -106,6 +106,16 @@ void run(TString option) {
     makePlots("etaAbsLep",4,6);
 
   }
+  // make posterior plots
+  else if (option=="post") {
+
+    makePosteriorPlots("etaAbsLep4");
+    makePosteriorPlots("etaAbsLep6");
+    makePosteriorPlots("vtxMass7");
+
+    makeTable();
+
+  }
 
   cout << "... DONE! " << endl;
 
