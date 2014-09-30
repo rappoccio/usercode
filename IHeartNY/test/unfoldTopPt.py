@@ -407,9 +407,7 @@ hMeas_TTNonSemi.SetFillColor(TColor.kRed-7)
 
 
 # -------------------------------------------------------------------------------------
-#
 # Scale each sample to that fitted by theta
-#
 # -------------------------------------------------------------------------------------
 
 hRecoMC.Scale( fitted_ttbar / hRecoMC.Integral() )
@@ -513,7 +511,7 @@ hReco = unfold.Hreco()
 
 hFrac = hReco.Clone()
 hFrac.SetName("hFrac")
-hFrac.SetTitle(";p_{T} [GeV];Measured/Truth")
+hFrac.SetTitle(";Top quark p_{T} [GeV];Measured/Truth")
 hFrac.Divide(hTrue)
 
 
@@ -521,6 +519,15 @@ hFrac.Divide(hTrue)
 hTrue.Scale(1.0/(lum*4/27))
 hMeas.Scale(1.0/(lum*4/27))
 hReco.Scale(1.0/(lum*4/27))
+
+# Correct for selection bias in requiring trigger 
+#SF [300,400]: 0 +/- 0
+# SF [400,500]: 1.4389 +/- 0.00608082
+# SF [500,600]: 1.37357 +/- 0.0094914
+# SF [600,700]: 1.32509 +/- 0.0141486
+# SF [700,800]: 1.34565 +/- 0.0274956
+# SF [800,1300]: 1.20706 +/- 0.0210675
+SF = [0.0, 1.4389, 1.37357, 1.32509, 1.34565, 1.20706]
 
 bin400 = hMeas.GetXaxis().FindBin(400.)
 binmax = hMeas.GetXaxis().FindBin(10000.)
@@ -530,16 +537,16 @@ if options.normalize :
     hMeas.Scale( 1.0 / hMeas.Integral(bin400,binmax) )
     hReco.Scale( 1.0 / hReco.Integral(bin400,binmax) )
 
- 
+
 # Correct for bin width
 for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
     width = hTrue.GetBinWidth(ibin)
-    hTrue.SetBinContent(ibin,  hTrue.GetBinContent(ibin) / width )
+    hTrue.SetBinContent(ibin,  hTrue.GetBinContent(ibin) * SF[ibin-1] / width )
     hMeas.SetBinContent(ibin,  hMeas.GetBinContent(ibin) / width )
-    hReco.SetBinContent(ibin,  hReco.GetBinContent(ibin) / width )
-    hTrue.SetBinError(ibin,  hTrue.GetBinError(ibin) / width )
+    hReco.SetBinContent(ibin,  hReco.GetBinContent(ibin) * SF[ibin-1] / width )
+    hTrue.SetBinError(ibin,  hTrue.GetBinError(ibin) * SF[ibin-1] / width )
     hMeas.SetBinError(ibin,  hMeas.GetBinError(ibin) / width )
-    hReco.SetBinError(ibin,  hReco.GetBinError(ibin) / width )
+    hReco.SetBinError(ibin,  hReco.GetBinError(ibin) * SF[ibin-1] / width )
 
     
 
@@ -567,7 +574,7 @@ hTrue.GetYaxis().SetTitleSize(25)
 hTrue.GetXaxis().SetLabelSize(0)
 
 if options.plotFullRange == False : 
-    hReco.GetXaxis().SetRangeUser(400., 10000.)
+    hReco.GetXaxis().SetRangeUser(400., 1300.)
 
 
 
@@ -627,7 +634,7 @@ hFrac.GetYaxis().SetNdivisions(2,4,0,False)
 
 hFrac.Draw("e")
 if options.plotFullRange == False : 
-    hFrac.GetXaxis().SetRangeUser(400., 10000.)
+    hFrac.GetXaxis().SetRangeUser(400., 1300.)
     
 
 c1.Update()

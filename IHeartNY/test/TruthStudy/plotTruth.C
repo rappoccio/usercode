@@ -57,12 +57,12 @@ void count() {
   h3->Sumw2();
 
   // ntuples with selection
-  TFile* ff1 = new TFile("histfiles_CT10_nom/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom_notrig.root");
-  TFile* ff2 = new TFile("histfiles_CT10_nom/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom_notrig.root");
-  TFile* ff3 = new TFile("histfiles_CT10_nom/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom_notrig.root");
-  //TFile* ff1 = new TFile("histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
-  //TFile* ff2 = new TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
-  //TFile* ff3 = new TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
+  //TFile* ff1 = new TFile("../histfiles_CT10_nom/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom_notrig.root");
+  //TFile* ff2 = new TFile("../histfiles_CT10_nom/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom_notrig.root");
+  //TFile* ff3 = new TFile("../histfiles_CT10_nom/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom_notrig.root");
+  TFile* ff1 = new TFile("../histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
+  TFile* ff2 = new TFile("../histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
+  TFile* ff3 = new TFile("../histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
   TH1F* hh1 = (TH1F*) ff1->Get("ptGenTop");
   TH1F* hh2 = (TH1F*) ff2->Get("ptGenTop");
   TH1F* hh3 = (TH1F*) ff3->Get("ptGenTop");
@@ -97,7 +97,7 @@ void count() {
     hh3->GetSum()-hh3->GetBinContent(0)-hh3->GetBinContent(1);
 
   cout << endl << "semilep ttbar with hadtop > 400 GeV (full truth ntuples): " << n_pt400 << endl;
-  cout << "semilep ttbar with hadtop > 400 GeV (no-trigger ntuples): " << nold_pt400 << endl << endl;
+  cout << "semilep ttbar with hadtop > 400 GeV (ntuples with trigger): " << nold_pt400 << endl << endl;
 
 }
 
