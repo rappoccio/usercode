@@ -496,13 +496,13 @@ h_mttbarGen7 = ROOT.TH1F("mttbarGen7", "mttbarGen7", 150, 0, 1500)
 h_nMuons     = ROOT.TH1F("nMuons",     "Number of muons, p_{T} > 45 GeV;N_{Muons};Number / event",         5, -0.5, 4.5)
 h_nElectrons = ROOT.TH1F("nElectrons", "Number of electrons, p_{T} > 35 GeV;N_{Electrons};Number / event", 5, -0.5, 4.5)
 
-h_nJets0     = ROOT.TH1F("nJets0",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event",          20, -0.5, 19.5)  #AK5 jets
-h_nJets1     = ROOT.TH1F("nJets1",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event",          20, -0.5, 19.5)
-h_nJets2     = ROOT.TH1F("nJets2",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event",          20, -0.5, 19.5)
-h_nJets3     = ROOT.TH1F("nJets3",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event",          20, -0.5, 19.5)
-h_nJets4     = ROOT.TH1F("nJets4",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event",          20, -0.5, 19.5)
-h_nJets5     = ROOT.TH1F("nJets5",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event",          20, -0.5, 19.5)
-h_nJets6     = ROOT.TH1F("nJets6",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event",          20, -0.5, 19.5)
+h_nJets0     = ROOT.TH1F("nJets0",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)  #AK5 jets
+h_nJets1     = ROOT.TH1F("nJets1",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
+h_nJets2     = ROOT.TH1F("nJets2",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
+h_nJets3     = ROOT.TH1F("nJets3",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
+h_nJets4     = ROOT.TH1F("nJets4",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
+h_nJets5     = ROOT.TH1F("nJets5",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
+h_nJets6     = ROOT.TH1F("nJets6",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
 
 h_nBJets0    = ROOT.TH1F("nBJets0",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
 h_nBJets1    = ROOT.TH1F("nBJets1",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
@@ -538,14 +538,14 @@ if options.lepType == "muon":
     h_etaLep6 = ROOT.TH1F("etaLep6", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
     h_etaLep7 = ROOT.TH1F("etaLep7", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
 
-    h_etaAbsLep0 = ROOT.TH1F("etaAbsLep0", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep1 = ROOT.TH1F("etaAbsLep1", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep2 = ROOT.TH1F("etaAbsLep2", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep3 = ROOT.TH1F("etaAbsLep3", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep4 = ROOT.TH1F("etaAbsLep4", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Muon #eta; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep0 = ROOT.TH1F("etaAbsLep0", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep1 = ROOT.TH1F("etaAbsLep1", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep2 = ROOT.TH1F("etaAbsLep2", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep3 = ROOT.TH1F("etaAbsLep3", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4 = ROOT.TH1F("etaAbsLep4", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
 
     h_dRvspTPre  = ROOT.TH2F("dRvspTPre",  ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
     h_dRvspT0    = ROOT.TH2F("dRvspT0",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
@@ -577,14 +577,14 @@ else:
     h_etaLep6 = ROOT.TH1F("etaLep6", ";Electron #eta; Electrons / 0.1", 50, -2.5, 2.5)
     h_etaLep7 = ROOT.TH1F("etaLep7", ";Electron #eta; Electrons / 0.1", 50, -2.5, 2.5)
     
-    h_etaAbsLep0 = ROOT.TH1F("etaAbsLep0", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep1 = ROOT.TH1F("etaAbsLep1", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep2 = ROOT.TH1F("etaAbsLep2", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep3 = ROOT.TH1F("etaAbsLep3", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep4 = ROOT.TH1F("etaAbsLep4", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
-    h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Electron #eta; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep0 = ROOT.TH1F("etaAbsLep0", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep1 = ROOT.TH1F("etaAbsLep1", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep2 = ROOT.TH1F("etaAbsLep2", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep3 = ROOT.TH1F("etaAbsLep3", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4 = ROOT.TH1F("etaAbsLep4", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
 
     h_dRvspTPre  = ROOT.TH2F("dRvspTPre",  ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
     h_dRvspT0    = ROOT.TH2F("dRvspT0",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
@@ -838,6 +838,7 @@ if options.makeResponse == True :
     response = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response.SetName('response_pt')
     h_ptGenTop = ROOT.TH1F("ptGenTop", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+    h_ptGenTop_noweight = ROOT.TH1F("ptGenTop_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
 h_ptRecoTop = ROOT.TH1F("ptRecoTop", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
@@ -1212,6 +1213,7 @@ for event in events :
     hadTop = None
     lepTop = None
     isSemiLeptonicGen = True
+    isMuon = False
     if options.makeResponse == True or options.mttGenMax is not None or options.semilep is not None:
         event.getByLabel( genParticlesPtLabel, genParticlesPtHandle )
         event.getByLabel( genParticlesEtaLabel, genParticlesEtaHandle )
@@ -1258,11 +1260,14 @@ for event in events :
             elif ( genParticlesPdgId[igen] == 11 or genParticlesPdgId[igen] == 13 or genParticlesPdgId[igen] == 15) :                
                 antitopDecay = 1
 
+            if (abs(genParticlesPdgId[igen]) == 13) :
+                isMuon = True
+
         
         topQuarks.append( GenTopQuark( 6, p4Top, topDecay) )
         topQuarks.append( GenTopQuark( -6, p4Antitop, antitopDecay) )
         
-        if topDecay + antitopDecay == 1 :
+        if (topDecay + antitopDecay == 1) and (isMuon == True) :
             isSemiLeptonicGen = True
         else :
             isSemiLeptonicGen = False
@@ -1299,7 +1304,9 @@ for event in events :
 
         if options.makeResponse == True:
             h_ptGenTop.Fill( hadTop.p4.Perp(), weight )
-    # endif (making response matrix)
+            h_ptGenTop_noweight.Fill( hadTop.p4.Perp() )
+
+        # endif (making response matrix)
 
         
     # -------------------------------------------------------------------------------------
