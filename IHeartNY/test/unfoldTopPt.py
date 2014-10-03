@@ -240,7 +240,7 @@ hEmpty2D.GetXaxis().SetTitle("Measured p_{T} [GeV]")
 hEmpty2D.GetYaxis().SetTitle("Truth p_{T} [GeV]")
 hEmpty2D.GetXaxis().SetLabelSize(0.045)
 hEmpty2D.Draw()
-response.Hresponse().Draw("colz,same")
+response.Hresponse().Draw("colz,same,text")
 hEmpty2D.Draw("axis,same")
 cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".png")
 cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".eps")
@@ -522,12 +522,12 @@ hReco.Scale(1.0/(lum*4/27))
 
 # Correct for selection bias in requiring trigger 
 #SF [300,400]: 0 +/- 0
-# SF [400,500]: 1.4389 +/- 0.00608082
-# SF [500,600]: 1.37357 +/- 0.0094914
-# SF [600,700]: 1.32509 +/- 0.0141486
-# SF [700,800]: 1.34565 +/- 0.0274956
-# SF [800,1300]: 1.20706 +/- 0.0210675
-SF = [0.0, 1.4389, 1.37357, 1.32509, 1.34565, 1.20706]
+#SF [400,500]: 1.67023 +/- 0.00847072
+#SF [500,600]: 1.62007 +/- 0.0139264
+#SF [600,700]: 1.54549 +/- 0.0209462
+#SF [700,800]: 1.61978 +/- 0.041841
+#SF [800,1300]: 1.47689 +/- 0.037455
+SF = [0.0, 1.67023, 1.62007, 1.54549, 1.61978, 1.47689]
 
 bin400 = hMeas.GetXaxis().FindBin(400.)
 binmax = hMeas.GetXaxis().FindBin(10000.)
@@ -547,8 +547,6 @@ for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
     hTrue.SetBinError(ibin,  hTrue.GetBinError(ibin) * SF[ibin-1] / width )
     hMeas.SetBinError(ibin,  hMeas.GetBinError(ibin) / width )
     hReco.SetBinError(ibin,  hReco.GetBinError(ibin) * SF[ibin-1] / width )
-
-    
 
 print 'htrue = ' + str(hTrue.Integral(bin400,binmax) )
 print 'hmeas = ' + str(hMeas.Integral(bin400,binmax) )
