@@ -47,10 +47,19 @@ void truthEff() {
   TFile* f_trig0    = new TFile("../histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
   TFile* f_trig700  = new TFile("../histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
   TFile* f_trig1000 = new TFile("../histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
+  TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptGenTop_noweight");
+  TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptGenTop_noweight");
+  TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop_noweight");
 
+  /*
+  TFile* f_trig0    = new TFile("TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
+  TFile* f_trig700  = new TFile("TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
+  TFile* f_trig1000 = new TFile("TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
   TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptGenTop");
   TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptGenTop");
   TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop");
+  */
+
   h_trig0->Sumw2();
   h_trig700->Sumw2();
   h_trig1000->Sumw2();
@@ -80,6 +89,7 @@ void truthEff() {
   h_trig0->Add(h_trig700);
   h_trig0->Add(h_trig1000);
 
+  //cout << h_trig0->Integral(2,7) << endl;
 
   float ptbins[7] = {300.0,400.0,500.0,600.0,700.0,800.0,1300.0};
 
@@ -115,7 +125,7 @@ void truthEff() {
   h_sf->GetYaxis()->SetTitle("Scale factor");
 
   TCanvas c;
-  h_sf->SetAxisRange(1.0,1.5,"Y");
+  h_sf->SetAxisRange(1.0,2.0,"Y");
   h_sf->Draw("lep");
 
   mySmallText(0.22,0.36,1,"Scale factor");
@@ -125,6 +135,8 @@ void truthEff() {
     cout << "SF [" << h_sf->GetBinLowEdge(i) << "," << h_sf->GetBinLowEdge(i+1) 
 	 << "]: " << h_sf->GetBinContent(i) << " +/- " << h_sf->GetBinError(i) << endl;
   }
+
+  cout << "Overall SF = " << h_true->Integral(2,7)/h_trig0->Integral(2,7) << endl;
 
   c.SaveAs("truth_eff.png");
   c.SaveAs("truth_eff.eps");
