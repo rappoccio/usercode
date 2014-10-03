@@ -112,6 +112,10 @@ h_leptop_mass_pt400 = ROOT.TH1F("leptop_mass_pt400", ";Mass(leptonic top) [GeV];
 h_leptop_pt_all     = ROOT.TH1F("leptop_pt_all",   ";p_{T}(leptonic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 h_leptop_pt_pt400   = ROOT.TH1F("leptop_pt_pt400", ";p_{T}(leptonic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 
+h_mu_eta_all   = ROOT.TH1F("mu_eta_all",   ";Muon #eta; Events / 0.025", 240, -3, 3)
+h_mu_eta_pt400 = ROOT.TH1F("mu_eta_pt400", ";Muon #eta; Events / 0.025", 240, -3, 3)
+h_mu_pt_all    = ROOT.TH1F("mu_pt_all",    ";Muon p_{T} [GeV]; Events / 1 GeV", 300, 0, 300)
+h_mu_pt_pt400  = ROOT.TH1F("mu_pt_pt400",  ";Muon p_{T} [GeV]; Events / 1 GeV", 300, 0, 300)
 
 
 
@@ -179,6 +183,8 @@ for event in events :
     topDecay = 0        # 0 = hadronic, 1 = leptonic
     antitopDecay = 0    # 0 = hadronic, 1 = leptonic
 
+    muonEta = 0
+    muonPt = 0
     
     # -------------------------------------------------------------------------------------
     # loop over gen particules
@@ -202,7 +208,10 @@ for event in events :
         # muon final state?
         if abs(topPdgId[igen]) == 13 :
             isMuonFinalState = True
+            muonEta = topEta[igen]
+            muonPt = topPt[igen]
 
+        
     # -------------------------------------------------------------------------------------
     # end loop over gen particles
     # -------------------------------------------------------------------------------------
@@ -265,6 +274,8 @@ for event in events :
     h_hadtop_pt_all.Fill( hadTop.p4.Perp() )
     h_leptop_mass_all.Fill( lepTop.p4.M() )
     h_leptop_pt_all.Fill( lepTop.p4.Perp() )
+    h_mu_eta_all.Fill(muonEta)    
+    h_mu_pt_all.Fill(muonPt)
     
     if hadTop.p4.Perp() > 400. :
         h_ttbar_mass_pt400.Fill( ttbar.M() )
@@ -273,6 +284,8 @@ for event in events :
         h_hadtop_pt_pt400.Fill( hadTop.p4.Perp() )
         h_leptop_mass_pt400.Fill( lepTop.p4.M() )
         h_leptop_pt_pt400.Fill( lepTop.p4.Perp() )
+        h_mu_eta_pt400.Fill(muonEta)
+        h_mu_pt_pt400.Fill(muonPt)
         
     
         
