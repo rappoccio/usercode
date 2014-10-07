@@ -1,0 +1,341 @@
+TDR Style initialized
+{'vtxMass7': {'TTbar': <ROOT.TH1D object ("vtxMass7__TTbar") at 0xe4eb640>, 'SingleTop': <ROOT.TH1D object ("vtxMass7__SingleTop") at 0xe40ac10>, 'WJets': <ROOT.TH1D object ("vtxMass7__WJets") at 0xe4bc780>, 'QCD': <ROOT.TH1D object ("vtxMass7__QCD") at 0xe4bcc20>}, 'etaAbsLep6': {'WJets': <ROOT.TH1D object ("etaAbsLep6__WJets") at 0xe40b280>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep6__SingleTop") at 0xe40bc20>, 'TTbar': <ROOT.TH1D object ("etaAbsLep6__TTbar") at 0xe4bbe30>, 'QCD': <ROOT.TH1D object ("etaAbsLep6__QCD") at 0xe4beb00>}, 'etaAbsLep4': {'TTbar': <ROOT.TH1D object ("etaAbsLep4__TTbar") at 0xe4bc200>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep4__SingleTop") at 0xe4bf2f0>, 'WJets': <ROOT.TH1D object ("etaAbsLep4__WJets") at 0xe4be4a0>, 'QCD': <ROOT.TH1D object ("etaAbsLep4__QCD") at 0xe4bdbd0>}}
+['vtxMass7', 'etaAbsLep6', 'etaAbsLep4']
+======================================
+Counts for NormalizedHists_CT10_nom
+======================================
+---------------------------
+Pre-fit results
+---------------------------
+QCD                                        &   9.90   &  40.10   & 1205.50   \\ 
+Single top                                 &   4.03   &  13.61   & 236.59   \\ 
+$W$+jets                                   &   4.41   & 175.05   & 4844.13   \\ 
+\ttbar (signal)                            & 390.10   & 401.81   & 2252.88   \\ 
+\hline
+Total                                      & 408.44   & 630.57   & 8539.10   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+---------------------------
+Post-fit results
+---------------------------
+QCD                                        &   9.49   &  38.43   & 1155.34   \\ 
+Single top                                 &   3.69   &  11.30   & 205.92   \\ 
+$W$+jets                                   &   4.24   & 153.87   & 4146.64   \\ 
+\ttbar (signal)                            & 322.06   & 329.76   & 1818.90   \\ 
+\hline
+Total                                      & 339.47   & 533.36   & 7326.79   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+TDR Style initialized
+{'vtxMass7': {'TTbar': <ROOT.TH1D object ("vtxMass7__TTbar") at 0x4334780>, 'SingleTop': <ROOT.TH1D object ("vtxMass7__SingleTop") at 0x4253d50>, 'WJets': <ROOT.TH1D object ("vtxMass7__WJets") at 0x43059b0>, 'QCD': <ROOT.TH1D object ("vtxMass7__QCD") at 0x4305e50>}, 'etaAbsLep6': {'WJets': <ROOT.TH1D object ("etaAbsLep6__WJets") at 0x42543b0>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep6__SingleTop") at 0x4254d50>, 'TTbar': <ROOT.TH1D object ("etaAbsLep6__TTbar") at 0x4304f70>, 'QCD': <ROOT.TH1D object ("etaAbsLep6__QCD") at 0x4307c40>}, 'etaAbsLep4': {'TTbar': <ROOT.TH1D object ("etaAbsLep4__TTbar") at 0x43055e0>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep4__SingleTop") at 0x4308430>, 'WJets': <ROOT.TH1D object ("etaAbsLep4__WJets") at 0x43075e0>, 'QCD': <ROOT.TH1D object ("etaAbsLep4__QCD") at 0x4306e00>}}
+['vtxMass7', 'etaAbsLep6', 'etaAbsLep4']
+======================================
+Counts for NormalizedHists_CT10_pdfup
+======================================
+---------------------------
+Pre-fit results
+---------------------------
+QCD                                        &   9.90   &  40.10   & 1205.50   \\ 
+Single top                                 &   4.03   &  13.61   & 236.59   \\ 
+$W$+jets                                   &   4.41   & 175.05   & 4844.13   \\ 
+\ttbar (signal)                            & 471.44   & 482.48   & 2711.49   \\ 
+\hline
+Total                                      & 489.78   & 711.24   & 8997.72   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+---------------------------
+Post-fit results
+---------------------------
+QCD                                        &   9.70   &  39.31   & 1181.64   \\ 
+Single top                                 &   3.55   &  11.03   & 206.09   \\ 
+$W$+jets                                   &   3.95   & 145.75   & 4033.54   \\ 
+\ttbar (signal)                            & 325.94   & 334.12   & 1904.82   \\ 
+\hline
+Total                                      & 343.15   & 530.21   & 7326.09   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+TDR Style initialized
+{'vtxMass7': {'TTbar': <ROOT.TH1D object ("vtxMass7__TTbar") at 0x1479b750>, 'SingleTop': <ROOT.TH1D object ("vtxMass7__SingleTop") at 0x146bad20>, 'WJets': <ROOT.TH1D object ("vtxMass7__WJets") at 0x1476c980>, 'QCD': <ROOT.TH1D object ("vtxMass7__QCD") at 0x1476ce20>}, 'etaAbsLep6': {'WJets': <ROOT.TH1D object ("etaAbsLep6__WJets") at 0x146bb380>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep6__SingleTop") at 0x146bbd20>, 'TTbar': <ROOT.TH1D object ("etaAbsLep6__TTbar") at 0x1476bf40>, 'QCD': <ROOT.TH1D object ("etaAbsLep6__QCD") at 0x1476ec10>}, 'etaAbsLep4': {'TTbar': <ROOT.TH1D object ("etaAbsLep4__TTbar") at 0x1476c5b0>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep4__SingleTop") at 0x1476f400>, 'WJets': <ROOT.TH1D object ("etaAbsLep4__WJets") at 0x1476e5b0>, 'QCD': <ROOT.TH1D object ("etaAbsLep4__QCD") at 0x1476ddd0>}}
+['vtxMass7', 'etaAbsLep6', 'etaAbsLep4']
+======================================
+Counts for NormalizedHists_CT10_pdfdown
+======================================
+---------------------------
+Pre-fit results
+---------------------------
+QCD                                        &   9.90   &  40.10   & 1205.50   \\ 
+Single top                                 &   4.03   &  13.61   & 236.59   \\ 
+$W$+jets                                   &   4.41   & 175.05   & 4844.13   \\ 
+\ttbar (signal)                            & 320.23   & 329.66   & 1890.28   \\ 
+\hline
+Total                                      & 338.57   & 558.42   & 8176.51   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+---------------------------
+Post-fit results
+---------------------------
+QCD                                        &   9.31   &  37.73   & 1134.30   \\ 
+Single top                                 &   3.73   &  11.41   & 204.17   \\ 
+$W$+jets                                   &   4.35   & 157.69   & 4179.81   \\ 
+\ttbar (signal)                            & 320.71   & 327.59   & 1808.92   \\ 
+\hline
+Total                                      & 338.11   & 534.42   & 7327.19   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+TDR Style initialized
+{'vtxMass7': {'TTbar': <ROOT.TH1D object ("vtxMass7__TTbar") at 0x217f6690>, 'SingleTop': <ROOT.TH1D object ("vtxMass7__SingleTop") at 0x21715c60>, 'WJets': <ROOT.TH1D object ("vtxMass7__WJets") at 0x217c77d0>, 'QCD': <ROOT.TH1D object ("vtxMass7__QCD") at 0x217c7c70>}, 'etaAbsLep6': {'WJets': <ROOT.TH1D object ("etaAbsLep6__WJets") at 0x217162d0>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep6__SingleTop") at 0x21716c70>, 'TTbar': <ROOT.TH1D object ("etaAbsLep6__TTbar") at 0x217c6e80>, 'QCD': <ROOT.TH1D object ("etaAbsLep6__QCD") at 0x217c9b50>}, 'etaAbsLep4': {'TTbar': <ROOT.TH1D object ("etaAbsLep4__TTbar") at 0x217c7250>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep4__SingleTop") at 0x217ca340>, 'WJets': <ROOT.TH1D object ("etaAbsLep4__WJets") at 0x217c94f0>, 'QCD': <ROOT.TH1D object ("etaAbsLep4__QCD") at 0x217c8c20>}}
+['vtxMass7', 'etaAbsLep6', 'etaAbsLep4']
+======================================
+Counts for NormalizedHists_MSTW_nom
+======================================
+---------------------------
+Pre-fit results
+---------------------------
+QCD                                        &   9.90   &  40.10   & 1205.50   \\ 
+Single top                                 &   4.03   &  13.61   & 236.59   \\ 
+$W$+jets                                   &   4.41   & 175.05   & 4844.13   \\ 
+\ttbar (signal)                            & 395.23   & 406.30   & 2251.17   \\ 
+\hline
+Total                                      & 413.57   & 635.06   & 8537.40   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+---------------------------
+Post-fit results
+---------------------------
+QCD                                        &   9.53   &  38.60   & 1160.29   \\ 
+Single top                                 &   3.67   &  11.25   & 205.02   \\ 
+$W$+jets                                   &   4.25   & 154.53   & 4166.53   \\ 
+\ttbar (signal)                            & 321.95   & 329.02   & 1794.93   \\ 
+\hline
+Total                                      & 339.40   & 533.40   & 7326.76   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+TDR Style initialized
+{'vtxMass7': {'TTbar': <ROOT.TH1D object ("vtxMass7__TTbar") at 0xaf7c740>, 'SingleTop': <ROOT.TH1D object ("vtxMass7__SingleTop") at 0xae9bd10>, 'WJets': <ROOT.TH1D object ("vtxMass7__WJets") at 0xaf4d880>, 'QCD': <ROOT.TH1D object ("vtxMass7__QCD") at 0xaf4dd20>}, 'etaAbsLep6': {'WJets': <ROOT.TH1D object ("etaAbsLep6__WJets") at 0xae9c370>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep6__SingleTop") at 0xae9cd10>, 'TTbar': <ROOT.TH1D object ("etaAbsLep6__TTbar") at 0xaf4cf30>, 'QCD': <ROOT.TH1D object ("etaAbsLep6__QCD") at 0xaf4fc00>}, 'etaAbsLep4': {'TTbar': <ROOT.TH1D object ("etaAbsLep4__TTbar") at 0xaf4d300>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep4__SingleTop") at 0xaf503f0>, 'WJets': <ROOT.TH1D object ("etaAbsLep4__WJets") at 0xaf4f5a0>, 'QCD': <ROOT.TH1D object ("etaAbsLep4__QCD") at 0xaf4ecd0>}}
+['vtxMass7', 'etaAbsLep6', 'etaAbsLep4']
+======================================
+Counts for NormalizedHists_MSTW_pdfup
+======================================
+---------------------------
+Pre-fit results
+---------------------------
+QCD                                        &   9.90   &  40.10   & 1205.50   \\ 
+Single top                                 &   4.03   &  13.61   & 236.59   \\ 
+$W$+jets                                   &   4.41   & 175.05   & 4844.13   \\ 
+\ttbar (signal)                            & 461.79   & 473.90   & 2565.06   \\ 
+\hline
+Total                                      & 480.12   & 702.66   & 8851.29   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+---------------------------
+Post-fit results
+---------------------------
+QCD                                        &   9.78   &  39.64   & 1191.58   \\ 
+Single top                                 &   3.63   &  11.13   & 206.65   \\ 
+$W$+jets                                   &   4.13   & 150.25   & 4124.12   \\ 
+\ttbar (signal)                            & 323.55   & 330.86   & 1804.07   \\ 
+\hline
+Total                                      & 341.10   & 531.87   & 7326.42   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+TDR Style initialized
+{'vtxMass7': {'TTbar': <ROOT.TH1D object ("vtxMass7__TTbar") at 0x1bcf6750>, 'SingleTop': <ROOT.TH1D object ("vtxMass7__SingleTop") at 0x1bc15d20>, 'WJets': <ROOT.TH1D object ("vtxMass7__WJets") at 0x1bcc7890>, 'QCD': <ROOT.TH1D object ("vtxMass7__QCD") at 0x1bcc7d30>}, 'etaAbsLep6': {'WJets': <ROOT.TH1D object ("etaAbsLep6__WJets") at 0x1bc16380>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep6__SingleTop") at 0x1bc16d20>, 'TTbar': <ROOT.TH1D object ("etaAbsLep6__TTbar") at 0x1bcc6f40>, 'QCD': <ROOT.TH1D object ("etaAbsLep6__QCD") at 0x1bcc9c10>}, 'etaAbsLep4': {'TTbar': <ROOT.TH1D object ("etaAbsLep4__TTbar") at 0x1bcc7310>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep4__SingleTop") at 0x1bcca400>, 'WJets': <ROOT.TH1D object ("etaAbsLep4__WJets") at 0x1bcc95b0>, 'QCD': <ROOT.TH1D object ("etaAbsLep4__QCD") at 0x1bcc8ce0>}}
+['vtxMass7', 'etaAbsLep6', 'etaAbsLep4']
+======================================
+Counts for NormalizedHists_MSTW_pdfdown
+======================================
+---------------------------
+Pre-fit results
+---------------------------
+QCD                                        &   9.90   &  40.10   & 1205.50   \\ 
+Single top                                 &   4.03   &  13.61   & 236.59   \\ 
+$W$+jets                                   &   4.41   & 175.05   & 4844.13   \\ 
+\ttbar (signal)                            & 353.53   & 362.75   & 2000.06   \\ 
+\hline
+Total                                      & 371.87   & 591.51   & 8286.28   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+---------------------------
+Post-fit results
+---------------------------
+QCD                                        &   9.44   &  38.25   & 1149.97   \\ 
+Single top                                 &   3.69   &  11.32   & 201.69   \\ 
+$W$+jets                                   &   4.44   & 161.18   & 4257.68   \\ 
+\ttbar (signal)                            & 319.26   & 324.77   & 1717.87   \\ 
+\hline
+Total                                      & 336.83   & 535.52   & 7327.21   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+TDR Style initialized
+{'vtxMass7': {'TTbar': <ROOT.TH1D object ("vtxMass7__TTbar") at 0x101815e0>, 'SingleTop': <ROOT.TH1D object ("vtxMass7__SingleTop") at 0x100a0bb0>, 'WJets': <ROOT.TH1D object ("vtxMass7__WJets") at 0x10152810>, 'QCD': <ROOT.TH1D object ("vtxMass7__QCD") at 0x10152cb0>}, 'etaAbsLep6': {'WJets': <ROOT.TH1D object ("etaAbsLep6__WJets") at 0x100a1220>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep6__SingleTop") at 0x100a1bc0>, 'TTbar': <ROOT.TH1D object ("etaAbsLep6__TTbar") at 0x10151dd0>, 'QCD': <ROOT.TH1D object ("etaAbsLep6__QCD") at 0x10154aa0>}, 'etaAbsLep4': {'TTbar': <ROOT.TH1D object ("etaAbsLep4__TTbar") at 0x10152440>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep4__SingleTop") at 0x10155290>, 'WJets': <ROOT.TH1D object ("etaAbsLep4__WJets") at 0x10154440>, 'QCD': <ROOT.TH1D object ("etaAbsLep4__QCD") at 0x10153c60>}}
+['vtxMass7', 'etaAbsLep6', 'etaAbsLep4']
+======================================
+Counts for NormalizedHists_NNPDF_nom
+======================================
+---------------------------
+Pre-fit results
+---------------------------
+QCD                                        &   9.90   &  40.10   & 1205.50   \\ 
+Single top                                 &   4.03   &  13.61   & 236.59   \\ 
+$W$+jets                                   &   4.41   & 175.05   & 4844.13   \\ 
+\ttbar (signal)                            & 373.28   & 377.17   & 2037.29   \\ 
+\hline
+Total                                      & 391.62   & 605.93   & 8323.51   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+---------------------------
+Post-fit results
+---------------------------
+QCD                                        &  10.64   &  43.08   & 1295.17   \\ 
+Single top                                 &   3.95   &  11.94   & 207.44   \\ 
+$W$+jets                                   &   4.63   & 165.31   & 4243.92   \\ 
+\ttbar (signal)                            & 315.54   & 315.53   & 1581.89   \\ 
+\hline
+Total                                      & 334.75   & 535.86   & 7328.41   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+TDR Style initialized
+{'vtxMass7': {'TTbar': <ROOT.TH1D object ("vtxMass7__TTbar") at 0x8647900>, 'SingleTop': <ROOT.TH1D object ("vtxMass7__SingleTop") at 0x8566ed0>, 'WJets': <ROOT.TH1D object ("vtxMass7__WJets") at 0x8618a40>, 'QCD': <ROOT.TH1D object ("vtxMass7__QCD") at 0x8618ee0>}, 'etaAbsLep6': {'WJets': <ROOT.TH1D object ("etaAbsLep6__WJets") at 0x8567540>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep6__SingleTop") at 0x8567ee0>, 'TTbar': <ROOT.TH1D object ("etaAbsLep6__TTbar") at 0x86180f0>, 'QCD': <ROOT.TH1D object ("etaAbsLep6__QCD") at 0x861adc0>}, 'etaAbsLep4': {'TTbar': <ROOT.TH1D object ("etaAbsLep4__TTbar") at 0x86184c0>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep4__SingleTop") at 0x861b760>, 'WJets': <ROOT.TH1D object ("etaAbsLep4__WJets") at 0x861a760>, 'QCD': <ROOT.TH1D object ("etaAbsLep4__QCD") at 0x8619e90>}}
+['vtxMass7', 'etaAbsLep6', 'etaAbsLep4']
+======================================
+Counts for NormalizedHists_NNPDF_pdfup
+======================================
+---------------------------
+Pre-fit results
+---------------------------
+QCD                                        &   9.90   &  40.10   & 1205.50   \\ 
+Single top                                 &   4.03   &  13.61   & 236.59   \\ 
+$W$+jets                                   &   4.41   & 175.05   & 4844.13   \\ 
+\ttbar (signal)                            & 469.94   & 462.59   & 2630.29   \\ 
+\hline
+Total                                      & 488.28   & 691.35   & 8916.51   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+---------------------------
+Post-fit results
+---------------------------
+QCD                                        &   9.50   &  38.50   & 1157.40   \\ 
+Single top                                 &   3.52   &  11.05   & 204.86   \\ 
+$W$+jets                                   &   4.00   & 149.19   & 4110.49   \\ 
+\ttbar (signal)                            & 327.30   & 325.09   & 1858.50   \\ 
+\hline
+Total                                      & 344.33   & 523.82   & 7331.24   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+TDR Style initialized
+{'vtxMass7': {'TTbar': <ROOT.TH1D object ("vtxMass7__TTbar") at 0x18a727b0>, 'SingleTop': <ROOT.TH1D object ("vtxMass7__SingleTop") at 0x18991d80>, 'WJets': <ROOT.TH1D object ("vtxMass7__WJets") at 0x18a438f0>, 'QCD': <ROOT.TH1D object ("vtxMass7__QCD") at 0x18a43d90>}, 'etaAbsLep6': {'WJets': <ROOT.TH1D object ("etaAbsLep6__WJets") at 0x189923e0>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep6__SingleTop") at 0x18992d80>, 'TTbar': <ROOT.TH1D object ("etaAbsLep6__TTbar") at 0x18a42fa0>, 'QCD': <ROOT.TH1D object ("etaAbsLep6__QCD") at 0x18a45c70>}, 'etaAbsLep4': {'TTbar': <ROOT.TH1D object ("etaAbsLep4__TTbar") at 0x18a43370>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep4__SingleTop") at 0x18a46460>, 'WJets': <ROOT.TH1D object ("etaAbsLep4__WJets") at 0x18a45610>, 'QCD': <ROOT.TH1D object ("etaAbsLep4__QCD") at 0x18a44d40>}}
+['vtxMass7', 'etaAbsLep6', 'etaAbsLep4']
+======================================
+Counts for NormalizedHists_NNPDF_pdfdown
+======================================
+---------------------------
+Pre-fit results
+---------------------------
+QCD                                        &   9.90   &  40.10   & 1205.50   \\ 
+Single top                                 &   4.03   &  13.61   & 236.59   \\ 
+$W$+jets                                   &   4.41   & 175.05   & 4844.13   \\ 
+\ttbar (signal)                            & 310.27   & 341.02   & 1875.47   \\ 
+\hline
+Total                                      & 328.61   & 569.78   & 8161.70   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+---------------------------
+Post-fit results
+---------------------------
+QCD                                        &  12.69   &  51.41   & 1545.54   \\ 
+Single top                                 &   7.25   &  21.15   & 327.55   \\ 
+$W$+jets                                   &   5.38   & 181.42   & 4158.43   \\ 
+\ttbar (signal)                            & 284.21   & 294.55   & 1306.80   \\ 
+\hline
+Total                                      & 309.54   & 548.53   & 7338.33   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+TDR Style initialized
+{'vtxMass7': {'TTbar': <ROOT.TH1D object ("vtxMass7__TTbar") at 0x1622d660>, 'SingleTop': <ROOT.TH1D object ("vtxMass7__SingleTop") at 0x1614cc30>, 'WJets': <ROOT.TH1D object ("vtxMass7__WJets") at 0x161fe7a0>, 'QCD': <ROOT.TH1D object ("vtxMass7__QCD") at 0x161fec40>}, 'etaAbsLep6': {'WJets': <ROOT.TH1D object ("etaAbsLep6__WJets") at 0x1614d2a0>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep6__SingleTop") at 0x1614dc40>, 'TTbar': <ROOT.TH1D object ("etaAbsLep6__TTbar") at 0x161fde50>, 'QCD': <ROOT.TH1D object ("etaAbsLep6__QCD") at 0x16200b20>}, 'etaAbsLep4': {'TTbar': <ROOT.TH1D object ("etaAbsLep4__TTbar") at 0x161fe220>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep4__SingleTop") at 0x162014c0>, 'WJets': <ROOT.TH1D object ("etaAbsLep4__WJets") at 0x162004c0>, 'QCD': <ROOT.TH1D object ("etaAbsLep4__QCD") at 0x161ffbf0>}}
+['vtxMass7', 'etaAbsLep6', 'etaAbsLep4']
+======================================
+Counts for NormalizedHists_scaleup
+======================================
+---------------------------
+Pre-fit results
+---------------------------
+QCD                                        &   9.90   &  40.10   & 1205.50   \\ 
+Single top                                 &   4.03   &  13.61   & 236.59   \\ 
+$W$+jets                                   &   4.41   & 175.05   & 4844.13   \\ 
+\ttbar (signal)                            & 365.10   & 373.11   & 1690.07   \\ 
+\hline
+Total                                      & 383.44   & 601.87   & 7976.29   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+---------------------------
+Post-fit results
+---------------------------
+QCD                                        &   9.38   &  37.99   & 1142.04   \\ 
+Single top                                 &   3.24   &  10.11   & 206.73   \\ 
+$W$+jets                                   &   3.75   & 138.95   & 4200.49   \\ 
+\ttbar (signal)                            & 330.05   & 341.97   & 1774.64   \\ 
+\hline
+Total                                      & 346.42   & 529.02   & 7323.90   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+TDR Style initialized
+{'vtxMass7': {'TTbar': <ROOT.TH1D object ("vtxMass7__TTbar") at 0x213f7740>, 'SingleTop': <ROOT.TH1D object ("vtxMass7__SingleTop") at 0x21316d10>, 'WJets': <ROOT.TH1D object ("vtxMass7__WJets") at 0x213c8880>, 'QCD': <ROOT.TH1D object ("vtxMass7__QCD") at 0x213c8d20>}, 'etaAbsLep6': {'WJets': <ROOT.TH1D object ("etaAbsLep6__WJets") at 0x21317380>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep6__SingleTop") at 0x21317d20>, 'TTbar': <ROOT.TH1D object ("etaAbsLep6__TTbar") at 0x213c7f30>, 'QCD': <ROOT.TH1D object ("etaAbsLep6__QCD") at 0x213cac00>}, 'etaAbsLep4': {'TTbar': <ROOT.TH1D object ("etaAbsLep4__TTbar") at 0x213c8300>, 'SingleTop': <ROOT.TH1D object ("etaAbsLep4__SingleTop") at 0x213cb3f0>, 'WJets': <ROOT.TH1D object ("etaAbsLep4__WJets") at 0x213ca5a0>, 'QCD': <ROOT.TH1D object ("etaAbsLep4__QCD") at 0x213c9cd0>}}
+['vtxMass7', 'etaAbsLep6', 'etaAbsLep4']
+======================================
+Counts for NormalizedHists_scaledown
+======================================
+---------------------------
+Pre-fit results
+---------------------------
+QCD                                        &   9.90   &  40.10   & 1205.50   \\ 
+Single top                                 &   4.03   &  13.61   & 236.59   \\ 
+$W$+jets                                   &   4.41   & 175.05   & 4844.13   \\ 
+\ttbar (signal)                            & 263.28   & 262.53   & 887.41   \\ 
+\hline
+Total                                      & 281.62   & 491.29   & 7173.64   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+---------------------------
+Post-fit results
+---------------------------
+QCD                                        &  13.16   &  53.32   & 1603.04   \\ 
+Single top                                 &   3.33   &  10.33   & 210.30   \\ 
+$W$+jets                                   &   3.83   & 141.36   & 4237.23   \\ 
+\ttbar (signal)                            & 321.95   & 325.56   & 1273.79   \\ 
+\hline
+Total                                      & 342.27   & 530.58   & 7324.36   \\ 
+\hline
+Data                                       & 340.00   & 537.00   & 7319.00   \\ 
+\hline
+python plot_mle_fitted_results.py --normdir=NormalizedHists_CT10_nom --file=run_theta/histos-mle-2d-CT10_nom.root
+python plot_mle_fitted_results.py --normdir=NormalizedHists_CT10_pdfup --file=run_theta/histos-mle-2d-CT10_pdfup.root
+python plot_mle_fitted_results.py --normdir=NormalizedHists_CT10_pdfdown --file=run_theta/histos-mle-2d-CT10_pdfdown.root
+python plot_mle_fitted_results.py --normdir=NormalizedHists_MSTW_nom --file=run_theta/histos-mle-2d-MSTW_nom.root
+python plot_mle_fitted_results.py --normdir=NormalizedHists_MSTW_pdfup --file=run_theta/histos-mle-2d-MSTW_pdfup.root
+python plot_mle_fitted_results.py --normdir=NormalizedHists_MSTW_pdfdown --file=run_theta/histos-mle-2d-MSTW_pdfdown.root
+python plot_mle_fitted_results.py --normdir=NormalizedHists_NNPDF_nom --file=run_theta/histos-mle-2d-NNPDF_nom.root
+python plot_mle_fitted_results.py --normdir=NormalizedHists_NNPDF_pdfup --file=run_theta/histos-mle-2d-NNPDF_pdfup.root
+python plot_mle_fitted_results.py --normdir=NormalizedHists_NNPDF_pdfdown --file=run_theta/histos-mle-2d-NNPDF_pdfdown.root
+python plot_mle_fitted_results.py --normdir=NormalizedHists_scaleup --file=run_theta/histos-mle-2d-scaleup.root
+python plot_mle_fitted_results.py --normdir=NormalizedHists_scaledown --file=run_theta/histos-mle-2d-scaledown.root

@@ -42,23 +42,24 @@ gStyle.SetLabelSize(20, "XYZ")
 f = TFile(options.file)
 keys = f.GetListOfKeys()
 
-samples = ['QCD', 'SingleTop', 'WJets', 'TTbar_nonSemiLep', 'TTbar' ]
+#samples = ['QCD', 'SingleTop', 'WJets', 'TTbar_nonSemiLep', 'TTbar' ]
+samples = ['QCD', 'SingleTop', 'WJets', 'TTbar' ]
 latexnames = {
     'QCD':'QCD',
     'SingleTop':'Single top',
     'WJets':'$W$+jets',
-    'TTbar_nonSemiLep':'\\ttbar (non-semilep)',
+    #'TTbar_nonSemiLep':'\\ttbar (non-semilep)',
     'TTbar':'\\ttbar (signal)',
     }
 colors = {'TTbar':TColor.kRed,
-          'TTbar_nonSemiLep':TColor.kOrange,
+          #'TTbar_nonSemiLep':TColor.kOrange,
           'WJets':TColor.kGreen,
           'SingleTop':TColor.kMagenta,
           'QCD':TColor.kYellow
           }
 
 counts_pre = {'TTbar':[],
-            'TTbar_nonSemiLep':[],
+            #'TTbar_nonSemiLep':[],
             'WJets':[],
             'SingleTop':[],
             'QCD':[],
@@ -67,7 +68,7 @@ counts_pre = {'TTbar':[],
             }
     
 counts_post = {'TTbar':[],
-            'TTbar_nonSemiLep':[],
+            #'TTbar_nonSemiLep':[],
             'WJets':[],
             'SingleTop':[],
             'QCD':[],

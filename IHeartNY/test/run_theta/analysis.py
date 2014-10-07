@@ -35,7 +35,7 @@ def muplusjets(files, infilter, signal, mcstat, ex_to_in):
     #model.add_lognormal_uncertainty('ttbar_rate', math.log(1.15), 'ttbar')
     model.add_lognormal_uncertainty('rate_st', math.log(1.5), 'SingleTop')
     model.add_lognormal_uncertainty('rate_vjets', math.log(1.5), 'WJets')
-    model.add_lognormal_uncertainty('beta_signal', math.log(1.5), 'TTbar_nonSemiLep')
+    #model.add_lognormal_uncertainty('beta_signal', math.log(1.5), 'TTbar_nonSemiLep')
     model.add_lognormal_uncertainty('rate_qcd', math.log(1.5), 'QCD')
 
     #    model.add_asymmetric_lognormal_uncertainty('scale_vjets', -math.log(1.577), math.log(0.710), 'WJets', obs)

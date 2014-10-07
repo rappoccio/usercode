@@ -263,8 +263,8 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, TString pdfdir 
   };
   double ttbar_nevents[nq2][nttbar] = {
     {21675970., 3082812., 1249111.},  // nominal
-    {14998720., 2243672., 1241650.},  // q2 up
-    {14998606., 2170074., 1308090.}   // q2 down
+    {14983686., 2243672., 1241650.},  // q2 up
+    {1789004., 2170074., 1308090.}   // q2 down
   };
   double ttbar_eff[nq2][nttbar] = {
     {1.0, 0.074, 0.015},  // nominal
@@ -328,8 +328,8 @@ SummedHist * getTTbar( TString name, TString histname, TString pdfdir = "CT10_no
   };
   double ttbar_nevents[nq2][nttbar] = {
     {21675970.,3082812.,1249111.},  // nominal
-    {14998720.,2243672.,1241650.},  // q2 up
-    {14998606.,2170074.,1308090.}   // q2 down
+    {14983686.,2243672.,1241650.},  // q2 up
+    {1789004.,2170074.,1308090.}   // q2 down
   };
   double ttbar_eff[nq2][nttbar] = {
     {1.0, 0.074, 0.015},  // nominal
