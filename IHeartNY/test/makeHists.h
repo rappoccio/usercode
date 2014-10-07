@@ -273,8 +273,8 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, TString pdfdir 
   };
 
   unsigned int iq2 = 0;
-  if ( name == "scaleup_nom" ) iq2 = 1;
-  if ( name == "scaledown_nom")iq2 = 2;
+  if ( pdfdir.Contains("scaleup") ) iq2 = 1;
+  if ( pdfdir.Contains("scaledown") ) iq2 = 2;
 
   double ttbar_norms[nttbar] = {
     ttbar_xs[iq2] * ttbar_eff[iq2][0] / ttbar_nevents[iq2][0],
@@ -338,10 +338,10 @@ SummedHist * getTTbar( TString name, TString histname, TString pdfdir = "CT10_no
   };
 
   unsigned int iq2 = 0;
-  if ( name == "scaleup_nom" ) iq2 = 1;
-  if ( name == "scaledown_nom")iq2 = 2;
+  if ( pdfdir.Contains("scaleup") ) iq2 = 1;
+  if ( pdfdir.Contains("scaledown") )iq2 = 2;
 
-  double ttbar_norms[nttbar] = {
+  double ttbar_norms[nttbar] = {    
     ttbar_xs[iq2] * ttbar_eff[iq2][0] / ttbar_nevents[iq2][0],
     ttbar_xs[iq2] * ttbar_eff[iq2][1] / ttbar_nevents[iq2][1],
     ttbar_xs[iq2] * ttbar_eff[iq2][2] / ttbar_nevents[iq2][2],
