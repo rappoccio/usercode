@@ -30,6 +30,7 @@ void myItalicText(Double_t x,Double_t y,Color_t color,char *text);
 
 void plotTruth() {
 
+  /*
   count();
 
   const int n = 6;
@@ -40,6 +41,9 @@ void plotTruth() {
   for (int i=0; i<n; i++) {
     plotOne(what[i]);
   }
+  */
+
+  plotMuon();
 
 }
 
@@ -99,6 +103,89 @@ void count() {
   cout << endl << "semilep ttbar with hadtop > 400 GeV (full truth ntuples): " << n_pt400 << endl;
   cout << "semilep ttbar with hadtop > 400 GeV (ntuples with trigger): " << nold_pt400 << endl << endl;
 
+}
+
+
+void plotMuon() {
+
+  SetPlotStyle();
+
+  TFile* f1 = new TFile("ttbar_max700.root");
+  TFile* f2 = new TFile("ttbar_700to1000.root");
+  TFile* f3 = new TFile("ttbar_1000toInf.root");
+
+
+  TH1F* h1 = (TH1F*) f1->Get("mu_pt_all");
+  TH1F* h2 = (TH1F*) f2->Get("mu_pt_all");
+  TH1F* h3 = (TH1F*) f3->Get("mu_pt_all");
+
+  TH1F* hh1 = (TH1F*) f1->Get("mu_pt_pt400");
+  TH1F* hh2 = (TH1F*) f2->Get("mu_pt_pt400");
+  TH1F* hh3 = (TH1F*) f3->Get("mu_pt_pt400");
+
+  h1->Sumw2();
+  h2->Sumw2();
+  h3->Sumw2();
+  hh1->Sumw2();
+  hh2->Sumw2();
+  hh3->Sumw2();
+
+  float ttbar_xs = 245.8;
+  float lumi = 19.7*1000;
+
+  float n_ttbar1 = 21675970.;
+  float n_ttbar2 = 3082812.;
+  float n_ttbar3 = 1249111.;
+
+  float eff_ttbar1 = 1.0;
+  float eff_ttbar2 = 0.074;
+  float eff_ttbar3 = 0.015;
+
+  h1->Scale(ttbar_xs*lumi*eff_ttbar1/n_ttbar1);
+  h2->Scale(ttbar_xs*lumi*eff_ttbar2/n_ttbar2);
+  h3->Scale(ttbar_xs*lumi*eff_ttbar3/n_ttbar3);
+
+  hh1->Scale(ttbar_xs*lumi*eff_ttbar1/n_ttbar1);
+  hh2->Scale(ttbar_xs*lumi*eff_ttbar2/n_ttbar2);
+  hh3->Scale(ttbar_xs*lumi*eff_ttbar3/n_ttbar3);
+
+  h1->Add(h2);
+  h1->Add(h3);
+
+  hh1->Add(hh2);
+  hh1->Add(hh3);
+
+  h1->SetLineColor(1);
+  hh1->SetLineColor(4);
+
+  cout << "pt>0 GeV (pt>400) = " << hh1->GetSum() << endl;
+  cout << "pt>40 GeV (pt>400) = " << hh1->GetSum()-hh1->Integral(1,39) << endl;
+
+  h1->Rebin(10);
+  hh1->Rebin(10);
+
+
+  h1->Scale(1.0/h1->GetSum());
+  hh1->Scale(1.0/hh1->GetSum());
+
+  TCanvas c;
+  //hh1->Draw("hist");
+  //h1->Draw("hist,same");
+  h1->Draw("hist");
+  hh1->Draw("same,hist");
+
+  TLegend* l = new TLegend(0.6,0.75,0.85,0.9);
+  l->SetFillStyle(0);
+  l->SetBorderSize(0);
+  l->SetFillColor(0);
+  l->SetTextSize(0.04);
+  l->AddEntry(h1, "All semileptonic events","l");
+  l->AddEntry(hh1,"p_{T}(top) > 400 GeV","l");
+  l->SetTextFont(42);
+  l->Draw();	
+
+  c.SaveAs("truth_muon_pt.png");
+  
 }
 
 void plotOne(TString what) {

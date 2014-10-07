@@ -106,6 +106,7 @@ h_hadtop_mass_all   = ROOT.TH1F("hadtop_mass_all",   ";Mass(hadronic top) [GeV];
 h_hadtop_mass_pt400 = ROOT.TH1F("hadtop_mass_pt400", ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
 h_hadtop_pt_all     = ROOT.TH1F("hadtop_pt_all",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 h_hadtop_pt_pt400   = ROOT.TH1F("hadtop_pt_pt400", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+h_hadtop_pt_pt400_pass = ROOT.TH1F("hadtop_pt_pt400_pass", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 
 h_leptop_mass_all   = ROOT.TH1F("leptop_mass_all",   ";Mass(leptonic top) [GeV]; Events / 1 GeV", 300, 0, 300)
 h_leptop_mass_pt400 = ROOT.TH1F("leptop_mass_pt400", ";Mass(leptonic top) [GeV]; Events / 1 GeV", 300, 0, 300)
@@ -286,7 +287,9 @@ for event in events :
         h_leptop_pt_pt400.Fill( lepTop.p4.Perp() )
         h_mu_eta_pt400.Fill(muonEta)
         h_mu_pt_pt400.Fill(muonPt)
-        
+
+        if abs(muonEta)<2.1 and muonPt>40 :
+            h_hadtop_pt_pt400_pass.Fill(hadTop.p4.Perp())
     
         
     # -------------------------------------------------------------------------------------
