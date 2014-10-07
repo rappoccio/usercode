@@ -382,7 +382,7 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
   float err_tot_dn = err_tot;
   float err_qcd_dn = err_qcd;
   if (cut==7) { //manual fix for down QCD error
-    if (use2D) err_qcd_dn = 11.0;
+    if (use2D) err_qcd_dn = 9.9;
     else err_qcd_dn = 1.0;
     err_tot_dn = err_tt*err_tt + err_tt_nonsemilep*err_tt_nonsemilep + err_singletop*err_singletop + err_wjets*err_wjets + err_qcd_dn*err_qcd_dn;
     err_tot_dn = sqrt(err_tot_dn);
@@ -423,7 +423,7 @@ void makePosteriorPlots(TString what, TString pdfdir="CT10_nom") {
   TH1F* h_qcd = (TH1F*) fMC->Get(what+"__QCD");
   TH1F* h_wjets = (TH1F*) fMC->Get(what+"__WJets");
   TH1F* h_ttbar = (TH1F*) fMC->Get(what+"__TTbar");
-  TH1F* h_ttbar_nonSemiLep = (TH1F*) fMC->Get(what+"__TTbar_nonSemiLep");
+  //TH1F* h_ttbar_nonSemiLep = (TH1F*) fMC->Get(what+"__TTbar_nonSemiLep");
   TH1F* h_singletop = (TH1F*) fMC->Get(what+"__SingleTop");
 
   // read data histogram 
@@ -452,13 +452,13 @@ void makePosteriorPlots(TString what, TString pdfdir="CT10_nom") {
   h_wjets->SetFillColor(kGreen-3);
   h_singletop->SetFillColor(6);
   h_ttbar->SetFillColor(kRed+1);
-  h_ttbar_nonSemiLep->SetFillColor(kRed-7);
+  //h_ttbar_nonSemiLep->SetFillColor(kRed-7);
 
   h_qcd->SetLineColor(1);
   h_wjets->SetLineColor(1);
   h_singletop->SetLineColor(1);
   h_ttbar->SetLineColor(1);
-  h_ttbar_nonSemiLep->SetLineColor(1);
+  //h_ttbar_nonSemiLep->SetLineColor(1);
 
 
   // rebinning
@@ -482,7 +482,7 @@ void makePosteriorPlots(TString what, TString pdfdir="CT10_nom") {
     h_data->GetYaxis()->SetTitle(newtitle);
     h_qcd->Rebin(rebin);
     h_ttbar->Rebin(rebin);
-    h_ttbar_nonSemiLep->Rebin(rebin);
+    //h_ttbar_nonSemiLep->Rebin(rebin);
     h_singletop->Rebin(rebin);
     h_wjets->Rebin(rebin);
   }
@@ -502,8 +502,9 @@ void makePosteriorPlots(TString what, TString pdfdir="CT10_nom") {
   leg->SetTextFont(42);
   leg->SetTextSize(0.05);
   leg->AddEntry(h_data, "Data", "pel");
-  leg->AddEntry(h_ttbar, "t#bar{t} Signal", "f");
-  leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} Other", "f");
+  leg->AddEntry(h_ttbar, "t#bar{t} combined", "f");
+  //leg->AddEntry(h_ttbar, "t#bar{t} Signal", "f");
+  //leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} Other", "f");
   leg->AddEntry(h_singletop, "Single Top", "f");
   leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
   leg->AddEntry(h_qcd, "QCD" , "f");
@@ -514,12 +515,12 @@ void makePosteriorPlots(TString what, TString pdfdir="CT10_nom") {
   h_stack->Add(h_qcd);
   h_stack->Add(h_wjets);
   h_stack->Add(h_singletop);
-  h_stack->Add(h_ttbar_nonSemiLep);
+  //h_stack->Add(h_ttbar_nonSemiLep);
   h_stack->Add(h_ttbar);
 
   TH1F* h_totalbkg = (TH1F*) h_qcd->Clone("totalbkg_"+what); 
   h_totalbkg->Add(h_ttbar);
-  h_totalbkg->Add(h_ttbar_nonSemiLep);
+  //h_totalbkg->Add(h_ttbar_nonSemiLep);
   h_totalbkg->Add(h_wjets);
   h_totalbkg->Add(h_singletop);
 
@@ -617,14 +618,14 @@ void makeTable() {
   TH1F* h_pre_qcd[3];
   TH1F* h_pre_wjets[3];
   TH1F* h_pre_ttbar[3];
-  TH1F* h_pre_ttbar_nonSemiLep[3];
+  //TH1F* h_pre_ttbar_nonSemiLep[3];
   TH1F* h_pre_singletop[3];
   TH1F* h_pre_total[3];
 
   TH1F* h_qcd[3];
   TH1F* h_wjets[3];
   TH1F* h_ttbar[3];
-  TH1F* h_ttbar_nonSemiLep[3];
+  //TH1F* h_ttbar_nonSemiLep[3];
   TH1F* h_singletop[3];
   TH1F* h_total[3];
 
@@ -632,7 +633,7 @@ void makeTable() {
 
   // errors for pre-fit table
   float err_tt[3] = {0};
-  float err_tt_nonsemilep[3] = {0};
+  //float err_tt_nonsemilep[3] = {0};
   float err_singletop[3] = {0};
   float err_wjets[3] = {0};
   float err_tot_up[3] = {0};
@@ -660,13 +661,13 @@ void makeTable() {
     h_qcd[i]   = (TH1F*) fMC->Get(what[i]+"__QCD");
     h_wjets[i] = (TH1F*) fMC->Get(what[i]+"__WJets");
     h_ttbar[i] = (TH1F*) fMC->Get(what[i]+"__TTbar");
-    h_ttbar_nonSemiLep[i] = (TH1F*) fMC->Get(what[i]+"__TTbar_nonSemiLep");
+    //h_ttbar_nonSemiLep[i] = (TH1F*) fMC->Get(what[i]+"__TTbar_nonSemiLep");
     h_singletop[i] = (TH1F*) fMC->Get(what[i]+"__SingleTop");
 
     h_total[i] = (TH1F*) h_qcd[i]->Clone(what[i]+"_total");
     h_total[i]->Add(h_wjets[i]);
     h_total[i]->Add(h_ttbar[i]);
-    h_total[i]->Add(h_ttbar_nonSemiLep[i]);
+    //h_total[i]->Add(h_ttbar_nonSemiLep[i]);
     h_total[i]->Add(h_singletop[i]);
 
     // data
@@ -676,31 +677,33 @@ void makeTable() {
     h_pre_qcd[i]   = (TH1F*) fDATA[i]->Get(what[i]+"__QCD");
     h_pre_wjets[i] = (TH1F*) fDATA[i]->Get(what[i]+"__WJets");
     h_pre_ttbar[i] = (TH1F*) fDATA[i]->Get(what[i]+"__TTbar");
-    h_pre_ttbar_nonSemiLep[i] = (TH1F*) fDATA[i]->Get(what[i]+"__TTbar_nonSemiLep");
+    //h_pre_ttbar_nonSemiLep[i] = (TH1F*) fDATA[i]->Get(what[i]+"__TTbar_nonSemiLep");
     h_pre_singletop[i] = (TH1F*) fDATA[i]->Get(what[i]+"__SingleTop");
 
     h_pre_total[i] = (TH1F*) h_pre_qcd[i]->Clone(what[i]+"_pre_total");
     h_pre_total[i]->Add(h_pre_wjets[i]);
     h_pre_total[i]->Add(h_pre_ttbar[i]);
-    h_pre_total[i]->Add(h_pre_ttbar_nonSemiLep[i]);
+    //h_pre_total[i]->Add(h_pre_ttbar_nonSemiLep[i]);
     h_pre_total[i]->Add(h_pre_singletop[i]);
 
     // error on pre-fit counts
     for (int ib=0; ib<h_pre_ttbar[i]->GetNbinsX(); ib++) {
       err_tt[i] += h_pre_ttbar[i]->GetBinError(ib+1)*h_pre_ttbar[i]->GetBinError(ib+1);
-      err_tt_nonsemilep[i] += h_pre_ttbar_nonSemiLep[i]->GetBinError(ib+1)*h_pre_ttbar_nonSemiLep[i]->GetBinError(ib+1);
+      //err_tt_nonsemilep[i] += h_pre_ttbar_nonSemiLep[i]->GetBinError(ib+1)*h_pre_ttbar_nonSemiLep[i]->GetBinError(ib+1);
       err_singletop[i] += h_pre_singletop[i]->GetBinError(ib+1)*h_pre_singletop[i]->GetBinError(ib+1);
       err_wjets[i] += h_pre_wjets[i]->GetBinError(ib+1)*h_pre_wjets[i]->GetBinError(ib+1);
     }
 
     err_tt[i] = sqrt(err_tt[i]);
-    err_tt_nonsemilep[i] = sqrt(err_tt_nonsemilep[i]);
+    //err_tt_nonsemilep[i] = sqrt(err_tt_nonsemilep[i]);
     err_singletop[i] = sqrt(err_singletop[i]);
     err_wjets[i] = sqrt(err_wjets[i]);
     
-    err_tot_up[i] = err_tt[i]*err_tt[i] + err_tt_nonsemilep[i]*err_tt_nonsemilep[i] + err_singletop[i]*err_singletop[i] + err_wjets[i]*err_wjets[i] + err_qcd_up[i]*err_qcd_up[i];
+    err_tot_up[i] = err_tt[i]*err_tt[i] + err_singletop[i]*err_singletop[i] + err_wjets[i]*err_wjets[i] + err_qcd_up[i]*err_qcd_up[i];
+    //err_tot_up[i] = err_tt[i]*err_tt[i] + err_tt_nonsemilep[i]*err_tt_nonsemilep[i] + err_singletop[i]*err_singletop[i] + err_wjets[i]*err_wjets[i] + err_qcd_up[i]*err_qcd_up[i];
     err_tot_up[i] = sqrt(err_tot_up[i]);
-    err_tot_dn[i] = err_tt[i]*err_tt[i] + err_tt_nonsemilep[i]*err_tt_nonsemilep[i] + err_singletop[i]*err_singletop[i] + err_wjets[i]*err_wjets[i] + err_qcd_dn[i]*err_qcd_dn[i];
+    err_tot_dn[i] = err_tt[i]*err_tt[i] + err_singletop[i]*err_singletop[i] + err_wjets[i]*err_wjets[i] + err_qcd_dn[i]*err_qcd_dn[i];
+    //err_tot_dn[i] = err_tt[i]*err_tt[i] + err_tt_nonsemilep[i]*err_tt_nonsemilep[i] + err_singletop[i]*err_singletop[i] + err_wjets[i]*err_wjets[i] + err_qcd_dn[i]*err_qcd_dn[i];
     err_tot_dn[i] = sqrt(err_tot_dn[i]);
   }
 
@@ -711,9 +714,9 @@ void makeTable() {
   std::cout << "\\ttbar (signal)      & " << h_pre_ttbar[0]->Integral() << " $\\pm$ " << err_tt[0] << " & " << 
     h_pre_ttbar[1]->Integral() << " $\\pm$ " << err_tt[1] << " & " << 
     h_pre_ttbar[2]->Integral() << " $\\pm$ " << err_tt[2] << " \\\\ " << std::endl;
-  std::cout << "\\ttbar (non-semilep) & " << h_pre_ttbar_nonSemiLep[0]->Integral() << " $\\pm$ " << err_tt_nonsemilep[0] << " & " << 
-    h_pre_ttbar_nonSemiLep[1]->Integral() << " $\\pm$ " << err_tt_nonsemilep[1] << " & " << 
-    h_pre_ttbar_nonSemiLep[2]->Integral() << " $\\pm$ " << err_tt_nonsemilep[2] << " \\\\ " << std::endl;
+  //  std::cout << "\\ttbar (non-semilep) & " << h_pre_ttbar_nonSemiLep[0]->Integral() << " $\\pm$ " << err_tt_nonsemilep[0] << " & " << 
+  //    h_pre_ttbar_nonSemiLep[1]->Integral() << " $\\pm$ " << err_tt_nonsemilep[1] << " & " << 
+  //    h_pre_ttbar_nonSemiLep[2]->Integral() << " $\\pm$ " << err_tt_nonsemilep[2] << " \\\\ " << std::endl;
   std::cout << "Single top           & " << h_pre_singletop[0]->Integral() << " $\\pm$ " << err_singletop[0] << " & " << 
     h_pre_singletop[1]->Integral() << " $\\pm$ " << err_singletop[1] << " & " << 
     h_pre_singletop[2]->Integral() << " $\\pm$ " << err_singletop[2] << " \\\\ " << std::endl;
@@ -734,7 +737,7 @@ void makeTable() {
   std::cout << "Post-fit results" << std::endl;
   std::cout << "---------------------------" << std::endl;
   std::cout << "\\ttbar (signal)      & " << h_ttbar[0]->Integral() << " & " << h_ttbar[1]->Integral() << " & " << h_ttbar[2]->Integral() << " \\\\ " << std::endl;
-  std::cout << "\\ttbar (non-semilep) & " << h_ttbar_nonSemiLep[0]->Integral() << " & " << h_ttbar_nonSemiLep[1]->Integral() << " & " << h_ttbar_nonSemiLep[2]->Integral() << " \\\\ " << std::endl;
+  //  std::cout << "\\ttbar (non-semilep) & " << h_ttbar_nonSemiLep[0]->Integral() << " & " << h_ttbar_nonSemiLep[1]->Integral() << " & " << h_ttbar_nonSemiLep[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "Single top           & " << h_singletop[0]->Integral() << " & " << h_singletop[1]->Integral() << " & " << h_singletop[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "$W$+jets             & " << h_wjets[0]->Integral() << " & " << h_wjets[1]->Integral() << " & " << h_wjets[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "QCD                  & " << h_qcd[0]->Integral() << " & " << h_qcd[1]->Integral() << " & " << h_qcd[2]->Integral() << " \\\\ " << std::endl;
@@ -788,6 +791,9 @@ void makeTheta_single(TString var, int cut, TString pdfdir="CT10_nom") {
     singletop[is] = getSingleTop( name_syst[is], hist  );
     ttbar[is]     = getTTbar( name_syst[is], hist, pdfdir  );
     ttbar_nonSemiLep[is] = getTTbarNonSemiLep( name_syst[is], hist, pdfdir  );
+
+    // do the ttbar combination
+    ttbar[is]->hist() ->Add(ttbar_nonSemiLep[is]->hist());
   }
 
   // QCD
@@ -804,6 +810,7 @@ void makeTheta_single(TString var, int cut, TString pdfdir="CT10_nom") {
   data->SetName(hist + "__DATA");
   
 
+
   // write the histograms to a file
   TString outname;
   if (use2D) outname = "NormalizedHists_" + pdfdir + "/normalized2d_mujets_"+hist+".root";
@@ -817,7 +824,7 @@ void makeTheta_single(TString var, int cut, TString pdfdir="CT10_nom") {
     wjets[is]->hist()->Write();
     singletop[is]->hist()->Write();
     ttbar[is]->hist()->Write();
-    ttbar_nonSemiLep[is]->hist()->Write();
+    //ttbar_nonSemiLep[is]->hist()->Write();
   }
 
   qcd->hist()->Write();
@@ -904,6 +911,8 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10_n
     singletop[is][0]->hist() ->Add(singletop[is][1]->hist(), -1);
     ttbar[is][0]->hist() ->Add(ttbar[is][1]->hist(), -1);
     ttbar_nonSemiLep[is][0]->hist() ->Add(ttbar_nonSemiLep[is][1]->hist(), -1);
+    // do the ttbar combination
+    ttbar[is][0]->hist() ->Add(ttbar_nonSemiLep[is][0]->hist());
   }
   qcd[0]->hist() ->Add(qcd[1]->hist(), -1);
   data[0]->Add(data[1], -1);
@@ -922,7 +931,7 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10_n
     wjets[is][0]->hist()->Write();
     singletop[is][0]->hist()->Write();
     ttbar[is][0]->hist()->Write();
-    ttbar_nonSemiLep[is][0]->hist()->Write();
+    //ttbar_nonSemiLep[is][0]->hist()->Write();
   }
 
   qcd[0]->hist()->Write();
