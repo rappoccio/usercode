@@ -106,6 +106,54 @@ void run(TString option) {
     makePlots("etaAbsLep",4,6);
 
   }
+
+  else if (option=="allpre") {
+
+    makePlots("vtxMass",7,0,"CT10_nom");
+    makePlots("etaAbsLep",6,7,"CT10_nom");
+    makePlots("etaAbsLep",4,6,"CT10_nom");
+
+    makePlots("vtxMass",7,0,"CT10_pdfup");
+    makePlots("etaAbsLep",6,7,"CT10_pdfup");
+    makePlots("etaAbsLep",4,6,"CT10_pdfup");
+
+    makePlots("vtxMass",7,0,"CT10_pdfdown");
+    makePlots("etaAbsLep",6,7,"CT10_pdfdown");
+    makePlots("etaAbsLep",4,6,"CT10_pdfdown");
+
+    makePlots("vtxMass",7,0,"MSTW_nom");
+    makePlots("etaAbsLep",6,7,"MSTW_nom");
+    makePlots("etaAbsLep",4,6,"MSTW_nom");
+
+    makePlots("vtxMass",7,0,"MSTW_pdfup");
+    makePlots("etaAbsLep",6,7,"MSTW_pdfup");
+    makePlots("etaAbsLep",4,6,"MSTW_pdfup");
+
+    makePlots("vtxMass",7,0,"MSTW_pdfdown");
+    makePlots("etaAbsLep",6,7,"MSTW_pdfdown");
+    makePlots("etaAbsLep",4,6,"MSTW_pdfdown");
+
+    makePlots("vtxMass",7,0,"NNPDF_nom");
+    makePlots("etaAbsLep",6,7,"NNPDF_nom");
+    makePlots("etaAbsLep",4,6,"NNPDF_nom");
+
+    makePlots("vtxMass",7,0,"NNPDF_pdfup");
+    makePlots("etaAbsLep",6,7,"NNPDF_pdfup");
+    makePlots("etaAbsLep",4,6,"NNPDF_pdfup");
+
+    makePlots("vtxMass",7,0,"NNPDF_pdfdown");
+    makePlots("etaAbsLep",6,7,"NNPDF_pdfdown");
+    makePlots("etaAbsLep",4,6,"NNPDF_pdfdown");
+
+    makePlots("vtxMass",7,0,"scaleup");
+    makePlots("etaAbsLep",6,7,"scaleup");
+    makePlots("etaAbsLep",4,6,"scaleup");
+
+    makePlots("vtxMass",7,0,"scaledown");
+    makePlots("etaAbsLep",6,7,"scaledown");
+    makePlots("etaAbsLep",4,6,"scaledown");
+
+  }
   // make posterior plots
   else if (option=="post") {
 
@@ -114,6 +162,65 @@ void run(TString option) {
     makePosteriorPlots("vtxMass7");
 
     makeTable();
+
+  }
+
+  else if (option=="allpost") {
+
+    makePosteriorPlots("etaAbsLep4", "CT10_nom");
+    makePosteriorPlots("etaAbsLep6", "CT10_nom");
+    makePosteriorPlots("vtxMass7", "CT10_nom");
+    makeTable("CT10_nom");
+
+    makePosteriorPlots("etaAbsLep4", "CT10_pdfup");
+    makePosteriorPlots("etaAbsLep6", "CT10_pdfup");
+    makePosteriorPlots("vtxMass7", "CT10_pdfup");
+    makeTable("CT10_pdfup");
+
+    makePosteriorPlots("etaAbsLep4", "CT10_pdfdown");
+    makePosteriorPlots("etaAbsLep6", "CT10_pdfdown");
+    makePosteriorPlots("vtxMass7", "CT10_pdfdown");
+    makeTable("CT10_pdfdown");
+
+    makePosteriorPlots("etaAbsLep4", "MSTW_nom");
+    makePosteriorPlots("etaAbsLep6", "MSTW_nom");
+    makePosteriorPlots("vtxMass7", "MSTW_nom");
+    makeTable("MSTW_nom");
+
+    makePosteriorPlots("etaAbsLep4", "MSTW_pdfup");
+    makePosteriorPlots("etaAbsLep6", "MSTW_pdfup");
+    makePosteriorPlots("vtxMass7", "MSTW_pdfup");
+    makeTable("MSTW_pdfup");
+
+    makePosteriorPlots("etaAbsLep4", "MSTW_pdfdown");
+    makePosteriorPlots("etaAbsLep6", "MSTW_pdfdown");
+    makePosteriorPlots("vtxMass7", "MSTW_pdfdown");
+    makeTable("MSTW_pdfdown");
+
+    makePosteriorPlots("etaAbsLep4", "NNPDF_nom");
+    makePosteriorPlots("etaAbsLep6", "NNPDF_nom");
+    makePosteriorPlots("vtxMass7", "NNPDF_nom");
+    makeTable("NNPDF_nom");
+
+    makePosteriorPlots("etaAbsLep4", "NNPDF_pdfup");
+    makePosteriorPlots("etaAbsLep6", "NNPDF_pdfup");
+    makePosteriorPlots("vtxMass7", "NNPDF_pdfup");
+    makeTable("NNPDF_pdfup");
+
+    makePosteriorPlots("etaAbsLep4", "NNPDF_pdfdown");
+    makePosteriorPlots("etaAbsLep6", "NNPDF_pdfdown");
+    makePosteriorPlots("vtxMass7", "NNPDF_pdfdown");
+    makeTable("NNPDF_pdfdown");
+
+    makePosteriorPlots("etaAbsLep4", "scaleup");
+    makePosteriorPlots("etaAbsLep6", "scaleup");
+    makePosteriorPlots("vtxMass7", "scaleup");
+    makeTable("scaleup");
+
+    makePosteriorPlots("etaAbsLep4", "scaledown");
+    makePosteriorPlots("etaAbsLep6", "scaledown");
+    makePosteriorPlots("vtxMass7", "scaledown");
+    makeTable("scaledown");
 
   }
 
