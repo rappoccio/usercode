@@ -347,7 +347,7 @@ SummedHist * getTTbar( TString name, TString histname, TString pdfdir = "CT10_no
     ttbar_xs[iq2] * ttbar_eff[iq2][2] / ttbar_nevents[iq2][2],
   };
 
-  TString thetaname = histname + "__TTbar";
+  TString thetaname = histname + "__TTbar_semiLep";
   adjustThetaName( thetaname, name );
   
   SummedHist* ttbar = new SummedHist( thetaname, kRed +1);

@@ -783,17 +783,22 @@ void makeTheta_single(TString var, int cut, TString pdfdir="CT10_nom") {
 			      "btagdn", "btagup", "toptagdn", "toptagup"};
   SummedHist* wjets[nSYST];
   SummedHist* singletop[nSYST];
-  SummedHist* ttbar[nSYST];
+  SummedHist* ttbar_semiLep[nSYST];
   SummedHist* ttbar_nonSemiLep[nSYST];
+  TH1F* ttbar[nSYST];
 
   for (int is=0; is<nSYST; is++) {
     wjets[is]     = getWJets( name_syst[is], hist  );
     singletop[is] = getSingleTop( name_syst[is], hist  );
-    ttbar[is]     = getTTbar( name_syst[is], hist, pdfdir  );
+    ttbar_semiLep[is]     = getTTbar( name_syst[is], hist, pdfdir  );
     ttbar_nonSemiLep[is] = getTTbarNonSemiLep( name_syst[is], hist, pdfdir  );
 
     // do the ttbar combination
-    ttbar[is]->hist() ->Add(ttbar_nonSemiLep[is]->hist());
+    ttbar[is] = (TH1F*) ttbar_semiLep[is]->hist()->Clone();
+    ttbar[is]->Add(ttbar_nonSemiLep[is]->hist());
+    TString tempname = hist + "__TTbar";
+    adjustThetaName( tempname, name_syst[is] );
+    ttbar[is]->SetName(tempname);
   }
 
   // QCD
@@ -823,8 +828,9 @@ void makeTheta_single(TString var, int cut, TString pdfdir="CT10_nom") {
   for (int is=0; is<nSYST; is++) {
     wjets[is]->hist()->Write();
     singletop[is]->hist()->Write();
-    ttbar[is]->hist()->Write();
-    //ttbar_nonSemiLep[is]->hist()->Write();
+    ttbar_semiLep[is]->hist()->Write();
+    ttbar_nonSemiLep[is]->hist()->Write();
+    ttbar[is]->Write();
   }
 
   qcd->hist()->Write();
@@ -873,15 +879,22 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10_n
   
   SummedHist* wjets[nSYST][2];
   SummedHist* singletop[nSYST][2];
-  SummedHist* ttbar[nSYST][2];
+  SummedHist* ttbar_semiLep[nSYST][2];
   SummedHist* ttbar_nonSemiLep[nSYST][2];
+  TH1F* ttbar[nSYST][2];
 
   for (int ih=0; ih<2; ih++) {
     for (int is=0; is<nSYST; is++) {
       wjets[is][ih]     = getWJets( name_syst[is], hist[ih] );
       singletop[is][ih] = getSingleTop( name_syst[is], hist[ih] );
-      ttbar[is][ih]     = getTTbar( name_syst[is], hist[ih], pdfdir );
+      ttbar_semiLep[is][ih]     = getTTbar( name_syst[is], hist[ih], pdfdir );
       ttbar_nonSemiLep[is][ih] = getTTbarNonSemiLep( name_syst[is], hist[ih], pdfdir );
+
+      ttbar[is][ih] = (TH1F*) ttbar_semiLep[is][ih]->hist()->Clone();
+      ttbar[is][ih]->Add(ttbar_nonSemiLep[is][ih]->hist());
+      TString tempname = hist[ih] + "__TTbar";
+      adjustThetaName( tempname, name_syst[is] );
+      ttbar[is][ih]->SetName(tempname);
     }
   }
 
@@ -909,10 +922,10 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10_n
   for (int is=0; is<nSYST; is++) {
     wjets[is][0]->hist() ->Add(wjets[is][1]->hist(), -1);
     singletop[is][0]->hist() ->Add(singletop[is][1]->hist(), -1);
-    ttbar[is][0]->hist() ->Add(ttbar[is][1]->hist(), -1);
+    ttbar_semiLep[is][0]->hist() ->Add(ttbar_semiLep[is][1]->hist(), -1);
     ttbar_nonSemiLep[is][0]->hist() ->Add(ttbar_nonSemiLep[is][1]->hist(), -1);
     // do the ttbar combination
-    ttbar[is][0]->hist() ->Add(ttbar_nonSemiLep[is][0]->hist());
+    ttbar[is][0]->Add(ttbar[is][1], -1);
   }
   qcd[0]->hist() ->Add(qcd[1]->hist(), -1);
   data[0]->Add(data[1], -1);
@@ -930,8 +943,9 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10_n
   for (int is=0; is<nSYST; is++) {
     wjets[is][0]->hist()->Write();
     singletop[is][0]->hist()->Write();
-    ttbar[is][0]->hist()->Write();
-    //ttbar_nonSemiLep[is][0]->hist()->Write();
+    ttbar_semiLep[is][0]->hist()->Write();
+    ttbar_nonSemiLep[is][0]->hist()->Write();
+    ttbar[is][0]->Write();
   }
 
   qcd[0]->hist()->Write();

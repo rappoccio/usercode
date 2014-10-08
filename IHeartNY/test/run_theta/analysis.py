@@ -11,7 +11,7 @@ from ROOT import *
 ####################################################################################
 
 def histfilter( hname ) :
-    if hname == None or 'NNPDF' in hname or 'MSTW' in hname : #or 'pdf' in hname or 'scale' in hname :
+    if hname == None or 'NNPDF' in hname or 'MSTW' in hname or 'TTbar_semiLep' in hname or 'TTbar_nonSemiLep' in hname: #or 'pdf' in hname or 'scale' in hname :
         return False
     else :
         return True
