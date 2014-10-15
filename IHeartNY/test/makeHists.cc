@@ -341,16 +341,16 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
 
   // save output
   TString outname;
-  if (use2D) outname = "NicePlots_" + pdfdir + "_";
-  else outname = "NicePlots_" + pdfdir + "_relIso_";
+  if (use2D) outname = "Plots/mu_"+pdfdir+"_";
+  else outname = "Plots/mu_relIso_"+pdfdir+"_";
 
   if (cut2==0) {
-    c->SaveAs(outname+hist+".png");
-    c->SaveAs(outname+hist+".pdf");
+    c->SaveAs(outname+hist+"_prefit.png");
+    c->SaveAs(outname+hist+"_prefit.pdf");
   }
   else {
-    c->SaveAs(outname+hist2+"_subtracted_from_"+hist+".png");
-    c->SaveAs(outname+hist2+"_subtracted_from_"+hist+".pdf");
+    c->SaveAs(outname+hist2+"_subtracted_from_"+hist+"_prefit.png");
+    c->SaveAs(outname+hist2+"_subtracted_from_"+hist+"_prefit.pdf");
   }
 
 
@@ -388,7 +388,6 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
 
   std::cout << std::endl << "-------------------------------------------------------------------------------------" << std::endl;
   std::cout << "PDF: " << pdfdir << std::endl;
-  std::cout << std::endl << "-------------------------------------------------------------------------------------" << std::endl;
   if (cut2==0) std::cout << "hist: " << hist << std::endl;
   else std::cout << "hist: " << hist2 << "_subtracted_from_" << hist << std::endl;
   std::cout << "-------------------------------------------------------------------------------------" << std::endl;
@@ -613,11 +612,11 @@ void makePosteriorPlots(TString what, TString pdfdir="CT10_nom") {
 
   // save output
   TString outname;
-  if (use2D) outname = "NicePlots_" + pdfdir + "_";
-  else outname = "NicePlots_" + pdfdir + "_relIso_";
+  if (use2D) outname = "Plots/mu_"+pdfdir+"_";
+  else outname = "Plots/mu_relIso_"+pdfdir+"_";
 
-  c->SaveAs(outname+what+"_post.png");
-  c->SaveAs(outname+what+"_post.pdf");
+  c->SaveAs(outname+what+"_postfit.png");
+  c->SaveAs(outname+what+"_postfit.pdf");
 
 }
 
@@ -751,7 +750,7 @@ void makeTable(TString pdfdir="CT10_nom") {
   std::cout << "Single top           & " << h_pre_singletop[0]->Integral() << " $\\pm$ " << err_singletop[0] << " & " << 
     h_pre_singletop[1]->Integral() << " $\\pm$ " << err_singletop[1] << " & " << 
     h_pre_singletop[2]->Integral() << " $\\pm$ " << err_singletop[2] << " \\\\ " << std::endl;
-  std::cout << "$W$+jets             & " << h_pre_wjets[0]->Integral() << " $\\pm$ " << err_wjets[0] << " & " << 
+  std::cout << "W+jets             & " << h_pre_wjets[0]->Integral() << " $\\pm$ " << err_wjets[0] << " & " << 
     h_pre_wjets[1]->Integral() << " $\\pm$ " << err_wjets[1] << " & " << 
     h_pre_wjets[2]->Integral() << " $\\pm$ " << err_wjets[2] << " \\\\ " << std::endl;
   std::cout << "QCD                  & " << h_pre_qcd[0]->Integral() << " $\\pm$ " << err_qcd_up[0] << " & " << 
@@ -770,7 +769,7 @@ void makeTable(TString pdfdir="CT10_nom") {
   std::cout << "\\ttbar (signal)      & " << h_ttbar_semiLep[0]->Integral() << " & " << h_ttbar_semiLep[1]->Integral() << " & " << h_ttbar_semiLep[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "\\ttbar (non-semilep) & " << h_ttbar_nonSemiLep[0]->Integral() << " & " << h_ttbar_nonSemiLep[1]->Integral() << " & " << h_ttbar_nonSemiLep[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "Single top           & " << h_singletop[0]->Integral() << " & " << h_singletop[1]->Integral() << " & " << h_singletop[2]->Integral() << " \\\\ " << std::endl;
-  std::cout << "$W$+jets             & " << h_wjets[0]->Integral() << " & " << h_wjets[1]->Integral() << " & " << h_wjets[2]->Integral() << " \\\\ " << std::endl;
+  std::cout << "W+jets             & " << h_wjets[0]->Integral() << " & " << h_wjets[1]->Integral() << " & " << h_wjets[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "QCD                  & " << h_qcd[0]->Integral() << " & " << h_qcd[1]->Integral() << " & " << h_qcd[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "\\hline" << std::endl;
   std::cout << "Total                & " << h_total[0]->Integral() << " & "  << h_total[1]->Integral() << " & "  << h_total[2]->Integral() << " \\\\ " << std::endl;
