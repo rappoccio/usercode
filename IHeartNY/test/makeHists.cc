@@ -386,6 +386,7 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
     err_tot_dn = sqrt(err_tot_dn);
   }
 
+
   std::cout << std::endl << "-------------------------------------------------------------------------------------" << std::endl;
   std::cout << "PDF: " << pdfdir << std::endl;
   if (cut2==0) std::cout << "hist: " << hist << std::endl;
@@ -670,9 +671,11 @@ void makeTable(TString pdfdir="CT10_nom") {
   std::pair<double, double> qcdnorm7 = getQCDnorm(7);
   double err_qcd_up[3];
   double err_qcd_dn[3];
-  err_qcd_up[0] = qcdnorm4.second - qcdnorm6.second; 
+  //err_qcd_up[0] = qcdnorm4.second - qcdnorm6.second; 
+  err_qcd_up[0] = qcdnorm4.second; //for now use the larger error
   err_qcd_dn[0] = err_qcd_up[0];
-  err_qcd_up[1] = qcdnorm6.second - qcdnorm7.second; 
+  //err_qcd_up[1] = qcdnorm6.second - qcdnorm7.second; 
+  err_qcd_up[1] = qcdnorm6.second; //for now use the larger error
   err_qcd_dn[1] = err_qcd_up[1];
   err_qcd_up[2] = qcdnorm7.second; 
   err_qcd_dn[2] = qcdnorm7.first;
