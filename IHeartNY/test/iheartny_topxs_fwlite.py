@@ -2703,7 +2703,7 @@ if options.printEvents :
 print "Total time = " + str( time.time() - start_time) + " seconds"
 
 if options.makeResponse:
-    print "RESPONSE DEBUG:  # pass = " + str(n_pass) + " # fail = " + str(n_fail) " # total = " + str(n_total)
+    print "RESPONSE DEBUG:  # pass = " + str(n_pass) + " # fail = " + str(n_fail) + " # total = " + str(n_total)
     if n_pass+n_fail != n_total:
         print "*********** WARNING !!! these numbers do not add up as they should !!! WARNING ***********" 
 
