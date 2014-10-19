@@ -1755,7 +1755,7 @@ for event in events :
             if options.jerSys == 0.2 :
                 my_jerSys = 1
             elif options.jerSys == 0.0 :
-                my_jerSys = =1
+                my_jerSys = -1
             scale = getJER(ak5JetEtas[ijet], my_jerSys) #JER nominal=0, up=+1, down=-1
             recopt = thisJet.Perp()
             genpt = genJet.Perp()
