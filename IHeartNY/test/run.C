@@ -94,6 +94,27 @@ void run(TString option) {
     makePlots("vtxMass",7);
 
   }
+
+  // various plots for kinematic checks
+  else if (option=="plotex") {
+
+    cout << "make exclusive pretty histograms..." << endl;
+
+    const int nHIST = 11;
+    TString hist[nHIST] = {"etaLep", "etaAbsLep", "ptLep",
+			   "hadtop_pt", "hadtop_mass", "hadtop_y", 
+			   "leptop_pt", "leptop_mass", "leptop_y",
+			   "ht", "ptMET"};
+    
+    for (int ih=0; ih<nHIST; ih++) {
+      makePlots(hist[ih], 4,6);
+      makePlots(hist[ih], 6,7);
+      makePlots(hist[ih], 7);      
+    }  
+    makePlots("vtxMass",7);
+
+  }
+
   // debug thing
   else if (option=="debug") {
 
