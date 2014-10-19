@@ -215,7 +215,7 @@ def getJER(jetEta, jerType) :
 
     jerSF = 1.0
 
-    if ( (jerType==0 || jerType==-1 || jerType==1) == False):
+    if ( (jerType==0 or jerType==-1 or jerType==1) == False):
         print "ERROR: Can't get JER! use type=0 (nom), -1 (down), +1 (up)"
         return float(jerSF)
 
