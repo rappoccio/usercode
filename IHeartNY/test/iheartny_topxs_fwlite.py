@@ -215,7 +215,7 @@ def getJER(jetEta, jerType) :
 
     jerSF = 1.0
 
-    if ( (jerType==0 || jerType==-1 || jerType==1) == False):
+    if ( (jerType==0 or jerType==-1 or jerType==1) == False):
         print "ERROR: Can't get JER! use type=0 (nom), -1 (down), +1 (up)"
         return float(jerSF)
 
@@ -1755,7 +1755,7 @@ for event in events :
             if options.jerSys == 0.2 :
                 my_jerSys = 1
             elif options.jerSys == 0.0 :
-                my_jerSys = =1
+                my_jerSys = -1
             scale = getJER(ak5JetEtas[ijet], my_jerSys) #JER nominal=0, up=+1, down=-1
             recopt = thisJet.Perp()
             genpt = genJet.Perp()
@@ -2703,7 +2703,7 @@ if options.printEvents :
 print "Total time = " + str( time.time() - start_time) + " seconds"
 
 if options.makeResponse:
-    print "RESPONSE DEBUG:  # pass = " + str(n_pass) + " # fail = " + str(n_fail) " # total = " + str(n_total)
+    print "RESPONSE DEBUG:  # pass = " + str(n_pass) + " # fail = " + str(n_fail) + " # total = " + str(n_total)
     if n_pass+n_fail != n_total:
         print "*********** WARNING !!! these numbers do not add up as they should !!! WARNING ***********" 
 
