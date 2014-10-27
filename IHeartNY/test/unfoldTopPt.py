@@ -236,11 +236,32 @@ cr = TCanvas("c_response", "", 800, 600)
 hEmpty2D = response.Hresponse().Clone()
 hEmpty2D.SetName("empty2D")
 hEmpty2D.Reset()
-hEmpty2D.GetXaxis().SetTitle("Measured p_{T} [GeV]")
-hEmpty2D.GetYaxis().SetTitle("Truth p_{T} [GeV]")
+hEmpty2D.GetXaxis().SetTitle("Measured top-jet p_{T} [GeV]")
+hEmpty2D.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
 hEmpty2D.GetXaxis().SetLabelSize(0.045)
+hEmpty2D.GetYaxis().SetLabelSize(0.045)
 hEmpty2D.Draw()
-response.Hresponse().Draw("colz,same,text")
+hResponse2D = response.Hresponse()
+
+## normalize so that for each bin of true top quark pt, the bins in measured top pt add up to 100%
+nbinsX = hResponse2D.GetNbinsX()
+nbinsY = hResponse2D.GetNbinsX()
+print "nbr bins in x = " + str(nbinsX) + "nbr bins in y = " + str(nbinsY)
+for iby in range(1,nbinsY+1) :
+    rowIntegral = hResponse2D.Integral(1,nbinsX+1,iby,iby)
+    print "for y-bin " + str(iby) + " row integral = " + str(rowIntegral)
+    for ibx in range(1,nbinsX+1) :
+        binContent = hResponse2D.GetBinContent(ibx,iby)
+        newContent = 0
+        if rowIntegral > 0:
+            newContent = binContent/rowIntegral*100.0
+        #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
+        hResponse2D.SetBinContent(ibx,iby,newContent)
+
+
+gStyle.SetPaintTextFormat(".1f")
+#gStyle.SetPalette(1)
+hResponse2D.Draw("colz,same,text")
 hEmpty2D.Draw("axis,same")
 cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".png")
 cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".eps")

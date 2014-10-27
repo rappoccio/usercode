@@ -188,7 +188,7 @@ def getMuonSF(muEta) :
 def getToptagSF(jetEta) :
 
     toptagSF = 1.0
-    if abs(jetEta) < 1.1 :
+    if abs(jetEta) < 1.0 :
         toptagSF = 1.173
     else :
         toptagSF = 0.704
