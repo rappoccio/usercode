@@ -14,13 +14,17 @@ For more info on TMinuit see root.cern.ch/root/html/TMinuit.html .
 
 The inputs to be changed when running the program are found in lines 68, 69, 70, 88, 
 and 89. 
-Line 68 gives the rebinning factor (number of bins in the original histogram to be 
+Line 69 gives the rebinning factor (number of bins in the original histogram to be 
 combined before the fit)
-Line 69 gives the new binsize (in GeV)
-Line 70 gives the new number of bins
-Line 88 specifies which ptMET histogram to fit
-Line 89 specifies whether MC sidebands are subtracted from the data sideband to give the
+Line 70 gives the new binsize (in GeV)
+Line 71 gives the new number of bins
+Lines 73-78 set whether the fit is done for 2D isolation (first three lines) or relIso (last three lines)
+
+Line 102 specifies which ptMET histogram to fit
+Line 103 specifies whether MC sidebands are subtracted from the data sideband to give the
 QCD template.
+Line 104 specifies whether to fit in exclusive regions or inclusive
+Line 105 indicates whether to scale up or down the amount of non-QCD subtracted from the sideband
 
 */
 
@@ -72,8 +76,10 @@ TString numberofbins = "20"; // 200 / binfac
 
 TString whichHist = "2Dcut_";
 TString whichDir = "2Dhist/";
+TString whichDirv2 = "2Dhists/";
 //TString whichHist = "";
 //TString whichDir = "";
+//TString whichDirv2 = "";
 
 double Nraw[5];
 double Nnorm[5];
@@ -83,8 +89,8 @@ double numEvent[2]; //set it global use to set limit in fcn
 
 // Helper functions
 void fcn(int& npar, double* deriv, double& f, double par[], int flag);
-void getData(TString& temp_num, int binfac);
-double* getTemp(TString& temp_num, int binfac, bool dosub);
+void getData(TString& temp_num, int binfac, bool exclusive);
+double* getTemp(TString& temp_num, int binfac, bool dosub, bool exclusive, TString var);
 double* getWeightArray();
 
 TText* doPrelim(float luminosity, float x, float y);
@@ -95,15 +101,18 @@ int QCDminfit() {
   cout << "Beginning QCD normalization..." << endl;
 
   // User inputs
-  TString temp_num = "0";
+  TString temp_num = "7";
   bool dosub = true;
+  bool exclusive = true; 
+  TString var = "dn";    // Amount of non-QCD subtracted from the sideband
+                         //"raw" = none, "" = nominal, "up" = nominal x 2, "dn" = nominal x 1/2
 
   int nbins_new = nbins / binfac;
   cout << "New # of bins is " << nbins_new << endl;
   cout << "Fitting ptMET" << temp_num << endl;
 
-  getData(temp_num, binfac);
-  double* ratios = getTemp(temp_num, binfac, dosub);
+  getData(temp_num, binfac, exclusive);
+  double* ratios = getTemp(temp_num, binfac, dosub, exclusive, var);
   
   // Initialize minuit, set initial values etc. of parameters.
   const int npar = 2; // the number of parameters
@@ -249,7 +258,7 @@ int QCDminfit() {
   textPrelimA->SetTextFont(42);
 
   canvasTemp->Update();
-  canvasTemp->SaveAs("Temp_"+whichHist+numberofbins+"b_"+temp_num+".png");
+  canvasTemp->SaveAs("Temp_"+whichHist+numberofbins+"b_"+temp_num+"_"+var+".png");
 
   //make fit plot
   TCanvas* canvasFit = new TCanvas("canvasFit", "canvasFit", 700, 500);
@@ -299,7 +308,7 @@ int QCDminfit() {
   gPad->RedrawAxis();
   
   canvasFit->Update();
-  canvasFit->SaveAs("Fit_"+whichHist+numberofbins+"b_"+temp_num+".png");
+  canvasFit->SaveAs("Fit_"+whichHist+numberofbins+"b_"+temp_num+"_"+var+".png");
    
   cout << "To exit, quit ROOT from the File menu of the plot" << endl;
   return 0;
@@ -369,12 +378,23 @@ double* getWeightArray(){
 
 
 // function to read in the data from a histogram
-void getData(TString& temp_num, int binfac){
+void getData(TString& temp_num, int binfac, bool exclusive){
 
   int nbins_new = nbins / binfac;
   TH1D* h_data = new TH1D("data", "data", nbins, xmin, xmax);
   TFile* datafile = TFile::Open("../histfiles/"+whichDir+"SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"nom.root", "READ");
   h_data = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+  h_data->Sumw2();
+  if (exclusive && temp_num == "4"){
+    TH1D* h_data_sub = (TH1D*) gDirectory->Get("ptMET6");
+    h_data_sub->Sumw2();
+    h_data->Add(h_data_sub, -1);
+  }
+  if (exclusive && temp_num == "6"){
+    TH1D* h_data_sub = (TH1D*) gDirectory->Get("ptMET7");
+    h_data_sub->Sumw2();
+    h_data->Add(h_data_sub, -1);
+  }
   h_data->Rebin(binfac);
 
   // Write histogram to data vector, calc total # of events
@@ -388,15 +408,15 @@ void getData(TString& temp_num, int binfac){
 }
 
 // Function to produce the top and QCD templates
-double* getTemp(TString& temp_num, int binfac, bool dosub){
+double* getTemp(TString& temp_num, int binfac, bool dosub, bool exclusive, TString var){
 
   double* ratios = new double[5];
-  TString sample_array[16] = {"TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-			   "TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-			   "TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-			   "TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-			   "TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-			   "TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
+  TString sample_array[16] = {"TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_",
+			   "TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_",
+			   "TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_",
+			   "TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_",
+			   "TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_",
+			   "TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_",
 			   "T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
 			   "Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
 			   "T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
@@ -439,8 +459,16 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   // Do first recombination
   // TTjets semilep
   for(int i=0; i<3; i++){
-    top_file_array[i] = TFile::Open("../histfiles/"+whichDir+sample_array[i]+whichHist+"nom.root", "READ");
+    top_file_array[i] = TFile::Open("../histfiles_CT10_nom/"+whichDirv2+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+    if (exclusive && temp_num == "4"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    if (exclusive && temp_num == "6"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
     top_his_array[i]->Rebin(binfac);
     Nraw[0] += top_his_array[i]->Integral(0, nbins_new+1);
     top_his_array[i]->Scale(weight[i]);
@@ -448,8 +476,16 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   }
   // TTjets nonsemilep
   for(int i=3; i<6; i++){
-    top_file_array[i] = TFile::Open("../histfiles/"+whichDir+sample_array[i]+whichHist+"nom.root", "READ");
+    top_file_array[i] = TFile::Open("../histfiles_CT10_nom/"+whichDirv2+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+    if (exclusive && temp_num == "4"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    if (exclusive && temp_num == "6"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
     top_his_array[i]->Rebin(binfac);
     Nraw[1] += top_his_array[i]->Integral(0, nbins_new+1);
     top_his_array[i]->Scale(weight[i]);
@@ -459,6 +495,14 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   for(int i=6; i<12; i++){
     top_file_array[i] = TFile::Open("../histfiles/"+whichDir+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+    if (exclusive && temp_num == "4"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    if (exclusive && temp_num == "6"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
     top_his_array[i]->Rebin(binfac);
     Nraw[2] += top_his_array[i]->Integral(0, nbins_new+1);
     top_his_array[i]->Scale(weight[i]);
@@ -468,6 +512,14 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   for(int i=12; i<16; i++){
     top_file_array[i] = TFile::Open("../histfiles/"+whichDir+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+    if (exclusive && temp_num == "4"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    if (exclusive && temp_num == "6"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
     top_his_array[i]->Rebin(binfac);
     Nraw[3] += top_his_array[i]->Integral(0, nbins_new+1);
     top_his_array[i]->Scale(weight[i]);
@@ -484,14 +536,43 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   // Get QCD template
   qcd_file_array[0] = TFile::Open("../histfiles/"+whichDir+"SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"qcd.root", "READ");
   qcd_his_array[0] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+  if (exclusive && temp_num == "4"){
+    TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+    qcd_his_array[0]->Add(hist_sub, -1);
+  }
+  if (exclusive && temp_num == "6"){
+    TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
+    qcd_his_array[0]->Add(hist_sub, -1);
+  }
   qcd_his_array[0]->Rebin(binfac);
   his_com_array[1]->Add(qcd_his_array[0]);
-  if (dosub) {
+  if (dosub && var != "raw") {
     for(int i=0; i<16; i++){
-      qcd_file_array[i+1] = TFile::Open("../histfiles/"+whichDir+sample_array[i]+whichHist+"qcd.root", "READ");
+      if (i < 6){
+	qcd_file_array[i+1] = TFile::Open("../histfiles_CT10_nom/"+whichDirv2+sample_array[i]+whichHist+"qcd.root", "READ");
+      }
+      else {
+	qcd_file_array[i+1] = TFile::Open("../histfiles/"+whichDir+sample_array[i]+whichHist+"qcd.root", "READ");
+      }
       qcd_his_array[i+1] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+      if (exclusive && temp_num == "4"){
+	TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+	qcd_his_array[i+1]->Add(hist_sub, -1);
+      }
+      if (exclusive && temp_num == "6"){
+	TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
+	qcd_his_array[i+1]->Add(hist_sub, -1);
+      }
       qcd_his_array[i+1]->Rebin(binfac);
-      qcd_his_array[i+1]->Scale(weight[i]);
+      if (var == ""){
+	qcd_his_array[i+1]->Scale(weight[i]);
+      }
+      if (var == "up"){
+	qcd_his_array[i+1]->Scale(weight[i]*2);
+      }
+      if (var == "dn"){
+	qcd_his_array[i+1]->Scale(weight[i]*0.5);
+      }
       his_com_array[1]->Add(qcd_his_array[i+1], -1);
     }
   }
@@ -534,7 +615,7 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   gPad->RedrawAxis();
 
   canvasTop->Update();
-  canvasTop->SaveAs("TopComp_"+whichHist+numberofbins+"b_"+temp_num+".png");
+  canvasTop->SaveAs("TopComp_"+whichHist+numberofbins+"b_"+temp_num+"_"+var+".png");
 
   TCanvas* canvasTopNorm = new TCanvas("canvasTopNorm", "canvasTopNorm", 700, 500);
   gStyle->SetOptStat(0);
@@ -576,9 +657,9 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   gPad->RedrawAxis();
 
   canvasTopNorm->Update();
-  canvasTopNorm->SaveAs("TopTemp_"+whichHist+numberofbins+"b_"+temp_num+".png");
+  canvasTopNorm->SaveAs("TopTemp_"+whichHist+numberofbins+"b_"+temp_num+"_"+var+".png");
 
-  if (dosub) {
+  if (dosub && var != "raw") {
     TH1F** qcd_cont_array = new TH1F*[6];
     TString qcd_cont_names[6] = {"qcdcorr", "qcdttbarsig", "qcdttbarbkg", "qcdstop", "qcdwjets", "qcdraw"};
     for(int i=0; i<6; i++){
@@ -645,7 +726,7 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
     gPad->RedrawAxis();
 
     canvasQCD->Update();
-    canvasQCD->SaveAs("QCDComp_"+whichHist+numberofbins+"b_"+temp_num+".png");
+    canvasQCD->SaveAs("QCDComp_"+whichHist+numberofbins+"b_"+temp_num+"_"+var+".png");
     
     TCanvas* canvasQCDNorm = new TCanvas("canvasQCDNorm", "canvasQCDNorm", 700, 500);
     gStyle->SetOptStat(0);
@@ -690,7 +771,7 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
     gPad->RedrawAxis();
 
     canvasQCDNorm->Update();
-    canvasQCDNorm->SaveAs("QCDTemp_"+whichHist+numberofbins+"b_"+temp_num+".png");
+    canvasQCDNorm->SaveAs("QCDTemp_"+whichHist+numberofbins+"b_"+temp_num+"_"+var+".png");
   }
 
   // Normalize histograms to 1 (but first determine Nexp)

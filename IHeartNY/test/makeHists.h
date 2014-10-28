@@ -33,8 +33,8 @@ std::pair<double, double> getQCDnorm(int cut) {
 
   float qcd_reliso_norm[8] = {0.0, 0.0, 0.0, 0.0,  401.4, 0.0, 28.5,  1.0};
   float qcd_reliso_err[8]  = {0.0, 0.0, 0.0, 0.0,   71.6, 0.0, 21.5, 10.0};
-  float qcd_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1255.5, 0.0, 50.0,  9.9};
-  float qcd_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   84.0, 0.0, 25.7, 14.6};
+  float qcd_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1207.7, 0.0, 29.5,  9.3};
+  float qcd_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   80.4, 0.0, 21.5, 14.6};
 
   float qcd_norm = 0;
   float qcd_err  = 0;
@@ -373,7 +373,7 @@ SummedHist * getTTbar( TString name, TString histname, TString pdfdir = "CT10_no
 // QCD
 // -------------------------------------------------------------------------------------
 
-SummedHist * getQCD( TString var, double norm ) {
+SummedHist * getQCD( TString var ) {
 
   SummedHist* wjets_qcd = getWJets( "qcd", var );
   SummedHist* singletop_qcd = getSingleTop( "qcd", var );
@@ -402,7 +402,7 @@ SummedHist * getQCD( TString var, double norm ) {
     }
   }
   
-  qcd->push_back( qcdHistRaw, norm / qcdHistRaw->GetSum() );
+  qcd->push_back( qcdHistRaw, 1.);
 
   return qcd;
 

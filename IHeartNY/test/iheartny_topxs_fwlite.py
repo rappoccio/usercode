@@ -188,7 +188,7 @@ def getMuonSF(muEta) :
 def getToptagSF(jetEta) :
 
     toptagSF = 1.0
-    if abs(jetEta) < 1.1 :
+    if abs(jetEta) < 1.0 :
         toptagSF = 1.173
     else :
         toptagSF = 0.704
@@ -206,6 +206,37 @@ def getToptagSFerror(jetEta) :
         toptagSF = 0.110
 
     return float(toptagSF)
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Jet energy resolution (nominal, up/down) for AK5 jets
+def getJER(jetEta, jerType) :
+
+    jerSF = 1.0
+
+    if ( (jerType==0 or jerType==-1 or jerType==1) == False):
+        print "ERROR: Can't get JER! use type=0 (nom), -1 (down), +1 (up)"
+        return float(jerSF)
+
+    etamin = [0.0,0.5,1.1,1.7,2.3,2.8,3.2]
+    etamax = [0.5,1.1,1.7,2.3,2.8,3.2,5.0]
+    
+    scale_nom = [1.079,1.099,1.121,1.208,1.254,1.395,1.056]
+    scale_dn  = [1.053,1.071,1.092,1.162,1.192,1.332,0.865]
+    scale_up  = [1.105,1.127,1.150,1.254,1.316,1.458,1.247]
+
+    for iSF in range(0,len(scale_nom)) :
+        if abs(jetEta) >= etamin[iSF] and abs(jetEta) < etamax[iSF] :
+            if jerType < 0 :
+                jerSF = scale_dn[iSF]
+            elif jerType > 0 :
+                jerSF = scale_up[iSF]
+            else :
+                jerSF = scale_nom[iSF]
+            break
+
+    return float(jerSF)
 # -------------------------------------------------------------------------------------
 
 
@@ -831,16 +862,26 @@ h_toptagSF = ROOT.TH1F("toptagSF", ";; Average top-tagging SF", 1,0.5,1.5)
 
 # dummy histogram used only to specify dimensions for reponse matrix
 ptbins = array('d',[300.0,400.0,500.0,600.0,700.0,800.0,1300.0])
+ptbins_atlas = array('d',[300.0,350.0,400.0,450.0,500.0,550.0,650.0,750.0,1200.0])  ## try using the same binning as ATLAS for comparison
 h_bins = ROOT.TH1F("bins", ";;", len(ptbins)-1, ptbins)
+h_bins_atlas = ROOT.TH1F("bins_atlas", ";;", len(ptbins_atlas)-1, ptbins_atlas)
 
 # histograms for doing the unfolding
 if options.makeResponse == True : 
+    ## current default bin widths
     response = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response.SetName('response_pt')
     h_ptGenTop = ROOT.TH1F("ptGenTop", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
     h_ptGenTop_noweight = ROOT.TH1F("ptGenTop_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
+    ## "atlas"-note's binning, keep our default one also for comparison for now
+    response_atlas = ROOT.RooUnfoldResponse(h_bins_atlas, h_bins_atlas)
+    response_atlas.SetName('response_pt_atlas')
+    h_ptGenTop_atlas = ROOT.TH1F("ptGenTop_atlas", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_atlas)-1, ptbins_atlas)
+    h_ptGenTop_noweight_atlas = ROOT.TH1F("ptGenTop_noweight_atlas", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_atlas)-1, ptbins_atlas)
+
 h_ptRecoTop = ROOT.TH1F("ptRecoTop", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+h_ptRecoTop_atlas = ROOT.TH1F("ptRecoTop_atlas", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_atlas)-1, ptbins_atlas)
 
 
 # -------------------------------------------------------------------------------------
@@ -1082,6 +1123,11 @@ ntotal = 0       # total number of events
 npassed = 0      # number of events passing selection
 goodEvents = []  # vector for storing events passing full selection
 
+# count number of events passing/failing the selection where response matrix is filled to ensure they match up! 
+n_total = 0
+n_pass  = 0
+n_fail  = 0
+
 
 # -------------------------------------------------------------------------------------
 # start looping over events
@@ -1305,18 +1351,27 @@ for event in events :
         if options.makeResponse == True:
             h_ptGenTop.Fill( hadTop.p4.Perp(), weight )
             h_ptGenTop_noweight.Fill( hadTop.p4.Perp() )
+            h_ptGenTop_atlas.Fill( hadTop.p4.Perp(), weight )
+            h_ptGenTop_noweight_atlas.Fill( hadTop.p4.Perp() )
 
         # endif (making response matrix)
 
-        
+
+
+    ### for event counting purposes for cross-checking response matrix, this is total number of events considered
+    n_total += 1
+
+    
     # -------------------------------------------------------------------------------------
     # read AK5 jet information
     # -------------------------------------------------------------------------------------
 
     event.getByLabel (ak5JetPtLabel, ak5JetPtHandle)
     if ak5JetPtHandle.isValid() == False : 
+        n_fail += 1
         if options.makeResponse == True :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
     
     ak5JetPts = ak5JetPtHandle.product()
@@ -1551,8 +1606,10 @@ for event in events :
     h_nElectrons.Fill( nElectrons, weight )
         
     if cut == False or cut == None: 
+        n_fail += 1
         if options.makeResponse == True :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
 
     # -------------------------------------------------------------------------------------
@@ -1591,8 +1648,10 @@ for event in events :
         event.getByLabel( ca8GenJetMassLabel, ca8GenJetMassHandle )
 
         if ak5GenJetPtHandle.isValid() == False :
+            n_fail += 1
             if options.makeResponse == True :
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
         ak5GenJetPt   = ak5GenJetPtHandle.product()
@@ -1601,8 +1660,10 @@ for event in events :
         ak5GenJetMass = ak5GenJetMassHandle.product()
 
         if len(ak5GenJetPt) == 0 :
+            n_fail += 1
             if options.makeResponse == True :
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
         # loop over AK5 gen jets
@@ -1615,8 +1676,10 @@ for event in events :
 
 
         if ca8GenJetPtHandle.isValid() == False :
+            n_fail += 1
             if options.makeResponse == True :
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
         ca8GenJetPt   = ca8GenJetPtHandle.product()
@@ -1625,8 +1688,10 @@ for event in events :
         ca8GenJetMass = ca8GenJetMassHandle.product()
         
         if len(ca8GenJetPt) == 0 :
+            n_fail += 1
             if options.makeResponse == True :
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
         # loop over CA8 gen jets
@@ -1685,7 +1750,13 @@ for event in events :
         # next smear the jets
         if options.jerSys != None :
             genJet = findClosestInList( thisJet, ak5GenJets )
-            scale = options.jerSys  #JER nominal=0.1, up=0.2, down=0.0
+            #scale = options.jerSys  #JER nominal=0.1, up=0.2, down=0.0
+            my_jerSys = 0
+            if options.jerSys == 0.2 :
+                my_jerSys = 1
+            elif options.jerSys == 0.0 :
+                my_jerSys = -1
+            scale = getJER(ak5JetEtas[ijet], my_jerSys) #JER nominal=0, up=+1, down=-1
             recopt = thisJet.Perp()
             genpt = genJet.Perp()
             deltapt = (recopt-genpt)*scale
@@ -1821,8 +1892,10 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     if nJets < 2 :
+        n_fail += 1
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight*weight_response )       
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
     if options.debug :
         print 'Passed stage1'
@@ -1875,8 +1948,10 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     if options.metCut is not None and met < options.metCut :
+        n_fail += 1
         if options.makeResponse == True :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -1947,7 +2022,7 @@ for event in events :
                 thisJet = thisJet - ilepton.p4()
 
         
-        # next smear the jets
+        # next smear the jets (for CA8 jets, used the flat JER of 0.10, or 0.0/0.2 for down/up)
         if options.jerSys != None :
             genJet = findClosestInList( thisJet, ca8GenJets )
             scale = options.jerSys
@@ -2047,8 +2122,10 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     if len(lepJets) < 1 or len(hadJets) < 1 or hadJets[0].Perp() < options.jetPtCut :
+        n_fail += 1
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight*weight_response )        
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -2114,8 +2191,10 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     if hadJets[0].Perp() < 400.0 :
+        n_fail += 1
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight*weight_response )        
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -2164,13 +2243,17 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     if options.htLepCut is not None and htLep < options.htLepCut :
+        n_fail += 1
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight*weight_response )        
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
 
     if options.htCut is not None and ht < options.htCut :
+        n_fail += 1
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight*weight_response )        
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -2369,8 +2452,10 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     if not passSelection:
+        n_fail += 1
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight*weight_response )       
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
     if options.debug :
         print 'Passed stage6'
@@ -2499,8 +2584,10 @@ for event in events :
     
     # require a b-tagged jet
     if ntagslep < 1:
+        n_fail += 1
         if options.makeResponse == True :
-            response.Miss( hadTop.p4.Perp(), weight*weight_response )        
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -2510,6 +2597,8 @@ for event in events :
     cutflow['Stage 7: '] += 1
     npassed += 1
 
+    n_pass += 1
+    
     goodEvents.append( [ event.object().id().run(), event.object().id().luminosityBlock(), event.object().id().event() ] )
     
     # apply b-tagging SF 
@@ -2566,9 +2655,9 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     if options.isData == False :
-        h_muonSF.Fill(1.0,muonSF)
-        h_btagSF.Fill(1.0,btagSF)
-        h_toptagSF.Fill(1.0,toptagSF)
+        h_muonSF.Fill(1.0,muonSF*weight)
+        h_btagSF.Fill(1.0,btagSF*weight)
+        h_toptagSF.Fill(1.0,toptagSF*weight)
 
     
     # -------------------------------------------------------------------------------------
@@ -2576,9 +2665,11 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     h_ptRecoTop.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_atlas.Fill( goodtop.Perp(), top_weight )
     
     if options.makeResponse == True :		
         response.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
+        response_atlas.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
     
     
 
@@ -2610,3 +2701,9 @@ if options.printEvents :
 
 
 print "Total time = " + str( time.time() - start_time) + " seconds"
+
+if options.makeResponse:
+    print "RESPONSE DEBUG:  # pass = " + str(n_pass) + " # fail = " + str(n_fail) + " # total = " + str(n_total)
+    if n_pass+n_fail != n_total:
+        print "*********** WARNING !!! these numbers do not add up as they should !!! WARNING ***********" 
+

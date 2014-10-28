@@ -53,23 +53,12 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
   TH1::AddDirectory(kFALSE); 
   setStyle();
 
-  if (cut2==0) { 
-    if ( !(cut==3||cut==4||cut==6||cut==7) ) {
-      std::cout << "Not a valid option! Syntax is: " << std::endl
-		<< "> makePlots(TString var, int cut)" << std::endl
-		<< "where cut == 3,4,6,7. Exiting..." << std::endl;
-      return;
-    }
-  }
-  else if ( !(cut==3||cut==4||cut==6||cut==7) ||
-	    !(cut2==3||cut2==4||cut2==6||cut2==7) ||
-	    cut2 <= cut ) {
+  if ( !((cut==4 && cut2==6) || (cut==6 && cut2==7) || (cut==7 && cut2==0))) { 
     std::cout << "Not a valid option! Syntax is: " << std::endl
-	      << "> makePlots(TString var, int cut1, int cut2)" << std::endl
-	      << "where cut1/2 == 3,4,6,7 and cut1 < cut2. Exiting..." << std::endl;
+	      << "> makePlots(TString var, int cut, int cut2)" << std::endl
+	      << "where (cut, cut2) = (4,6) or (6,7) or (7,0). Exiting..." << std::endl;
     return;
   }
-
  
   TString hist = var;
   hist += cut;
@@ -81,22 +70,12 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
   double nqcd = qcdnorm.first;
   double err_qcd = qcdnorm.second; 
 
-  std::pair<double, double> qcdnorm2;
-  double nqcd2 = 0;
-  double err_qcd2 = 0; 
-  if (cut2>0) {
-    qcdnorm2 = getQCDnorm(cut2);
-    nqcd2 = qcdnorm2.first;
-    err_qcd2 = qcdnorm2.second; 
-  }
-
-
   // get histograms
   SummedHist* wjets = getWJets( "nom", hist  );
   SummedHist* singletop = getSingleTop( "nom", hist  );
   SummedHist* ttbar = getTTbar( "nom", hist, pdfdir  );
   SummedHist* ttbar_nonSemiLep = getTTbarNonSemiLep( "nom", hist, pdfdir  );
-  SummedHist* qcd = getQCD( hist, nqcd );
+  SummedHist* qcd = getQCD( hist );
   
   SummedHist* wjets2;
   SummedHist* singletop2;
@@ -108,7 +87,7 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
     singletop2 = getSingleTop( "nom", hist2  );
     ttbar2 = getTTbar( "nom", hist2, pdfdir  );
     ttbar_nonSemiLep2 = getTTbarNonSemiLep( "nom", hist2, pdfdir  );
-    qcd2 = getQCD( hist2, nqcd2 );
+    qcd2 = getQCD( hist2 );
   }
 
   TString filepath;
@@ -137,7 +116,6 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
     h_data->Add(h_data2, -1);
   }
 
-
   // -------------------------------------------------------------------------------------
   // get the TH1F versions
 
@@ -147,6 +125,9 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
   TH1F* h_ttbar_nonSemiLep = (TH1F*) ttbar_nonSemiLep->hist();
   TH1F* h_singletop = (TH1F*) singletop->hist();
 
+  // ------------------------------------------------------------------------------------
+  // Normalize the QCD histogram
+  h_qcd->Scale(nqcd / h_qcd->GetSum());
 
   // -------------------------------------------------------------------------------------
   // various hist plotting edits
@@ -341,16 +322,16 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
 
   // save output
   TString outname;
-  if (use2D) outname = "NicePlots_" + pdfdir + "_";
-  else outname = "NicePlots_" + pdfdir + "_relIso_";
+  if (use2D) outname = "Plots/mu_"+pdfdir+"_";
+  else outname = "Plots/mu_relIso_"+pdfdir+"_";
 
   if (cut2==0) {
-    c->SaveAs(outname+hist+".png");
-    c->SaveAs(outname+hist+".pdf");
+    c->SaveAs(outname+hist+"_prefit.png");
+    c->SaveAs(outname+hist+"_prefit.pdf");
   }
   else {
-    c->SaveAs(outname+hist2+"_subtracted_from_"+hist+".png");
-    c->SaveAs(outname+hist2+"_subtracted_from_"+hist+".pdf");
+    c->SaveAs(outname+hist2+"_subtracted_from_"+hist+"_prefit.png");
+    c->SaveAs(outname+hist2+"_subtracted_from_"+hist+"_prefit.pdf");
   }
 
 
@@ -380,15 +361,14 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
   float err_tot_dn = err_tot;
   float err_qcd_dn = err_qcd;
   if (cut==7) { //manual fix for down QCD error
-    if (use2D) err_qcd_dn = 9.9;
-    else err_qcd_dn = 1.0;
+    if (nqcd < err_qcd) {err_qcd_dn = nqcd;}
     err_tot_dn = err_tt*err_tt + err_tt_nonsemilep*err_tt_nonsemilep + err_singletop*err_singletop + err_wjets*err_wjets + err_qcd_dn*err_qcd_dn;
     err_tot_dn = sqrt(err_tot_dn);
   }
 
+
   std::cout << std::endl << "-------------------------------------------------------------------------------------" << std::endl;
   std::cout << "PDF: " << pdfdir << std::endl;
-  std::cout << std::endl << "-------------------------------------------------------------------------------------" << std::endl;
   if (cut2==0) std::cout << "hist: " << hist << std::endl;
   else std::cout << "hist: " << hist2 << "_subtracted_from_" << hist << std::endl;
   std::cout << "-------------------------------------------------------------------------------------" << std::endl;
@@ -613,11 +593,11 @@ void makePosteriorPlots(TString what, TString pdfdir="CT10_nom") {
 
   // save output
   TString outname;
-  if (use2D) outname = "NicePlots_" + pdfdir + "_";
-  else outname = "NicePlots_" + pdfdir + "_relIso_";
+  if (use2D) outname = "Plots/mu_"+pdfdir+"_";
+  else outname = "Plots/mu_relIso_"+pdfdir+"_";
 
-  c->SaveAs(outname+what+"_post.png");
-  c->SaveAs(outname+what+"_post.pdf");
+  c->SaveAs(outname+what+"_postfit.png");
+  c->SaveAs(outname+what+"_postfit.pdf");
 
 }
 
@@ -671,9 +651,9 @@ void makeTable(TString pdfdir="CT10_nom") {
   std::pair<double, double> qcdnorm7 = getQCDnorm(7);
   double err_qcd_up[3];
   double err_qcd_dn[3];
-  err_qcd_up[0] = qcdnorm4.second - qcdnorm6.second; 
+  err_qcd_up[0] = qcdnorm4.second; 
   err_qcd_dn[0] = err_qcd_up[0];
-  err_qcd_up[1] = qcdnorm6.second - qcdnorm7.second; 
+  err_qcd_up[1] = qcdnorm6.second; 
   err_qcd_dn[1] = err_qcd_up[1];
   err_qcd_up[2] = qcdnorm7.second; 
   err_qcd_dn[2] = qcdnorm7.first;
@@ -751,7 +731,7 @@ void makeTable(TString pdfdir="CT10_nom") {
   std::cout << "Single top           & " << h_pre_singletop[0]->Integral() << " $\\pm$ " << err_singletop[0] << " & " << 
     h_pre_singletop[1]->Integral() << " $\\pm$ " << err_singletop[1] << " & " << 
     h_pre_singletop[2]->Integral() << " $\\pm$ " << err_singletop[2] << " \\\\ " << std::endl;
-  std::cout << "$W$+jets             & " << h_pre_wjets[0]->Integral() << " $\\pm$ " << err_wjets[0] << " & " << 
+  std::cout << "W+jets             & " << h_pre_wjets[0]->Integral() << " $\\pm$ " << err_wjets[0] << " & " << 
     h_pre_wjets[1]->Integral() << " $\\pm$ " << err_wjets[1] << " & " << 
     h_pre_wjets[2]->Integral() << " $\\pm$ " << err_wjets[2] << " \\\\ " << std::endl;
   std::cout << "QCD                  & " << h_pre_qcd[0]->Integral() << " $\\pm$ " << err_qcd_up[0] << " & " << 
@@ -770,7 +750,7 @@ void makeTable(TString pdfdir="CT10_nom") {
   std::cout << "\\ttbar (signal)      & " << h_ttbar_semiLep[0]->Integral() << " & " << h_ttbar_semiLep[1]->Integral() << " & " << h_ttbar_semiLep[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "\\ttbar (non-semilep) & " << h_ttbar_nonSemiLep[0]->Integral() << " & " << h_ttbar_nonSemiLep[1]->Integral() << " & " << h_ttbar_nonSemiLep[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "Single top           & " << h_singletop[0]->Integral() << " & " << h_singletop[1]->Integral() << " & " << h_singletop[2]->Integral() << " \\\\ " << std::endl;
-  std::cout << "$W$+jets             & " << h_wjets[0]->Integral() << " & " << h_wjets[1]->Integral() << " & " << h_wjets[2]->Integral() << " \\\\ " << std::endl;
+  std::cout << "W+jets             & " << h_wjets[0]->Integral() << " & " << h_wjets[1]->Integral() << " & " << h_wjets[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "QCD                  & " << h_qcd[0]->Integral() << " & " << h_qcd[1]->Integral() << " & " << h_qcd[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "\\hline" << std::endl;
   std::cout << "Total                & " << h_total[0]->Integral() << " & "  << h_total[1]->Integral() << " & "  << h_total[2]->Integral() << " \\\\ " << std::endl;
@@ -791,10 +771,10 @@ void makeTheta_single(TString var, int cut, TString pdfdir="CT10_nom") {
   TH1::AddDirectory(kFALSE); 
   setStyle();
 
-  if ( !(cut==3||cut==4||cut==6||cut==7) ) {
+  if ( !(cut==7) ) {
     std::cout << "Not a valid option! Syntax is: " << std::endl
 	      << "> makeTheta_single(TString var, int cut)" << std::endl
-	      << "where cut == 3,4,6,7. Exiting..." << std::endl;
+	      << "where cut == 7. Exiting..." << std::endl;
     return;
   }
  
@@ -833,8 +813,8 @@ void makeTheta_single(TString var, int cut, TString pdfdir="CT10_nom") {
   }
 
   // QCD
-  SummedHist* qcd = getQCD( hist, nqcd );
-
+  SummedHist* qcd = getQCD( hist );
+  
 
   // data
   TString filepath;
@@ -864,7 +844,9 @@ void makeTheta_single(TString var, int cut, TString pdfdir="CT10_nom") {
     ttbar[is]->Write();
   }
 
-  qcd->hist()->Write();
+  TH1F* h_qcd = qcd->hist();
+  h_qcd->Scale(nqcd / h_qcd->GetSum());
+  h_qcd->Write();
   data->Write();
 
   fout->Close();
@@ -881,12 +863,10 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10_n
   TH1::AddDirectory(kFALSE); 
   setStyle();
 
-  if ( !(cut1==3||cut1==4||cut1==6||cut1==7) ||
-       !(cut2==3||cut2==4||cut2==6||cut2==7) ||
-       cut2 <= cut1 ) {
+  if ( !((cut1==4 && cut2==6) || (cut1==6 && cut2==7)) ) {
     std::cout << "Not a valid option! Syntax is: " << std::endl
 	      << "> makeTheta_subtract(TString var, int cut1, int cut2)" << std::endl
-	      << "where cut1/2 == 3,4,6,7 and cut1 < cut2. Exiting..." << std::endl;
+	      << "where (cut1, cut2) = (4,6) or (6,7). Exiting..." << std::endl;
     return;
   }
  
@@ -896,10 +876,9 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10_n
 
 
   // read QCD normalization
-  std::pair<double, double> qcdnorm1 = getQCDnorm(cut1);
-  std::pair<double, double> qcdnorm2 = getQCDnorm(cut2);
-  double nqcd[2] = {qcdnorm1.first, qcdnorm2.first};
-  //double qcd_err[2] = {qcdnorm1.second, qcdnorm2.second};
+  std::pair<double, double> qcdnorm = getQCDnorm(cut1);
+  double nqcd = qcdnorm.first;
+  //double qcd_err = qcdnorm.second;
 
 	
   // systematics for ttbar, non-semilep ttbar, single top, W+jets
@@ -931,8 +910,8 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10_n
 
   // QCD
   SummedHist* qcd[2];
-  qcd[0] = getQCD( hist[0], nqcd[0] );
-  qcd[1] = getQCD( hist[1], nqcd[1] );
+  qcd[0] = getQCD( hist[0] );
+  qcd[1] = getQCD( hist[1] );
 
 
   // data
@@ -959,6 +938,7 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString pdfdir="_CT10_n
     ttbar[is][0]->Add(ttbar[is][1], -1);
   }
   qcd[0]->hist() ->Add(qcd[1]->hist(), -1);
+  qcd[0]->hist()->Scale(nqcd / qcd[0]->hist()->GetSum());
   data[0]->Add(data[1], -1);
 
 
