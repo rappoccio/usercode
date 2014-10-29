@@ -1759,7 +1759,7 @@ for event in events :
             scale = getJER(ak5JetEtas[ijet], my_jerSys) #JER nominal=0, up=+1, down=-1
             recopt = thisJet.Perp()
             genpt = genJet.Perp()
-            deltapt = (recopt-genpt)*scale
+            deltapt = (recopt-genpt)*(scale-1.0)
             ptscale = max(0.0, (recopt+deltapt)/recopt)
             jetScale *= ptscale
         
