@@ -327,10 +327,10 @@ parser.add_option('--mttGenMax', metavar='J', type='float', action='store',
                   dest='mttGenMax',
                   help='Maximum generator-level m_ttbar [GeV] to stitch together the ttbar samples.')
 
-parser.add_option('--makeResponse', metavar='M', action='store_true',
-                  default=False,
+parser.add_option('--makeResponse', metavar='J', type='float', action='store',
+                  default=None,
                   dest='makeResponse',
-                  help='Make response matrix for top pt unfolding')
+                  help='Make response matrix for two-step (option==2) or one-step (option==1) even (option==2) unfolding.')
 
 parser.add_option('--semilep', metavar='J', type='float',action='store',
                   default=None,
@@ -398,7 +398,7 @@ ROOT.gROOT.Macro("rootlogon.C")
 ## array needed for response matrix binning
 from array import *
 
-if options.makeResponse :
+if options.makeResponse != None:
     ROOT.gSystem.Load("RooUnfold-1.1.1/libRooUnfold")
 
 
@@ -867,7 +867,7 @@ h_bins = ROOT.TH1F("bins", ";;", len(ptbins)-1, ptbins)
 h_bins_atlas = ROOT.TH1F("bins_atlas", ";;", len(ptbins_atlas)-1, ptbins_atlas)
 
 # histograms for doing the unfolding
-if options.makeResponse == True : 
+if options.makeResponse == 1 : 
     ## current default bin widths
     response = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response.SetName('response_pt')
@@ -879,6 +879,29 @@ if options.makeResponse == True :
     response_atlas.SetName('response_pt_atlas')
     h_ptGenTop_atlas = ROOT.TH1F("ptGenTop_atlas", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_atlas)-1, ptbins_atlas)
     h_ptGenTop_noweight_atlas = ROOT.TH1F("ptGenTop_noweight_atlas", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_atlas)-1, ptbins_atlas)
+
+if options.makeResponse == 2 : 
+    ## current default bin widths
+    response_pp = ROOT.RooUnfoldResponse(h_bins, h_bins)
+    response_pp.SetName('response_pt_pp')
+    h_ptGenTop = ROOT.TH1F("ptGenTop", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+    h_ptGenTop_noweight = ROOT.TH1F("ptGenTop_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+
+    response_rp = ROOT.RooUnfoldResponse(h_bins, h_bins)
+    response_rp.SetName('response_pt_rp')
+    h_ptPartTop = ROOT.TH1F("ptPartTop", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+    h_ptPartTop_noweight = ROOT.TH1F("ptPartTop_noweight", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+
+    ## "atlas"-note's binning, keep our default one also for comparison for now
+    response_atlas_pp = ROOT.RooUnfoldResponse(h_bins_atlas, h_bins_atlas)
+    response_atlas_pp.SetName('response_pt_atlas_pp')
+    h_ptGenTop_atlas = ROOT.TH1F("ptGenTop_atlas", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_atlas)-1, ptbins_atlas)
+    h_ptGenTop_noweight_atlas = ROOT.TH1F("ptGenTop_noweight_atlas", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_atlas)-1, ptbins_atlas)
+
+    response_atlas_rp = ROOT.RooUnfoldResponse(h_bins_atlas, h_bins_atlas)
+    response_atlas_rp.SetName('response_pt_atlas_rp')
+    h_ptPartTop_atlas = ROOT.TH1F("ptPartTop_atlas", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_atlas)-1, ptbins_atlas)
+    h_ptPartTop_noweight_atlas = ROOT.TH1F("ptPartTop_noweight_atlas", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_atlas)-1, ptbins_atlas)
 
 h_ptRecoTop = ROOT.TH1F("ptRecoTop", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 h_ptRecoTop_atlas = ROOT.TH1F("ptRecoTop_atlas", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_atlas)-1, ptbins_atlas)
@@ -1037,7 +1060,7 @@ if options.pdfSys != 0.0 or options.pdfSet != 0.0:
 
 
 # if making response matrix, need generated particles (truth-level)
-if options.makeResponse == True or options.mttGenMax is not None or options.semilep is not None: 
+if options.makeResponse != None or options.mttGenMax is not None or options.semilep is not None: 
     genParticlesPtHandle     = Handle("std::vector<float>")
     genParticlesPtLabel      = ("pfShyftTupleGenParticles", "pt")
     genParticlesEtaHandle    = Handle("std::vector<float>")
@@ -1053,7 +1076,8 @@ if options.makeResponse == True or options.mttGenMax is not None or options.semi
 
 
 # if doing JER corrections, need the gen jets (for AK5 and CA8 jets)
-if options.jerSys != None :
+# also need the gen jets when doing particle-level unfolding
+if options.jerSys != None or options.makeResponse == 2:
     ak5GenJetPtHandle   = Handle("std::vector<float>")
     ak5GenJetPtLabel    = ("pfShyftTupleAK5GenJets", "pt")
     ak5GenJetEtaHandle  = Handle("std::vector<float>")
@@ -1105,7 +1129,7 @@ Nmc_TT_Mtt_700_1000 = 3082812
 Nmc_TT_Mtt_1000_Inf = 1249111
 e_TT_Mtt_0_700 = 1.0
 e_TT_Mtt_700_1000 = 0.074
-e_TT_Mtt_1000_Inf = 0.014
+e_TT_Mtt_1000_Inf = 0.015
 
 if "TT_max700" in options.outname:
     weight_response = sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar)
@@ -1256,11 +1280,12 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     topQuarks = []
+    genMuons = []
     hadTop = None
     lepTop = None
     isSemiLeptonicGen = True
     isMuon = False
-    if options.makeResponse == True or options.mttGenMax is not None or options.semilep is not None:
+    if options.makeResponse != None or options.mttGenMax is not None or options.semilep is not None:
         event.getByLabel( genParticlesPtLabel, genParticlesPtHandle )
         event.getByLabel( genParticlesEtaLabel, genParticlesEtaHandle )
         event.getByLabel( genParticlesPhiLabel, genParticlesPhiHandle )
@@ -1279,7 +1304,6 @@ for event in events :
         p4Antitop = ROOT.TLorentzVector()
         topDecay = 0        # 0 = hadronic, 1 = leptonic
         antitopDecay = 0    # 0 = hadronic, 1 = leptonic
-
         
         # loop over gen particles
         for igen in xrange( len(genParticlesPt) ) :
@@ -1308,7 +1332,9 @@ for event in events :
 
             if (abs(genParticlesPdgId[igen]) == 13) :
                 isMuon = True
-
+                p4Muon = ROOT.TLorentzVector()
+                p4Muon.SetPtEtaPhiM( genParticlesPt[igen], genParticlesEta[igen], genParticlesPhi[igen], genParticlesMass[igen] )
+                genMuons.append(p4Muon)
         
         topQuarks.append( GenTopQuark( 6, p4Top, topDecay) )
         topQuarks.append( GenTopQuark( -6, p4Antitop, antitopDecay) )
@@ -1322,7 +1348,7 @@ for event in events :
         # consider "volunteer" events that pass the selection
         # even though they aren't really semileptonic events. 
 
-        if options.makeResponse == True and not (options.semilep < 0) and isSemiLeptonicGen == False :
+        if options.makeResponse != None and not (options.semilep < 0) and isSemiLeptonicGen == False :
             continue	
 
         if options.semilep > 0 and isSemiLeptonicGen == False:
@@ -1348,7 +1374,7 @@ for event in events :
 
         h_mttbarGen0.Fill( mttbarGen )
 
-        if options.makeResponse == True:
+        if options.makeResponse != None:
             h_ptGenTop.Fill( hadTop.p4.Perp(), weight )
             h_ptGenTop_noweight.Fill( hadTop.p4.Perp() )
             h_ptGenTop_atlas.Fill( hadTop.p4.Perp(), weight )
@@ -1361,7 +1387,120 @@ for event in events :
     ### for event counting purposes for cross-checking response matrix, this is total number of events considered
     n_total += 1
 
+
+    # -------------------------------------------------------------------------------------
+    # read gen jets if doing JER systematics or 2-step unfolding
+    # -------------------------------------------------------------------------------------
+
+    ak5GenJets = []
+    ca8GenJets = []
+    if options.makeResponse == 2 or options.jerSys != None:
+        event.getByLabel( ak5GenJetPtLabel, ak5GenJetPtHandle )
+        if ak5GenJetPtHandle.isValid() == False :
+            n_fail += 1
+            if options.makeResponse == 2:
+                response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_atlas_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+            continue
+        event.getByLabel( ak5GenJetEtaLabel, ak5GenJetEtaHandle )
+        event.getByLabel( ak5GenJetPhiLabel, ak5GenJetPhiHandle )
+        event.getByLabel( ak5GenJetMassLabel, ak5GenJetMassHandle )
+
+        ak5GenJetPt   = ak5GenJetPtHandle.product()
+        ak5GenJetEta  = ak5GenJetEtaHandle.product()
+        ak5GenJetPhi  = ak5GenJetPhiHandle.product()
+        ak5GenJetMass = ak5GenJetMassHandle.product()
+
+        if len(ak5GenJetPt) == 0 :
+            n_fail += 1
+            if options.makeResponse == 2:
+                response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_atlas_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+            continue
+
+        # loop over AK5 gen jets
+        for iak5 in xrange( len(ak5GenJetPt) ) :
+            p4 = ROOT.TLorentzVector()
+            p4.SetPtEtaPhiM( ak5GenJetPt[iak5], ak5GenJetEta[iak5], ak5GenJetPhi[iak5], ak5GenJetMass[iak5] )
+            ak5GenJets.append(p4)
+            if options.debug :
+                print 'AK5Gen {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( iak5, ak5GenJetPt[iak5], ak5GenJetEta[iak5], ak5GenJetPhi[iak5], ak5GenJetMass[iak5] )
+
+        event.getByLabel( ca8GenJetPtLabel, ca8GenJetPtHandle )
+        if ca8GenJetPtHandle.isValid() == False :
+            n_fail += 1
+            if options.makeResponse == 2:
+                response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_atlas_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+            continue
+        event.getByLabel( ca8GenJetEtaLabel, ca8GenJetEtaHandle )
+        event.getByLabel( ca8GenJetPhiLabel, ca8GenJetPhiHandle )
+        event.getByLabel( ca8GenJetMassLabel, ca8GenJetMassHandle )
+        
+        ca8GenJetPt   = ca8GenJetPtHandle.product()
+        ca8GenJetEta  = ca8GenJetEtaHandle.product()
+        ca8GenJetPhi  = ca8GenJetPhiHandle.product()
+        ca8GenJetMass = ca8GenJetMassHandle.product()
+        
+        if len(ca8GenJetPt) == 0 :
+            n_fail += 1
+            if options.makeResponse == 2:
+                response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_atlas_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+            continue
+
+        # loop over CA8 gen jets
+        for ica8 in xrange( len(ca8GenJetPt) ) :
+            p4 = ROOT.TLorentzVector()
+            p4.SetPtEtaPhiM( ca8GenJetPt[ica8], ca8GenJetEta[ica8], ca8GenJetPhi[ica8], ca8GenJetMass[ica8] )
+            ca8GenJets.append(p4)
+            if options.debug :
+                print 'CA8Gen {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ica8, ca8GenJetPt[ica8], ca8GenJetEta[ica8], ca8GenJetPhi[ica8], ca8GenJetMass[ica8] )
+
+
+        # -------------------------------------------------------------------------------------
+        # implement particle-level selection
+        # -------------------------------------------------------------------------------------
+
+    if options.makeResponse == 2:
+        nGenMuons = 0
+        nGenBJets = 0
+        nGenTops = 0
+        genMuon = ROOT.TLorentzVector()
+        genTops = []
+        for iMuon in genMuons:
+            if iMuon.Perp() > 45. and abs(iMuon.Eta()) < 2.1:
+                nGenMuons += 1
+                genMuon = iMuon
+        if nGenMuons != 1:
+            n_fail += 1
+            response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_atlas_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+            continue
+
+        for iak5Gen in ak5GenJets:
+            if iak5Gen.DeltaR(genMuon) < ROOT.TMath.Pi() / 2.0 and iak5Gen.Perp() > 30. and abs(iak5Gen.Eta()) < 2.4:
+                nGenBJets += 1
+
+        for ica8Gen in ca8GenJets:
+            if ica8Gen.DeltaR(genMuon) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > 400. and abs(ica8Gen.Eta()) < 2.4:
+                genTops.append(ica8Gen)
+                nGenTops += 1
+
+        if nGenBJets < 1 or nGenTops < 1:
+            n_fail += 1
+            response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_atlas_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+            continue
     
+        h_ptPartTop.Fill( genTops[0].Perp(), weight )
+        h_ptPartTop_noweight.Fill( genTops[0].Perp() )
+        h_ptPartTop_atlas.Fill( genTops[0].Perp(), weight )
+        h_ptPartTop_noweight_atlas.Fill( genTops[0].Perp() )
+    
+        response_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
+        response_atlas_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
+
     # -------------------------------------------------------------------------------------
     # read AK5 jet information
     # -------------------------------------------------------------------------------------
@@ -1369,9 +1508,12 @@ for event in events :
     event.getByLabel (ak5JetPtLabel, ak5JetPtHandle)
     if ak5JetPtHandle.isValid() == False : 
         n_fail += 1
-        if options.makeResponse == True :
+        if options.makeResponse == 1 :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if options.makeResponse == 2 :
+            response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            response_atlas_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
     
     ak5JetPts = ak5JetPtHandle.product()
@@ -1607,9 +1749,12 @@ for event in events :
         
     if cut == False or cut == None: 
         n_fail += 1
-        if options.makeResponse == True :
+        if options.makeResponse == 1 :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if options.makeResponse == 2 :
+            response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            response_atlas_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     # -------------------------------------------------------------------------------------
@@ -1627,82 +1772,6 @@ for event in events :
     if options.debug :
         print lepton
         
-
-    # -------------------------------------------------------------------------------------
-    # read gen jets if doing JER systematics
-    # -------------------------------------------------------------------------------------
-
-    ak5GenJets = []
-    ca8GenJets = []
-    if len(ak5JetPts) > 0 and options.jerSys != None :
-        if options.debug :
-            print 'Getting gen jets'
-
-        event.getByLabel( ak5GenJetPtLabel, ak5GenJetPtHandle )
-        event.getByLabel( ak5GenJetEtaLabel, ak5GenJetEtaHandle )
-        event.getByLabel( ak5GenJetPhiLabel, ak5GenJetPhiHandle )
-        event.getByLabel( ak5GenJetMassLabel, ak5GenJetMassHandle )
-        event.getByLabel( ca8GenJetPtLabel, ca8GenJetPtHandle )
-        event.getByLabel( ca8GenJetEtaLabel, ca8GenJetEtaHandle )
-        event.getByLabel( ca8GenJetPhiLabel, ca8GenJetPhiHandle )
-        event.getByLabel( ca8GenJetMassLabel, ca8GenJetMassHandle )
-
-        if ak5GenJetPtHandle.isValid() == False :
-            n_fail += 1
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-
-        ak5GenJetPt   = ak5GenJetPtHandle.product()
-        ak5GenJetEta  = ak5GenJetEtaHandle.product()
-        ak5GenJetPhi  = ak5GenJetPhiHandle.product()
-        ak5GenJetMass = ak5GenJetMassHandle.product()
-
-        if len(ak5GenJetPt) == 0 :
-            n_fail += 1
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-
-        # loop over AK5 gen jets
-        for iak5 in xrange( len(ak5GenJetPt) ) :
-            p4 = ROOT.TLorentzVector()
-            p4.SetPtEtaPhiM( ak5GenJetPt[iak5], ak5GenJetEta[iak5], ak5GenJetPhi[iak5], ak5GenJetMass[iak5] )
-            ak5GenJets.append(p4)
-            if options.debug :
-                print 'AK5Gen {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( iak5, ak5GenJetPt[iak5], ak5GenJetEta[iak5], ak5GenJetPhi[iak5], ak5GenJetMass[iak5] )
-
-
-        if ca8GenJetPtHandle.isValid() == False :
-            n_fail += 1
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-
-        ca8GenJetPt   = ca8GenJetPtHandle.product()
-        ca8GenJetEta  = ca8GenJetEtaHandle.product()
-        ca8GenJetPhi  = ca8GenJetPhiHandle.product()
-        ca8GenJetMass = ca8GenJetMassHandle.product()
-        
-        if len(ca8GenJetPt) == 0 :
-            n_fail += 1
-            if options.makeResponse == True :
-                response.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
-            continue
-
-        # loop over CA8 gen jets
-        for ica8 in xrange( len(ca8GenJetPt) ) :
-            p4 = ROOT.TLorentzVector()
-            p4.SetPtEtaPhiM( ca8GenJetPt[ica8], ca8GenJetEta[ica8], ca8GenJetPhi[ica8], ca8GenJetMass[ica8] )
-            ca8GenJets.append(p4)
-            if options.debug :
-                print 'CA8Gen {0:4.0f} : ({1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f})'.format( ica8, ca8GenJetPt[ica8], ca8GenJetEta[ica8], ca8GenJetPhi[ica8], ca8GenJetMass[ica8] )
-
-
     # -------------------------------------------------------------------------------------
     # read MET 
     # -------------------------------------------------------------------------------------
@@ -1716,8 +1785,6 @@ for event in events :
     met_px = metRaw * math.cos( metphi )
     met_py = metRaw * math.sin( metphi )
     
-
-
     # -------------------------------------------------------------------------------------
     # loop over AK 5 jets
     # -------------------------------------------------------------------------------------
@@ -1893,9 +1960,12 @@ for event in events :
 
     if nJets < 2 :
         n_fail += 1
-        if options.makeResponse == True :
+        if options.makeResponse == 1 :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if options.makeResponse == 2 :
+            response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            response_atlas_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
     if options.debug :
         print 'Passed stage1'
@@ -1949,9 +2019,12 @@ for event in events :
 
     if options.metCut is not None and met < options.metCut :
         n_fail += 1
-        if options.makeResponse == True :
+        if options.makeResponse == 1 :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if options.makeResponse == 2 :
+            response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            response_atlas_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -2123,9 +2196,12 @@ for event in events :
 
     if len(lepJets) < 1 or len(hadJets) < 1 or hadJets[0].Perp() < options.jetPtCut :
         n_fail += 1
-        if options.makeResponse == True :
+        if options.makeResponse == 1 :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if options.makeResponse == 2 :
+            response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            response_atlas_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -2192,9 +2268,12 @@ for event in events :
 
     if hadJets[0].Perp() < 400.0 :
         n_fail += 1
-        if options.makeResponse == True :
+        if options.makeResponse == 1 :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if options.makeResponse == 2 :
+            response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            response_atlas_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -2244,16 +2323,22 @@ for event in events :
 
     if options.htLepCut is not None and htLep < options.htLepCut :
         n_fail += 1
-        if options.makeResponse == True :
+        if options.makeResponse == 1 :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if options.makeResponse == 2 :
+            response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            response_atlas_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     if options.htCut is not None and ht < options.htCut :
         n_fail += 1
-        if options.makeResponse == True :
+        if options.makeResponse == 1 :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if options.makeResponse == 2 :
+            response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            response_atlas_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -2453,9 +2538,12 @@ for event in events :
 
     if not passSelection:
         n_fail += 1
-        if options.makeResponse == True :
+        if options.makeResponse == 1 :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if options.makeResponse == 2 :
+            response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            response_atlas_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
     if options.debug :
         print 'Passed stage6'
@@ -2585,9 +2673,12 @@ for event in events :
     # require a b-tagged jet
     if ntagslep < 1:
         n_fail += 1
-        if options.makeResponse == True :
+        if options.makeResponse == 1 :
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_atlas.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if options.makeResponse == 2 :
+            response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            response_atlas_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -2667,9 +2758,13 @@ for event in events :
     h_ptRecoTop.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_atlas.Fill( goodtop.Perp(), top_weight )
     
-    if options.makeResponse == True :		
+    if options.makeResponse == 1 :		
         response.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
         response_atlas.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
+
+    if options.makeResponse == 2 :		
+        response_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
+        response_atlas_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
     
     
 
@@ -2686,8 +2781,15 @@ print  'Total Events: ' + str(ntotal)
 print  'Passed      : ' + str(npassed)
 f.cd()
 
-if options.makeResponse :
+if options.makeResponse == 1 :
     response.Write()
+    response_atlas.Write()
+
+if options.makeResponse == 2 :
+    response_pp.Write()
+    response_atlas_pp.Write()
+    response_rp.Write()
+    response_atlas_rp.Write()
 
 f.Write()
 f.Close()
@@ -2702,7 +2804,7 @@ if options.printEvents :
 
 print "Total time = " + str( time.time() - start_time) + " seconds"
 
-if options.makeResponse:
+if options.makeResponse != None:
     print "RESPONSE DEBUG:  # pass = " + str(n_pass) + " # fail = " + str(n_fail) + " # total = " + str(n_total)
     if n_pass+n_fail != n_total:
         print "*********** WARNING !!! these numbers do not add up as they should !!! WARNING ***********" 
