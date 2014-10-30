@@ -241,22 +241,23 @@ hEmpty2D.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
 hEmpty2D.GetXaxis().SetLabelSize(0.045)
 hEmpty2D.GetYaxis().SetLabelSize(0.045)
 hEmpty2D.Draw()
-hResponse2D = response.Hresponse()
+hResponse2D = response.Hresponse().Clone()
+hResponse2D.SetName("plottedResponse")
 
-## normalize so that for each bin of true top quark pt, the bins in measured top pt add up to 100%
-nbinsX = hResponse2D.GetNbinsX()
-nbinsY = hResponse2D.GetNbinsX()
-print "nbr bins in x = " + str(nbinsX) + "nbr bins in y = " + str(nbinsY)
-for iby in range(1,nbinsY+1) :
-    rowIntegral = hResponse2D.Integral(1,nbinsX+1,iby,iby)
-    print "for y-bin " + str(iby) + " row integral = " + str(rowIntegral)
-    for ibx in range(1,nbinsX+1) :
-        binContent = hResponse2D.GetBinContent(ibx,iby)
-        newContent = 0
-        if rowIntegral > 0:
-            newContent = binContent/rowIntegral*100.0
-        #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
-        hResponse2D.SetBinContent(ibx,iby,newContent)
+# normalize so that for each bin of true top quark pt, the bins in measured top pt add up to 100%
+#nbinsX = hResponse2D.GetNbinsX()
+#nbinsY = hResponse2D.GetNbinsX()
+#print "nbr bins in x = " + str(nbinsX) + "nbr bins in y = " + str(nbinsY)
+#for iby in range(1,nbinsY) :
+#    rowIntegral = hResponse2D.Integral(1,nbinsX,iby,iby)
+#    print "for y-bin " + str(iby) + " row integral = " + str(rowIntegral)
+#    for ibx in range(1,nbinsX+1) :
+#        binContent = hResponse2D.GetBinContent(ibx,iby)
+#        newContent = 0
+#        if rowIntegral > 0:
+#            newContent = binContent/rowIntegral*100.0
+#        #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
+#        hResponse2D.SetBinContent(ibx,iby,newContent)
 
 
 gStyle.SetPaintTextFormat(".1f")
