@@ -159,11 +159,11 @@ e_TT_Mtt_0_700 =    1.0    # No efficiency here, we applied the cut at gen level
 
 
 # Scaling of the various backgrounds from the theta fit
-fitted_qcd = 9.32
-fitted_singletop = 4.65
-fitted_wjets = 4.13
-fitted_ttbarnonsemilep = 17.50
-fitted_ttbar = 301.50
+fitted_qcd = 9.5
+fitted_singletop = 3.9
+fitted_wjets = 4.2
+fitted_ttbarnonsemilep = 30.8
+fitted_ttbar = 291.3
 
 
 # -------------------------------------------------------------------------------------
@@ -174,12 +174,12 @@ f_data = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root"
 f_QCD  = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root")
 
 if options.closureTest == True : 
-    f_ttbar_max700    = TFile("histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_even.root")
-    f_ttbar_700to1000 = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_even.root")
-    f_ttbar_1000toInf = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_even.root")
-    f_ttbar_max700_odd    = TFile("histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_odd.root")
-    f_ttbar_700to1000_odd = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_odd.root")
-    f_ttbar_1000toInf_odd = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_odd.root")
+    f_ttbar_max700    = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_even.root")
+    f_ttbar_700to1000 = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_even.root")
+    f_ttbar_1000toInf = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_even.root")
+    f_ttbar_max700_odd    = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_odd.root")
+    f_ttbar_700to1000_odd = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_odd.root")
+    f_ttbar_1000toInf_odd = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_odd.root")
 else :
     f_ttbar_max700    = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
     f_ttbar_700to1000 = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
@@ -427,6 +427,14 @@ hMeas.SetFillColor(TColor.kRed+1)
 hRecoMC.SetFillColor(TColor.kRed+1)
 hMeas_TTNonSemi.SetFillColor(TColor.kRed-7)
 
+#number of events before scaling each sample to that fitted by theta
+print 'number of events before scaling each sample to that fitted by theta'
+print 'Nqcd   '            + str( hRecoQCD.Integral() )
+print 'Nt     '            + str( hMeas_SingleTop.Integral() )
+print 'Nwjets '            + str( hMeas_WJets.Integral() )
+print 'Nttbar nonsemilep ' + str( hMeas_TTNonSemi.Integral() )
+print 'Nttbar '            + str( hRecoMC.Integral() )
+print 'NData  '            + str( hRecoData.Integral() )
 
 # -------------------------------------------------------------------------------------
 # Scale each sample to that fitted by theta
@@ -493,12 +501,15 @@ c.SaveAs("UnfoldingPlots/unfold_datamc_"+options.syst+".png")
 c.SaveAs("UnfoldingPlots/unfold_datamc_"+options.syst+".eps")
 
 
+#number of events after scaling each sample to that fitted by theta
+print 'number of events after scaling each sample to that fitted by theta'
+print 'Nqcd   '            + str( hRecoQCD.Integral() )
+print 'Nt     '            + str( hMeas_SingleTop.Integral() )
+print 'Nwjets '            + str( hMeas_WJets.Integral() )
+print 'Nttbar nonsemilep ' + str( hMeas_TTNonSemi.Integral() )
+print 'Nttbar '            + str( hRecoMC.Integral() )
+print 'NData  '            + str( hRecoData.Integral() )                      
 
-print 'Nwjets ' + str( hMeas_WJets.Integral() )
-print 'Nqcd   ' + str( hRecoQCD.Integral() )
-print 'Nt     ' + str( hMeas_SingleTop.Integral() )
-print 'Nttbar ' + str( hRecoMC.Integral() )
-print 'NData  ' + str( hRecoData.Integral() )
                        
 
 # -------------------------------------------------------------------------------------
@@ -585,6 +596,11 @@ else :
     hReco.SetTitle(";;#frac{1}{#sigma} #frac{d#sigma}{dp_{T}} [1 / GeV]")
 hReco.GetYaxis().SetTitleOffset(1.2)
 hReco.SetMinimum(0.0)
+max = hTrue.GetMaximum()
+max2 = hReco.GetMaximum()
+if max2 > max:
+	max = max2
+hReco.SetAxisRange(0,max*1.07,"Y")
 hReco.Draw()
 hTrue.Draw('hist same')
 hMeas.Draw('same')
