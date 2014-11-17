@@ -50,6 +50,10 @@ void mySmallText(Double_t x,Double_t y,Color_t color,char const *text) {
 
 void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
 
+
+  TString syst = "nom";
+
+
   TH1::AddDirectory(kFALSE); 
   setStyle();
 
@@ -69,12 +73,12 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
   std::pair<double, double> qcdnorm = getQCDnorm(cut);
   double nqcd = qcdnorm.first;
   double err_qcd = qcdnorm.second; 
-
+  
   // get histograms
-  SummedHist* wjets = getWJets( "nom", hist  );
-  SummedHist* singletop = getSingleTop( "nom", hist  );
-  SummedHist* ttbar = getTTbar( "nom", hist, pdfdir  );
-  SummedHist* ttbar_nonSemiLep = getTTbarNonSemiLep( "nom", hist, pdfdir  );
+  SummedHist* wjets = getWJets( syst, hist  );
+  SummedHist* singletop = getSingleTop( syst, hist  );
+  SummedHist* ttbar = getTTbar( syst, hist, pdfdir  );
+  SummedHist* ttbar_nonSemiLep = getTTbarNonSemiLep( syst, hist, pdfdir  );
   SummedHist* qcd = getQCD( hist );
   
   SummedHist* wjets2;
@@ -83,10 +87,10 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
   SummedHist* ttbar_nonSemiLep2;
   SummedHist* qcd2;
   if (cut2>0) {
-    wjets2 = getWJets( "nom", hist2  );
-    singletop2 = getSingleTop( "nom", hist2  );
-    ttbar2 = getTTbar( "nom", hist2, pdfdir  );
-    ttbar_nonSemiLep2 = getTTbarNonSemiLep( "nom", hist2, pdfdir  );
+    wjets2 = getWJets( syst, hist2  );
+    singletop2 = getSingleTop( syst, hist2  );
+    ttbar2 = getTTbar( syst, hist2, pdfdir  );
+    ttbar_nonSemiLep2 = getTTbarNonSemiLep( syst, hist2, pdfdir  );
     qcd2 = getQCD( hist2 );
   }
 
