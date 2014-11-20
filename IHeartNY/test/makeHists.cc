@@ -616,6 +616,12 @@ void makeTable(TString pdfdir="CT10_nom") {
   // post-fit file
   TFile* fMC   = new TFile("run_theta/histos-mle-2d-"+pdfdir+".root");
 
+  // post-fit relative errors (from theta_output.txt)
+  float fiterr_tt = 0.10/0.72;
+  float fiterr_singletop = (0.5*0.86)/(1.0-0.5*0.66);
+  float fiterr_wjets = (0.5*0.21)/(1.0-0.5*0.7);
+  float fiterr_qcd = (0.5*0.57)/(1.0-0.5*0.1);
+
   // pre-fit & data files
   TFile* fDATA[3];
   fDATA[0] = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
@@ -735,7 +741,7 @@ void makeTable(TString pdfdir="CT10_nom") {
   std::cout << "Single top           & " << h_pre_singletop[0]->Integral() << " $\\pm$ " << err_singletop[0] << " & " << 
     h_pre_singletop[1]->Integral() << " $\\pm$ " << err_singletop[1] << " & " << 
     h_pre_singletop[2]->Integral() << " $\\pm$ " << err_singletop[2] << " \\\\ " << std::endl;
-  std::cout << "W+jets             & " << h_pre_wjets[0]->Integral() << " $\\pm$ " << err_wjets[0] << " & " << 
+  std::cout << "W+jets               & " << h_pre_wjets[0]->Integral() << " $\\pm$ " << err_wjets[0] << " & " << 
     h_pre_wjets[1]->Integral() << " $\\pm$ " << err_wjets[1] << " & " << 
     h_pre_wjets[2]->Integral() << " $\\pm$ " << err_wjets[2] << " \\\\ " << std::endl;
   std::cout << "QCD                  & " << h_pre_qcd[0]->Integral() << " $\\pm$ " << err_qcd_up[0] << " & " << 
@@ -751,11 +757,21 @@ void makeTable(TString pdfdir="CT10_nom") {
   std::cout << "---------------------------" << std::endl;
   std::cout << "Post-fit results" << std::endl;
   std::cout << "---------------------------" << std::endl;
-  std::cout << "\\ttbar (signal)      & " << h_ttbar_semiLep[0]->Integral() << " & " << h_ttbar_semiLep[1]->Integral() << " & " << h_ttbar_semiLep[2]->Integral() << " \\\\ " << std::endl;
-  std::cout << "\\ttbar (non-semilep) & " << h_ttbar_nonSemiLep[0]->Integral() << " & " << h_ttbar_nonSemiLep[1]->Integral() << " & " << h_ttbar_nonSemiLep[2]->Integral() << " \\\\ " << std::endl;
-  std::cout << "Single top           & " << h_singletop[0]->Integral() << " & " << h_singletop[1]->Integral() << " & " << h_singletop[2]->Integral() << " \\\\ " << std::endl;
-  std::cout << "W+jets             & " << h_wjets[0]->Integral() << " & " << h_wjets[1]->Integral() << " & " << h_wjets[2]->Integral() << " \\\\ " << std::endl;
-  std::cout << "QCD                  & " << h_qcd[0]->Integral() << " & " << h_qcd[1]->Integral() << " & " << h_qcd[2]->Integral() << " \\\\ " << std::endl;
+  std::cout << "\\ttbar (signal)      & " << h_ttbar_semiLep[0]->Integral() << " $\\pm$ " << h_ttbar_semiLep[0]->Integral()*fiterr_tt
+	    << " & " << h_ttbar_semiLep[1]->Integral() << " $\\pm$ " << h_ttbar_semiLep[1]->Integral()*fiterr_tt
+	    << " & " << h_ttbar_semiLep[2]->Integral() << " $\\pm$ " << h_ttbar_semiLep[2]->Integral()*fiterr_tt << " \\\\ " << std::endl;
+  std::cout << "\\ttbar (non-semilep) & " << h_ttbar_nonSemiLep[0]->Integral() << " $\\pm$ " << h_ttbar_nonSemiLep[0]->Integral()*fiterr_tt
+	    << " & " << h_ttbar_nonSemiLep[1]->Integral() << " $\\pm$ " << h_ttbar_nonSemiLep[1]->Integral()*fiterr_tt
+	    << " & " << h_ttbar_nonSemiLep[2]->Integral() << " $\\pm$ " << h_ttbar_nonSemiLep[2]->Integral()*fiterr_tt << " \\\\ " << std::endl;
+  std::cout << "Single top           & " << h_singletop[0]->Integral() << " $\\pm$ " << h_singletop[0]->Integral()*fiterr_singletop
+	    << " & " << h_singletop[1]->Integral() << " $\\pm$ " << h_singletop[1]->Integral()*fiterr_singletop
+	    << " & " << h_singletop[2]->Integral() << " $\\pm$ " << h_singletop[2]->Integral()*fiterr_singletop << " \\\\ " << std::endl;
+  std::cout << "W+jets               & " << h_wjets[0]->Integral() << " $\\pm$ " << h_wjets[0]->Integral()*fiterr_wjets
+	    << " & " << h_wjets[1]->Integral() << " $\\pm$ " << h_wjets[1]->Integral()*fiterr_wjets
+	    << " & " << h_wjets[2]->Integral() << " $\\pm$ " << h_wjets[2]->Integral()*fiterr_wjets << " \\\\ " << std::endl;
+  std::cout << "QCD                  & " << h_qcd[0]->Integral() << " $\\pm$ " << h_qcd[0]->Integral()*fiterr_qcd
+	    << " & " << h_qcd[1]->Integral() << " $\\pm$ " << h_qcd[1]->Integral()*fiterr_qcd
+	    << " & " << h_qcd[2]->Integral() << " $\\pm$ " << h_qcd[2]->Integral()*fiterr_qcd << " \\\\ " << std::endl;
   std::cout << "\\hline" << std::endl;
   std::cout << "Total                & " << h_total[0]->Integral() << " & "  << h_total[1]->Integral() << " & "  << h_total[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "\\hline \\hline" << std::endl;
