@@ -50,6 +50,10 @@ void mySmallText(Double_t x,Double_t y,Color_t color,char const *text) {
 
 void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
 
+
+  TString syst = "nom";
+
+
   TH1::AddDirectory(kFALSE); 
   setStyle();
 
@@ -69,12 +73,12 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
   std::pair<double, double> qcdnorm = getQCDnorm(cut);
   double nqcd = qcdnorm.first;
   double err_qcd = qcdnorm.second; 
-
+  
   // get histograms
-  SummedHist* wjets = getWJets( "nom", hist  );
-  SummedHist* singletop = getSingleTop( "nom", hist  );
-  SummedHist* ttbar = getTTbar( "nom", hist, pdfdir  );
-  SummedHist* ttbar_nonSemiLep = getTTbarNonSemiLep( "nom", hist, pdfdir  );
+  SummedHist* wjets = getWJets( syst, hist  );
+  SummedHist* singletop = getSingleTop( syst, hist  );
+  SummedHist* ttbar = getTTbar( syst, hist, pdfdir  );
+  SummedHist* ttbar_nonSemiLep = getTTbarNonSemiLep( syst, hist, pdfdir  );
   SummedHist* qcd = getQCD( hist );
   
   SummedHist* wjets2;
@@ -83,10 +87,10 @@ void makePlots(TString var, int cut, int cut2=0, TString pdfdir="CT10_nom") {
   SummedHist* ttbar_nonSemiLep2;
   SummedHist* qcd2;
   if (cut2>0) {
-    wjets2 = getWJets( "nom", hist2  );
-    singletop2 = getSingleTop( "nom", hist2  );
-    ttbar2 = getTTbar( "nom", hist2, pdfdir  );
-    ttbar_nonSemiLep2 = getTTbarNonSemiLep( "nom", hist2, pdfdir  );
+    wjets2 = getWJets( syst, hist2  );
+    singletop2 = getSingleTop( syst, hist2  );
+    ttbar2 = getTTbar( syst, hist2, pdfdir  );
+    ttbar_nonSemiLep2 = getTTbarNonSemiLep( syst, hist2, pdfdir  );
     qcd2 = getQCD( hist2 );
   }
 
@@ -612,6 +616,12 @@ void makeTable(TString pdfdir="CT10_nom") {
   // post-fit file
   TFile* fMC   = new TFile("run_theta/histos-mle-2d-"+pdfdir+".root");
 
+  // post-fit relative errors (from theta_output.txt)
+  float fiterr_tt = 0.10/0.72;
+  float fiterr_singletop = (0.5*0.86)/(1.0-0.5*0.66);
+  float fiterr_wjets = (0.5*0.21)/(1.0-0.5*0.7);
+  float fiterr_qcd = (0.5*0.57)/(1.0-0.5*0.1);
+
   // pre-fit & data files
   TFile* fDATA[3];
   fDATA[0] = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
@@ -731,7 +741,7 @@ void makeTable(TString pdfdir="CT10_nom") {
   std::cout << "Single top           & " << h_pre_singletop[0]->Integral() << " $\\pm$ " << err_singletop[0] << " & " << 
     h_pre_singletop[1]->Integral() << " $\\pm$ " << err_singletop[1] << " & " << 
     h_pre_singletop[2]->Integral() << " $\\pm$ " << err_singletop[2] << " \\\\ " << std::endl;
-  std::cout << "W+jets             & " << h_pre_wjets[0]->Integral() << " $\\pm$ " << err_wjets[0] << " & " << 
+  std::cout << "W+jets               & " << h_pre_wjets[0]->Integral() << " $\\pm$ " << err_wjets[0] << " & " << 
     h_pre_wjets[1]->Integral() << " $\\pm$ " << err_wjets[1] << " & " << 
     h_pre_wjets[2]->Integral() << " $\\pm$ " << err_wjets[2] << " \\\\ " << std::endl;
   std::cout << "QCD                  & " << h_pre_qcd[0]->Integral() << " $\\pm$ " << err_qcd_up[0] << " & " << 
@@ -747,11 +757,21 @@ void makeTable(TString pdfdir="CT10_nom") {
   std::cout << "---------------------------" << std::endl;
   std::cout << "Post-fit results" << std::endl;
   std::cout << "---------------------------" << std::endl;
-  std::cout << "\\ttbar (signal)      & " << h_ttbar_semiLep[0]->Integral() << " & " << h_ttbar_semiLep[1]->Integral() << " & " << h_ttbar_semiLep[2]->Integral() << " \\\\ " << std::endl;
-  std::cout << "\\ttbar (non-semilep) & " << h_ttbar_nonSemiLep[0]->Integral() << " & " << h_ttbar_nonSemiLep[1]->Integral() << " & " << h_ttbar_nonSemiLep[2]->Integral() << " \\\\ " << std::endl;
-  std::cout << "Single top           & " << h_singletop[0]->Integral() << " & " << h_singletop[1]->Integral() << " & " << h_singletop[2]->Integral() << " \\\\ " << std::endl;
-  std::cout << "W+jets             & " << h_wjets[0]->Integral() << " & " << h_wjets[1]->Integral() << " & " << h_wjets[2]->Integral() << " \\\\ " << std::endl;
-  std::cout << "QCD                  & " << h_qcd[0]->Integral() << " & " << h_qcd[1]->Integral() << " & " << h_qcd[2]->Integral() << " \\\\ " << std::endl;
+  std::cout << "\\ttbar (signal)      & " << h_ttbar_semiLep[0]->Integral() << " $\\pm$ " << h_ttbar_semiLep[0]->Integral()*fiterr_tt
+	    << " & " << h_ttbar_semiLep[1]->Integral() << " $\\pm$ " << h_ttbar_semiLep[1]->Integral()*fiterr_tt
+	    << " & " << h_ttbar_semiLep[2]->Integral() << " $\\pm$ " << h_ttbar_semiLep[2]->Integral()*fiterr_tt << " \\\\ " << std::endl;
+  std::cout << "\\ttbar (non-semilep) & " << h_ttbar_nonSemiLep[0]->Integral() << " $\\pm$ " << h_ttbar_nonSemiLep[0]->Integral()*fiterr_tt
+	    << " & " << h_ttbar_nonSemiLep[1]->Integral() << " $\\pm$ " << h_ttbar_nonSemiLep[1]->Integral()*fiterr_tt
+	    << " & " << h_ttbar_nonSemiLep[2]->Integral() << " $\\pm$ " << h_ttbar_nonSemiLep[2]->Integral()*fiterr_tt << " \\\\ " << std::endl;
+  std::cout << "Single top           & " << h_singletop[0]->Integral() << " $\\pm$ " << h_singletop[0]->Integral()*fiterr_singletop
+	    << " & " << h_singletop[1]->Integral() << " $\\pm$ " << h_singletop[1]->Integral()*fiterr_singletop
+	    << " & " << h_singletop[2]->Integral() << " $\\pm$ " << h_singletop[2]->Integral()*fiterr_singletop << " \\\\ " << std::endl;
+  std::cout << "W+jets               & " << h_wjets[0]->Integral() << " $\\pm$ " << h_wjets[0]->Integral()*fiterr_wjets
+	    << " & " << h_wjets[1]->Integral() << " $\\pm$ " << h_wjets[1]->Integral()*fiterr_wjets
+	    << " & " << h_wjets[2]->Integral() << " $\\pm$ " << h_wjets[2]->Integral()*fiterr_wjets << " \\\\ " << std::endl;
+  std::cout << "QCD                  & " << h_qcd[0]->Integral() << " $\\pm$ " << h_qcd[0]->Integral()*fiterr_qcd
+	    << " & " << h_qcd[1]->Integral() << " $\\pm$ " << h_qcd[1]->Integral()*fiterr_qcd
+	    << " & " << h_qcd[2]->Integral() << " $\\pm$ " << h_qcd[2]->Integral()*fiterr_qcd << " \\\\ " << std::endl;
   std::cout << "\\hline" << std::endl;
   std::cout << "Total                & " << h_total[0]->Integral() << " & "  << h_total[1]->Integral() << " & "  << h_total[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "\\hline \\hline" << std::endl;

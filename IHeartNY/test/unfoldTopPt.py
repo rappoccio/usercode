@@ -168,11 +168,11 @@ e_TT_Mtt_0_700 =    1.0    # No efficiency here, we applied the cut at gen level
 
 
 # Scaling of the various backgrounds from the theta fit
-fitted_qcd = 9.32
-fitted_singletop = 4.65
-fitted_wjets = 4.13
-fitted_ttbarnonsemilep = 17.50
-fitted_ttbar = 301.50
+fitted_qcd = 9.5
+fitted_singletop = 3.7
+fitted_wjets = 4.2
+fitted_ttbarnonsemilep = 30.8
+fitted_ttbar = 291.3
 
 # -------------------------------------------------------------------------------------
 #  read histogram files
@@ -186,6 +186,7 @@ f_data = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root"
 f_QCD  = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root")
 
 if options.closureTest == True : 
+<<<<<<< HEAD
     if options.twoStep == True :
         f_ttbar_max700_2step    = TFile("histfiles_CT10_nom/2step/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_even.root")
         f_ttbar_700to1000_2step = TFile("histfiles_CT10_nom/2step/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_even.root")
@@ -206,6 +207,14 @@ if options.closureTest == True :
     f_ttbar_700to1000_odd = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_odd.root")
     f_ttbar_1000toInf_odd = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_odd.root")
 
+=======
+    f_ttbar_max700    = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_even.root")
+    f_ttbar_700to1000 = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_even.root")
+    f_ttbar_1000toInf = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_even.root")
+    f_ttbar_max700_odd    = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_odd.root")
+    f_ttbar_700to1000_odd = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_odd.root")
+    f_ttbar_1000toInf_odd = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_odd.root")
+>>>>>>> aaadb747cb06a9b10d74fdd89cb1dcc7f90cb1b0
 else :
     f_ttbar_max700    = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
     f_ttbar_700to1000 = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
@@ -275,6 +284,7 @@ else :
 
 
 # -------------------------------------------------------------------------------------
+<<<<<<< HEAD
 # plot response matrices 
 # -------------------------------------------------------------------------------------
 
@@ -385,6 +395,8 @@ if options.twoStep :
 
 
 # -------------------------------------------------------------------------------------
+=======
+>>>>>>> aaadb747cb06a9b10d74fdd89cb1dcc7f90cb1b0
 # read actual histograms
 # -------------------------------------------------------------------------------------
 
@@ -438,6 +450,18 @@ hRecoMC_700to1000.Sumw2()
 hRecoMC_1000toInf = f_ttbar_1000toInf.Get("ptRecoTop").Clone()
 hRecoMC_1000toInf.SetName("hRecoMC_1000toInf")
 hRecoMC_1000toInf.Sumw2()
+
+
+hTopTagSF_max700    = f_ttbar_max700.Get("toptagSF").Clone()
+hTopTagSF_max700.SetName("toptagSF_max700")
+hTopTagSF_max700.Sumw2()
+hTopTagSF_700to1000 = f_ttbar_700to1000.Get("toptagSF").Clone()
+hTopTagSF_700to1000.SetName("toptagSF_700to1000")
+hTopTagSF_700to1000.Sumw2()
+hTopTagSF_1000toInf = f_ttbar_1000toInf.Get("toptagSF").Clone()
+hTopTagSF_1000toInf.SetName("toptagSF_1000toInf")
+hTopTagSF_1000toInf.Sumw2()
+
 
 hRecoData = f_data.Get("ptRecoTop").Clone()
 hRecoData.SetName("hRecoData")
@@ -625,6 +649,16 @@ hRecoMC.SetName("ptRecoTop_ttbar")
 hRecoMC.Add(hRecoMC_700to1000)
 hRecoMC.Add(hRecoMC_1000toInf)
 
+hTopTagSF_max700.Scale( eff_closure * sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) )
+hTopTagSF_700to1000.Scale( eff_closure * sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) )
+hTopTagSF_1000toInf.Scale( eff_closure * sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) )
+hTopTagSF = hTopTagSF_max700.Clone()
+hTopTagSF.SetName("ttSF")
+hTopTagSF.Add(hTopTagSF_700to1000)
+hTopTagSF.Add(hTopTagSF_1000toInf)
+
+thisTopTagSF = hTopTagSF.GetBinContent(1)/hRecoMC.GetSum()
+print "Average top-tagging SF = " + str(thisTopTagSF)
 
 hMeas_T_t.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) )
 hMeas_Tbar_t.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) )
@@ -668,6 +702,14 @@ if options.twoStep :
 hRecoMC.SetFillColor(TColor.kRed+1)
 hMeas_TTNonSemi.SetFillColor(TColor.kRed-7)
 
+#number of events before scaling each sample to that fitted by theta
+print 'number of events before scaling each sample to that fitted by theta'
+print 'Nqcd   '            + str( hRecoQCD.Integral() )
+print 'Nt     '            + str( hMeas_SingleTop.Integral() )
+print 'Nwjets '            + str( hMeas_WJets.Integral() )
+print 'Nttbar nonsemilep ' + str( hMeas_TTNonSemi.Integral() )
+print 'Nttbar '            + str( hRecoMC.Integral() )
+print 'NData  '            + str( hRecoData.Integral() )
 
 # -------------------------------------------------------------------------------------
 # Scale each sample to that fitted by theta
@@ -752,12 +794,24 @@ l2.Draw()
 cI.SaveAs("UnfoldingPlots/"+folder+"unfold_input_"+options.syst+".png")
 cI.SaveAs("UnfoldingPlots/"+folder+"unfold_input_"+options.syst+".eps")
 
+#number of events after scaling each sample to that fitted by theta
+print 'number of events after scaling each sample to that fitted by theta'
+print 'Nqcd   '            + str( hRecoQCD.Integral() )
+print 'Nt     '            + str( hMeas_SingleTop.Integral() )
+print 'Nwjets '            + str( hMeas_WJets.Integral() )
+print 'Nttbar nonsemilep ' + str( hMeas_TTNonSemi.Integral() )
+print 'Nttbar '            + str( hRecoMC.Integral() )
+print 'NData  '            + str( hRecoData.Integral() )                      
 
+<<<<<<< HEAD
 print 'Nwjets ' + str( hMeas_WJets.Integral() )
 print 'Nqcd   ' + str( hRecoQCD.Integral() )
 print 'Nt     ' + str( hMeas_SingleTop.Integral() )
 print 'Nttbar ' + str( hRecoMC.Integral() )
 print 'NData  ' + str( hRecoData.Integral() )
+=======
+                       
+>>>>>>> aaadb747cb06a9b10d74fdd89cb1dcc7f90cb1b0
 
 # -------------------------------------------------------------------------------------
 # Compare inputs for 1-step and 2-step unfolding
@@ -951,13 +1005,13 @@ print 'hReco (events), 1-step: ' + str(hReco.Integral())
 
 hFrac = hReco.Clone()
 hFrac.SetName("hFrac")
-hFrac.SetTitle(";Top quark p_{T} [GeV];Measured/Truth")
+hFrac.SetTitle(";Top quark p_{T} [GeV];Data/MC")
 hFrac.Divide(hTrue)
 
 # Translate to cross section (not events) in bins of pt N/L/BR)
 hTrue.Scale(1.0/(lum*4/27))
-hMeas.Scale(1.0/(lum*4/27))
-hReco.Scale(1.0/(lum*4/27))
+hMeas.Scale(1.0/(lum*4/27)/((1.0+0.25*0.27)))
+hReco.Scale(1.0/(lum*4/27)/((1.0+0.25*0.27)))
 
 if options.twoStep :
     hPart.Scale(1.0/(lum*4/27))
@@ -993,7 +1047,11 @@ if options.normalize :
         hReco_2step.Scale( 1.0 / hReco_2step.Integral(bin400,binmax) )
         hTrue_noTrig.Scale( 1.0 / hTrue_noTrig.Integral(bin400,binmax) )
 
+
 # Correct for bin width
+sumReco = 0
+sumTrue = 0
+sumMeas = 0
 for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
     width = hTrue.GetBinWidth(ibin)
     hTrue.SetBinContent(ibin,  hTrue.GetBinContent(ibin) * SF[ibin-1] / width )
@@ -1030,6 +1088,7 @@ if options.twoStep :
     print 'hReco_2step (xsec) = ' + str(hReco_2step.Integral(bin400,binmax) )
     print 'hTrue_noTrig (xsec) = ' + str(hTrue_noTrig.Integral(bin400,binmax) )
 
+<<<<<<< HEAD
 #unfold.PrintTable (cout, hTrue);
 
 c1 = TCanvas("c1", "c1", 700, 700)
@@ -1037,6 +1096,21 @@ pad1 =  TPad("pad1","pad1",0,0.3,1,1)
 pad1.SetBottomMargin(0.05);
 pad1.Draw();
 pad1.cd();
+=======
+    sumReco += hReco.GetBinContent(ibin)*width
+    sumTrue += hTrue.GetBinContent(ibin)*width
+    sumMeas += hMeas.GetBinContent(ibin)*width
+    
+
+print 'htrue = ' + str(hTrue.Integral(bin400,binmax) )
+print 'hmeas = ' + str(hMeas.Integral(bin400,binmax) )
+print 'hreco = ' + str(hReco.Integral(bin400,binmax) )
+
+print 'true sigma = ' + str(sumTrue)
+print 'meas sigma = ' + str(sumMeas)
+print 'reco sigma = ' + str(sumReco)
+
+>>>>>>> aaadb747cb06a9b10d74fdd89cb1dcc7f90cb1b0
 
 hReco.SetMarkerStyle(21)
 hMeas.SetMarkerStyle(25)
@@ -1055,12 +1129,21 @@ if options.twoStep :
     hTrue_noTrig.SetLineWidth(2)
 
 if options.normalize == False : 
-    hReco.SetTitle(";;#frac{d#sigma}{dp_{T}} [fb/GeV]")
+    #hReco.SetTitle(";;#frac{d#sigma}{dp_{T}} [fb/GeV]")
+    hReco.SetTitle(";;d#sigma/dp_{T} [fb/GeV]")
 else : 
     hReco.SetTitle(";;#frac{1}{#sigma} #frac{d#sigma}{dp_{T}} [1 / GeV]")
 hReco.GetYaxis().SetTitleOffset(1.2)
 hReco.SetMinimum(0.0)
+<<<<<<< HEAD
 hReco.SetMaximum(20.)
+=======
+max = hTrue.GetMaximum()
+max2 = hReco.GetMaximum()
+if max2 > max:
+	max = max2
+hReco.SetAxisRange(0,max*1.07,"Y")
+>>>>>>> aaadb747cb06a9b10d74fdd89cb1dcc7f90cb1b0
 hReco.Draw()
 hTrue.Draw('hist same')
 hMeas.Draw('same')
@@ -1071,6 +1154,8 @@ if options.twoStep :
 
 if options.plotFullRange == False : 
     hReco.GetXaxis().SetRangeUser(400., 1300.)
+    hTrue.GetXaxis().SetRangeUser(400., 1300.)
+    hMeas.GetXaxis().SetRangeUser(400., 1300.)
 
 leg = TLegend(0.35, 0.5, 0.75, 0.8)
 leg.SetFillStyle(0)
@@ -1255,5 +1340,59 @@ if options.twoStep :
     c2.Print("UnfoldingPlots/"+folder+"partlevel_ttbar_xs"+append+"_"+options.syst+".pdf", "pdf")
     c2.Print("UnfoldingPlots/"+folder+"partlevel_ttbar_xs"+append+"_"+options.syst+".png", "png")
     c2.Print("UnfoldingPlots/"+folder+"partlevel_ttbar_xs"+append+"_"+options.syst+".eps", "eps")
+
+
+# -------------------------------------------------------------------------------------
+# plot response matrices 
+# (do this in the end as the normalization otherwise will mess up the unfolding result!)
+# -------------------------------------------------------------------------------------
+
+gStyle.SetPadRightMargin(0.12);
+cr = TCanvas("c_response", "", 800, 600)
+
+hEmpty2D = response.Hresponse().Clone()
+hEmpty2D.SetName("empty2D")
+hEmpty2D.Reset()
+hEmpty2D.GetXaxis().SetTitle("Top-tagged jet p_{T} [GeV]")
+hEmpty2D.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
+hEmpty2D.GetXaxis().SetLabelSize(0.045)
+hEmpty2D.GetYaxis().SetLabelSize(0.045)
+hEmpty2D.Draw()
+hResponse2D = response.Hresponse().Clone()
+hResponse2D.SetName("plottedResponse")
+
+# normalize so that for each bin of true top quark pt, the bins in measured top pt add up to 100%
+nbinsX = hResponse2D.GetNbinsX()
+nbinsY = hResponse2D.GetNbinsX()
+print "nbr bins in x = " + str(nbinsX) + "nbr bins in y = " + str(nbinsY)
+for iby in range(1,nbinsY) :
+    rowIntegral = hResponse2D.Integral(1,nbinsX,iby,iby)
+    print "for y-bin " + str(iby) + " row integral = " + str(rowIntegral)
+    for ibx in range(1,nbinsX+1) :
+        binContent = hResponse2D.GetBinContent(ibx,iby)
+        newContent = 0
+        if rowIntegral > 0:
+            newContent = binContent/rowIntegral*100.0
+        #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
+        hResponse2D.SetBinContent(ibx,iby,newContent)
+
+
+gStyle.SetPaintTextFormat(".1f")
+#gStyle.SetPalette(1)
+hResponse2D.Draw("colz,same,text")
+hEmpty2D.Draw("axis,same")
+cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".png")
+cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".eps")
+cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".pdf")
+
+response.Hresponse().SetName("responseMatrix_"+options.syst)
+response.Hresponse().Write()
+
+gPad.SetLogz()
+cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_logz_"+options.syst+".png")
+cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_logz_"+options.syst+".eps")
+cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_logz_"+options.syst+".pdf")
+
+
 
 fout.Close()
