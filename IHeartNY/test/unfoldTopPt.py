@@ -160,7 +160,7 @@ e_TT_Mtt_0_700 =    1.0    # No efficiency here, we applied the cut at gen level
 
 # Scaling of the various backgrounds from the theta fit
 fitted_qcd = 9.5
-fitted_singletop = 3.9
+fitted_singletop = 3.7
 fitted_wjets = 4.2
 fitted_ttbarnonsemilep = 30.8
 fitted_ttbar = 291.3
@@ -253,6 +253,18 @@ hRecoMC_1000toInf = f_ttbar_1000toInf.Get("ptRecoTop").Clone()
 hRecoMC_1000toInf.SetName("hRecoMC_1000toInf")
 hRecoMC_1000toInf.Sumw2()
 
+
+hTopTagSF_max700    = f_ttbar_max700.Get("toptagSF").Clone()
+hTopTagSF_max700.SetName("toptagSF_max700")
+hTopTagSF_max700.Sumw2()
+hTopTagSF_700to1000 = f_ttbar_700to1000.Get("toptagSF").Clone()
+hTopTagSF_700to1000.SetName("toptagSF_700to1000")
+hTopTagSF_700to1000.Sumw2()
+hTopTagSF_1000toInf = f_ttbar_1000toInf.Get("toptagSF").Clone()
+hTopTagSF_1000toInf.SetName("toptagSF_1000toInf")
+hTopTagSF_1000toInf.Sumw2()
+
+
 hRecoData = f_data.Get("ptRecoTop").Clone()
 hRecoData.SetName("hRecoData")
 
@@ -335,6 +347,16 @@ hRecoMC.SetName("ptRecoTop_ttbar")
 hRecoMC.Add(hRecoMC_700to1000)
 hRecoMC.Add(hRecoMC_1000toInf)
 
+hTopTagSF_max700.Scale( eff_closure * sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar) )
+hTopTagSF_700to1000.Scale( eff_closure * sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000) )
+hTopTagSF_1000toInf.Scale( eff_closure * sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf) )
+hTopTagSF = hTopTagSF_max700.Clone()
+hTopTagSF.SetName("ttSF")
+hTopTagSF.Add(hTopTagSF_700to1000)
+hTopTagSF.Add(hTopTagSF_1000toInf)
+
+thisTopTagSF = hTopTagSF.GetBinContent(1)/hRecoMC.GetSum()
+print "Average top-tagging SF = " + str(thisTopTagSF)
 
 hMeas_T_t.Scale( sigma_T_t_NNLO * lum / float(Nmc_T_t) )
 hMeas_Tbar_t.Scale( sigma_Tbar_t_NNLO * lum / float(Nmc_Tbar_t) )
@@ -493,14 +515,14 @@ hReco = unfold.Hreco()
 
 hFrac = hReco.Clone()
 hFrac.SetName("hFrac")
-hFrac.SetTitle(";Top quark p_{T} [GeV];Measured/Truth")
+hFrac.SetTitle(";Top quark p_{T} [GeV];Data/MC")
 hFrac.Divide(hTrue)
 
 
 # Translate to cross section (not events) in bins of pt N/L/BR)
 hTrue.Scale(1.0/(lum*4/27))
-hMeas.Scale(1.0/(lum*4/27))
-hReco.Scale(1.0/(lum*4/27))
+hMeas.Scale(1.0/(lum*4/27)/((1.0+0.25*0.27)))
+hReco.Scale(1.0/(lum*4/27)/((1.0+0.25*0.27)))
 
 # Correct for selection bias in requiring trigger 
 #SF [300,400]: 0 +/- 0
@@ -520,7 +542,11 @@ if options.normalize :
     hReco.Scale( 1.0 / hReco.Integral(bin400,binmax) )
 
 
+
 # Correct for bin width
+sumReco = 0
+sumTrue = 0
+sumMeas = 0
 for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
     width = hTrue.GetBinWidth(ibin)
     hTrue.SetBinContent(ibin,  hTrue.GetBinContent(ibin) * SF[ibin-1] / width )
@@ -530,9 +556,18 @@ for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
     hMeas.SetBinError(ibin,  hMeas.GetBinError(ibin) / width )
     hReco.SetBinError(ibin,  hReco.GetBinError(ibin) * SF[ibin-1] / width )
 
+    sumReco += hReco.GetBinContent(ibin)*width
+    sumTrue += hTrue.GetBinContent(ibin)*width
+    sumMeas += hMeas.GetBinContent(ibin)*width
+    
+
 print 'htrue = ' + str(hTrue.Integral(bin400,binmax) )
 print 'hmeas = ' + str(hMeas.Integral(bin400,binmax) )
 print 'hreco = ' + str(hReco.Integral(bin400,binmax) )
+
+print 'true sigma = ' + str(sumTrue)
+print 'meas sigma = ' + str(sumMeas)
+print 'reco sigma = ' + str(sumReco)
 
 
 #unfold.PrintTable (cout, hTrue);
@@ -540,7 +575,8 @@ hReco.SetMarkerStyle(21)
 hMeas.SetMarkerStyle(25);
 
 if options.normalize == False : 
-    hReco.SetTitle(";;#frac{d#sigma}{dp_{T}} [fb/GeV]")
+    #hReco.SetTitle(";;#frac{d#sigma}{dp_{T}} [fb/GeV]")
+    hReco.SetTitle(";;d#sigma/dp_{T} [fb/GeV]")
 else : 
     hReco.SetTitle(";;#frac{1}{#sigma} #frac{d#sigma}{dp_{T}} [1 / GeV]")
 hReco.GetYaxis().SetTitleOffset(1.2)
@@ -560,6 +596,8 @@ hTrue.GetXaxis().SetLabelSize(0)
 
 if options.plotFullRange == False : 
     hReco.GetXaxis().SetRangeUser(400., 1300.)
+    hTrue.GetXaxis().SetRangeUser(400., 1300.)
+    hMeas.GetXaxis().SetRangeUser(400., 1300.)
 
 
 
@@ -647,7 +685,7 @@ cr = TCanvas("c_response", "", 800, 600)
 hEmpty2D = response.Hresponse().Clone()
 hEmpty2D.SetName("empty2D")
 hEmpty2D.Reset()
-hEmpty2D.GetXaxis().SetTitle("Measured top-jet p_{T} [GeV]")
+hEmpty2D.GetXaxis().SetTitle("Top-tagged jet p_{T} [GeV]")
 hEmpty2D.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
 hEmpty2D.GetXaxis().SetLabelSize(0.045)
 hEmpty2D.GetYaxis().SetLabelSize(0.045)
@@ -677,6 +715,7 @@ hResponse2D.Draw("colz,same,text")
 hEmpty2D.Draw("axis,same")
 cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".png")
 cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".eps")
+cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".pdf")
 
 response.Hresponse().SetName("responseMatrix_"+options.syst)
 response.Hresponse().Write()
@@ -684,6 +723,7 @@ response.Hresponse().Write()
 gPad.SetLogz()
 cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_logz_"+options.syst+".png")
 cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_logz_"+options.syst+".eps")
+cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_logz_"+options.syst+".pdf")
 
 
 
