@@ -186,7 +186,6 @@ f_data = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root"
 f_QCD  = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root")
 
 if options.closureTest == True : 
-<<<<<<< HEAD
     if options.twoStep == True :
         f_ttbar_max700_2step    = TFile("histfiles_CT10_nom/2step/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_even.root")
         f_ttbar_700to1000_2step = TFile("histfiles_CT10_nom/2step/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_even.root")
@@ -200,21 +199,14 @@ if options.closureTest == True :
         f_ttbar_max700_odd_truthonly    = TFile("histfiles_CT10_nom/2step/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_truthonly_odd.root")
         f_ttbar_700to1000_odd_truthonly = TFile("histfiles_CT10_nom/2step/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_truthonly_odd.root")
         f_ttbar_1000toInf_odd_truthonly = TFile("histfiles_CT10_nom/2step/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_truthonly_odd.root")
-    f_ttbar_max700    = TFile("histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_even.root")
-    f_ttbar_700to1000 = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_even.root")
-    f_ttbar_1000toInf = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_even.root")
-    f_ttbar_max700_odd    = TFile("histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_odd.root")
-    f_ttbar_700to1000_odd = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_odd.root")
-    f_ttbar_1000toInf_odd = TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_odd.root")
 
-=======
     f_ttbar_max700    = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_even.root")
     f_ttbar_700to1000 = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_even.root")
     f_ttbar_1000toInf = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_even.root")
     f_ttbar_max700_odd    = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_odd.root")
     f_ttbar_700to1000_odd = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_odd.root")
     f_ttbar_1000toInf_odd = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+"_odd.root")
->>>>>>> aaadb747cb06a9b10d74fdd89cb1dcc7f90cb1b0
+
 else :
     f_ttbar_max700    = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
     f_ttbar_700to1000 = TFile("histfiles_" + options.ttbarPDF + "/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.syst+".root")
@@ -283,120 +275,9 @@ else :
     fout = TFile("UnfoldingPlots/unfold_"+options.syst+".root","recreate");
 
 
-# -------------------------------------------------------------------------------------
-<<<<<<< HEAD
-# plot response matrices 
-# -------------------------------------------------------------------------------------
-
-gStyle.SetPadRightMargin(0.12);
-cr = TCanvas("c_response", "", 800, 600)
-
-hEmpty2D = response.Hresponse().Clone()
-hEmpty2D.SetName("empty2D")
-hEmpty2D.Reset()
-hEmpty2D.GetXaxis().SetTitle("Measured top-jet p_{T} [GeV]")
-hEmpty2D.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
-hEmpty2D.GetXaxis().SetLabelSize(0.045)
-hEmpty2D.GetYaxis().SetLabelSize(0.045)
-hEmpty2D.Draw()
-hResponse2D = response.Hresponse().Clone()
-hResponse2D.SetName("plottedResponse")
-
-# normalize so that for each bin of true top quark pt, the bins in measured top pt add up to 100%
-#nbinsX = hResponse2D.GetNbinsX()
-#nbinsY = hResponse2D.GetNbinsX()
-#print "nbr bins in x = " + str(nbinsX) + "nbr bins in y = " + str(nbinsY)
-#for iby in range(1,nbinsY) :
-#    rowIntegral = hResponse2D.Integral(1,nbinsX,iby,iby)
-#    print "for y-bin " + str(iby) + " row integral = " + str(rowIntegral)
-#    for ibx in range(1,nbinsX+1) :
-#        binContent = hResponse2D.GetBinContent(ibx,iby)
-#        newContent = 0
-#        if rowIntegral > 0:
-#            newContent = binContent/rowIntegral*100.0
-#        #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
-#        hResponse2D.SetBinContent(ibx,iby,newContent)
-
-
-gStyle.SetPaintTextFormat(".1f")
-#gStyle.SetPalette(1)
-hResponse2D.Draw("colz,same,text")
-hEmpty2D.Draw("axis,same")
-cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_"+options.syst+".png")
-cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_"+options.syst+".eps")
-
-response.Hresponse().SetName("responseMatrix_"+options.syst)
-response.Hresponse().Write()
-
-gPad.SetLogz()
-cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_logz_"+options.syst+".png")
-cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_logz_"+options.syst+".eps")
-
-gStyle.SetPadRightMargin(0.05);
-
-if options.twoStep :
-    crpp = TCanvas("c_response_pp", "", 800, 600)
-
-    hEmpty2D_pp = response_pp.Hresponse().Clone()
-    hEmpty2D_pp.SetName("empty2D_pp")
-    hEmpty2D_pp.Reset()
-    hEmpty2D_pp.GetXaxis().SetTitle("Particle-level top p_{T} [GeV]")
-    hEmpty2D_pp.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
-    hEmpty2D_pp.GetXaxis().SetLabelSize(0.045)
-    hEmpty2D_pp.GetYaxis().SetLabelSize(0.045)
-    hEmpty2D_pp.Draw()
-    hResponse2D_pp = response_pp.Hresponse().Clone()
-    hResponse2D_pp.SetName("plottedResponse_pp")
-    
-    gStyle.SetPaintTextFormat(".1f")
-    hResponse2D_pp.Draw("colz,same,text")
-    hEmpty2D_pp.Draw("axis,same")
-    crpp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_pp_"+options.syst+".png")
-    crpp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_pp_"+options.syst+".eps")
-    
-    response_pp.Hresponse().SetName("responseMatrix_pp_"+options.syst)
-    response_pp.Hresponse().Write()
-    
-    gPad.SetLogz()
-    crpp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_pp_logz_"+options.syst+".png")
-    crpp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_pp_logz_"+options.syst+".eps")
-    
-    gStyle.SetPadRightMargin(0.05);
-
-    crrp = TCanvas("c_response_rp", "", 800, 600)
-
-    hEmpty2D_rp = response_rp.Hresponse().Clone()
-    hEmpty2D_rp.SetName("empty2D_rp")
-    hEmpty2D_rp.Reset()
-    hEmpty2D_rp.GetXaxis().SetTitle("Measured top-jet p_{T} [GeV]")
-    hEmpty2D_rp.GetYaxis().SetTitle("Particle-level top p_{T} [GeV]")
-    hEmpty2D_rp.GetXaxis().SetLabelSize(0.045)
-    hEmpty2D_rp.GetYaxis().SetLabelSize(0.045)
-    hEmpty2D_rp.Draw()
-    hResponse2D_rp = response_rp.Hresponse().Clone()
-    hResponse2D_rp.SetName("plottedResponse_rp")
-    
-    gStyle.SetPaintTextFormat(".1f")
-    hResponse2D_rp.Draw("colz,same,text")
-    hEmpty2D_rp.Draw("axis,same")
-    crrp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_rp_"+options.syst+".png")
-    crrp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_rp_"+options.syst+".eps")
-    
-    response_rp.Hresponse().SetName("responseMatrix_rp_"+options.syst)
-    response_rp.Hresponse().Write()
-    
-    gPad.SetLogz()
-    crrp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_rp_logz_"+options.syst+".png")
-    crrp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_rp_logz_"+options.syst+".eps")
-    
-    gStyle.SetPadRightMargin(0.05);
-
-
 
 
 # -------------------------------------------------------------------------------------
-=======
->>>>>>> aaadb747cb06a9b10d74fdd89cb1dcc7f90cb1b0
 # read actual histograms
 # -------------------------------------------------------------------------------------
 
@@ -451,7 +332,6 @@ hRecoMC_1000toInf = f_ttbar_1000toInf.Get("ptRecoTop").Clone()
 hRecoMC_1000toInf.SetName("hRecoMC_1000toInf")
 hRecoMC_1000toInf.Sumw2()
 
-
 hTopTagSF_max700    = f_ttbar_max700.Get("toptagSF").Clone()
 hTopTagSF_max700.SetName("toptagSF_max700")
 hTopTagSF_max700.Sumw2()
@@ -461,7 +341,6 @@ hTopTagSF_700to1000.Sumw2()
 hTopTagSF_1000toInf = f_ttbar_1000toInf.Get("toptagSF").Clone()
 hTopTagSF_1000toInf.SetName("toptagSF_1000toInf")
 hTopTagSF_1000toInf.Sumw2()
-
 
 hRecoData = f_data.Get("ptRecoTop").Clone()
 hRecoData.SetName("hRecoData")
@@ -801,17 +680,7 @@ print 'Nt     '            + str( hMeas_SingleTop.Integral() )
 print 'Nwjets '            + str( hMeas_WJets.Integral() )
 print 'Nttbar nonsemilep ' + str( hMeas_TTNonSemi.Integral() )
 print 'Nttbar '            + str( hRecoMC.Integral() )
-print 'NData  '            + str( hRecoData.Integral() )                      
-
-<<<<<<< HEAD
-print 'Nwjets ' + str( hMeas_WJets.Integral() )
-print 'Nqcd   ' + str( hRecoQCD.Integral() )
-print 'Nt     ' + str( hMeas_SingleTop.Integral() )
-print 'Nttbar ' + str( hRecoMC.Integral() )
-print 'NData  ' + str( hRecoData.Integral() )
-=======
-                       
->>>>>>> aaadb747cb06a9b10d74fdd89cb1dcc7f90cb1b0
+print 'NData  '            + str( hRecoData.Integral() ) 
 
 # -------------------------------------------------------------------------------------
 # Compare inputs for 1-step and 2-step unfolding
@@ -850,7 +719,7 @@ if options.twoStep == True:
     hMu_2step.SetLineWidth(3)
     hMu.Draw("hist")
     hMu_2step.Draw("hist, same")
-    l4 = TLegend(0.5, 0.75, 0.9, 0.9)
+    l4 = TLegend(0.4, 0.75, 0.9, 0.9)
     l4.SetFillStyle(0)
     l4.SetTextFont(42)
     l4.SetTextSize(0.045)
@@ -870,7 +739,7 @@ if options.twoStep == True:
     hBJet.SetLineWidth(3)
     hBJet.Draw("hist")
     hBJet_2step.Draw("hist, same")
-    l5 = TLegend(0.5, 0.7, 0.9, 0.9)
+    l5 = TLegend(0.4, 0.7, 0.9, 0.9)
     l5.SetFillStyle(0)
     l5.SetTextFont(42)
     l5.SetTextSize(0.045)
@@ -890,7 +759,7 @@ if options.twoStep == True:
     hPartNoTrig.SetLineWidth(3)
     hPartNoTrig.Draw("hist")
     hPart.Draw("hist, same")
-    l6 = TLegend(0.7, 0.7, 0.9, 0.9)
+    l6 = TLegend(0.5, 0.7, 0.9, 0.9)
     l6.SetFillStyle(0)
     l6.SetTextFont(42)
     l6.SetTextSize(0.045)
@@ -941,9 +810,18 @@ if options.twoStep :
     hSF.SetName("hSF")
     hSF.Divide(hPart)
     print 'Trigger SFs at particle-level are: '
-    for ibin in xrange(hSF.GetNbinsX()) :
+    for ibin in xrange(1, hSF.GetNbinsX()+1) :
         print 'SF [' + str(hSF.GetXaxis().GetBinLowEdge(ibin)) + ',' + str(hSF.GetXaxis().GetBinUpEdge(ibin)) + ']: ' + str(hSF.GetBinContent(ibin))
     print ''
+
+    cSF = TCanvas("triggerSFs", "", 800, 600)
+    hSF.GetXaxis().SetTitle("Particle-level top p_{T} [GeV]")
+    hSF.SetLineColor(TColor.kBlack)
+    hSF.SetLineWidth(3)
+    hSF.Draw("hist")
+    cSF.SaveAs("UnfoldingPlots/"+folder+"unfold_trigSF_"+options.syst+".png")
+    cSF.SaveAs("UnfoldingPlots/"+folder+"unfold_trigSF_"+options.syst+".eps")
+
 
 # -------------------------------------------------------------------------------------
 # Now do the actual unfolding
@@ -1005,7 +883,7 @@ print 'hReco (events), 1-step: ' + str(hReco.Integral())
 
 hFrac = hReco.Clone()
 hFrac.SetName("hFrac")
-hFrac.SetTitle(";Top quark p_{T} [GeV];Data/MC")
+hFrac.SetTitle(";Top quark p_{T} [GeV];Measured/Truth")
 hFrac.Divide(hTrue)
 
 # Translate to cross section (not events) in bins of pt N/L/BR)
@@ -1016,10 +894,10 @@ hReco.Scale(1.0/(lum*4/27)/((1.0+0.25*0.27)))
 if options.twoStep :
     hPart.Scale(1.0/(lum*4/27))
     hPartNoTrig.Scale(1.0/(lum*4/27))
-    hPartUnfold.Scale(1.0/(lum*4/27))
-    hPartRescale.Scale(1.0/(lum*4/27))
-    hMeas_2step.Scale(1.0/(lum*4/27))
-    hReco_2step.Scale(1.0/(lum*4/27))
+    hPartUnfold.Scale(1.0/(lum*4/27)/(1.0+0.25*0.27))
+    hPartRescale.Scale(1.0/(lum*4/27)/(1.0+0.25*0.27))
+    hMeas_2step.Scale(1.0/(lum*4/27)/(1.0+0.25*0.27))
+    hReco_2step.Scale(1.0/(lum*4/27)/(1.0+0.25*0.27))
     hTrue_noTrig.Scale(1.0/(lum*4/27))
 
 # Correct for selection bias in requiring trigger 
@@ -1047,11 +925,17 @@ if options.normalize :
         hReco_2step.Scale( 1.0 / hReco_2step.Integral(bin400,binmax) )
         hTrue_noTrig.Scale( 1.0 / hTrue_noTrig.Integral(bin400,binmax) )
 
-
 # Correct for bin width
 sumReco = 0
 sumTrue = 0
 sumMeas = 0
+sumPart = 0
+sumPartNoTrig = 0
+sumPartUnfold = 0
+sumPartRescale = 0
+sumMeas_2step = 0
+sumReco_2step = 0
+sumTrue_noTrig = 0
 for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
     width = hTrue.GetBinWidth(ibin)
     hTrue.SetBinContent(ibin,  hTrue.GetBinContent(ibin) * SF[ibin-1] / width )
@@ -1075,20 +959,31 @@ for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
         hMeas_2step.SetBinError(ibin,  hMeas_2step.GetBinError(ibin) / width )
         hReco_2step.SetBinError(ibin,  hReco_2step.GetBinError(ibin) / width )
         hTrue_noTrig.SetBinError(ibin, hTrue_noTrig.GetBinError(ibin) / width )
-    
-print 'htrue (xsec) = ' + str(hTrue.Integral(bin400,binmax) )
-print 'hmeas (xsec) = ' + str(hMeas.Integral(bin400,binmax) )
-print 'hreco (xsec) = ' + str(hReco.Integral(bin400,binmax) )
-if options.twoStep :
-    print 'hPart (xsec) = ' + str(hPart.Integral(bin400,binmax) )
-    print 'hPartNoTrig (xsec) = ' + str(hPartNoTrig.Integral(bin400,binmax) )
-    print 'hPartUnfold (xsec) = ' + str(hPartUnfold.Integral(bin400,binmax) )
-    print 'hPartRescale (xsec) = ' + str(hPartRescale.Integral(bin400,binmax) )
-    print 'hMeas_2step (xsec) = ' + str(hMeas_2step.Integral(bin400,binmax) )
-    print 'hReco_2step (xsec) = ' + str(hReco_2step.Integral(bin400,binmax) )
-    print 'hTrue_noTrig (xsec) = ' + str(hTrue_noTrig.Integral(bin400,binmax) )
 
-<<<<<<< HEAD
+    sumReco += hReco.GetBinContent(ibin)*width
+    sumTrue += hTrue.GetBinContent(ibin)*width
+    sumMeas += hMeas.GetBinContent(ibin)*width
+
+    sumPart += hPart.GetBinContent(ibin)*width
+    sumPartNoTrig += hPartNoTrig.GetBinContent(ibin)*width
+    sumPartUnfold += hPartUnfold.GetBinContent(ibin)*width
+    sumPartRescale += hPartRescale.GetBinContent(ibin)*width
+    sumMeas_2step += hMeas_2step.GetBinContent(ibin)*width
+    sumReco_2step += hReco_2step.GetBinContent(ibin)*width
+    sumTrue_noTrig += hTrue_noTrig.GetBinContent(ibin)*width
+    
+print 'htrue (xsec) = ' + str(sumTrue)
+print 'hmeas (xsec) = ' + str(sumMeas)
+print 'hreco (xsec) = ' + str(sumReco)
+if options.twoStep :
+    print 'hPart (xsec) = ' + str(sumPart)
+    print 'hPartNoTrig (xsec) = ' + str(sumPartNoTrig)
+    print 'hPartUnfold (xsec) = ' + str(sumPartUnfold)
+    print 'hPartRescale (xsec) = ' + str(sumPartRescale)
+    print 'hMeas_2step (xsec) = ' + str(sumMeas_2step)
+    print 'hReco_2step (xsec) = ' + str(sumReco_2step)
+    print 'hTrue_noTrig (xsec) = ' + str(sumTrue_noTrig)
+
 #unfold.PrintTable (cout, hTrue);
 
 c1 = TCanvas("c1", "c1", 700, 700)
@@ -1096,21 +991,6 @@ pad1 =  TPad("pad1","pad1",0,0.3,1,1)
 pad1.SetBottomMargin(0.05);
 pad1.Draw();
 pad1.cd();
-=======
-    sumReco += hReco.GetBinContent(ibin)*width
-    sumTrue += hTrue.GetBinContent(ibin)*width
-    sumMeas += hMeas.GetBinContent(ibin)*width
-    
-
-print 'htrue = ' + str(hTrue.Integral(bin400,binmax) )
-print 'hmeas = ' + str(hMeas.Integral(bin400,binmax) )
-print 'hreco = ' + str(hReco.Integral(bin400,binmax) )
-
-print 'true sigma = ' + str(sumTrue)
-print 'meas sigma = ' + str(sumMeas)
-print 'reco sigma = ' + str(sumReco)
-
->>>>>>> aaadb747cb06a9b10d74fdd89cb1dcc7f90cb1b0
 
 hReco.SetMarkerStyle(21)
 hMeas.SetMarkerStyle(25)
@@ -1133,17 +1013,10 @@ if options.normalize == False :
     hReco.SetTitle(";;d#sigma/dp_{T} [fb/GeV]")
 else : 
     hReco.SetTitle(";;#frac{1}{#sigma} #frac{d#sigma}{dp_{T}} [1 / GeV]")
+
 hReco.GetYaxis().SetTitleOffset(1.2)
 hReco.SetMinimum(0.0)
-<<<<<<< HEAD
 hReco.SetMaximum(20.)
-=======
-max = hTrue.GetMaximum()
-max2 = hReco.GetMaximum()
-if max2 > max:
-	max = max2
-hReco.SetAxisRange(0,max*1.07,"Y")
->>>>>>> aaadb747cb06a9b10d74fdd89cb1dcc7f90cb1b0
 hReco.Draw()
 hTrue.Draw('hist same')
 hMeas.Draw('same')
@@ -1157,7 +1030,7 @@ if options.plotFullRange == False :
     hTrue.GetXaxis().SetRangeUser(400., 1300.)
     hMeas.GetXaxis().SetRangeUser(400., 1300.)
 
-leg = TLegend(0.35, 0.5, 0.75, 0.8)
+leg = TLegend(0.35, 0.4, 0.75, 0.7)
 leg.SetFillStyle(0)
 leg.SetTextFont(42)
 leg.SetTextSize(0.045)
@@ -1341,10 +1214,8 @@ if options.twoStep :
     c2.Print("UnfoldingPlots/"+folder+"partlevel_ttbar_xs"+append+"_"+options.syst+".png", "png")
     c2.Print("UnfoldingPlots/"+folder+"partlevel_ttbar_xs"+append+"_"+options.syst+".eps", "eps")
 
-
 # -------------------------------------------------------------------------------------
 # plot response matrices 
-# (do this in the end as the normalization otherwise will mess up the unfolding result!)
 # -------------------------------------------------------------------------------------
 
 gStyle.SetPadRightMargin(0.12);
@@ -1353,7 +1224,7 @@ cr = TCanvas("c_response", "", 800, 600)
 hEmpty2D = response.Hresponse().Clone()
 hEmpty2D.SetName("empty2D")
 hEmpty2D.Reset()
-hEmpty2D.GetXaxis().SetTitle("Top-tagged jet p_{T} [GeV]")
+hEmpty2D.GetXaxis().SetTitle("Measured top-jet p_{T} [GeV]")
 hEmpty2D.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
 hEmpty2D.GetXaxis().SetLabelSize(0.045)
 hEmpty2D.GetYaxis().SetLabelSize(0.045)
@@ -1376,23 +1247,109 @@ for iby in range(1,nbinsY) :
         #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
         hResponse2D.SetBinContent(ibx,iby,newContent)
 
-
 gStyle.SetPaintTextFormat(".1f")
 #gStyle.SetPalette(1)
 hResponse2D.Draw("colz,same,text")
 hEmpty2D.Draw("axis,same")
-cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".png")
-cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".eps")
-cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.syst+".pdf")
+cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_"+options.syst+".png")
+cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_"+options.syst+".eps")
+cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_"+options.syst+".pdf")
 
 response.Hresponse().SetName("responseMatrix_"+options.syst)
 response.Hresponse().Write()
 
 gPad.SetLogz()
-cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_logz_"+options.syst+".png")
-cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_logz_"+options.syst+".eps")
-cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_logz_"+options.syst+".pdf")
+cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_logz_"+options.syst+".png")
+cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_logz_"+options.syst+".eps")
+cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_logz_"+options.syst+".pdf")
 
+gStyle.SetPadRightMargin(0.05);
 
+if options.twoStep :
+    crpp = TCanvas("c_response_pp", "", 800, 600)
 
+    hEmpty2D_pp = response_pp.Hresponse().Clone()
+    hEmpty2D_pp.SetName("empty2D_pp")
+    hEmpty2D_pp.Reset()
+    hEmpty2D_pp.GetXaxis().SetTitle("Particle-level top p_{T} [GeV]")
+    hEmpty2D_pp.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
+    hEmpty2D_pp.GetXaxis().SetLabelSize(0.045)
+    hEmpty2D_pp.GetYaxis().SetLabelSize(0.045)
+    hEmpty2D_pp.Draw()
+    hResponse2D_pp = response_pp.Hresponse().Clone()
+    hResponse2D_pp.SetName("plottedResponse_pp")
+
+    # normalize so that for each bin of true top quark pt, the bins in particle-level top pt add up to 100%
+    print "Normalizing pp response matrix: "
+    print "nbr bins in x = " + str(nbinsX) + ", nbr bins in y = " + str(nbinsY)
+    for iby in range(1,nbinsY) :
+        rowIntegral = hResponse2D_pp.Integral(1,nbinsX,iby,iby)
+        print "for y-bin " + str(iby) + " row integral = " + str(rowIntegral)
+        for ibx in range(1,nbinsX+1) :
+            binContent = hResponse2D_pp.GetBinContent(ibx,iby)
+            newContent = 0
+            if rowIntegral > 0:
+                newContent = binContent/rowIntegral*100.0
+            #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
+            hResponse2D_pp.SetBinContent(ibx,iby,newContent)
+    
+    gStyle.SetPaintTextFormat(".1f")
+    hResponse2D_pp.Draw("colz,same,text")
+    hEmpty2D_pp.Draw("axis,same")
+    crpp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_pp_"+options.syst+".png")
+    crpp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_pp_"+options.syst+".eps")
+    crpp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_pp_"+options.syst+".pdf")
+    
+    response_pp.Hresponse().SetName("responseMatrix_pp_"+options.syst)
+    response_pp.Hresponse().Write()
+    
+    gPad.SetLogz()
+    crpp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_pp_logz_"+options.syst+".png")
+    crpp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_pp_logz_"+options.syst+".eps")
+    crpp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_pp_logz_"+options.syst+".pdf")
+    
+    gStyle.SetPadRightMargin(0.05);
+
+    crrp = TCanvas("c_response_rp", "", 800, 600)
+
+    hEmpty2D_rp = response_rp.Hresponse().Clone()
+    hEmpty2D_rp.SetName("empty2D_rp")
+    hEmpty2D_rp.Reset()
+    hEmpty2D_rp.GetXaxis().SetTitle("Measured top-jet p_{T} [GeV]")
+    hEmpty2D_rp.GetYaxis().SetTitle("Particle-level top p_{T} [GeV]")
+    hEmpty2D_rp.GetXaxis().SetLabelSize(0.045)
+    hEmpty2D_rp.GetYaxis().SetLabelSize(0.045)
+    hEmpty2D_rp.Draw()
+    hResponse2D_rp = response_rp.Hresponse().Clone()
+    hResponse2D_rp.SetName("plottedResponse_rp")
+
+    # normalize so that for each bin of particle-level top quark pt, the bins in measured top pt add up to 100%
+    print "Normalizing rp response matrix: "
+    print "nbr bins in x = " + str(nbinsX) + ", nbr bins in y = " + str(nbinsY)
+    for iby in range(1,nbinsY) :
+        rowIntegral = hResponse2D_rp.Integral(1,nbinsX,iby,iby)
+        print "for y-bin " + str(iby) + " row integral = " + str(rowIntegral)
+        for ibx in range(1,nbinsX+1) :
+            binContent = hResponse2D_rp.GetBinContent(ibx,iby)
+            newContent = 0
+            if rowIntegral > 0:
+                newContent = binContent/rowIntegral*100.0
+            #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
+            hResponse2D_rp.SetBinContent(ibx,iby,newContent)
+    
+    gStyle.SetPaintTextFormat(".1f")
+    hResponse2D_rp.Draw("colz,same,text")
+    hEmpty2D_rp.Draw("axis,same")
+    crrp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_rp_"+options.syst+".png")
+    crrp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_rp_"+options.syst+".eps")
+    crrp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_rp_"+options.syst+".pdf")
+    
+    response_rp.Hresponse().SetName("responseMatrix_rp_"+options.syst)
+    response_rp.Hresponse().Write()
+    
+    gPad.SetLogz()
+    crrp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_rp_logz_"+options.syst+".png")
+    crrp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_rp_logz_"+options.syst+".eps")
+    crrp.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_rp_logz_"+options.syst+".pdf")
+    
 fout.Close()
