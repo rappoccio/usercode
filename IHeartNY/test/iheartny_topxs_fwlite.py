@@ -765,6 +765,15 @@ h_ptMET5 = ROOT.TH1F("ptMET5", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 h_ptMET6 = ROOT.TH1F("ptMET6", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 h_ptMET7 = ROOT.TH1F("ptMET7", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 
+h_phiMET0 = ROOT.TH1F("phiMET0", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
+h_phiMET1 = ROOT.TH1F("phiMET1", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
+h_phiMET2 = ROOT.TH1F("phiMET2", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
+h_phiMET3 = ROOT.TH1F("phiMET3", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
+h_phiMET4 = ROOT.TH1F("phiMET4", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
+h_phiMET5 = ROOT.TH1F("phiMET5", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
+h_phiMET6 = ROOT.TH1F("phiMET6", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
+h_phiMET7 = ROOT.TH1F("phiMET7", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
+
 h_htLep0 = ROOT.TH1F("htLep0", ";H_{T}^{lep} [GeV]; Events / 10 GeV", 300, 0., 3000.)
 h_htLep1 = ROOT.TH1F("htLep1", ";H_{T}^{lep} [GeV]; Events / 10 GeV", 300, 0., 3000.)
 h_htLep2 = ROOT.TH1F("htLep2", ";H_{T}^{lep} [GeV]; Events / 10 GeV", 300, 0., 3000.)
@@ -838,6 +847,12 @@ h_hadtop_y5 = ROOT.TH1F("hadtop_y5", ";y(hadronic top); Events / 0.1", 100, -5, 
 h_hadtop_y6 = ROOT.TH1F("hadtop_y6", ";y(hadronic top); Events / 0.1", 100, -5, 5.)
 h_hadtop_y7 = ROOT.TH1F("hadtop_y7", ";y(hadronic top); Events / 0.1", 100, -5, 5.)
 
+h_ttbar_mass3 = ROOT.TH1F("ttbar_mass3", ";m(t#bar{t}) [GeV]; Events / 10 GeV", 200, 0., 2000.)
+h_ttbar_mass4 = ROOT.TH1F("ttbar_mass4", ";m(t#bar{t}) [GeV]; Events / 10 GeV", 200, 0., 2000.)
+h_ttbar_mass5 = ROOT.TH1F("ttbar_mass5", ";m(t#bar{t}) [GeV]; Events / 10 GeV", 200, 0., 2000.)
+h_ttbar_mass6 = ROOT.TH1F("ttbar_mass6", ";m(t#bar{t}) [GeV]; Events / 10 GeV", 200, 0., 2000.)
+h_ttbar_mass7 = ROOT.TH1F("ttbar_mass7", ";m(t#bar{t}) [GeV]; Events / 10 GeV", 200, 0., 2000.)
+
 h_hadtop_eta4 = ROOT.TH1F("hadtop_eta4", ";top-tagged jet #eta; Events / 0.1", 50, -2.5, 2.5)
 h_hadtop_eta6 = ROOT.TH1F("hadtop_eta6", ";top-tagged jet #eta; Events / 0.1", 50, -2.5, 2.5)
 h_hadtop_eta7 = ROOT.TH1F("hadtop_eta7", ";top-tagged jet #eta; Events / 0.1", 50, -2.5, 2.5)
@@ -858,6 +873,10 @@ h_hadtop_precut_nvtx_csv     = ROOT.TH2F("hadtop_precut_nvtx_csv",     ";Number 
 h_muonSF   = ROOT.TH1F("muonSF",   ";; Average muon trigger+ID SF", 1,0.5,1.5)
 h_btagSF   = ROOT.TH1F("btagSF",   ";; Average b-tagging SF", 1,0.5,1.5)
 h_toptagSF = ROOT.TH1F("toptagSF", ";; Average top-tagging SF", 1,0.5,1.5)
+
+# debug histogram
+h_hadtop_pt_preVtx = ROOT.TH1F("hadtop_pt_preVtx", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
+h_vtxMass_preVtx   = ROOT.TH1F("vtxMass_preVtx",   ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 
 
 # dummy histogram used only to specify dimensions for reponse matrix
@@ -1884,6 +1903,7 @@ for event in events :
     h_htLep0.Fill(htLep, weight)
     h_lepMET0.Fill(lepMET, weight)
     h_ptMET0.Fill(met, weight)
+    h_phiMET0.Fill(metphi, weight)
     h_pfIso0.Fill(lepton.getIsoPU(), weight)
     h_dRvspT0.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     h_ptLep0.Fill(lepton.p4().Perp(), weight)
@@ -1976,6 +1996,7 @@ for event in events :
     h_htLep1.Fill(htLep, weight)
     h_lepMET1.Fill(lepMET, weight)
     h_ptMET1.Fill(met, weight)
+    h_phiMET1.Fill(metphi, weight)
     h_pfIso1.Fill(lepton.getIsoPU(), weight)
     h_dRvspT1.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     h_ptLep1.Fill(lepton.p4().Perp(), weight)
@@ -2036,6 +2057,7 @@ for event in events :
     h_htLep2.Fill(htLep, weight)
     h_lepMET2.Fill(lepMET, weight)
     h_ptMET2.Fill(met, weight)
+    h_phiMET2.Fill(metphi, weight)
     h_pfIso2.Fill(lepton.getIsoPU(), weight)
     h_dRvspT2.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     h_ptLep2.Fill(lepton.p4().Perp(), weight)
@@ -2214,6 +2236,7 @@ for event in events :
     h_lepMET3.Fill(lepMET, weight)
     h_vtxMass3.Fill(this_vtxmass, weight)
     h_ptMET3.Fill(met, weight)
+    h_phiMET3.Fill(metphi, weight)
     h_pfIso3.Fill(lepton.getIsoPU(), weight)
     h_dRvspT3.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     h_ptLep3.Fill(lepton.p4().Perp(), weight)
@@ -2259,7 +2282,11 @@ for event in events :
     h_hadtop_pt3.Fill(hadJets[0].Perp(), top_weight)
     h_hadtop_y3.Fill(hadJets[0].Rapidity(), top_weight)
     h_hadtop_mass3.Fill(hadJets[0].M(), top_weight)
- 
+
+    v_ttbar = hadJets[0] + v_leptop
+    ttbar_mass = v_ttbar.M()
+
+    h_ttbar_mass3.Fill(ttbar_mass, top_weight)
     
 
     # -------------------------------------------------------------------------------------
@@ -2285,6 +2312,7 @@ for event in events :
     h_htLep4.Fill(htLep, weight)
     h_lepMET4.Fill(lepMET, weight)
     h_ptMET4.Fill(met, weight)
+    h_phiMET4.Fill(metphi, weight)
     h_vtxMass4.Fill(this_vtxmass, weight)
     h_ptLep4.Fill(lepton.p4().Perp(), weight)
     h_etaLep4.Fill(lepton.p4().Eta(), weight)
@@ -2315,6 +2343,8 @@ for event in events :
     h_hadtop_y4.Fill(hadJets[0].Rapidity(), top_weight)
     h_hadtop_mass4.Fill(hadJets[0].M(), top_weight)
     h_hadtop_eta4.Fill(hadJets[0].Eta(), top_weight)
+
+    h_ttbar_mass4.Fill(ttbar_mass, top_weight)
 
     
     # -------------------------------------------------------------------------------------
@@ -2355,6 +2385,7 @@ for event in events :
     h_etaLep5.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep5.Fill(abs(lepton.p4().Eta()), weight)
     h_ptMET5.Fill(met, weight)
+    h_phiMET5.Fill(metphi, weight)
     h_nJets5.Fill(nJets, weight)
     h_nBJets5.Fill(nBJets, weight)
     h_nLepJets5.Fill(len(lepJets), weight)
@@ -2380,8 +2411,9 @@ for event in events :
     h_hadtop_pt5.Fill(hadJets[0].Perp(), top_weight)
     h_hadtop_y5.Fill(hadJets[0].Rapidity(), top_weight)
     h_hadtop_mass5.Fill(hadJets[0].M(), top_weight)
-    
-    
+
+    h_ttbar_mass5.Fill(ttbar_mass, top_weight)
+
     
     # -------------------------------------------------------------------------------------
     # get variables for subjets of top-tagged jet 
@@ -2581,6 +2613,7 @@ for event in events :
     h_lepMET6.Fill(lepMET, weight)
     h_vtxMass6.Fill(this_vtxmass, weight)
     h_ptMET6.Fill(met, weight)
+    h_phiMET6.Fill(metphi, weight)
     h_ptLep6.Fill(lepton.p4().Perp(), weight)
     h_etaLep6.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep6.Fill(abs(lepton.p4().Eta()), weight)
@@ -2606,7 +2639,12 @@ for event in events :
     h_leptop_y6.Fill(leptop_y, top_weight)
     h_leptop_mass6.Fill(leptop_mass, top_weight)
     
+    v2_ttbar = goodtop + v_leptop
+    ttbar_mass = v2_ttbar.M()
 
+    h_ttbar_mass6.Fill(ttbar_mass, top_weight)
+
+    
     # look at more variables for top-tagged subjets, even though we're not cutting on them at the moment
     event.getByLabel (nsubCA8Label, nsubCA8Handle)
     nsubCA8Jets = nsubCA8Handle.product() 
@@ -2650,13 +2688,18 @@ for event in events :
     # -------------------------------------------------------------------------------------
     # STEP (7): require a leptonic-side b-tagged jet
     # -------------------------------------------------------------------------------------
-
+    
     ntagslep = 0      # number of b-tagged jets
     i_leadbtag = -1   # identifier for finding leading b-tagged jet
     bjet_pt = 0       # pt of leading b-tagged jet
     bjet_vtxmass = 0  # secondary vertex mass of leading b-tagged jet
     bjet_eta = 0      # eta of leading b-tagged jet
-    
+
+    ## debug 
+    ntagslepLoose = 0
+    bjetLoose_pt = 0 
+    bjetLoose_vtxmass = 0
+
     # loop over CSV discriminator values of leptonic-side AK5 jets
     for ijet in range(0,len(lepcsvs)) :
         lepjet = lepJets[ijet]
@@ -2669,6 +2712,17 @@ for event in events :
                 bjet_eta = lepjet.Eta()
                 bjet_vtxmass = lep_vtxmass
                 i_leadbtag = ijet
+        if lepcsv > options.bDiscCut:
+            ntagslepLoose += 1
+            if (lepjet.Perp() > bjetLoose_pt) :
+                bjetLoose_pt = lepjet.Perp()
+                bjetLoose_vtxmass = lep_vtxmass
+
+    # debug vtxMass cut
+    if ntagslepLoose > 0:
+        h_hadtop_pt_preVtx.Fill(goodtop.Perp(), top_weight)
+        h_vtxMass_preVtx.Fill(bjetLoose_vtxmass, weight)
+    
     
     # require a b-tagged jet
     if ntagslep < 1:
@@ -2731,6 +2785,7 @@ for event in events :
     h_htLep7.Fill(htLep, weight)
     h_lepMET7.Fill(lepMET, weight)
     h_ptMET7.Fill(met, weight)
+    h_phiMET7.Fill(metphi, weight)
     
     h_leptop_pt7.Fill(leptop_pt, top_weight)
     h_leptop_y7.Fill(leptop_y, top_weight)
@@ -2741,6 +2796,9 @@ for event in events :
     h_hadtop_y7.Fill(goodtop.Rapidity(), top_weight)
     h_hadtop_eta7.Fill(goodtop.Eta(), top_weight)
 
+    h_ttbar_mass7.Fill(ttbar_mass, top_weight)
+
+        
     # -------------------------------------------------------------------------------------
     # fill histograms for average scale factors
     # -------------------------------------------------------------------------------------
