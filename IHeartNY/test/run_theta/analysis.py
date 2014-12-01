@@ -36,7 +36,7 @@ def muplusjets(files, infilter, signal, mcstat, ex_to_in):
     model.add_lognormal_uncertainty('rate_st', math.log(1.5), 'SingleTop')
     model.add_lognormal_uncertainty('rate_vjets', math.log(1.5), 'WJets')
     #model.add_lognormal_uncertainty('beta_signal', math.log(1.5), 'TTbar_nonSemiLep')
-    model.add_lognormal_uncertainty('rate_qcd', math.log(1.5), 'QCD')
+    model.add_lognormal_uncertainty('rate_qcd', math.log(2.0), 'QCD')
 
     #    model.add_asymmetric_lognormal_uncertainty('scale_vjets', -math.log(1.577), math.log(0.710), 'WJets', obs)
     #    model.add_asymmetric_lognormal_uncertainty('matching_vjets', -math.log(1.104), math.log(1.052), 'WJets', obs)
@@ -81,8 +81,7 @@ def build_model(type, indir='', mcstat = True, ex_to_in = None, infilter = None)
     if type == 'ttbar_xs' :
 
         model = muplusjets(
-            files=[#'normalized_mujets_ptMET3_subtracted_from_ptMET1.root',
-                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
                    'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
                    'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root'],
             infilter=infilter,
@@ -113,8 +112,6 @@ def build_model(type, indir='', mcstat = True, ex_to_in = None, infilter = None)
 ####################################################################################
 # Here is the "main" part of the script. 
 ####################################################################################
-
-
 
 useMLE = True
 usePL = False
@@ -165,15 +162,15 @@ for idir in dirs :
         pdbs = plotdata()
         pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
         plot(pdbs, 'bs', 'ntoys', 'beta_signal_' + idir + '.pdf')
-
+        
         pdd = plotdata()
         pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
         plot(pdd, 'dbs', 'ntoys', 'delta_beta_signal_' + idir + '.pdf')
-
+        
         pdp = plotdata()
         pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
         plot(pdp, 'pull', 'ntoys', 'pull_' + idir + '.pdf')
-
+        
 
         # to write the data to a file, use e.g.:
         pdp.write_txt('pull_' + idir + '.txt')

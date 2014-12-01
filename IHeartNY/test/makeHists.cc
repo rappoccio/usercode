@@ -574,10 +574,13 @@ void makePosteriorPlots(TString what, TString pdfdir="CT10_nom") {
 
   leg->Draw();
 
-  myText(0.48,0.81,1,"#intLdt = 19.7 fb^{-1}");
-  myText(0.48,0.72,1,"#sqrt{s} = 8 TeV");
+  //mySmallText(0.14,0.96,1,"Posterior fit distributions");
+  //myText(0.48,0.81,1,"#intLdt = 19.7 fb^{-1}");
+  //myText(0.48,0.72,1,"#sqrt{s} = 8 TeV");
   
-  mySmallText(0.14,0.96,1,"Posterior fit distributions");
+  myText(0.45,0.86,1,"CMS Preliminary");
+  myText(0.45,0.75,1,"#intLdt = 19.7 fb^{-1}");
+  myText(0.45,0.66,1,"#sqrt{s} = 8 TeV");
 
   // plot ratio part
   c->cd();

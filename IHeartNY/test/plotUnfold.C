@@ -22,7 +22,7 @@
 using namespace std;
 
 void SetPlotStyle();
-void mySmallText(Double_t x,Double_t y,Color_t color,char *text); 
+void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize,char *text); 
 
 
 void plotUnfold() {
@@ -45,8 +45,8 @@ void plotUnfold() {
 			      "CT10_nom_2Dcut_jerdn",			      
 			      "CT10_nom_2Dcut_btagup",
 			      "CT10_nom_2Dcut_btagdn",
-			      "CT10_nom_2Dcut_toptagup",
-			      "CT10_nom_2Dcut_toptagdn",
+			      "CT10_nom_2Dcut_toptagFITup",
+			      "CT10_nom_2Dcut_toptagFITdn",
   };
   
   TFile* f_syst[nSYST];
@@ -55,6 +55,15 @@ void plotUnfold() {
   TH1F* h_measured;
   
   cout << "Getting files and hists" << endl;
+
+
+  TFile* f_syst_MSTW  = new TFile("UnfoldingPlots/unfold_MSTW_nom_2Dcut_nom.root");
+  TFile* f_syst_NNPDF = new TFile("UnfoldingPlots/unfold_NNPDF_nom_2Dcut_nom.root");
+
+  TH1F* h_true_MSTW  = (TH1F*) f_syst_MSTW->Get("pt_genTop")->Clone();
+  h_true_MSTW->SetName("pt_genTop_MSTW");
+  TH1F* h_true_NNPDF = (TH1F*) f_syst_NNPDF->Get("pt_genTop")->Clone();
+  h_true_NNPDF->SetName("pt_genTop_NNPDF");
   
   for (int is=0; is<nSYST; is++) {
     cout << "getting UnfoldingPlots/unfold_" << name_syst[is] << ".root" <<endl;
@@ -88,6 +97,8 @@ void plotUnfold() {
   h_measured->SetMarkerStyle(24);
   
   h_true->SetLineColor(2);
+  h_true_MSTW->SetLineColor(4);
+  h_true_NNPDF->SetLineColor(8);
   
   h_unfolded[0]->SetLineColor(1);
   h_unfolded[0]->SetMarkerColor(1);
@@ -142,7 +153,6 @@ void plotUnfold() {
     cout << "Accessing event counts" << endl;
     float this_systEXP_up = 0;
     this_systEXP_up += (count[5]-count[0])*(count[5]-count[0]);
-    cout << "this_systEXP_up" << this_systEXP_up << endl;
     this_systEXP_up += (count[7]-count[0])*(count[7]-count[0]);
     this_systEXP_up += (count[9]-count[0])*(count[9]-count[0]);
     this_systEXP_up += (count[11]-count[0])*(count[11]-count[0]);
@@ -179,6 +189,9 @@ void plotUnfold() {
     h_systTH_up->SetBinContent(i+1,upTH);
     h_systTH_dn->SetBinContent(i+1,dnTH);  
     cout << ".... done" << endl;
+
+    cout << "measured = " << count[0] << " +" << this_systEXP_up << " / -" << this_systEXP_dn << " (exp) +" << this_systTH_up << " / -" << this_systTH_dn << " (th)" << endl;
+    cout << "generator (CT10) = " << h_true->GetBinContent(i+1) << endl;
   }
   
   cout << "Done with all bins" << endl;
@@ -243,6 +256,13 @@ void plotUnfold() {
     h_syst_jer->SetBinContent(i+1,max_syst_jer);    
     h_syst_btag->SetBinContent(i+1,max_syst_btag);   
     h_syst_toptag->SetBinContent(i+1,max_syst_toptag); 
+
+    h_syst_Q2->SetBinError(i+1,0.001);  
+    h_syst_pdf->SetBinError(i+1,0.001);
+    h_syst_jec->SetBinError(i+1,0.001);
+    h_syst_jer->SetBinError(i+1,0.001);
+    h_syst_btag->SetBinError(i+1,0.001);
+    h_syst_toptag->SetBinError(i+1,0.001);
     cout << ".... done" << endl;
     
   }
@@ -304,6 +324,8 @@ void plotUnfold() {
   cout << "Plotting stuff" << endl;
   h_dummy->Draw("hist");
   h_true->Draw("hist,same");
+  //h_true_MSTW->Draw("hist,same");
+  //h_true_NNPDF->Draw("hist,same");
   h_unfolded[0]->Draw("hist,ep,same");
   //gr->Draw("ep,same");
   h_dummy->Draw("hist,axis,same"); 
@@ -393,7 +415,8 @@ void plotUnfold() {
   
 
   // ----------------------------------------------------------------------------------------------------------------
-  TLegend* leg = new TLegend(0.45,0.55,0.9,0.9);  
+  //TLegend* leg = new TLegend(0.45,0.55,0.9,0.9);  
+  TLegend* leg = new TLegend(0.45,0.45,0.9,0.75);  
   leg->AddEntry(h_true,"POWHEG t#bar{t} MC (CT10)","l");
   leg->AddEntry(h_unfolded[0],"Unfolded data","pel");
   leg->AddEntry(blaEXP,"Experimental uncertainties","f");
@@ -404,6 +427,7 @@ void plotUnfold() {
   leg->SetTextFont(42);
   leg->Draw();
 
+  mySmallText(0.38,0.82,1,0.05,"CMS Preliminary, L = 19.7 fb^{-1}, #sqrt{s} = 8 TeV");
 
 
   // ----------------------------------------------------------------------------------------------------------------
@@ -449,90 +473,85 @@ void plotUnfold() {
 
   
   cout << "plotting relative uncertainties" <<endl;
-  TCanvas *c1 = new TCanvas("c1", "", 800, 650);
-  c1->SetTopMargin(0.10);
-  c1->SetBottomMargin(0.15);
-  c1->SetLeftMargin(0.13);
-  c1->SetRightMargin(0.075);
+  TCanvas *c1 = new TCanvas("c1", "", 800, 600);
+  c1->SetTopMargin(0.05);
+  c1->SetRightMargin(0.05);
+  c1->SetBottomMargin(0.16);
+  c1->SetLeftMargin(0.16);
   
+
   h_dummy_r->GetXaxis()->SetTitle("Top quark p_{T} [GeV]");
   h_dummy_r->GetYaxis()->SetTitle("Uncertainty [%]");
   h_dummy_r->SetAxisRange(400,1250,"X");
-  h_dummy_r->SetAxisRange(0,50,"Y");
+  h_dummy_r->SetAxisRange(0,60,"Y");
   
-  h_dummy_r->GetYaxis()->SetTitleSize(0.05);    
+  h_dummy_r->GetYaxis()->SetTitleSize(0.055);    
   h_dummy_r->GetYaxis()->SetTitleOffset(1.0);
-  h_dummy_r->GetYaxis()->SetLabelSize(0.04);
+  h_dummy_r->GetYaxis()->SetLabelSize(0.045);
   
   h_dummy_r->GetXaxis()->SetTitleSize(0.05);
   h_dummy_r->GetXaxis()->SetTitleOffset(1.2);
-  h_dummy_r->GetXaxis()->SetLabelSize(0.04);
+  h_dummy_r->GetXaxis()->SetLabelSize(0.0455);
+  
   c1->cd();
   
-  h_syst_Q2->SetLineColor(kRed);
+  h_syst_Q2->SetLineColor(2);
   h_syst_Q2->SetLineWidth(2);
-  h_syst_Q2->SetMarkerColor(kRed);
-  h_syst_Q2->SetFillColor(kWhite);
-  h_syst_Q2->SetMarkerStyle(20);
+  h_syst_Q2->SetMarkerColor(2);
+  h_syst_Q2->SetMarkerStyle(24);
   
-  h_syst_pdf->SetLineColor(kYellow-2);
+  h_syst_pdf->SetLineColor(6);
   h_syst_pdf->SetLineWidth(2);
-  h_syst_pdf->SetMarkerColor(kYellow-2);
-  h_syst_pdf->SetFillColor(kWhite);
-  h_syst_pdf->SetMarkerStyle(21);
+  h_syst_pdf->SetMarkerColor(6);
+  h_syst_pdf->SetMarkerStyle(25);
   
-  h_syst_jec->SetLineColor(kGreen-3);
+  h_syst_jec->SetLineColor(1);
   h_syst_jec->SetLineWidth(2);
-  h_syst_jec->SetMarkerColor(kGreen-3);
-  h_syst_jec->SetFillColor(kWhite);
-  h_syst_jec->SetMarkerStyle(22);
+  h_syst_jec->SetMarkerColor(1);
+  h_syst_jec->SetMarkerStyle(20);
   
-  h_syst_jer->SetLineColor(kCyan-1);
+  h_syst_jer->SetLineColor(14);
   h_syst_jer->SetLineWidth(2);
-  h_syst_jer->SetMarkerColor(kCyan-1);
-  h_syst_jer->SetFillColor(kWhite);
-  h_syst_jer->SetMarkerStyle(23);
+  h_syst_jer->SetMarkerColor(14);
+  h_syst_jer->SetMarkerStyle(20);
   
-  h_syst_btag->SetLineColor(kMagenta);
-  h_syst_btag->SetLineWidth(2);
-  h_syst_btag->SetMarkerColor(kMagenta);
-  h_syst_btag->SetFillColor(kWhite);
-  h_syst_btag->SetMarkerStyle(24);
-  
-  h_syst_toptag->SetLineColor(kBlue);
+  h_syst_toptag->SetLineColor(4);
   h_syst_toptag->SetLineWidth(2);
-  h_syst_toptag->SetMarkerColor(kBlue);
-  h_syst_toptag->SetFillColor(kWhite);
-  h_syst_toptag->SetMarkerStyle(25);
+  h_syst_toptag->SetMarkerColor(4);
+  h_syst_toptag->SetMarkerStyle(22);
+
+  h_syst_btag->SetLineColor(8);
+  h_syst_btag->SetLineWidth(2);
+  h_syst_btag->SetMarkerColor(8);
+  h_syst_btag->SetMarkerStyle(23);
+    
   
-  
-  TLegend* leg = new TLegend(0.2,0.7,0.4,0.85);  
-  //leg->AddEntry(h_unfolded[0],"Unfolded MC","pel");
-  leg->AddEntry(h_syst_Q2,"Q2","lp");
-  leg->AddEntry(h_syst_pdf,"pdf","lp");
-  leg->AddEntry(h_syst_jec,"jec","lp");
-  leg->AddEntry(h_syst_jer,"jer","lp");
-  leg->AddEntry(h_syst_btag,"btag","lp");
-  leg->AddEntry(h_syst_toptag,"toptag","lp");
-  
+  TLegend* leg = new TLegend(0.2,0.68,0.45,0.92);  
+  leg->AddEntry(h_syst_jec,"Jet energy scale","lp");
+  leg->AddEntry(h_syst_jer,"Jet energy resolution","lp");
+  leg->AddEntry(h_syst_toptag,"Top-tagging efficiency","lp");
+  leg->AddEntry(h_syst_btag,"b-tagging efficiency","lp");
+  leg->AddEntry(h_syst_Q2,"Q^{2} scale","lp");
+  leg->AddEntry(h_syst_pdf,"PDF uncertainty","lp");
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);
-  leg->SetTextSize(0.02);
+  leg->SetTextSize(0.032);
   leg->SetTextFont(42);
-  
+
   	
   h_dummy_r->Draw("hist");
-  //h_unfolded[0]->Draw("ep same");
-  //h_syst_scaleup->Draw("ah ][ hist p same");
-  h_syst_Q2->Draw("ehpsame");
-  h_syst_pdf->Draw("ehpsame");
-  h_syst_jec->Draw("ehpsame");
-  h_syst_jer->Draw("ehpsame");
-  h_syst_btag->Draw("ehpsame");
-  h_syst_toptag->Draw("ehpsame");
+  h_syst_jec->Draw("ep,same");
+  h_syst_jer->Draw("ep,same");
+  h_syst_toptag->Draw("ep,same");
+  h_syst_btag->Draw("ep,same");
+  h_syst_Q2->Draw("ep,same");
+  h_syst_pdf->Draw("ep,same");
   h_dummy_r->Draw("hist,axis,same");
   leg->Draw(); 
-  c1->Draw();
+
+  mySmallText(0.6,0.87,1,0.04,"CMS Preliminary");
+  mySmallText(0.6,0.82,1,0.04,"L = 19.7 fb^{-1}, #sqrt{s} = 8 TeV");
+
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties.png");
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties.pdf");
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties.eps");
@@ -541,80 +560,79 @@ void plotUnfold() {
 
 
 void SetPlotStyle() {
-
-	// from ATLAS plot style macro
-
-	// use plain black on white colors
-	gStyle->SetFrameBorderMode(0);
-	gStyle->SetFrameFillColor(0);
-	gStyle->SetCanvasBorderMode(0);
-	gStyle->SetCanvasColor(0);
-	gStyle->SetPadBorderMode(0);
-	gStyle->SetPadColor(0);
-	gStyle->SetStatColor(0);
-	gStyle->SetHistLineColor(1);
-
-	gStyle->SetPalette(1);
-
-	// set the paper & margin sizes
-	gStyle->SetPaperSize(20,26);
-	/*
-	gStyle->SetPadTopMargin(0.05);
-	gStyle->SetPadRightMargin(0.05);
-	gStyle->SetPadBottomMargin(0.16);
-	gStyle->SetPadLeftMargin(0.16);
-	*/
-	gStyle->SetPadTopMargin(0.07);
-	gStyle->SetPadRightMargin(0.05);
-	gStyle->SetPadBottomMargin(0.16);
-	gStyle->SetPadLeftMargin(0.18);
-
-	// set title offsets (for axis label)
-	gStyle->SetTitleXOffset(1.4);
-	gStyle->SetTitleYOffset(1.2);
-
-	// use large fonts
-	gStyle->SetTextFont(42);
-	gStyle->SetTextSize(0.05);
-	gStyle->SetLabelFont(42,"x");
-	gStyle->SetTitleFont(42,"x");
-	gStyle->SetLabelFont(42,"y");
-	gStyle->SetTitleFont(42,"y");
-	gStyle->SetLabelFont(42,"z");
-	gStyle->SetTitleFont(42,"z");
-	gStyle->SetLabelSize(0.05,"x");
-	gStyle->SetTitleSize(0.05,"x");
-	gStyle->SetLabelSize(0.05,"y");
-	gStyle->SetTitleSize(0.05,"y");
-	gStyle->SetLabelSize(0.05,"z");
-	gStyle->SetTitleSize(0.05,"z");
-
-	// use bold lines and markers
-	gStyle->SetMarkerStyle(20);
-	gStyle->SetMarkerSize(1.2);
-	gStyle->SetHistLineWidth(2.);
-	gStyle->SetLineStyleString(2,"[12 12]");
-
-	// get rid of error bar caps
-	gStyle->SetEndErrorSize(0.);
-
-	// do not display any of the standard histogram decorations
-	gStyle->SetOptTitle(0);
-	gStyle->SetOptStat(0);
-	gStyle->SetOptFit(0);
-
-	// put tick marks on top and RHS of plots
-	gStyle->SetPadTickX(1);
-	gStyle->SetPadTickY(1);
-
+  
+  // from ATLAS plot style macro
+  
+  // use plain black on white colors
+  gStyle->SetFrameBorderMode(0);
+  gStyle->SetFrameFillColor(0);
+  gStyle->SetCanvasBorderMode(0);
+  gStyle->SetCanvasColor(0);
+  gStyle->SetPadBorderMode(0);
+  gStyle->SetPadColor(0);
+  gStyle->SetStatColor(0);
+  gStyle->SetHistLineColor(1);
+  
+  gStyle->SetPalette(1);
+  
+  // set the paper & margin sizes
+  gStyle->SetPaperSize(20,26);
+  /*
+    gStyle->SetPadTopMargin(0.05);
+    gStyle->SetPadRightMargin(0.05);
+    gStyle->SetPadBottomMargin(0.16);
+    gStyle->SetPadLeftMargin(0.16);
+  */
+  gStyle->SetPadTopMargin(0.07);
+  gStyle->SetPadRightMargin(0.05);
+  gStyle->SetPadBottomMargin(0.16);
+  gStyle->SetPadLeftMargin(0.18);
+  
+  // set title offsets (for axis label)
+  gStyle->SetTitleXOffset(1.4);
+  gStyle->SetTitleYOffset(1.2);
+  
+  // use large fonts
+  gStyle->SetTextFont(42);
+  gStyle->SetTextSize(0.05);
+  gStyle->SetLabelFont(42,"x");
+  gStyle->SetTitleFont(42,"x");
+  gStyle->SetLabelFont(42,"y");
+  gStyle->SetTitleFont(42,"y");
+  gStyle->SetLabelFont(42,"z");
+  gStyle->SetTitleFont(42,"z");
+  gStyle->SetLabelSize(0.05,"x");
+  gStyle->SetTitleSize(0.05,"x");
+  gStyle->SetLabelSize(0.05,"y");
+  gStyle->SetTitleSize(0.05,"y");
+  gStyle->SetLabelSize(0.05,"z");
+  gStyle->SetTitleSize(0.05,"z");
+  
+  // use bold lines and markers
+  gStyle->SetMarkerStyle(20);
+  gStyle->SetMarkerSize(1.2);
+  gStyle->SetHistLineWidth(2.);
+  gStyle->SetLineStyleString(2,"[12 12]");
+  
+  // get rid of error bar caps
+  gStyle->SetEndErrorSize(0.);
+  
+  // do not display any of the standard histogram decorations
+  gStyle->SetOptTitle(0);
+  gStyle->SetOptStat(0);
+  gStyle->SetOptFit(0);
+  
+  // put tick marks on top and RHS of plots
+  gStyle->SetPadTickX(1);
+  gStyle->SetPadTickY(1);
+  
 }
 
 
-void mySmallText(Double_t x,Double_t y,Color_t color,char *text) {
-	Double_t tsize=0.044;
-	TLatex l;
-	l.SetTextSize(tsize); 
-	l.SetNDC();
-	l.SetTextColor(color);
-	l.DrawLatex(x,y,text);
+void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize, char *text) {
+  TLatex l;
+  l.SetTextSize(tsize); 
+  l.SetNDC();
+  l.SetTextColor(color);
+  l.DrawLatex(x,y,text);
 }
