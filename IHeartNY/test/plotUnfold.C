@@ -127,6 +127,7 @@ void plotUnfold() {
   TH1F* h_syst_jer = (TH1F*) h_measured->Clone("syst_jer");
   TH1F* h_syst_btag = (TH1F*) h_measured->Clone("syst_btag");
   TH1F* h_syst_toptag = (TH1F*) h_measured->Clone("syst_toptag");
+  TH1F* h_syst_stat = (TH1F*) h_measured->Clone("syst_stat");
   
   h_syst_Q2->Reset(); 
   h_syst_pdf->Reset();
@@ -134,6 +135,7 @@ void plotUnfold() {
   h_syst_jer->Reset(); 
   h_syst_btag->Reset();   
   h_syst_toptag->Reset(); 
+  h_syst_stat->Reset(); 
   
   
   float count[nSYST] = {0};
@@ -205,13 +207,18 @@ void plotUnfold() {
   cout << "Getting the relative systematics" << endl;
   cout<<"h_unfolded[0]->GetNbinsX() "<<h_unfolded[0]->GetNbinsX()<<endl;
   float count_r[nSYST] = {0};
+  float err_stat = 0;
   for (int i=1; i<h_unfolded[0]->GetNbinsX(); i++) {
+
+    err_stat = h_unfolded[0]->GetBinError(i+1);
     
     for (int is=0; is<nSYST; is++) {
       count_r[is] = 0;
       count_r[is] = h_unfolded[is]->GetBinContent(i+1);
     }
     cout << "MEBUG = " << count_r[0] << " " << count_r[11] << " " << count_r[12] << endl;
+    double syst_stat   = err_stat/count_r[0]*100;
+    cout << "statistical error for bin "<<i<<": "<<syst_stat<<endl;
     double syst_scaleup   = fabs((count_r[1]-count_r[0])/count_r[0])*100;
     cout << "relative syst scaleup for bin "<<i<<": "<<syst_scaleup<<endl;
     double syst_scaledown = fabs((count_r[2]-count_r[0])/count_r[0])*100;
@@ -256,13 +263,15 @@ void plotUnfold() {
     h_syst_jer->SetBinContent(i+1,max_syst_jer);    
     h_syst_btag->SetBinContent(i+1,max_syst_btag);   
     h_syst_toptag->SetBinContent(i+1,max_syst_toptag); 
-
+    h_syst_stat->SetBinContent(i+1,syst_stat);  
+    
     h_syst_Q2->SetBinError(i+1,0.001);  
     h_syst_pdf->SetBinError(i+1,0.001);
     h_syst_jec->SetBinError(i+1,0.001);
     h_syst_jer->SetBinError(i+1,0.001);
     h_syst_btag->SetBinError(i+1,0.001);
     h_syst_toptag->SetBinError(i+1,0.001);
+    h_syst_stat->SetBinError(i+1,0.001);
     cout << ".... done" << endl;
     
   }
@@ -483,7 +492,7 @@ void plotUnfold() {
   h_dummy_r->GetXaxis()->SetTitle("Top quark p_{T} [GeV]");
   h_dummy_r->GetYaxis()->SetTitle("Uncertainty [%]");
   h_dummy_r->SetAxisRange(400,1250,"X");
-  h_dummy_r->SetAxisRange(0,60,"Y");
+  h_dummy_r->SetAxisRange(0,100,"Y");
   
   h_dummy_r->GetYaxis()->SetTitleSize(0.055);    
   h_dummy_r->GetYaxis()->SetTitleOffset(1.0);
@@ -524,6 +533,12 @@ void plotUnfold() {
   h_syst_btag->SetLineWidth(2);
   h_syst_btag->SetMarkerColor(8);
   h_syst_btag->SetMarkerStyle(23);
+
+  h_syst_stat->SetLineColor(kOrange+1);
+  h_syst_stat->SetLineWidth(2);
+  h_syst_stat->SetMarkerColor(kOrange+1);
+  h_syst_stat->SetMarkerStyle(25);
+  
     
   
   TLegend* leg = new TLegend(0.2,0.68,0.45,0.92);  
@@ -533,6 +548,7 @@ void plotUnfold() {
   leg->AddEntry(h_syst_btag,"b-tagging efficiency","lp");
   leg->AddEntry(h_syst_Q2,"Q^{2} scale","lp");
   leg->AddEntry(h_syst_pdf,"PDF uncertainty","lp");
+  leg->AddEntry(h_syst_stat,"Statistical uncertainty","lp");
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);
   leg->SetTextSize(0.032);
@@ -546,6 +562,7 @@ void plotUnfold() {
   h_syst_btag->Draw("ep,same");
   h_syst_Q2->Draw("ep,same");
   h_syst_pdf->Draw("ep,same");
+  h_syst_stat->Draw("ep,same");
   h_dummy_r->Draw("hist,axis,same");
   leg->Draw(); 
 
