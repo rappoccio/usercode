@@ -1251,6 +1251,12 @@ gStyle.SetPaintTextFormat(".1f")
 #gStyle.SetPalette(1)
 hResponse2D.Draw("colz,same,text")
 hEmpty2D.Draw("axis,same")
+
+txt = TLatex()
+txt.SetNDC()
+txt.SetTextFont(42)
+txt.DrawLatex(0.20,0.95, "#scale[0.7]{CMS Preliminary, L = 19.7 fb^{-1} at #sqrt{s} = 8 TeV}")
+
 cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_"+options.syst+".png")
 cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_"+options.syst+".eps")
 cr.SaveAs("UnfoldingPlots/"+folder+"unfold_responseMatrix_"+options.syst+".pdf")
