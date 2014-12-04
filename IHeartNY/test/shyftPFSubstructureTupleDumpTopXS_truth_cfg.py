@@ -17,7 +17,7 @@ from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
 
 options.register('ignoreTrigger',
-                 0,
+                 1,
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.int,
                  "Ignore trigger in selection (1) or apply trigger (0)")
@@ -35,7 +35,7 @@ options.register('useData',
                  "Use data (1) or MC (0)")
 
 options.register('addPdfs',
-                 0,
+                 1,
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.int,
                  "Add PDF info (1) or not (0)")
@@ -648,6 +648,17 @@ process.pfShyftTupleTopQuarks = cms.EDProducer(
         )
     )
 
+
+## high pt top quarks -- filter for when to save PDF info (which is otherwise too large)
+process.topQuarksHighPt = cms.EDFilter("CandViewSelector",
+    src = cms.InputTag("prunedGenParticles"),
+    cut = cms.string("status == 3 && abs(pdgId) == 6 && pt > 300.0")
+)
+process.highPtCount = cms.EDFilter("CandViewCountFilter",
+                                   src = cms.InputTag("topQuarksHighPt"),
+                                   minNumber = cms.uint32(1)
+)
+
 ## Producer for gen particles
 process.pfShyftTupleGenParticles = cms.EDProducer(
     "CandViewNtpProducer",
@@ -683,9 +694,14 @@ process.pfShyftTupleGenParticles = cms.EDProducer(
     )
 
 ## CA8 gen jets producer
+process.CA8GenJets = cms.EDFilter("CandViewSelector",
+    src = cms.InputTag("ca8GenJetsNoNu"),
+    cut = cms.string("pt > 20")
+)
 process.pfShyftTupleCA8GenJets = cms.EDProducer(
     "CandViewNtpProducer",
-    src = cms.InputTag("ca8GenJetsNoNu"),
+#    src = cms.InputTag("ca8GenJetsNoNu"),
+    src = cms.InputTag("CA8GenJets"),
     lazyParser = cms.untracked.bool(True),
     eventInfo = cms.untracked.bool(False),
     variables = cms.VPSet(
@@ -709,9 +725,14 @@ process.pfShyftTupleCA8GenJets = cms.EDProducer(
     )
 
 ## AK5 gen jets producer
+process.AK5GenJets = cms.EDFilter("CandViewSelector",
+    src = cms.InputTag("ak5GenJetsNoNu"),
+    cut = cms.string("pt > 20")
+)
 process.pfShyftTupleAK5GenJets = cms.EDProducer(
     "CandViewNtpProducer",
-    src = cms.InputTag("ak5GenJetsNoNu"),
+#    src = cms.InputTag("ak5GenJetsNoNu"),
+    src = cms.InputTag("AK5GenJets"),
     lazyParser = cms.untracked.bool(True),
     eventInfo = cms.untracked.bool(False),
     variables = cms.VPSet(
@@ -769,20 +790,32 @@ process.pfShyftTupleAK5GenJets = cms.EDProducer(
 #    )
 
 process.ptrue = cms.Path(
+    process.pileup*
     process.topQuarks*
-    process.pfShyftTupleTopQuarks
+    process.pfShyftTupleTopQuarks*
+    process.CA8GenJets*
+    process.pfShyftTupleCA8GenJets*
+    process.AK5GenJets*
+    process.pfShyftTupleAK5GenJets
+    )
+process.ptrue2 = cms.Path(
+    process.topQuarksHighPt*
+    process.highPtCount
     )
 
 
-#if options.addPdfs == 1 : 
-#    # PDF Information (first in list has to be the central one!!!)
-#    from Analysis.PdfWeights.pdfWeightProducer_cfi import pdfWeightProducer
-#    process.pdfWeights = pdfWeightProducer.clone(pdfSet = cms.vstring("CT10nnlo.LHgrid","MSTW2008nnlo68cl.LHgrid","NNPDF23_nnlo_as_0118.LHgrid"), 
-#                                           pdfName = cms.vstring("ct10","mstw","nnpdf"), 
-#                                           nMembers = cms.vint32(50,40,100)
-#                                           )
+if options.addPdfs == 1 : 
+    # PDF Information (first in list has to be the central one!!!)
+    from Analysis.PdfWeights.pdfWeightProducer_cfi import pdfWeightProducer
+    process.pdfWeights = pdfWeightProducer.clone(pdfSet = cms.vstring("CT10nnlo.LHgrid","MSTW2008nnlo68cl.LHgrid","NNPDF23_nnlo_as_0118.LHgrid"), 
+                                           pdfName = cms.vstring("ct10","mstw","nnpdf"), 
+                                           nMembers = cms.vint32(50,40,100)
+                                           )
 #    process.p1 *= process.pdfWeights
 #    process.p2 *= process.pdfWeights
+#process.ptrue *= process.pdfWeights
+process.ptrue2 *= process.pdfWeights
+
 
 ### For data, remove the truth information from the paths
 #if options.useData == 1 :
@@ -804,14 +837,14 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 ## Define the output ROOT file
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string("shyft_ultraslim.root"),
-                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('ptrue') ),
+                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('ptrue','ptrue2') ),
                                outputCommands = cms.untracked.vstring('drop *',
 #                                                                      'keep double_*_rho_*',
                                                                       'keep *_pfShyftTuple*_*_*',
 #                                                                      'keep *_nsub*_*_*',
 #                                                                      'keep *_generator_*_*',
-#                                                                      'keep *_pileup*_*_*',
-#                                                                      'keep *_pdfWeights_*_*'
+                                                                      'keep *_pileup*_*_*',
+                                                                      'keep *_pdfWeights_*_*'
                                                                       )
                                )
 process.outpath = cms.EndPath(process.out)
