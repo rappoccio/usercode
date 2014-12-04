@@ -1257,7 +1257,7 @@ if "TT_max700" in options.outname and "scaleup" in options.outname :
     weight_response = sigma_ttbar_NNLO_Q2up * e_TT_Mtt_0_700_Q2up * lum / float(Nmc_ttbar_Q2up)
 elif "TT_max700" in options.outname and "scaledown" in options.outname :
     weight_response = sigma_ttbar_NNLO_Q2dn * e_TT_Mtt_0_700_Q2dn * lum / float(Nmc_ttbar_Q2dn)
-elif "TT_max700" in options.outname and "scaleup" in options.outname :
+elif "TT_max700" in options.outname :
     weight_response = sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar)
 ## 700 < m < 100 GeV 
 elif "TT_Mtt-700to1000" in options.outname and "scaleup" in options.outname :
