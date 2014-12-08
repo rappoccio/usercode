@@ -1362,10 +1362,13 @@ for event in events :
         nMembers = len(pdfWeight)
         nEigenVec = int((nMembers-1)/2) #the list of PDF weights is w0 (==1 for CT10), w1+, w1-, w2+, w2-, ...
 
+
+        this_pdfweight = 1.0
         
         if options.pdfSys == 0 :   # reweight to a different PDF set
             newweight = pdfWeight[0] 
             weight *= newweight
+            this_pdfweight = newweight
         elif options.pdfSet == 2.0 and options.pdfSys > 0 :   # upward PDF uncertainty for NNPDF (non-Hessian set...!!)
             tmpweight = 0.0
             for iw in range(1,nMembers) :
@@ -1373,6 +1376,7 @@ for event in events :
             tmpweight = tmpweight/(nMembers-1)
             tmpweight = 1.0 + math.sqrt(tmpweight)
             weight *= tmpweight
+            this_pdfweight = tmpweight
         elif options.pdfSet == 2.0 and options.pdfSys < 0 :   # downward PDF uncertainty for NNPDF (non-Hessian set...!!)
             tmpweight = 0.0
             for iw in range(1,nMembers) :
@@ -1380,28 +1384,37 @@ for event in events :
             tmpweight = tmpweight/(nMembers-1)
             tmpweight = 1.0 - math.sqrt(tmpweight)
             weight *= tmpweight
+            this_pdfweight = tmpweight
         elif options.pdfSys > 0 :   # upward PDF uncertainty
             upweight = 0.0
             for iw in range(0,nEigenVec) :
                 tmpweight = 0.0
                 if (pdfWeight[1+2*iw] - 1.0) > tmpweight :
-                    tmpweight = pdfWeight[0+2*iw] - 1.0
-                if (pdfWeight[2+2*iw] - 1.0) > tmpweight :
                     tmpweight = pdfWeight[1+2*iw] - 1.0
+                if (pdfWeight[2+2*iw] - 1.0) > tmpweight :
+                    tmpweight = pdfWeight[2+2*iw] - 1.0
                 upweight += tmpweight*tmpweight
             upweight = 1.0 + math.sqrt(upweight)
             weight *= upweight
+            this_pdfweight = upweight
         else :   # downward PDF uncertainty
             dnweight = 0.0
             for iw in range(0,nEigenVec) :
                 tmpweight = 0.0
                 if (1.0 - pdfWeight[1+2*iw]) > tmpweight :
-                    tmpweight = 1.0 - pdfWeight[0+2*iw]
-                if (1.0 - pdfWeight[2+2*iw]) > tmpweight :
                     tmpweight = 1.0 - pdfWeight[1+2*iw]
+                if (1.0 - pdfWeight[2+2*iw]) > tmpweight :
+                    tmpweight = 1.0 - pdfWeight[2+2*iw]
                 dnweight += tmpweight*tmpweight
             dnweight = 1.0 - math.sqrt(dnweight)
             weight *= dnweight
+            this_pdfweight = dnweight
+
+        ## ignore potential events with crazy pdf weight (one CT10 pdf up weight...)
+        if (this_pdfweight > 100.0):
+            print "WARNING!! really large PDF weight for pdfset # " + str(options.pdfSet) + " syst # " + str(options.pdfSys) + ", weight = " + str(this_pdfweight) + " -- i'm ignoring this event!!"
+            continue
+        
     
     #endof if doing pdfSys
   
