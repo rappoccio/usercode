@@ -41,6 +41,11 @@ parser.add_option('--pileup', metavar='F', type='string', action='store',
                   dest='pileup',
                   help='What pileup histogram should be used? ttbar, wjets, sts, stt, sttw, stsb, sttb, sttwb')
 
+parser.add_option('--oddeven', metavar='J', type='float', action='store',
+                  default=None,
+                  dest='oddeven',
+                  help='Run on only odd (option==1) even (option==2) events (based on event ID) for unfolding closure test.')
+
 
 (options, args) = parser.parse_args()
 argv = []
@@ -50,6 +55,8 @@ ROOT.gROOT.Macro("rootlogon.C")
 
 ## array needed for response matrix binning
 from array import *
+
+ROOT.gSystem.Load("RooUnfold-1.1.1/libRooUnfold")
 
 
 # -------------------------------------------------------------------------------------
@@ -199,6 +206,22 @@ h_ptGenTop_passParton_noweight          = ROOT.TH1F("ptGenTop_passParton_noweigh
 h_ptGenTop_passParticleParton_noweight  = ROOT.TH1F("ptGenTop_passParticleParton_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
 
 
+## --------------------------------------------------------------------------------------------------
+## TWO-STEP UNFOLDING
+## --------------------------------------------------------------------------------------------------
+
+## current default bin widths
+response_pp = ROOT.RooUnfoldResponse(h_bins, h_bins)
+response_pp.SetName('response_pt_pp')
+
+## including lower/higher pt bins
+response_full_pp = ROOT.RooUnfoldResponse(h_bins_full, h_bins_full)
+response_full_pp.SetName('response_pt_full_pp')
+
+## version with pt>400 cuts
+response_pt400_pp = ROOT.RooUnfoldResponse(h_bins_pt400, h_bins_pt400)
+response_pt400_pp.SetName('response_pt_pt400_pp')
+
 
 # -------------------------------------------------------------------------------------
 # define all variables to be read from input files
@@ -257,6 +280,60 @@ ca8GenJetMassLabel  = ("pfShyftTupleCA8GenJets", "mass")
 
 
 
+# -------------------------------------------------------------------------------------
+# need to fill response matrix with weights already from the beginning!
+# -------------------------------------------------------------------------------------
+weight_response = 1.0
+
+lum = 19.7
+
+sigma_ttbar_NNLO = 245.8 * 1000.
+sigma_ttbar_NNLO_Q2up = 252.0 * 1000.
+sigma_ttbar_NNLO_Q2dn = 237.4 * 1000.
+
+Nmc_ttbar = 21675970
+Nmc_TT_Mtt_700_1000 = 3082812
+Nmc_TT_Mtt_1000_Inf = 1249111
+Nmc_ttbar_Q2up = 14983686
+Nmc_TT_Mtt_700_1000_Q2up = 2243672
+Nmc_TT_Mtt_1000_Inf_Q2up = 1241650
+Nmc_ttbar_Q2dn = 1789004
+Nmc_TT_Mtt_700_1000_Q2dn = 2170074
+Nmc_TT_Mtt_1000_Inf_Q2dn = 1308090
+
+e_TT_Mtt_0_700 = 1.0
+e_TT_Mtt_700_1000 = 0.074
+e_TT_Mtt_1000_Inf = 0.015
+e_TT_Mtt_0_700_Q2up = 1.0
+e_TT_Mtt_700_1000_Q2up = 0.074
+e_TT_Mtt_1000_Inf_Q2up = 0.014
+e_TT_Mtt_0_700_Q2dn = 1.0
+e_TT_Mtt_700_1000_Q2dn = 0.081
+e_TT_Mtt_1000_Inf_Q2dn = 0.016
+
+
+## m < 700 GeV
+if "max700" in options.outname and "scaleup" in options.outname :
+    weight_response = sigma_ttbar_NNLO_Q2up * e_TT_Mtt_0_700_Q2up * lum / float(Nmc_ttbar_Q2up)
+elif "max700" in options.outname and "scaledown" in options.outname :
+    weight_response = sigma_ttbar_NNLO_Q2dn * e_TT_Mtt_0_700_Q2dn * lum / float(Nmc_ttbar_Q2dn)
+elif "max700" in options.outname :
+    weight_response = sigma_ttbar_NNLO * e_TT_Mtt_0_700 * lum / float(Nmc_ttbar)
+## 700 < m < 100 GeV 
+elif "700to1000" in options.outname and "scaleup" in options.outname :
+    weight_response = sigma_ttbar_NNLO_Q2up * e_TT_Mtt_700_1000_Q2up * lum / float(Nmc_TT_Mtt_700_1000_Q2up)
+elif "700to1000" in options.outname and "scaledown" in options.outname :
+    weight_response = sigma_ttbar_NNLO_Q2dn * e_TT_Mtt_700_1000_Q2dn * lum / float(Nmc_TT_Mtt_700_1000_Q2dn)
+elif "700to1000" in options.outname :
+    weight_response = sigma_ttbar_NNLO * e_TT_Mtt_700_1000 * lum / float(Nmc_TT_Mtt_700_1000)
+## 1000 < m < inf GeV
+elif "1000toInf" in options.outname and "scaleup" in options.outname :
+    weight_response = sigma_ttbar_NNLO_Q2up * e_TT_Mtt_1000_Inf_Q2up * lum / float(Nmc_TT_Mtt_1000_Inf_Q2up)
+elif "1000toInf" in options.outname and "scaledown" in options.outname :
+    weight_response = sigma_ttbar_NNLO_Q2dn * e_TT_Mtt_1000_Inf_Q2dn * lum / float(Nmc_TT_Mtt_1000_Inf_Q2dn)
+elif "1000toInf" in options.outname:
+    weight_response = sigma_ttbar_NNLO * e_TT_Mtt_1000_Inf * lum / float(Nmc_TT_Mtt_1000_Inf)
+
 
 # -------------------------------------------------------------------------------------
 # start looping over events
@@ -274,6 +351,13 @@ for event in events :
       print  '--------- Processing Event ' + str(ntotal)
     ntotal += 1
     
+    if options.oddeven != 'none':
+        # odd only
+        if options.oddeven == 1 and event.object().id().event()%2 == 1 :
+            continue
+        # event only
+        if options.oddeven == 2 and event.object().id().event()%2 == 0 :
+            continue
     
     ## various pass/fail for unfolding 
     passParton = False         ## this means pt(gen-level hadronic top) > 400 GeV
@@ -554,6 +638,10 @@ for event in events :
 
     event.getByLabel( ak5GenJetPtLabel, ak5GenJetPtHandle )
     if ak5GenJetPtHandle.isValid() == False :
+        response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if passParton: 
+            response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
     event.getByLabel( ak5GenJetEtaLabel, ak5GenJetEtaHandle )
     event.getByLabel( ak5GenJetPhiLabel, ak5GenJetPhiHandle )
@@ -565,6 +653,10 @@ for event in events :
     ak5GenJetMass = ak5GenJetMassHandle.product()
     
     if len(ak5GenJetPt) == 0 :
+        response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if passParton: 
+            response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
 
     # loop over AK5 gen jets
@@ -579,6 +671,10 @@ for event in events :
 
     event.getByLabel( ca8GenJetPtLabel, ca8GenJetPtHandle )
     if ca8GenJetPtHandle.isValid() == False :
+        response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if passParton: 
+            response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
     event.getByLabel( ca8GenJetEtaLabel, ca8GenJetEtaHandle )
     event.getByLabel( ca8GenJetPhiLabel, ca8GenJetPhiHandle )
@@ -590,6 +686,10 @@ for event in events :
     ca8GenJetMass = ca8GenJetMassHandle.product()
     
     if len(ca8GenJetPt) == 0 :
+        response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        if passParton: 
+            response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
 
     # loop over CA8 gen jets
@@ -631,25 +731,36 @@ for event in events :
 
 
     ## loose particle-level selection w/o 400 cut
-    if passParticleLoose == True:
+    if passParticleLoose == False:
+        response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+    else:
         h_ptPartTop.Fill( genTops[0].Perp(), weight )
         h_ptPartTop_noweight.Fill( genTops[0].Perp() )
         h_ptPartTop_full.Fill( genTops[0].Perp(), weight )
         h_ptPartTop_noweight_full.Fill( genTops[0].Perp() )
+        response_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
+        response_full_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
 
     ## particle-level selection *with* 400 cut
-    if passParticle == True:
-        h_ptPartTop_pt400.Fill( genTops[0].Perp(), weight )
-        h_ptPartTop_noweight_pt400.Fill( genTops[0].Perp() )
-        h_ptPartTop_passParticle.Fill(genTops[0].Perp(), weight) 
-        h_ptPartTop_passParticle_noweight.Fill(genTops[0].Perp()) 
+    if passParton: 
+        if passParticle == False:
+            response_pt400_pp.Miss(hadTop.p4.Perp(), weight*weight_response)
+        else:
+            response_pt400_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
             
-        if passParton == True:
             h_ptPartTop_passParticleParton.Fill(genTops[0].Perp(), weight) 
             h_ptPartTop_passParticleParton_noweight.Fill(genTops[0].Perp()) 
             h_ptGenTop_passParticleParton.Fill(hadTop.p4.Perp(), weight)
             h_ptGenTop_passParticleParton_noweight.Fill(hadTop.p4.Perp())
-        
+
+    if passParticle:
+        h_ptPartTop_pt400.Fill( genTops[0].Perp(), weight )
+        h_ptPartTop_noweight_pt400.Fill( genTops[0].Perp() )
+
+        h_ptPartTop_passParticle.Fill(genTops[0].Perp(), weight) 
+        h_ptPartTop_passParticle_noweight.Fill(genTops[0].Perp()) 
+
     ## end particle-level selection
     
     
@@ -659,6 +770,11 @@ for event in events :
 # -------------------------------------------------------------------------------------
 
 f.cd()
+
+response_pp.Write()
+response_full_pp.Write()
+response_pt400_pp.Write()
+
 f.Write()
 f.Close()
 
