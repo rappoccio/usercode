@@ -9,20 +9,6 @@ import math
 from optparse import OptionParser
 parser = OptionParser()
 
-
-## default unfolding, 300-1300 GeV
-#unfoldType = ""
-
-## full range unfolding, including events 0-2000 GeV
-#unfoldType = "_full"
-
-## only unfold for events with gen pt > 400 GeV
-unfoldType = "_pt400"
-
-
-#nobtag = "_nobtag";
-nobtag = "";
-
     
 # -------------------------------------------------------------------------------------
 # input options
@@ -48,6 +34,16 @@ parser.add_option('--ttbarPDF', metavar='F', type='string', action='store',
                   dest='pdf',
                   help='Which PDF set and nominal vs up/down? Or Q2 up/down?')
 
+parser.add_option('--unfoldType', metavar='F', type='string', action='store',
+                  default='full',
+                  dest='unfold',
+                  help='Unfold using pt > 0 ("full") or pt > 400 ("pt400")?')
+
+parser.add_option('--addNoBtag', metavar='F', action='store_true',
+                  default=False,
+                  dest='addNoBtag',
+                  help='Unfold only using category \"1 top-tag, 1 b-tag\" (default) or adding \"1 top-tag, 0 b-tag\" (use --addNoBtag)')
+
 
 # -------------------------------------------------------------------------------------
 # load options & set plot style
@@ -56,6 +52,27 @@ parser.add_option('--ttbarPDF', metavar='F', type='string', action='store',
 (options, args) = parser.parse_args()
 argv = []
 
+import sys
+
+unfoldType = "_"
+if (options.unfold == "full" or options.unfold == "pt400") == False:
+    print ""
+    print "WARNING - not a valid option for unfolding type (use either \"full\" or \"pt400\"), exiting...!"
+    print ""
+    sys.exit()
+else :
+    unfoldType += options.unfold 
+    print ""
+    print "Unfolding using option \"" + options.unfold +"\" "
+    print ""
+
+
+nobtag = ""
+if options.addNoBtag == True:
+    nobtag = "_nobtag"
+
+
+    
 from ROOT import gRandom, TH1, TH1D, cout, TFile, gSystem, TCanvas, TPad, gPad, gROOT, gStyle, THStack, TLegend, TLatex, TColor
 
 gROOT.Macro("rootlogon.C")
@@ -190,6 +207,10 @@ else :
     f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
     f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
     f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
+    ## full truth samples for unfolding (two-step) particle-level to parton 
+    f_ttbar_max700_pp    = TFile("TruthStudy/ttbar_max700.root")
+    f_ttbar_700to1000_pp = TFile("TruthStudy/ttbar_700to1000.root")
+    f_ttbar_1000toInf_pp = TFile("TruthStudy/ttbar_1000toInf.root")
 
 f_ttbar_nonsemilep_max700    = TFile("histfiles_"+options.pdf+"/2Dhists/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
 f_ttbar_nonsemilep_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
@@ -965,7 +986,7 @@ if options.twoStep == False:
             if rowIntegral > 0:
                 newContent = binContent/rowIntegral*100.0
             #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
-            #hResponse2D.SetBinContent(ibx,iby,newContent)
+            hResponse2D.SetBinContent(ibx,iby,newContent)
 
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D.Draw("colz,same,text")
@@ -1009,7 +1030,7 @@ if options.twoStep:
             if rowIntegral > 0:
                 newContent = binContent/rowIntegral*100.0
             #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
-            #hResponse2D_rp.SetBinContent(ibx,iby,newContent)
+            hResponse2D_rp.SetBinContent(ibx,iby,newContent)
 
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D_rp.Draw("colz,same,text")
@@ -1047,7 +1068,7 @@ if options.twoStep:
             if rowIntegral > 0:
                 newContent = binContent/rowIntegral*100.0
             #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
-            #hResponse2D_pp.SetBinContent(ibx,iby,newContent)
+            hResponse2D_pp.SetBinContent(ibx,iby,newContent)
 
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D_pp.Draw("colz,same,text")
