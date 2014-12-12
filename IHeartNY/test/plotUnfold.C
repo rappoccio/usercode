@@ -29,24 +29,36 @@ void plotUnfold() {
   
   SetPlotStyle();
   
+  // default unfolding, 300-1300 GeV
+  //TString unfoldType = "";
+
+  // full range unfolding, including events 0-2000 GeV
+  TString unfoldType = "_full";
+
+  // only unfold for events with gen pt > 400 GeV
+  //TString unfoldType = "_pt400";
+
+  TString nobtag = "_nobtag";
+  //TString nobtag = "";
   
+
   // ---------------------------------------------------------------------------------------------------------------
   // get files & histograms
   
   const int nSYST = 13;
-  TString name_syst[nSYST] = {"CT10_nom_2Dcut_nom",
-			      "scaleup_2Dcut_nom",
-			      "scaledown_2Dcut_nom",
-			      "CT10_pdfup_2Dcut_nom",
-			      "CT10_pdfdown_2Dcut_nom",
-			      "CT10_nom_2Dcut_jecup",
-			      "CT10_nom_2Dcut_jecdn",
-			      "CT10_nom_2Dcut_jerup",
-			      "CT10_nom_2Dcut_jerdn",			      
-			      "CT10_nom_2Dcut_btagup",
-			      "CT10_nom_2Dcut_btagdn",
-			      "CT10_nom_2Dcut_toptagFITup",
-			      "CT10_nom_2Dcut_toptagFITdn",
+  TString name_syst[nSYST] = {"CT10_nom_nom",
+			      "scaleup_nom",
+			      "scaledown_nom",
+			      "CT10_pdfup_nom",
+			      "CT10_pdfdown_nom",
+			      "CT10_nom_jecup",
+			      "CT10_nom_jecdn",
+			      "CT10_nom_jerup",
+			      "CT10_nom_jerdn",			      
+			      "CT10_nom_btagup",
+			      "CT10_nom_btagdn",
+			      "CT10_nom_toptagFITup",
+			      "CT10_nom_toptagFITdn",
   };
   
   TFile* f_syst[nSYST];
@@ -57,8 +69,8 @@ void plotUnfold() {
   cout << "Getting files and hists" << endl;
 
 
-  TFile* f_syst_MSTW  = new TFile("UnfoldingPlots/unfold_MSTW_nom_2Dcut_nom.root");
-  TFile* f_syst_NNPDF = new TFile("UnfoldingPlots/unfold_NNPDF_nom_2Dcut_nom.root");
+  TFile* f_syst_MSTW  = new TFile("UnfoldingPlots/unfold_MSTW_nom_nom"+nobtag+unfoldType+".root");
+  TFile* f_syst_NNPDF = new TFile("UnfoldingPlots/unfold_NNPDF_nom_nom"+nobtag+unfoldType+".root");
 
   TH1F* h_true_MSTW  = (TH1F*) f_syst_MSTW->Get("pt_genTop")->Clone();
   h_true_MSTW->SetName("pt_genTop_MSTW");
@@ -66,19 +78,19 @@ void plotUnfold() {
   h_true_NNPDF->SetName("pt_genTop_NNPDF");
   
   for (int is=0; is<nSYST; is++) {
-    cout << "getting UnfoldingPlots/unfold_" << name_syst[is] << ".root" <<endl;
-    f_syst[is] = new TFile("UnfoldingPlots/unfold_"+name_syst[is]+".root");
+    cout << "getting UnfoldingPlots/unfold_" << name_syst[is] << nobtag << unfoldType << ".root" <<endl;
+    f_syst[is] = new TFile("UnfoldingPlots/unfold_"+name_syst[is]+nobtag+unfoldType+".root");
     
     if (is==0) {
       h_true = (TH1F*) f_syst[is]->Get("pt_genTop")->Clone();
-      h_measured = (TH1F*) f_syst[is]->Get("ptRecoTop")->Clone();
-      h_true->SetAxisRange(400,1250,"X");
-      h_measured->SetAxisRange(400,1250,"X");
+      h_measured = (TH1F*) f_syst[is]->Get("ptRecoTop"+nobtag+unfoldType)->Clone();
+      h_true->SetAxisRange(400,1150,"X");
+      h_measured->SetAxisRange(400,1150,"X");
     }
     
     h_unfolded[is] = (TH1F*) f_syst[is]->Get("UnfoldedData")->Clone();
     h_unfolded[is]->SetName("UnfoldedData_"+name_syst[is]);
-    h_unfolded[is]->SetAxisRange(400,1250,"X");
+    h_unfolded[is]->SetAxisRange(400,1150,"X");
   }
   
 
@@ -200,7 +212,7 @@ void plotUnfold() {
   
   h_dummy->GetXaxis()->SetTitle("p_{T} [GeV]");
   h_dummy->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
-  h_dummy->SetAxisRange(400,1250,"X");
+  h_dummy->SetAxisRange(400,1150,"X");
   h_dummy->SetAxisRange(0,12,"Y");
   
   //Getting the relative systematics:
@@ -476,9 +488,9 @@ void plotUnfold() {
   p1->cd();
   
   
-  c->SaveAs("UnfoldingPlots/unfoldWithError.png");
-  c->SaveAs("UnfoldingPlots/unfoldWithError.eps");
-  c->SaveAs("UnfoldingPlots/unfoldWithError.pdf");
+  c->SaveAs("UnfoldingPlots/unfoldWithError"+nobtag+unfoldType+".png");
+  c->SaveAs("UnfoldingPlots/unfoldWithError"+nobtag+unfoldType+".eps");
+  c->SaveAs("UnfoldingPlots/unfoldWithError"+nobtag+unfoldType+".pdf");
 
   
   cout << "plotting relative uncertainties" <<endl;
@@ -491,7 +503,7 @@ void plotUnfold() {
 
   h_dummy_r->GetXaxis()->SetTitle("Top quark p_{T} [GeV]");
   h_dummy_r->GetYaxis()->SetTitle("Uncertainty [%]");
-  h_dummy_r->SetAxisRange(400,1250,"X");
+  h_dummy_r->SetAxisRange(400,1150,"X");
   h_dummy_r->SetAxisRange(0,100,"Y");
   
   h_dummy_r->GetYaxis()->SetTitleSize(0.055);    
@@ -569,9 +581,9 @@ void plotUnfold() {
   mySmallText(0.6,0.87,1,0.04,"CMS Preliminary");
   mySmallText(0.6,0.82,1,0.04,"L = 19.7 fb^{-1}, #sqrt{s} = 8 TeV");
 
-  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties.png");
-  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties.pdf");
-  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties.eps");
+  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+nobtag+unfoldType+".png");
+  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+nobtag+unfoldType+".pdf");
+  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+nobtag+unfoldType+".eps");
 
 }
 
