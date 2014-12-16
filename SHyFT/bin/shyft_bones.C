@@ -70,7 +70,7 @@ int main ( int argc, char ** argv )
        ! ev.atEnd();
        ++ev) {
     ret.set(false);
-    bool passed = wPlusJets(ev, ret);
+    //bool passed = wPlusJets(ev, ret);
 
     ++nEventsAnalyzed;
 
