@@ -195,7 +195,7 @@ int main (int argc, char* argv[])
 			       pfJetStudiesParams );
 
   vector<int> const & runs = plotParameters.getParameter<std::vector<int> >("runs");
-  bool doTracks = plotParameters.getParameter<bool>("doTracks");
+  //bool doTracks = plotParameters.getParameter<bool>("doTracks");
   bool useMC    = plotParameters.getParameter<bool>("useMC");
 
   cout << "About to begin looping" << endl;
@@ -213,10 +213,10 @@ int main (int argc, char* argv[])
     if ( nev % 10000 == 0 ) cout << "Entry " << nev << ", Processing run " << event.id().run() << ", event " << event.id().event() << endl;
 
     pat::strbitset retCalo = caloSelector.getBitTemplate();
-    bool passedCalo = caloSelector( event, retCalo );
+    //bool passedCalo = caloSelector( event, retCalo );
 
     pat::strbitset retPF = pfSelector.getBitTemplate();
-    bool passedPF = pfSelector( event, retPF );
+    //bool passedPF = pfSelector( event, retPF );
 
     ///------------------
     /// PF JETS

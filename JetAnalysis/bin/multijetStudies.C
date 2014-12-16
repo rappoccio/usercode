@@ -100,7 +100,7 @@ int main (int argc, char* argv[])
     bool goodLumi = runLumiSel( event );
     if ( !goodLumi ) continue;
 
-    int run = event.id().run();
+    //int run = event.id().run();
     if ( nev % 10000 == 0 ) cout << "Entry " << nev << ", Processing run " << event.id().run() << ", event " << event.id().event() << endl;
 
     // Analyze it

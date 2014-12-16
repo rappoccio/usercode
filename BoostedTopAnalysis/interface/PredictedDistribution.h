@@ -59,13 +59,14 @@ class PredictedDistribution {
   
  protected:
 
+  TH1D   *h1_p, * h1_o ;                         //the desired 1-d distributions: predict and observe  
   const  Int_t _fNDataHisto; 	                   //number of bins in distribution with overflo & underflo
 
   
   TH2D * h_weights;
 
-  TH1D   *h1_r;                                   //the tag rate matrix, divided, with errors inside  		
-  TH1D   *h1_p, * h1_o, * h1_tgb ;                //the desired 1-d distributions: predict and observe	
+  TH1D   *h1_r;                                   //the tag rate matrix, divided, with errors inside 
+  TH1D   *h1_tgb; 		                            //the desired 1-d distributions: predict and observe 
 
   bool _errsSet;
 };

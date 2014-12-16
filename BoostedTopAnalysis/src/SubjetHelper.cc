@@ -67,7 +67,7 @@ void pat::subjetHelper( math::XYZTLorentzVector const & p1, math::XYZTLorentzVec
 void pat::subjetHelper( math::PtEtaPhiMLorentzVector const & p1, math::PtEtaPhiMLorentzVector const & p2,
 			double & y, double & mu, double & dR , double mfat )  {
 
-  math::PtEtaPhiMLorentzVector p = p1 + p2;
+  //math::PtEtaPhiMLorentzVector p = p1 + p2;
   double m0 = p1.M();
   double m1 = p2.M();
   double pt0 = p1.pt();

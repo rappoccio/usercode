@@ -342,7 +342,7 @@ void HadronicAnalysis::analyze(const edm::EventBase& iEvent)
 
   //cout<<"Print 1"<<endl;
   pat::strbitset ret = hadronicSelection_.getBitTemplate();
-  bool pass = hadronicSelection_(iEvent, ret);
+  //bool pass = hadronicSelection_(iEvent, ret);
   //cout<<"Pring 2"<<endl;
 
   if ( ret[std::string("Jet Preselection")] ) {

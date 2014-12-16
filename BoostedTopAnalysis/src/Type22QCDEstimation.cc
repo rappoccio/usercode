@@ -93,9 +93,9 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
   double catop_jet1_phi = 99999999;
   
   bool verbose_ = false;
-  int run = iEvent.id().run();
+  //int run = iEvent.id().run();
   int event = iEvent.id().event();
-  int lumi = iEvent.id().luminosityBlock(); 
+  //int lumi = iEvent.id().luminosityBlock(); 
   if (verbose_)cout<<"Analyze event "<<event<<endl;
   
   histograms1d["Nevents"]->Fill("no cuts",1);
@@ -397,13 +397,13 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
       }
     }
 
-    bool hasTwoWTags = (wTags0.size() >=1 ) && (wTags1.size() >=1 );
+    //bool hasTwoWTags = (wTags0.size() >=1 ) && (wTags1.size() >=1 );
     bool hasBTag0 = (bTags0.size() >=1 );
     bool hasBTag1 = (bTags1.size() >= 1 );
     bool hasWTag0 = (wTags0.size() >= 1 );
     bool hasWTag1 = (wTags1.size() >= 1 );
     bool hasOneWTag = (hasWTag0 && !hasWTag1 ) || (hasWTag1 && !hasWTag0) ;
-    bool hasWTag = hasWTag0 || hasWTag1;
+    //bool hasWTag = hasWTag0 || hasWTag1;
     //if( hasOneWTag )  
     //  cout<<"wTags0.size() "<<wTags0.size()<<", wTags1.size() "<<wTags1.size() <<endl;
     bool hasBTag = hasBTag0 || hasBTag1;
@@ -524,7 +524,7 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
     if( hasOneWTag && hasBTag ) {
       if( hasWTag0 )  { 
         //cout<<"case 1"<<endl;
-        bool passTopMass1 = false;
+        //bool passTopMass1 = false;
         p4_top1.SetPxPyPzE(0,0,0,0);
         if( hasTightTop0 )  { 
           //cout<<"case 10"<<endl;
@@ -537,7 +537,7 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
               p4_top1 = noTags1.at(i)->p4() + bTags1.at(0)->p4();
               histograms1d["topMassPred"]     ->  Fill( p4_top1.mass(), weight*evtWeight );
               if( p4_top1.mass() > topMassMin_ && p4_top1.mass() < topMassMax_ )  {
-                passTopMass1 = true;
+                //passTopMass1 = true;
                 double ttMass = (p4_top0+p4_top1).mass() ;
                 histograms1d["ttMassType22Pred"]      ->  Fill( ttMass, weight*evtWeight );
                 ttMassPred      ->    Accumulate( ttMass, pt, 1,  evtWeight );
@@ -564,7 +564,7 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
                 weight *= (1-weight1);
                 histograms1d["topMassPred"]   ->  Fill( p4_top1.mass(), weight*evtWeight );
                 if( p4_top1.mass() > topMassMin_ && p4_top1.mass() < topMassMax_ )  {
-                  passTopMass1 = true;
+                  //passTopMass1 = true;
                   double ttMass = (p4_top0+p4_top1).mass() ;
                   histograms1d["ttMassType22Pred"]    ->  Fill( ttMass, weight*evtWeight );
                   ttMassPred          ->      Accumulate( ttMass, pt, 1,  (1-weight1)*evtWeight );
@@ -583,7 +583,7 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
             p4_top1 = noTags1.at(i)->p4() + bTags1.at(0)->p4();
             histograms1d["topMassPred"]     ->   Fill( p4_top1.mass(), weight*evtWeight );
             if( p4_top1.mass() > topMassMin_ && p4_top1.mass() < topMassMax_ )  {
-              passTopMass1 = true;
+              //passTopMass1 = true;
               double ttMass = (p4_top0+p4_top1).mass() ;
               histograms1d["ttMassType22Pred"]      ->  Fill( ttMass, weight*evtWeight );
               ttMassPred          ->      Accumulate( ttMass, pt, 1,  evtWeight );
@@ -593,7 +593,7 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
       } // hasWTag0 
       else  {
         //cout<<"case 2"<<endl;
-        bool passTopMass0 = false;
+        //bool passTopMass0 = false;
         p4_top0.SetPxPyPzE(0,0,0,0);
         if( hasTightTop1 )  {
           //cout<<"case 20"<<endl;
@@ -605,7 +605,7 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
               p4_top0 = noTags0.at(i)->p4() + bTags0.at(0)->p4();
               histograms1d["topMassPred"]     ->  Fill( p4_top0.mass(), weight*evtWeight );
               if( p4_top0.mass() > topMassMin_ && p4_top0.mass() < topMassMax_ )  {
-                passTopMass0 = true;
+                //passTopMass0 = true;
                 double ttMass = (p4_top0+p4_top1).mass() ;
                 histograms1d["ttMassType22Pred"]      ->  Fill( ttMass, weight*evtWeight );
                 ttMassPred       ->      Accumulate( ttMass, pt, 1,  evtWeight );
@@ -631,7 +631,7 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
                 weight *= (1-weight1);
                 histograms1d["topMassPred"]   ->  Fill( p4_top0.mass(), weight*evtWeight );
                 if( p4_top0.mass() > topMassMin_ && p4_top0.mass() < topMassMax_ )  {
-                  passTopMass0 = true;
+                  //passTopMass0 = true;
                   double ttMass = (p4_top0+p4_top1).mass() ;
                   histograms1d["ttMassType22Pred"]    ->  Fill( ttMass, weight*evtWeight );
                   ttMassPred      ->      Accumulate( ttMass, pt, 1,  (1-weight1)*evtWeight );
@@ -649,7 +649,7 @@ void Type22QCDEstimation::analyze( const edm::EventBase & iEvent )
             p4_top0 = noTags0.at(i)->p4() + bTags0.at(0)->p4();
             histograms1d["topMassPred"]     ->   Fill( p4_top0.mass(), weight*evtWeight );
             if( p4_top0.mass() > topMassMin_ && p4_top0.mass() < topMassMax_ )  {
-              passTopMass0 = true;
+              //passTopMass0 = true;
               double ttMass = (p4_top0+p4_top1).mass() ;
               histograms1d["ttMassType22Pred"]      ->  Fill( ttMass, weight*evtWeight );
               ttMassPred      ->      Accumulate( ttMass, pt, 1, evtWeight );

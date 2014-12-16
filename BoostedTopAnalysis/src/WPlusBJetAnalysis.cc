@@ -174,8 +174,8 @@ WPlusBJetAnalysis::WPlusBJetAnalysis( const edm::ParameterSet & iConfig,  TFileD
 
   mistagFile_   = TFile::Open( mistagFileName_.c_str() );
   wMistag_      = (TH1F*)mistagFile_   -> Get("wMistag");
-  bMistag_      = (TH1F*)mistagFile_   -> Get("bMistag");
-  TDirectory * dir = theDir.getBareDirectory();
+  //bMistag_      = (TH1F*)mistagFile_   -> Get("bMistag");
+  //TDirectory * dir = theDir.getBareDirectory();
 
   edm::Service<edm::RandomNumberGenerator> rng;
   if ( ! rng.isAvailable()) {
@@ -554,8 +554,8 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
         histograms1d["ttMassType23"]    ->  Fill( (p4_top0+p4_top1).mass() );
         histograms1d["ttMassType23_truth"]      ->  Fill( ttTrueMass );
         if(runOnData_)    cout<<"Woohoo, Type2+Type3, Event id, run "<<iEvent.id()<<endl;
-        double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
-        double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) );
+        //double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
+        //double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) );
         //histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
         //histograms1d["topPairDr"]       ->  Fill( deltaR );        
       } // end passType23
@@ -612,17 +612,17 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
             cout<<"top0, "<<p4_top0.px()<<" "<<p4_top0.py()<<" "<<p4_top0.pz()<<" "<<p4_top0.energy()<<" "<<p4_top0.mass()<<endl;
             cout<<"top1, "<<p4_top1.px()<<" "<<p4_top1.py()<<" "<<p4_top1.pz()<<" "<<p4_top1.energy()<<" "<<p4_top1.mass()<<endl;
           }
-          double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
-          double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) ) ;
+          //double deltaR = reco::deltaR<double>( p4_top0.eta(), p4_top0.phi(), p4_top1.eta(), p4_top1.phi() );
+          //double deltaPhi = fabs( reco::deltaPhi<double>( p4_top0.phi(), p4_top1.phi() ) ) ;
           //histograms1d["topPairDPhi"]     ->  Fill( deltaPhi );
           //histograms1d["topPairDr"]       ->  Fill( deltaR );
         }
       }  // hasMinPair0 && hasMinPair1
 
-      bool hasHF = hasHeavyFlavor( iEvent );
+      //bool hasHF = hasHeavyFlavor( iEvent );
 
       if( retType33[string("nJets >= 6")] ) { //&& !hasHF ) 
-        long eventId = iEvent.id().event();
+        //long eventId = iEvent.id().event();
         eventCount++;
         //Check b tagging rates in multijets events
         //Get parameterization from both odd and even events
@@ -656,8 +656,8 @@ void WPlusBJetAnalysis::analyze( const edm::EventBase & iEvent )
           //for random tagger exercise
           std::vector<edm::Ptr<pat::Jet> >  const &  tMinDrPair = wPlusBJetType33Selection_.minDrPair0();
           std::vector<edm::Ptr<pat::Jet> >  const &  oMinDrPair = wPlusBJetType33Selection_.minDrPair1();
-          std::vector<edm::Ptr<pat::Jet> >  const &  tbJets = wPlusBJetType33Selection_.bJet0();
-          std::vector<edm::Ptr<pat::Jet> >  const &  obJets = wPlusBJetType33Selection_.bJet1();
+          //std::vector<edm::Ptr<pat::Jet> >  const &  tbJets = wPlusBJetType33Selection_.bJet0();
+          //std::vector<edm::Ptr<pat::Jet> >  const &  obJets = wPlusBJetType33Selection_.bJet1();
 
           bool towards = false;
           if( x < 0.5 )  towards = true;

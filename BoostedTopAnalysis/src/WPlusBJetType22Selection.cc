@@ -135,11 +135,11 @@ bool WPlusBJetType22Selection::operator()( edm::EventBase const & t, pat::strbit
 
               pat::strbitset tret = twPlusBJetSelection_.getBitTemplate();
               //Analyze the towards direction
-              bool tpassWPlusBJet  = twPlusBJetSelection_( t, theJet->p4(), tret, true );
+              //bool tpassWPlusBJet  = twPlusBJetSelection_( t, theJet->p4(), tret, true );
 
               pat::strbitset oret = owPlusBJetSelection_.getBitTemplate();
               //Analyze the opposite direction
-              bool opassWPlusBJet  = owPlusBJetSelection_( t, theJet->p4(), oret, false );
+              //bool opassWPlusBJet  = owPlusBJetSelection_( t, theJet->p4(), oret, false );
 
 
               std::vector<edm::Ptr<pat::Jet> >  const & tWJets = twPlusBJetSelection_.wJets();

@@ -272,7 +272,7 @@ TopResonanceTutorial::analyze(const edm::Event& iEvent, const edm::EventSetup& i
         /////////////////
         // find tagged and untagged jets in hemisphere opposite leading jet 
 
-        double deltaR_LJ_PrunedJet = deltaR( leading_jet.eta(), leading_jet.phi(), ijet->eta(), ijet->phi() );
+        //double deltaR_LJ_PrunedJet = deltaR( leading_jet.eta(), leading_jet.phi(), ijet->eta(), ijet->phi() );
 /*
         if (mass>60 && mass<100 && mu>0.4){
           wTags1.push_back( *ijet );

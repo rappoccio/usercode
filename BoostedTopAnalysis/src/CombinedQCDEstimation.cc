@@ -243,9 +243,9 @@ CombinedQCDEstimation::CombinedQCDEstimation( const edm::ParameterSet & iConfig,
 void CombinedQCDEstimation::analyze( const edm::EventBase & iEvent )
 {	
   bool verbose_ = false;
-  int run = iEvent.id().run();
-  int event = iEvent.id().event();
-  int lumi = iEvent.id().luminosityBlock(); 
+  //int run = iEvent.id().run();
+  //int event = iEvent.id().event();
+  //int lumi = iEvent.id().luminosityBlock(); 
   if (verbose_)cout<<"\nAnalyze event "<<iEvent.id()<<endl;
 
   theDir.getObject<TH1>("Nevents_PassCuts")->Fill(1);
@@ -359,10 +359,10 @@ cout<<"Print ca8Jets info - JEC"<<endl;
       pat::Jet const & jet = **ijet;
       bool  wtagged = false;
       bool  btagged = false;
-	  bool  cajet_btagged = false;
+	    //bool  cajet_btagged = false;
 	  pat::strbitset iret = wJetSelector_->getBitTemplate();
 	  wtagged = wJetSelector_->operator()( jet, iret );
-	  bool passWMass = (jet.mass() > wMassMin_ ) && (jet.mass() < wMassMax_ );
+	  //bool passWMass = (jet.mass() > wMassMin_ ) && (jet.mass() < wMassMax_ );
 	  btagged = (jet.bDiscriminator( bTagAlgo_ ) > bTagOP_ );
 	  cout<<"  eta "<<jet.eta()<<" phi "<<jet.phi()<<" pt "<<jet.pt()<<" mass "<<jet.mass()
 	      <<" wtagged? "<<wtagged<<" btagged? "<<btagged
@@ -956,7 +956,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 	  bool hasWTag0 = (wTags0.size() >= 1 );
 	  bool hasWTag1 = (wTags1.size() >= 1 );
 	  bool hasOneWTag = (hasWTag0 && !hasWTag1 ) || (hasWTag1 && !hasWTag0) ;
-	  bool hasWTag = hasWTag0 || hasWTag1;
+	  //bool hasWTag = hasWTag0 || hasWTag1;
 	  bool hasBTag = hasBTag0 || hasBTag1;
 			
 	  reco::Candidate::LorentzVector p4_top0;
@@ -1380,8 +1380,8 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 					int bin1 = topMistag_->FindBin( p4_catop_jet1.pt() );
 					double mistagProb_jet0 = topMistag_->GetBinContent(bin0);
 					double mistagProb_jet1 = topMistag_->GetBinContent(bin1);
-					double mistagError_jet0 = topMistag_->GetBinError(bin0);
-					double mistagError_jet1 = topMistag_->GetBinError(bin1);
+					//double mistagError_jet0 = topMistag_->GetBinError(bin0);
+					//double mistagError_jet1 = topMistag_->GetBinError(bin1);
 					
 					double ttMass = (p4_catop_jet0+p4_catop_jet1).mass();
 					
@@ -1464,7 +1464,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 		      if (verbose_) cout<<"   hasBTag0 "<<hasBTag0<<endl;
 		      if (verbose_) cout<<"   hasBTag1 "<<hasBTag1<<endl;
 						
-		      bool passTopMass1 = false;
+		      //bool passTopMass1 = false;
 		      p4_top1.SetPxPyPzE(0,0,0,0);
 						
 		      if (noTags1.size() !=0) theDir.getObject<TH1>("Nevents_succesiveCuts_type12bkg")->Fill(5,evtWeight);
@@ -1487,7 +1487,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 				  theDir.getObject<TH1>("Nevents_type12bkg")->Fill(1,evtWeight);
 				  type12_bkgd_prediction_event=true;
 									
-				  passTopMass1 = true;
+				  //passTopMass1 = true;
 				  double ttMass = (p4_catop_jet0+p4_top1).mass() ;
 									
 				  theDir.getObject<TH1>("ttMassType12_predicted")      ->  Fill( ttMass, weight*evtWeight );
@@ -1509,7 +1509,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 		      if (verbose_) cout<<"   hasBTag0 "<<hasBTag0<<endl;
 		      if (verbose_) cout<<"   hasBTag1 "<<hasBTag1<<endl;
 						
-		      bool passTopMass0 = false;
+		      //bool passTopMass0 = false;
 		      p4_top0.SetPxPyPzE(0,0,0,0);
 						
 		      if (noTags1.size() !=0) theDir.getObject<TH1>("Nevents_succesiveCuts_type12bkg")->Fill(5,evtWeight);
@@ -1532,7 +1532,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 				  theDir.getObject<TH1>("Nevents_type12bkg")->Fill(1,evtWeight);
 				  type12_bkgd_prediction_event=true;
 									
-				  passTopMass0 = true;
+				  //passTopMass0 = true;
 				  double ttMass = (p4_top0+p4_catop_jet1).mass() ;
 				  theDir.getObject<TH1>("ttMassType12_predicted")      ->  Fill( ttMass, weight*evtWeight );
 				  theDir.getObject<TH1>("ttMassType12_predicted_errorSquared")->Fill (ttMass, mistagError*mistagError);
@@ -1552,7 +1552,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 	      if( hasOneWTag && hasBTag ) {
 		if( hasWTag0 )  { 
 		  //cout<<"case 1"<<endl;
-		  bool passTopMass1 = false;
+		  //bool passTopMass1 = false;
 		  p4_top1.SetPxPyPzE(0,0,0,0);
 		  if( hasTightTop0 )  { 
 		    //cout<<"case 10"<<endl;
@@ -1579,7 +1579,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 			    if (verbose_) cout<<" Type 22 background estimation event "<<endl;
 			    if (verbose_) cout<<"   hasTightTop0. hemi 1 has b-tag and p4_top1.mass() "<<p4_top1.mass()<<endl;
 											
-			    passTopMass1 = true;
+			    //passTopMass1 = true;
 			    theDir.getObject<TH1>("Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg")->Fill(6,evtWeight);
 			    theDir.getObject<TH1>("Nevents_type22bkg")->Fill(1,evtWeight);
 			    theDir.getObject<TH1>("Nevents_Type22_Case123")->Fill(1,evtWeight);
@@ -1616,7 +1616,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 			  p4_top1 = noTags1.at(i)->p4() + nearestJet->p4();
 			  int  bin1  = wMistag_      ->  FindBin( nearestJet->pt() );
 			  double weight1 =  wMistag_ -> GetBinContent( bin1 );
-			  double mistagError1 = wMistag_ ->GetBinError( bin1 );
+			  //double mistagError1 = wMistag_ ->GetBinError( bin1 );
 
 			  weight *= (1-weight1);
 										
@@ -1634,7 +1634,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 			      if (verbose_) cout<<" Type 22 background estimation event "<<endl;
 			      if (verbose_) cout<<"   hasTightTop0. hemi 1 has 0 b-tags and p4_top1.mass() "<<p4_top1.mass()<<endl;
 												
-			      passTopMass1 = true;
+			      //passTopMass1 = true;
 			      theDir.getObject<TH1>("Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg")->Fill(6,evtWeight);
 			      theDir.getObject<TH1>("Nevents_Type22_Case123")->Fill(2,evtWeight);
 			      theDir.getObject<TH1>("Nevents_type22bkg")->Fill(1,evtWeight);
@@ -1669,7 +1669,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 			  if (verbose_) cout<<" Type 22 background estimation event "<<endl;
 			  if (verbose_) cout<<"   hasLooseTop0. hemi 1 has 0 b-tags and p4_top1.mass() "<<p4_top1.mass()<<endl;
 										
-			  passTopMass1 = true;
+			  //passTopMass1 = true;
 			  theDir.getObject<TH1>("Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg")->Fill(6,evtWeight);
 			  theDir.getObject<TH1>("Nevents_Type22_Case123")->Fill(3,evtWeight);
 			  theDir.getObject<TH1>("Nevents_type22bkg")->Fill(1,evtWeight);
@@ -1686,7 +1686,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 		} // hasWTag0 
 		else  {
 		  //cout<<"case 2"<<endl;
-		  bool passTopMass0 = false;
+		  //bool passTopMass0 = false;
 		  p4_top0.SetPxPyPzE(0,0,0,0);
 		  if( hasTightTop1 )  {
 		    //cout<<"case 20"<<endl;
@@ -1707,7 +1707,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 			    if (verbose_) cout<<"   hasTightTop1. hemi 0 has b-tag and p4_top0.mass() "<<p4_top0.mass()<<endl;
 											
 											
-			    passTopMass0 = true;
+			    //passTopMass0 = true;
 			    theDir.getObject<TH1>("Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg")->Fill(6,evtWeight);
 			    theDir.getObject<TH1>("Nevents_Type22_Case123")->Fill(1,evtWeight);
 			    theDir.getObject<TH1>("Nevents_type22bkg")->Fill(1,evtWeight);
@@ -1737,7 +1737,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 			  p4_top0 = noTags0.at(i)->p4() + nearestJet->p4();
 			  int   bin1  =  wMistag_       ->  FindBin( nearestJet->pt() );
 			  double weight1  = wMistag_    ->  GetBinContent( bin1 );
-			  double mistagError1 = wMistag_ ->GetBinError( bin1 );
+			  //double mistagError1 = wMistag_ ->GetBinError( bin1 );
 
 			  weight *= (1-weight1);
 			  theDir.getObject<TH1>("topMassPred")   ->  Fill( p4_top0.mass(), weight*evtWeight );
@@ -1748,7 +1748,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 			      if (verbose_) cout<<" Type 22 background estimation event "<<endl;
 			      if (verbose_) cout<<"   hasTightTop1. hemi 0 has 0 b-tags and p4_top0.mass() "<<p4_top0.mass()<<endl;
 												
-			      passTopMass0 = true;
+			      //passTopMass0 = true;
 			      theDir.getObject<TH1>("Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg")->Fill(6,evtWeight);
 			      theDir.getObject<TH1>("Nevents_Type22_Case123")->Fill(2,evtWeight);
 			      theDir.getObject<TH1>("Nevents_type22bkg")->Fill(1,evtWeight);
@@ -1781,7 +1781,7 @@ cout<<"Print ca8Jets info - JEC"<<endl;
 			  if (verbose_) cout<<" Type 22 background estimation event "<<endl;
 			  if (verbose_) cout<<"   hasLooseTop1. p4_top0.mass() "<<p4_top0.mass()<<endl;
 										
-			  passTopMass0 = true;
+			  //passTopMass0 = true;
 			  theDir.getObject<TH1>("Nevents_11sig_12sig_22sig_11bkg_12bkg_22bkg")->Fill(6,evtWeight);
 			  theDir.getObject<TH1>("Nevents_Type22_Case123")->Fill(3,evtWeight);
 			  theDir.getObject<TH1>("Nevents_type22bkg")->Fill(1,evtWeight);

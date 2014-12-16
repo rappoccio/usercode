@@ -49,7 +49,7 @@ void MistagMaker::analyze( const edm::EventBase & iEvent )
   }
 
   pat::strbitset jetRet = dijetSelector_.getBitTemplate();
-  bool passDijet = dijetSelector_( iEvent, jetRet );
+  //bool passDijet = dijetSelector_( iEvent, jetRet );
 
   std::vector<edm::Ptr<pat::Jet> > const & pretaggedJets = dijetSelector_.pfJets()  ;
   histograms1d["nJets"]       ->      Fill( pretaggedJets.size() );

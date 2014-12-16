@@ -116,9 +116,9 @@ void MultijetAnalyzer::analyze(const edm::EventBase& event)
 {
 
     pat::strbitset retCalo = caloSelector.getBitTemplate();
-    bool passedCalo = caloSelector( event, retCalo );
+    //bool passedCalo = caloSelector( event, retCalo );
     pat::strbitset retPF = pfSelector.getBitTemplate();
-    bool passedPF = pfSelector( event, retPF );
+    //bool passedPF = pfSelector( event, retPF );
 
 
     ///------------------

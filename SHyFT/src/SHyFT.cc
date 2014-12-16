@@ -1339,7 +1339,7 @@ void SHyFT::weightPU( edm::EventBase const & iEvent) {
   int npv = -1; float sum_nvtx = 0.0; double puweight = -1000.0; double puweightShift = -1000.0;
   for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
      
-     int BX = PVI->getBunchCrossing();
+     //int BX = PVI->getBunchCrossing();
 
     //  if(BX == 0 && !use42X_) { //skip the OOT PU for Spring11
 //         npv = PVI->getPU_NumInteractions();

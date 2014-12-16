@@ -272,14 +272,14 @@ void SemileptonicAnalysis::analyze(const edm::EventBase& iEvent)
 			if ( wJetPat != 0 ) {
 			  zPrime = MET + bjetP + muP + castLorentzVector(wJet->p4());// + TLorentzVector(wJet->px(),wJet->py(),wJet->pz(),wJet->energy());
 			  SemileptonicSelection::candidate_collection::const_iterator hadWJet = taggedJets.end();
-			  double leadPt = -1.0, deltaPhi = -1.0;
+			  //double leadPt = -1.0, deltaPhi = -1.0;
 			  SemileptonicSelection::candidate_collection::const_iterator bJet = taggedJets.end();
 			  double leadBJetPt = -1.0;
 			  for(SemileptonicSelection::candidate_collection::const_iterator ijet = taggedJets.begin(),
 				jetEnd = taggedJets.end(), jetBegin = taggedJets.begin(); ijet != jetEnd; ++ijet)
 			    {
-			      deltaPhi = fabs(reco::deltaPhi<double>(ijet->phi(), taggedMuons[0].phi()));
-			      if( deltaPhi > 2*TMath::Pi()/3 )
+			      //deltaPhi = fabs(reco::deltaPhi<double>(ijet->phi(), taggedMuons[0].phi()));
+			      //if( deltaPhi > 2*TMath::Pi()/3 )
 				{
 				  if(ijet != wJet )
 				    {

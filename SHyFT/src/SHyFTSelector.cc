@@ -180,21 +180,21 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
       
       edm::Handle<pat::TriggerEvent> triggerEvent;
       event.getByLabel(trigTag_, triggerEvent);
-      pat::TriggerEvent const * trig =  &*triggerEvent;
+      //pat::TriggerEvent const * trig =  &*triggerEvent;
       
-      if ( trig->wasRun() && trig->wasAccept() ) { 
+      //if ( trig->wasRun() && trig->wasAccept() ) { 
          
-         const pat::TriggerPathCollection *paths = trig->paths();
+         //const pat::TriggerPathCollection *paths = trig->paths();
          
-         pat::TriggerPath const * lepPath;
-         if(muPlusJets_)
-            lepPath = trig->path(muTrig_);
-         else if (ePlusJets_)
-            lepPath = trig->path(eleTrig_);
-         if ( lepPath != 0 && lepPath->wasAccept() ) {
-            passTrig = true;    
-         }          
-      }
+         //pat::TriggerPath const * lepPath;
+         //if(muPlusJets_)
+         //   lepPath = trig->path(muTrig_);
+         //else if (ePlusJets_)
+         //   lepPath = trig->path(eleTrig_);
+         //if ( lepPath != 0 && lepPath->wasAccept() ) {
+         //   passTrig = true;    
+         //}          
+      //}
    }
    
    if ( ignoreCut(triggerIndex_) || 
@@ -662,12 +662,12 @@ bool SHyFTSelector::operator() ( edm::EventBase const & event, pat::strbitset & 
                                                electronEnd = selectedElectrons_.end(), ielectron = electronBegin;
                                             ielectron != electronEnd; ++ielectron ) {
                                              
-                                          reco::Candidate::LorentzVector nu_p4 = met_.p4();
-                                          reco::Candidate::LorentzVector lep_p4 = ielectron->p4();
-                                          double wPt = lep_p4.Pt() + nu_p4.Pt();
-                                          double wPx = lep_p4.Px() + nu_p4.Px();
-                                          double wPy = lep_p4.Py() + nu_p4.Py();
-                                          double wMT = TMath::Sqrt(wPt*wPt-wPx*wPx-wPy*wPy);
+                                          //reco::Candidate::LorentzVector nu_p4 = met_.p4();
+                                          //reco::Candidate::LorentzVector lep_p4 = ielectron->p4();
+                                          //double wPt = lep_p4.Pt() + nu_p4.Pt();
+                                          //double wPx = lep_p4.Px() + nu_p4.Px();
+                                          //double wPy = lep_p4.Py() + nu_p4.Py();
+                                          //double wMT = TMath::Sqrt(wPt*wPt-wPx*wPx-wPy*wPy);
                                           //cout << "wMT = " << wMT << endl;
                                           //wMTMaxCut = wMT < wMTMax_;
                                        }

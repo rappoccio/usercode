@@ -98,7 +98,7 @@ bool HadronicSelection::operator() ( edm::EventBase const & event, pat::strbitse
 
 	// Get the good inclusive jets
 	pat::strbitset jetRet = dijetSelector_.getBitTemplate();
-	bool passDijet = dijetSelector_( event, jetRet );
+	//bool passDijet = dijetSelector_( event, jetRet );
 	std::vector<edm::Ptr<pat::Jet> > const & inclusiveJets = (!usePF_) ? dijetSelector_.caloJets() : dijetSelector_.pfJets();
 
 	// Get a list of the jets that pass our tag requirements
