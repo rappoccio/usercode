@@ -78,9 +78,9 @@ bool WPlusBJetType33Selection::operator()( edm::EventBase const & t, pat::strbit
     } // end if jetPt, jetEta
   } // end ijet
 
-  const pat::Jet * theJet;
+  //const pat::Jet * theJet;
   if( pfJets_.size() < 1 )   return false;
-  theJet = &(*pfJets_.at(0));
+  //theJet = &(*pfJets_.at(0));
 /*
   Get the trigger
   edm::Handle<pat::TriggerEvent>  triggerEvent;
@@ -109,11 +109,11 @@ bool WPlusBJetType33Selection::operator()( edm::EventBase const & t, pat::strbit
       passCut( ret, "nJets >= 6" );
       pat::strbitset tret = twPlusBJetSelection_.getBitTemplate();
       //Analyze the towards direction
-      bool tpassWPlusBJet  = twPlusBJetSelection_( t, theJet->p4(), tret, true );
+      //bool tpassWPlusBJet  = twPlusBJetSelection_( t, theJet->p4(), tret, true );
 
       pat::strbitset oret = owPlusBJetSelection_.getBitTemplate();
       //Analyze the opposite direction
-      bool opassWPlusBJet  = owPlusBJetSelection_( t, theJet->p4(), oret, false );
+      //bool opassWPlusBJet  = owPlusBJetSelection_( t, theJet->p4(), oret, false );
 
       std::vector<edm::Ptr<pat::Jet> >  const & tbJets = twPlusBJetSelection_.bJets();
       //cout<<"Type33::BJets0 is "<<tbJets.size()<<endl;
@@ -121,7 +121,7 @@ bool WPlusBJetType33Selection::operator()( edm::EventBase const & t, pat::strbit
       std::vector<edm::Ptr<pat::Jet> >  const & tMinDrPair = twPlusBJetSelection_.minDrPair();
       std::vector<edm::Ptr<pat::Jet> >  const & oMinDrPair = owPlusBJetSelection_.minDrPair();
 
-      int numBJets = 0;
+      //int numBJets = 0;
       bool hasBJet0 = false, hasBJet1 = false;
       if( tbJets.size() >= 1 )  hasBJet0 = true;
       if( obJets.size() >= 1 )  hasBJet1 = true;
