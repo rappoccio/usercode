@@ -56,14 +56,15 @@ import sys
 if options.useData == 0 : 
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    'file:pattuple.root'
+                                    #'file:pattuple.root'
+                                    'root://cmsxrootd.fnal.gov//store/results/B2G/TT_CT10_TuneZ2star_8TeV-powheg-tauola/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/TT_CT10_TuneZ2star_8TeV-powheg-tauola/USER/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/0000/002079E2-81CD-E211-B071-002590593878.root'
     #'/store/results/B2G/TT_CT10_TuneZ2star_8TeV-powheg-tauola/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/TT_CT10_TuneZ2star_8TeV-powheg-tauola/USER/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/0000/002079E2-81CD-E211-B071-002590593878.root'
                                     )
         )
 else : 
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    '/store/results/B2G/SingleMu/StoreResults-Run2012A-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/SingleMu/USER/StoreResults-Run2012A-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/0000/00752EA1-DEBB-E211-8988-002590593878.root'
+                                    'root://cmsxrootd.fnal.gov//store/results/B2G/SingleMu/StoreResults-Run2012A-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/SingleMu/USER/StoreResults-Run2012A-22Jan2013-v1_TLBSM_53x_v3-db7dd8e58134469d4e102fe8d5e205b6/0000/00752EA1-DEBB-E211-8988-002590593878.root'
                                     )
         )
 
