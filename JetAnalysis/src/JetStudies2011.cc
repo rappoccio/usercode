@@ -205,7 +205,7 @@ void JetStudies2011::analyze(const edm::EventBase& iEvent)
   if ( h_jets->size() != 2 ) 
     return;
 
-  double rho = *h_rho;
+  //double rho = *h_rho;
 
   int index0 = 0, index1 = 1;
 
