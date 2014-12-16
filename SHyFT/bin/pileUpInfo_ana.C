@@ -49,10 +49,10 @@ int main ( int argc, char ** argv )
    edm::ParameterSet const& inputs  = parameters->getParameter<edm::ParameterSet>("inputs");
    edm::ParameterSet const& outputs = parameters->getParameter<edm::ParameterSet>("outputs");
 
-   bool selectLumis = false;
+   //bool selectLumis = false;
    std::vector<edm::LuminosityBlockRange> lumis;
    if ( inputs.exists("lumisToProcess") ) {
-      selectLumis = true;
+      //selectLumis = true;
 
       std::vector<edm::LuminosityBlockRange> const & lumisTemp = inputs.getUntrackedParameter<std::vector<edm::LuminosityBlockRange> > ("lumisToProcess");
       lumis.resize( lumisTemp.size() );
