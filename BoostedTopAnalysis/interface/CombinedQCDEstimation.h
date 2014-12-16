@@ -33,33 +33,35 @@ class CombinedQCDEstimation {
   private :
     TFileDirectory& theDir;
     Type22Selection_v1   type22Selection_v1_;
-    Type11Selection_v1   type11Selection_v1_;
     double              bTagOP_;
     std::string         bTagAlgo_;
-    BoostedTopWTagFunctor   *        wJetSelector_;
+    double jetPt0_;
+    double jetPt1_;
+    double jetEta_;
     double              wMassMin_, wMassMax_;
     double              topMassMin_, topMassMax_;
     std::string         mistagFileName_;
+    double              prob;
+    bool                runOnData_;
+    Type11Selection_v1   type11Selection_v1_;
+    double caTopJetPtMin_;
+    double caTopJetEtaCut_;
+    double        caTopJetMassMin_;
+    double        caTopJetMassMax_;
+    double        caTopMinMassMin_;
+    TFile *             caTopMistagFile_;
+    BoostedTopWTagFunctor   *        wJetSelector_;
     TFile *             mistagFile_;
     TH1F  *             wMistag_;
     TH1F  *             bMistag_;
     CLHEP::RandFlat *flatDistribution_;
-    double              prob;
-    bool                runOnData_;
     PredictedDistribution * ttMassPred11;
     PredictedDistribution * ttMassPred12;
     PredictedDistribution * ttMassPred22;
-    double 				caTopJetMassMin_;
-    double 				caTopJetMassMax_;
-    double 				caTopMinMassMin_;
     std::string             caTopMistagFileName_;
-    TFile *             caTopMistagFile_;
     TH1F  *             topMistag_;
-    double caTopJetPtMin_;
-    double caTopJetEtaCut_;
-    double jetPt0_;
-    double jetPt1_;
-    double jetEta_;
+    
+    
 };
 
 
