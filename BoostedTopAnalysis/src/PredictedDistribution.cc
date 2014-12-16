@@ -68,9 +68,9 @@ void PredictedDistribution::Accumulate(Float_t X, Float_t et, Bool_t tagged, Flo
   
   Int_t bin = h1_r->FindBin( et );
   Float_t rate   = h1_r->GetBinContent(bin);
-  Float_t err    = h1_r->GetBinError(bin);
+  //Float_t err    = h1_r->GetBinError(bin);
 
-  Int_t binx= h1_o->FindBin(X);
+  //Int_t binx= h1_o->FindBin(X);
 
 //   cout << "---------" << endl;
 //   cout << "filling: " << endl;
@@ -185,11 +185,11 @@ void PredictedDistribution::DivideDists(TH1D *h1d_1, TH1D *h1d_2, bool useBinomi
 	rate.Np = val1;
 	rate.Nt = val2;
 	  
-	if ( (rate.Np < 0) || (rate.Nt < 0) || (rate.Nt < rate.Np) ) {
-	  std::cout << "\n INVALID INPUT FOR ERROR CALCULATION. I QUIT! " 
-	       << rate.Np << " " << rate.Nt << std::endl;
-	  std::sqrt(-1.);
-	}
+	//if ( (rate.Np < 0) || (rate.Nt < 0) || (rate.Nt < rate.Np) ) {
+	//  std::cout << "\n INVALID INPUT FOR ERROR CALCULATION. I QUIT! " 
+	//       << rate.Np << " " << rate.Nt << std::endl;
+	//  std::sqrt(-1.);
+	//}
 	  
 	val = rate.eff();
 	// Treatment of case with low statistics per bin
