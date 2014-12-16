@@ -59,13 +59,13 @@ class WPlusBJetAnalysis{
     double wMassMin_, wMassMax_;
     double topMassMin_, topMassMax_;
     bool   runOnData_;
-    bool   runOnTTbar_;
     std::string   bTagAlgo_;
     double        bTagOPM_;
     double        bTagOPL_;
+    bool   runOnTTbar_;
+    bool          debug_;
     long          eventCount;
     CLHEP::RandFlat *flatDistribution_;
-    bool          debug_;
     std::string   mistagFileName_;
     TFile *       mistagFile_;
     TH1F  *       wMistag_;
