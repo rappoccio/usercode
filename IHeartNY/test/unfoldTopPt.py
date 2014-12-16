@@ -197,9 +197,9 @@ if options.closureTest == True :
     f_ttbar_700to1000_odd = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
     f_ttbar_1000toInf_odd = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
     ## full truth samples for unfolding (two-step) particle-level to parton 
-    f_ttbar_max700_pp    = TFile("TruthStudy/ttbar_max700.root")
-    f_ttbar_700to1000_pp = TFile("TruthStudy/ttbar_700to1000.root")
-    f_ttbar_1000toInf_pp = TFile("TruthStudy/ttbar_1000toInf.root")
+    f_ttbar_max700_pp    = TFile("TruthStudy/ttbar_max700_even.root")
+    f_ttbar_700to1000_pp = TFile("TruthStudy/ttbar_700to1000_even.root")
+    f_ttbar_1000toInf_pp = TFile("TruthStudy/ttbar_1000toInf_even.root")
     f_ttbar_max700_pp_odd    = TFile("TruthStudy/ttbar_max700_odd.root")
     f_ttbar_700to1000_pp_odd = TFile("TruthStudy/ttbar_700to1000_odd.root")
     f_ttbar_1000toInf_pp_odd = TFile("TruthStudy/ttbar_1000toInf_odd.root")
