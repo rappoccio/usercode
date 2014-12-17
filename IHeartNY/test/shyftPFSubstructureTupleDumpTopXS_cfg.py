@@ -58,7 +58,6 @@ if options.useData == 0 :
                                 fileNames = cms.untracked.vstring(
                                     #'file:pattuple.root'
                                     'root://cmsxrootd.fnal.gov//store/results/B2G/TT_CT10_TuneZ2star_8TeV-powheg-tauola/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/TT_CT10_TuneZ2star_8TeV-powheg-tauola/USER/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/0000/002079E2-81CD-E211-B071-002590593878.root'
-    #'/store/results/B2G/TT_CT10_TuneZ2star_8TeV-powheg-tauola/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/TT_CT10_TuneZ2star_8TeV-powheg-tauola/USER/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/0000/002079E2-81CD-E211-B071-002590593878.root'
                                     )
         )
 else : 
@@ -181,6 +180,10 @@ process.pfShyftTupleJetsAK5 = cms.EDProducer(
         cms.PSet(
             tag = cms.untracked.string("secvtxMass"),
             quantity = cms.untracked.string("userFloat('secvtxMass')")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("flavor"),
+            quantity = cms.untracked.string("partonFlavour()")
             ),
         )
     )
