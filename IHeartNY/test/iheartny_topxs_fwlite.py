@@ -3229,6 +3229,9 @@ if options.makeResponse == True :
     response_rp.Write()
     response_full_rp.Write()
     response_pt400_rp.Write()
+    response_nobtag_rp.Write()
+    response_nobtag_full_rp.Write()
+    response_nobtag_pt400_rp.Write()
 
 f.Write()
 f.Close()
