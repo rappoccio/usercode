@@ -5,18 +5,16 @@ from PhysicsTools.SelectorUtils.pfMuonSelector_cfi import pfMuonSelector
 
 shyftPFSelection = cms.PSet(
     electronIdPFTight = pfElectronSelector.clone(
-        electronIDused = cms.string('eidTight'),
         cutsToIgnore=cms.vstring()
         ),
     muonIdPFTight = pfMuonSelector.clone(
         cutsToIgnore=cms.vstring()
         ),
     electronIdPFLoose = pfElectronSelector.clone(
-        electronIDused = cms.string('eidTight'),
-        cutsToIgnore = cms.vstring('D0', 'MaxMissingHits','electronID','ConversionRejection', "MVA")
+        cutsToIgnore = cms.vstring('Fiducial','MaxMissingHits','D0','ConversionRejection','MVA')
         ),
     muonIdPFLoose = pfMuonSelector.clone(
-        cutsToIgnore=cms.vstring('Chi2','D0','NHits','NValMuHits','nPixelHits','nMatchedStations')
+        cutsToIgnore=cms.vstring('Chi2','minTrackerLayers','minValidMuHits','maxIp','minPixelHits','minMatchedStations')
         ),
     # input parameter sets
     muonSrc = cms.InputTag('selectedPatMuonsPFlow'),
@@ -33,10 +31,9 @@ shyftPFSelection = cms.PSet(
     muEtaMax       = cms.double( 2.1 ),
     eleEtMin       = cms.double( 20.0 ),
     eleEtaMax      = cms.double( 2.5 ),
-    eleMaxMissHits = cms.int32( 0 ),
     muPtMinLoose   = cms.double( 10.0 ),
     muEtaMaxLoose  = cms.double( 2.5 ),
-    eleEtMinLoose  = cms.double( 15.0 ),
+    eleEtMinLoose  = cms.double( 20.0 ),
     eleEtaMaxLoose = cms.double( 2.5 ),
     jetPtMin       = cms.double( 30.0 ),
     jetEtaMax      = cms.double( 2.5 ),

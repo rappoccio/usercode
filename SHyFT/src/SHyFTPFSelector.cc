@@ -25,7 +25,6 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   muEtaMax_          (params.getParameter<double>("muEtaMax")), 
   eleEtMin_          (params.getParameter<double>("eleEtMin")), 
   eleEtaMax_         (params.getParameter<double>("eleEtaMax")), 
-  eleMaxMissHits_    (params.getParameter<int>("eleMaxMissHits")), 
   muPtMinLoose_      (params.getParameter<double>("muPtMinLoose")), 
   muEtaMaxLoose_     (params.getParameter<double>("muEtaMaxLoose")), 
   eleEtMinLoose_     (params.getParameter<double>("eleEtMinLoose")), 
@@ -46,8 +45,6 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
   useL1Corr_         (params.getParameter<bool>("useL1Corr")),
   jecPayloads_        (params.getParameter<std::vector<std::string> >("jecPayloads"))
 {
-
-  //  std::cout << "MEBUG: " << eleMvaName_ << " " << eleMvaCut_ << " " << eleMaxMissHits_ << std::endl;
 
   // make the bitset
   push_back( "Inclusive"      );
@@ -121,9 +118,6 @@ SHyFTPFSelector::SHyFTPFSelector( edm::ParameterSet const & params ) :
 
 bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset & ret)
 {
-  // std::cout << "" << std::endl;
-
-
 
   // Do the SHyFT PF selection.
   // Here there are two important issues : 
@@ -198,17 +192,18 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
     for ( std::vector<pat::Muon>::const_iterator muonBegin = muonHandle->begin(), muonEnd = muonHandle->end(), imuon = muonBegin;
 	  imuon != muonEnd; ++imuon ) {
       allMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
-      if ( !imuon->isGlobalMuon() ) continue;
-	
+
+      // updated: tight ID use global muons only, loose ID (i.e. for veto!) allows global or tracker muons
+      
       // Tight ID cuts : can also include isolation if the user sets it in the config.
       bool passTight = muonIdPFTight_(*imuon);
-      if (  imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && passTight ) {
+      if ( imuon->isGlobalMuon() && imuon->pt() > muPtMin_ && fabs(imuon->eta()) < muEtaMax_ && passTight ) {
 	selectedTightMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
       }
       else {
 	// Loose ID cuts : can also include isolation if the user sets it in the config.
 	bool passLoose = muonIdPFLoose_(*imuon) ;
-	if ( imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ && passLoose ) {
+	if ( (imuon->isGlobalMuon() || imuon->isTrackerMuon()) && imuon->pt() > muPtMinLoose_ && fabs(imuon->eta()) < muEtaMaxLoose_ && passLoose ) {
 	  selectedLooseMuons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Muon>( muonHandle, imuon - muonBegin ) ) );
 	}
       }
@@ -223,13 +218,11 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       allElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
 	
       // Tight ID cuts : can also include isolation if the user sets it in the config.
-      bool passTight = electronIdPFTight_(*ielectron, event );
-
-
+      bool passTight = electronIdPFTight_(*ielectron, event );      
       if (  ielectron->pt() > eleEtMin_ && fabs(ielectron->eta()) < eleEtaMax_ && passTight ) {
 	selectedTightElectrons_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<pat::Electron>( electronHandle, ielectron - electronBegin ) ) );
-      } else {
-
+      } 
+      else {
 	// Loose ID cuts : can also include isolation if the user sets it in the config.
 	bool passLoose = electronIdPFLoose_(*ielectron);
 	if ( ielectron->pt() > eleEtMinLoose_ && fabs(ielectron->eta()) < eleEtaMaxLoose_ && passLoose ){
@@ -298,6 +291,7 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
       jec_->setJetA  ( ijet->jetArea() );
       jec_->setRho   ( rho );
       double corr = jec_->getCorrection();
+
 
       // Here will be the working variable for all the jet energy effects
       reco::Candidate::LorentzVector scaledJetP4 = uncorrJet * corr;
@@ -413,7 +407,6 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 	metP4.SetPy( metP4.py() - imu->py() );	       
       }
 
-
       // Add back the electrons
       for ( std::vector<reco::ShallowClonePtrCandidate>::const_iterator eleBegin = allElectrons_.begin(),
 	      eleEnd = allElectrons_.end(), iele = eleBegin;
@@ -421,7 +414,6 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 	metP4.SetPx( metP4.px() - iele->px() );
 	metP4.SetPy( metP4.py() - iele->py() );	       
       }
-
 
     }
 
@@ -458,10 +450,10 @@ bool SHyFTPFSelector::operator() ( edm::EventBase const & event, pat::strbitset 
 	  passCut(ret, lep3Index_);
 
   
+	  // cut on MET (default 0-100 TeV...)
 	  bool metCutMin = met_.pt() > metMin_;
 	  bool metCutMax = met_.pt() < metMax_;
-	  //cout << "metCutMin = " << metCutMin << ",metCutMax = " << metCutMax << endl;
-	  //cout << "minCut = " << metMin_ << ", maxCut = " << metMax_ << endl;
+
 	  if ( ignoreCut(metLowIndex_) || (metCutMin)) {
 	    passCut( ret, metLowIndex_ );
 	  

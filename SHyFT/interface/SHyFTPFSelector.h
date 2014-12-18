@@ -98,9 +98,6 @@ class SHyFTPFSelector : public EventSelector {
       double muEtaMax_ ;
       double eleEtMin_ ;
       double eleEtaMax_;
-      std::string eleMvaName_;
-      double eleMvaCut_;
-      double eleMaxMissHits_;
 
       double muPtMinLoose_  ;
       double muEtaMaxLoose_ ;

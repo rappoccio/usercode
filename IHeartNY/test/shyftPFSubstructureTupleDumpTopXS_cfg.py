@@ -57,7 +57,8 @@ if options.useData == 0 :
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
                                     #'file:pattuple.root'
-                                    'root://cmsxrootd.fnal.gov//store/results/B2G/TT_CT10_TuneZ2star_8TeV-powheg-tauola/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/TT_CT10_TuneZ2star_8TeV-powheg-tauola/USER/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/0000/002079E2-81CD-E211-B071-002590593878.root'
+                                    'file:/uscms_data/d3/skinnari/pattuple.root'
+                                    #'root://cmsxrootd.fnal.gov//store/results/B2G/TT_CT10_TuneZ2star_8TeV-powheg-tauola/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/TT_CT10_TuneZ2star_8TeV-powheg-tauola/USER/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/0000/002079E2-81CD-E211-B071-002590593878.root'
                                     )
         )
 else : 
@@ -125,7 +126,7 @@ process.pfShyftProducerAK5 = cms.EDFilter('EDSHyFTPFSelector',
                                           jecPayloads = cms.vstring( payloads )
                                           )
                                           )
-#!!!Change below doElectrons from False to True
+
 process.pfShyftProducerAK5Loose = cms.EDFilter('EDSHyFTPFSelector',
                                                shyftPFSelection = shyftPFSelectionInput.clone(
                                                jetSrc = cms.InputTag('goodPatJetsPFlow'),
@@ -298,85 +299,85 @@ process.pfShyftTupleJetsLooseTopTag = cms.EDProducer(
             tag = cms.untracked.string("topMass"),
             quantity = cms.untracked.string("? hasTagInfo('CATop') ? tagInfo('CATop').properties().topMass : 0.0")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj0csv"),
-	    quantity = cms.untracked.string("daughter(0).bDiscriminator('combinedSecondaryVertexBJetTags')")
+        cms.PSet(
+            tag = cms.untracked.string("topsj0csv"),
+            quantity = cms.untracked.string("daughter(0).bDiscriminator('combinedSecondaryVertexBJetTags')")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj1csv"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 1 ? daughter(1).bDiscriminator('combinedSecondaryVertexBJetTags') : -1")
+        cms.PSet(
+            tag = cms.untracked.string("topsj1csv"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 1 ? daughter(1).bDiscriminator('combinedSecondaryVertexBJetTags') : -1")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj2csv"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 2 ? daughter(2).bDiscriminator('combinedSecondaryVertexBJetTags') : -1")
+        cms.PSet(
+            tag = cms.untracked.string("topsj2csv"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 2 ? daughter(2).bDiscriminator('combinedSecondaryVertexBJetTags') : -1")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj3csv"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 3 ? daughter(3).bDiscriminator('combinedSecondaryVertexBJetTags') : -1")
+        cms.PSet(
+            tag = cms.untracked.string("topsj3csv"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 3 ? daughter(3).bDiscriminator('combinedSecondaryVertexBJetTags') : -1")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj0pt"),
-	    quantity = cms.untracked.string("daughter(0).pt()")
+        cms.PSet(
+            tag = cms.untracked.string("topsj0pt"),
+            quantity = cms.untracked.string("daughter(0).pt()")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj1pt"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 1 ? daughter(1).pt() : -1000")
+        cms.PSet(
+            tag = cms.untracked.string("topsj1pt"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 1 ? daughter(1).pt() : -1000")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj2pt"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 2 ? daughter(2).pt() : -1000")
+        cms.PSet(
+            tag = cms.untracked.string("topsj2pt"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 2 ? daughter(2).pt() : -1000")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj3pt"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 3 ? daughter(3).pt()  : -1000")
+        cms.PSet(
+            tag = cms.untracked.string("topsj3pt"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 3 ? daughter(3).pt()  : -1000")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj0eta"),
-	    quantity = cms.untracked.string("daughter(0).eta()")
+        cms.PSet(
+            tag = cms.untracked.string("topsj0eta"),
+            quantity = cms.untracked.string("daughter(0).eta()")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj1eta"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 1 ? daughter(1).eta() : -1000")
+        cms.PSet(
+            tag = cms.untracked.string("topsj1eta"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 1 ? daughter(1).eta() : -1000")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj2eta"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 2 ? daughter(2).eta() : -1000")
+        cms.PSet(
+            tag = cms.untracked.string("topsj2eta"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 2 ? daughter(2).eta() : -1000")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj3eta"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 3 ? daughter(3).eta()  : -1000")
+        cms.PSet(
+            tag = cms.untracked.string("topsj3eta"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 3 ? daughter(3).eta()  : -1000")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj0phi"),
-	    quantity = cms.untracked.string("daughter(0).phi()")
+        cms.PSet(
+            tag = cms.untracked.string("topsj0phi"),
+            quantity = cms.untracked.string("daughter(0).phi()")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj1phi"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 1 ? daughter(1).phi() : -1000")
+        cms.PSet(
+            tag = cms.untracked.string("topsj1phi"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 1 ? daughter(1).phi() : -1000")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj2phi"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 2 ? daughter(2).phi() : -1000")
+        cms.PSet(
+            tag = cms.untracked.string("topsj2phi"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 2 ? daughter(2).phi() : -1000")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj3phi"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 3 ? daughter(3).phi()  : -1000")
+        cms.PSet(
+            tag = cms.untracked.string("topsj3phi"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 3 ? daughter(3).phi()  : -1000")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj0mass"),
-	    quantity = cms.untracked.string("daughter(0).mass()")
+        cms.PSet(
+            tag = cms.untracked.string("topsj0mass"),
+            quantity = cms.untracked.string("daughter(0).mass()")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj1mass"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 1 ? daughter(1).mass() : -1000")
+        cms.PSet(
+            tag = cms.untracked.string("topsj1mass"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 1 ? daughter(1).mass() : -1000")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj2mass"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 2 ? daughter(2).mass() : -1000")
+        cms.PSet(
+            tag = cms.untracked.string("topsj2mass"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 2 ? daughter(2).mass() : -1000")
             ),
-	cms.PSet(
-	    tag = cms.untracked.string("topsj3mass"),
-	    quantity = cms.untracked.string("? numberOfDaughters() > 3 ? daughter(3).mass()  : -1000")
+        cms.PSet(
+            tag = cms.untracked.string("topsj3mass"),
+            quantity = cms.untracked.string("? numberOfDaughters() > 3 ? daughter(3).mass()  : -1000")
             ),
         cms.PSet(
             tag = cms.untracked.string("secvtxMass"),
@@ -734,6 +735,32 @@ process.pfShyftTupleAK5GenJets = cms.EDProducer(
         )
     )
 
+## AK7 gen jets producer
+process.pfShyftTupleAK7GenJets = cms.EDProducer(
+    "CandViewNtpProducer",
+    src = cms.InputTag("ak7GenJetsNoNu"),
+    lazyParser = cms.untracked.bool(True),
+    eventInfo = cms.untracked.bool(False),
+    variables = cms.VPSet(
+        cms.PSet(
+            tag = cms.untracked.string("pt"),
+            quantity = cms.untracked.string("pt")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("eta"),
+            quantity = cms.untracked.string("eta")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("phi"),
+            quantity = cms.untracked.string("phi")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("mass"),
+            quantity = cms.untracked.string("mass")
+            )
+        )
+    )
+
 ## Define which process are to be run (one path for Loose objects and one for regular ones)
 process.p1 = cms.Path(
     process.hltSelection*
@@ -746,12 +773,12 @@ process.p1 = cms.Path(
     process.pfShyftTupleMuonsLoose*
     process.pfShyftTupleElectronsLoose*
     process.pfShyftTupleMETLoose*
-    process.pfShyftTupleMETLoose*
     process.topQuarks*
     process.pfShyftTupleTopQuarks*
     process.pfShyftTupleGenParticles*
     process.pfShyftTupleCA8GenJets*
-    process.pfShyftTupleAK5GenJets
+    process.pfShyftTupleAK5GenJets*
+    process.pfShyftTupleAK7GenJets
     )
 
 process.p2 = cms.Path(
@@ -765,7 +792,8 @@ process.p2 = cms.Path(
     process.pfShyftTupleTopQuarks*
     process.pfShyftTupleGenParticles*
     process.pfShyftTupleCA8GenJets*
-    process.pfShyftTupleAK5GenJets
+    process.pfShyftTupleAK5GenJets*
+    process.pfShyftTupleAK7GenJets
     )
 
 
@@ -786,11 +814,13 @@ if options.useData == 1 :
     process.p1.remove( process.pfShyftTupleGenParticles )
     process.p1.remove( process.pfShyftTupleCA8GenJets )
     process.p1.remove( process.pfShyftTupleAK5GenJets )
+    process.p1.remove( process.pfShyftTupleAK7GenJets )
     process.p2.remove( process.topQuarks )
     process.p2.remove( process.pfShyftTupleTopQuarks )
     process.p2.remove( process.pfShyftTupleGenParticles )
     process.p2.remove( process.pfShyftTupleCA8GenJets )
     process.p2.remove( process.pfShyftTupleAK5GenJets )
+    process.p2.remove( process.pfShyftTupleAK7GenJets )
 
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
