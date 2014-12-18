@@ -56,7 +56,6 @@ import sys
 if options.useData == 0 : 
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    #'file:pattuple.root'
                                     'file:/uscms_data/d3/skinnari/pattuple.root'
                                     #'root://cmsxrootd.fnal.gov//store/results/B2G/TT_CT10_TuneZ2star_8TeV-powheg-tauola/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/TT_CT10_TuneZ2star_8TeV-powheg-tauola/USER/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/0000/002079E2-81CD-E211-B071-002590593878.root'
                                     )
@@ -140,7 +139,7 @@ process.pfShyftProducerAK5Loose = cms.EDFilter('EDSHyFTPFSelector',
                                                )
 
 #process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('== 1 Tight Lepton')
-#process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('0 other lepton')
+process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('0 other lepton')   ## don't apply dilepton veto with looseID-leptons (too tight when not having isolation!)
 #process.pfShyftProducerAK5Loose.shyftPFSelection.cutsToIgnore.append('>=1 Jets')
 process.pfShyftProducerAK5Loose.shyftPFSelection.muonIdPFTight.cutsToIgnore.append('maxPfRelIso')
 process.pfShyftProducerAK5Loose.shyftPFSelection.electronIdPFTight.cutsToIgnore.append('PFIso')
