@@ -35,9 +35,9 @@ parser.add_option('--ttbarPDF', metavar='F', type='string', action='store',
                   help='Which PDF set and nominal vs up/down? Or Q2 up/down?')
 
 parser.add_option('--unfoldType', metavar='F', type='string', action='store',
-                  default='full',
+                  default='pt400',
                   dest='unfold',
-                  help='Unfold using pt > 0 ("full") or pt > 400 ("pt400")?')
+                  help='Unfold using pt > 0 ("full") or pt > 400 ("pt400", default)?')
 
 parser.add_option('--addNoBtag', metavar='F', action='store_true',
                   default=False,
@@ -249,16 +249,16 @@ if options.twoStep == True :
         response_ttbar_max700_rp    = f_ttbar_max700_odd.Get("response_pt"+nobtag+unfoldType+"_rp")
         response_ttbar_700to1000_rp = f_ttbar_700to1000_odd.Get("response_pt"+nobtag+unfoldType+"_rp")
         response_ttbar_1000toInf_rp = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag+unfoldType+"_rp")
-        response_ttbar_max700_pp    = f_ttbar_max700_pp_odd.Get("response_pt"+nobtag+unfoldType+"_pp")
-        response_ttbar_700to1000_pp = f_ttbar_700to1000_pp_odd.Get("response_pt"+nobtag+unfoldType+"_pp")
-        response_ttbar_1000toInf_pp = f_ttbar_1000toInf_pp_odd.Get("response_pt"+nobtag+unfoldType+"_pp")
+        response_ttbar_max700_pp    = f_ttbar_max700_pp_odd.Get("response_pt"+unfoldType+"_pp")
+        response_ttbar_700to1000_pp = f_ttbar_700to1000_pp_odd.Get("response_pt"+unfoldType+"_pp")
+        response_ttbar_1000toInf_pp = f_ttbar_1000toInf_pp_odd.Get("response_pt"+unfoldType+"_pp")
     else:
         response_ttbar_max700_rp    = f_ttbar_max700.Get("response_pt"+nobtag+unfoldType+"_rp")
         response_ttbar_700to1000_rp = f_ttbar_700to1000.Get("response_pt"+nobtag+unfoldType+"_rp")
         response_ttbar_1000toInf_rp = f_ttbar_1000toInf.Get("response_pt"+nobtag+unfoldType+"_rp")
-        response_ttbar_max700_pp    = f_ttbar_max700_pp.Get("response_pt"+nobtag+unfoldType+"_pp")
-        response_ttbar_700to1000_pp = f_ttbar_700to1000_pp.Get("response_pt"+nobtag+unfoldType+"_pp")
-        response_ttbar_1000toInf_pp = f_ttbar_1000toInf_pp.Get("response_pt"+nobtag+unfoldType+"_pp")
+        response_ttbar_max700_pp    = f_ttbar_max700_pp.Get("response_pt"+unfoldType+"_pp")
+        response_ttbar_700to1000_pp = f_ttbar_700to1000_pp.Get("response_pt"+unfoldType+"_pp")
+        response_ttbar_1000toInf_pp = f_ttbar_1000toInf_pp.Get("response_pt"+unfoldType+"_pp")
 
     response_rp = response_ttbar_max700_rp.Clone()
     response_rp.SetName("response_pt_"+options.syst+"_rp")
