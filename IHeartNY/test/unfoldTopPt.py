@@ -44,6 +44,11 @@ parser.add_option('--addNoBtag', metavar='F', action='store_true',
                   dest='addNoBtag',
                   help='Unfold only using category \"1 top-tag, 1 b-tag\" (default) or adding \"1 top-tag, 0 b-tag\" (use --addNoBtag)')
 
+parser.add_option('--troubleshoot', metavar='F', action='store_true',
+                  default=False,
+                  dest='troubleshoot',
+                  help='Make troubleshooting plots')
+
 
 # -------------------------------------------------------------------------------------
 # load options & set plot style
@@ -252,6 +257,13 @@ if options.twoStep == True :
         response_ttbar_max700_pp    = f_ttbar_max700_pp_odd.Get("response_pt"+unfoldType+"_pp")
         response_ttbar_700to1000_pp = f_ttbar_700to1000_pp_odd.Get("response_pt"+unfoldType+"_pp")
         response_ttbar_1000toInf_pp = f_ttbar_1000toInf_pp_odd.Get("response_pt"+unfoldType+"_pp")
+        if options.troubleshoot == True:
+            response_ttbar_max700_rp_even    = f_ttbar_max700.Get("response_pt"+nobtag+unfoldType+"_rp")
+            response_ttbar_700to1000_rp_even = f_ttbar_700to1000.Get("response_pt"+nobtag+unfoldType+"_rp")
+            response_ttbar_1000toInf_rp_even = f_ttbar_1000toInf.Get("response_pt"+nobtag+unfoldType+"_rp")
+            response_ttbar_max700_pp_even    = f_ttbar_max700_pp.Get("response_pt"+unfoldType+"_pp")
+            response_ttbar_700to1000_pp_even = f_ttbar_700to1000_pp.Get("response_pt"+unfoldType+"_pp")
+            response_ttbar_1000toInf_pp_even = f_ttbar_1000toInf_pp.Get("response_pt"+unfoldType+"_pp")
     else:
         response_ttbar_max700_rp    = f_ttbar_max700.Get("response_pt"+nobtag+unfoldType+"_rp")
         response_ttbar_700to1000_rp = f_ttbar_700to1000.Get("response_pt"+nobtag+unfoldType+"_rp")
@@ -269,6 +281,17 @@ if options.twoStep == True :
     response_pp.SetName("response_pt_"+options.syst+"_pp")
     response_pp.Add(response_ttbar_700to1000_pp)
     response_pp.Add(response_ttbar_1000toInf_pp)
+
+    if options.troubleshoot :
+        response_rp_even = response_ttbar_max700_rp_even.Clone()
+        response_rp_even.SetName("response_pt_"+options.syst+"_rp_even")
+        response_rp_even.Add(response_ttbar_700to1000_rp_even)
+        response_rp_even.Add(response_ttbar_1000toInf_rp_even)
+        
+        response_pp_even = response_ttbar_max700_pp_even.Clone()
+        response_pp_even.SetName("response_pt_"+options.syst+"_pp_even")
+        response_pp_even.Add(response_ttbar_700to1000_pp_even)
+        response_pp_even.Add(response_ttbar_1000toInf_pp_even)
 
 
 TH1.AddDirectory(0)
@@ -296,6 +319,14 @@ if options.closureTest == True :
         hPart_max700    = f_ttbar_max700_odd.Get("ptPartTop"+unfoldType)
         hPart_700to1000 = f_ttbar_700to1000_odd.Get("ptPartTop"+unfoldType)
         hPart_1000toInf = f_ttbar_1000toInf_odd.Get("ptPartTop"+unfoldType)
+
+        if options.troubleshoot :
+            hTrue_max700_even    = f_ttbar_max700.Get("ptGenTop"+unfoldType)
+            hTrue_700to1000_even = f_ttbar_700to1000.Get("ptGenTop"+unfoldType)
+            hTrue_1000toInf_even = f_ttbar_1000toInf.Get("ptGenTop"+unfoldType)
+            hPart_max700_even    = f_ttbar_max700.Get("ptPartTop"+unfoldType)
+            hPart_700to1000_even = f_ttbar_700to1000.Get("ptPartTop"+unfoldType)
+            hPart_1000toInf_even = f_ttbar_1000toInf.Get("ptPartTop"+unfoldType)
 else :
     hTrue_max700    = f_ttbar_max700.Get("ptGenTop"+unfoldType)
     hTrue_700to1000 = f_ttbar_700to1000.Get("ptGenTop"+unfoldType)
@@ -314,6 +345,14 @@ if options.twoStep:
     hPart_max700.Sumw2()
     hPart_700to1000.Sumw2()
     hPart_1000toInf.Sumw2()
+    
+    if options.troubleshoot:
+        hTrue_max700_even.Sumw2()
+        hTrue_700to1000_even.Sumw2()
+        hTrue_1000toInf_even.Sumw2()
+        hPart_max700_even.Sumw2()
+        hPart_700to1000_even.Sumw2()
+        hPart_1000toInf_even.Sumw2()
 
 isTwoStep = ""
 if options.twoStep:
@@ -347,6 +386,14 @@ else :
     hMeas_max700.Sumw2()
     hMeas_700to1000.Sumw2()
     hMeas_1000toInf.Sumw2()
+
+    if options.troubleshoot :
+        hMeas_max700_odd    = f_ttbar_max700_odd.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
+        hMeas_700to1000_odd = f_ttbar_700to1000_odd.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
+        hMeas_1000toInf_odd = f_ttbar_1000toInf_odd.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
+        hMeas_max700_odd.Sumw2()
+        hMeas_700to1000_odd.Sumw2()
+        hMeas_1000toInf_odd.Sumw2()
     
 
 hMeas_T_t     = f_T_t.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
@@ -392,6 +439,15 @@ if options.closureTest == True :
     hMeas.Add(hMeas_700to1000)
     hMeas.Add(hMeas_1000toInf)    
 
+    if options.troubleshoot :
+        hMeas_max700_odd.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
+        hMeas_700to1000_odd.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
+        hMeas_1000toInf_odd.Scale( eff_closure * sigma_ttbar[ipdf][2] * eff_ttbar[ipdf][2] * lum / float(Nmc_ttbar[ipdf][2]))
+        hMeas_odd = hMeas_max700_odd.Clone()
+        hMeas_odd.SetName("ptRecoTop_measured_odd")
+        hMeas_odd.Add(hMeas_700to1000_odd)
+        hMeas_odd.Add(hMeas_1000toInf_odd)    
+
 hTrue_max700.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
 hTrue_700to1000.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
 hTrue_1000toInf.Scale( eff_closure * sigma_ttbar[ipdf][2] * eff_ttbar[ipdf][2] * lum / float(Nmc_ttbar[ipdf][2]))
@@ -399,6 +455,15 @@ hTrue = hTrue_max700.Clone()
 hTrue.SetName("pt_genTop")
 hTrue.Add(hTrue_700to1000)
 hTrue.Add(hTrue_1000toInf)
+
+if options.troubleshoot :
+    hTrue_max700_even.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
+    hTrue_700to1000_even.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
+    hTrue_1000toInf_even.Scale( eff_closure * sigma_ttbar[ipdf][2] * eff_ttbar[ipdf][2] * lum / float(Nmc_ttbar[ipdf][2]))
+    hTrue_even = hTrue_max700_even.Clone()
+    hTrue_even.SetName("pt_genTop_even")
+    hTrue_even.Add(hTrue_700to1000_even)
+    hTrue_even.Add(hTrue_1000toInf_even)
 
 if options.twoStep :
     hPart_max700.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
@@ -408,6 +473,15 @@ if options.twoStep :
     hPart.SetName("pt_partTop")
     hPart.Add(hPart_700to1000)
     hPart.Add(hPart_1000toInf)
+
+    if options.troubleshoot :
+        hPart_max700_even.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
+        hPart_700to1000_even.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
+        hPart_1000toInf_even.Scale( eff_closure * sigma_ttbar[ipdf][2] * eff_ttbar[ipdf][2] * lum / float(Nmc_ttbar[ipdf][2]))
+        hPart_even = hPart_max700_even.Clone()
+        hPart_even.SetName("pt_partTop_even")
+        hPart_even.Add(hPart_700to1000_even)
+        hPart_even.Add(hPart_1000toInf_even)
 
 hRecoMC_max700.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
 hRecoMC_700to1000.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
@@ -494,9 +568,66 @@ if options.closureTest == False :
     hMeas.Draw("axis,same")
     ll.AddEntry(hMeas, "Background-subtracted data","l")
     ll.Draw()
-    cc.SaveAs("UnfoldingPlots/unfold_input"+isTwoStep+"_"+options.syst+".png")
-    cc.SaveAs("UnfoldingPlots/unfold_input"+isTwoStep+"_"+options.syst+".eps")
+    cc.SaveAs("UnfoldingPlots/unfold_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    cc.SaveAs("UnfoldingPlots/unfold_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
 
+if options.closureTest and options.troubleshoot :
+    ct1 = TCanvas("ct1", "", 800, 600)
+    
+    lt1 = TLegend(0.4, 0.65, 0.7, 0.9)
+    lt1.SetFillStyle(0)
+    lt1.SetTextFont(42)
+    lt1.SetTextSize(0.045)
+    lt1.SetBorderSize(0)
+    
+    hMeas.SetLineColor(2)
+    hMeas.SetLineWidth(2)
+    hMeas_odd.SetLineColor(4)
+    hMeas_odd.SetLineWidth(2)
+    hMeas.Draw("hist")
+    hMeas_odd.Draw("hist,same")
+    lt1.AddEntry(hMeas, "Unfolding input, even","l")
+    lt1.AddEntry(hMeas_odd, "Unfolding input, odd","l")
+    lt1.Draw()
+    ct1.SaveAs("UnfoldingPlots/troubleshoot_hMeas_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+
+    ct2 = TCanvas("ct2", "", 800, 600)
+    
+    lt2 = TLegend(0.4, 0.65, 0.7, 0.9)
+    lt2.SetFillStyle(0)
+    lt2.SetTextFont(42)
+    lt2.SetTextSize(0.045)
+    lt2.SetBorderSize(0)
+    
+    hPart_even.SetLineColor(2)
+    hPart_even.SetLineWidth(2)
+    hPart.SetLineColor(4)
+    hPart.SetLineWidth(2)
+    hPart_even.Draw("hist")
+    hPart.Draw("hist,same")
+    lt2.AddEntry(hPart_even, "Particle-level truth, even","l")
+    lt2.AddEntry(hPart, "Particle-level truth, odd","l")
+    lt2.Draw()
+    ct2.SaveAs("UnfoldingPlots/troubleshoot_hPart_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+
+    ct3 = TCanvas("ct3", "", 800, 600)
+    
+    lt3 = TLegend(0.4, 0.65, 0.7, 0.9)
+    lt3.SetFillStyle(0)
+    lt3.SetTextFont(42)
+    lt3.SetTextSize(0.045)
+    lt3.SetBorderSize(0)
+    
+    hTrue_even.SetLineColor(2)
+    hTrue_even.SetLineWidth(2)
+    hTrue.SetLineColor(4)
+    hTrue.SetLineWidth(2)
+    hTrue_even.Draw("hist")
+    hTrue.Draw("hist,same")
+    lt3.AddEntry(hTrue_even, "Parton-level truth, even","l")
+    lt3.AddEntry(hTrue, "Parton-level truth, odd","l")
+    lt3.Draw()
+    ct3.SaveAs("UnfoldingPlots/troubleshoot_hTrue_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
 
 
 # -------------------------------------------------------------------------------------
@@ -1014,9 +1145,33 @@ if options.twoStep:
     hEmpty2D_rp.GetYaxis().SetTitle("Particle-level top p_{T} [GeV]")
     hEmpty2D_rp.GetXaxis().SetLabelSize(0.045)
     hEmpty2D_rp.GetYaxis().SetLabelSize(0.045)
-    hEmpty2D_rp.Draw()
+    #hEmpty2D_rp.Draw()
     hResponse2D_rp = response_rp.Hresponse().Clone()
     hResponse2D_rp.SetName("plottedResponse_rp")
+
+    if options.troubleshoot :
+        hEmpty2D_rp_even = response_rp_even.Hresponse().Clone()
+        hEmpty2D_rp_even.SetName("empty2D_rp_even")
+        hEmpty2D_rp_even.Reset()
+        hEmpty2D_rp_even.GetXaxis().SetTitle("Top-tagged jet p_{T} [GeV]")
+        hEmpty2D_rp_even.GetYaxis().SetTitle("Particle-level top p_{T} [GeV]")
+        hEmpty2D_rp_even.GetXaxis().SetLabelSize(0.045)
+        hEmpty2D_rp_even.GetYaxis().SetLabelSize(0.045)
+        #hEmpty2D_rp_even.Draw()
+        hResponse2D_rp_even = response_rp_even.Hresponse().Clone()
+        hResponse2D_rp_even.SetName("plottedResponse_rp_even")
+
+        hEmpty2D_rp.Draw()
+        gStyle.SetPaintTextFormat(".1f")
+        hResponse2D_rp.Draw("colz,same,text")
+        hEmpty2D_rp.Draw("axis,same")
+        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_rp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+
+        hEmpty2D_rp_even.Draw()
+        gStyle.SetPaintTextFormat(".1f")
+        hResponse2D_rp_even.Draw("colz,same,text")
+        hEmpty2D_rp_even.Draw("axis,same")
+        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_rp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
     
     # normalize so that for each bin of particle-level top pt, the bins in measured top pt add up to 100%
     nbinsX = hResponse2D_rp.GetNbinsX()
@@ -1032,12 +1187,13 @@ if options.twoStep:
             #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
             hResponse2D_rp.SetBinContent(ibx,iby,newContent)
 
+    hEmpty2D_rp.Draw()
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold_2step_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-    cr.SaveAs("UnfoldingPlots/unfold_2step_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold_2step_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+    cr.SaveAs("UnfoldingPlots/unfold_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    cr.SaveAs("UnfoldingPlots/unfold_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
     
     response_rp.Hresponse().SetName("responseMatrix_rp_"+options.syst)
     response_rp.Hresponse().Write()
@@ -1045,16 +1201,44 @@ if options.twoStep:
     
     # -------------------------------------------------------------------------------------
     ### particle level to parton level 
-    hEmpty2D_pp = response.Hresponse().Clone()
+    hEmpty2D_pp = response_pp.Hresponse().Clone()
     hEmpty2D_pp.SetName("empty2D_pp")
     hEmpty2D_pp.Reset()
     hEmpty2D_pp.GetXaxis().SetTitle("Particle-level top p_{T} [GeV]")
     hEmpty2D_pp.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
     hEmpty2D_pp.GetXaxis().SetLabelSize(0.045)
     hEmpty2D_pp.GetYaxis().SetLabelSize(0.045)
-    hEmpty2D_pp.Draw()
-    hResponse2D_pp = response.Hresponse().Clone()
+    #hEmpty2D_pp.Draw()
+    hResponse2D_pp = response_pp.Hresponse().Clone()
     hResponse2D_pp.SetName("plottedResponse_pp")
+
+    if options.troubleshoot :
+        hEmpty2D_pp_even = response_pp_even.Hresponse().Clone()
+        hEmpty2D_pp_even.SetName("empty2D_pp_even")
+        hEmpty2D_pp_even.Reset()
+        hEmpty2D_pp_even.GetXaxis().SetTitle("Particle-level top p_{T} [GeV]")
+        hEmpty2D_pp_even.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
+        hEmpty2D_pp_even.GetXaxis().SetLabelSize(0.045)
+        hEmpty2D_pp_even.GetYaxis().SetLabelSize(0.045)
+        #hEmpty2D_pp_even.Draw()
+        hResponse2D_pp_even = response_pp_even.Hresponse().Clone()
+        hResponse2D_pp_even.SetName("plottedResponse_pp_even")
+
+        hEmpty2D_pp.Draw()
+        gStyle.SetPaintTextFormat(".1f")
+        hResponse2D_pp.Draw("colz,same,text")
+        hEmpty2D_pp.Draw("axis,same")
+        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+
+        hEmpty2D_pp_even.Draw()
+        gStyle.SetPaintTextFormat(".1f")
+        hResponse2D_pp_even.Draw("colz,same,text")
+        hEmpty2D_pp_even.Draw("axis,same")
+        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
     
     # normalize so that for each bin of particle-level top pt, the bins in measured top pt add up to 100%
     nbinsX = hResponse2D_pp.GetNbinsX()
@@ -1073,9 +1257,9 @@ if options.twoStep:
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D_pp.Draw("colz,same,text")
     hEmpty2D_pp.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold_2step_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-    cr.SaveAs("UnfoldingPlots/unfold_2step_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold_2step_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+    cr.SaveAs("UnfoldingPlots/unfold_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    cr.SaveAs("UnfoldingPlots/unfold_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
     
     response_pp.Hresponse().SetName("responseMatrix_pp_"+options.syst)
     response_pp.Hresponse().Write()
