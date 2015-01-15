@@ -382,7 +382,9 @@ for event in events :
     # Use the max and min values of all of the eigenvectors as the envelope. 
     # -------------------------------------------------------------------------------------
 
-    if options.pdfSys != 0.0 or options.pdfSet != 0.0:
+    ## adding temporary hack... i only stored PDF weights for full-truth samples for events with high-pt top quark (pt>300) ... !!!!!
+
+    if (options.pdfSys != 0.0 or options.pdfSet != 0.0) and (pdfWeightCT10Handle.isValid() == True) :
 
         if options.pdfSet == 1.0 :
             event.getByLabel( pdfWeightMSTWLabel, pdfWeightMSTWHandle )
