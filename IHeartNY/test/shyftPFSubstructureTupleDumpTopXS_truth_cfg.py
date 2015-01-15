@@ -652,7 +652,7 @@ process.pfShyftTupleTopQuarks = cms.EDProducer(
 ## high pt top quarks -- filter for when to save PDF info (which is otherwise too large)
 process.topQuarksHighPt = cms.EDFilter("CandViewSelector",
     src = cms.InputTag("prunedGenParticles"),
-    cut = cms.string("status == 3 && abs(pdgId) == 6 && pt > 300.0")
+    cut = cms.string("status == 3 && abs(pdgId) == 6 && pt > 400.0")
 )
 process.highPtCount = cms.EDFilter("CandViewCountFilter",
                                    src = cms.InputTag("topQuarksHighPt"),
@@ -723,6 +723,17 @@ process.pfShyftTupleCA8GenJets = cms.EDProducer(
             )
         )
     )
+
+## high pt particle-level tops -- filter for when to save PDF info (which is otherwise too large)
+process.particleTopHighPt = cms.EDFilter("CandViewSelector",
+    src = cms.InputTag("ca8GenJetsNoNu"),
+    cut = cms.string("pt > 400")
+)
+process.highPtCountParticle = cms.EDFilter("CandViewCountFilter",
+                                           src = cms.InputTag("particleTopHighPt"),
+                                           minNumber = cms.uint32(1)
+)
+
 
 ## AK5 gen jets producer
 process.AK5GenJets = cms.EDFilter("CandViewSelector",
@@ -802,6 +813,10 @@ process.ptrue2 = cms.Path(
     process.topQuarksHighPt*
     process.highPtCount
     )
+process.ptrue3 = cms.Path(
+    process.particleTopHighPt*
+    process.highPtCountParticle
+    )
 
 
 if options.addPdfs == 1 : 
@@ -815,6 +830,7 @@ if options.addPdfs == 1 :
 #    process.p2 *= process.pdfWeights
 #process.ptrue *= process.pdfWeights
 process.ptrue2 *= process.pdfWeights
+process.ptrue3 *= process.pdfWeights
 
 
 ### For data, remove the truth information from the paths
@@ -837,7 +853,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 ## Define the output ROOT file
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string("shyft_ultraslim.root"),
-                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('ptrue','ptrue2') ),
+                               SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('ptrue','ptrue2','ptrue2') ),
                                outputCommands = cms.untracked.vstring('drop *',
 #                                                                      'keep double_*_rho_*',
                                                                       'keep *_pfShyftTuple*_*_*',
