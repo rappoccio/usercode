@@ -202,20 +202,20 @@ if options.closureTest == True :
     f_ttbar_700to1000_odd = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
     f_ttbar_1000toInf_odd = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
     ## full truth samples for unfolding (two-step) particle-level to parton 
-    f_ttbar_max700_pp    = TFile("TruthStudy/ttbar_max700_even.root")
-    f_ttbar_700to1000_pp = TFile("TruthStudy/ttbar_700to1000_even.root")
-    f_ttbar_1000toInf_pp = TFile("TruthStudy/ttbar_1000toInf_even.root")
-    f_ttbar_max700_pp_odd    = TFile("TruthStudy/ttbar_max700_odd.root")
-    f_ttbar_700to1000_pp_odd = TFile("TruthStudy/ttbar_700to1000_odd.root")
-    f_ttbar_1000toInf_pp_odd = TFile("TruthStudy/ttbar_1000toInf_odd.root")
+    f_ttbar_max700_pp    = TFile("TruthStudy/TT_max700_"+options.pdf+"_fullTruth_even.root")
+    f_ttbar_700to1000_pp = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+"_fullTruth_even.root")
+    f_ttbar_1000toInf_pp = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+"_fullTruth_even.root")
+    f_ttbar_max700_pp_odd    = TFile("TruthStudy/TT_max700_"+options.pdf+"_fullTruth_odd.root")
+    f_ttbar_700to1000_pp_odd = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+"_fullTruth_odd.root")
+    f_ttbar_1000toInf_pp_odd = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+"_fullTruth_odd.root")
 else :
     f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
     f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
     f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
     ## full truth samples for unfolding (two-step) particle-level to parton 
-    f_ttbar_max700_pp    = TFile("TruthStudy/ttbar_max700.root")
-    f_ttbar_700to1000_pp = TFile("TruthStudy/ttbar_700to1000.root")
-    f_ttbar_1000toInf_pp = TFile("TruthStudy/ttbar_1000toInf.root")
+    f_ttbar_max700_pp    = TFile("TruthStudy/TT_max700_"+options.pdf+"_fullTruth.root")
+    f_ttbar_700to1000_pp = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+"_fullTruth.root")
+    f_ttbar_1000toInf_pp = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+"_fullTruth.root")
 
 f_ttbar_nonsemilep_max700    = TFile("histfiles_"+options.pdf+"/2Dhists/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
 f_ttbar_nonsemilep_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
@@ -1107,8 +1107,8 @@ if options.twoStep == False:
     
     # normalize so that for each bin of true top quark pt, the bins in measured top pt add up to 100%
     nbinsX = hResponse2D.GetNbinsX()
-    nbinsY = hResponse2D.GetNbinsX()
-    for iby in range(1,nbinsY) :
+    nbinsY = hResponse2D.GetNbinsY()
+    for iby in range(1,nbinsY+1) :
         rowIntegral = hResponse2D.Integral(1,nbinsX,iby,iby)
         #print "for y-bin " + str(iby) + " row integral = " + str(rowIntegral)
         for ibx in range(1,nbinsX+1) :
@@ -1145,7 +1145,7 @@ if options.twoStep:
     hEmpty2D_rp.GetYaxis().SetTitle("Particle-level top p_{T} [GeV]")
     hEmpty2D_rp.GetXaxis().SetLabelSize(0.045)
     hEmpty2D_rp.GetYaxis().SetLabelSize(0.045)
-    #hEmpty2D_rp.Draw()
+    hEmpty2D_rp.Draw()
     hResponse2D_rp = response_rp.Hresponse().Clone()
     hResponse2D_rp.SetName("plottedResponse_rp")
 
@@ -1175,8 +1175,8 @@ if options.twoStep:
     
     # normalize so that for each bin of particle-level top pt, the bins in measured top pt add up to 100%
     nbinsX = hResponse2D_rp.GetNbinsX()
-    nbinsY = hResponse2D_rp.GetNbinsX()
-    for iby in range(1,nbinsY) :
+    nbinsY = hResponse2D_rp.GetNbinsY()
+    for iby in range(1,nbinsY+1) :
         rowIntegral = hResponse2D_rp.Integral(1,nbinsX,iby,iby)
         #print "for y-bin " + str(iby) + " row integral = " + str(rowIntegral)
         for ibx in range(1,nbinsX+1) :
@@ -1208,7 +1208,7 @@ if options.twoStep:
     hEmpty2D_pp.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
     hEmpty2D_pp.GetXaxis().SetLabelSize(0.045)
     hEmpty2D_pp.GetYaxis().SetLabelSize(0.045)
-    #hEmpty2D_pp.Draw()
+    hEmpty2D_pp.Draw()
     hResponse2D_pp = response_pp.Hresponse().Clone()
     hResponse2D_pp.SetName("plottedResponse_pp")
 
@@ -1242,8 +1242,8 @@ if options.twoStep:
     
     # normalize so that for each bin of particle-level top pt, the bins in measured top pt add up to 100%
     nbinsX = hResponse2D_pp.GetNbinsX()
-    nbinsY = hResponse2D_pp.GetNbinsX()
-    for iby in range(1,nbinsY) :
+    nbinsY = hResponse2D_pp.GetNbinsY()
+    for iby in range(1,nbinsY+1) :
         rowIntegral = hResponse2D_pp.Integral(1,nbinsX,iby,iby)
         #print "for y-bin " + str(iby) + " row integral = " + str(rowIntegral)
         for ibx in range(1,nbinsX+1) :

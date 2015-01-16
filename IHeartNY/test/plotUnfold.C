@@ -33,10 +33,10 @@ void plotUnfold() {
   //TString unfoldType = "";
 
   // full range unfolding, including events 0-2000 GeV
-  TString unfoldType = "_full";
+  //TString unfoldType = "_full";
 
   // only unfold for events with gen pt > 400 GeV
-  //TString unfoldType = "_pt400";
+  TString unfoldType = "_pt400";
 
   TString nobtag = "_nobtag";
   //TString nobtag = "";

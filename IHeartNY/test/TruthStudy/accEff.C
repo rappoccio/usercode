@@ -27,39 +27,60 @@ void mySmallText(Double_t x,Double_t y,Color_t color,char *text);
 void myItalicText(Double_t x,Double_t y,Color_t color,char *text); 
 
 
-void accEff() {
+void accEff(TString option) {
+
+  
+  // valid options
+  // "one": one-step unfolding, acceptance correction
+  // "two_rp": two-step unfolding, acceptance correction for reco to particle unfolding
+  // "two_pp": two-step unfolding, acceptance correction for particle to parton unfolding
+  // "two_rploose": two-step unfolding, acceptance correction for reco to "particle loose" unfolding (for unfolding using pt>0 GeV instead of pt>400 GeV!!)
+
+  if ( (option=="one" || option=="two_rp" || option=="two_pp" || option=="two_rploose") == false) {
+    cout << endl << "Invalid option!! Correct usage is:   root -b -q 'accEff.C(option)', " << endl << endl
+	 << "where option can be: " << endl << endl
+	 << "-- \"one\": one-step unfolding, acceptance correction" << endl
+	 << "-- \"two_rp\": two-step unfolding, acceptance correction for reco to particle unfolding" << endl 
+	 << "-- \"two_pp\": two-step unfolding, acceptance correction for particle to parton unfolding" << endl
+	 << "-- \"two_rploose\": two-step unfolding, acceptance correction for reco to \"particle loose\" unfolding (for unfolding using pt>0 GeV instead of pt>400 GeV!!)" << endl << endl;
+    return;
+  }
+
 
   SetPlotStyle();
   
-  /*
   TFile* f1 = new TFile("../histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
   TFile* f2 = new TFile("../histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
   TFile* f3 = new TFile("../histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
-  */
 
-  ///*
+  /*
   TFile* f1 = new TFile("ttbar_max700.root");
   TFile* f2 = new TFile("ttbar_700to1000.root");
   TFile* f3 = new TFile("ttbar_1000toInf.root");
-  //*/
-
-  //TString num = "ptRecoTop_passRecoParton";
-  //TString den = "ptRecoTop_passReco";
-  //TString num = "ptGenTop_passRecoParton";
-  //TString den = "ptGenTop_passParton";
-
-  // *** acceptance correction for "_pt400", reco to particle unfolding, (i.e. passParticle & passReco / passReco) ***
-  //TString num = "ptRecoTop_passRecoParticle";
-  //TString den = "ptRecoTop_passReco";
-
-  // *** acceptance correction for "_pt400", particle to parton unfolding, (i.e. passParticle & passParton / passParticle) ***
-  TString num = "ptPartTop_passParticleParton";
-  TString den = "ptPartTop_passParticle";
-
-  // *** acceptance correction for "_full" two-step unfolding (i.e. passParticleLoose & passReco / passReco) ***
-  //TString num = "ptRecoTop_2step";
-  //TString den = "ptRecoTop";
-
+  */
+  
+  TString num;
+  TString den;
+  if (option=="one") {
+    // acceptance correction for one-step unfolding
+    num = "ptRecoTop_passRecoParton";
+    den = "ptRecoTop_passReco";
+  }
+  else if (option=="two_rp") {
+    // *** acceptance correction for "_pt400", reco to particle unfolding, (i.e. passParticle & passReco / passReco) ***
+    num = "ptRecoTop_passRecoParticle";
+    den = "ptRecoTop_passReco";
+  }
+  else if (option=="two_pp") {  
+    // *** acceptance correction for "_pt400", particle to parton unfolding, (i.e. passParticle & passParton / passParticle) ***
+    num = "ptPartTop_passParticleParton";
+    den = "ptPartTop_passParticle";
+  }
+  else if (option=="two_rploose") {
+    // *** acceptance correction for "_full" two-step unfolding (i.e. passParticleLoose & passReco / passReco) ***
+    num = "ptRecoTop_2step";
+    den = "ptRecoTop";
+  }
 
   TH1F* hnum1 = (TH1F*) f1->Get(num);
   TH1F* hnum2 = (TH1F*) f2->Get(num);
@@ -99,8 +120,8 @@ void accEff() {
 
   heff->GetYaxis()->SetTitle("Acceptance correction");
   heff->SetAxisRange(0.0,1.0,"Y");
-  //heff->SetAxisRange(0.6,1.05,"Y");
-  //heff->SetAxisRange(0.9,1.01,"Y");
+  if (option=="two_rp") heff->SetAxisRange(0.6,1.05,"Y");
+  if (option=="two_rploose") heff->SetAxisRange(0.9,1.01,"Y");
 
   for (int i=1; i<heff->GetNbinsX()+1; i++) {
     cout << "accCorr [" << heff->GetBinLowEdge(i) << "," << heff->GetBinLowEdge(i+1) 
@@ -110,28 +131,28 @@ void accEff() {
 
   TCanvas c;
   heff->Draw("ep");
-
-  /*
-  TLegend* leg = new TLegend(0.6,0.7,0.8,0.9);
-  leg->SetBorderSize(0);
-  leg->SetFillStyle(0);
-  leg->SetTextFont(42);
-  leg->SetTextSize(0.04);
-  leg->AddEntry(h1, "CT10 nominal", "lep");
-  leg->AddEntry(hup1, "CT10 PDF up", "lep");
-  leg->AddEntry(hdn1, "CT10 PDF down", "lep");
-  leg->Draw();
-  */
-
+  
   mySmallText(0.22,0.42,1,"Acceptance correction factor");
-  //mySmallText(0.22,0.36,1,"(events passing full selection + loose particle-level cuts");
-  mySmallText(0.22,0.36,1,"(events passing full selection + particle-level cuts");
-  mySmallText(0.22,0.30,1,"vs events passing full selection)");
-  //mySmallText(0.22,0.36,1,"(events passing particle-level & parton selection");
-  //mySmallText(0.22,0.30,1,"vs events passing particle-level selection)");
+  if (option=="one") {
+    mySmallText(0.22,0.36,1,"(events passing full selection + p_{T}(top quark) > 400 GeV");
+    mySmallText(0.22,0.30,1,"vs events passing full selection)");    
+  }
+  else if (option=="two_rp") {
+    mySmallText(0.22,0.36,1,"(events passing full selection + particle-level cuts");
+    mySmallText(0.22,0.30,1,"vs events passing full selection)");
+  }  
+  else if (option=="two_pp") {
+    mySmallText(0.22,0.36,1,"(events passing particle-level & parton selection");
+    mySmallText(0.22,0.30,1,"vs events passing particle-level selection)");
+  }
+  else if (option=="two_rploose") {
+    mySmallText(0.22,0.36,1,"(events passing full selection + loose particle-level cuts");
+    mySmallText(0.22,0.30,1,"vs events passing full selection)");
+  }
 
-  c.SaveAs("acceptanceCorr.png");
-  c.SaveAs("acceptanceCorr.eps");
+  c.SaveAs("accCorr_"+option+".png");
+  c.SaveAs("accCorr_"+option+".eps");
+  c.SaveAs("accCorr_"+option+".pdf");
 
 }
 
