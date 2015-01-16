@@ -3,6 +3,9 @@ from ROOT import *
 gStyle.SetOptStat(000000)
 gStyle.SetPaintTextFormat( '.2f' )
 
+gStyle.SetPadRightMargin(0.12);
+gStyle.SetPadLeftMargin(0.12);
+
 labels = ['beta_signal', 'btag', 'jec', 'jer', 'lumi', 'rate_qcd', 'rate_st', 'rate_vjets', 'toptag']
 
 cov = [[  7.55608435e-03,  -1.94122033e-02,  -8.87050992e-03,
