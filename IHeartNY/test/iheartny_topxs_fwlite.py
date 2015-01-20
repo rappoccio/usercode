@@ -3224,16 +3224,16 @@ for event in events :
             ### a tagged jets enters just through SF...
             if lepcsv > options.bDiscCut:
                 btagSF *= jet_btagSF
-                print "debug! jet with pt="+str(lepjet.Perp())+", eta="+str(lepjet.Eta())+", flavor="+str(lep_flavor)+" passes b-tagging jet_btagSF = "+str(jet_btagSF)
+                #print "debug! jet with pt="+str(lepjet.Perp())+", eta="+str(lepjet.Eta())+", flavor="+str(lep_flavor)+" passes b-tagging jet_btagSF = "+str(jet_btagSF)
             ### ...while a non-tagged jet need the MC tagging efficiency as well
             else: 
                 effMC = getBtagEff(lepjet.Perp(), lepjet.Eta(), lep_flavor)
                 btagSF *= ((1.0 - jet_btagSF*effMC)/(1.0 - effMC))
-                print "debug! jet with pt="+str(lepjet.Perp())+", eta="+str(lepjet.Eta())+", flavor="+str(lep_flavor)+" failes b-tagging jet_btagSF = "+str(jet_btagSF)+" effMC = " + str(effMC)
+                #print "debug! jet with pt="+str(lepjet.Perp())+", eta="+str(lepjet.Eta())+", flavor="+str(lep_flavor)+" failes b-tagging jet_btagSF = "+str(jet_btagSF)+" effMC = " + str(effMC)
         # -------------------------------------------------------------------------------------
 
     # apply b-tagging SF
-    print "debug! combined btagSF = " + str(btagSF)
+    #print "debug! combined btagSF = " + str(btagSF)
     weight *= btagSF
     top_weight *= btagSF
 
