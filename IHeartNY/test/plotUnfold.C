@@ -153,7 +153,6 @@ void plotUnfold() {
   float count[nSYST] = {0};
   float sig[nSYST] = {0};
   
-  
   for (int i=0; i<h_unfolded[0]->GetNbinsX()+1; i++) {
     
     for (int is=0; is<nSYST; is++) {
@@ -217,10 +216,9 @@ void plotUnfold() {
   
   //Getting the relative systematics:
   cout << "Getting the relative systematics" << endl;
-  cout<<"h_unfolded[0]->GetNbinsX() "<<h_unfolded[0]->GetNbinsX()<<endl;
   float count_r[nSYST] = {0};
   float err_stat = 0;
-  for (int i=1; i<h_unfolded[0]->GetNbinsX(); i++) {
+  for (int i=0; i<h_unfolded[0]->GetNbinsX()+1; i++) {
 
     err_stat = h_unfolded[0]->GetBinError(i+1);
     
