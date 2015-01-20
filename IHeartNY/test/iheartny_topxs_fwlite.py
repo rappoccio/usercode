@@ -168,6 +168,129 @@ def getBtagSFerror(jetPt) :
 
 
 # -------------------------------------------------------------------------------------
+# helper function to get b-tagging efficiency scale factor (for MC) for LIGHT JETS 
+# From: https://twiki.cern.ch/twiki/pub/CMS/BtagRecommendation53XReReco/SFlightFuncs_EPS2013.C
+# Tagger: CSVM within 20 < pt < 1000 GeV (850 for eta>1.6), abs(eta) < 2.4, x = pt
+# -------------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------------
+# SF for light-jets
+def getBtagSF_light(jetPt,jetEta,sys) :
+
+    if jetPt > 850 and abs(jetEta) > 1.6: 
+        jetPt = 850
+    if jetPt > 1000:
+        jetPt = 1000
+
+    ## nominal value
+    if (sys==0):
+        if abs(jetEta) < 0.8:
+            SFlight = ((1.07541+(0.00231827*jetPt))+(-4.74249e-06*(jetPt*jetPt)))+(2.70862e-09*(jetPt*(jetPt*jetPt)))
+        elif abs(jetEta) < 1.6:
+            SFlight = ((1.05613+(0.00114031*jetPt))+(-2.56066e-06*(jetPt*jetPt)))+(1.67792e-09*(jetPt*(jetPt*jetPt)))
+        elif abs(jetEta) < 2.4:
+            SFlight = ((1.05625+(0.000487231*jetPt))+(-2.22792e-06*(jetPt*jetPt)))+(1.70262e-09*(jetPt*(jetPt*jetPt)))
+        else:
+            print "Invalid jet eta range!!!"
+            SFlight = 1.0
+    ## up-varied
+    elif (sys==1):
+        if abs(jetEta) < 0.8:
+            SFlight = ((1.18638+(0.00314148*jetPt))+(-6.68993e-06*(jetPt*jetPt)))+(3.89288e-09*(jetPt*(jetPt*jetPt)))
+        elif abs(jetEta) < 1.6:
+            SFlight = ((1.16624+(0.00151884*jetPt))+(-3.59041e-06*(jetPt*jetPt)))+(2.38681e-09*(jetPt*(jetPt*jetPt)))
+        elif abs(jetEta) < 2.4:
+            SFlight = ((1.15575+(0.000693344*jetPt))+(-3.02661e-06*(jetPt*jetPt)))+(2.39752e-09*(jetPt*(jetPt*jetPt)))
+        else:
+            print "Invalid jet eta range!!!"
+            SFlight = 1.0
+    ## down-varied
+    elif (sys==-1):
+        if abs(jetEta) < 0.8:
+            SFlight = ((0.964527+(0.00149055*jetPt))+(-2.78338e-06*(jetPt*jetPt)))+(1.51771e-09*(jetPt*(jetPt*jetPt)))
+        elif abs(jetEta) < 1.6:
+            SFlight = ((0.946051+(0.000759584*jetPt))+(-1.52491e-06*(jetPt*jetPt)))+(9.65822e-10*(jetPt*(jetPt*jetPt)))
+        elif abs(jetEta) < 2.4:
+            SFlight = ((0.956736+(0.000280197*jetPt))+(-1.42739e-06*(jetPt*jetPt)))+(1.0085e-09*(jetPt*(jetPt*jetPt)))
+        else:
+            print "Invalid jet eta range!!!"
+            SFlight = 1.0
+    else:
+        print "Invalid light-jet b-tagging SF option!!!"
+        SFlight = 1.0
+    
+    return float(SFlight)
+
+# -------------------------------------------------------------------------------------
+# MC b-tagging efficiency
+def getBtagEff(jetPt, jetEta, jetFlavor) :
+
+    if jetPt > 800.0:
+        jetPt = 800.0
+    if jetPt < 30.0 or abs(jetEta) > 2.4:
+        print "This jet shouldn't have passed our selection!!!!!!!!!"
+        return float(0.0)
+
+    ptmin = [30, 50, 70, 100, 160, 220, 300, 400]
+    ptmax = [50, 70, 100, 160, 220, 300, 400, 800]
+
+    ## efficiencies
+    eff_b_C = [0.657105, 0.714398, 0.743294, 0.754371, 0.725513, 0.671324, 0.581024, 0.476708]
+    eff_b_M = [0.60698, 0.668257, 0.701126, 0.708266, 0.672969, 0.619897, 0.535795, 0.465189]
+    eff_b_H = [0.548226, 0.597592, 0.6355, 0.633576, 0.599783, 0.556137, 0.534634, 0.514862]
+    
+    eff_c_C = [0.190518, 0.207722, 0.216882, 0.219563, 0.187907, 0.169981, 0.116069, 0.0909977]
+    eff_c_M = [0.165894, 0.18293, 0.196692, 0.213846, 0.179415, 0.154544, 0.125904, 0.13197]
+    eff_c_H = [0.149837, 0.160211, 0.180663, 0.181549, 0.15813, 0.137798, 0.097816, 0.1459]
+
+    eff_l_C = [0.0120545, 0.00989127, 0.0107686, 0.0112309, 0.0133013, 0.0116046, 0.0123252, 0.0171984]
+    eff_l_M = [0.0131259, 0.0109459, 0.0110449, 0.0118005, 0.0141589, 0.011822, 0.0176869, 0.0247197]
+    eff_l_H = [0.0186674, 0.0155701, 0.0166389, 0.0183861, 0.0227545, 0.0270767, 0.0308926, 0.0365164]
+
+
+    ## loop to find right bin
+    effMC = 0.0
+    for iEff in range(0,len(eff_b_C) ):
+        if jetPt > ptmin[iEff] and jetPt <= ptmax[iEff] :
+
+            ## b-jets
+            if (abs(jetFlavor) == 5):
+                if abs(jetEta) < 0.8:
+                    effMC = eff_b_C[iEff]
+                    break
+                elif abs(jetEta) < 1.6:
+                    effMC = eff_b_M[iEff]
+                    break
+                else:
+                    effMC = eff_b_H[iEff]
+                    break
+            ## c-jets
+            elif (abs(jetFlavor) == 4):
+                if abs(jetEta) < 0.8:
+                    effMC = eff_c_C[iEff]
+                    break
+                elif abs(jetEta) < 1.6:
+                    effMC = eff_c_M[iEff]
+                    break
+                else:
+                    effMC = eff_c_H[iEff]
+                    break
+            ## light-jets
+            else:
+                if abs(jetEta) < 0.8:
+                    effMC = eff_l_C[iEff]
+                    break
+                elif abs(jetEta) < 1.6:
+                    effMC = eff_l_M[iEff]
+                    break
+                else:
+                    effMC = eff_l_H[iEff]
+                    break
+    
+    return float(effMC)
+
+
+# -------------------------------------------------------------------------------------
 # Lepton trigger * ID SF
 def getMuonSF(muEta) :
 
@@ -1074,6 +1197,8 @@ ak5JetCSVHandle  = Handle( "std::vector<float>" )
 ak5JetCSVLabel   = ("pfShyftTupleJets" + postfix + "AK5", "csv")
 ak5JetSecvtxMassHandle = Handle( "std::vector<float>" )
 ak5JetSecvtxMassLabel  = ("pfShyftTupleJets" + postfix + "AK5", "secvtxMass")
+ak5JetFlavorHandle = Handle( "std::vector<float>" )
+ak5JetFlavorLabel  = ("pfShyftTupleJets" + postfix + "AK5", "flavor")
 
 # top-tagged jet collection
 topTagPtHandle   = Handle( "std::vector<float>" )
@@ -2149,6 +2274,8 @@ for event in events :
     ak5JetCSVs = ak5JetCSVHandle.product()
     event.getByLabel (ak5JetSecvtxMassLabel, ak5JetSecvtxMassHandle)
     ak5JetSecvtxMasses = ak5JetSecvtxMassHandle.product()
+    event.getByLabel (ak5JetFlavorLabel, ak5JetFlavorHandle)
+    ak5JetFlavors = ak5JetFlavorHandle.product()
 
     nJets = 0.0
     nBJets = 0.0
@@ -2411,6 +2538,7 @@ for event in events :
     lepJets = []      # AK5 jets with dR(jet,lepton) < pi/2
     lepcsvs = []      # CSV values of AK5 jets with dR(jet,lepton) < pi/2
     lepVtxMass = []   # secondary vertex mass of AK5 jets with dR(jet,lepton) < pi/2
+    lepflavors = []   # True jet flavors of AK5 jets with dR(jet,lepton) < pi/2
 
     i_leadBjet = -1   # identifier of leading b-tagged jet if there is one
     pt_leadBjet = -1  # pt of leading b-tagged jet if there is one
@@ -2425,6 +2553,7 @@ for event in events :
                 lepJets.append(jet)
                 lepcsvs.append(ak5JetCSVs[ijet])
                 lepVtxMass.append(ak5JetSecvtxMasses[ijet])
+                lepflavors.append(ak5JetFlavors[ijet])
                 
                 if ak5JetSecvtxMasses[ijet] > 0:
                     lead_vtxmass = ak5JetSecvtxMasses[ijet]
@@ -3048,10 +3177,12 @@ for event in events :
     bjetLoose_vtxmass = 0
 
     # loop over CSV discriminator values of leptonic-side AK5 jets
+    btagSF = 1.0
     for ijet in range(0,len(lepcsvs)) :
         lepjet = lepJets[ijet]
         lepcsv = lepcsvs[ijet]
         lep_vtxmass = lepVtxMass[ijet]
+        lep_flavor = lepflavors[ijet]
         if lepcsv > options.bDiscCut and lep_vtxmass > 0.0:
             ntagslep += 1
             if (lepjet.Perp() > bjet_pt) :
@@ -3064,6 +3195,48 @@ for event in events :
             if (lepjet.Perp() > bjetLoose_pt) :
                 bjetLoose_pt = lepjet.Perp()
                 bjetLoose_vtxmass = lep_vtxmass
+            
+        # -------------------------------------------------------------------------------------
+        # get jet's contribution to b-tagging SF 
+        if options.isData == False :
+
+            jet_btagSF = 1.0
+            
+            ### SF for b-jets and c-jets
+            if (abs(lep_flavor)==5 or abs(lep_flavor)==4): 
+                jet_btagSF = getBtagSF(lepjet.Perp())
+                if options.btagSys != None :
+                    jet_btagSFerr = getBtagSFerror(lepjet.Perp())
+                    if (abs(lep_flavor)==4):
+                        jet_btagSFerr *= 2.0 ##for c-jets, use twice the uncertainty
+                    if options.btagSys > 0 :
+                        jet_btagSF += jet_btagSFerr
+                    else :
+                        jet_btagSF -= jet_btagSFerr
+            ### SF for light-jets
+            else:
+                if options.btagSys == None :
+                    jet_btagSF = getBtagSF_light(lepjet.Perp(),lepjet.Eta(),0)
+                else : 
+                    jet_btagSF = getBtagSF_light(lepjet.Perp(),lepjet.Eta(),options.btagSys)
+
+
+            ### a tagged jets enters just through SF...
+            if lepcsv > options.bDiscCut:
+                btagSF *= jet_btagSF
+                print "debug! jet with pt="+str(lepjet.Perp())+", eta="+str(lepjet.Eta())+", flavor="+str(lep_flavor)+" passes b-tagging jet_btagSF = "+str(jet_btagSF)
+            ### ...while a non-tagged jet need the MC tagging efficiency as well
+            else: 
+                effMC = getBtagEff(lepjet.Perp(), lepjet.Eta(), lep_flavor)
+                btagSF *= ((1.0 - jet_btagSF*effMC)/(1.0 - effMC))
+                print "debug! jet with pt="+str(lepjet.Perp())+", eta="+str(lepjet.Eta())+", flavor="+str(lep_flavor)+" failes b-tagging jet_btagSF = "+str(jet_btagSF)+" effMC = " + str(effMC)
+        # -------------------------------------------------------------------------------------
+
+    # apply b-tagging SF
+    print "debug! combined btagSF = " + str(btagSF)
+    weight *= btagSF
+    top_weight *= btagSF
+
 
     # debug vtxMass cut
     if ntagslepLoose > 0:
@@ -3096,19 +3269,7 @@ for event in events :
 
     
     goodEvents.append( [ event.object().id().run(), event.object().id().luminosityBlock(), event.object().id().event() ] )
-    
-    # apply b-tagging SF 
-    btagSF = 1.0
-    if options.isData == False :
-        btagSF = getBtagSF(bjet_pt)
-        if options.btagSys != None :
-            btagSFerr = getBtagSFerror(bjet_pt)
-            if options.btagSys > 0 :
-                btagSF += btagSFerr
-            else :
-                btagSF -= btagSFerr
-        weight *= btagSF
-        top_weight *= btagSF
+
     
     h_mttbarGen7.Fill(mttbarGen, weight)
     h_wboson_pt7.Fill(wboson_pt, weight)
