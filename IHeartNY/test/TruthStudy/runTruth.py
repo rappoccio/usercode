@@ -376,73 +376,6 @@ for event in events :
     	weight *= PilePlot.GetBinContent(bin1)
 
 
-    # -------------------------------------------------------------------------------------
-    # If doing PDF systematatics:
-    # Get the envelopes of the various PDF sets for this event.
-    # Use the max and min values of all of the eigenvectors as the envelope. 
-    # -------------------------------------------------------------------------------------
-
-    ## adding temporary hack... i only stored PDF weights for full-truth samples for events with high-pt top quark (pt>300) ... !!!!!
-
-    if (options.pdfSys != 0.0 or options.pdfSet != 0.0) and (pdfWeightCT10Handle.isValid() == True) :
-
-        if options.pdfSet == 1.0 :
-            event.getByLabel( pdfWeightMSTWLabel, pdfWeightMSTWHandle )
-            pdfWeight  = pdfWeightMSTWHandle.product()
-        elif options.pdfSet == 2.0 :
-            event.getByLabel( pdfWeightNNPDFLabel, pdfWeightNNPDFHandle )
-            pdfWeight = pdfWeightNNPDFHandle.product()
-        else :
-            event.getByLabel( pdfWeightCT10Label, pdfWeightCT10Handle )
-            pdfWeight  = pdfWeightCT10Handle.product()
-        
-
-        nMembers = len(pdfWeight)
-        nEigenVec = int((nMembers-1)/2) #the list of PDF weights is w0 (==1 for CT10), w1+, w1-, w2+, w2-, ...
-
-        
-        if options.pdfSys == 0 :   # reweight to a different PDF set
-            newweight = pdfWeight[0] 
-            weight *= newweight
-        elif options.pdfSet == 2.0 and options.pdfSys > 0 :   # upward PDF uncertainty for NNPDF (non-Hessian set...!!)
-            tmpweight = 0.0
-            for iw in range(1,nMembers) :
-                tmpweight += (1.0 - pdfWeight[iw])*(1.0 - pdfWeight[iw])
-            tmpweight = tmpweight/(nMembers-1)
-            tmpweight = 1.0 + math.sqrt(tmpweight)
-            weight *= tmpweight
-        elif options.pdfSet == 2.0 and options.pdfSys < 0 :   # downward PDF uncertainty for NNPDF (non-Hessian set...!!)
-            tmpweight = 0.0
-            for iw in range(1,nMembers) :
-                tmpweight += (1.0 - pdfWeight[iw])*(1.0 - pdfWeight[iw])
-            tmpweight = tmpweight/(nMembers-1)
-            tmpweight = 1.0 - math.sqrt(tmpweight)
-            weight *= tmpweight
-        elif options.pdfSys > 0 :   # upward PDF uncertainty
-            upweight = 0.0
-            for iw in range(0,nEigenVec) :
-                tmpweight = 0.0
-                if (pdfWeight[1+2*iw] - 1.0) > tmpweight :
-                    tmpweight = pdfWeight[0+2*iw] - 1.0
-                if (pdfWeight[2+2*iw] - 1.0) > tmpweight :
-                    tmpweight = pdfWeight[1+2*iw] - 1.0
-                upweight += tmpweight*tmpweight
-            upweight = 1.0 + math.sqrt(upweight)
-            weight *= upweight
-        else :   # downward PDF uncertainty
-            dnweight = 0.0
-            for iw in range(0,nEigenVec) :
-                tmpweight = 0.0
-                if (1.0 - pdfWeight[1+2*iw]) > tmpweight :
-                    tmpweight = 1.0 - pdfWeight[0+2*iw]
-                if (1.0 - pdfWeight[2+2*iw]) > tmpweight :
-                    tmpweight = 1.0 - pdfWeight[1+2*iw]
-                dnweight += tmpweight*tmpweight
-            dnweight = 1.0 - math.sqrt(dnweight)
-            weight *= dnweight
-    
-    #endof if doing pdfSys
-
 
     # -------------------------------------------------------------------------------------
     # read / store truth information
@@ -530,7 +463,7 @@ for event in events :
         lepTop = topQuarks[0]
         
     ttbar = hadTop.p4 + lepTop.p4
-    
+
     
     # -------------------------------------------------------------------------------------
     # fill histograms!        
@@ -559,10 +492,85 @@ for event in events :
         h_ttbar_mass_pt400_emutau.Fill( ttbar.M() )
         hw_ttbar_mass_pt400_emutau.Fill( ttbar.M(), weight )
 
-
     ## now require mu+jets final state only
     if isMuon is False:
         continue
+
+    ## passParton?
+    if hadTop.p4.Perp() > 400.0:
+        passParton = True
+
+
+    # -------------------------------------------------------------------------------------
+    # If doing PDF systematatics:
+    # Get the envelopes of the various PDF sets for this event.
+    # Use the max and min values of all of the eigenvectors as the envelope. 
+    # -------------------------------------------------------------------------------------
+
+    if (options.pdfSys != 0.0 or options.pdfSet != 0.0) and (passParton) :
+        
+        if options.pdfSet == 1.0 :
+            event.getByLabel( pdfWeightMSTWLabel, pdfWeightMSTWHandle )
+            pdfWeight  = pdfWeightMSTWHandle.product()
+        elif options.pdfSet == 2.0 :
+            event.getByLabel( pdfWeightNNPDFLabel, pdfWeightNNPDFHandle )
+            pdfWeight = pdfWeightNNPDFHandle.product()
+        else :
+            event.getByLabel( pdfWeightCT10Label, pdfWeightCT10Handle )
+            pdfWeight  = pdfWeightCT10Handle.product()
+        
+
+        nMembers = len(pdfWeight)
+        nEigenVec = int((nMembers-1)/2) #the list of PDF weights is w0 (==1 for CT10), w1+, w1-, w2+, w2-, ...
+
+        
+        if options.pdfSys == 0 :   # reweight to a different PDF set
+            newweight = pdfWeight[0] 
+            weight *= newweight
+        elif options.pdfSet == 2.0 and options.pdfSys > 0 :   # upward PDF uncertainty for NNPDF (non-Hessian set...!!)
+            tmpweight = 0.0
+            for iw in range(1,nMembers) :
+                tmpweight += (1.0 - pdfWeight[iw])*(1.0 - pdfWeight[iw])
+            tmpweight = tmpweight/(nMembers-1)
+            tmpweight = 1.0 + math.sqrt(tmpweight)
+            weight *= tmpweight
+        elif options.pdfSet == 2.0 and options.pdfSys < 0 :   # downward PDF uncertainty for NNPDF (non-Hessian set...!!)
+            tmpweight = 0.0
+            for iw in range(1,nMembers) :
+                tmpweight += (1.0 - pdfWeight[iw])*(1.0 - pdfWeight[iw])
+            tmpweight = tmpweight/(nMembers-1)
+            tmpweight = 1.0 - math.sqrt(tmpweight)
+            weight *= tmpweight
+        elif options.pdfSys > 0 :   # upward PDF uncertainty
+            upweight = 0.0
+            for iw in range(0,nEigenVec) :
+                tmpweight = 0.0
+                if (pdfWeight[1+2*iw] - 1.0) > tmpweight :
+                    tmpweight = pdfWeight[0+2*iw] - 1.0
+                if (pdfWeight[2+2*iw] - 1.0) > tmpweight :
+                    tmpweight = pdfWeight[1+2*iw] - 1.0
+                upweight += tmpweight*tmpweight
+            upweight = 1.0 + math.sqrt(upweight)
+            weight *= upweight
+        else :   # downward PDF uncertainty
+            dnweight = 0.0
+            for iw in range(0,nEigenVec) :
+                tmpweight = 0.0
+                if (1.0 - pdfWeight[1+2*iw]) > tmpweight :
+                    tmpweight = 1.0 - pdfWeight[0+2*iw]
+                if (1.0 - pdfWeight[2+2*iw]) > tmpweight :
+                    tmpweight = 1.0 - pdfWeight[1+2*iw]
+                dnweight += tmpweight*tmpweight
+            dnweight = 1.0 - math.sqrt(dnweight)
+            weight *= dnweight
+    
+    #endof if doing pdfSys
+
+    
+
+    # -------------------------------------------------------------------------------------
+    # fill histograms!        
+    # -------------------------------------------------------------------------------------
     
     ## fill rest of histograms        
     h_ttbar_mass_all.Fill( ttbar.M() )
@@ -583,7 +591,7 @@ for event in events :
     hw_mu_eta_all.Fill(muonEta, weight)    
     hw_mu_pt_all.Fill(muonPt, weight)
 
-    if hadTop.p4.Perp() > 400. :
+    if passParton :
         h_ttbar_mass_pt400.Fill( ttbar.M() )
         h_ttbar_pt_pt400.Fill( ttbar.Perp() )            
         h_hadtop_mass_pt400.Fill( hadTop.p4.M() )
@@ -614,9 +622,6 @@ for event in events :
     h_ptGenTop_noweight.Fill( hadTop.p4.Perp() )
     h_ptGenTop_full.Fill( hadTop.p4.Perp(), weight )
     h_ptGenTop_noweight_full.Fill( hadTop.p4.Perp() )
-
-    if hadTop.p4.Perp() > 400.0:
-        passParton = True
         
     if passParton :
         h_ptGenTop_pt400.Fill( hadTop.p4.Perp(), weight )
@@ -628,7 +633,6 @@ for event in events :
     # -------------------------------------------------------------------------------------
     # end truth loop
     # -------------------------------------------------------------------------------------
-
 
 
     ak5GenJets = []
