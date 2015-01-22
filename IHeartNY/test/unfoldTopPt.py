@@ -647,6 +647,13 @@ if options.closureTest and options.troubleshoot :
 #accCorr [800,1200]: 0.952454 +/- 0.0234787
 accCorr = [0.713124, 0.899743, 0.912729, 0.911112, 0.952454]
 
+#accCorr [400,500]: 0.715637 +/- 0.0082754
+#accCorr [500,600]: 0.895401 +/- 0.00891083
+#accCorr [600,700]: 0.93823 +/- 0.0118266
+#accCorr [700,800]: 0.900569 +/- 0.0232154
+#accCorr [800,1200]: 0.930093 +/- 0.0241897
+accCorr_nobtag = [0.715637, 0.895401, 0.93823, 0.900569, 0.930093]
+
 # two-step unfolding
 #accCorr_rp [400,500]:  0.829239 +/- 0.00924507
 #accCorr_rp [500,600]:  0.984784 +/- 0.00474956
@@ -654,6 +661,13 @@ accCorr = [0.713124, 0.899743, 0.912729, 0.911112, 0.952454]
 #accCorr_rp [700,800]:  1 +/- 0
 #accCorr_rp [800,1200]: 1 +/- 0
 accCorr_rp = [0.829239, 0.984784, 0.992851, 1.0, 1.0]
+
+#accCorr_rp_nobtag [400,500]: 0.823396 +/- 0.00677141
+#accCorr_rp_nobtag [500,600]: 0.976083 +/- 0.00425749
+#accCorr_rp_nobtag [600,700]: 0.988957 +/- 0.00331876
+#accCorr_rp_nobtag [700,800]: 0.98946 +/- 0.00909336
+#accCorr_rp_nobtag [800,1200]: 1 +/- 0
+accCorr_rp_nobtag = [0.823396, 0.976083, 0.988957, 0.98946, 1.0]
 
 #accCorr_pp [400,500]:  0.515877 +/- 0.00371986
 #accCorr_pp [500,600]:  0.55938 +/- 0.00624021
@@ -692,9 +706,13 @@ if options.twoStep == False:
     # apply acceptance correction
     if unfoldType == "_pt400" and options.closureTest == False:
         for ibin in range(1, hMeasCorr.GetXaxis().GetNbins()+1 ) :
-            hMeasCorr.SetBinContent(ibin,  hMeas.GetBinContent(ibin) * accCorr[ibin-1] )
-            hMeasCorr.SetBinError(ibin,  hMeas.GetBinError(ibin) * accCorr[ibin-1] )
-    
+            if options.addNoBtag == True:
+                hMeasCorr.SetBinContent(ibin,  hMeas.GetBinContent(ibin) * accCorr_nobtag[ibin-1] )
+                hMeasCorr.SetBinError(ibin,  hMeas.GetBinError(ibin) * accCorr_nobtag[ibin-1] )
+            else: 
+                hMeasCorr.SetBinContent(ibin,  hMeas.GetBinContent(ibin) * accCorr[ibin-1] )
+                hMeasCorr.SetBinError(ibin,  hMeas.GetBinError(ibin) * accCorr[ibin-1] )
+                
     
     print "------------ UNFOLDING (set: " + options.pdf + ", syst: " + options.syst + ") ------------"
     #unfold = RooUnfoldBayes(response, hMeasCorr, 10);
@@ -712,8 +730,12 @@ else :
     if options.closureTest == False:
         if unfoldType == "_pt400":
             for ibin in range(1, hMeasCorr.GetXaxis().GetNbins()+1 ) :
-                hMeasCorr.SetBinContent(ibin, hMeas.GetBinContent(ibin) * accCorr_rp[ibin-1] )
-                hMeasCorr.SetBinError(ibin, hMeas.GetBinError(ibin) * accCorr_rp[ibin-1] )
+                if options.addNoBtag == True:
+                    hMeasCorr.SetBinContent(ibin, hMeas.GetBinContent(ibin) * accCorr_rp_nobtag[ibin-1] )
+                    hMeasCorr.SetBinError(ibin, hMeas.GetBinError(ibin) * accCorr_rp_nobtag[ibin-1] )
+                else :
+                    hMeasCorr.SetBinContent(ibin, hMeas.GetBinContent(ibin) * accCorr_rp[ibin-1] )
+                    hMeasCorr.SetBinError(ibin, hMeas.GetBinError(ibin) * accCorr_rp[ibin-1] )
         elif unfoldType == "_full":
             for ibin in range(1, hMeasCorr.GetXaxis().GetNbins()+1 ) :
                 hMeasCorr.SetBinContent(ibin, hMeas.GetBinContent(ibin) * accCorr_rp_full[ibin-1] )

@@ -36,11 +36,13 @@ void accEff(TString option) {
   // "two_pp": two-step unfolding, acceptance correction for particle to parton unfolding
   // "two_rploose": two-step unfolding, acceptance correction for reco to "particle loose" unfolding (for unfolding using pt>0 GeV instead of pt>400 GeV!!)
 
-  if ( (option=="one" || option=="two_rp" || option=="two_pp" || option=="two_rploose") == false) {
+  if ( (option=="one" || option=="one_nobtag" || option=="two_rp" || option=="two_rp_nobtag" || option=="two_pp" || option=="two_rploose") == false) {
     cout << endl << "Invalid option!! Correct usage is:   root -b -q 'accEff.C(option)', " << endl << endl
 	 << "where option can be: " << endl << endl
 	 << "-- \"one\": one-step unfolding, acceptance correction" << endl
+	 << "-- \"one\": one-step unfolding (adding no btag category), acceptance correction" << endl
 	 << "-- \"two_rp\": two-step unfolding, acceptance correction for reco to particle unfolding" << endl 
+	 << "-- \"two_rp\": two-step unfolding, acceptance correction for reco to particle unfolding (adding no btag category)" << endl 
 	 << "-- \"two_pp\": two-step unfolding, acceptance correction for particle to parton unfolding" << endl
 	 << "-- \"two_rploose\": two-step unfolding, acceptance correction for reco to \"particle loose\" unfolding (for unfolding using pt>0 GeV instead of pt>400 GeV!!)" << endl << endl;
     return;
@@ -66,10 +68,20 @@ void accEff(TString option) {
     num = "ptRecoTop_passRecoParton";
     den = "ptRecoTop_passReco";
   }
+  else if (option=="one_nobtag") {
+    // acceptance correction for one-step unfolding (adding no btag!)
+    num = "ptRecoTop_passRecoNoBtagParton";
+    den = "ptRecoTop_passRecoNoBtag";
+  }
   else if (option=="two_rp") {
     // *** acceptance correction for "_pt400", reco to particle unfolding, (i.e. passParticle & passReco / passReco) ***
     num = "ptRecoTop_passRecoParticle";
     den = "ptRecoTop_passReco";
+  }
+  else if (option=="two_rp_nobtag") {
+    // *** acceptance correction for "_pt400", reco to particle unfolding, (i.e. passParticle (adding no btag!) & passReco / passReco) ***
+    num = "ptRecoTop_passRecoNoBtagParticle";
+    den = "ptRecoTop_passRecoNoBtag";
   }
   else if (option=="two_pp") {  
     // *** acceptance correction for "_pt400", particle to parton unfolding, (i.e. passParticle & passParton / passParticle) ***
@@ -120,7 +132,7 @@ void accEff(TString option) {
 
   heff->GetYaxis()->SetTitle("Acceptance correction");
   heff->SetAxisRange(0.0,1.0,"Y");
-  if (option=="two_rp") heff->SetAxisRange(0.6,1.05,"Y");
+  if (option=="two_rp" || option=="two_rp_nobtag") heff->SetAxisRange(0.6,1.05,"Y");
   if (option=="two_rploose") heff->SetAxisRange(0.9,1.01,"Y");
 
   for (int i=1; i<heff->GetNbinsX()+1; i++) {
@@ -137,9 +149,17 @@ void accEff(TString option) {
     mySmallText(0.22,0.36,1,"(events passing full selection + p_{T}(top quark) > 400 GeV");
     mySmallText(0.22,0.30,1,"vs events passing full selection)");    
   }
+  else if (option=="one_nobtag") {
+    mySmallText(0.22,0.36,1,"(events passing selection w/o btag + p_{T}(top quark) >");
+    mySmallText(0.22,0.30,1,"400 GeV vs events passing selection w/o btag)");    
+  }
   else if (option=="two_rp") {
     mySmallText(0.22,0.36,1,"(events passing full selection + particle-level cuts");
     mySmallText(0.22,0.30,1,"vs events passing full selection)");
+  }  
+  else if (option=="two_rp_nobtag") {
+    mySmallText(0.22,0.36,1,"(events passing selection w/o btag + particle-level cuts");
+    mySmallText(0.22,0.30,1,"vs events passing selection w/o btag)");
   }  
   else if (option=="two_pp") {
     mySmallText(0.22,0.36,1,"(events passing particle-level & parton selection");
