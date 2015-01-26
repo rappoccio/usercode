@@ -2594,6 +2594,12 @@ for event in events :
                 
                 this_pt = ak5Jets[ijet].Perp()
 
+                this_flavor = 1
+                if abs(ak5JetFlavors[ijet]) == 5:
+                    this_flavor = 5
+                elif abs(ak5JetFlavors[ijet]) == 4:
+                    this_flavor = 4
+
                 ## closest AK5 jet in dR to lepton -- this will be the one to use for b-tagging!
                 if this_dR < bjet_dR: 
                     bjet_dR = this_dR
@@ -2601,7 +2607,7 @@ for event in events :
                     bjet_eta = ak5Jets[ijet].Eta()
                     bjet_csv = ak5JetCSVs[ijet]
                     bjet_vtxmass = ak5JetSecvtxMasses[ijet]
-                    bjet_flavor = ak5JetFlavors[ijet]
+                    bjet_flavor = this_flavor
 
                 ## highest pt, leptonic-side AK5 jet -- cross-check for b-tagging!
                 if this_pt > bjet_lead_pt: 
@@ -2609,7 +2615,7 @@ for event in events :
                     bjet_lead_eta = ak5Jets[ijet].Eta()
                     bjet_lead_csv = ak5JetCSVs[ijet]
                     bjet_lead_vtxmass = ak5JetSecvtxMasses[ijet]
-                    bjet_lead_flavor = ak5JetFlavors[ijet]                    
+                    bjet_lead_flavor = this_flavor
 
                     
     # loop over CA8 jets (hadronic side)
@@ -3304,9 +3310,15 @@ for event in events :
             if (lepjet.Perp() > bjet_any_pt):
                 bjet_any_pt = lepjet.Perp()
                 bjet_any_eta = lepjet.Eta()
-                bjet_any_flavor = lep_flavor
                 bjet_any_vtxmass = lep_vtxmass
                 bjet_any_i = ijet
+                
+                if abs(lep_flavor) == 5:
+                    bjet_any_flavor = 5
+                elif abs(lep_flavor) == 4:
+                    bjet_any_flavor = 4
+                else:
+                    bjet_any_flavor = 1
             
         # get jet's contribution to b-tagging SF 
         if options.isData == False :
@@ -3371,7 +3383,7 @@ for event in events :
 
     
     # require a b-tagged jet (using closest jet as b-tag candidate!)
-    if passBtag:
+    if passBtag == False:
         if options.makeResponse == True:
             ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
@@ -3418,7 +3430,8 @@ for event in events :
     h_ptBJet7.Fill(bjet_pt, weight)
     h_etaBJet7.Fill(bjet_eta, weight)
     h_vtxMass7.Fill(bjet_vtxmass, weight)
-            
+    h_flavorBJet7.Fill(bjet_flavor, weight)
+                
     h_ht7.Fill(ht, weight)
     h_htLep7.Fill(htLep, weight)
     h_lepMET7.Fill(lepMET, weight)
