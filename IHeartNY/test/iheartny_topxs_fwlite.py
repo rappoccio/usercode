@@ -1578,10 +1578,12 @@ for event in events :
 
     topQuarks = []
     genMuons = []
+    genElectrons = []
     hadTop = None
     lepTop = None
     isSemiLeptonicGen = True
     isMuon = False
+    isElectron = False
     
     if options.makeResponse == True or options.mttGenMax is not None or options.semilep is not None:
         event.getByLabel( genParticlesPtLabel, genParticlesPtHandle )
@@ -1633,11 +1635,19 @@ for event in events :
                 p4Muon = ROOT.TLorentzVector()
                 p4Muon.SetPtEtaPhiM( genParticlesPt[igen], genParticlesEta[igen], genParticlesPhi[igen], genParticlesMass[igen] )
                 genMuons.append(p4Muon)
-        
+
+            if (abs(genParticlesPdgId[igen]) == 11) :
+                isElectron = True
+                p4Electron = ROOT.TLorentzVector()
+                p4Electron.SetPtEtaPhiM( genParticlesPt[igen], genParticlesEta[igen], genParticlesPhi[igen], genParticlesMass[igen] )
+                genElectrons.append(p4Electron)
+
         topQuarks.append( GenTopQuark( 6, p4Top, topDecay) )
         topQuarks.append( GenTopQuark( -6, p4Antitop, antitopDecay) )
         
-        if (topDecay + antitopDecay == 1) and (isMuon == True) :
+        if (topDecay + antitopDecay == 1) and (isMuon == True) and (isElectron == False) and (options.lepType == "muon"):
+            isSemiLeptonicGen = True
+        elif (topDecay + antitopDecay == 1) and (isMuon == False) and (isElectron == True) and (options.lepType == "ele"):
             isSemiLeptonicGen = True
         else :
             isSemiLeptonicGen = False
@@ -1812,27 +1822,34 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     if options.makeResponse == True:
-        nGenMuons = 0
+        nGenLeptons = 0
         nGenBJets = 0
         nGenTops = 0
-        genMuon = ROOT.TLorentzVector()
+        genLepton = ROOT.TLorentzVector()
         genTops = []
-        for iMuon in genMuons:
-            if iMuon.Perp() > 45. and abs(iMuon.Eta()) < 2.1:
-                nGenMuons += 1
-                genMuon = iMuon
 
-        if nGenMuons == 1:
+        if (options.leptype == "muon") :
+            for iMuon in genMuons:
+                if iMuon.Perp() > MIN_MU_PT and abs(iMuon.Eta()) < MAX_MU_ETA:
+                    nGenLeptons += 1
+                    genLepton = iMuon
+        else :
+            for iEle in genElectrons:
+                if iEle.Perp() > MIN_EL_PT and abs(iEle.Eta()) < MAX_EL_ETA:
+                    nGenLeptons += 1
+                    genLepton = iEle
+
+        if nGenLeptons == 1:
             for iak5Gen in ak5GenJets:
-                if iak5Gen.DeltaR(genMuon) < ROOT.TMath.Pi() / 2.0 and iak5Gen.Perp() > 30. and abs(iak5Gen.Eta()) < 2.4:
+                if iak5Gen.DeltaR(genLepton) < ROOT.TMath.Pi() / 2.0 and iak5Gen.Perp() > MIN_JET_PT and abs(iak5Gen.Eta()) < MAX_JET_PT:
                     nGenBJets += 1
 
             for ica8Gen in ca8GenJets:
-                if ica8Gen.DeltaR(genMuon) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > 30. and abs(ica8Gen.Eta()) < 2.4:
+                if ica8Gen.DeltaR(genLepton) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > MIN_JET_PT and abs(ica8Gen.Eta()) < MAX_JET_PT:
                     genTops.append(ica8Gen)
                     nGenTops += 1
 
-        if nGenMuons == 1 and nGenBJets > 0 and nGenTops > 0:
+        if nGenLeptons == 1 and nGenBJets > 0 and nGenTops > 0:
             passParticleLoose = True
         if passParticleLoose and genTops[0].Perp() > 400.0 :
             passParticle = True
@@ -1909,7 +1926,7 @@ for event in events :
     
     jetsFor2D = []
     for ijet in xrange( len(ak5JetPts) ) :
-        if ak5JetPts[ijet] > 25 :
+        if ak5JetPts[ijet] > 25. :
             theJet = ROOT.TLorentzVector()
             theJet.SetPtEtaPhiM( ak5JetPts[ijet], ak5JetEtas[ijet], ak5JetPhis[ijet], ak5JetMasss[ijet] )
             jetsFor2D.append(theJet)
