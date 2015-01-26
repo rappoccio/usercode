@@ -3346,20 +3346,20 @@ for event in events :
 
     if passBtag_any == True:
         h_mttbarGen7_any.Fill(mttbarGen, weight*btagSF_any)
-        h_ptBJet7_any.Fill(bjet_pt_any, weight*btagSF_any)
-        h_etaBJet7_any.Fill(bjet_eta_any, weight*btagSF_any)
-        h_flavorBJet7_any.Fill(bjet_flavor_any, weight*btagSF_any)
-        h_vtxMass7_any.Fill(bjet_vtxmass_any, weight*btagSF_any)
+        h_ptBJet7_any.Fill(bjet_any_pt, weight*btagSF_any)
+        h_etaBJet7_any.Fill(bjet_any_eta, weight*btagSF_any)
+        h_flavorBJet7_any.Fill(bjet_any_flavor, weight*btagSF_any)
+        h_vtxMass7_any.Fill(bjet_any_vtxmass, weight*btagSF_any)
         h_etaAbsLep7_any.Fill(abs(lepton.p4().Eta()), weight*btagSF_any)
         h_ptMET7_any.Fill(met, weight*btagSF_any)
         h_hadtop_pt7_any.Fill(goodtop.Perp(), top_weight*btagSF_any)
 
     if passBtag_lead == True:
         h_mttbarGen7_lead.Fill(mttbarGen, weight*btagSF_lead)
-        h_ptBJet7_lead.Fill(bjet_pt_lead, weight*btagSF_lead)
-        h_etaBJet7_lead.Fill(bjet_eta_lead, weight*btagSF_lead)
-        h_flavorBJet7_lead.Fill(bjet_flavor_lead, weight*btagSF_lead)
-        h_vtxMass7_lead.Fill(bjet_vtxmass_lead, weight*btagSF_lead)
+        h_ptBJet7_lead.Fill(bjet_lead_pt, weight*btagSF_lead)
+        h_etaBJet7_lead.Fill(bjet_lead_eta, weight*btagSF_lead)
+        h_flavorBJet7_lead.Fill(bjet_lead_flavor, weight*btagSF_lead)
+        h_vtxMass7_lead.Fill(bjet_lead_vtxmass, weight*btagSF_lead)
         h_etaAbsLep7_lead.Fill(abs(lepton.p4().Eta()), weight*btagSF_lead)
         h_ptMET7_lead.Fill(met, weight*btagSF_lead)
         h_hadtop_pt7_lead.Fill(goodtop.Perp(), top_weight*btagSF_lead)
