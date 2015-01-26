@@ -175,6 +175,10 @@ def getBtagSFerror(jetPt) :
 
 # -------------------------------------------------------------------------------------
 # SF for light-jets
+#
+# **** WE DON'T NEED THIS (?), KEEP IT IN JUST IN CASE ****
+#
+# -------------------------------------------------------------------------------------
 def getBtagSF_light(jetPt,jetEta,sys) :
 
     if jetPt > 850 and abs(jetEta) > 1.6: 
@@ -223,6 +227,10 @@ def getBtagSF_light(jetPt,jetEta,sys) :
 
 # -------------------------------------------------------------------------------------
 # MC b-tagging efficiency
+#
+# **** WE DON'T NEED THIS (?), KEEP IT IN JUST IN CASE ****
+#
+# -------------------------------------------------------------------------------------
 def getBtagEff(jetPt, jetEta, jetFlavor) :
 
     if jetPt > 800.0:
@@ -288,6 +296,7 @@ def getBtagEff(jetPt, jetEta, jetFlavor) :
                     break
     
     return float(effMC)
+# -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
@@ -644,6 +653,8 @@ h_mttbarGen4 = ROOT.TH1F("mttbarGen4", "; gen-level m(t#bar{t}) [GeV]; Events / 
 h_mttbarGen5 = ROOT.TH1F("mttbarGen5", "; gen-level m(t#bar{t}) [GeV]; Events / 10 GeV", 250, 0, 2500)
 h_mttbarGen6 = ROOT.TH1F("mttbarGen6", "; gen-level m(t#bar{t}) [GeV]; Events / 10 GeV", 250, 0, 2500)
 h_mttbarGen7 = ROOT.TH1F("mttbarGen7", "; gen-level m(t#bar{t}) [GeV]; Events / 10 GeV", 250, 0, 2500)
+h_mttbarGen7_any  = ROOT.TH1F("mttbarGen7_any",  "; gen-level m(t#bar{t}) [GeV]; Events / 10 GeV", 250, 0, 2500)
+h_mttbarGen7_lead = ROOT.TH1F("mttbarGen7_lead", "; gen-level m(t#bar{t}) [GeV]; Events / 10 GeV", 250, 0, 2500)
 
 
 # numbers of different objects
@@ -700,6 +711,8 @@ if options.lepType == "muon":
     h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7_any  = ROOT.TH1F("etaAbsLep7_any",  ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7_lead = ROOT.TH1F("etaAbsLep7_lead", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
 
     h_dRvspTPre  = ROOT.TH2F("dRvspTPre",  ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
     h_dRvspT0    = ROOT.TH2F("dRvspT0",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
@@ -739,6 +752,8 @@ else:
     h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7_any  = ROOT.TH1F("etaAbsLep7_any",  ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7_lead = ROOT.TH1F("etaAbsLep7_lead", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
 
     h_dRvspTPre  = ROOT.TH2F("dRvspTPre",  ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
     h_dRvspT0    = ROOT.TH2F("dRvspT0",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
@@ -868,14 +883,24 @@ h_vtxMass2LepJet7 = ROOT.TH1F("vtxMass2LepJet7", ";2nd leading lep.side jet vert
 
 
 # b-jet quantities
-h_ptBJet7  = ROOT.TH1F("ptBJet7",  ";B-tagged jet p_{T} [GeV]; B-jets / 10 GeV", 50, 0., 500.)
-h_etaBJet7 = ROOT.TH1F("etaBJet7", ";B-tagged jet #eta; B-jets / 0.1", 50, -2.5, 2.5)
+h_ptBJet7       = ROOT.TH1F("ptBJet7",      ";b-tagged jet p_{T} [GeV]; b-jets / 10 GeV", 50, 0., 500.)
+h_ptBJet7_any   = ROOT.TH1F("ptBJet7_any",  ";b-tagged jet p_{T} [GeV]; b-jets / 10 GeV", 50, 0., 500.)
+h_ptBJet7_lead  = ROOT.TH1F("ptBJet7_lead", ";b-tagged jet p_{T} [GeV]; b-jets / 10 GeV", 50, 0., 500.)
+h_etaBJet7      = ROOT.TH1F("etaBJet7",     ";b-tagged jet #eta; b-jets / 0.1", 50, -2.5, 2.5)
+h_etaBJet7_any  = ROOT.TH1F("etaBJet7_any", ";b-tagged jet #eta; b-jets / 0.1", 50, -2.5, 2.5)
+h_etaBJet7_lead = ROOT.TH1F("etaBJet7_lead",";b-tagged jet #eta; b-jets / 0.1", 50, -2.5, 2.5)
+
+h_flavorBJet7      = ROOT.TH1F("flavorBJet7",     ";b-tagged jet true flavor; b-jets", 5, 0.5, 5.5)
+h_flavorBJet7_any  = ROOT.TH1F("flavorBJet7_any", ";b-tagged jet true flavor; b-jets", 5, 0.5, 5.5)
+h_flavorBJet7_lead = ROOT.TH1F("flavorBJet7_lead",";b-tagged jet true flavor; b-jets", 5, 0.5, 5.5)
 
 h_vtxMass3 = ROOT.TH1F("vtxMass3", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass4 = ROOT.TH1F("vtxMass4", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass5 = ROOT.TH1F("vtxMass5", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass6 = ROOT.TH1F("vtxMass6", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass7 = ROOT.TH1F("vtxMass7", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+h_vtxMass7_any  = ROOT.TH1F("vtxMass7_any",  ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+h_vtxMass7_lead = ROOT.TH1F("vtxMass7_lead", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 
 
 # event-level quantities
@@ -887,6 +912,8 @@ h_ptMET4 = ROOT.TH1F("ptMET4", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 h_ptMET5 = ROOT.TH1F("ptMET5", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 h_ptMET6 = ROOT.TH1F("ptMET6", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 h_ptMET7 = ROOT.TH1F("ptMET7", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
+h_ptMET7_any  = ROOT.TH1F("ptMET7_any",  ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
+h_ptMET7_lead = ROOT.TH1F("ptMET7_lead", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 
 h_phiMET0 = ROOT.TH1F("phiMET0", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
 h_phiMET1 = ROOT.TH1F("phiMET1", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
@@ -957,6 +984,8 @@ h_hadtop_pt6        = ROOT.TH1F("hadtop_pt6",        ";p_{T}(hadronic top) [GeV]
 h_hadtop_pt_tau32   = ROOT.TH1F("hadtop_pt_tau32",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass tau32 cut (beyond current selection!)
 h_hadtop_pt_csv     = ROOT.TH1F("hadtop_pt_csv",     ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass subjet b-tag cut (beyond current selection!)
 h_hadtop_pt7        = ROOT.TH1F("hadtop_pt7",        ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass pt > 400 GeV
+h_hadtop_pt7_any    = ROOT.TH1F("hadtop_pt7_any",    ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
+h_hadtop_pt7_lead   = ROOT.TH1F("hadtop_pt7_lead",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 
 h_hadtop_mass3 = ROOT.TH1F("hadtop_mass3", ";m(hadronic top) [GeV]; Events / 5 GeV", 100, 0., 500.)
 h_hadtop_mass4 = ROOT.TH1F("hadtop_mass4", ";m(hadronic top) [GeV]; Events / 5 GeV", 100, 0., 500.)
@@ -996,10 +1025,6 @@ h_hadtop_precut_nvtx_csv     = ROOT.TH2F("hadtop_precut_nvtx_csv",     ";Number 
 h_muonSF   = ROOT.TH1F("muonSF",   ";; Average muon trigger+ID SF", 1,0.5,1.5)
 h_btagSF   = ROOT.TH1F("btagSF",   ";; Average b-tagging SF", 1,0.5,1.5)
 h_toptagSF = ROOT.TH1F("toptagSF", ";; Average top-tagging SF", 1,0.5,1.5)
-
-# debug histogram
-h_hadtop_pt_preVtx = ROOT.TH1F("hadtop_pt_preVtx", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
-h_vtxMass_preVtx   = ROOT.TH1F("vtxMass_preVtx",   ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 
 
 
@@ -2158,7 +2183,7 @@ for event in events :
     
 
     # -------------------------------------------------------------------------------------
-    # loop over AK 5 jets
+    # loop over AK5 jets
     # -------------------------------------------------------------------------------------
 
     ak5Jets = [] #list of smeared/corrected jets
@@ -2530,7 +2555,7 @@ for event in events :
 
 
     # -------------------------------------------------------------------------------------
-    # define hadronic (CA8)/leptonic (AK5) side jet, apply b-tagging, etc. 
+    # define hadronic (CA8) / leptonic (AK5) side jet, apply b-tagging, etc. 
     # -------------------------------------------------------------------------------------
 
     hadJets = []      # CA8 jets with dR(jet,lepton) > pi/2
@@ -2540,33 +2565,52 @@ for event in events :
     lepVtxMass = []   # secondary vertex mass of AK5 jets with dR(jet,lepton) < pi/2
     lepflavors = []   # True jet flavors of AK5 jets with dR(jet,lepton) < pi/2
 
-    i_leadBjet = -1   # identifier of leading b-tagged jet if there is one
-    pt_leadBjet = -1  # pt of leading b-tagged jet if there is one
+    ## use closest jet for b-tagging (default)
+    bjet_dR = 5.0      
+    bjet_pt = -1.      
+    bjet_eta = -99.    
+    bjet_csv = -99.    
+    bjet_vtxmass = -1. 
+    bjet_flavor = -99  
 
-    lead_vtxmass = 0  # leading-pt jet with non-zero vertex mass
+    ## use leading-pt, leptonic-side jet for b-tagging (cross-check)
+    bjet_lead_pt = -1.      
+    bjet_lead_eta = -99.    
+    bjet_lead_csv = -99.    
+    bjet_lead_vtxmass = -1. 
+    bjet_lead_flavor = -99  
+
     
     # loop over AK5 jets (leptonic side)
     for ijet in range(0,len(ak5Jets)) :
         if ak5Jets[ijet].Perp() > MIN_JET_PT and abs(ak5Jets[ijet].Eta()) < MAX_JET_ETA:
             jet = ak5Jets[ijet]
-            if jet.DeltaR(lepton.p4()) < ROOT.TMath.Pi() / 2.0 :
+            this_dR = jet.DeltaR(lepton.p4())
+            if this_dR < ROOT.TMath.Pi() / 2.0 :
                 lepJets.append(jet)
                 lepcsvs.append(ak5JetCSVs[ijet])
                 lepVtxMass.append(ak5JetSecvtxMasses[ijet])
                 lepflavors.append(ak5JetFlavors[ijet])
                 
-                if ak5JetSecvtxMasses[ijet] > 0:
-                    lead_vtxmass = ak5JetSecvtxMasses[ijet]
+                this_pt = ak5Jets[ijet].Perp()
 
-                if ak5Jets[ijet].Perp() > pt_leadBjet and ak5JetCSVs[ijet] > options.bDiscCut :
-                    i_leadBjet = ijet
-                    pt_leadBjet = ak5Jets[ijet].Perp()
-                    
+                ## closest AK5 jet in dR to lepton -- this will be the one to use for b-tagging!
+                if this_dR < dR_bjet: 
+                    bjet_dR = this_dR
+                    bjet_pt = ak5Jets[ijet].Perp()
+                    bjet_eta = ak5Jets[ijet].Eta()
+                    bjet_csv = ak5JetCSVs[ijet]
+                    bjet_vtxmass = ak5JetSecvtxMasses[ijet]
+                    bjet_flavor = ak5JetFlavors[ijet]
 
-    this_vtxmass = lead_vtxmass
-    if pt_leadBjet > 0 :
-        this_vtxmass = ak5JetSecvtxMasses[i_leadBjet]
-    
+                ## highest pt, leptonic-side AK5 jet -- cross-check for b-tagging!
+                if this_pt > bjet_lead_pt: 
+                    bjet_lead_pt = this_pt
+                    bjet_lead_eta = ak5Jets[ijet].Eta()
+                    bjet_lead_csv = ak5JetCSVs[ijet]
+                    bjet_lead_vtxmass = ak5JetSecvtxMasses[ijet]
+                    bjet_lead_flavor = ak5JetFlavors[ijet]                    
+
                     
     # loop over CA8 jets (hadronic side)
     for ijet in range(0,len(ca8Jets)) :
@@ -2624,7 +2668,7 @@ for event in events :
     h_ht3.Fill(ht, weight)
     h_htLep3.Fill(htLep, weight)
     h_lepMET3.Fill(lepMET, weight)
-    h_vtxMass3.Fill(this_vtxmass, weight)
+    h_vtxMass3.Fill(bjet_vtxmass, weight)
     h_ptMET3.Fill(met, weight)
     h_phiMET3.Fill(metphi, weight)
     h_pfIso3.Fill(lepton.getIsoPU(), weight)
@@ -2714,7 +2758,7 @@ for event in events :
     h_lepMET4.Fill(lepMET, weight)
     h_ptMET4.Fill(met, weight)
     h_phiMET4.Fill(metphi, weight)
-    h_vtxMass4.Fill(this_vtxmass, weight)
+    h_vtxMass4.Fill(bjet_vtxmass, weight)
     h_ptLep4.Fill(lepton.p4().Perp(), weight)
     h_etaLep4.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep4.Fill(abs(lepton.p4().Eta()), weight)
@@ -2803,7 +2847,7 @@ for event in events :
     h_ht5.Fill(ht, weight)
     h_htLep5.Fill(htLep, weight)
     h_lepMET5.Fill(lepMET, weight)
-    h_vtxMass5.Fill(this_vtxmass, weight)
+    h_vtxMass5.Fill(bjet_vtxmass, weight)
     h_ptLep5.Fill(lepton.p4().Perp(), weight)
     h_etaLep5.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep5.Fill(abs(lepton.p4().Eta()), weight)
@@ -3045,7 +3089,7 @@ for event in events :
     h_ht6.Fill(ht, weight)
     h_htLep6.Fill(htLep, weight)
     h_lepMET6.Fill(lepMET, weight)
-    h_vtxMass6.Fill(this_vtxmass, weight)
+    h_vtxMass6.Fill(bjet_vtxmass, weight)
     h_ptMET6.Fill(met, weight)
     h_phiMET6.Fill(metphi, weight)
     h_ptLep6.Fill(lepton.p4().Perp(), weight)
@@ -3162,41 +3206,108 @@ for event in events :
 
 
     # -------------------------------------------------------------------------------------
-    # STEP (7): require a leptonic-side b-tagged jet
+    # STEP (7): require b-tagging!
     # -------------------------------------------------------------------------------------
     
-    ntagslep = 0      # number of b-tagged jets
-    i_leadbtag = -1   # identifier for finding leading b-tagged jet
-    bjet_pt = 0       # pt of leading b-tagged jet
-    bjet_vtxmass = 0  # secondary vertex mass of leading b-tagged jet
-    bjet_eta = 0      # eta of leading b-tagged jet
+    
+    # -------------------------------------------------------------------------------------
+    # check if closest dR jet fulfills b-tagging
+    # -------------------------------------------------------------------------------------
 
-    ## debug 
-    ntagslepLoose = 0
-    bjetLoose_pt = 0 
-    bjetLoose_vtxmass = 0
-
-    # loop over CSV discriminator values of leptonic-side AK5 jets
+    passBtag = False
     btagSF = 1.0
+
+    if bjet_csv > options.bDiscCut and bjet_vtxmass > 0.0:
+
+        passBtag = True
+        
+        # b-tagging SF 
+        if options.isData == False :
+            
+            ### SF for b-jets and c-jets
+            if (abs(bjet_flavor)==5 or abs(bjet_flavor)==4): 
+                btagSF = getBtagSF(bjet_pt)
+                if options.btagSys != None :
+                    btagSFerr = getBtagSFerror(bjet_pt)
+                    if (abs(bjet_flavor)==4):
+                        btagSFerr *= 2.0 ##for c-jets, use twice the uncertainty
+                    if options.btagSys > 0 :
+                        btagSF += btagSFerr
+                    else :
+                        btagSF -= btagSFerr
+            ### SF for light-jets
+            else:
+                if options.btagSys == None :
+                    btagSF = getBtagSF_light(bjet_pt,bjet_eta,0)
+                else : 
+                    btagSF = getBtagSF_light(bjet_pt,bjet_eta,options.btagSys)
+    # -------------------------------------------------------------------------------------
+
+    
+    # -------------------------------------------------------------------------------------
+    # check if leading-pt, leptonic-side jet fulfills b-tagging
+    # -------------------------------------------------------------------------------------
+
+    passBtag_lead = False
+    btagSF_lead = 1.0
+
+    if bjet_lead_csv > options.bDiscCut and bjet_lead_vtxmass > 0.0:
+
+        passBtag_lead = True
+        
+        # b-tagging SF 
+        if options.isData == False :
+            
+            ### SF for b-jets and c-jets
+            if (abs(bjet_lead_flavor)==5 or abs(bjet_lead_flavor)==4): 
+                btagSF_lead = getBtagSF(bjet_lead_pt)
+                if options.btagSys != None :
+                    btagSFerr = getBtagSFerror(bjet_lead_pt)
+                    if (abs(bjet_lead_flavor)==4):
+                        btagSFerr *= 2.0 ##for c-jets, use twice the uncertainty
+                    if options.btagSys > 0 :
+                        btagSF_lead += btagSFerr
+                    else :
+                        btagSF_lead -= btagSFerr
+            ### SF for light-jets
+            else:
+                if options.btagSys == None :
+                    btagSF_lead = getBtagSF_light(bjet_lead_pt,bjet_lead_eta,0)
+                else : 
+                    btagSF_lead = getBtagSF_light(bjet_lead_pt,bjet_lead_eta,options.btagSys)
+    # -------------------------------------------------------------------------------------
+
+
+    # -------------------------------------------------------------------------------------
+    # check if any leptonic-side jet fulfills b-tagging
+    # -------------------------------------------------------------------------------------
+
+    passBtag_any = False
+    btagSF_any = 1.0
+
+    ## use any leptonic-side jet for b-tagging, if multiple passes, use leading-pt one (old default)
+    bjet_any_i = -1.      
+    bjet_any_pt = -1.      
+    bjet_any_eta = -99.    
+    bjet_any_flavor = -1.      
+    bjet_any_vtxmass = -1. 
+
     for ijet in range(0,len(lepcsvs)) :
         lepjet = lepJets[ijet]
-        lepcsv = lepcsvs[ijet]
+        lep_csv = lepcsvs[ijet]
         lep_vtxmass = lepVtxMass[ijet]
         lep_flavor = lepflavors[ijet]
-        if lepcsv > options.bDiscCut and lep_vtxmass > 0.0:
-            ntagslep += 1
-            if (lepjet.Perp() > bjet_pt) :
-                bjet_pt = lepjet.Perp()
-                bjet_eta = lepjet.Eta()
-                bjet_vtxmass = lep_vtxmass
-                i_leadbtag = ijet
-        if lepcsv > options.bDiscCut:
-            ntagslepLoose += 1
-            if (lepjet.Perp() > bjetLoose_pt) :
-                bjetLoose_pt = lepjet.Perp()
-                bjetLoose_vtxmass = lep_vtxmass
+        if lep_csv > options.bDiscCut and lep_vtxmass > 0.0:
+
+            passBtag_any = True
             
-        # -------------------------------------------------------------------------------------
+            if (lepjet.Perp() > bjet_any_pt):
+                bjet_any_pt = lepjet.Perp()
+                bjet_any_eta = lepjet.Eta()
+                bjet_any_flavor = lep_flavor
+                bjet_any_vtxmass = lep_vtxmass
+                bjet_any_i = ijet
+            
         # get jet's contribution to b-tagging SF 
         if options.isData == False :
 
@@ -3222,30 +3333,45 @@ for event in events :
 
 
             ### a tagged jets enters just through SF...
-            if lepcsv > options.bDiscCut:
-                btagSF *= jet_btagSF
+            if lep_csv > options.bDiscCut:
+                btagSF_any *= jet_btagSF
                 #print "debug! jet with pt="+str(lepjet.Perp())+", eta="+str(lepjet.Eta())+", flavor="+str(lep_flavor)+" passes b-tagging jet_btagSF = "+str(jet_btagSF)
             ### ...while a non-tagged jet need the MC tagging efficiency as well
             else: 
                 effMC = getBtagEff(lepjet.Perp(), lepjet.Eta(), lep_flavor)
-                btagSF *= ((1.0 - jet_btagSF*effMC)/(1.0 - effMC))
+                btagSF_any *= ((1.0 - jet_btagSF*effMC)/(1.0 - effMC))
                 #print "debug! jet with pt="+str(lepjet.Perp())+", eta="+str(lepjet.Eta())+", flavor="+str(lep_flavor)+" failes b-tagging jet_btagSF = "+str(jet_btagSF)+" effMC = " + str(effMC)
-        # -------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------
 
+
+    if passBtag_any == True:
+        h_mttbarGen7_any.Fill(mttbarGen, weight*btagSF_any)
+        h_ptBJet7_any.Fill(bjet_pt_any, weight*btagSF_any)
+        h_etaBJet7_any.Fill(bjet_eta_any, weight*btagSF_any)
+        h_flavorBJet7_any.Fill(bjet_flavor_any, weight*btagSF_any)
+        h_vtxMass7_any.Fill(bjet_vtxmass_any, weight*btagSF_any)
+        h_etaAbsLep7_any.Fill(abs(lepton.p4().Eta()), weight*btagSF_any)
+        h_ptMET7_any.Fill(met, weight*btagSF_any)
+        h_hadtop_pt7_any.Fill(goodtop.Perp(), top_weight*btagSF_any)
+
+    if passBtag_lead == True:
+        h_mttbarGen7_lead.Fill(mttbarGen, weight*btagSF_lead)
+        h_ptBJet7_lead.Fill(bjet_pt_lead, weight*btagSF_lead)
+        h_etaBJet7_lead.Fill(bjet_eta_lead, weight*btagSF_lead)
+        h_flavorBJet7_lead.Fill(bjet_flavor_lead, weight*btagSF_lead)
+        h_vtxMass7_lead.Fill(bjet_vtxmass_lead, weight*btagSF_lead)
+        h_etaAbsLep7_lead.Fill(abs(lepton.p4().Eta()), weight*btagSF_lead)
+        h_ptMET7_lead.Fill(met, weight*btagSF_lead)
+        h_hadtop_pt7_lead.Fill(goodtop.Perp(), top_weight*btagSF_lead)
+
+    
     # apply b-tagging SF
-    #print "debug! combined btagSF = " + str(btagSF)
     weight *= btagSF
     top_weight *= btagSF
 
-
-    # debug vtxMass cut
-    if ntagslepLoose > 0:
-        h_hadtop_pt_preVtx.Fill(goodtop.Perp(), top_weight)
-        h_vtxMass_preVtx.Fill(bjetLoose_vtxmass, weight)
     
-    
-    # require a b-tagged jet
-    if ntagslep < 1:
+    # require a b-tagged jet (using closest jet as b-tag candidate!)
+    if passBtag:
         if options.makeResponse == True:
             ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
