@@ -2595,7 +2595,7 @@ for event in events :
                 this_pt = ak5Jets[ijet].Perp()
 
                 ## closest AK5 jet in dR to lepton -- this will be the one to use for b-tagging!
-                if this_dR < dR_bjet: 
+                if this_dR < bjet_dR: 
                     bjet_dR = this_dR
                     bjet_pt = ak5Jets[ijet].Perp()
                     bjet_eta = ak5Jets[ijet].Eta()
