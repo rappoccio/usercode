@@ -685,6 +685,9 @@ h_nLepJets6  = ROOT.TH1F("nLepJets6",  "Number of jets, p_{T} > 30 GeV;N_{lep.si
 
 # lepton properties
 if options.lepType == "muon":
+
+    print "running on muons!"
+    
     h_ptLep0  = ROOT.TH1F("ptLep0",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
     h_ptLep1  = ROOT.TH1F("ptLep1",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
     h_ptLep2  = ROOT.TH1F("ptLep2",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
@@ -726,6 +729,9 @@ if options.lepType == "muon":
     h_pfIso2    = ROOT.TH1F("pfIso2",    ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
     h_pfIso3    = ROOT.TH1F("pfIso3",    ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
 else:
+
+    print "running on electrons!"
+    
     h_ptLep0  = ROOT.TH1F("ptLep0",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
     h_ptLep1  = ROOT.TH1F("ptLep1",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
     h_ptLep2  = ROOT.TH1F("ptLep2",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
@@ -1560,6 +1566,10 @@ for event in events :
         if (this_pdfweight > 100.0):
             print "WARNING!! really large PDF weight for pdfset # " + str(options.pdfSet) + " syst # " + str(options.pdfSys) + ", weight = " + str(this_pdfweight) + " -- i'm ignoring this event!!"
             continue
+
+        if options.debug : 
+            print "PPDF weight is " + str(this_pdfweight)
+
         
     
     #endof if doing pdfSys
@@ -1647,10 +1657,16 @@ for event in events :
         
         if (topDecay + antitopDecay == 1) and (isMuon == True) and (isElectron == False) and (options.lepType == "muon"):
             isSemiLeptonicGen = True
+            if options.debug:
+                print "semileptonic ttbar decay to muon channel!"
         elif (topDecay + antitopDecay == 1) and (isMuon == False) and (isElectron == True) and (options.lepType == "ele"):
             isSemiLeptonicGen = True
+            if options.debug:
+                print "semileptonic ttbar decay to electron channel!"
         else :
             isSemiLeptonicGen = False
+            if options.debug:
+                print "NON-semileptonic ttbar decay!"
 
         # If we are filling the response matrix, don't
         # consider "volunteer" events that pass the selection
@@ -1828,7 +1844,7 @@ for event in events :
         genLepton = ROOT.TLorentzVector()
         genTops = []
 
-        if (options.leptype == "muon") :
+        if (options.lepType == "muon") :
             for iMuon in genMuons:
                 if iMuon.Perp() > MIN_MU_PT and abs(iMuon.Eta()) < MAX_MU_ETA:
                     nGenLeptons += 1
@@ -1841,11 +1857,11 @@ for event in events :
 
         if nGenLeptons == 1:
             for iak5Gen in ak5GenJets:
-                if iak5Gen.DeltaR(genLepton) < ROOT.TMath.Pi() / 2.0 and iak5Gen.Perp() > MIN_JET_PT and abs(iak5Gen.Eta()) < MAX_JET_PT:
+                if iak5Gen.DeltaR(genLepton) < ROOT.TMath.Pi() / 2.0 and iak5Gen.Perp() > MIN_JET_PT and abs(iak5Gen.Eta()) < MAX_JET_ETA:
                     nGenBJets += 1
 
             for ica8Gen in ca8GenJets:
-                if ica8Gen.DeltaR(genLepton) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > MIN_JET_PT and abs(ica8Gen.Eta()) < MAX_JET_PT:
+                if ica8Gen.DeltaR(genLepton) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > MIN_JET_PT and abs(ica8Gen.Eta()) < MAX_JET_ETA:
                     genTops.append(ica8Gen)
                     nGenTops += 1
 
