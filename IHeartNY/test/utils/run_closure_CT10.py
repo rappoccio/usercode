@@ -46,7 +46,7 @@ def run_threads (samples) :
         for ioe in range(0,len(oddeven)):
             for isyst in range(0,len(pdfsysts)):
                 for iset in range(0,len(pdfsets)):
-                    s = [ 'python', 'iheartny_topxs_fwlite.py', samples[isample], oddeven[ioe], pdfsysts[isyst], pdfsets[isyst], 
+                    s = [ 'python', 'iheartny_topxs_fwlite.py', samples[isample], oddeven[ioe], pdfsysts[isyst], pdfsets[iset], 
                           '--makeResponse', '--semilep=1', '--mttGenMax=700.', '--pileup=ttbar', '--jerSys=0.1', '--use2Dcut',
                           outname[isample]+name_pdfsets[iset]+name_pdfsysts[isyst]+"_2Dcut_nom_"+name_oddeven[ioe] ]
                     q.put(s)    
