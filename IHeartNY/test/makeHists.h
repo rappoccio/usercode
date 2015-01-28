@@ -33,8 +33,12 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron) {
 
   float qcd_mu_reliso_norm[8] = {0.0, 0.0, 0.0, 0.0,  401.4, 0.0, 28.5,  1.0};
   float qcd_mu_reliso_err[8]  = {0.0, 0.0, 0.0, 0.0,   71.6, 0.0, 21.5, 10.0};
-  float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1207.7, 0.0, 29.5,  9.3};
-  float qcd_mu_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   80.4, 0.0, 21.5, 14.6};
+  //float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1207.7, 0.0, 29.5,  9.3};
+  //float qcd_mu_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   80.4, 0.0, 21.5, 14.6};
+
+  // preliminary version of muon values with new ntuples -- needs to be checked!
+  float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1449.6, 0.0, 57.5,  11.0};
+  float qcd_mu_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   81.8, 0.0, 23.7, 12.8};
 
   // for now, electrons using same values as for muons -- needs to be updated!
   float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1207.7, 0.0, 29.5,  9.3};

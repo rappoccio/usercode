@@ -946,7 +946,7 @@ void makeTheta_subtract(TString var, int cut1, int cut2, bool doElectron=false, 
       wjets[is][ih]     = getWJets( name_syst[is], hist[ih], doElectron );
       singletop[is][ih] = getSingleTop( name_syst[is], hist[ih], doElectron );
       ttbar_semiLep[is][ih]     = getTTbar( name_syst[is], hist[ih], doElectron, pdfdir );
-      ttbar_nonSemiLep[is][ih] = getTTbarNonSemiLep( name_syst[is], doElectron, hist[ih], pdfdir );
+      ttbar_nonSemiLep[is][ih] = getTTbarNonSemiLep( name_syst[is], hist[ih], doElectron, pdfdir );
 
       ttbar[is][ih] = (TH1F*) ttbar_semiLep[is][ih]->hist()->Clone();
       ttbar[is][ih]->Add(ttbar_nonSemiLep[is][ih]->hist());
