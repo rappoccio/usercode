@@ -147,7 +147,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   }
   else if (var=="etaAbsLep"){
     rebin = 2;
-    if (doElectrons) newtitle = "Electrons / 0.1";
+    if (doElectron) newtitle = "Electrons / 0.1";
     else newtitle = "Muons / 0.1";
   }
   else if (hist=="hadtop_mass6" || hist=="hadtop_mass7" || hist=="leptop_mass4") {
@@ -180,7 +180,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   }
   else if (var=="ptLep") {
     rebin = 2;
-    if (doElectrons) newtitle = "Electrons / 10 GeV";
+    if (doElectron) newtitle = "Electrons / 10 GeV";
     else newtitle = "Muons / 10 GeV";
   }
   else if (hist=="ptMET4") {
@@ -227,7 +227,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (hist=="ptLep0" || hist=="ptLep1" || hist=="ptLep2") h_data->SetAxisRange(0,200,"X");
   if (hist=="ptMET0" || hist=="ptMET1" || hist=="ptMET2") h_data->SetAxisRange(0,200,"X");
 
-  if (var=="etaAbsLep" && doElectrons) h_data->GetXaxis()->SetTitle("Electron |#eta|");
+  if (var=="etaAbsLep" && doElectron) h_data->GetXaxis()->SetTitle("Electron |#eta|");
   else if (var=="etaAbsLep") h_data->GetXaxis()->SetTitle("Muon |#eta|");
 
   // legend
