@@ -28,6 +28,8 @@ samples = [
            title='SingleEl_iheartNY_V1_el_Run2012C_8', jersys=None, jecsys=False, pdfsys=False, qcd=True, pu=None, noms=True, newiso=True, flags='--isData --lepType=ele'),
     Sample(directory='/uscms_data/d3/skinnari/TopXS_slc6/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/SingleEl_Run2012C_22Jan/res/shyft_ultraslim_9*.root',
            title='SingleEl_iheartNY_V1_el_Run2012C_9', jersys=None, jecsys=False, pdfsys=False, qcd=True, pu=None, noms=True, newiso=True, flags='--isData --lepType=ele'),
+    Sample(directory='/uscms_data/d3/skinnari/TopXS_slc6/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/SingleEl_Run2012C_Missing_22Jan/res/shyft_ultraslim_*.root',
+           title='SingleEl_iheartNY_V1_el_Run2012C_1', jersys=None, jecsys=False, pdfsys=False, qcd=True, pu=None, noms=True, newiso=True, flags='--isData --lepType=ele'),
     Sample(directory='/uscms_data/d3/skinnari/TopXS_slc6/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/SingleEl_Run2012D_22Jan/res/shyft_ultraslim_1*.root',
            title='SingleEl_iheartNY_V1_el_Run2012D_1', jersys=None, jecsys=False, pdfsys=False, qcd=True, pu=None, noms=True, newiso=True, flags='--isData --lepType=ele'),
     Sample(directory='/uscms_data/d3/skinnari/TopXS_slc6/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/SingleEl_Run2012D_22Jan/res/shyft_ultraslim_2*.root',
