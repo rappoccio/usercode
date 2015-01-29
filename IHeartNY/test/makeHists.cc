@@ -421,8 +421,8 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT1
   TH1F* h_pre_ttbar;
   TH1F* h_pre_ttbar_nonSemiLep;
   if (what == "etaAbsLep4") {
-    if (doElectron) fPre = TFile::Open("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
-    else fPre = TFile::Open("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
+    if (doElectron) fPre = TFile::Open("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
+    else fPre = TFile::Open("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
     h_pre_ttbar = (TH1F*) fPre->Get(what+"__TTbar");
     h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(what+"__TTbar_nonSemiLep");
   }
@@ -642,14 +642,14 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom") {
   // pre-fit & data files
   TFile* fDATA[3];
   if (doElectron) {
-    fDATA[0] = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
-    fDATA[1] = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root");
-    fDATA[2] = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7.root");
-  }
-  else {
     fDATA[0] = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
     fDATA[1] = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root");
     fDATA[2] = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7.root");
+  }
+  else {
+    fDATA[0] = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
+    fDATA[1] = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root");
+    fDATA[2] = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7.root");
   }
 
   TH1F* h_pre_qcd[3];
