@@ -142,11 +142,13 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   TString newtitle;
   if (var=="etaLep"){
     rebin = 2;
-    newtitle = "Muons / 0.2";
+    if (doElectron) newtitle = "Electrons / 0.2";
+    else newtitle = "Muons / 0.2";
   }
   else if (var=="etaAbsLep"){
     rebin = 2;
-    newtitle = "Muons / 0.1";
+    if (doElectrons) newtitle = "Electrons / 0.1";
+    else newtitle = "Muons / 0.1";
   }
   else if (hist=="hadtop_mass6" || hist=="hadtop_mass7" || hist=="leptop_mass4") {
     rebin = 2;
@@ -178,7 +180,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   }
   else if (var=="ptLep") {
     rebin = 2;
-    newtitle = "Muons / 10 GeV";
+    if (doElectrons) newtitle = "Electrons / 10 GeV";
+    else newtitle = "Muons / 10 GeV";
   }
   else if (hist=="ptMET4") {
     rebin = 5;
@@ -224,7 +227,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (hist=="ptLep0" || hist=="ptLep1" || hist=="ptLep2") h_data->SetAxisRange(0,200,"X");
   if (hist=="ptMET0" || hist=="ptMET1" || hist=="ptMET2") h_data->SetAxisRange(0,200,"X");
 
-  if (var=="etaAbsLep") h_data->GetXaxis()->SetTitle("Muon |#eta|");
+  if (var=="etaAbsLep" && doElectrons) h_data->GetXaxis()->SetTitle("Electron |#eta|");
+  else if (var=="etaAbsLep") h_data->GetXaxis()->SetTitle("Muon |#eta|");
 
   // legend
   TLegend* leg;
@@ -634,10 +638,16 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom") {
   else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+".root");
 
   // post-fit relative errors (from theta_output.txt)
+  /*
   float fiterr_tt = 0.10/0.72;
   float fiterr_singletop = (0.5*0.86)/(1.0-0.5*0.66);
   float fiterr_wjets = (0.5*0.21)/(1.0-0.5*0.7);
   float fiterr_qcd = (0.5*0.57)/(1.0-0.5*0.1);
+  */
+  float fiterr_tt = 0.10/0.68;
+  float fiterr_singletop = (0.5*0.83)/(1.0-0.5*0.88);
+  float fiterr_wjets = (0.5*0.22)/(1.0-0.5*0.5);
+  float fiterr_qcd = (1.0*0.35)/(1.0-1.0*0.21);
 
   // pre-fit & data files
   TFile* fDATA[3];

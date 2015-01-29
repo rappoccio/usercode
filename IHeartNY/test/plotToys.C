@@ -36,7 +36,13 @@ void plotToys(TString syst) {
 
 
   TCanvas c;
+  h_pull->SetLineColor(1);
+  h_pull->SetLineWidth(2);
   h_pull->Rebin(2);
+  h_pull->GetYaxis()->SetTitleSize(0.052);
+  h_pull->GetXaxis()->SetTitleSize(0.052);
+  h_pull->GetYaxis()->SetLabelSize(0.045);
+  h_pull->GetXaxis()->SetLabelSize(0.045);
   h_pull->GetYaxis()->SetTitleOffset(1.0);
   h_pull->GetYaxis()->SetTitle("# pseudo experiments");
   h_pull->GetXaxis()->SetTitle("Pull");
@@ -59,6 +65,12 @@ void plotToys(TString syst) {
   c.SaveAs("pull_"+syst+".pdf");
 
 
+  h_dbs->SetLineColor(1);
+  h_dbs->SetLineWidth(2);
+  h_dbs->GetYaxis()->SetTitleSize(0.052);
+  h_dbs->GetXaxis()->SetTitleSize(0.052);
+  h_dbs->GetYaxis()->SetLabelSize(0.045);
+  h_dbs->GetXaxis()->SetLabelSize(0.045);
   h_dbs->SetAxisRange(0,0.5,"X");
   h_dbs->GetYaxis()->SetTitleOffset(1.0);
   h_dbs->GetYaxis()->SetTitle("# pseudo experiments");
@@ -98,12 +110,11 @@ void SetPlotStyle() {
   
   // set the paper & margin sizes
   gStyle->SetPaperSize(20,26);
-  /*
-    gStyle->SetPadTopMargin(0.05);
-    gStyle->SetPadRightMargin(0.05);
-    gStyle->SetPadBottomMargin(0.16);
-    gStyle->SetPadLeftMargin(0.16);
-  */
+  //gStyle->SetPadTopMargin(0.05);
+  //gStyle->SetPadRightMargin(0.05);
+  //gStyle->SetPadBottomMargin(0.16);
+  //gStyle->SetPadLeftMargin(0.16);
+
   gStyle->SetPadTopMargin(0.07);
   gStyle->SetPadRightMargin(0.05);
   gStyle->SetPadBottomMargin(0.16);
