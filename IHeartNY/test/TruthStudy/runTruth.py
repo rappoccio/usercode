@@ -144,11 +144,13 @@ h_hadtop_mass_pt400 = ROOT.TH1F("hadtop_mass_pt400", ";Mass(hadronic top) [GeV];
 h_hadtop_pt_all     = ROOT.TH1F("hadtop_pt_all",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 h_hadtop_pt_pt400   = ROOT.TH1F("hadtop_pt_pt400", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 h_hadtop_pt_pt400_pass = ROOT.TH1F("hadtop_pt_pt400_pass", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+h_hadtop_pt_pt400_passTight = ROOT.TH1F("hadtop_pt_pt400_passTight", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 hw_hadtop_mass_all   = ROOT.TH1F("w_hadtop_mass_all",   ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
 hw_hadtop_mass_pt400 = ROOT.TH1F("w_hadtop_mass_pt400", ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
 hw_hadtop_pt_all     = ROOT.TH1F("w_hadtop_pt_all",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 hw_hadtop_pt_pt400   = ROOT.TH1F("w_hadtop_pt_pt400", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 hw_hadtop_pt_pt400_pass = ROOT.TH1F("w_hadtop_pt_pt400_pass", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+hw_hadtop_pt_pt400_passTight = ROOT.TH1F("w_hadtop_pt_pt400_passTight", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 
 h_leptop_mass_all   = ROOT.TH1F("leptop_mass_all",   ";Mass(leptonic top) [GeV]; Events / 1 GeV", 300, 0, 300)
 h_leptop_mass_pt400 = ROOT.TH1F("leptop_mass_pt400", ";Mass(leptonic top) [GeV]; Events / 1 GeV", 300, 0, 300)
@@ -524,9 +526,12 @@ for event in events :
         nEigenVec = int((nMembers-1)/2) #the list of PDF weights is w0 (==1 for CT10), w1+, w1-, w2+, w2-, ...
 
         
+        this_pdfweight = 1.0
+
         if options.pdfSys == 0 :   # reweight to a different PDF set
             newweight = pdfWeight[0] 
             weight *= newweight
+            this_pdfweight = newweight
         elif options.pdfSet == 2.0 and options.pdfSys > 0 :   # upward PDF uncertainty for NNPDF (non-Hessian set...!!)
             tmpweight = 0.0
             for iw in range(1,nMembers) :
@@ -534,6 +539,7 @@ for event in events :
             tmpweight = tmpweight/(nMembers-1)
             tmpweight = 1.0 + math.sqrt(tmpweight)
             weight *= tmpweight
+            this_pdfweight = tmpweight
         elif options.pdfSet == 2.0 and options.pdfSys < 0 :   # downward PDF uncertainty for NNPDF (non-Hessian set...!!)
             tmpweight = 0.0
             for iw in range(1,nMembers) :
@@ -541,6 +547,7 @@ for event in events :
             tmpweight = tmpweight/(nMembers-1)
             tmpweight = 1.0 - math.sqrt(tmpweight)
             weight *= tmpweight
+            this_pdfweight = tmpweight
         elif options.pdfSys > 0 :   # upward PDF uncertainty
             upweight = 0.0
             for iw in range(0,nEigenVec) :
@@ -552,6 +559,7 @@ for event in events :
                 upweight += tmpweight*tmpweight
             upweight = 1.0 + math.sqrt(upweight)
             weight *= upweight
+            this_pdfweight = upweight
         else :   # downward PDF uncertainty
             dnweight = 0.0
             for iw in range(0,nEigenVec) :
@@ -563,6 +571,13 @@ for event in events :
                 dnweight += tmpweight*tmpweight
             dnweight = 1.0 - math.sqrt(dnweight)
             weight *= dnweight
+            this_pdfweight = dnweight
+
+        ## ignore potential events with crazy pdf weight (one CT10 pdf up weight...)
+        if (this_pdfweight > 100.0):
+            print "WARNING!! really large PDF weight for pdfset # " + str(options.pdfSet) + " syst # " + str(options.pdfSys) + ", weight = " + str(this_pdfweight) + " -- i'm ignoring this event!!"
+            continue
+
     
     #endof if doing pdfSys
 
@@ -638,6 +653,8 @@ for event in events :
     ak5GenJets = []
     ca8GenJets = []
 
+    ak5GenJets_tight = []
+
     # -------------------------------------------------------------------------------------
     # get AK5 gen jets
     # -------------------------------------------------------------------------------------
@@ -671,6 +688,15 @@ for event in events :
         p4.SetPtEtaPhiM( ak5GenJetPt[iak5], ak5GenJetEta[iak5], ak5GenJetPhi[iak5], ak5GenJetMass[iak5] )
         ak5GenJets.append(p4)
 
+        if ak5GenJetPt[iak5] > 30.0 and abs(ak5GenJetEta[iak5]) < 2.4:
+            ak5GenJets_tight.append(p4)
+
+
+    if abs(muonEta)<2.1 and muonPt>45. and len(ak5GenJets_tight) > 1:
+        h_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp())
+        hw_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp(), weight)
+
+            
     # -------------------------------------------------------------------------------------
     # get CA8 gen jets
     # -------------------------------------------------------------------------------------
