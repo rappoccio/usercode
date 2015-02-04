@@ -27,19 +27,19 @@ void mySmallText(Double_t x,Double_t y,Color_t color,char *text);
 void myItalicText(Double_t x,Double_t y,Color_t color,char *text); 
 
 
-void truthEff(TString option, bool doPart) {
+void truthEff(TString option, bool doPart, TString pdf) {
 
   SetPlotStyle();
 
-  if (option != "trigSF" && option == "eff") {
+  if ( !(option == "trigSF" || option == "eff" || option == "eff_nobtag")) {
     cout << "not a valid option! exiting..." << endl;
     return;
   }
   
   // full truth samlpes (aka denominator)
-  TFile* f_true0    = new TFile("TT_max700_CT10_nom_fullTruth.root");
-  TFile* f_true700  = new TFile("TT_Mtt-700to1000_CT10_nom_fullTruth.root");
-  TFile* f_true1000 = new TFile("TT_Mtt-1000toInf_CT10_nom_fullTruth.root");
+  TFile* f_true0    = new TFile("TT_max700_"+pdf+"_fullTruth.root");
+  TFile* f_true700  = new TFile("TT_Mtt-700to1000_"+pdf+"_fullTruth.root");
+  TFile* f_true1000 = new TFile("TT_Mtt-1000toInf_"+pdf+"_fullTruth.root");
 
   if (doPart) {
     TH1F* h_true0    = (TH1F*) f_true0->Get("ptPartTop_passParticle");
@@ -56,16 +56,22 @@ void truthEff(TString option, bool doPart) {
   h_true1000->Sumw2();
 
   // default samples with trigger (aka numerator) 
-  TFile* f_trig0    = new TFile("../histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
-  TFile* f_trig700  = new TFile("../histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
-  TFile* f_trig1000 = new TFile("../histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
+  TFile* f_trig0    = new TFile("../histfiles_"+pdf+"/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+pdf+"_2Dcut_nom.root");
+  TFile* f_trig700  = new TFile("../histfiles_"+pdf+"/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+pdf+"_2Dcut_nom.root");
+  TFile* f_trig1000 = new TFile("../histfiles_"+pdf+"/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+pdf+"_2Dcut_nom.root");
+
   if (doPart) {
     if (option=="eff") {
       TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptPartTop_passRecoParticle");
       TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptPartTop_passRecoParticle");
       TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptPartTop_passRecoParticle");
     }
-    else {
+    else if (option=="eff_nobtag") {
+      TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptPartTop_passRecoNoBtagParticle");
+      TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptPartTop_passRecoNoBtagParticle");
+      TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptPartTop_passRecoNoBtagParticle");
+    }
+    else if (option=="trigSF") {
       TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptPartTop_passParticle");
       TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptPartTop_passParticle");
       TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptPartTop_passParticle");
@@ -77,7 +83,12 @@ void truthEff(TString option, bool doPart) {
       TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptGenTop_passRecoParton");
       TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop_passRecoParton");
     }
-    else {
+    else if (option=="eff_nobtag") {
+      TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptGenTop_passRecoNoBtagParton");
+      TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptGenTop_passRecoNoBtagParton");
+      TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop_passRecoNoBtagParton");
+    }
+    else if (option=="trigSF") {
       TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptGenTop_passParton");
       TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptGenTop_passParton");
       TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop_passParton");
@@ -115,15 +126,15 @@ void truthEff(TString option, bool doPart) {
 
   TH1F* h_sf = (TH1F*) h_true0->Clone("eff");
   h_sf->Clear();
-  if (option=="eff") h_sf->Divide(h_trig0,h_true0,1.0,1.0,"B");
+  if (option.Contains("eff")) h_sf->Divide(h_trig0,h_true0,1.0,1.0,"B");
   else h_sf->Divide(h_true0,h_trig0,1.0,1.0,"B");
   
   h_sf->GetYaxis()->SetTitleOffset(1.1);
-  if (option=="eff") h_sf->GetYaxis()->SetTitle("Efficiency");
+  if (option.Contains("eff")) h_sf->GetYaxis()->SetTitle("Efficiency");
   else h_sf->GetYaxis()->SetTitle("Trigger correction");
 
 
-  if (option=="eff") h_sf->SetAxisRange(0.0,0.15,"Y");
+  if (option.Contains("eff")) h_sf->SetAxisRange(0.0,0.15,"Y");
   else if (doPart) h_sf->SetAxisRange(1.0,1.5,"Y");
   else h_sf->SetAxisRange(1.0,2.0,"Y");
 
@@ -135,24 +146,37 @@ void truthEff(TString option, bool doPart) {
     mySmallText(0.4,0.36,1,"(events passing trigger & all selection cuts");
     mySmallText(0.4,0.30,1,"vs all semileptonic t#bar{t} #rightarrow #mu+jets)");
   }
+  else if (option=="eff_nobtag") {
+    mySmallText(0.4,0.42,1,"Total selection efficiency");
+    mySmallText(0.4,0.36,1,"(events passing trigger & all selection cuts w/o btag");
+    mySmallText(0.4,0.30,1,"vs all semileptonic t#bar{t} #rightarrow #mu+jets)");
+  }
   else {
     mySmallText(0.22,0.36,1,"Trigger correction factor");
     if (doPart) mySmallText(0.22,0.30,1,"(pass trigger vs pass particle-level)");
     else mySmallText(0.22,0.30,1,"(pass trigger vs pass parton)");
   }
 
-  for (int i=1; (int)i<h_sf->GetNbinsX()+1; i++) {
-    cout << "SF [" << h_sf->GetBinLowEdge(i) << "," << h_sf->GetBinLowEdge(i+1) 
-	 << "]: " << h_sf->GetBinContent(i) << " +/- " << h_sf->GetBinError(i) << endl;
+  if (option=="trigSF") {
+    cout << endl;
+    for (int i=1; (int)i<h_sf->GetNbinsX()+1; i++) {
+      if (doPart) cout << "trigSF_rp [";
+      else cout << "trigSF [";
+      cout  << h_sf->GetBinLowEdge(i) << "," << h_sf->GetBinLowEdge(i+1) << "]: " << h_sf->GetBinContent(i) << " +/- " << h_sf->GetBinError(i) << endl;
+    }
   }
 
-  if (option=="eff") cout << "Overall SF = " << h_trig0->Integral()/h_true0->Integral() << endl;
-  else cout << "Overall SF = " << h_true0->Integral()/h_trig0->Integral() << endl;
+  if (option.Contains("eff")) cout << endl << "Overall SF = " << h_trig0->Integral()/h_true0->Integral() << endl << endl;
+  else {
+    if (doPart) cout << endl << "Overall trigSF_rp (";
+    else cout << endl << "Overall trigSF (";
+    cout << pdf << ") = " << h_true0->Integral()/h_trig0->Integral() << endl << endl;
+  }
 
   TString outname = "truth_"+option;
   if (doPart) outname += "_rp";
-  c.SaveAs(outname+".png");
-  c.SaveAs(outname+".eps");
+  c.SaveAs(outname+"_"+pdf+".png");
+  c.SaveAs(outname+"_"+pdf+".eps");
   
 }
 
