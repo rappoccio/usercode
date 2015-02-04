@@ -300,18 +300,48 @@ def getBtagEff(jetPt, jetEta, jetFlavor) :
 
 
 # -------------------------------------------------------------------------------------
-# Lepton trigger * ID SF
+# Muon trigger * ID SF
 def getMuonSF(muEta) :
+
+    ## from here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffs#22Jan2013_ReReco_of_2012_data_re
+    ## ID: https://indico.cern.ch/getFile.py/access?contribId=1&resId=2&materialId=slides&confId=257630
+    ## trigger: https://indico.cern.ch/getFile.py/access?contribId=2&resId=0&materialId=slides&confId=257000
 
     muSF = 1.0
     if abs(muEta) < 0.9 :
-        muSF = 0.9815 * 0.9930
+        muSF = 0.9827 * 0.9925
     elif abs(muEta) < 1.2 :
-        muSF = 0.9622 * 0.9942
+        muSF = 0.9622 * 0.9928
     else :
-        muSF = 0.9906 * 0.9968
+        muSF = 0.9906 * 0.9960
 
     return float(muSF)
+
+# -------------------------------------------------------------------------------------
+# Electron trigger * ID SF
+def getElectronSF(elEta, elPt) :
+
+    ## from here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Triggering_MVA
+    
+    ## electron ID
+    if elPt > 199. :
+        elPt = 199.
+    
+    f_elSF = ROOT.TFile("electrons_scale_factors.root")
+    h_elSF = f_elSF.Get("electronsDATAMCratio_FO_ID")
+    
+    ibin = h_elSF.FindBin(abs(elEta), elPt)
+    elSF_ID = PilePlot.GetBinContent(ibin)
+
+    ## electron trigger (uncertainty is statistical only), from AN-2014/035
+    # eff_data = 88.5 +/- 0.7 %
+    # eff_MC = 94.1 +/- 0.2 %
+
+    elSF_trig = 0.94
+
+    elSF = elSF_ID * elSF_trig
+    
+    return float(elSF)
 # -------------------------------------------------------------------------------------
 
 
@@ -2158,6 +2188,11 @@ for event in events :
         cut = cut2
         if options.debug == True and cut == True :
             print '----- Counting as electron event -----'    
+        if nElectrons == 1 and options.isData == False :
+            elEta = muons[igoodMu].p4().Eta()
+            elPt = muons[igoodMu].p4().Pt()
+            electronSF = getElectronSF(elEta, elPt)
+            weight = weight*electronSF
     
     leptons = muons + electrons
     h_nMuons.Fill( nMuons, weight )
