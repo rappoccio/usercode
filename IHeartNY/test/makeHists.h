@@ -24,27 +24,41 @@ bool use2D = true;
 // QCD normalization
 // -------------------------------------------------------------------------------------
 
-std::pair<double, double> getQCDnorm(int cut) {
+std::pair<double, double> getQCDnorm(int cut, bool doElectron) {
 
   if ( !(cut==4||cut==6||cut==7) ) {
     std::cout << "Not a valid cut option! Options are cut == 4,6,7. Exiting..." << std::endl;
     return std::make_pair(0,0);
   }
 
-  float qcd_reliso_norm[8] = {0.0, 0.0, 0.0, 0.0,  401.4, 0.0, 28.5,  1.0};
-  float qcd_reliso_err[8]  = {0.0, 0.0, 0.0, 0.0,   71.6, 0.0, 21.5, 10.0};
-  float qcd_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1207.7, 0.0, 29.5,  9.3};
-  float qcd_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   80.4, 0.0, 21.5, 14.6};
+  float qcd_mu_reliso_norm[8] = {0.0, 0.0, 0.0, 0.0,  401.4, 0.0, 28.5,  1.0};
+  float qcd_mu_reliso_err[8]  = {0.0, 0.0, 0.0, 0.0,   71.6, 0.0, 21.5, 10.0};
+  //float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1207.7, 0.0, 29.5,  9.3};
+  //float qcd_mu_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   80.4, 0.0, 21.5, 14.6};
+
+  // preliminary version of muon values with new ntuples -- needs to be checked!
+  float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1449.6, 0.0, 57.5,  11.0};
+  float qcd_mu_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   81.8, 0.0, 23.7, 12.8};
+
+  // for now, electrons using same values as for muons -- needs to be updated!
+  //float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 3653.2, 0.0, 210.4, 0.0};
+  //float qcd_el_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,  322.8, 0.0,  16.1, 0.0};
+  float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, 0.0};
+  float qcd_el_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,  0, 0.0,  0, 0.0};
 
   float qcd_norm = 0;
   float qcd_err  = 0;
-  if (use2D) {
-    qcd_norm = qcd_2Dcut_norm[cut];
-    qcd_err  = qcd_2Dcut_err[cut];
+  if (use2D && doElectron) {
+    qcd_norm = qcd_el_2Dcut_norm[cut];
+    qcd_err  = qcd_el_2Dcut_err[cut];
+  }
+  else if (use2D) {
+    qcd_norm = qcd_mu_2Dcut_norm[cut];
+    qcd_err  = qcd_mu_2Dcut_err[cut];
   }
   else {
-    qcd_norm = qcd_reliso_norm[cut];
-    qcd_err  = qcd_reliso_err[cut];
+    qcd_norm = qcd_mu_reliso_norm[cut];
+    qcd_err  = qcd_mu_reliso_err[cut];
   }
 
   return std::make_pair(qcd_norm, qcd_err);
@@ -147,18 +161,22 @@ void adjustThetaName( TString & thetaname, TString name ) {
 // W+jets
 // -------------------------------------------------------------------------------------
 
-SummedHist * getWJets( TString name, TString histname ) {
+SummedHist * getWJets( TString name, TString histname, bool doElectron ) {
 
   const int nwjets = 4;
 
   TString DIR = "histfiles/";
-  if (use2D) DIR += "2Dhist/";
+  if (use2D && doElectron) DIR += "2Dhist_el/";
+  else if (use2D) DIR += "2Dhist/";
+
+  TString muOrEl = "mu";
+  if (doElectron) muOrEl = "el";
 
   TString wjets_names[nwjets] = {
-    "W1JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_",
-    "W2JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_",
-    "W3JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_",
-    "W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_",
+    "W1JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_",
+    "W2JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_",
+    "W3JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_",
+    "W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_",
   };
   double wjets_norms[nwjets] = {
     5400. * 1.207 * 1000. * LUM / 23141598.,  // W+1 jets
@@ -193,20 +211,24 @@ SummedHist * getWJets( TString name, TString histname ) {
 // single top
 // -------------------------------------------------------------------------------------
 
-SummedHist * getSingleTop( TString name, TString histname ) {
+SummedHist * getSingleTop( TString name, TString histname, bool doElectron ) {
 
   const int nsingletop = 6;
 
   TString DIR = "histfiles/";
-  if (use2D) DIR += "2Dhist/";
+  if (use2D && doElectron) DIR += "2Dhist_el/";
+  else if (use2D) DIR += "2Dhist/";
+
+  TString muOrEl = "mu";
+  if (doElectron) muOrEl = "el";
 
   TString singletop_names[nsingletop] = {
-    "T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-    "Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-    "T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-    "Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-    "T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-    "Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
+    "T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+    "Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+    "T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+    "Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+    "T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+    "Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
   };
   double singletop_norms[nsingletop] = {
     3.79 * 1000. * LUM / 259961. , // All single-top approx NNLO cross sections from
@@ -243,18 +265,22 @@ SummedHist * getSingleTop( TString name, TString histname ) {
 // non-semileptonic ttbar
 // -------------------------------------------------------------------------------------
 
-SummedHist * getTTbarNonSemiLep( TString name, TString histname, TString pdfdir = "CT10_nom" ) {
+SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron, TString pdfdir = "CT10_nom" ) {
 
   const int nttbar = 3;
   const int nq2 = 3;
 
   TString DIR = "histfiles_" + pdfdir + "/";
-  if (use2D) DIR += "2Dhists/";
+  if (use2D && doElectron) DIR += "2Dhists_el/";
+  else if (use2D) DIR += "2Dhists/";
+
+  TString muOrEl = "mu";
+  if (doElectron) muOrEl = "el";
 
   TString ttbar_names[nttbar] = {
-    "TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-    "TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-    "TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"
+    "TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+    "TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+    "TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"
   };
   double ttbar_xs[nq2] = {
     245.8 * 1000. * LUM,  // nominal
@@ -264,7 +290,7 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, TString pdfdir 
   double ttbar_nevents[nq2][nttbar] = {
     {21675970., 3082812., 1249111.},  // nominal
     {14983686., 2243672., 1241650.},  // q2 up
-    {1789004., 2170074., 1308090.}   // q2 down
+    {14545715., 2170074., 1308090.}   // q2 down
   };
   double ttbar_eff[nq2][nttbar] = {
     {1.0, 0.074, 0.015},  // nominal
@@ -308,18 +334,23 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, TString pdfdir 
 // signal ttbar
 // -------------------------------------------------------------------------------------
 
-SummedHist * getTTbar( TString name, TString histname, TString pdfdir = "CT10_nom" ) {
+SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString pdfdir = "CT10_nom" ) {
 
   const int nttbar = 3;
   const int nq2 = 3;
 
   TString DIR = "histfiles_" + pdfdir + "/";
-  if (use2D) DIR += "2Dhists/";
+  if (use2D && doElectron) DIR += "2Dhists_el/";
+  else if (use2D) DIR += "2Dhists/";
+
+  TString muOrEl = "mu";
+  if (doElectron) muOrEl = "el";
+
 
   TString ttbar_names[nttbar] = {
-    "TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-    "TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-    "TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"
+    "TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+    "TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+    "TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"
   };
   double ttbar_xs[nttbar] = {
     245.8 * 1000. * LUM,  // nominal
@@ -373,17 +404,18 @@ SummedHist * getTTbar( TString name, TString histname, TString pdfdir = "CT10_no
 // QCD
 // -------------------------------------------------------------------------------------
 
-SummedHist * getQCD( TString var ) {
+SummedHist * getQCD( TString var, bool doElectron ) {
 
-  SummedHist* wjets_qcd = getWJets( "qcd", var );
-  SummedHist* singletop_qcd = getSingleTop( "qcd", var );
-  SummedHist* ttbar_qcd = getTTbar( "qcd", var );
-  SummedHist* ttbar_nonsemilep_qcd = getTTbarNonSemiLep( "qcd", var );
+  SummedHist* wjets_qcd = getWJets( "qcd", var, doElectron );
+  SummedHist* singletop_qcd = getSingleTop( "qcd", var, doElectron );
+  SummedHist* ttbar_qcd = getTTbar( "qcd", var, doElectron );
+  SummedHist* ttbar_nonsemilep_qcd = getTTbarNonSemiLep( "qcd", var, doElectron );
 
   SummedHist* qcd = new SummedHist( var + "__QCD", kYellow);
 
   TString filepath;
-  if (use2D) filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root";
+  if (doElectron && use2D) filepath = "histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root";
+  else if (use2D) filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root";
   else filepath = "histfiles/SingleMu_iheartNY_V1_mu_Run2012_qcd.root";
 
   TFile* qcdFile = TFile::Open(filepath);

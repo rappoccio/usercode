@@ -300,18 +300,48 @@ def getBtagEff(jetPt, jetEta, jetFlavor) :
 
 
 # -------------------------------------------------------------------------------------
-# Lepton trigger * ID SF
+# Muon trigger * ID SF
 def getMuonSF(muEta) :
+
+    ## from here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffs#22Jan2013_ReReco_of_2012_data_re
+    ## ID: https://indico.cern.ch/getFile.py/access?contribId=1&resId=2&materialId=slides&confId=257630
+    ## trigger: https://indico.cern.ch/getFile.py/access?contribId=2&resId=0&materialId=slides&confId=257000
 
     muSF = 1.0
     if abs(muEta) < 0.9 :
-        muSF = 0.9815 * 0.9930
+        muSF = 0.9827 * 0.9925
     elif abs(muEta) < 1.2 :
-        muSF = 0.9622 * 0.9942
+        muSF = 0.9622 * 0.9928
     else :
-        muSF = 0.9906 * 0.9968
+        muSF = 0.9906 * 0.9960
 
     return float(muSF)
+
+# -------------------------------------------------------------------------------------
+# Electron trigger * ID SF
+def getElectronSF(elEta, elPt) :
+
+    ## from here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Triggering_MVA
+    
+    ## electron ID
+    if elPt > 199. :
+        elPt = 199.
+    
+    f_elSF = ROOT.TFile("electrons_scale_factors.root")
+    h_elSF = f_elSF.Get("electronsDATAMCratio_FO_ID")
+    
+    ibin = h_elSF.FindBin(abs(elEta), elPt)
+    elSF_ID = PilePlot.GetBinContent(ibin)
+
+    ## electron trigger (uncertainty is statistical only), from AN-2014/035
+    # eff_data = 88.5 +/- 0.7 %
+    # eff_MC = 94.1 +/- 0.2 %
+
+    elSF_trig = 0.94
+
+    elSF = elSF_ID * elSF_trig
+    
+    return float(elSF)
 # -------------------------------------------------------------------------------------
 
 
@@ -685,6 +715,9 @@ h_nLepJets6  = ROOT.TH1F("nLepJets6",  "Number of jets, p_{T} > 30 GeV;N_{lep.si
 
 # lepton properties
 if options.lepType == "muon":
+
+    print "running on muons!"
+    
     h_ptLep0  = ROOT.TH1F("ptLep0",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
     h_ptLep1  = ROOT.TH1F("ptLep1",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
     h_ptLep2  = ROOT.TH1F("ptLep2",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
@@ -726,6 +759,9 @@ if options.lepType == "muon":
     h_pfIso2    = ROOT.TH1F("pfIso2",    ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
     h_pfIso3    = ROOT.TH1F("pfIso3",    ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
 else:
+
+    print "running on electrons!"
+    
     h_ptLep0  = ROOT.TH1F("ptLep0",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
     h_ptLep1  = ROOT.TH1F("ptLep1",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
     h_ptLep2  = ROOT.TH1F("ptLep2",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
@@ -1051,8 +1087,10 @@ if options.makeResponse == True :
     ## current default bin widths
     response = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response.SetName('response_pt')
+    response.UseOverflow()
     response_nobtag = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response_nobtag.SetName('response_pt_nobtag')
+    response_nobtag.UseOverflow()
     h_ptGenTop          = ROOT.TH1F("ptGenTop",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
     h_ptGenTop_noweight = ROOT.TH1F("ptGenTop_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
@@ -1383,7 +1421,7 @@ Nmc_TT_Mtt_1000_Inf = 1249111
 Nmc_ttbar_Q2up = 14983686
 Nmc_TT_Mtt_700_1000_Q2up = 2243672
 Nmc_TT_Mtt_1000_Inf_Q2up = 1241650
-Nmc_ttbar_Q2dn = 1789004
+Nmc_ttbar_Q2dn = 14545715
 Nmc_TT_Mtt_700_1000_Q2dn = 2170074
 Nmc_TT_Mtt_1000_Inf_Q2dn = 1308090
 
@@ -1560,6 +1598,10 @@ for event in events :
         if (this_pdfweight > 100.0):
             print "WARNING!! really large PDF weight for pdfset # " + str(options.pdfSet) + " syst # " + str(options.pdfSys) + ", weight = " + str(this_pdfweight) + " -- i'm ignoring this event!!"
             continue
+
+        if options.debug : 
+            print "PPDF weight is " + str(this_pdfweight)
+
         
     
     #endof if doing pdfSys
@@ -1647,10 +1689,16 @@ for event in events :
         
         if (topDecay + antitopDecay == 1) and (isMuon == True) and (isElectron == False) and (options.lepType == "muon"):
             isSemiLeptonicGen = True
+            if options.debug:
+                print "semileptonic ttbar decay to muon channel!"
         elif (topDecay + antitopDecay == 1) and (isMuon == False) and (isElectron == True) and (options.lepType == "ele"):
             isSemiLeptonicGen = True
+            if options.debug:
+                print "semileptonic ttbar decay to electron channel!"
         else :
             isSemiLeptonicGen = False
+            if options.debug:
+                print "NON-semileptonic ttbar decay!"
 
         # If we are filling the response matrix, don't
         # consider "volunteer" events that pass the selection
@@ -1828,7 +1876,7 @@ for event in events :
         genLepton = ROOT.TLorentzVector()
         genTops = []
 
-        if (options.leptype == "muon") :
+        if (options.lepType == "muon") :
             for iMuon in genMuons:
                 if iMuon.Perp() > MIN_MU_PT and abs(iMuon.Eta()) < MAX_MU_ETA:
                     nGenLeptons += 1
@@ -1841,11 +1889,11 @@ for event in events :
 
         if nGenLeptons == 1:
             for iak5Gen in ak5GenJets:
-                if iak5Gen.DeltaR(genLepton) < ROOT.TMath.Pi() / 2.0 and iak5Gen.Perp() > MIN_JET_PT and abs(iak5Gen.Eta()) < MAX_JET_PT:
+                if iak5Gen.DeltaR(genLepton) < ROOT.TMath.Pi() / 2.0 and iak5Gen.Perp() > MIN_JET_PT and abs(iak5Gen.Eta()) < MAX_JET_ETA:
                     nGenBJets += 1
 
             for ica8Gen in ca8GenJets:
-                if ica8Gen.DeltaR(genLepton) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > MIN_JET_PT and abs(ica8Gen.Eta()) < MAX_JET_PT:
+                if ica8Gen.DeltaR(genLepton) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > MIN_JET_PT and abs(ica8Gen.Eta()) < MAX_JET_ETA:
                     genTops.append(ica8Gen)
                     nGenTops += 1
 
@@ -2142,6 +2190,11 @@ for event in events :
         cut = cut2
         if options.debug == True and cut == True :
             print '----- Counting as electron event -----'    
+        if nElectrons == 1 and options.isData == False :
+            elEta = muons[igoodMu].p4().Eta()
+            elPt = muons[igoodMu].p4().Pt()
+            electronSF = getElectronSF(elEta, elPt)
+            weight = weight*electronSF
     
     leptons = muons + electrons
     h_nMuons.Fill( nMuons, weight )
@@ -3153,13 +3206,18 @@ for event in events :
     h_ptRecoTop_nobtag.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_nobtag_full.Fill( goodtop.Perp(), top_weight )
 
-    if passParton:
-        h_ptRecoTop_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
-    if passParticleLoose:
-        h_ptRecoTop_2step_nobtag.Fill( goodtop.Perp(), top_weight )
-        h_ptRecoTop_2step_nobtag_full.Fill( goodtop.Perp(), top_weight )
-    if passParticle:
-        h_ptRecoTop_2step_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
+    #if passParton:
+    #    h_ptRecoTop_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
+    #if passParticleLoose:
+    #    h_ptRecoTop_2step_nobtag.Fill( goodtop.Perp(), top_weight )
+    #    h_ptRecoTop_2step_nobtag_full.Fill( goodtop.Perp(), top_weight )
+    #if passParticle:
+    #    h_ptRecoTop_2step_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
+
+    h_ptRecoTop_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_nobtag.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_nobtag_full.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
     
     if options.makeResponse == True :		
         h_ptRecoTop_passRecoNoBtag.Fill( goodtop.Perp(), top_weight )
@@ -3484,13 +3542,18 @@ for event in events :
     h_ptRecoTop.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_full.Fill( goodtop.Perp(), top_weight )
 
-    if passParton:
-        h_ptRecoTop_pt400.Fill( goodtop.Perp(), top_weight )
-    if passParticleLoose:
-        h_ptRecoTop_2step.Fill( goodtop.Perp(), top_weight )
-        h_ptRecoTop_2step_full.Fill( goodtop.Perp(), top_weight )
-    if passParticle:
-        h_ptRecoTop_2step_pt400.Fill( goodtop.Perp(), top_weight )
+    #if passParton:
+    #    h_ptRecoTop_pt400.Fill( goodtop.Perp(), top_weight )
+    #if passParticleLoose:
+    #    h_ptRecoTop_2step.Fill( goodtop.Perp(), top_weight )
+    #    h_ptRecoTop_2step_full.Fill( goodtop.Perp(), top_weight )
+    #if passParticle:
+    #    h_ptRecoTop_2step_pt400.Fill( goodtop.Perp(), top_weight )
+    
+    h_ptRecoTop_pt400.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_full.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_pt400.Fill( goodtop.Perp(), top_weight )
     
     if options.makeResponse == True :		
         h_ptRecoTop_passReco.Fill( goodtop.Perp(), top_weight )
