@@ -1087,8 +1087,10 @@ if options.makeResponse == True :
     ## current default bin widths
     response = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response.SetName('response_pt')
+    response.UseOverflow()
     response_nobtag = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response_nobtag.SetName('response_pt_nobtag')
+    response_nobtag.UseOverflow()
     h_ptGenTop          = ROOT.TH1F("ptGenTop",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
     h_ptGenTop_noweight = ROOT.TH1F("ptGenTop_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
@@ -3204,13 +3206,18 @@ for event in events :
     h_ptRecoTop_nobtag.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_nobtag_full.Fill( goodtop.Perp(), top_weight )
 
-    if passParton:
-        h_ptRecoTop_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
-    if passParticleLoose:
-        h_ptRecoTop_2step_nobtag.Fill( goodtop.Perp(), top_weight )
-        h_ptRecoTop_2step_nobtag_full.Fill( goodtop.Perp(), top_weight )
-    if passParticle:
-        h_ptRecoTop_2step_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
+    #if passParton:
+    #    h_ptRecoTop_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
+    #if passParticleLoose:
+    #    h_ptRecoTop_2step_nobtag.Fill( goodtop.Perp(), top_weight )
+    #    h_ptRecoTop_2step_nobtag_full.Fill( goodtop.Perp(), top_weight )
+    #if passParticle:
+    #    h_ptRecoTop_2step_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
+
+    h_ptRecoTop_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_nobtag.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_nobtag_full.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
     
     if options.makeResponse == True :		
         h_ptRecoTop_passRecoNoBtag.Fill( goodtop.Perp(), top_weight )
@@ -3535,13 +3542,18 @@ for event in events :
     h_ptRecoTop.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_full.Fill( goodtop.Perp(), top_weight )
 
-    if passParton:
-        h_ptRecoTop_pt400.Fill( goodtop.Perp(), top_weight )
-    if passParticleLoose:
-        h_ptRecoTop_2step.Fill( goodtop.Perp(), top_weight )
-        h_ptRecoTop_2step_full.Fill( goodtop.Perp(), top_weight )
-    if passParticle:
-        h_ptRecoTop_2step_pt400.Fill( goodtop.Perp(), top_weight )
+    #if passParton:
+    #    h_ptRecoTop_pt400.Fill( goodtop.Perp(), top_weight )
+    #if passParticleLoose:
+    #    h_ptRecoTop_2step.Fill( goodtop.Perp(), top_weight )
+    #    h_ptRecoTop_2step_full.Fill( goodtop.Perp(), top_weight )
+    #if passParticle:
+    #    h_ptRecoTop_2step_pt400.Fill( goodtop.Perp(), top_weight )
+    
+    h_ptRecoTop_pt400.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_full.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_pt400.Fill( goodtop.Perp(), top_weight )
     
     if options.makeResponse == True :		
         h_ptRecoTop_passReco.Fill( goodtop.Perp(), top_weight )
