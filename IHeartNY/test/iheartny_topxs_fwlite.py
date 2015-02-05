@@ -331,7 +331,7 @@ def getElectronSF(elEta, elPt) :
     h_elSF = f_elSF.Get("electronsDATAMCratio_FO_ID")
     
     ibin = h_elSF.FindBin(abs(elEta), elPt)
-    elSF_ID = PilePlot.GetBinContent(ibin)
+    elSF_ID = h_elSF.GetBinContent(ibin)
 
     ## electron trigger (uncertainty is statistical only), from AN-2014/035
     # eff_data = 88.5 +/- 0.7 %
@@ -1069,7 +1069,7 @@ h_toptagSF = ROOT.TH1F("toptagSF", ";; Average top-tagging SF", 1,0.5,1.5)
 ############################################################################################################
 
 # dummy histogram used only to specify dimensions for reponse matrix
-ptbins       = array('d',[300.0,400.0,500.0,600.0,700.0,800.0,1300.0])                         ## default version
+ptbins       = array('d',[400.0,500.0,600.0,700.0,800.0,1200.0])                               ## default version
 ptbins_full  = array('d',[0.0,100.0,200.0,300.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])  ## including lower/higher pt bins
 ptbins_pt400 = array('d',[400.0,500.0,600.0,700.0,800.0,1200.0])                               ## version requiring pt>400 at gen/particle-level
 
