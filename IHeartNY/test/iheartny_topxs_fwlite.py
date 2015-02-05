@@ -2191,8 +2191,8 @@ for event in events :
         if options.debug == True and cut == True :
             print '----- Counting as electron event -----'    
         if nElectrons == 1 and options.isData == False :
-            elEta = muons[igoodMu].p4().Eta()
-            elPt = muons[igoodMu].p4().Pt()
+            elEta = electrons[igoodEle].p4().Eta()
+            elPt = electrons[igoodEle].p4().Pt()
             electronSF = getElectronSF(elEta, elPt)
             weight = weight*electronSF
     
