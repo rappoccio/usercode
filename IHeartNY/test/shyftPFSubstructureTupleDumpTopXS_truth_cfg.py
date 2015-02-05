@@ -198,19 +198,19 @@ process.pfShyftTupleJetsLooseCA8Pruned = cms.EDProducer(
     variables = cms.VPSet(
         cms.PSet(
             tag = cms.untracked.string("mass"),
-            quantity = cms.untracked.string("mass")
+            quantity = cms.untracked.string("correctedP4(0).mass()")
             ),
         cms.PSet(
             tag = cms.untracked.string("pt"),
-            quantity = cms.untracked.string("pt")
+            quantity = cms.untracked.string("correctedP4(0).pt()")
             ),
         cms.PSet(
             tag = cms.untracked.string("eta"),
-            quantity = cms.untracked.string("eta")
+            quantity = cms.untracked.string("correctedP4(0).eta()")
             ),
         cms.PSet(
             tag = cms.untracked.string("phi"),
-            quantity = cms.untracked.string("phi")
+            quantity = cms.untracked.string("correctedP4(0).phi()")
             ),
         cms.PSet(
             tag = cms.untracked.string("jetArea"),
@@ -264,19 +264,19 @@ process.pfShyftTupleJetsLooseTopTag = cms.EDProducer(
     variables = cms.VPSet(
         cms.PSet(
             tag = cms.untracked.string("mass"),
-            quantity = cms.untracked.string("mass")
+            quantity = cms.untracked.string("correctedP4(0).mass()")
             ),
         cms.PSet(
             tag = cms.untracked.string("pt"),
-            quantity = cms.untracked.string("pt")
+            quantity = cms.untracked.string("correctedP4(0).pt()")
             ),
         cms.PSet(
             tag = cms.untracked.string("eta"),
-            quantity = cms.untracked.string("eta")
+            quantity = cms.untracked.string("correctedP4(0).eta()")
             ),
         cms.PSet(
             tag = cms.untracked.string("phi"),
-            quantity = cms.untracked.string("phi")
+            quantity = cms.untracked.string("correctedP4(0).phi()")
             ),
         cms.PSet(
             tag = cms.untracked.string("jetArea"),

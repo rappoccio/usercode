@@ -56,7 +56,7 @@ import sys
 if options.useData == 0 : 
     process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-                                    'file:/uscms_data/d3/skinnari/pattuple.root'
+                                    'file:/uscms/home/skinnari/myeos/pattuple.root'
                                     #'root://cmsxrootd.fnal.gov//store/results/B2G/TT_CT10_TuneZ2star_8TeV-powheg-tauola/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/TT_CT10_TuneZ2star_8TeV-powheg-tauola/USER/StoreResults-Summer12_DR53X-PU_S10_START53_V7A-v2_TLBSM_53x_v3_bugfix_v1-99bd99199697666ff01397dad5652e9e/0000/002079E2-81CD-E211-B071-002590593878.root'
                                     )
         )
@@ -202,19 +202,19 @@ process.pfShyftTupleJetsLooseCA8Pruned = cms.EDProducer(
     variables = cms.VPSet(
         cms.PSet(
             tag = cms.untracked.string("mass"),
-            quantity = cms.untracked.string("mass")
+            quantity = cms.untracked.string("correctedP4(0).mass()")
             ),
         cms.PSet(
             tag = cms.untracked.string("pt"),
-            quantity = cms.untracked.string("pt")
+            quantity = cms.untracked.string("correctedP4(0).pt()")
             ),
         cms.PSet(
             tag = cms.untracked.string("eta"),
-            quantity = cms.untracked.string("eta")
+            quantity = cms.untracked.string("correctedP4(0).eta()")
             ),
         cms.PSet(
             tag = cms.untracked.string("phi"),
-            quantity = cms.untracked.string("phi")
+            quantity = cms.untracked.string("correctedP4(0).phi()")
             ),
         cms.PSet(
             tag = cms.untracked.string("jetArea"),
@@ -268,19 +268,19 @@ process.pfShyftTupleJetsLooseTopTag = cms.EDProducer(
     variables = cms.VPSet(
         cms.PSet(
             tag = cms.untracked.string("mass"),
-            quantity = cms.untracked.string("mass")
+            quantity = cms.untracked.string("correctedP4(0).mass()")
             ),
         cms.PSet(
             tag = cms.untracked.string("pt"),
-            quantity = cms.untracked.string("pt")
+            quantity = cms.untracked.string("correctedP4(0).pt()")
             ),
         cms.PSet(
             tag = cms.untracked.string("eta"),
-            quantity = cms.untracked.string("eta")
+            quantity = cms.untracked.string("correctedP4(0).eta()")
             ),
         cms.PSet(
             tag = cms.untracked.string("phi"),
-            quantity = cms.untracked.string("phi")
+            quantity = cms.untracked.string("correctedP4(0).phi()")
             ),
         cms.PSet(
             tag = cms.untracked.string("jetArea"),
