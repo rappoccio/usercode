@@ -25,6 +25,7 @@ QCD template.
 */
 
 #include <iostream>
+#include <iomanip>
 #include <cstdlib>
 #include <cmath>
 #include <string>
@@ -57,7 +58,7 @@ vector<double> top_Vec; //ttbar+stop template from MC
 vector<double> wjets_Vec; //wjets template from MC
 vector<double> qcd_Vec; //qcd template from data driven method
 
-double L = 19748; //UPDATED (in pb)
+double L = 19700; //UPDATED (in pb)
 
 int Ntotal; //Total # of events -- define as global, currently rewritten for each Njets bin
 int nbins = 200;
@@ -69,12 +70,24 @@ int binfac = 10;
 TString binsize  = "20";      //binfac * 2
 TString numberofbins  = "20"; //200 / binfac
 
+TString whichHist = "2Dcut_";
+TString whichDir = "2Dhist_el/";
+TString whichDirv2 = "2Dhists_el/";
+TString channel = "el";
+//TString whichHist = "";
+//TString whichDir = "";
+//TString whichDirv2 = "";
+
+double Nraw[5];
+double Nnorm[5];
+double Nfit[5];
+double Nside[5];
 double numEvent[3]; //set it global use to set limit in fcn
 
 // Helper functions
 void fcn(int& npar, double* deriv, double& f, double par[], int flag);
-void getData(TString& temp_num, int binfac);
-double* getTemp(TString& temp_num, int binfac, bool dosub);
+void getData(TString& temp_num, int binfac, bool exclusive, TString channel);
+double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub, bool exclusive, TString var, TString channel);
 double* getWeightArray();
 
 TText* doPrelim(float luminosity, float x, float y);
@@ -85,15 +98,21 @@ int QCDminfit_3() {
   cout << "Beginning QCD normalization..." << endl;
 
   // User inputs
-  TString temp_num = "0";
+  TString temp_num = "4";
+  TString QCD_temp_num = "4";
   bool dosub = true;
+  bool exclusive = true; 
+  TString var = "";    // Amount of non-QCD subtracted from the sideband
+                         //"raw" = none, "" = nominal, "up" = nominal x 2, "dn" = nominal x 1/2
 
   int nbins_new = nbins / binfac;
   cout << "New # of bins is " << nbins_new << endl;
   cout << "Fitting ptMET" << temp_num << endl;
 
-  getData(temp_num, binfac);
-  double * ini_val = getTemp(temp_num, binfac, dosub);
+  getData(temp_num, binfac, exclusive, channel);
+  cout << "Got data..." << endl;
+  double* ratios = getTemp(temp_num, QCD_temp_num, binfac, dosub, exclusive, var, channel);
+  cout << "Got MC..." << endl;
   
   // Initialize minuit, set initial values etc. of parameters.
   const int npar = 3; // the number of parameters
@@ -107,30 +126,12 @@ int QCDminfit_3() {
   string parName[npar] = {"top", "wjets", "qcd"};
   double par[npar];
   
-  //for(int i=0; i<npar; i++){
-    // use the MC estimations for the normalization start values,
-    // but correct if out of range.
-    //if (ini_val[i] < 0.) {
-    //  par[i] = 0.;
-    //  numEvent[i] = 0.;
-    //}
-    
-    //else if (ini_val[i] >= Ntotal) {
-    //  par[i] = Ntotal - 1.;
-    //  numEvent[i] = Ntotal - 1.;
-    //}
-    
-    //else {
-    //  par[i] = ini_val[i];
-    //  numEvent[i] = ini_val[i];
-    //}
-  //}
-  par[0] = 0.3 * Ntotal;
-  par[1] = 0.3 * Ntotal;
-  par[2] = 0.4 * Ntotal;
-  numEvent[0] = 0.3 * Ntotal;
-  numEvent[1] = 0.3 * Ntotal;
-  numEvent[2] = 0.4 * Ntotal;
+  par[0] = 0.8 * Ntotal;
+  par[1] = 0.1 * Ntotal;
+  par[2] = 0.1 * Ntotal;
+  numEvent[0] = 0.8 * Ntotal;
+  numEvent[1] = 0.1 * Ntotal;
+  numEvent[2] = 0.1 * Ntotal;
 
   for(int i=0; i<npar; i++){
     // optimize parameters with initial value of par[i], moving in increments
@@ -199,14 +200,38 @@ int QCDminfit_3() {
   double pplus, pminus, pparab, pgcc;
   minuit.mnerrs(2, pplus, pminus, pparab, pgcc);
 
-  //print out the results
-  cout << " When fitting ptMET" << temp_num << ", the fitting results were" << endl;
-  cout << " \t top \t wjets \t qcd"<<endl;
+  //Get post-fit numbers
+  for (int i=0; i<3; i++){
+    Nfit[i] = Nnorm[i] * outpar[0] / (Nnorm[0] + Nnorm[1] + Nnorm[2]) * ratios[i];
+  }
+  Nfit[3] = outpar[1] * ratios[3];
 
-  cout <<" Before fit "<< ini_val[0]<<" \t "<<ini_val[1]<<" \t "<<ini_val[2]<<std::endl;
-  cout <<" After fit "<<outpar[0]<<" +- "<<err[0]<<" \t "<<outpar[1]<<" +- "<<err[1]<<" \t "
-       <<outpar[2]<<" +- "<<err[2]<<endl;
-  cout <<" MINOS errors are +"<<pplus<<", -"<<pminus<<", "<<pparab<<" parabolic and "<<pgcc<<" gcc"<<endl;
+    
+  //print out the results
+  cout << fixed << setprecision(1);
+  
+  cout << "Cutflow: Step " << temp_num << endl;
+  cout << "                    " << setw(10) << "TTbar"  << setw(18) << "TTbar_nonSemiLep" << setw(10) << "WJets"  
+       << setw(10) << "S.T."   << setw(10) << "QCD"     << setw(10) << "Data"   << endl;
+  cout << "Raw counts:         " << setw(10) << Nraw[0]  << setw(18) << Nraw[1]            << setw(10) << Nraw[3]  
+       << setw(10) << Nraw[2]  << setw(10) << "N/A"     << setw(10) << Nraw[4]  << endl;
+  cout << "Post normalization: " << setw(10) << Nnorm[0] << setw(18) << Nnorm[1]           << setw(10) << Nnorm[3] 
+       << setw(10) << Nnorm[2] << setw(10) << "N/A"     << setw(10) << Nnorm[4] << endl;
+  cout << "Post fit:           " << setw(10) << Nfit[0]  << setw(18) << Nfit[1]            << setw(10) << Nfit[3]  
+       << setw(10) << Nfit[2]  << setw(10) << outpar[2] << setw(10) << Nfit[4]  << endl;
+  cout << fixed << setprecision(2);
+  cout << "Post / pre fit ratio: " << outpar[0] / (Nnorm[0] + Nnorm[1] + Nnorm[2]) << endl;
+  cout << fixed << setprecision(1);
+  cout << endl;
+  cout << "QCD fit result:" << endl;
+  cout << "\t Basic: " << outpar[2] * ratios[4] << " +- " << err[2] * ratios[4] << endl;
+  cout << "\t MINOS: " << outpar[2] * ratios[4] << " + " << pplus * ratios[4] << " - " << pminus * ratios[4] << endl;
+  cout << endl;
+  cout << "Cutflow in sideband: Step " << temp_num << endl;
+  cout << setw(10) << "TTbar"  << setw(18) << "TTbar_nonSemiLep" << setw(10) << "WJets"  
+       << setw(10) << "S.T."   << setw(13) << "Data"   << endl;
+  cout << setw(10) << Nside[0]  << setw(18) << Nside[1] << setw(10) << Nside[3] 
+       << setw(10) << Nside[2]  << setw(13) << Nside[4]  << endl;
   
   //make template plots
   TCanvas* canvasTemp = new TCanvas("canvasTemp", "canvasTemp", 700, 500);
@@ -248,7 +273,7 @@ int QCDminfit_3() {
   textPrelimA->SetTextFont(42);
 
   canvasTemp->Update();
-  canvasTemp->SaveAs("Temp_"+numberofbins+"b_"+temp_num+".png");
+  canvasTemp->SaveAs("Temp_3temp_"+numberofbins+"b_"+temp_num+".png");
 
   //make fit plot
   TCanvas* canvasFit = new TCanvas("canvasFit", "canvasFit", 700, 500);
@@ -301,7 +326,7 @@ int QCDminfit_3() {
   gPad->RedrawAxis();
   
   canvasFit->Update();
-  canvasFit->SaveAs("Fit_"+numberofbins+"b_"+temp_num+".png");
+  canvasFit->SaveAs("Fit_3temp_"+whichHist+numberofbins+"b_"+temp_num+"_"+var+".png");
 
   cout << "To exit, quit ROOT from the File menu of the plot" << endl;
   return 0;
@@ -311,8 +336,8 @@ int QCDminfit_3() {
 //-------------------------------------------------------------------------
 double* getWeightArray(){
 
-  double xs_array[13], nE_array[13];
-  double* weight_array = new double[13];
+  double xs_array[16], nE_array[16];
+  double* weight_array = new double[16];
 
   xs_array[0] = 245.8; //TTjets 0-700
   nE_array[0] = 21675970;
@@ -320,11 +345,11 @@ double* getWeightArray(){
   nE_array[1] = 3082812;
   xs_array[2] = 245.8; //TTjets 1000-Inf
   nE_array[2] = 1249111;
-  xs_array[3] = 245.8; //TTjets 0-700 nonSemiLep
+  xs_array[3] = 245.8; //TTjets 0-700 notSemiLep
   nE_array[3] = 21675970;
-  xs_array[4] = 245.8; //TTjets 700-1000 nonSemiLep
-  nE_array[4] = 3082812;  
-  xs_array[5] = 245.8; //TTjets 1000-Inf nonSemiLep
+  xs_array[4] = 245.8; //TTjets 700-1000 notSemiLep
+  nE_array[4] = 3082812;
+  xs_array[5] = 245.8; //TTjets 1000-Inf notSemiLep
   nE_array[5] = 1249111;
   xs_array[6] = 11.1; //St_tW
   nE_array[6] = 497658;
@@ -338,36 +363,61 @@ double* getWeightArray(){
   nE_array[10] = 259961;
   xs_array[11] = 1.76; //St_sB
   nE_array[11] = 139974;
-  xs_array[12] = 36703.2; //Wjets
-  nE_array[12] = 57709905;
+  xs_array[12] = 5400*1.207; //W+1jets
+  nE_array[12] = 23141598;
+  xs_array[13] = 1750*1.207; //W+2jets
+  nE_array[13] = 34044921;
+  xs_array[14] = 519*1.207; //W+3jets
+  nE_array[14] = 15539503;
+  xs_array[15] = 214*1.207; //W+4jets
+  nE_array[15] = 13382803;
 
   weight_array[0] = xs_array[0]*L/nE_array[0]; //TTjets 0-700
   weight_array[1] = xs_array[1]*L*0.074/nE_array[1]; //TTjets 700-1000
-  weight_array[2] = xs_array[2]*L*0.014/nE_array[2]; //TTjets 1000-Inf
+  weight_array[2] = xs_array[2]*L*0.015/nE_array[2]; //TTjets 1000-Inf
   weight_array[3] = xs_array[3]*L/nE_array[3]; //TTjets 0-700 nonSemiLep
   weight_array[4] = xs_array[4]*L*0.074/nE_array[4]; //TTjets 700-1000 nonSemiLep
-  weight_array[5] = xs_array[5]*L*0.014/nE_array[5]; //TTjets 1000-Inf nonSemiLep
+  weight_array[5] = xs_array[5]*L*0.015/nE_array[5]; //TTjets 1000-Inf nonSemiLep
   weight_array[6] = xs_array[6]*L/nE_array[6]; //St_tW
   weight_array[7] = xs_array[7]*L/nE_array[7]; //St_tWB
   weight_array[8] = xs_array[8]*L/nE_array[8]; //St_t
   weight_array[9] = xs_array[9]*L/nE_array[9]; //St_tB
   weight_array[10] = xs_array[10]*L/nE_array[10]; //St_s
   weight_array[11] = xs_array[11]*L/nE_array[11]; //St_sB
-  weight_array[12] = xs_array[12]*L/nE_array[12]; //Wjets
+  weight_array[12] = xs_array[12]*L/nE_array[12]; //W+1jets
+  weight_array[13] = xs_array[13]*L/nE_array[13]; //W+2jets
+  weight_array[14] = xs_array[14]*L/nE_array[14]; //W+3jets
+  weight_array[15] = xs_array[15]*L/nE_array[15]; //W+4jets
   
   return weight_array;
 
 }
 
 
-
 // function to read in the data from a histogram
-void getData(TString& temp_num, int binfac){
+void getData(TString& temp_num, int binfac, bool exclusive, TString channel){
 
   int nbins_new = nbins / binfac;
   TH1D* h_data = new TH1D("data", "data", nbins, xmin, xmax);
-  TFile* datafile = TFile::Open("../histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root", "READ");
+  TFile* datafile;
+  if (channel == "mu") {
+    datafile = TFile::Open("../histfiles/"+whichDir+"SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"nom.root", "READ");
+  }
+  if (channel == "el") {
+    datafile = TFile::Open("../histfiles/"+whichDir+"SingleEl_iheartNY_V1_el_Run2012_"+whichHist+"nom.root", "READ");
+  }
   h_data = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+  h_data->Sumw2();
+  if (exclusive && temp_num == "4"){
+    TH1D* h_data_sub = (TH1D*) gDirectory->Get("ptMET6");
+    h_data_sub->Sumw2();
+    h_data->Add(h_data_sub, -1);
+  }
+  if (exclusive && temp_num == "6"){
+    TH1D* h_data_sub = (TH1D*) gDirectory->Get("ptMET7");
+    h_data_sub->Sumw2();
+    h_data->Add(h_data_sub, -1);
+  }
   h_data->Rebin(binfac);
 
   // Write histogram to data vector, calc total # of events
@@ -376,52 +426,49 @@ void getData(TString& temp_num, int binfac){
     data_Vec.push_back(nn);
     Ntotal += nn;
   }
-  cout << "Number of data events: " << h_data->Integral() << endl;
+  Nraw[4] = Nnorm[4] = Nfit[4] = h_data->Integral(0,nbins_new+1);
 
 }
 
-// Function to produce the top, wjets, and QCD templates
-double* getTemp(TString& temp_num, int binfac, bool dosub){
+// Function to produce the top and QCD templates
+double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub, bool exclusive, TString var, TString channel){
 
-  double* ini_val = new double[3];
-  TString top_array[12] = {"TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom",
-			  "TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom",
-			  "TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom",
-			  "TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom",
-			  "TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom",
-			  "TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom",
-			  "T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom",
-			  "Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom",
-			   "T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom",
-			  "Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom",
-			  "T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom",
-			  "Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_nom"};
+  double* ratios = new double[5]; //EDIT might be wrong size -- was ini_val
+  TString sample_array[16] = {"TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_CT10_nom_",
+			      "TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_CT10_nom_",
+			      "TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_CT10_nom_",
+			      "TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_CT10_nom_",
+			      "TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_CT10_nom_",
+			      "TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_CT10_nom_",
+			      "T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_",
+			      "Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_",
+			      "T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_",
+			      "Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_",
+			      "T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_",
+			      "Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_",
+			      "W1JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+channel+"_",
+			      "W2JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+channel+"_",
+			      "W3JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+channel+"_",
+			      "W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+channel+"_"};
 
-  TString qcd_array[14] = {"SingleMu_iheartNY_V1_mu_Run2012_qcd",
-			   "TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd",
-			   "TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd",
-			   "TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd",
-			   "TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd",
-			   "TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd",
-			   "TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd",
-			   "T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd",
-			   "Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd",
-			   "T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd",
-			   "Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd",
-			   "T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd",
-			   "Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_qcd",
-			   "WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_iheartNY_V1_mu_qcd"};
-
-  TString shortnames[13] = {"TTbar_m0to700", "TTbar_m700to1000", "TTbar_m1000toInf", "TTbar_nonSemiLep_m0to700", 
+  TString shortnames[16] = {"TTbar_m0to700", "TTbar_m700to1000", "TTbar_m1000toInf", "TTbar_nonSemiLep_m0to700", 
 			    "TTbar_nonSemiLep_m700to1000", "TTbar_nonSemiLep_m1000toInf",
-			    "St_tW", "St_tWB", "St_t", "St_tB", "St_s", "St_sB", "WJets"};
+			    "St_tW", "St_tWB", "St_t", "St_tB", "St_s", "St_sB", "W1Jets", "W2Jets", "W3Jets", "W4Jets"};
 
   TString sample_com_array[3] = {"top", "wjets", "qcd"};
-  TH1D** top_his_array = new TH1D*[12];
-  TH1D** qcd_his_array = new TH1D*[14];
   TH1D** his_com_array = new TH1D*[3];
+
+  TString top_cont_names[3] = {"TTjets", "TTjets_nonsemilep", "Stop"};
+  TH1D** top_cont_array = new TH1D*[3];
+
+  TH1D** top_his_array = new TH1D*[12];
   TFile* top_file_array[12];
-  TFile* qcd_file_array[14];
+
+  TH1D** wjets_his_array = new TH1D*[4];
+  TFile* wjets_file_array[4];
+
+  TH1D** qcd_his_array = new TH1D*[17];
+  TFile* qcd_file_array[17];
 
   double* weight = getWeightArray();
   int nbins_new = nbins / binfac;
@@ -429,71 +476,152 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   for(int i=0; i<3; i++){
     his_com_array[i] = new TH1D(sample_com_array[i], sample_com_array[i], nbins_new, xmin, xmax);
   }
+
+  for(int i=0; i<3; i++){
+    top_cont_array[i] = new TH1D(top_cont_names[i], top_cont_names[i], nbins_new, xmin, xmax);
+  }
   
-  // Get top template
-  for(int i=0; i<12; i++){
-    top_file_array[i] = TFile::Open("../histfiles/"+top_array[i]+".root", "READ");
+  // Do first recombination
+  // TTjets semilep
+  for(int i=0; i<3; i++){
+    top_file_array[i] = TFile::Open("../histfiles_CT10_nom/"+whichDirv2+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+    if (exclusive && temp_num == "4"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    if (exclusive && temp_num == "6"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
     top_his_array[i]->Rebin(binfac);
-    double nraw = top_his_array[i]->Integral();
+    Nraw[0] += top_his_array[i]->Integral(0, nbins_new+1);
     top_his_array[i]->Scale(weight[i]);
-    double nscale = top_his_array[i]->Integral();
-    his_com_array[0]->Add(top_his_array[i]);
-    cout << "Contribution from " << shortnames[i] << " is " << nraw << " before normalization and " 
-	 << nscale << " after." << endl;
+    top_cont_array[0]->Add(top_his_array[i]);
+  }
+  cout << "Got ttjets semilep..." << endl;
+
+  // TTjets nonsemilep
+  for(int i=3; i<6; i++){
+    top_file_array[i] = TFile::Open("../histfiles_CT10_nom/"+whichDirv2+sample_array[i]+whichHist+"nom.root", "READ");
+    top_his_array[i] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+    if (exclusive && temp_num == "4"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    if (exclusive && temp_num == "6"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    top_his_array[i]->Rebin(binfac);
+    Nraw[1] += top_his_array[i]->Integral(0, nbins_new+1);
+    top_his_array[i]->Scale(weight[i]);
+    top_cont_array[1]->Add(top_his_array[i]);
+  }
+  cout << "Got ttjets nonsemilep..." << endl;
+  
+  // Stop
+  for(int i=6; i<12; i++){
+    top_file_array[i] = TFile::Open("../histfiles/"+whichDir+sample_array[i]+whichHist+"nom.root", "READ");
+    top_his_array[i] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+    if (exclusive && temp_num == "4"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    if (exclusive && temp_num == "6"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    top_his_array[i]->Rebin(binfac);
+    Nraw[2] += top_his_array[i]->Integral(0, nbins_new+1);
+    top_his_array[i]->Scale(weight[i]);
+    top_cont_array[2]->Add(top_his_array[i]);
+  }
+  cout << "Got single top..." << endl;
+
+  //Combine into one top histo
+  for (int i=0; i<3; i++){
+    Nnorm[i] = top_cont_array[i]->Integral(0, nbins_new+1);
+    ratios[i] = top_cont_array[i]->Integral(0, nbins_new+1) / top_cont_array[i]->Integral();
+    his_com_array[0]->Add(top_cont_array[i]);
   }
 
-  // Get wjets template
-  TFile* wjetsfile = TFile::Open("../histfiles/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball_iheartNY_V1_mu_nom.root", "READ");
-  his_com_array[1] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
-  double nraw = his_com_array[1]->Integral();
-  his_com_array[1]->Scale(weight[12]);
-  double nscale = his_com_array[1]->Integral();
-  his_com_array[1]->Rebin(binfac);
-  cout << "Contribution from wjets is " << nraw << " before normalization and " << nscale << " after." << endl;
+  // Get WJets template
+  for(int i=0; i<4; i++){
+    wjets_file_array[i] = TFile::Open("../histfiles/"+whichDir+sample_array[i+12]+whichHist+"nom.root", "READ");
+    wjets_his_array[i] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+    if (exclusive && temp_num == "4"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+      wjets_his_array[i]->Add(hist_sub, -1);
+    }
+    if (exclusive && temp_num == "6"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
+      wjets_his_array[i]->Add(hist_sub, -1);
+    }
+    wjets_his_array[i]->Rebin(binfac);
+    Nraw[3] += wjets_his_array[i]->Integral(0, nbins_new+1);
+    wjets_his_array[i]->Scale(weight[i+12]);
+    his_com_array[1]->Add(wjets_his_array[i]);
+  }
+  cout << "Got wjets..." << endl;
+  Nnorm[3] = his_com_array[1]->Integral(0, nbins_new+1);
+  ratios[3] = his_com_array[1]->Integral(0, nbins_new+1) / his_com_array[1]->Integral();
 
-  // Get qcd template
-  qcd_file_array[0] = TFile::Open("../histfiles/"+qcd_array[0]+".root", "READ");
-  qcd_his_array[0] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+  // Get QCD template
+  if (channel == "mu") {
+    qcd_file_array[0] = TFile::Open("../histfiles/"+whichDir+"SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"qcd.root", "READ");
+  }
+  if (channel == "el") {
+    qcd_file_array[0] = TFile::Open("../histfiles/"+whichDir+"SingleEl_iheartNY_V1_el_Run2012_"+whichHist+"qcd.root", "READ");
+  }
+
+  qcd_his_array[0] = (TH1D*) gDirectory->Get("ptMET"+QCD_temp_num);
+  if (exclusive && QCD_temp_num == "4"){
+    TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+    qcd_his_array[0]->Add(hist_sub, -1);
+  }
+  if (exclusive && QCD_temp_num == "6"){
+    TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
+    qcd_his_array[0]->Add(hist_sub, -1);
+  }
   qcd_his_array[0]->Rebin(binfac);
   his_com_array[2]->Add(qcd_his_array[0]);
-  cout << "There are " << qcd_his_array[0]->Integral() << " events in the data sideband " << endl;
-  if (dosub) {
-    for(int i=0; i<13; i++){
-      qcd_file_array[i+1] = TFile::Open("../histfiles/"+qcd_array[i+1]+".root", "READ");
-      qcd_his_array[i+1] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
+  if (dosub && var != "raw") {
+    for(int i=0; i<16; i++){
+      if (i < 6){
+	qcd_file_array[i+1] = TFile::Open("../histfiles_CT10_nom/"+whichDirv2+sample_array[i]+whichHist+"qcd.root", "READ");
+      }
+      else {
+	qcd_file_array[i+1] = TFile::Open("../histfiles/"+whichDir+sample_array[i]+whichHist+"qcd.root", "READ");
+      }
+      qcd_his_array[i+1] = (TH1D*) gDirectory->Get("ptMET"+QCD_temp_num);
+      if (exclusive && QCD_temp_num == "4"){
+	TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+	qcd_his_array[i+1]->Add(hist_sub, -1);
+      }
+      if (exclusive && QCD_temp_num == "6"){
+	TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
+	qcd_his_array[i+1]->Add(hist_sub, -1);
+      }
       qcd_his_array[i+1]->Rebin(binfac);
-      double nraw = qcd_his_array[i+1]->Integral();
-      qcd_his_array[i+1]->Scale(weight[i]);
-      double nscale = qcd_his_array[i+1]->Integral();
+      if (var == ""){
+	qcd_his_array[i+1]->Scale(weight[i]);
+      }
+      if (var == "up"){
+	qcd_his_array[i+1]->Scale(weight[i]*2);
+      }
+      if (var == "dn"){
+	qcd_his_array[i+1]->Scale(weight[i]*0.5);
+      }
       his_com_array[2]->Add(qcd_his_array[i+1], -1);
-      cout << "Contribution from " << shortnames[i] << " in sideband is " << nraw << " before normalization and " 
-	   << nscale << " after." << endl;    
     }
   }
-
-  // Make breakdown plots 
-  TH1F** top_cont_array = new TH1F*[3];
-  TString top_cont_names[3] = {"topttbarsig", "topttbarbkg", "topstop"};
-  for(int i=0; i<3; i++){
-    top_cont_array[i] = new TH1F(top_cont_names[i], top_cont_names[i], nbins_new, xmin, xmax);
-  }
-  int colors[5] = {400, 632, 632+2, 616, 416};
-
-  top_cont_array[0]->Add(top_his_array[0]);
-  top_cont_array[0]->Add(top_his_array[1]);
-  top_cont_array[0]->Add(top_his_array[2]);
-  top_cont_array[1]->Add(top_his_array[3]);
-  top_cont_array[1]->Add(top_his_array[4]);
-  top_cont_array[1]->Add(top_his_array[5]);
-  top_cont_array[2]->Add(top_his_array[6]);
-  top_cont_array[2]->Add(top_his_array[7]);
-  top_cont_array[2]->Add(top_his_array[8]);
-  top_cont_array[2]->Add(top_his_array[9]);
-  top_cont_array[2]->Add(top_his_array[10]);
-  top_cont_array[2]->Add(top_his_array[11]);
+  cout << "Got QCD..." << endl;
+  ratios[4] = his_com_array[2]->Integral(0, nbins_new+1) / his_com_array[2]->Integral();
 
 
+  // Make breakdown plots
+  int colors[6] = {400, 632, 632+2, 616, 416, 1};
   TCanvas* canvasTop = new TCanvas("canvasTop", "canvasTop", 700, 500);
   THStack* topcont = new THStack("topcont","top contributions");
 
@@ -506,6 +634,12 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   topcont->GetXaxis()->SetTitle("missing E_{T} (GeV)");
   topcont->GetXaxis()->SetTitleSize(0.05);
 
+  double Lmargin = canvasTop->GetLeftMargin();
+  double Rmargin = canvasTop->GetRightMargin();
+  double Bmargin = canvasTop->GetBottomMargin();
+  double Tmargin = canvasTop->GetTopMargin();
+  canvasTop->SetMargin(Lmargin, Rmargin, Bmargin, Tmargin*1.2);
+
   TLegend* leg1 = new TLegend(0.56, 0.5, 0.86, 0.82);
   leg1->SetBorderSize(0);
   leg1->SetTextFont(42);
@@ -515,23 +649,23 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   leg1->AddEntry(top_cont_array[2], " Single top", "F");
   leg1->SetTextSize(0.04);
   leg1->Draw("same");
-  
-  TText* textPrelim1 = doPrelim(L/1000, 0.525, 0.915);
+
+  TText* textPrelim1 = doPrelim(L/1000, 0.525, 0.895);
   textPrelim1->Draw();
   textPrelim1->SetTextFont(42);
   gPad->RedrawAxis();
 
   canvasTop->Update();
-  canvasTop->SaveAs("TopComp_"+numberofbins+"b_"+temp_num+".png");
+  canvasTop->SaveAs("TopComp_3temp_"+whichHist+numberofbins+"b_"+temp_num+"_"+var+".png");
 
   TCanvas* canvasTopNorm = new TCanvas("canvasTopNorm", "canvasTopNorm", 700, 500);
   gStyle->SetOptStat(0);
-
   double tempmax = 0.;
   for (int i = 0; i<3; i++){
     if (top_cont_array[i]->Integral() > 0.){
       top_cont_array[i]->Scale(1./top_cont_array[i]->Integral());
     }
+    top_cont_array[i]->SetFillColor(0);
     top_cont_array[i]->SetLineColor(colors[i+1]);
     top_cont_array[i]->SetLineWidth(5);
     if (top_cont_array[i]->GetMaximum() > tempmax){
@@ -542,7 +676,7 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   top_cont_array[0]->Draw();
   top_cont_array[0]->GetXaxis()->SetTitleSize(0.05);
   top_cont_array[0]->SetMaximum(1.2 * tempmax);
-  top_cont_array[0]->SetTitle("Contributions to top template");
+  top_cont_array[0]->SetTitle("Components of top template");
   top_cont_array[1]->Draw("same");
   top_cont_array[2]->Draw("same");
 
@@ -555,77 +689,94 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
   leg2->AddEntry(top_cont_array[2], " Single top", "L");
   leg2->SetTextSize(0.04);
   leg2->Draw("same");
-
-  TText* textPrelim2 = doPrelim(L/1000, 0.52, 0.92);
+  
+  TText* textPrelim2 = doPrelim(L/1000, 0.6, 0.915);
   textPrelim2->Draw();
   textPrelim2->SetTextFont(42);
   gPad->RedrawAxis();
 
   canvasTopNorm->Update();
-  canvasTopNorm->SaveAs("TopTemp_"+numberofbins+"b_"+temp_num+".png");
+  canvasTopNorm->SaveAs("TopTemp_3temp_"+whichHist+numberofbins+"b_"+temp_num+"_"+var+".png");
 
-  if (dosub) {
-    TH1F** qcd_cont_array = new TH1F*[5];
-    TString qcd_cont_names[5] = {"qcdraw", "qcdttbarsig", "qcdttbarbkg", "qcdstop", "qcdwjets"};
-    for(int i=0; i<5; i++){
+
+  if (dosub && var != "raw") {
+    TH1F** qcd_cont_array = new TH1F*[6];
+    TString qcd_cont_names[6] = {"qcdcorr", "qcdttbarsig", "qcdttbarbkg", "qcdstop", "qcdwjets", "qcdraw"};
+    for(int i=0; i<6; i++){
       qcd_cont_array[i] = new TH1F(qcd_cont_names[i], qcd_cont_names[i], nbins_new, xmin, xmax);
     }
     
-    qcd_cont_array[0]->Add(qcd_his_array[0]);
-    qcd_cont_array[1]->Add(qcd_his_array[1]);
+    qcd_cont_array[0]->Add(his_com_array[2]);  //corrected (QCD)
+    qcd_cont_array[1]->Add(qcd_his_array[1]);  //TTjets
     qcd_cont_array[1]->Add(qcd_his_array[2]);
     qcd_cont_array[1]->Add(qcd_his_array[3]);
-    qcd_cont_array[2]->Add(qcd_his_array[4]);
+    qcd_cont_array[2]->Add(qcd_his_array[4]);  //TTjets nonsemilep
     qcd_cont_array[2]->Add(qcd_his_array[5]);
     qcd_cont_array[2]->Add(qcd_his_array[6]);
-    qcd_cont_array[3]->Add(qcd_his_array[7]);
+    qcd_cont_array[3]->Add(qcd_his_array[7]);  //Single top
     qcd_cont_array[3]->Add(qcd_his_array[8]);
     qcd_cont_array[3]->Add(qcd_his_array[9]);
     qcd_cont_array[3]->Add(qcd_his_array[10]);
     qcd_cont_array[3]->Add(qcd_his_array[11]);
     qcd_cont_array[3]->Add(qcd_his_array[12]);
-    qcd_cont_array[4]->Add(qcd_his_array[13]);
+    qcd_cont_array[4]->Add(qcd_his_array[13]); //WJets
+    qcd_cont_array[4]->Add(qcd_his_array[14]);
+    qcd_cont_array[4]->Add(qcd_his_array[15]);
+    qcd_cont_array[4]->Add(qcd_his_array[16]);
+    qcd_cont_array[5]->Add(qcd_his_array[0]);  //raw data
 
     TCanvas* canvasQCD = new TCanvas("canvasQCD", "canvasQCD", 700, 500);
     THStack* QCDcont = new THStack("QCDcont","QCD contributions");
 
     for (int i = 0; i<5; i++) {
       qcd_cont_array[i]->SetFillColor(colors[i]);
+      Nside[i] = qcd_cont_array[i+1]->Integral(0, nbins_new+1);
       QCDcont->Add(qcd_cont_array[i]);
     }
-    QCDcont->SetTitle("Contributions to qcd template");
+    QCDcont->SetTitle("Contributions to data sideband");
     QCDcont->Draw();
     QCDcont->GetXaxis()->SetTitle("missing E_{T} (GeV)");
     QCDcont->GetXaxis()->SetTitleSize(0.05);
+    qcd_cont_array[5]->SetLineColor(kBlack);
+    qcd_cont_array[5]->SetLineWidth(3);
+    qcd_cont_array[5]->Draw("same");
+
+    Lmargin = canvasQCD->GetLeftMargin();
+    Rmargin = canvasQCD->GetRightMargin();
+    Bmargin = canvasQCD->GetBottomMargin();
+    Tmargin = canvasQCD->GetTopMargin();
+    canvasQCD->SetMargin(Lmargin, Rmargin, Bmargin, Tmargin*1.2);
 
     TLegend* leg3 = new TLegend(0.56, 0.5, 0.86, 0.82);
     leg3->SetBorderSize(0);
     leg3->SetTextFont(42);
     leg3->SetFillColor(0);
-    leg3->AddEntry(qcd_cont_array[0], " Data sideband", "F");
+    leg3->AddEntry(qcd_cont_array[5], " Data sideband", "L");
     leg3->AddEntry(qcd_cont_array[1], " TTJets semilep sb", "F");
     leg3->AddEntry(qcd_cont_array[2], " TTJets nonsemilep sb", "F");
     leg3->AddEntry(qcd_cont_array[3], " Single top sb", "F");
     leg3->AddEntry(qcd_cont_array[4], " W+Jets sb", "F");
+    leg3->AddEntry(qcd_cont_array[0], " QCD", "F");
     leg3->SetTextSize(0.04);
     leg3->Draw("same");
 
-    TText* textPrelim3 = doPrelim(L/1000, 0.525, 0.915);
+    TText* textPrelim3 = doPrelim(L/1000, 0.525, 0.895);
     textPrelim3->Draw();
     textPrelim3->SetTextFont(42);
     gPad->RedrawAxis();
 
     canvasQCD->Update();
-    canvasQCD->SaveAs("QCDComp_"+numberofbins+"b_"+temp_num+".png");
+    canvasQCD->SaveAs("QCDComp_3temp_"+whichHist+numberofbins+"b_"+temp_num+"_"+var+".png");
     
     TCanvas* canvasQCDNorm = new TCanvas("canvasQCDNorm", "canvasQCDNorm", 700, 500);
     gStyle->SetOptStat(0);
 
     double tempmax2 = 0.;
-    for (int i = 0; i<5; i++){
+    for (int i = 1; i<6; i++){
       if (qcd_cont_array[i]->Integral() > 0.){
 	qcd_cont_array[i]->Scale(1./qcd_cont_array[i]->Integral());
       }
+      qcd_cont_array[i]->SetFillColor(0);
       qcd_cont_array[i]->SetLineColor(colors[i]);
       qcd_cont_array[i]->SetLineWidth(5);
 	if (qcd_cont_array[i]->GetMaximum() > tempmax2){
@@ -633,20 +784,20 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
 	}
     }
 
-    qcd_cont_array[0]->Draw();
-    qcd_cont_array[0]->GetXaxis()->SetTitleSize(0.05);
-    qcd_cont_array[0]->SetMaximum(1.2 * tempmax2);
-    qcd_cont_array[0]->SetTitle("Contributions to qcd template");
-    qcd_cont_array[1]->Draw("same");
+    qcd_cont_array[1]->Draw();
+    qcd_cont_array[1]->GetXaxis()->SetTitleSize(0.05);
+    qcd_cont_array[1]->SetMaximum(1.2 * tempmax2);
+    qcd_cont_array[1]->SetTitle("Distributions in sideband");
     qcd_cont_array[2]->Draw("same");
     qcd_cont_array[3]->Draw("same");
     qcd_cont_array[4]->Draw("same");
+    qcd_cont_array[5]->Draw("same");
 
     TLegend* leg4 = new TLegend(0.56, 0.5, 0.86, 0.82);
     leg4->SetBorderSize(0);
     leg4->SetTextFont(42);
     leg4->SetFillColor(0);
-    leg4->AddEntry(qcd_cont_array[0], " Data sideband", "L");
+    leg4->AddEntry(qcd_cont_array[5], " Data sideband", "L");
     leg4->AddEntry(qcd_cont_array[1], " TTJets semilep sb", "L");
     leg4->AddEntry(qcd_cont_array[2], " TTJets nonsemilep sb", "L");
     leg4->AddEntry(qcd_cont_array[3], " Single top sb", "L");
@@ -660,15 +811,11 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
     gPad->RedrawAxis();
 
     canvasQCDNorm->Update();
-    canvasQCDNorm->SaveAs("QCDTemp_"+numberofbins+"b_"+temp_num+".png");
+    canvasQCDNorm->SaveAs("QCDTemp_3temp_"+whichHist+numberofbins+"b_"+temp_num+"_"+var+".png");
   }
 
-  // Normalize histograms to 1 (but first determine Nexp)
-  ini_val[0] = his_com_array[0]->Integral();
-  ini_val[1] = his_com_array[1]->Integral();
-  ini_val[2] = Ntotal - ini_val[0] - ini_val[1];
-  if (ini_val[2] < 0.) ini_val[2] = 0.;
 
+  // Normalize histograms to 1 (but first determine Nexp)
   his_com_array[0]->Scale(1./his_com_array[0]->Integral());
   his_com_array[1]->Scale(1./his_com_array[1]->Integral());
   his_com_array[2]->Scale(1./his_com_array[2]->Integral());
@@ -687,7 +834,7 @@ double* getTemp(TString& temp_num, int binfac, bool dosub){
      
   }
 
-  return ini_val;
+  return ratios;
    
 }
 

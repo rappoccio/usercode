@@ -75,8 +75,9 @@ TString binsize = "20";      // 2 * binfac
 TString numberofbins = "20"; // 200 / binfac
 
 TString whichHist = "2Dcut_";
-TString whichDir = "2Dhist/";
-TString whichDirv2 = "2Dhists/";
+TString whichDir = "2Dhist_el/";
+TString whichDirv2 = "2Dhists_el/";
+TString channel = "el";
 //TString whichHist = "";
 //TString whichDir = "";
 //TString whichDirv2 = "";
@@ -89,8 +90,8 @@ double numEvent[2]; //set it global use to set limit in fcn
 
 // Helper functions
 void fcn(int& npar, double* deriv, double& f, double par[], int flag);
-void getData(TString& temp_num, int binfac, bool exclusive);
-double* getTemp(TString& temp_num, int binfac, bool dosub, bool exclusive, TString var);
+void getData(TString& temp_num, int binfac, bool exclusive, TString channel);
+double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub, bool exclusive, TString var, TString channel);
 double* getWeightArray();
 
 TText* doPrelim(float luminosity, float x, float y);
@@ -101,18 +102,19 @@ int QCDminfit() {
   cout << "Beginning QCD normalization..." << endl;
 
   // User inputs
-  TString temp_num = "7";
+  TString temp_num = "4";
+  TString QCD_temp_num = "4";
   bool dosub = true;
   bool exclusive = true; 
-  TString var = "dn";    // Amount of non-QCD subtracted from the sideband
+  TString var = "raw";    // Amount of non-QCD subtracted from the sideband
                          //"raw" = none, "" = nominal, "up" = nominal x 2, "dn" = nominal x 1/2
 
   int nbins_new = nbins / binfac;
   cout << "New # of bins is " << nbins_new << endl;
   cout << "Fitting ptMET" << temp_num << endl;
 
-  getData(temp_num, binfac, exclusive);
-  double* ratios = getTemp(temp_num, binfac, dosub, exclusive, var);
+  getData(temp_num, binfac, exclusive, channel);
+  double* ratios = getTemp(temp_num, QCD_temp_num, binfac, dosub, exclusive, var, channel);
   
   // Initialize minuit, set initial values etc. of parameters.
   const int npar = 2; // the number of parameters
@@ -126,10 +128,10 @@ int QCDminfit() {
   string parName[npar] = {"top", "qcd"};
   double par[npar];
   
-  par[0] = 0.9 * Ntotal;
-  par[1] = 0.1 * Ntotal;
-  numEvent[0] = 0.9 * Ntotal;
-  numEvent[1] = 0.1 * Ntotal;
+  par[0] = 0.5 * Ntotal;
+  par[1] = 0.5 * Ntotal;
+  numEvent[0] = 0.5 * Ntotal;
+  numEvent[1] = 0.5 * Ntotal;
 
   for(int i=0; i<npar; i++){
     // optimize parameters with initial value of par[i], moving in increments
@@ -378,11 +380,17 @@ double* getWeightArray(){
 
 
 // function to read in the data from a histogram
-void getData(TString& temp_num, int binfac, bool exclusive){
+void getData(TString& temp_num, int binfac, bool exclusive, TString channel){
 
   int nbins_new = nbins / binfac;
   TH1D* h_data = new TH1D("data", "data", nbins, xmin, xmax);
-  TFile* datafile = TFile::Open("../histfiles/"+whichDir+"SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"nom.root", "READ");
+  TFile* datafile;
+  if (channel == "mu") {
+    datafile = TFile::Open("../histfiles/"+whichDir+"SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"nom.root", "READ");
+  }
+  if (channel == "el") {
+    datafile = TFile::Open("../histfiles/"+whichDir+"SingleEl_iheartNY_V1_el_Run2012_"+whichHist+"nom.root", "READ");
+  }
   h_data = (TH1D*) gDirectory->Get("ptMET"+temp_num);
   h_data->Sumw2();
   if (exclusive && temp_num == "4"){
@@ -408,25 +416,25 @@ void getData(TString& temp_num, int binfac, bool exclusive){
 }
 
 // Function to produce the top and QCD templates
-double* getTemp(TString& temp_num, int binfac, bool dosub, bool exclusive, TString var){
+double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub, bool exclusive, TString var, TString channel){
 
   double* ratios = new double[5];
-  TString sample_array[16] = {"TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_",
-			   "TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_",
-			   "TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_",
-			   "TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_",
-			   "TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_",
-			   "TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_",
-			   "T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-			   "Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-			   "T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-			   "Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-			   "T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-			   "Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_",
-			   "W1JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_",
-			   "W2JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_",
-			   "W3JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_",
-			   "W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_"};
+  TString sample_array[16] = {"TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_CT10_nom_",
+			   "TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_CT10_nom_",
+			   "TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_CT10_nom_",
+			   "TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_CT10_nom_",
+			   "TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_CT10_nom_",
+			   "TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_CT10_nom_",
+			   "T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_",
+			   "Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_",
+			   "T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_",
+			   "Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_",
+			   "T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_",
+			   "Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+channel+"_",
+			   "W1JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+channel+"_",
+			   "W2JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+channel+"_",
+			   "W3JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+channel+"_",
+			   "W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+channel+"_"};
 
   TString shortnames[16] = {"TTbar_m0to700", "TTbar_m700to1000", "TTbar_m1000toInf", "TTbar_nonSemiLep_m0to700", 
 			    "TTbar_nonSemiLep_m700to1000", "TTbar_nonSemiLep_m1000toInf",
@@ -534,13 +542,19 @@ double* getTemp(TString& temp_num, int binfac, bool dosub, bool exclusive, TStri
   }
   
   // Get QCD template
-  qcd_file_array[0] = TFile::Open("../histfiles/"+whichDir+"SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"qcd.root", "READ");
-  qcd_his_array[0] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
-  if (exclusive && temp_num == "4"){
+  if (channel == "mu") {
+    qcd_file_array[0] = TFile::Open("../histfiles/"+whichDir+"SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"qcd.root", "READ");
+  }
+  if (channel == "el") {
+    qcd_file_array[0] = TFile::Open("../histfiles/"+whichDir+"SingleEl_iheartNY_V1_el_Run2012_"+whichHist+"qcd.root", "READ");
+  }
+
+  qcd_his_array[0] = (TH1D*) gDirectory->Get("ptMET"+QCD_temp_num);
+  if (exclusive && QCD_temp_num == "4"){
     TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
     qcd_his_array[0]->Add(hist_sub, -1);
   }
-  if (exclusive && temp_num == "6"){
+  if (exclusive && QCD_temp_num == "6"){
     TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
     qcd_his_array[0]->Add(hist_sub, -1);
   }
@@ -554,12 +568,12 @@ double* getTemp(TString& temp_num, int binfac, bool dosub, bool exclusive, TStri
       else {
 	qcd_file_array[i+1] = TFile::Open("../histfiles/"+whichDir+sample_array[i]+whichHist+"qcd.root", "READ");
       }
-      qcd_his_array[i+1] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
-      if (exclusive && temp_num == "4"){
+      qcd_his_array[i+1] = (TH1D*) gDirectory->Get("ptMET"+QCD_temp_num);
+      if (exclusive && QCD_temp_num == "4"){
 	TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
 	qcd_his_array[i+1]->Add(hist_sub, -1);
       }
-      if (exclusive && temp_num == "6"){
+      if (exclusive && QCD_temp_num == "6"){
 	TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET7");
 	qcd_his_array[i+1]->Add(hist_sub, -1);
       }
