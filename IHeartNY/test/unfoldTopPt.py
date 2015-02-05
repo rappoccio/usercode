@@ -174,17 +174,17 @@ if options.closureTest == True:
 # -------------------------------------------------------------------------------------
 
 if nobtag == "_nobtag":
-    fitted_qcd = 9.5+38
-    fitted_singletop = 3.7+11.3
-    fitted_wjets = 4.2+154
-    fitted_ttbarnonsemilep = 30.8+36.7
-    fitted_ttbar = 291.3+293
+    fitted_qcd = 9.5+50
+    fitted_singletop = 3.5+12.5
+    fitted_wjets = 4.5+172.4
+    fitted_ttbarnonsemilep = 28.5+43.2
+    fitted_ttbar = 259.6+344.1
 else:
     fitted_qcd = 9.5
-    fitted_singletop = 3.7
-    fitted_wjets = 4.2
-    fitted_ttbarnonsemilep = 30.8
-    fitted_ttbar = 291.3
+    fitted_singletop = 3.5
+    fitted_wjets = 4.5
+    fitted_ttbarnonsemilep = 28.5
+    fitted_ttbar = 259.6
 
 
 # -------------------------------------------------------------------------------------
@@ -639,61 +639,87 @@ if options.closureTest and options.troubleshoot :
 ## which enters the signal region 
 
 
+# -------------------------------------------------------------------------------------
 # one-step unfolding
-#accCorr [400,500]:  0.713124 +/- 0.0116647
-#accCorr [500,600]:  0.899743 +/- 0.0123778
-#accCorr [600,700]:  0.912729 +/- 0.019871
-#accCorr [700,800]:  0.911112 +/- 0.0319739
-#accCorr [800,1200]: 0.952454 +/- 0.0234787
-accCorr = [0.713124, 0.899743, 0.912729, 0.911112, 0.952454]
+# with b-tagging
+#accCorr [400,500]: 0.734074 +/- 0.011362
+#accCorr [500,600]: 0.927802 +/- 0.0102069
+#accCorr [600,700]: 0.931428 +/- 0.0186005
+#accCorr [700,800]: 0.894601 +/- 0.0372121
+#accCorr [800,1200]: 0.949683 +/- 0.0247506
 
-#accCorr [400,500]: 0.715637 +/- 0.0082754
-#accCorr [500,600]: 0.895401 +/- 0.00891083
-#accCorr [600,700]: 0.93823 +/- 0.0118266
-#accCorr [700,800]: 0.900569 +/- 0.0232154
-#accCorr [800,1200]: 0.930093 +/- 0.0241897
-accCorr_nobtag = [0.715637, 0.895401, 0.93823, 0.900569, 0.930093]
+# without b-tagging
+#accCorr [400,500]: 0.721549 +/- 0.00785279
+#accCorr [500,600]: 0.894393 +/- 0.00856833
+#accCorr [600,700]: 0.937271 +/- 0.01156
+#accCorr [700,800]: 0.893543 +/- 0.0230515
+#accCorr [800,1200]: 0.920693 +/- 0.02521
 
+if options.addNoBtag == True:
+    accCorr = [0.721549, 0.894393, 0.937271, 0.893543, 0.920693]
+else: 
+    accCorr = [0.734074, 0.927802, 0.931428, 0.894601, 0.949683]
+    
+# -------------------------------------------------------------------------------------
 # two-step unfolding
-#accCorr_rp [400,500]:  0.829239 +/- 0.00924507
-#accCorr_rp [500,600]:  0.984784 +/- 0.00474956
-#accCorr_rp [600,700]:  0.992851 +/- 0.00333441
+# with b-tagging
+#accCorr_rp [400,500]: 0.835686 +/- 0.00894462
+#accCorr_rp [500,600]: 0.985853 +/- 0.00443783
+#accCorr_rp [600,700]: 0.99338 +/- 0.00334353
 #accCorr_rp [700,800]:  1 +/- 0
 #accCorr_rp [800,1200]: 1 +/- 0
-accCorr_rp = [0.829239, 0.984784, 0.992851, 1.0, 1.0]
 
-#accCorr_rp_nobtag [400,500]: 0.823396 +/- 0.00677141
-#accCorr_rp_nobtag [500,600]: 0.976083 +/- 0.00425749
-#accCorr_rp_nobtag [600,700]: 0.988957 +/- 0.00331876
-#accCorr_rp_nobtag [700,800]: 0.98946 +/- 0.00909336
-#accCorr_rp_nobtag [800,1200]: 1 +/- 0
-accCorr_rp_nobtag = [0.823396, 0.976083, 0.988957, 0.98946, 1.0]
+# without b-tagging
+#accCorr_rp [400,500]: 0.824758 +/- 0.00640913
+#accCorr_rp [500,600]: 0.977592 +/- 0.00391614
+#accCorr_rp [600,700]: 0.989632 +/- 0.0031169
+#accCorr_rp [700,800]: 0.990246 +/- 0.00842073
+#accCorr_rp [800,1200]: 1 +/- 0
 
-#accCorr_pp [400,500]:  0.515877 +/- 0.00371986
-#accCorr_pp [500,600]:  0.55938 +/- 0.00624021
-#accCorr_pp [600,700]:  0.577836 +/- 0.010334
-#accCorr_pp [700,800]:  0.611004 +/- 0.0166818
-#accCorr_pp [800,1200]: 0.653409 +/- 0.0191128
-accCorr_pp = [0.515877, 0.55938, 0.577836, 0.611004, 0.653409]
+if options.addNoBtag == True:
+    accCorr_rp = [0.824758, 0.977592, 0.989632, 0.990246, 1.0]
+else :
+    accCorr_rp = [0.835686, 0.985853, 0.99338, 1.0, 1.0]
 
+#accCorr_pp [400,500]: 0.515115 +/- 0.00407366
+#accCorr_pp [500,600]: 0.558949 +/- 0.00687654
+#accCorr_pp [600,700]: 0.580201 +/- 0.0113766
+#accCorr_pp [700,800]: 0.614188 +/- 0.0185472
+#accCorr_pp [800,1200]: 0.65884 +/- 0.0211105
+accCorr_pp = [0.515115, 0.558949, 0.580201, 0.614188, 0.65884]
+
+# -------------------------------------------------------------------------------------
 # two-step unfolding for "_full" option, meaning no passParton at pp-step, and only passParticleLoose at rp-step
-#accCorr_rp [400,500]:  0.994535 +/- 0.00149084
-#accCorr_rp [500,600]:  0.99138 +/- 0.00342479
-#accCorr_rp [600,700]:  0.992851 +/- 0.00333441
+# with b-tagging
+#accCorr_rp [400,500]: 0.993905 +/- 0.00163273
+#accCorr_rp [500,600]: 0.993647 +/- 0.0024617
+#accCorr_rp [600,700]: 0.99338 +/- 0.00334353
 #accCorr_rp [700,800]:  1 +/- 0
 #accCorr_rp [800,1300]: 1 +/- 0
-accCorr_rp_full = [0.0, 0.0, 0.0, 0.0, 0.994535, 0.99138, 0.992851, 1.0, 1.0, 0.0]
 
+# without b-tagging
+#accCorr_rp [400,500]: 0.991138 +/- 0.00145623
+#accCorr_rp [500,600]: 0.984228 +/- 0.0031489
+#accCorr_rp [600,700]: 0.989632 +/- 0.0031169
+#accCorr_rp [700,800]: 0.990246 +/- 0.00842073
+#accCorr_rp [800,1300]: 1 +/- 0
+
+if options.addNoBtag == True:
+    accCorr_rp_full = [0.0, 0.0, 0.0, 0.0, 0.991138, 0.984228, 0.989632, 0.990246, 1.0, 0.0]
+else:
+    accCorr_rp_full = [0.0, 0.0, 0.0, 0.0, 0.993905, 0.993647, 0.99338, 1.0, 1.0, 0.0]
+
+
+# -------------------------------------------------------------------------------------
 # trigger SF for particle-level 
-#trigSF_rp [400,500]:  1.22372 +/- 0.0042528
-#trigSF_rp [500,600]:  1.24353 +/- 0.00729263
-#trigSF_rp [600,700]:  1.23862 +/- 0.0118791
-#trigSF_rp [700,800]:  1.28546 +/- 0.0216951
-#trigSF_rp [800,1200]: 1.28605 +/- 0.0262931
-trigSF_rp = [1.22372, 1.24353, 1.23862, 1.28546, 1.28605]
-trigSF_rp_full = [0.0, 0.0, 0.0, 0.0, 1.22372, 1.24353, 1.23862, 1.28546, 1.28605, 0.0]
+#trigSF_rp [400,500]: 1.19878 +/- 0.00391811
+#trigSF_rp [500,600]: 1.21192 +/- 0.00660688
+#trigSF_rp [600,700]: 1.20806 +/- 0.0107819
+#trigSF_rp [700,800]: 1.23508 +/- 0.0187494
+#trigSF_rp [800,1200]: 1.22596 +/- 0.0218614
 
-
+trigSF_rp = [1.19878, 1.21192, 1.20806, 1.23508, 1.22596]
+trigSF_rp_full = [0.0, 0.0, 0.0, 0.0, 1.19878, 1.21192, 1.20806, 1.23508, 1.22596, 0.0]
 
 hMeasCorr = hMeas.Clone()
 hMeasCorr.SetName("correctedMeas")
@@ -706,12 +732,8 @@ if options.twoStep == False:
     # apply acceptance correction
     if unfoldType == "_pt400" and options.closureTest == False:
         for ibin in range(1, hMeasCorr.GetXaxis().GetNbins()+1 ) :
-            if options.addNoBtag == True:
-                hMeasCorr.SetBinContent(ibin,  hMeas.GetBinContent(ibin) * accCorr_nobtag[ibin-1] )
-                hMeasCorr.SetBinError(ibin,  hMeas.GetBinError(ibin) * accCorr_nobtag[ibin-1] )
-            else: 
-                hMeasCorr.SetBinContent(ibin,  hMeas.GetBinContent(ibin) * accCorr[ibin-1] )
-                hMeasCorr.SetBinError(ibin,  hMeas.GetBinError(ibin) * accCorr[ibin-1] )
+            hMeasCorr.SetBinContent(ibin,  hMeas.GetBinContent(ibin) * accCorr[ibin-1] )
+            hMeasCorr.SetBinError(ibin,  hMeas.GetBinError(ibin) * accCorr[ibin-1] )
                 
     
     print "------------ UNFOLDING (set: " + options.pdf + ", syst: " + options.syst + ") ------------"
@@ -730,12 +752,8 @@ else :
     if options.closureTest == False:
         if unfoldType == "_pt400":
             for ibin in range(1, hMeasCorr.GetXaxis().GetNbins()+1 ) :
-                if options.addNoBtag == True:
-                    hMeasCorr.SetBinContent(ibin, hMeas.GetBinContent(ibin) * accCorr_rp_nobtag[ibin-1] )
-                    hMeasCorr.SetBinError(ibin, hMeas.GetBinError(ibin) * accCorr_rp_nobtag[ibin-1] )
-                else :
-                    hMeasCorr.SetBinContent(ibin, hMeas.GetBinContent(ibin) * accCorr_rp[ibin-1] )
-                    hMeasCorr.SetBinError(ibin, hMeas.GetBinError(ibin) * accCorr_rp[ibin-1] )
+                hMeasCorr.SetBinContent(ibin, hMeas.GetBinContent(ibin) * accCorr_rp[ibin-1] )
+                hMeasCorr.SetBinError(ibin, hMeas.GetBinError(ibin) * accCorr_rp[ibin-1] )
         elif unfoldType == "_full":
             for ibin in range(1, hMeasCorr.GetXaxis().GetNbins()+1 ) :
                 hMeasCorr.SetBinContent(ibin, hMeas.GetBinContent(ibin) * accCorr_rp_full[ibin-1] )
@@ -789,10 +807,10 @@ if options.twoStep:
 
 ## correct also to post-fit top-tagging SF !!! 
 if options.closureTest == False : 
-    hMeas.Scale(1.0/(1.0+0.25*0.27))
-    hReco.Scale(1.0/(1.0+0.25*0.27))
+    hMeas.Scale(1.0/(1.0+0.25*0.44))
+    hReco.Scale(1.0/(1.0+0.25*0.44))
     if options.twoStep:
-        hReco_rp.Scale(1.0/(1.0+0.25*0.27))
+        hReco_rp.Scale(1.0/(1.0+0.25*0.44))
 
 
     
@@ -801,18 +819,18 @@ if options.closureTest == False :
 # -------------------------------------------------------------------------------------
 
 ## trigger SF (this is for correcting parton-level distribution & one-step unfolded distribution @ parton-level 
-#trigSF [400,500]:  1.66655 +/- 0.00842579
-#trigSF [500,600]:  1.62051 +/- 0.0140173
-#trigSF [600,700]:  1.54945 +/- 0.0210899
-#trigSF [700,800]:  1.63045 +/- 0.0426413
-#trigSF [800,1200]: 1.48044 +/- 0.0373831
+#trigSF [400,500]: 1.62473 +/- 0.00796161
+#trigSF [500,600]: 1.5741 +/- 0.0131161
+#trigSF [600,700]: 1.50913 +/- 0.0197511
+#trigSF [700,800]: 1.58339 +/- 0.0400283
+#trigSF [800,1200]: 1.41899 +/- 0.0326825
 
 if unfoldType == "":
-    trigSF = [0.0, 1.66655, 1.62051, 1.54945, 1.63045, 1.480044]
+    trigSF = [0.0, 1.62473, 1.5741, 1.50913, 1.58339, 1.41899]
 elif unfoldType == "_full":
-    trigSF = [0.0, 0.0, 0.0, 0.0, 1.66655, 1.62051, 1.54945, 1.63045, 1.480044, 0.0]
+    trigSF = [0.0, 0.0, 0.0, 0.0, 1.62473, 1.5741, 1.50913, 1.58339, 1.41899, 0.0]
 elif unfoldType == "_pt400":
-    trigSF = [1.66655, 1.62051, 1.54945, 1.63045, 1.480044]
+    trigSF = [1.62473, 1.5741, 1.50913, 1.58339, 1.41899]
 else:
     print "Unvalid unfolding type!!" 
 
@@ -953,6 +971,7 @@ else :
     leg.AddEntry( hMeas, 'Raw MC', 'p')
 
 leg.Draw()
+
 
 # write histograms to file
 if options.closureTest:

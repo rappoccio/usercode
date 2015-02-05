@@ -27,7 +27,7 @@ void mySmallText(Double_t x,Double_t y,Color_t color,char *text);
 void myItalicText(Double_t x,Double_t y,Color_t color,char *text); 
 
 
-void accEff(TString option) {
+void accEff(TString option, TString pdf) {
 
   
   // valid options
@@ -36,31 +36,26 @@ void accEff(TString option) {
   // "two_pp": two-step unfolding, acceptance correction for particle to parton unfolding
   // "two_rploose": two-step unfolding, acceptance correction for reco to "particle loose" unfolding (for unfolding using pt>0 GeV instead of pt>400 GeV!!)
 
-  if ( (option=="one" || option=="one_nobtag" || option=="two_rp" || option=="two_rp_nobtag" || option=="two_pp" || option=="two_rploose") == false) {
+  if ( (option=="one" || option=="one_nobtag" || option=="two_rp" || option=="two_rp_nobtag" || option=="two_pp" || option=="two_rploose" || option=="two_rploose_nobtag") == false) {
     cout << endl << "Invalid option!! Correct usage is:   root -b -q 'accEff.C(option)', " << endl << endl
 	 << "where option can be: " << endl << endl
 	 << "-- \"one\": one-step unfolding, acceptance correction" << endl
 	 << "-- \"one\": one-step unfolding (adding no btag category), acceptance correction" << endl
 	 << "-- \"two_rp\": two-step unfolding, acceptance correction for reco to particle unfolding" << endl 
-	 << "-- \"two_rp\": two-step unfolding, acceptance correction for reco to particle unfolding (adding no btag category)" << endl 
+	 << "-- \"two_rp_nobtag\": two-step unfolding, acceptance correction for reco to particle unfolding (adding no btag category)" << endl 
 	 << "-- \"two_pp\": two-step unfolding, acceptance correction for particle to parton unfolding" << endl
 	 << "-- \"two_rploose\": two-step unfolding, acceptance correction for reco to \"particle loose\" unfolding (for unfolding using pt>0 GeV instead of pt>400 GeV!!)" << endl << endl;
+	 << "-- \"two_rploose_nobtag\": two-step unfolding, acceptance correction for reco to \"particle loose\" unfolding (for unfolding using pt>0 GeV instead of pt>400 GeV!!) (adding no btag category)" << endl << endl;
     return;
   }
 
 
   SetPlotStyle();
   
-  TFile* f1 = new TFile("../histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
-  TFile* f2 = new TFile("../histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
-  TFile* f3 = new TFile("../histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
+  TFile* f1 = new TFile("../histfiles_"+pdf+"/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+pdf+"_2Dcut_nom.root");
+  TFile* f2 = new TFile("../histfiles_"+pdf+"/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+pdf+"_2Dcut_nom.root");
+  TFile* f3 = new TFile("../histfiles_"+pdf+"/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+pdf+"_2Dcut_nom.root");
 
-  /*
-  TFile* f1 = new TFile("ttbar_max700.root");
-  TFile* f2 = new TFile("ttbar_700to1000.root");
-  TFile* f3 = new TFile("ttbar_1000toInf.root");
-  */
-  
   TString num;
   TString den;
   if (option=="one") {
@@ -92,6 +87,11 @@ void accEff(TString option) {
     // *** acceptance correction for "_full" two-step unfolding (i.e. passParticleLoose & passReco / passReco) ***
     num = "ptRecoTop_2step";
     den = "ptRecoTop";
+  }
+  else if (option=="two_rploose_nobtag") {
+    // *** acceptance correction for "_full" two-step unfolding (i.e. passParticleLoose (adding no btag!) & passReco / passReco) ***
+    num = "ptRecoTop_2step_nobtag";
+    den = "ptRecoTop_nobtag";
   }
 
   TH1F* hnum1 = (TH1F*) f1->Get(num);
@@ -135,10 +135,15 @@ void accEff(TString option) {
   if (option=="two_rp" || option=="two_rp_nobtag") heff->SetAxisRange(0.6,1.05,"Y");
   if (option=="two_rploose") heff->SetAxisRange(0.9,1.01,"Y");
 
+  cout << endl << "acceptance correction for " << pdf << endl << endl;
   for (int i=1; i<heff->GetNbinsX()+1; i++) {
-    cout << "accCorr [" << heff->GetBinLowEdge(i) << "," << heff->GetBinLowEdge(i+1) 
+    if (option.Contains("two_rp")) cout << "accCorr_rp [";
+    else if (option.Contains("two_pp")) cout << "accCorr_pp [";
+    else cout << "accCorr [";
+    cout << heff->GetBinLowEdge(i) << "," << heff->GetBinLowEdge(i+1) 
 	   << "]: " << heff->GetBinContent(i) << " +/- " << heff->GetBinError(i) << endl;
   }
+  cout << endl;
 
 
   TCanvas c;
@@ -170,9 +175,9 @@ void accEff(TString option) {
     mySmallText(0.22,0.30,1,"vs events passing full selection)");
   }
 
-  c.SaveAs("accCorr_"+option+".png");
-  c.SaveAs("accCorr_"+option+".eps");
-  c.SaveAs("accCorr_"+option+".pdf");
+  c.SaveAs("accCorr_"+option+"_"+pdf+".png");
+  c.SaveAs("accCorr_"+option+"_"+pdf+".eps");
+  c.SaveAs("accCorr_"+option+"_"+pdf+".pdf");
 
 }
 
