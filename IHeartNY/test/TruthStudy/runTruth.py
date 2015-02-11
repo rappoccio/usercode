@@ -299,7 +299,7 @@ Nmc_TT_Mtt_1000_Inf = 1249111
 Nmc_ttbar_Q2up = 14983686
 Nmc_TT_Mtt_700_1000_Q2up = 2243672
 Nmc_TT_Mtt_1000_Inf_Q2up = 1241650
-Nmc_ttbar_Q2dn = 1789004
+Nmc_ttbar_Q2dn = 14545715*89./102.  ## temporary hack -- we're missing part of this dataset
 Nmc_TT_Mtt_700_1000_Q2dn = 2170074
 Nmc_TT_Mtt_1000_Inf_Q2dn = 1308090
 
@@ -785,6 +785,9 @@ for event in events :
             h_ptPartTop_passParticleParton_noweight.Fill(genTops[0].Perp()) 
             h_ptGenTop_passParticleParton.Fill(hadTop.p4.Perp(), weight)
             h_ptGenTop_passParticleParton_noweight.Fill(hadTop.p4.Perp())
+    elif passParticle:
+        response_pt400_pp.Fake(genTops[0].Perp(), weight*weight_response)
+
 
     if passParticle:
         h_ptPartTop_pt400.Fill( genTops[0].Perp(), weight )

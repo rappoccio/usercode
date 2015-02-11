@@ -569,15 +569,38 @@ if options.makeResponse == True:
 # -------------------------------------------------------------------------------------
 
 # Additional JEC uncertainty for CA8 jets (this is a manual hack to use AK7 corrections on CA8 jets)
-flatJecUnc = 0.03
+flatJecUnc = 0.01
+
+ROOT.gSystem.Load('libCondFormatsJetMETObjects')
 
 # Read JEC uncertainties
 if options.jecSys != None or options.jerSys != None :
-    ROOT.gSystem.Load('libCondFormatsJetMETObjects')
     jecParStrAK5 = ROOT.std.string('START53_V27_Uncertainty_AK5PFchs.txt')
     jecUncAK5 = ROOT.JetCorrectionUncertainty( jecParStrAK5 )
     jecParStrAK7 = ROOT.std.string('START53_V27_Uncertainty_AK7PFchs.txt')
     jecUncAK7 = ROOT.JetCorrectionUncertainty( jecParStrAK7 )    
+
+# read nominal JEC corrections for AK7 jets to be applied to CA8 jets
+if options.isData == False:
+    jecNomStrAK7 = [
+        'START53_V27_L1FastJet_AK7PFchs.txt',
+        'START53_V27_L2Relative_AK7PFchs.txt',
+        'START53_V27_L3Absolute_AK7PFchs.txt'
+        ]
+else:
+    jecNomStrAK7 = [
+        'FT_53_V21_AN6_L1FastJet_AK7PFchs.txt',
+        'FT_53_V21_AN6_L2Relative_AK7PFchs.txt',
+        'FT_53_V21_AN6_L3Absolute_AK7PFchs.txt',
+        'FT_53_V21_AN6_L2L3Residual_AK7PFchs.txt',
+        ]
+
+v_jecNomAK7 = ROOT.std.vector(ROOT.JetCorrectorParameters)()
+for ijecStr in jecNomStrAK7 :
+    ijec = ROOT.JetCorrectorParameters( ijecStr )
+    v_jecNomAK7.push_back( ijec )
+jecNomAK7 = ROOT.FactorizedJetCorrector(v_jecNomAK7)
+
 
 
 # -------------------------------------------------------------------------------------
@@ -752,6 +775,10 @@ if options.lepType == "muon":
     h_dRvspT1    = ROOT.TH2F("dRvspT1",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
     h_dRvspT2    = ROOT.TH2F("dRvspT2",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
     h_dRvspT3    = ROOT.TH2F("dRvspT3",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT4    = ROOT.TH2F("dRvspT4",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT5    = ROOT.TH2F("dRvspT5",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT6    = ROOT.TH2F("dRvspT6",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT7    = ROOT.TH2F("dRvspT7",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
 
     h_pfIsoPre  = ROOT.TH1F("pfIsoPre",  ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
     h_pfIso0    = ROOT.TH1F("pfIso0",    ";PF-isolation/p_{T}; Muons / 0.01", 200, 0., 2.)
@@ -796,6 +823,10 @@ else:
     h_dRvspT1    = ROOT.TH2F("dRvspT1",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
     h_dRvspT2    = ROOT.TH2F("dRvspT2",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
     h_dRvspT3    = ROOT.TH2F("dRvspT3",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT4    = ROOT.TH2F("dRvspT4",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT5    = ROOT.TH2F("dRvspT5",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT6    = ROOT.TH2F("dRvspT6",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
+    h_dRvspT7    = ROOT.TH2F("dRvspT7",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
 
     h_pfIsoPre  = ROOT.TH1F("pfIsoPre",  ";PF-isolation/p_{T}; Electrons / 0.01", 200, 0., 2.)
     h_pfIso0    = ROOT.TH1F("pfIso0",    ";PF-isolation/p_{T}; Electrons / 0.01", 200, 0., 2.)
@@ -1276,6 +1307,8 @@ topTagMinMassHandle  = Handle( "std::vector<float>" )
 topTagMinMassLabel   = ("pfShyftTupleJetsLooseTopTag", "minMass")
 topTagNSubjetsHandle = Handle( "std::vector<float>" )
 topTagNSubjetsLabel  = ("pfShyftTupleJetsLooseTopTag", "nSubjets")
+topTagJetAreaHandle  = Handle( "std::vector<float>" )
+topTagJetAreaLabel   = ("pfShyftTupleJetsLooseTopTag", "jetArea")
 
 # CA8 subjets collection
 nsubCA8Handle = Handle("vector<ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > >")
@@ -1421,7 +1454,7 @@ Nmc_TT_Mtt_1000_Inf = 1249111
 Nmc_ttbar_Q2up = 14983686
 Nmc_TT_Mtt_700_1000_Q2up = 2243672
 Nmc_TT_Mtt_1000_Inf_Q2up = 1241650
-Nmc_ttbar_Q2dn = 14545715
+Nmc_ttbar_Q2dn = 14545715*89./102.  ## temporary hack -- we're missing part of this dataset
 Nmc_TT_Mtt_700_1000_Q2dn = 2170074
 Nmc_TT_Mtt_1000_Inf_Q2dn = 1308090
 
@@ -1740,11 +1773,11 @@ for event in events :
                 passParton = True
 
             if passParton :
+                h_ptGenTop_passParton.Fill(hadTop.p4.Perp(), weight)
                 h_ptGenTop_pt400.Fill( hadTop.p4.Perp(), weight )
                 h_ptGenTop_noweight_pt400.Fill( hadTop.p4.Perp() )
                 
-                h_ptGenTop_passParton.Fill(hadTop.p4.Perp(), weight)
-
+                
         # endif (making response matrix)
 
 
@@ -1923,7 +1956,7 @@ for event in events :
                 response_pt400_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
                             
                 h_ptPartTop_passParticleParton.Fill(genTops[0].Perp(), weight) 
-                h_ptGenTop_passParticleParton.Fill(hadTop.p4.Perp(), weight)
+                h_ptGenTop_passParticleParton.Fill(hadTop.p4.Perp(), weight)            
 
         if passParticle:
             h_ptPartTop_pt400.Fill( genTops[0].Perp(), weight )
@@ -2563,6 +2596,8 @@ for event in events :
     topTagMinMass = topTagMinMassHandle.product()
     event.getByLabel (topTagNSubjetsLabel, topTagNSubjetsHandle)
     topTagNSub = topTagNSubjetsHandle.product()
+    event.getByLabel (topTagJetAreaLabel, topTagJetAreaHandle)
+    topTagJetArea = topTagJetAreaHandle.product()
 
 
     ca8Jets = []  #list of smeared & corrected CA8 jets
@@ -2588,7 +2623,17 @@ for event in events :
                 print ilepton
                 thisJet = thisJet - ilepton.p4()
 
+        # apply nominal jet energy corrections (for both data & MC)! what's stored now is the uncorrected jet variables! 
+        jecNomAK7.setJetEta( thisJet.Eta() )
+        jecNomAK7.setJetPt( thisJet.Perp() )
+        jecNomAK7.setJetE( thisJet.E() )
+        jecNomAK7.setNPV( len(npvHandle.product()) )
+        jecNomAK7.setJetA( topTagJetArea[ijet] );
+        jecNomAK7.setRho( rho[0] )
+        corr = jecNomAK7.getCorrection()
         
+        thisJet = thisJet * corr
+                
         # next smear the jets (for CA8 jets, used the flat JER of 0.10, or 0.0/0.2 for down/up)
         if options.jerSys != None :
             genJet = findClosestInList( thisJet, ca8GenJets )
@@ -2601,8 +2646,8 @@ for event in events :
 
         # then do the jet corrections
         if options.jecSys != None :
-            jecUncAK7.setJetEta( topTagEta[ijet] )
-            jecUncAK7.setJetPt( topTagPt[ijet] )                    
+            jecUncAK7.setJetEta( thisJet.Eta() )
+            jecUncAK7.setJetPt( thisJet.Perp() )                    
             upOrDown = bool(options.jecSys > 0.0)
             unc1 = abs(jecUncAK7.getUncertainty(upOrDown))
             unc2 = flatJecUnc
@@ -2841,6 +2886,7 @@ for event in events :
     h_nJets4.Fill(nJets, weight)
     h_nBJets4.Fill(nBJets, weight)
     h_nLepJets4.Fill(len(lepJets), weight)
+    h_dRvspT4.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
 
     if len(lepJets) > 0:
         h_pt1LepJet4.Fill(lepJets[0].Perp(), weight)
@@ -2932,6 +2978,7 @@ for event in events :
     h_nJets5.Fill(nJets, weight)
     h_nBJets5.Fill(nBJets, weight)
     h_nLepJets5.Fill(len(lepJets), weight)
+    h_dRvspT5.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
 
     if len(lepJets) > 0:
         h_pt1LepJet5.Fill(lepJets[0].Perp(), weight)
@@ -3174,6 +3221,7 @@ for event in events :
     h_nJets6.Fill(nJets, weight)
     h_nBJets6.Fill(nBJets, weight)
     h_nLepJets6.Fill(len(lepJets), weight)
+    h_dRvspT6.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     
     if len(lepJets) > 0:
         h_pt1LepJet6.Fill(lepJets[0].Perp(), weight)
@@ -3237,12 +3285,19 @@ for event in events :
         response_nobtag.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
         response_nobtag_full.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
         if passParton:
-            response_nobtag_pt400.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)            
+            response_nobtag_pt400.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
+        else:
+            response_nobtag_pt400.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
         if passParticleLoose:
             response_nobtag_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
             response_nobtag_full_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
+        else:
+            response_nobtag_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
+            response_nobtag_full_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
         if passParticle:
             response_nobtag_pt400_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
+        else:
+            response_nobtag_pt400_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
     ### ------------------------------------------------------------------------------------------------
 
     
@@ -3495,6 +3550,7 @@ for event in events :
     h_ptLep7.Fill(lepton.p4().Perp(), weight)
     h_etaLep7.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep7.Fill(abs(lepton.p4().Eta()), weight)
+    h_dRvspT7.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     
     if len(lepJets) > 1:
         h_pt2LepJet7.Fill(lepJets[1].Perp(), weight)
@@ -3574,11 +3630,18 @@ for event in events :
         response_full.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
         if passParton:
             response_pt400.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)            
+        else:
+            response_pt400.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
         if passParticleLoose:
             response_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
             response_full_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
+        else:
+            response_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
+            response_full_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
         if passParticle:
             response_pt400_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
+        else:
+            response_pt400_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
     
     
 
