@@ -144,138 +144,135 @@ dirs = ['CT10_nom',
         #'scaledown'
     ]
 
-channels = ['el', 
-            'mu'
-]
+channel = 'el'
 
-for ich in channels :
-    ivar = -1
-    for idir in dirs :
-        ivar += 1
-
-        args = {'type': 'ttbar_xs_'+ich,
-                'mcstat':False,
-                'infilter':infilter,
-                'indir':idir}
-
-        model = build_model(**args)
+ivar = -1
+for idir in dirs :
+    ivar += 1
+    
+    args = {'type': 'ttbar_xs_'+channel,
+            'mcstat':False,
+            'infilter':infilter,
+            'indir':idir}
+    
+    model = build_model(**args)
         
-        #model_summary(model, all_nominal_templates=True, shape_templates=True) 
+    #model_summary(model, all_nominal_templates=True, shape_templates=True) 
         
+    parameters = model.get_parameters(['TTbar'])
+
+
+    if ivar == 0 :
+        model_summary(model)
+
+    if useMLE == True :        
+
+        print '------------- MLE RESULTS ' + idir + ' ' + channel + ' channel ---------------'
+
+        results1 = mle(model, input='toys:1.', n=1000)
+
+
+        bs = []
+        delta_bs = []
+        pulls = []
+
+        for b, db in results1['TTbar']['beta_signal']:
+            bs.append(b)
+            delta_bs.append(db)
+            pulls.append((1 - b)/db)
+
+        pdbs = plotdata()
+        pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
+        plot(pdbs, 'bs', 'ntoys', 'beta_signal_' + idir + '_' + channel + '.pdf')
+        
+        pdd = plotdata()
+        pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
+        plot(pdd, 'dbs', 'ntoys', 'delta_beta_signal_' + idir + '_' + channel + '.pdf')
+        
+        pdp = plotdata()
+        pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
+        plot(pdp, 'pull', 'ntoys', 'pull_' + idir + '_' + channel + '.pdf')
+        
+
+        # to write the data to a file, use e.g.:
+        pdp.write_txt('pull_' + idir + '_' + channel + '.txt')
+
+        # to write it to a root file:
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_mle_' + idir + '_' + channel + '.root')
+
+
+        results2 = mle(model, input='data', n=1, with_covariance = True)
+
+
+
+
+        print results2
+        ivals = results2['TTbar']
+        for ikey, ival in ivals.iteritems() :
+            if ikey != "__nll" and ikey != "__cov":
+                print '{0:20s} : {1:6.2f} +- {2:6.2f}'.format(
+                    ikey, ival[0][0], ival[0][1]
+                )
+
         parameters = model.get_parameters(['TTbar'])
+        print parameters
 
-
-        if ivar == 0 :
-            model_summary(model)
-
-        if useMLE == True :        
-
-            print '------------- MLE RESULTS ' + idir + ich + 'channel ---------------'
-
-            results1 = mle(model, input='toys:1.', n=1000)
-
-
-            bs = []
-            delta_bs = []
-            pulls = []
-
-            for b, db in results1['TTbar']['beta_signal']:
-                bs.append(b)
-                delta_bs.append(db)
-                pulls.append((1 - b)/db)
-
-            pdbs = plotdata()
-            pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-            plot(pdbs, 'bs', 'ntoys', 'beta_signal_' + idir + '_' + ich + '.pdf')
+        parameter_values = {}
+        for p in parameters :
+            parameter_values[p] = results2['TTbar'][p][0][0]
+        histos = evaluate_prediction(model, parameter_values, include_signal = True)
+        write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + channel + '.root')
         
-            pdd = plotdata()
-            pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-            plot(pdd, 'dbs', 'ntoys', 'delta_beta_signal_' + idir + '_' + ich + '.pdf')
-        
-            pdp = plotdata()
-            pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-            plot(pdp, 'pull', 'ntoys', 'pull_' + idir + '_' + ich + '.pdf')
-        
-
-            # to write the data to a file, use e.g.:
-            pdp.write_txt('pull_' + idir + '_' + ich + '.txt')
-
-            # to write it to a root file:
-            write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_mle_' + idir + '_' + ich + '.root')
-
-
-            results2 = mle(model, input='data', n=1, with_covariance = True)
-
-
-
-
-            print results2
-            ivals = results2['TTbar']
-            for ikey, ival in ivals.iteritems() :
-                if ikey != "__nll" and ikey != "__cov":
-                    print '{0:20s} : {1:6.2f} +- {2:6.2f}'.format(
-                        ikey, ival[0][0], ival[0][1]
-                    )
-
-            parameters = model.get_parameters(['TTbar'])
-            print parameters
-
-            parameter_values = {}
-            for p in parameters :
-                parameter_values[p] = results2['TTbar'][p][0][0]
-            histos = evaluate_prediction(model, parameter_values, include_signal = True)
-            write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + ich + '.root')
-        
-            if idir == "CT10_nom" :
-                report.write_html('htmlout_'+ich)
+        if idir == "CT10_nom" :
+            report.write_html('htmlout_'+channel)
             
-        if usePL == True :
+    if usePL == True :
 
-            print '------------- PL RESULTS ' + idir + ' ---------------'
+        print '------------- PL RESULTS ' + idir + ' ' + channel + ' channel ---------------'
 
 
-            args = {}
+        args = {}
 
-            results3 = pl_interval(model, input='toys:1.', n=1000 ,  **args)
+        results3 = pl_interval(model, input='toys:1.', n=1000 ,  **args)
 
-            bs = []
-            delta_bs = []
-            pulls = []
+        bs = []
+        delta_bs = []
+        pulls = []
 
-            for ival in results3['TTbar'][0.0] :
-                bs.append( ival )
-            ii = 0
-            for ival in results3['TTbar'][0.68268949213708585] :
-                delta_bs.append( 0.5 * ( abs( bs[ii] - ival[0] ) + abs(ival[1] - bs[ii])  ) )
-                ii += 1
+        for ival in results3['TTbar'][0.0] :
+            bs.append( ival )
+        ii = 0
+        for ival in results3['TTbar'][0.68268949213708585] :
+            delta_bs.append( 0.5 * ( abs( bs[ii] - ival[0] ) + abs(ival[1] - bs[ii])  ) )
+            ii += 1
             
-            for ii in xrange(len(bs)) :
-                pulls.append( (1 - bs[ii]) / delta_bs[ii] )
+        for ii in xrange(len(bs)) :
+            pulls.append( (1 - bs[ii]) / delta_bs[ii] )
             
-            pdbs = plotdata()
-            pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-            plot(pdbs, 'bs', 'ntoys', 'pl_beta_signal_' + idir + '_' + ich + '.pdf')
+        pdbs = plotdata()
+        pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
+        plot(pdbs, 'bs', 'ntoys', 'pl_beta_signal_' + idir + '_' + channel + '.pdf')
 
-            pdd = plotdata()
-            pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-            plot(pdd, 'dbs', 'ntoys', 'pl_delta_beta_signal_' + idir + '_' + ich + '.pdf')
+        pdd = plotdata()
+        pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
+        plot(pdd, 'dbs', 'ntoys', 'pl_delta_beta_signal_' + idir + '_' + channel + '.pdf')
 
-            pdp = plotdata()
-            pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-            plot(pdp, 'pull', 'ntoys', 'pl_pull_' + idir + '_' + ich + '.pdf')
+        pdp = plotdata()
+        pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
+        plot(pdp, 'pull', 'ntoys', 'pl_pull_' + idir + '_' + channel + '.pdf')
 
 
-            # to write the data to a file, use e.g.:
-            pdd.write_txt('pl_dbs_' + idir + '_' + ich + '.txt')
-            pdp.write_txt('pl_pull_' + idir + '_' + ich + '.txt')
+        # to write the data to a file, use e.g.:
+        pdd.write_txt('pl_dbs_' + idir + '_' + channel + '.txt')
+        pdp.write_txt('pl_pull_' + idir + '_' + channel + '.txt')
 
-            # to write it to a root file:
-            write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_pl_' + idir + '_' + ich + '.root')
+        # to write it to a root file:
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_pl_' + idir + '_' + channel + '.root')
 
         
-            results4 = pl_interval(model, input='data', n=1 , **args)
+        results4 = pl_interval(model, input='data', n=1 , **args)
 
-            print results4
+        print results4
         
-            if idir == "CT10_nom" : 
-                report.write_html('htmlout_'+ich)
+        if idir == "CT10_nom" : 
+            report.write_html('htmlout_'+channel)

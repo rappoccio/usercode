@@ -15,6 +15,11 @@ parser.add_option('--normdir', metavar='D', type='string', action='store',
                   dest='normdir',
                   help='Directory where normalized histograms reside')
 
+parser.add_option('--channel', metavar='D', type='string', action='store',
+                  default='el',
+                  dest='channel',
+                  help='el or mu')
+
 
 (options, args) = parser.parse_args()
 
@@ -77,9 +82,9 @@ counts_post = {'TTbar':[],
             }
     
 files = {
-    'etaAbsLep4':options.normdir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',    
-    'etaAbsLep6':options.normdir + '/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
-    'vtxMass7':options.normdir + '/normalized2d_mujets_vtxMass7.root'
+    'etaAbsLep4':options.normdir + '/normalized2d_'+options.channel+'jets_etaAbsLep6_subtracted_from_etaAbsLep4.root',    
+    'etaAbsLep6':options.normdir + '/normalized2d_'+options.channel+'jets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+    'vtxMass7':options.normdir + '/normalized2d_'+options.channel+'jets_vtxMass7.root'
     }
 	
 
@@ -139,8 +144,8 @@ for variable in variables :
     stacks.append(hs)
     counts_post["Data"].append( h_data.Integral() )
     #print 'Data : {0:6.2f}'.format( h_data.Integral() )
-    c.Print(variable + '_' + options.normdir + '.png')
-    c.Print(variable + '_' + options.normdir + '.pdf')
+    c.Print(variable + '_' + options.normdir + '_' + options.channel + '.png')
+    c.Print(variable + '_' + options.normdir + '_' + options.channel + '.pdf')
     i+= 1
 
 
@@ -170,12 +175,12 @@ for variable in variables :
     h_datas.append(h_data)
     stacks.append(hs)
     counts_pre["Data"].append( h_data.Integral() )
-    cpre.Print(variable + '_' + options.normdir + '_pre.png')
-    cpre.Print(variable + '_' + options.normdir + '_pre.pdf')
+    cpre.Print(variable + '_' + options.normdir + '_' + options.channel + '_pre.png')
+    cpre.Print(variable + '_' + options.normdir + '_' + options.channel + '_pre.pdf')
     i+= 1
 
 print '======================================'
-print 'Counts for ' + options.normdir
+print 'Counts for ' + options.normdir + ' ' + options.channel + ' channel'
 print '======================================'
 
 # initialize total
