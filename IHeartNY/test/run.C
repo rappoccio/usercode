@@ -17,13 +17,13 @@ void run(TString option, bool doElectron) {
 
     cout << "make theta histograms..." << endl;
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"scaleup");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"scaleup");
-    makeTheta_single("vtxMass",7,doElectron,"scaleup");
+    //makeTheta_subtract("etaAbsLep",4,6,doElectron,"scaleup");
+    //makeTheta_subtract("etaAbsLep",6,7,doElectron,"scaleup");
+    //makeTheta_single("vtxMass",7,doElectron,"scaleup");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"scaledown");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"scaledown");
-    makeTheta_single("vtxMass",7,doElectron,"scaledown");
+    //makeTheta_subtract("etaAbsLep",4,6,doElectron,"scaledown");
+    //makeTheta_subtract("etaAbsLep",6,7,doElectron,"scaledown");
+    //makeTheta_single("vtxMass",7,doElectron,"scaledown");
 
     makeTheta_subtract("etaAbsLep",4,6,doElectron,"CT10_nom");
     makeTheta_subtract("etaAbsLep",6,7,doElectron,"CT10_nom");
@@ -37,29 +37,29 @@ void run(TString option, bool doElectron) {
     makeTheta_subtract("etaAbsLep",6,7,doElectron,"CT10_pdfdown");
     makeTheta_single("vtxMass",7,doElectron,"CT10_pdfdown");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"MSTW_nom");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"MSTW_nom");
-    makeTheta_single("vtxMass",7,doElectron,"MSTW_nom");
+    //makeTheta_subtract("etaAbsLep",4,6,doElectron,"MSTW_nom");
+    //makeTheta_subtract("etaAbsLep",6,7,doElectron,"MSTW_nom");
+    //makeTheta_single("vtxMass",7,doElectron,"MSTW_nom");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"MSTW_pdfup");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"MSTW_pdfup");
-    makeTheta_single("vtxMass",7,doElectron,"MSTW_pdfup");
+    //makeTheta_subtract("etaAbsLep",4,6,doElectron,"MSTW_pdfup");
+    //makeTheta_subtract("etaAbsLep",6,7,doElectron,"MSTW_pdfup");
+    //makeTheta_single("vtxMass",7,doElectron,"MSTW_pdfup");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"MSTW_pdfdown");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"MSTW_pdfdown");
-    makeTheta_single("vtxMass",7,doElectron,"MSTW_pdfdown");
+    //makeTheta_subtract("etaAbsLep",4,6,doElectron,"MSTW_pdfdown");
+    //makeTheta_subtract("etaAbsLep",6,7,doElectron,"MSTW_pdfdown");
+    //makeTheta_single("vtxMass",7,doElectron,"MSTW_pdfdown");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"NNPDF_nom");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"NNPDF_nom");
-    makeTheta_single("vtxMass",7,doElectron,"NNPDF_nom");
+    //makeTheta_subtract("etaAbsLep",4,6,doElectron,"NNPDF_nom");
+    //makeTheta_subtract("etaAbsLep",6,7,doElectron,"NNPDF_nom");
+    //makeTheta_single("vtxMass",7,doElectron,"NNPDF_nom");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"NNPDF_pdfup");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"NNPDF_pdfup");
-    makeTheta_single("vtxMass",7,doElectron,"NNPDF_pdfup");
+    //makeTheta_subtract("etaAbsLep",4,6,doElectron,"NNPDF_pdfup");
+    //makeTheta_subtract("etaAbsLep",6,7,doElectron,"NNPDF_pdfup");
+    //makeTheta_single("vtxMass",7,doElectron,"NNPDF_pdfup");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"NNPDF_pdfdown");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"NNPDF_pdfdown");
-    makeTheta_single("vtxMass",7,doElectron,"NNPDF_pdfdown");
+    //makeTheta_subtract("etaAbsLep",4,6,doElectron,"NNPDF_pdfdown");
+    //makeTheta_subtract("etaAbsLep",6,7,doElectron,"NNPDF_pdfdown");
+    //makeTheta_single("vtxMass",7,doElectron,"NNPDF_pdfdown");
 
   } 
   // various plots for kinematic checks
@@ -132,37 +132,37 @@ void run(TString option, bool doElectron) {
     makePlots("etaAbsLep",6,7,doElectron,"CT10_pdfdown");
     makePlots("etaAbsLep",4,6,doElectron,"CT10_pdfdown");
 
-    makePlots("vtxMass",7,0,doElectron,"MSTW_nom");
-    makePlots("etaAbsLep",6,7,doElectron,"MSTW_nom");
-    makePlots("etaAbsLep",4,6,doElectron,"MSTW_nom");
+    //makePlots("vtxMass",7,0,doElectron,"MSTW_nom");
+    //makePlots("etaAbsLep",6,7,doElectron,"MSTW_nom");
+    //makePlots("etaAbsLep",4,6,doElectron,"MSTW_nom");
 
-    makePlots("vtxMass",7,0,doElectron,"MSTW_pdfup");
-    makePlots("etaAbsLep",6,7,doElectron,"MSTW_pdfup");
-    makePlots("etaAbsLep",4,6,doElectron,"MSTW_pdfup");
+    //makePlots("vtxMass",7,0,doElectron,"MSTW_pdfup");
+    //makePlots("etaAbsLep",6,7,doElectron,"MSTW_pdfup");
+    //makePlots("etaAbsLep",4,6,doElectron,"MSTW_pdfup");
 
-    makePlots("vtxMass",7,0,doElectron,"MSTW_pdfdown");
-    makePlots("etaAbsLep",6,7,doElectron,"MSTW_pdfdown");
-    makePlots("etaAbsLep",4,6,doElectron,"MSTW_pdfdown");
+    //makePlots("vtxMass",7,0,doElectron,"MSTW_pdfdown");
+    //makePlots("etaAbsLep",6,7,doElectron,"MSTW_pdfdown");
+    //makePlots("etaAbsLep",4,6,doElectron,"MSTW_pdfdown");
 
-    makePlots("vtxMass",7,0,doElectron,"NNPDF_nom");
-    makePlots("etaAbsLep",6,7,doElectron,"NNPDF_nom");
-    makePlots("etaAbsLep",4,6,doElectron,"NNPDF_nom");
+    //makePlots("vtxMass",7,0,doElectron,"NNPDF_nom");
+    //makePlots("etaAbsLep",6,7,doElectron,"NNPDF_nom");
+    //makePlots("etaAbsLep",4,6,doElectron,"NNPDF_nom");
 
-    makePlots("vtxMass",7,0,doElectron,"NNPDF_pdfup");
-    makePlots("etaAbsLep",6,7,doElectron,"NNPDF_pdfup");
-    makePlots("etaAbsLep",4,6,doElectron,"NNPDF_pdfup");
+    //makePlots("vtxMass",7,0,doElectron,"NNPDF_pdfup");
+    //makePlots("etaAbsLep",6,7,doElectron,"NNPDF_pdfup");
+    //makePlots("etaAbsLep",4,6,doElectron,"NNPDF_pdfup");
 
-    makePlots("vtxMass",7,0,doElectron,"NNPDF_pdfdown");
-    makePlots("etaAbsLep",6,7,doElectron,"NNPDF_pdfdown");
-    makePlots("etaAbsLep",4,6,doElectron,"NNPDF_pdfdown");
+    //makePlots("vtxMass",7,0,doElectron,"NNPDF_pdfdown");
+    //makePlots("etaAbsLep",6,7,doElectron,"NNPDF_pdfdown");
+    //makePlots("etaAbsLep",4,6,doElectron,"NNPDF_pdfdown");
 
-    makePlots("vtxMass",7,0,doElectron,"scaleup");
-    makePlots("etaAbsLep",6,7,doElectron,"scaleup");
-    makePlots("etaAbsLep",4,6,doElectron,"scaleup");
+    //makePlots("vtxMass",7,0,doElectron,"scaleup");
+    //makePlots("etaAbsLep",6,7,doElectron,"scaleup");
+    //makePlots("etaAbsLep",4,6,doElectron,"scaleup");
 
-    makePlots("vtxMass",7,0,doElectron,"scaledown");
-    makePlots("etaAbsLep",6,7,doElectron,"scaledown");
-    makePlots("etaAbsLep",4,6,doElectron,"scaledown");
+    //makePlots("vtxMass",7,0,doElectron,"scaledown");
+    //makePlots("etaAbsLep",6,7,doElectron,"scaledown");
+    //makePlots("etaAbsLep",4,6,doElectron,"scaledown");
 
   }
   // make posterior plots
