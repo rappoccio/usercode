@@ -413,7 +413,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT1
 
   // read MC histograms
   TFile* fMC;
-  if (doElectron) fMC = new TFile("run_theta/histos-el-mle-2d-"+pdfdir+".root");
+  if (doElectron) fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el.root");
   else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+".root");
 
   TH1F* h_qcd = (TH1F*) fMC->Get(what+"__QCD");
@@ -638,7 +638,7 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom") {
 
   // post-fit file
   TFile* fMC;
-  if (doElectron) fMC = new TFile("run_theta/histos-el-mle-2d-"+pdfdir+".root");
+  if (doElectron) fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el.root");
   else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+".root");
 
   // post-fit relative errors (from theta_output.txt)
@@ -648,10 +648,25 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom") {
   float fiterr_wjets = (0.5*0.21)/(1.0-0.5*0.7);
   float fiterr_qcd = (0.5*0.57)/(1.0-0.5*0.1);
   */
-  float fiterr_tt = 0.10/0.68;
-  float fiterr_singletop = (0.5*0.83)/(1.0-0.5*0.88);
-  float fiterr_wjets = (0.5*0.22)/(1.0-0.5*0.5);
-  float fiterr_qcd = (1.0*0.35)/(1.0-1.0*0.21);
+
+  float fiterr_tt = 0;
+  float fiterr_singletop = 0;
+  float fiterr_wjets = 0;
+  float fiterr_qcd = 0;
+
+  if (doElectron) {
+    fiterr_tt = 0.07/0.69;
+    fiterr_singletop = (0.5*0.83)/(1.0-0.5*0.86);
+    fiterr_wjets = (0.5*0.14)/(1.0+0.5*0.88);
+    fiterr_qcd = (1.0*0.12)/(1.0-0.5*1.0);
+  }
+  else {
+    fiterr_tt = 0.10/0.68;
+    fiterr_singletop = (0.5*0.83)/(1.0-0.5*0.88);
+    fiterr_wjets = (0.5*0.22)/(1.0-0.5*0.5);
+    fiterr_qcd = (1.0*0.35)/(1.0-1.0*0.21);
+  }
+
 
   // pre-fit & data files
   TFile* fDATA[3];
@@ -704,7 +719,8 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom") {
   err_qcd_up[1] = qcdnorm6.second; 
   err_qcd_dn[1] = err_qcd_up[1];
   err_qcd_up[2] = qcdnorm7.second; 
-  err_qcd_dn[2] = qcdnorm7.first;
+  if (err_qcd_up[2] > qcdnorm7.first) err_qcd_dn[2] = qcdnorm7.first;
+  else err_qcd_dn[2] = err_qcd_up[2];
   
 
   // get histograms
