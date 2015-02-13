@@ -432,7 +432,7 @@ parser.add_option('--num', metavar='F', type='string', action='store',
 parser.add_option('--pileup', metavar='F', type='string', action='store',
                   default='none',
                   dest='pileup',
-                  help='What pileup histogram should be used? ttbar, wjets, sts, stt, sttw, stsb, sttb, sttwb')
+                  help='What pileup histogram should be used? ttbar, wjets, sts, stt, sttw, stsb, sttb, sttwb, ttbarQ2dn, ttbarQ2up')
 
 parser.add_option('--ptWeight', metavar='F', action='store_true',
                   default=False,
