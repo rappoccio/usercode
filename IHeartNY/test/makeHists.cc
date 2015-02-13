@@ -521,7 +521,8 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT1
 
   // axis ranges
   if (what=="hadtop_pt6" || what=="hadtop_pt7") h_data->SetAxisRange(350,1200,"X");
-  if (what.Contains("etaAbsLep")) h_data->GetXaxis()->SetTitle("Muon |#eta|");
+  if (what.Contains("etaAbsLep") && doElectron) h_data->GetXaxis()->SetTitle("Electron |#eta|");
+  else if (what.Contains("etaAbsLep")) h_data->GetXaxis()->SetTitle("Muon |#eta|");
 
   // legend
   TLegend* leg = new TLegend(0.67,0.56,0.92,0.9);
@@ -559,6 +560,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT1
   float max = h_totalbkg->GetMaximum();
   if ( (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin())) > max)
     max = (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin()));
+  if (what.Contains("etaAbs") && doElectron) max = max*1.4;
   if (what.Contains("etaAbs")) max = max*1.2;
   h_data->SetAxisRange(0,max*1.05,"Y");
 
