@@ -25,8 +25,8 @@ name_pdfsysts = [ "_nom", "_pdfup", "_pdfdown" ]
 
 #pdfsets = [ '--pdfSet=0.0', '--pdfSet=1.0', '--pdfSet=2.0' ]
 #name_pdfsets = [ 'CT10', 'MSTW', 'NNPDF' ]
-pdfsets = [ '--pdfSet=0.0' ]
-name_pdfsets = [ 'CT10' ]
+pdfsets = [ '--pdfSet=1.0' ]
+name_pdfsets = [ 'MSTW' ]
 
 def worker(q):
     while True:

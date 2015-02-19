@@ -26,6 +26,11 @@ parser.add_option('--mttGenMax', metavar='J', type='float', action='store',
                   dest='mttGenMax',
                   help='Maximum generator-level m_ttbar [GeV] to stitch together the ttbar samples.')
 
+parser.add_option('--lepType', metavar='F', type='string', action='store',
+                  default='muon',
+                  dest='lepType',
+                  help='Lepton type (ele or muon)')
+
 parser.add_option('--pdfSet', metavar='J', type='float', action='store',
                   default=0.0,
                   dest='pdfSet',
@@ -161,18 +166,18 @@ hw_leptop_mass_pt400 = ROOT.TH1F("w_leptop_mass_pt400", ";Mass(leptonic top) [Ge
 hw_leptop_pt_all     = ROOT.TH1F("w_leptop_pt_all",   ";p_{T}(leptonic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 hw_leptop_pt_pt400   = ROOT.TH1F("w_leptop_pt_pt400", ";p_{T}(leptonic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 
-h_mu_eta_all   = ROOT.TH1F("mu_eta_all",   ";Muon #eta; Events / 0.025", 240, -3, 3)
-h_mu_eta_pt400 = ROOT.TH1F("mu_eta_pt400", ";Muon #eta; Events / 0.025", 240, -3, 3)
-h_mu_pt_all    = ROOT.TH1F("mu_pt_all",    ";Muon p_{T} [GeV]; Events / 1 GeV", 300, 0, 300)
-h_mu_pt_pt400  = ROOT.TH1F("mu_pt_pt400",  ";Muon p_{T} [GeV]; Events / 1 GeV", 300, 0, 300)
-hw_mu_eta_all   = ROOT.TH1F("w_mu_eta_all",   ";Muon #eta; Events / 0.025", 240, -3, 3)
-hw_mu_eta_pt400 = ROOT.TH1F("w_mu_eta_pt400", ";Muon #eta; Events / 0.025", 240, -3, 3)
-hw_mu_pt_all    = ROOT.TH1F("w_mu_pt_all",    ";Muon p_{T} [GeV]; Events / 1 GeV", 300, 0, 300)
-hw_mu_pt_pt400  = ROOT.TH1F("w_mu_pt_pt400",  ";Muon p_{T} [GeV]; Events / 1 GeV", 300, 0, 300)
+h_lep_eta_all   = ROOT.TH1F("lep_eta_all",   ";Muon #eta; Events / 0.025", 240, -3, 3)
+h_lep_eta_pt400 = ROOT.TH1F("lep_eta_pt400", ";Muon #eta; Events / 0.025", 240, -3, 3)
+h_lep_pt_all    = ROOT.TH1F("lep_pt_all",    ";Muon p_{T} [GeV]; Events / 1 GeV", 300, 0, 300)
+h_lep_pt_pt400  = ROOT.TH1F("lep_pt_pt400",  ";Muon p_{T} [GeV]; Events / 1 GeV", 300, 0, 300)
+hw_lep_eta_all   = ROOT.TH1F("w_lep_eta_all",   ";Muon #eta; Events / 0.025", 240, -3, 3)
+hw_lep_eta_pt400 = ROOT.TH1F("w_lep_eta_pt400", ";Muon #eta; Events / 0.025", 240, -3, 3)
+hw_lep_pt_all    = ROOT.TH1F("w_lep_pt_all",    ";Muon p_{T} [GeV]; Events / 1 GeV", 300, 0, 300)
+hw_lep_pt_pt400  = ROOT.TH1F("w_lep_pt_pt400",  ";Muon p_{T} [GeV]; Events / 1 GeV", 300, 0, 300)
 
 
 # dummy histogram used only to specify dimensions for reponse matrix
-ptbins       = array('d',[300.0,400.0,500.0,600.0,700.0,800.0,1300.0])                         ## default version
+ptbins       = array('d',[400.0,500.0,600.0,700.0,800.0,1200.0])                               ## default version
 ptbins_full  = array('d',[0.0,100.0,200.0,300.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])  ## including lower/higher pt bins
 ptbins_pt400 = array('d',[400.0,500.0,600.0,700.0,800.0,1200.0])                               ## version requiring pt>400 at gen/particle-level
 
@@ -385,12 +390,14 @@ for event in events :
 
     topQuarks = []
     genMuons = []
+    genElectrons = []
     hadTop = None
     lepTop = None
     ttbar = None
     isSemiLeptonicGen = True
     isMuon = False
-
+    isElectron = False
+    
     event.getByLabel( topPtLabel, topPtHandle )
     event.getByLabel( topEtaLabel, topEtaHandle )
     event.getByLabel( topPhiLabel, topPhiHandle )
@@ -408,8 +415,8 @@ for event in events :
     topDecay = 0        # 0 = hadronic, 1 = leptonic
     antitopDecay = 0    # 0 = hadronic, 1 = leptonic
 
-    muonEta = 0
-    muonPt = 0
+    leptonEta = 0
+    leptonPt = 0
     
     # -------------------------------------------------------------------------------------
     # loop over gen particules
@@ -436,8 +443,17 @@ for event in events :
             p4Muon = ROOT.TLorentzVector()
             p4Muon.SetPtEtaPhiM( topPt[igen], topEta[igen], topPhi[igen], topMass[igen] )
             genMuons.append(p4Muon)
-            muonEta = topEta[igen]
-            muonPt = topPt[igen]
+            leptonEta = topEta[igen]
+            leptonPt = topPt[igen]
+
+        # electron final state?
+        if abs(topPdgId[igen]) == 11 :
+            isElectron = True
+            p4Electron = ROOT.TLorentzVector()
+            p4Electron.SetPtEtaPhiM( topPt[igen], topEta[igen], topPhi[igen], topMass[igen] )
+            genElectrons.append(p4Electron)
+            leptonEta = topEta[igen]
+            leptonPt = topPt[igen]
 
         
     # -------------------------------------------------------------------------------------
@@ -494,9 +510,11 @@ for event in events :
         h_ttbar_mass_pt400_emutau.Fill( ttbar.M() )
         hw_ttbar_mass_pt400_emutau.Fill( ttbar.M(), weight )
 
-    ## now require mu+jets final state only
-    if isMuon is False:
-        continue
+    ## now require mu/e+jets final state only
+    if ((isMuon == False) or (isElectron == True)) and (options.lepType == "muon"):
+		continue
+    if ((isMuon == True) or (isElectron == False)) and (options.lepType == "ele"):
+		continue
 
     ## passParton?
     if hadTop.p4.Perp() > 400.0:
@@ -594,8 +612,8 @@ for event in events :
     h_hadtop_pt_all.Fill( hadTop.p4.Perp() )
     h_leptop_mass_all.Fill( lepTop.p4.M() )
     h_leptop_pt_all.Fill( lepTop.p4.Perp() )
-    h_mu_eta_all.Fill(muonEta)    
-    h_mu_pt_all.Fill(muonPt)
+    h_lep_eta_all.Fill(leptonEta)    
+    h_lep_pt_all.Fill(leptonPt)
 
     hw_ttbar_mass_all.Fill( ttbar.M(), weight )
     hw_ttbar_pt_all.Fill( ttbar.Perp(), weight )
@@ -603,8 +621,8 @@ for event in events :
     hw_hadtop_pt_all.Fill( hadTop.p4.Perp(), weight )
     hw_leptop_mass_all.Fill( lepTop.p4.M(), weight )
     hw_leptop_pt_all.Fill( lepTop.p4.Perp(), weight )
-    hw_mu_eta_all.Fill(muonEta, weight)    
-    hw_mu_pt_all.Fill(muonPt, weight)
+    hw_lep_eta_all.Fill(leptonEta, weight)    
+    hw_lep_pt_all.Fill(leptonPt, weight)
 
     if passParton :
         h_ttbar_mass_pt400.Fill( ttbar.M() )
@@ -613,8 +631,8 @@ for event in events :
         h_hadtop_pt_pt400.Fill( hadTop.p4.Perp() )
         h_leptop_mass_pt400.Fill( lepTop.p4.M() )
         h_leptop_pt_pt400.Fill( lepTop.p4.Perp() )
-        h_mu_eta_pt400.Fill(muonEta)
-        h_mu_pt_pt400.Fill(muonPt)
+        h_lep_eta_pt400.Fill(leptonEta)
+        h_lep_pt_pt400.Fill(leptonPt)
 
         hw_ttbar_mass_pt400.Fill( ttbar.M(), weight )
         hw_ttbar_pt_pt400.Fill( ttbar.Perp(), weight )            
@@ -622,10 +640,10 @@ for event in events :
         hw_hadtop_pt_pt400.Fill( hadTop.p4.Perp(), weight )
         hw_leptop_mass_pt400.Fill( lepTop.p4.M(), weight )
         hw_leptop_pt_pt400.Fill( lepTop.p4.Perp(), weight )
-        hw_mu_eta_pt400.Fill(muonEta, weight)
-        hw_mu_pt_pt400.Fill(muonPt, weight)
+        hw_lep_eta_pt400.Fill(leptonEta, weight)
+        hw_lep_pt_pt400.Fill(leptonPt, weight)
 
-        if abs(muonEta)<2.1 and muonPt>40 :
+        if abs(leptonEta)<2.1 and leptonPt>40 :
             h_hadtop_pt_pt400_pass.Fill(hadTop.p4.Perp())
             hw_hadtop_pt_pt400_pass.Fill(hadTop.p4.Perp(), weight)
 
@@ -692,7 +710,7 @@ for event in events :
             ak5GenJets_tight.append(p4)
 
 
-    if abs(muonEta)<2.1 and muonPt>45. and len(ak5GenJets_tight) > 1:
+    if abs(leptonEta)<2.1 and leptonPt>45. and len(ak5GenJets_tight) > 1:
         h_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp())
         hw_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp(), weight)
 
@@ -735,27 +753,34 @@ for event in events :
     # implement particle-level selection
     # -------------------------------------------------------------------------------------
 
-    nGenMuons = 0
+    nGenLeptons = 0
     nGenBJets = 0
     nGenTops = 0
-    genMuon = ROOT.TLorentzVector()
+    genLeptoon = ROOT.TLorentzVector()
     genTops = []
-    for iMuon in genMuons:
-        if iMuon.Perp() > 45. and abs(iMuon.Eta()) < 2.1:
-            nGenMuons += 1
-            genMuon = iMuon
 
-    if nGenMuons == 1:
+    if (options.lepType == "muon") :
+		for iMuon in genMuons:
+			if iMuon.Perp() > 45. and abs(iMuon.Eta()) < 2.1:
+				nGenLeptons += 1
+				genLepton = iMuon
+    else :
+		for iEle in genElectrons:
+			if iEle.Perp() > 35. and abs(iEle.Eta()) < 2.5:
+				nGenLeptons += 1
+				genLepton = iEle
+
+    if nGenLeptons == 1:
         for iak5Gen in ak5GenJets:
-            if iak5Gen.DeltaR(genMuon) < ROOT.TMath.Pi() / 2.0 and iak5Gen.Perp() > 30. and abs(iak5Gen.Eta()) < 2.4:
+            if iak5Gen.DeltaR(genLepton) < ROOT.TMath.Pi() / 2.0 and iak5Gen.Perp() > 30. and abs(iak5Gen.Eta()) < 2.4:
                 nGenBJets += 1
 
         for ica8Gen in ca8GenJets:
-            if ica8Gen.DeltaR(genMuon) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > 30. and abs(ica8Gen.Eta()) < 2.4:
+            if ica8Gen.DeltaR(genLepton) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > 30. and abs(ica8Gen.Eta()) < 2.4:
                 genTops.append(ica8Gen)
                 nGenTops += 1
 
-    if nGenMuons == 1 and nGenBJets > 0 and nGenTops > 0:
+    if nGenLeptons == 1 and nGenBJets > 0 and nGenTops > 0:
         passParticleLoose = True
             
     if passParticleLoose and genTops[0].Perp() > 400.0 :
@@ -785,9 +810,6 @@ for event in events :
             h_ptPartTop_passParticleParton_noweight.Fill(genTops[0].Perp()) 
             h_ptGenTop_passParticleParton.Fill(hadTop.p4.Perp(), weight)
             h_ptGenTop_passParticleParton_noweight.Fill(hadTop.p4.Perp())
-    elif passParticle:
-        response_pt400_pp.Fake(genTops[0].Perp(), weight*weight_response)
-
 
     if passParticle:
         h_ptPartTop_pt400.Fill( genTops[0].Perp(), weight )
