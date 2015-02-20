@@ -220,6 +220,7 @@ h_ptGenTop_passParticleParton_noweight  = ROOT.TH1F("ptGenTop_passParticleParton
 ## current default bin widths
 response_pp = ROOT.RooUnfoldResponse(h_bins, h_bins)
 response_pp.SetName('response_pt_pp')
+response_pp.UseOverflow()
 
 ## including lower/higher pt bins
 response_full_pp = ROOT.RooUnfoldResponse(h_bins_full, h_bins_full)
@@ -810,6 +811,8 @@ for event in events :
             h_ptPartTop_passParticleParton_noweight.Fill(genTops[0].Perp()) 
             h_ptGenTop_passParticleParton.Fill(hadTop.p4.Perp(), weight)
             h_ptGenTop_passParticleParton_noweight.Fill(hadTop.p4.Perp())
+    elif passParticle:
+        response_pt400_pp.Fake(genTops[0].Perp(), weight*weight_response)
 
     if passParticle:
         h_ptPartTop_pt400.Fill( genTops[0].Perp(), weight )

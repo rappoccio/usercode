@@ -1152,10 +1152,13 @@ if options.makeResponse == True :
     ## current default bin widths
     response_pp = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response_pp.SetName('response_pt_pp')
+    response_pp.UseOverflow()
     response_rp = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response_rp.SetName('response_pt_rp')
+    response_rp.UseOverflow()
     response_nobtag_rp = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response_nobtag_rp.SetName('response_pt_nobtag_rp')
+    response_nobtag_rp.UseOverflow()
     h_ptPartTop          = ROOT.TH1F("ptPartTop",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
     h_ptPartTop_noweight = ROOT.TH1F("ptPartTop_noweight", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
@@ -1959,12 +1962,13 @@ for event in events :
                 response_pt400_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
                             
                 h_ptPartTop_passParticleParton.Fill(genTops[0].Perp(), weight) 
-                h_ptGenTop_passParticleParton.Fill(hadTop.p4.Perp(), weight)            
+                h_ptGenTop_passParticleParton.Fill(hadTop.p4.Perp(), weight)
+        elif passParticle:
+            response_pt400_pp.Fake(genTops[0].Perp(), weight*weight_response)
 
         if passParticle:
             h_ptPartTop_pt400.Fill( genTops[0].Perp(), weight )
             h_ptPartTop_noweight_pt400.Fill( genTops[0].Perp() )
-            
             h_ptPartTop_passParticle.Fill(genTops[0].Perp(), weight) 
 
         
