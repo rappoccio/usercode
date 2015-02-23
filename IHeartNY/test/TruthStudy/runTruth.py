@@ -711,9 +711,14 @@ for event in events :
             ak5GenJets_tight.append(p4)
 
 
-    if abs(leptonEta)<2.1 and leptonPt>45. and len(ak5GenJets_tight) > 1:
-        h_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp())
-        hw_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp(), weight)
+    if options.lepType == "ele": 
+        if abs(leptonEta)<2.5 and leptonPt>35. and len(ak5GenJets_tight) > 1:
+            h_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp())
+            hw_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp(), weight)
+    else:
+        if abs(leptonEta)<2.1 and leptonPt>45. and len(ak5GenJets_tight) > 1:
+            h_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp())
+            hw_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp(), weight)
 
             
     # -------------------------------------------------------------------------------------
@@ -757,7 +762,7 @@ for event in events :
     nGenLeptons = 0
     nGenBJets = 0
     nGenTops = 0
-    genLeptoon = ROOT.TLorentzVector()
+    genLepton = ROOT.TLorentzVector()
     genTops = []
 
     if (options.lepType == "muon") :
