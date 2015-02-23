@@ -29,6 +29,15 @@ void myItalicText(Double_t x,Double_t y,Color_t color,char *text);
 
 void truthEff(TString option, bool doPart, TString pdf) {
 
+  bool doElectron = true;
+
+  TString path = "";
+  TString muOrEl = "mu";
+  if (doElectron) {
+    path = "_el";
+    muOrEl = "el";
+  }
+
   SetPlotStyle();
 
   if ( !(option == "trigSF" || option == "eff" || option == "eff_nobtag")) {
@@ -37,28 +46,28 @@ void truthEff(TString option, bool doPart, TString pdf) {
   }
   
   // full truth samlpes (aka denominator)
-  TFile* f_true0    = new TFile("TT_max700_"+pdf+"_fullTruth.root");
-  TFile* f_true700  = new TFile("TT_Mtt-700to1000_"+pdf+"_fullTruth.root");
-  TFile* f_true1000 = new TFile("TT_Mtt-1000toInf_"+pdf+"_fullTruth.root");
+  TFile* f_true0    = new TFile("TT_max700_"+pdf+path+"_fullTruth.root");
+  TFile* f_true700  = new TFile("TT_Mtt-700to1000_"+pdf+path+"_fullTruth.root");
+  TFile* f_true1000 = new TFile("TT_Mtt-1000toInf_"+pdf+path+"_fullTruth.root");
 
   if (doPart) {
-    TH1F* h_true0    = (TH1F*) f_true0->Get("ptPartTop_passParticle");
-    TH1F* h_true700  = (TH1F*) f_true700->Get("ptPartTop_passParticle");
-    TH1F* h_true1000 = (TH1F*) f_true1000->Get("ptPartTop_passParticle");
+    TH1F* h_true0    = (TH1F*) f_true0->Get("ptPartTop");
+    TH1F* h_true700  = (TH1F*) f_true700->Get("ptPartTop");
+    TH1F* h_true1000 = (TH1F*) f_true1000->Get("ptPartTop");
   }
   else {
-    TH1F* h_true0    = (TH1F*) f_true0->Get("ptGenTop_passParton");
-    TH1F* h_true700  = (TH1F*) f_true700->Get("ptGenTop_passParton");
-    TH1F* h_true1000 = (TH1F*) f_true1000->Get("ptGenTop_passParton");
+    TH1F* h_true0    = (TH1F*) f_true0->Get("ptGenTop");
+    TH1F* h_true700  = (TH1F*) f_true700->Get("ptGenTop");
+    TH1F* h_true1000 = (TH1F*) f_true1000->Get("ptGenTop");
   }
   h_true0->Sumw2();
   h_true700->Sumw2();
   h_true1000->Sumw2();
 
   // default samples with trigger (aka numerator) 
-  TFile* f_trig0    = new TFile("../histfiles_"+pdf+"/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+pdf+"_2Dcut_nom.root");
-  TFile* f_trig700  = new TFile("../histfiles_"+pdf+"/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+pdf+"_2Dcut_nom.root");
-  TFile* f_trig1000 = new TFile("../histfiles_"+pdf+"/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+pdf+"_2Dcut_nom.root");
+  TFile* f_trig0    = new TFile("../histfiles_"+pdf+"/2Dhists"+path+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+pdf+"_2Dcut_nom.root");
+  TFile* f_trig700  = new TFile("../histfiles_"+pdf+"/2Dhists"+path+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+pdf+"_2Dcut_nom.root");
+  TFile* f_trig1000 = new TFile("../histfiles_"+pdf+"/2Dhists"+path+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+pdf+"_2Dcut_nom.root");
 
   if (doPart) {
     if (option=="eff") {
@@ -72,9 +81,9 @@ void truthEff(TString option, bool doPart, TString pdf) {
       TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptPartTop_passRecoNoBtagParticle");
     }
     else if (option=="trigSF") {
-      TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptPartTop_passParticle");
-      TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptPartTop_passParticle");
-      TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptPartTop_passParticle");
+      TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptPartTop");
+      TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptPartTop");
+      TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptPartTop");
     }
   }
   else {
@@ -89,9 +98,9 @@ void truthEff(TString option, bool doPart, TString pdf) {
       TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop_passRecoNoBtagParton");
     }
     else if (option=="trigSF") {
-      TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptGenTop_passParton");
-      TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptGenTop_passParton");
-      TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop_passParton");
+      TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptGenTop");
+      TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptGenTop");
+      TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop");
     }
   }
   h_trig0->Sumw2();
@@ -135,8 +144,8 @@ void truthEff(TString option, bool doPart, TString pdf) {
 
 
   if (option.Contains("eff")) h_sf->SetAxisRange(0.0,0.15,"Y");
-  else if (doPart) h_sf->SetAxisRange(1.0,1.5,"Y");
-  else h_sf->SetAxisRange(1.0,2.0,"Y");
+  else if (doPart) h_sf->SetAxisRange(1.0,1.8,"Y");
+  else h_sf->SetAxisRange(1.0,2.2,"Y");
 
   TCanvas c;
   h_sf->Draw("lep");
@@ -173,7 +182,7 @@ void truthEff(TString option, bool doPart, TString pdf) {
     cout << pdf << ") = " << h_true0->Integral()/h_trig0->Integral() << endl << endl;
   }
 
-  TString outname = "truth_"+option;
+  TString outname = "truth"+path+"_"+option;
   if (doPart) outname += "_rp";
   c.SaveAs(outname+"_"+pdf+".png");
   c.SaveAs(outname+"_"+pdf+".eps");
