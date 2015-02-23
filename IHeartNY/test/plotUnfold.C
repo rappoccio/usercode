@@ -25,8 +25,10 @@ void SetPlotStyle();
 void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize,char *text); 
 
 
-void plotUnfold() {
+void plotUnfold(TString lepType="muon") {
   
+  cout << "Make plots!" << endl;
+
   SetPlotStyle();
   
   // default unfolding, 300-1300 GeV
@@ -45,6 +47,11 @@ void plotUnfold() {
   TString twoStep = "_2step";
   //TString twoStep = "";
   
+  TString muOrEl = "";
+  if (lepType == "ele") {
+    muOrEl = "_el";
+  }
+
 
   // ---------------------------------------------------------------------------------------------------------------
   // get files & histograms
@@ -75,8 +82,8 @@ void plotUnfold() {
   
   cout << "Getting files and hists" << endl;
 
-  //TFile* f_syst_MSTW  = new TFile("UnfoldingPlots/unfold"+twoStep+"_MSTW_nom_nom"+nobtag+unfoldType+".root");
-  //TFile* f_syst_NNPDF = new TFile("UnfoldingPlots/unfold"+twoStep+"_NNPDF_nom_nom"+nobtag+unfoldType+".root");
+  //TFile* f_syst_MSTW  = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_MSTW_nom_nom"+nobtag+unfoldType+".root");
+  //TFile* f_syst_NNPDF = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_NNPDF_nom_nom"+nobtag+unfoldType+".root");
 
   //TH1F* h_true_MSTW  = (TH1F*) f_syst_MSTW->Get("pt_genTop")->Clone();
   //h_true_MSTW->SetName("pt_genTop_MSTW");
@@ -84,8 +91,8 @@ void plotUnfold() {
   //h_true_NNPDF->SetName("pt_genTop_NNPDF");
   
   for (int is=0; is<nSYST; is++) {
-    cout << "getting UnfoldingPlots/unfold" << twoStep << name_syst[is] << nobtag << unfoldType << ".root" <<endl;
-    f_syst[is] = new TFile("UnfoldingPlots/unfold"+twoStep+name_syst[is]+nobtag+unfoldType+".root");
+    cout << "getting UnfoldingPlots/unfold" << muOrEl << twoStep << name_syst[is] << nobtag << unfoldType << ".root" <<endl;
+    f_syst[is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+name_syst[is]+nobtag+unfoldType+".root");
     
     if (is==0) {
       h_true = (TH1F*) f_syst[is]->Get("pt_genTop")->Clone();
@@ -522,9 +529,9 @@ void plotUnfold() {
   p1->cd();
   
   
-  c->SaveAs("UnfoldingPlots/unfoldWithError"+twoStep+nobtag+unfoldType+".png");
-  c->SaveAs("UnfoldingPlots/unfoldWithError"+twoStep+nobtag+unfoldType+".eps");
-  c->SaveAs("UnfoldingPlots/unfoldWithError"+twoStep+nobtag+unfoldType+".pdf");
+  c->SaveAs("UnfoldingPlots/unfoldWithError"+muOrEl+twoStep+nobtag+unfoldType+".png");
+  c->SaveAs("UnfoldingPlots/unfoldWithError"+muOrEl+twoStep+nobtag+unfoldType+".eps");
+  c->SaveAs("UnfoldingPlots/unfoldWithError"+muOrEl+twoStep+nobtag+unfoldType+".pdf");
 
   
   cout << "plotting relative uncertainties" <<endl;
@@ -617,9 +624,9 @@ void plotUnfold() {
   mySmallText(0.6,0.87,1,0.04,"CMS Preliminary");
   mySmallText(0.6,0.82,1,0.04,"L = 19.7 fb^{-1}, #sqrt{s} = 8 TeV");
 
-  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+twoStep+nobtag+unfoldType+".png");
-  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+twoStep+nobtag+unfoldType+".pdf");
-  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+twoStep+nobtag+unfoldType+".eps");
+  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+muOrEl+twoStep+nobtag+unfoldType+".png");
+  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+muOrEl+twoStep+nobtag+unfoldType+".pdf");
+  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+muOrEl+twoStep+nobtag+unfoldType+".eps");
 
   // -----------------------------------------------------------
   // Now do particle-level...
@@ -943,9 +950,9 @@ void plotUnfold() {
     p3->cd();
     
     
-    c2->SaveAs("UnfoldingPlots/unfoldWithError_part"+twoStep+nobtag+unfoldType+".png");
-    c2->SaveAs("UnfoldingPlots/unfoldWithError_part"+twoStep+nobtag+unfoldType+".eps");
-    c2->SaveAs("UnfoldingPlots/unfoldWithError_part"+twoStep+nobtag+unfoldType+".pdf");
+    c2->SaveAs("UnfoldingPlots/unfoldWithError_part"+muOrEl+twoStep+nobtag+unfoldType+".png");
+    c2->SaveAs("UnfoldingPlots/unfoldWithError_part"+muOrEl+twoStep+nobtag+unfoldType+".eps");
+    c2->SaveAs("UnfoldingPlots/unfoldWithError_part"+muOrEl+twoStep+nobtag+unfoldType+".pdf");
     
     
     cout << "plotting relative uncertainties" <<endl;
@@ -1038,9 +1045,9 @@ void plotUnfold() {
     mySmallText(0.6,0.87,1,0.04,"CMS Preliminary");
     mySmallText(0.6,0.82,1,0.04,"L = 19.7 fb^{-1}, #sqrt{s} = 8 TeV");
     
-    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part"+twoStep+nobtag+unfoldType+".png");
-    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part"+twoStep+nobtag+unfoldType+".pdf");
-    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part"+twoStep+nobtag+unfoldType+".eps");
+    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part"+muOrEl+twoStep+nobtag+unfoldType+".png");
+    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part"+muOrEl+twoStep+nobtag+unfoldType+".pdf");
+    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part"+muOrEl+twoStep+nobtag+unfoldType+".eps");
   }
   return;
 }

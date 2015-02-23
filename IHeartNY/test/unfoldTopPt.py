@@ -35,7 +35,7 @@ parser.add_option('--ttbarPDF', metavar='F', type='string', action='store',
                   help='Which PDF set and nominal vs up/down? Or Q2 up/down?')
 
 parser.add_option('--unfoldType', metavar='F', type='string', action='store',
-                  default='pt400',
+                  default='full',
                   dest='unfold',
                   help='Unfold using pt > 0 ("full") or pt > 400 ("pt400", default)?')
 
@@ -43,6 +43,11 @@ parser.add_option('--addNoBtag', metavar='F', action='store_true',
                   default=False,
                   dest='addNoBtag',
                   help='Unfold only using category \"1 top-tag, 1 b-tag\" (default) or adding \"1 top-tag, 0 b-tag\" (use --addNoBtag)')
+
+parser.add_option('--lepType', metavar='F', type='string', action='store',
+                  default='muon',
+                  dest='lepType',
+                  help='Lepton type (ele or muon)')
 
 parser.add_option('--troubleshoot', metavar='F', action='store_true',
                   default=False,
@@ -60,7 +65,9 @@ argv = []
 import sys
 
 unfoldType = "_"
-if (options.unfold == "full" or options.unfold == "pt400") == False:
+if options.unfold == "":
+    unfoldType = ""
+elif (options.unfold == "full" or options.unfold == "pt400") == False:
     print ""
     print "WARNING - not a valid option for unfolding type (use either \"full\" or \"pt400\"), exiting...!"
     print ""
@@ -125,7 +132,7 @@ eff_ttbar = [
 Nmc_ttbar = [
     [21675970., 3082812., 1249111.],  # nominal
     [14983686., 2243672., 1241650.],  # Q2 up
-    [1789004., 2170074., 1308090.]    # Q2 down
+    [14545715*89./102., 2170074., 1308090.]    # Q2 down
     ]
 
 if options.pdf == "scaleup" :
@@ -173,65 +180,99 @@ if options.closureTest == True:
 # Scaling of the various backgrounds from the theta fit
 # -------------------------------------------------------------------------------------
 
-if nobtag == "_nobtag":
-    fitted_qcd = 9.5+50
-    fitted_singletop = 3.5+12.5
-    fitted_wjets = 4.5+172.4
-    fitted_ttbarnonsemilep = 28.5+43.2
-    fitted_ttbar = 259.6+344.1
+if options.lepType == "ele":
+    if nobtag == "_nobtag":
+        fitted_qcd = 10.2+128.1
+        fitted_singletop = 3.2+12.3
+        fitted_wjets = 8.6+307.4
+        fitted_ttbarnonsemilep = 29.6+41.3
+        fitted_ttbar = 254.0+329.0
+    else:
+        fitted_qcd = 10.2
+        fitted_singletop = 3.2
+        fitted_wjets = 8.6
+        fitted_ttbarnonsemilep = 29.6
+        fitted_ttbar = 254.0
 else:
-    fitted_qcd = 9.5
-    fitted_singletop = 3.5
-    fitted_wjets = 4.5
-    fitted_ttbarnonsemilep = 28.5
-    fitted_ttbar = 259.6
+    if nobtag == "_nobtag":
+        fitted_qcd = 9.5+38.4
+        fitted_singletop = 3.7+11.3
+        fitted_wjets = 4.2+153.9
+        fitted_ttbarnonsemilep = 30.8+36.7
+        fitted_ttbar = 291.3+293.1
+    else:
+        fitted_qcd = 9.5
+        fitted_singletop = 3.7
+        fitted_wjets = 4.2
+        fitted_ttbarnonsemilep = 30.8
+        fitted_ttbar = 291.3
 
 
 # -------------------------------------------------------------------------------------
 #  read histogram files
 # -------------------------------------------------------------------------------------
 
-f_data = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root")
-f_QCD  = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root")
+DIR = ""
+muOrEl = "mu"
+if options.lepType=="ele":
+    print ""
+    print "UNFOLDING FOR ELECTRON CHANNEL !!!" 
+    print ""
+    DIR = "_el"
+    muOrEl = "el"
+else:
+    print ""
+    print "UNFOLDING FOR MUON CHANNEL !!!" 
+    print ""
+    
 
+if options.lepType=="ele":
+    f_data = TFile("histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root")
+    f_QCD  = TFile("histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root")
+else:
+    f_data = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root")
+    f_QCD  = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root")
+
+    
 if options.closureTest == True : 
-    f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
-    f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
-    f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
-    f_ttbar_max700_odd    = TFile("histfiles_"+options.pdf+"/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
-    f_ttbar_700to1000_odd = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
-    f_ttbar_1000toInf_odd = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
+    f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
+    f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
+    f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
+    f_ttbar_max700_odd    = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
+    f_ttbar_700to1000_odd = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
+    f_ttbar_1000toInf_odd = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
     ## full truth samples for unfolding (two-step) particle-level to parton 
-    f_ttbar_max700_pp    = TFile("TruthStudy/TT_max700_"+options.pdf+"_fullTruth_even.root")
-    f_ttbar_700to1000_pp = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+"_fullTruth_even.root")
-    f_ttbar_1000toInf_pp = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+"_fullTruth_even.root")
-    f_ttbar_max700_pp_odd    = TFile("TruthStudy/TT_max700_"+options.pdf+"_fullTruth_odd.root")
-    f_ttbar_700to1000_pp_odd = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+"_fullTruth_odd.root")
-    f_ttbar_1000toInf_pp_odd = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+"_fullTruth_odd.root")
+    f_ttbar_max700_pp    = TFile("TruthStudy/TT_max700_"+options.pdf+DIR+"_fullTruth_even.root")
+    f_ttbar_700to1000_pp = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+DIR+"_fullTruth_even.root")
+    f_ttbar_1000toInf_pp = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+DIR+"_fullTruth_even.root")
+    f_ttbar_max700_pp_odd    = TFile("TruthStudy/TT_max700_"+options.pdf+DIR+"_fullTruth_odd.root")
+    f_ttbar_700to1000_pp_odd = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+DIR+"_fullTruth_odd.root")
+    f_ttbar_1000toInf_pp_odd = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+DIR+"_fullTruth_odd.root")
 else :
-    f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
-    f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
-    f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
+    f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+    f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+    f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
     ## full truth samples for unfolding (two-step) particle-level to parton 
-    f_ttbar_max700_pp    = TFile("TruthStudy/TT_max700_"+options.pdf+"_fullTruth.root")
-    f_ttbar_700to1000_pp = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+"_fullTruth.root")
-    f_ttbar_1000toInf_pp = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+"_fullTruth.root")
+    f_ttbar_max700_pp    = TFile("TruthStudy/TT_max700_"+options.pdf+DIR+"_fullTruth.root")
+    f_ttbar_700to1000_pp = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+DIR+"_fullTruth.root")
+    f_ttbar_1000toInf_pp = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+DIR+"_fullTruth.root")
 
-f_ttbar_nonsemilep_max700    = TFile("histfiles_"+options.pdf+"/2Dhists/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
-f_ttbar_nonsemilep_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
-f_ttbar_nonsemilep_1000toInf = TFile("histfiles_"+options.pdf+"/2Dhists/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+options.pdf+"_2Dcut_"+options.syst+".root")
+f_ttbar_nonsemilep_max700    = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+f_ttbar_nonsemilep_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+f_ttbar_nonsemilep_1000toInf = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
 
-f_T_t     = TFile("histfiles/2Dhist/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
-f_Tbar_t  = TFile("histfiles/2Dhist/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
-f_T_s     = TFile("histfiles/2Dhist/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
-f_Tbar_s  = TFile("histfiles/2Dhist/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
-f_T_tW    = TFile("histfiles/2Dhist/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
-f_Tbar_tW = TFile("histfiles/2Dhist/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_2Dcut_nom.root")
+f_T_t     = TFile("histfiles/2Dhist"+DIR+"/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_Tbar_t  = TFile("histfiles/2Dhist"+DIR+"/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_T_s     = TFile("histfiles/2Dhist"+DIR+"/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_Tbar_s  = TFile("histfiles/2Dhist"+DIR+"/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_T_tW    = TFile("histfiles/2Dhist"+DIR+"/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_Tbar_tW = TFile("histfiles/2Dhist"+DIR+"/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
 
-f_WJets_1jet   = TFile("histfiles/2Dhist/W1JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root")
-f_WJets_2jet   = TFile("histfiles/2Dhist/W2JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root")
-f_WJets_3jet   = TFile("histfiles/2Dhist/W3JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root")
-f_WJets_4jet   = TFile("histfiles/2Dhist/W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root")
+f_WJets_1jet   = TFile("histfiles/2Dhist"+DIR+"/W1JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_WJets_2jet   = TFile("histfiles/2Dhist"+DIR+"/W2JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_WJets_3jet   = TFile("histfiles/2Dhist"+DIR+"/W3JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_WJets_4jet   = TFile("histfiles/2Dhist"+DIR+"/W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+
 
 # the response matrices are simply added here, but have been filled with the full event weights (taking sample size, efficiency, etx. into account)
 if options.closureTest == True : 
@@ -301,9 +342,9 @@ TH1.AddDirectory(0)
 # -------------------------------------------------------------------------------------
 
 if options.twoStep :
-    fout = TFile("UnfoldingPlots/unfold_2step_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".root","recreate");
+    fout = TFile("UnfoldingPlots/unfold"+DIR+"_2step_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".root","recreate");
 else :
-    fout = TFile("UnfoldingPlots/unfold_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".root","recreate");
+    fout = TFile("UnfoldingPlots/unfold"+DIR+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".root","recreate");
 
 
 # -------------------------------------------------------------------------------------
@@ -456,7 +497,7 @@ hTrue.SetName("pt_genTop")
 hTrue.Add(hTrue_700to1000)
 hTrue.Add(hTrue_1000toInf)
 
-if options.troubleshoot :
+if options.troubleshoot and options.twoStep :
     hTrue_max700_even.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
     hTrue_700to1000_even.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
     hTrue_1000toInf_even.Scale( eff_closure * sigma_ttbar[ipdf][2] * eff_ttbar[ipdf][2] * lum / float(Nmc_ttbar[ipdf][2]))
@@ -568,10 +609,10 @@ if options.closureTest == False :
     hMeas.Draw("axis,same")
     ll.AddEntry(hMeas, "Background-subtracted data","l")
     ll.Draw()
-    cc.SaveAs("UnfoldingPlots/unfold_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-    cc.SaveAs("UnfoldingPlots/unfold_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+    cc.SaveAs("UnfoldingPlots/unfold"+DIR+"_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    cc.SaveAs("UnfoldingPlots/unfold"+DIR+"_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
 
-if options.closureTest and options.troubleshoot :
+if options.closureTest and options.troubleshoot and options.twoStep :
     ct1 = TCanvas("ct1", "", 800, 600)
     
     lt1 = TLegend(0.4, 0.65, 0.7, 0.9)
@@ -589,7 +630,7 @@ if options.closureTest and options.troubleshoot :
     lt1.AddEntry(hMeas, "Unfolding input, even","l")
     lt1.AddEntry(hMeas_odd, "Unfolding input, odd","l")
     lt1.Draw()
-    ct1.SaveAs("UnfoldingPlots/troubleshoot_hMeas_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    ct1.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hMeas_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
 
     ct2 = TCanvas("ct2", "", 800, 600)
     
@@ -608,7 +649,7 @@ if options.closureTest and options.troubleshoot :
     lt2.AddEntry(hPart_even, "Particle-level truth, even","l")
     lt2.AddEntry(hPart, "Particle-level truth, odd","l")
     lt2.Draw()
-    ct2.SaveAs("UnfoldingPlots/troubleshoot_hPart_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    ct2.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hPart_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
 
     ct3 = TCanvas("ct3", "", 800, 600)
     
@@ -627,166 +668,79 @@ if options.closureTest and options.troubleshoot :
     lt3.AddEntry(hTrue_even, "Parton-level truth, even","l")
     lt3.AddEntry(hTrue, "Parton-level truth, odd","l")
     lt3.Draw()
-    ct3.SaveAs("UnfoldingPlots/troubleshoot_hTrue_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    ct3.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hTrue_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
 
 
 # -------------------------------------------------------------------------------------
 # do the actual unfolding
 # -------------------------------------------------------------------------------------
 
-## if doing unfolding for pt(top quark) > 400 GeV only, apply acceptance correction!
-## this corrects for events which fails parton-level cut (i.e. has pt(gen top)<400), 
-## which enters the signal region 
-
 
 # -------------------------------------------------------------------------------------
-# one-step unfolding
-# with b-tagging
-#accCorr [400,500]: 0.734074 +/- 0.011362
-#accCorr [500,600]: 0.927802 +/- 0.0102069
-#accCorr [600,700]: 0.931428 +/- 0.0186005
-#accCorr [700,800]: 0.894601 +/- 0.0372121
-#accCorr [800,1200]: 0.949683 +/- 0.0247506
+# trigger SF for particle-level
 
-# without b-tagging
-#accCorr [400,500]: 0.721549 +/- 0.00785279
-#accCorr [500,600]: 0.894393 +/- 0.00856833
-#accCorr [600,700]: 0.937271 +/- 0.01156
-#accCorr [700,800]: 0.893543 +/- 0.0230515
-#accCorr [800,1200]: 0.920693 +/- 0.02521
-
-if options.addNoBtag == True:
-    accCorr = [0.721549, 0.894393, 0.937271, 0.893543, 0.920693]
-else: 
-    accCorr = [0.734074, 0.927802, 0.931428, 0.894601, 0.949683]
-    
-# -------------------------------------------------------------------------------------
-# two-step unfolding
-# with b-tagging
-#accCorr_rp [400,500]: 0.835686 +/- 0.00894462
-#accCorr_rp [500,600]: 0.985853 +/- 0.00443783
-#accCorr_rp [600,700]: 0.99338 +/- 0.00334353
-#accCorr_rp [700,800]:  1 +/- 0
-#accCorr_rp [800,1200]: 1 +/- 0
-
-# without b-tagging
-#accCorr_rp [400,500]: 0.824758 +/- 0.00640913
-#accCorr_rp [500,600]: 0.977592 +/- 0.00391614
-#accCorr_rp [600,700]: 0.989632 +/- 0.0031169
-#accCorr_rp [700,800]: 0.990246 +/- 0.00842073
-#accCorr_rp [800,1200]: 1 +/- 0
-
-if options.addNoBtag == True:
-    accCorr_rp = [0.824758, 0.977592, 0.989632, 0.990246, 1.0]
-else :
-    accCorr_rp = [0.835686, 0.985853, 0.99338, 1.0, 1.0]
-
-#accCorr_pp [400,500]: 0.515115 +/- 0.00407366
-#accCorr_pp [500,600]: 0.558949 +/- 0.00687654
-#accCorr_pp [600,700]: 0.580201 +/- 0.0113766
-#accCorr_pp [700,800]: 0.614188 +/- 0.0185472
-#accCorr_pp [800,1200]: 0.65884 +/- 0.0211105
-accCorr_pp = [0.515115, 0.558949, 0.580201, 0.614188, 0.65884]
-
-# -------------------------------------------------------------------------------------
-# two-step unfolding for "_full" option, meaning no passParton at pp-step, and only passParticleLoose at rp-step
-# with b-tagging
-#accCorr_rp [400,500]: 0.993905 +/- 0.00163273
-#accCorr_rp [500,600]: 0.993647 +/- 0.0024617
-#accCorr_rp [600,700]: 0.99338 +/- 0.00334353
-#accCorr_rp [700,800]:  1 +/- 0
-#accCorr_rp [800,1300]: 1 +/- 0
-
-# without b-tagging
-#accCorr_rp [400,500]: 0.991138 +/- 0.00145623
-#accCorr_rp [500,600]: 0.984228 +/- 0.0031489
-#accCorr_rp [600,700]: 0.989632 +/- 0.0031169
-#accCorr_rp [700,800]: 0.990246 +/- 0.00842073
-#accCorr_rp [800,1300]: 1 +/- 0
-
-if options.addNoBtag == True:
-    accCorr_rp_full = [0.0, 0.0, 0.0, 0.0, 0.991138, 0.984228, 0.989632, 0.990246, 1.0, 0.0]
-else:
-    accCorr_rp_full = [0.0, 0.0, 0.0, 0.0, 0.993905, 0.993647, 0.99338, 1.0, 1.0, 0.0]
-
-
-# -------------------------------------------------------------------------------------
-# trigger SF for particle-level 
-#trigSF_rp [400,500]: 1.19878 +/- 0.00391811
-#trigSF_rp [500,600]: 1.21192 +/- 0.00660688
-#trigSF_rp [600,700]: 1.20806 +/- 0.0107819
-#trigSF_rp [700,800]: 1.23508 +/- 0.0187494
+# *** MUONS ***
+#trigSF_rp [400,500]:  1.19878 +/- 0.00391811
+#trigSF_rp [500,600]:  1.21192 +/- 0.00660688
+#trigSF_rp [600,700]:  1.20806 +/- 0.0107819
+#trigSF_rp [700,800]:  1.23508 +/- 0.0187494
 #trigSF_rp [800,1200]: 1.22596 +/- 0.0218614
 
-trigSF_rp = [1.19878, 1.21192, 1.20806, 1.23508, 1.22596]
-trigSF_rp_full = [0.0, 0.0, 0.0, 0.0, 1.19878, 1.21192, 1.20806, 1.23508, 1.22596, 0.0]
+# *** ELECTRONS ***
+#trigSF_rp [400,500]:  1.34124 +/- 0.0051957
+#trigSF_rp [500,600]:  1.39423 +/- 0.00979081
+#trigSF_rp [600,700]:  1.4907 +/- 0.0196793
+#trigSF_rp [700,800]:  1.45701 +/- 0.0284001
+#trigSF_rp [800,1200]: 1.58253 +/- 0.0425775
 
-hMeasCorr = hMeas.Clone()
-hMeasCorr.SetName("correctedMeas")
+if unfoldType == "_pt400" or unfoldType == "":
+    if options.lepType == "ele":
+        trigSF_rp = [1.34124, 1.39423, 1.4907, 1.45701, 1.58253]
+    else:
+        trigSF_rp = [1.19878, 1.21192, 1.20806, 1.23508, 1.22596]
+elif unfoldType == "_full":
+    if options.lepType == "ele":
+        trigSF_rp = [0.0, 0.0, 0.0, 0.0, 1.34124, 1.39423, 1.4907, 1.45701, 1.58253, 0.0]
+    else:
+        trigSF_rp = [0.0, 0.0, 0.0, 0.0, 1.19878, 1.21192, 1.20806, 1.23508, 1.22596, 0.0]
+else:
+    print "invalid unfolding type option"
 
 
 # -------------------------------------------------------------------------------------
 # one-step unfolding
-if options.twoStep == False:
-
-    # apply acceptance correction
-    if unfoldType == "_pt400" and options.closureTest == False:
-        for ibin in range(1, hMeasCorr.GetXaxis().GetNbins()+1 ) :
-            hMeasCorr.SetBinContent(ibin,  hMeas.GetBinContent(ibin) * accCorr[ibin-1] )
-            hMeasCorr.SetBinError(ibin,  hMeas.GetBinError(ibin) * accCorr[ibin-1] )
-                
+if options.twoStep == False:                
     
     print "------------ UNFOLDING (set: " + options.pdf + ", syst: " + options.syst + ") ------------"
-    #unfold = RooUnfoldBayes(response, hMeasCorr, 10);
-    unfold = RooUnfoldSvd(response, hMeasCorr, 4);
-    #unfold = RooUnfoldTUnfold(response, hMeasCorr);
+    #unfold = RooUnfoldBayes(response, hMeas, 10);
+    unfold = RooUnfoldSvd(response, hMeas, 3);
+    #unfold = RooUnfoldTUnfold(response, hMeas);
 
     # get the unfolded distribution
     hReco = unfold.Hreco()
 
 # -------------------------------------------------------------------------------------
 # two-step unfolding
-else :
-
-    # apply acceptance correction for reco -> particle-level
-    if options.closureTest == False:
-        if unfoldType == "_pt400":
-            for ibin in range(1, hMeasCorr.GetXaxis().GetNbins()+1 ) :
-                hMeasCorr.SetBinContent(ibin, hMeas.GetBinContent(ibin) * accCorr_rp[ibin-1] )
-                hMeasCorr.SetBinError(ibin, hMeas.GetBinError(ibin) * accCorr_rp[ibin-1] )
-        elif unfoldType == "_full":
-            for ibin in range(1, hMeasCorr.GetXaxis().GetNbins()+1 ) :
-                hMeasCorr.SetBinContent(ibin, hMeas.GetBinContent(ibin) * accCorr_rp_full[ibin-1] )
-                hMeasCorr.SetBinError(ibin, hMeas.GetBinError(ibin) * accCorr_rp_full[ibin-1] )
-        else:
-            print "invalid unfolding option for two-step unfolding!!!" 
-    
+else :    
     
     print "------------ UNFOLD TO PARTICLE-LEVEL (set: " + options.pdf + ", syst: " + options.syst + ") ------------"
-    #unfold_rp = RooUnfoldBayes(response_rp, hMeasCorr, 10);
-    unfold_rp = RooUnfoldSvd(response_rp, hMeasCorr, 4);
-    #unfold_rp = RooUnfoldTUnfold(response_rp, hMeasCorr);
+    #unfold_rp = RooUnfoldBayes(response_rp, hMeas, 10);
+    unfold_rp = RooUnfoldSvd(response_rp, hMeas, 3);
+    #unfold_rp = RooUnfoldTUnfold(response_rp, hMeas);
 
     # get the distribution unfolded to particle-level
     hReco_rp = unfold_rp.Hreco()
 
-    # apply acceptance correction *AND* trigger SF correction for particle-level -> parton
+    # apply trigger SF correction for particle-level -> parton
     hRecoCorr_rp = hReco_rp.Clone()
     hRecoCorr_rp.SetName("hRecoCorr_rp")
-    if unfoldType == "_pt400":
-        for ibin in range(1, hReco_rp.GetXaxis().GetNbins()+1 ) :
-            hRecoCorr_rp.SetBinContent(ibin, hReco_rp.GetBinContent(ibin) * accCorr_pp[ibin-1] * trigSF_rp[ibin-1] )
-            hRecoCorr_rp.SetBinError(ibin, hReco_rp.GetBinError(ibin) * accCorr_pp[ibin-1] * trigSF_rp[ibin-1] )
-    elif unfoldType == "_full":
-        for ibin in range(1, hReco_rp.GetXaxis().GetNbins()+1 ) :
-            hRecoCorr_rp.SetBinContent(ibin,  hReco_rp.GetBinContent(ibin) * trigSF_rp_full[ibin-1] )
-            hRecoCorr_rp.SetBinError(ibin,  hReco_rp.GetBinError(ibin) * trigSF_rp_full[ibin-1] )
-    else: 
-        print "invalid unfolding option for two-step unfolding!!!" 
+    for ibin in range(1, hReco_rp.GetXaxis().GetNbins()+1 ) :
+        hRecoCorr_rp.SetBinContent(ibin, hReco_rp.GetBinContent(ibin) * trigSF_rp[ibin-1] )
+        hRecoCorr_rp.SetBinError(ibin, hReco_rp.GetBinError(ibin) * trigSF_rp[ibin-1] )
 
     print "------------ UNFOLD TO PARTON-LEVEL (set: " + options.pdf + ", syst: " + options.syst + ") ------------"
     #unfold = RooUnfoldBayes(response_pp, hRecoCorr_rp, 10);
-    unfold = RooUnfoldSvd(response_pp, hRecoCorr_rp, 4);
+    unfold = RooUnfoldSvd(response_pp, hRecoCorr_rp, 3);
     #unfold = RooUnfoldTUnfold(response_pp, hRecoCorr_rp);
 
     # get the distribution unfolded to parton-level
@@ -807,10 +761,16 @@ if options.twoStep:
 
 ## correct also to post-fit top-tagging SF !!! 
 if options.closureTest == False : 
-    hMeas.Scale(1.0/(1.0+0.25*0.44))
-    hReco.Scale(1.0/(1.0+0.25*0.44))
-    if options.twoStep:
-        hReco_rp.Scale(1.0/(1.0+0.25*0.44))
+    if options.lepType == "muon" :
+        hMeas.Scale(1.0/(1.0+0.25*0.27))
+        hReco.Scale(1.0/(1.0+0.25*0.27))
+        if options.twoStep:
+            hReco_rp.Scale(1.0/(1.0+0.25*0.27))
+    else :
+        hMeas.Scale(1.0/(1.0+0.25*0.39))
+        hReco.Scale(1.0/(1.0+0.25*0.39))
+        if options.twoStep:
+            hReco_rp.Scale(1.0/(1.0+0.25*0.39))
 
 
     
@@ -819,18 +779,31 @@ if options.closureTest == False :
 # -------------------------------------------------------------------------------------
 
 ## trigger SF (this is for correcting parton-level distribution & one-step unfolded distribution @ parton-level 
+
+# *** MUONS ***
 #trigSF [400,500]: 1.62473 +/- 0.00796161
 #trigSF [500,600]: 1.5741 +/- 0.0131161
 #trigSF [600,700]: 1.50913 +/- 0.0197511
 #trigSF [700,800]: 1.58339 +/- 0.0400283
 #trigSF [800,1200]: 1.41899 +/- 0.0326825
 
-if unfoldType == "":
-    trigSF = [0.0, 1.62473, 1.5741, 1.50913, 1.58339, 1.41899]
-elif unfoldType == "_full":
-    trigSF = [0.0, 0.0, 0.0, 0.0, 1.62473, 1.5741, 1.50913, 1.58339, 1.41899, 0.0]
-elif unfoldType == "_pt400":
-    trigSF = [1.62473, 1.5741, 1.50913, 1.58339, 1.41899]
+# *** ELECRTONS ***
+#trigSF [400,500]: 1.69319 +/- 0.00854152
+#trigSF [500,600]: 1.7082 +/- 0.015327
+#trigSF [600,700]: 1.81256 +/- 0.0306949
+#trigSF [700,800]: 1.83791 +/- 0.0494666
+#trigSF [800,1200]: 1.99493 +/- 0.07839
+
+if unfoldType == "_full":
+    if options.lepType == "ele":
+        trigSF = [0.0, 0.0, 0.0, 0.0, 1.69319, 1.7082, 1.81256, 1.83791, 1.99493, 0.0]
+    else:
+        trigSF = [0.0, 0.0, 0.0, 0.0, 1.62473, 1.5741, 1.50913, 1.58339, 1.41899, 0.0]
+elif unfoldType == "_pt400" or unfoldType == "":
+    if options.lepType == "ele":
+        trigSF = [1.69319, 1.7082, 1.81256, 1.83791, 1.99493]
+    else:
+        trigSF = [1.62473, 1.5741, 1.50913, 1.58339, 1.41899]
 else:
     print "Unvalid unfolding type!!" 
 
@@ -843,7 +816,7 @@ sumPart = 0
 for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
 
     width = hTrue.GetBinWidth(ibin)
-
+    
     # correct top-quark pt @ gen-level for trigger bias (for both one-step & two-step)
     hTrue.SetBinContent(ibin, hTrue.GetBinContent(ibin) * trigSF[ibin-1] / width )
     hTrue.SetBinError(ibin, hTrue.GetBinError(ibin) * trigSF[ibin-1] / width )
@@ -855,16 +828,10 @@ for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
     else:
         hReco.SetBinContent(ibin, hReco.GetBinContent(ibin) / width )
         hReco.SetBinError(ibin, hReco.GetBinError(ibin) / width )
-        if unfoldType == "_pt400":
-            hReco_rp.SetBinContent(ibin, hReco_rp.GetBinContent(ibin) * trigSF_rp[ibin-1] / width )
-            hReco_rp.SetBinError(ibin, hReco_rp.GetBinError(ibin) * trigSF_rp[ibin-1] / width )
-            hPart.SetBinContent(ibin, hPart.GetBinContent(ibin) * trigSF_rp[ibin-1] / width )
-            hPart.SetBinError(ibin, hPart.GetBinError(ibin) * trigSF_rp[ibin-1] / width )
-        elif unfoldType == "_full":
-            hReco_rp.SetBinContent(ibin, hReco_rp.GetBinContent(ibin) * trigSF_rp_full[ibin-1] / width )
-            hReco_rp.SetBinError(ibin, hReco_rp.GetBinError(ibin) * trigSF_rp_full[ibin-1] / width )
-            hPart.SetBinContent(ibin, hPart.GetBinContent(ibin) * trigSF_rp_full[ibin-1] / width )
-            hPart.SetBinError(ibin, hPart.GetBinError(ibin) * trigSF_rp_full[ibin-1] / width )
+        hReco_rp.SetBinContent(ibin, hReco_rp.GetBinContent(ibin) * trigSF_rp[ibin-1] / width )
+        hReco_rp.SetBinError(ibin, hReco_rp.GetBinError(ibin) * trigSF_rp[ibin-1] / width )
+        hPart.SetBinContent(ibin, hPart.GetBinContent(ibin) * trigSF_rp[ibin-1] / width )
+        hPart.SetBinError(ibin, hPart.GetBinError(ibin) * trigSF_rp[ibin-1] / width )
             
     
     # correct measured distribution for bin width
@@ -929,14 +896,9 @@ pad1.cd();
 hReco.SetMarkerStyle(21)
 hMeas.SetMarkerStyle(25);
 
-hReco.GetXaxis().SetRangeUser(400.,1300.)
-hTrue.GetXaxis().SetRangeUser(400.,1300.)
-hMeas.GetXaxis().SetRangeUser(400.,1300.)
-
-if unfoldType == "_full" or unfoldType == "_pt400":
-    hReco.GetXaxis().SetRangeUser(400.,1200.)
-    hTrue.GetXaxis().SetRangeUser(400.,1200.)
-    hMeas.GetXaxis().SetRangeUser(400.,1200.)
+hReco.GetXaxis().SetRangeUser(400.,1200.)
+hTrue.GetXaxis().SetRangeUser(400.,1200.)
+hMeas.GetXaxis().SetRangeUser(400.,1200.)
 
 hReco.SetTitle(";;d#sigma/dp_{T} [fb/GeV]")
 hReco.GetYaxis().SetTitleOffset(1.2)
@@ -1007,10 +969,7 @@ hFrac.GetXaxis().SetLabelSize(25)
 hFrac.GetYaxis().SetNdivisions(2,4,0,False)
 
 hFrac.Draw("e")
-hFrac.GetXaxis().SetRangeUser(400., 1300.)
-
-if unfoldType == "_full" or unfoldType == "_pt400":
-    hFrac.GetXaxis().SetRangeUser(400., 1200.)
+hFrac.GetXaxis().SetRangeUser(400., 1200.)
 
 c1.Update()
 
@@ -1020,9 +979,9 @@ if options.twoStep :
 if options.closureTest :
     append += "_closure"
 
-c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf", "pdf")
-c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png", "png")
-c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps", "eps")
+c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf", "pdf")
+c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png", "png")
+c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps", "eps")
 
 
 
@@ -1036,14 +995,9 @@ if options.twoStep:
     hReco_rp.SetMarkerStyle(21)
     hMeas.SetMarkerStyle(25);
 
-    hReco_rp.GetXaxis().SetRangeUser(400.,1300.)
-    hPart.GetXaxis().SetRangeUser(400.,1300.)
-    hMeas.GetXaxis().SetRangeUser(400.,1300.)
-    
-    if unfoldType == "_full" or unfoldType == "_pt400":
-        hReco_rp.GetXaxis().SetRangeUser(400.,1200.)
-        hPart.GetXaxis().SetRangeUser(400.,1200.)
-        hMeas.GetXaxis().SetRangeUser(400.,1200.)
+    hReco_rp.GetXaxis().SetRangeUser(400.,1200.)
+    hPart.GetXaxis().SetRangeUser(400.,1200.)
+    hMeas.GetXaxis().SetRangeUser(400.,1200.)
 
     hReco_rp.SetTitle(";;d#sigma/dp_{T} [fb/GeV]")
     hReco_rp.GetYaxis().SetTitleOffset(1.2)
@@ -1104,10 +1058,7 @@ if options.twoStep:
     hFrac_rp.GetYaxis().SetNdivisions(2,4,0,False)
 
     hFrac_rp.Draw("e")
-    hFrac_rp.GetXaxis().SetRangeUser(400., 1300.)
-
-    if unfoldType == "_full" or unfoldType == "_pt400":
-        hFrac_rp.GetXaxis().SetRangeUser(400., 1200.)
+    hFrac_rp.GetXaxis().SetRangeUser(400., 1200.)
 
     c1.Update()
 
@@ -1115,9 +1066,9 @@ if options.twoStep:
     if options.closureTest :
         append += "_closure"
         
-    c1.Print("UnfoldingPlots/unfolded_ttbar_xs_2step_particle"+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf", "pdf")
-    c1.Print("UnfoldingPlots/unfolded_ttbar_xs_2step_particle"+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png", "png")
-    c1.Print("UnfoldingPlots/unfolded_ttbar_xs_2step_particle"+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps", "eps")
+    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf", "pdf")
+    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png", "png")
+    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps", "eps")
 
 
 
@@ -1158,14 +1109,14 @@ if options.twoStep == False:
             if rowIntegral > 0:
                 newContent = binContent/rowIntegral*100.0
             #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
-            hResponse2D.SetBinContent(ibx,iby,newContent)
+            #hResponse2D.SetBinContent(ibx,iby,newContent)
 
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D.Draw("colz,same,text")
     hEmpty2D.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-    cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
     
     response.Hresponse().SetName("responseMatrix_"+options.syst)
     response.Hresponse().Write()
@@ -1206,13 +1157,13 @@ if options.twoStep:
         gStyle.SetPaintTextFormat(".1f")
         hResponse2D_rp.Draw("colz,same,text")
         hEmpty2D_rp.Draw("axis,same")
-        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_rp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_rp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
 
         hEmpty2D_rp_even.Draw()
         gStyle.SetPaintTextFormat(".1f")
         hResponse2D_rp_even.Draw("colz,same,text")
         hEmpty2D_rp_even.Draw("axis,same")
-        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_rp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_rp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
     
     # normalize so that for each bin of particle-level top pt, the bins in measured top pt add up to 100%
     nbinsX = hResponse2D_rp.GetNbinsX()
@@ -1226,15 +1177,15 @@ if options.twoStep:
             if rowIntegral > 0:
                 newContent = binContent/rowIntegral*100.0
             #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
-            hResponse2D_rp.SetBinContent(ibx,iby,newContent)
+            #hResponse2D_rp.SetBinContent(ibx,iby,newContent)
 
     hEmpty2D_rp.Draw()
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-    cr.SaveAs("UnfoldingPlots/unfold_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
     
     response_rp.Hresponse().SetName("responseMatrix_rp_"+options.syst)
     response_rp.Hresponse().Write()
@@ -1249,6 +1200,7 @@ if options.twoStep:
     hEmpty2D_pp.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
     hEmpty2D_pp.GetXaxis().SetLabelSize(0.045)
     hEmpty2D_pp.GetYaxis().SetLabelSize(0.045)
+    #hEmpty2D_pp.SetAxisRange(0,1100,"X")
     hEmpty2D_pp.Draw()
     hResponse2D_pp = response_pp.Hresponse().Clone()
     hResponse2D_pp.SetName("plottedResponse_pp")
@@ -1269,17 +1221,17 @@ if options.twoStep:
         gStyle.SetPaintTextFormat(".1f")
         hResponse2D_pp.Draw("colz,same,text")
         hEmpty2D_pp.Draw("axis,same")
-        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
 
         hEmpty2D_pp_even.Draw()
         gStyle.SetPaintTextFormat(".1f")
         hResponse2D_pp_even.Draw("colz,same,text")
         hEmpty2D_pp_even.Draw("axis,same")
-        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-        cr.SaveAs("UnfoldingPlots/troubleshoot_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
     
     # normalize so that for each bin of particle-level top pt, the bins in measured top pt add up to 100%
     nbinsX = hResponse2D_pp.GetNbinsX()
@@ -1293,14 +1245,14 @@ if options.twoStep:
             if rowIntegral > 0:
                 newContent = binContent/rowIntegral*100.0
             #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
-            hResponse2D_pp.SetBinContent(ibx,iby,newContent)
+            #hResponse2D_pp.SetBinContent(ibx,iby,newContent)
 
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D_pp.Draw("colz,same,text")
     hEmpty2D_pp.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-    cr.SaveAs("UnfoldingPlots/unfold_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
     
     response_pp.Hresponse().SetName("responseMatrix_pp_"+options.syst)
     response_pp.Hresponse().Write()
