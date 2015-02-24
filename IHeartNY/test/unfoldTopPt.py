@@ -717,7 +717,7 @@ if options.twoStep == False:
     
     print "------------ UNFOLDING (set: " + options.pdf + ", syst: " + options.syst + ") ------------"
     #unfold = RooUnfoldBayes(response, hMeas, 10);
-    unfold = RooUnfoldSvd(response, hMeas, 3);
+    unfold = RooUnfoldSvd(response, hMeas, 2);
     #unfold = RooUnfoldTUnfold(response, hMeas);
 
     # get the unfolded distribution
@@ -729,7 +729,7 @@ else :
     
     print "------------ UNFOLD TO PARTICLE-LEVEL (set: " + options.pdf + ", syst: " + options.syst + ") ------------"
     #unfold_rp = RooUnfoldBayes(response_rp, hMeas, 10);
-    unfold_rp = RooUnfoldSvd(response_rp, hMeas, 3);
+    unfold_rp = RooUnfoldSvd(response_rp, hMeas, 2);
     #unfold_rp = RooUnfoldTUnfold(response_rp, hMeas);
 
     # get the distribution unfolded to particle-level
@@ -744,7 +744,7 @@ else :
 
     print "------------ UNFOLD TO PARTON-LEVEL (set: " + options.pdf + ", syst: " + options.syst + ") ------------"
     #unfold = RooUnfoldBayes(response_pp, hRecoCorr_rp, 10);
-    unfold = RooUnfoldSvd(response_pp, hRecoCorr_rp, 3);
+    unfold = RooUnfoldSvd(response_pp, hRecoCorr_rp, 2);
     #unfold = RooUnfoldTUnfold(response_pp, hRecoCorr_rp);
 
     # get the distribution unfolded to parton-level
