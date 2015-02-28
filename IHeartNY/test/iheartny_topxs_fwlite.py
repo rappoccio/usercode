@@ -1105,10 +1105,14 @@ h_toptagSF = ROOT.TH1F("toptagSF", ";; Average top-tagging SF", 1,0.5,1.5)
 # dummy histogram used only to specify dimensions for reponse matrix
 ptbins       = array('d',[400.0,500.0,600.0,700.0,800.0,1200.0])                               ## default version
 ptbins_full  = array('d',[0.0,100.0,200.0,300.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])  ## including lower/higher pt bins
+ptbins_full2 = array('d',[0.0,200.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])              ## including lower/higher pt bins (alt 2)
+ptbins_full3 = array('d',[0.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])                    ## including lower/higher pt bins (alt 3)
 ptbins_pt400 = array('d',[400.0,500.0,600.0,700.0,800.0,1200.0])                               ## version requiring pt>400 at gen/particle-level
 
 h_bins       = ROOT.TH1F("bins",       ";;", len(ptbins)-1,       ptbins)
 h_bins_full  = ROOT.TH1F("bins_full",  ";;", len(ptbins_full)-1,  ptbins_full)
+h_bins_full2 = ROOT.TH1F("bins_full2", ";;", len(ptbins_full2)-1, ptbins_full2)
+h_bins_full3 = ROOT.TH1F("bins_full3", ";;", len(ptbins_full3)-1, ptbins_full3)
 h_bins_pt400 = ROOT.TH1F("bins_pt400", ";;", len(ptbins_pt400)-1, ptbins_pt400)
 
 
@@ -1135,6 +1139,22 @@ if options.makeResponse == True :
     response_nobtag_full.SetName('response_pt_nobtag_full')
     h_ptGenTop_full          = ROOT.TH1F("ptGenTop_full",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
     h_ptGenTop_noweight_full = ROOT.TH1F("ptGenTop_noweight_full", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
+
+    ## including lower/higher pt bins (alt 2)
+    response_full2 = ROOT.RooUnfoldResponse(h_bins_full2, h_bins_full2)
+    response_full2.SetName('response_pt_full2')
+    response_nobtag_full2 = ROOT.RooUnfoldResponse(h_bins_full2, h_bins_full2)
+    response_nobtag_full2.SetName('response_pt_nobtag_full2')
+    h_ptGenTop_full2          = ROOT.TH1F("ptGenTop_full2",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
+    h_ptGenTop_noweight_full2 = ROOT.TH1F("ptGenTop_noweight_full2", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
+
+    ## including lower/higher pt bins (alt 3)
+    response_full3 = ROOT.RooUnfoldResponse(h_bins_full3, h_bins_full3)
+    response_full3.SetName('response_pt_full3')
+    response_nobtag_full3 = ROOT.RooUnfoldResponse(h_bins_full3, h_bins_full3)
+    response_nobtag_full3.SetName('response_pt_nobtag_full3')
+    h_ptGenTop_full3          = ROOT.TH1F("ptGenTop_full3",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
+    h_ptGenTop_noweight_full3 = ROOT.TH1F("ptGenTop_noweight_full3", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
 
     ## version with pt>400 cuts
     response_pt400 = ROOT.RooUnfoldResponse(h_bins_pt400, h_bins_pt400)
@@ -1171,6 +1191,26 @@ if options.makeResponse == True :
     response_nobtag_full_rp.SetName('response_pt_nobtag_full_rp')
     h_ptPartTop_full          = ROOT.TH1F("ptPartTop_full",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
     h_ptPartTop_noweight_full = ROOT.TH1F("ptPartTop_noweight_full", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
+
+    ## including lower/higher pt bins (alt 2)
+    response_full2_pp = ROOT.RooUnfoldResponse(h_bins_full2, h_bins_full2)
+    response_full2_pp.SetName('response_pt_full2_pp')
+    response_full2_rp = ROOT.RooUnfoldResponse(h_bins_full2, h_bins_full2)
+    response_full2_rp.SetName('response_pt_full2_rp')
+    response_nobtag_full2_rp = ROOT.RooUnfoldResponse(h_bins_full2, h_bins_full2)
+    response_nobtag_full2_rp.SetName('response_pt_nobtag_full2_rp')
+    h_ptPartTop_full2          = ROOT.TH1F("ptPartTop_full2",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
+    h_ptPartTop_noweight_full2 = ROOT.TH1F("ptPartTop_noweight_full2", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
+
+    ## including lower/higher pt bins (alt 3)
+    response_full3_pp = ROOT.RooUnfoldResponse(h_bins_full3, h_bins_full3)
+    response_full3_pp.SetName('response_pt_full3_pp')
+    response_full3_rp = ROOT.RooUnfoldResponse(h_bins_full3, h_bins_full3)
+    response_full3_rp.SetName('response_pt_full3_rp')
+    response_nobtag_full3_rp = ROOT.RooUnfoldResponse(h_bins_full3, h_bins_full3)
+    response_nobtag_full3_rp.SetName('response_pt_nobtag_full3_rp')
+    h_ptPartTop_full3          = ROOT.TH1F("ptPartTop_full3",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
+    h_ptPartTop_noweight_full3 = ROOT.TH1F("ptPartTop_noweight_full3", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
 
     ## version with pt>400 cuts
     response_pt400_pp = ROOT.RooUnfoldResponse(h_bins_pt400, h_bins_pt400)
@@ -1216,17 +1256,25 @@ if options.makeResponse == True :
 
 h_ptRecoTop       = ROOT.TH1F("ptRecoTop",       ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,       ptbins)
 h_ptRecoTop_full  = ROOT.TH1F("ptRecoTop_full",  ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full)-1,  ptbins_full)
-h_ptRecoTop_pt400 = ROOT.TH1F("ptRecoTop_pt400", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
+h_ptRecoTop_full2 = ROOT.TH1F("ptRecoTop_full2", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
+h_ptRecoTop_full3 = ROOT.TH1F("ptRecoTop_full3", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
+h_ptRecoTop_pt400 = ROOT.TH1F("ptRecoTop_pt400", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
 h_ptRecoTop_nobtag       = ROOT.TH1F("ptRecoTop_nobtag",       ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,       ptbins)
 h_ptRecoTop_nobtag_full  = ROOT.TH1F("ptRecoTop_nobtag_full",  ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full)-1,  ptbins_full)
-h_ptRecoTop_nobtag_pt400 = ROOT.TH1F("ptRecoTop_nobtag_pt400", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
+h_ptRecoTop_nobtag_full2 = ROOT.TH1F("ptRecoTop_nobtag_full2", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
+h_ptRecoTop_nobtag_full3 = ROOT.TH1F("ptRecoTop_nobtag_full3", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
+h_ptRecoTop_nobtag_pt400 = ROOT.TH1F("ptRecoTop_nobtag_pt400", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
 
 h_ptRecoTop_2step       = ROOT.TH1F("ptRecoTop_2step",       ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,       ptbins)
 h_ptRecoTop_2step_full  = ROOT.TH1F("ptRecoTop_2step_full",  ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full)-1,  ptbins_full)
-h_ptRecoTop_2step_pt400 = ROOT.TH1F("ptRecoTop_2step_pt400", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
+h_ptRecoTop_2step_full2 = ROOT.TH1F("ptRecoTop_2step_full2", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
+h_ptRecoTop_2step_full3 = ROOT.TH1F("ptRecoTop_2step_full3", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
+h_ptRecoTop_2step_pt400 = ROOT.TH1F("ptRecoTop_2step_pt400", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
 h_ptRecoTop_2step_nobtag       = ROOT.TH1F("ptRecoTop_2step_nobtag",       ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,       ptbins)
 h_ptRecoTop_2step_nobtag_full  = ROOT.TH1F("ptRecoTop_2step_nobtag_full",  ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full)-1,  ptbins_full)
-h_ptRecoTop_2step_nobtag_pt400 = ROOT.TH1F("ptRecoTop_2step_nobtag_pt400", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
+h_ptRecoTop_2step_nobtag_full2 = ROOT.TH1F("ptRecoTop_2step_nobtag_full2", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
+h_ptRecoTop_2step_nobtag_full3 = ROOT.TH1F("ptRecoTop_2step_nobtag_full3", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
+h_ptRecoTop_2step_nobtag_pt400 = ROOT.TH1F("ptRecoTop_2step_nobtag_pt400", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
 
 
 
@@ -1773,8 +1821,12 @@ for event in events :
             h_ptGenTop.Fill( hadTop.p4.Perp(), weight )
             h_ptGenTop_noweight.Fill( hadTop.p4.Perp() )
             h_ptGenTop_full.Fill( hadTop.p4.Perp(), weight )
+            h_ptGenTop_full2.Fill( hadTop.p4.Perp(), weight )
+            h_ptGenTop_full3.Fill( hadTop.p4.Perp(), weight )
             h_ptGenTop_noweight_full.Fill( hadTop.p4.Perp() )
-
+            h_ptGenTop_noweight_full2.Fill( hadTop.p4.Perp() )
+            h_ptGenTop_noweight_full3.Fill( hadTop.p4.Perp() )
+            
             if hadTop.p4.Perp() > 400.0:
                 passParton = True
 
@@ -1806,14 +1858,20 @@ for event in events :
                 ## one-step
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
                 if passParton: 
                     response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                     response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 ## two-step
                 response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
                 if passParton: 
                     response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
@@ -1831,14 +1889,20 @@ for event in events :
                 ## one-step
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
                 if passParton: 
                     response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                     response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 ## two-step
                 response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
                 if passParton: 
                     response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
@@ -1857,14 +1921,20 @@ for event in events :
                 ## one-step
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
                 if passParton: 
                     response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                     response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 ## two-step
                 response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
                 if passParton: 
                     response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
@@ -1882,14 +1952,20 @@ for event in events :
                 ## one-step
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
                 if passParton: 
                     response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                     response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 ## two-step
                 response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+                response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
                 if passParton: 
                     response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
@@ -1917,12 +1993,12 @@ for event in events :
 
         if (options.lepType == "muon") :
             for iMuon in genMuons:
-                if iMuon.Perp() > MIN_MU_PT and abs(iMuon.Eta()) < MAX_MU_ETA:
+                if iMuon.Perp() > MIN_MU_PT and abs(iMuon.Eta()) < MAX_MU_ETA:  ## pt>45, |eta|<2.1
                     nGenLeptons += 1
                     genLepton = iMuon
         else :
             for iEle in genElectrons:
-                if iEle.Perp() > MIN_EL_PT and abs(iEle.Eta()) < MAX_EL_ETA:
+                if iEle.Perp() > MIN_MU_PT and abs(iEle.Eta()) < MAX_MU_ETA:  ## pt>45, |eta|<2.1  (same selection as for muons here!)
                     nGenLeptons += 1
                     genLepton = iEle
 
@@ -1946,13 +2022,21 @@ for event in events :
         if passParticleLoose == False:
             response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         else:           
             h_ptPartTop.Fill( genTops[0].Perp(), weight )
             h_ptPartTop_noweight.Fill( genTops[0].Perp() )
             h_ptPartTop_full.Fill( genTops[0].Perp(), weight )
+            h_ptPartTop_full2.Fill( genTops[0].Perp(), weight )
+            h_ptPartTop_full3.Fill( genTops[0].Perp(), weight )
             h_ptPartTop_noweight_full.Fill( genTops[0].Perp() )
+            h_ptPartTop_noweight_full2.Fill( genTops[0].Perp() )
+            h_ptPartTop_noweight_full3.Fill( genTops[0].Perp() )
             response_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
             response_full_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
+            response_full2_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
+            response_full3_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
 
         ## particle-level selection *with* 400 cut
         if passParton: 
@@ -1988,8 +2072,12 @@ for event in events :
             ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             if passParton: 
                 response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
@@ -1997,8 +2085,12 @@ for event in events :
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
             if passParticle: 
                 response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
@@ -2245,8 +2337,12 @@ for event in events :
             ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             if passParton: 
                 response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
@@ -2254,8 +2350,12 @@ for event in events :
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
             if passParticle: 
                 response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
@@ -2473,8 +2573,12 @@ for event in events :
             ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             if passParton: 
                 response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
@@ -2482,8 +2586,12 @@ for event in events :
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
             if passParticle: 
                 response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
@@ -2544,8 +2652,12 @@ for event in events :
             ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             if passParton: 
                 response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
@@ -2553,8 +2665,12 @@ for event in events :
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
             if passParticle: 
                 response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
@@ -2772,8 +2888,12 @@ for event in events :
             ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             if passParton: 
                 response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
@@ -2781,8 +2901,12 @@ for event in events :
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
             if passParticle: 
                 response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
@@ -2860,8 +2984,12 @@ for event in events :
             ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             if passParton: 
                 response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
@@ -2869,8 +2997,12 @@ for event in events :
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
             if passParticle: 
                 response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
@@ -2930,8 +3062,12 @@ for event in events :
             ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             if passParton: 
                 response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
@@ -2939,8 +3075,12 @@ for event in events :
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
             if passParticle: 
                 response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
@@ -2951,8 +3091,12 @@ for event in events :
             ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             if passParton: 
                 response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
@@ -2960,8 +3104,12 @@ for event in events :
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
             if passParticle: 
                 response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
@@ -3170,8 +3318,12 @@ for event in events :
             ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             if passParton: 
                 response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
@@ -3179,8 +3331,12 @@ for event in events :
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
             if passParticle: 
                 response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
@@ -3260,18 +3416,14 @@ for event in events :
 
     h_ptRecoTop_nobtag.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_nobtag_full.Fill( goodtop.Perp(), top_weight )
-
-    #if passParton:
-    #    h_ptRecoTop_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
-    #if passParticleLoose:
-    #    h_ptRecoTop_2step_nobtag.Fill( goodtop.Perp(), top_weight )
-    #    h_ptRecoTop_2step_nobtag_full.Fill( goodtop.Perp(), top_weight )
-    #if passParticle:
-    #    h_ptRecoTop_2step_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_nobtag_full2.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_nobtag_full3.Fill( goodtop.Perp(), top_weight )
 
     h_ptRecoTop_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_2step_nobtag.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_2step_nobtag_full.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_nobtag_full2.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_nobtag_full3.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_2step_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
     
     if options.makeResponse == True :		
@@ -3291,6 +3443,8 @@ for event in events :
             
         response_nobtag.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
         response_nobtag_full.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
+        response_nobtag_full2.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
+        response_nobtag_full3.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
         if passParton:
             response_nobtag_pt400.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
         else:
@@ -3298,9 +3452,13 @@ for event in events :
         if passParticleLoose:
             response_nobtag_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
             response_nobtag_full_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
+            response_nobtag_full2_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
+            response_nobtag_full3_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
         else:
             response_nobtag_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
             response_nobtag_full_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
+            response_nobtag_full2_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
+            response_nobtag_full3_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
         if passParticle:
             response_nobtag_pt400_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
         else:
@@ -3525,12 +3683,16 @@ for event in events :
             ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             if passParton: 
                 response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
             ## two-step
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
             if passParticle: 
                 response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
@@ -3604,18 +3766,14 @@ for event in events :
 
     h_ptRecoTop.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_full.Fill( goodtop.Perp(), top_weight )
-
-    #if passParton:
-    #    h_ptRecoTop_pt400.Fill( goodtop.Perp(), top_weight )
-    #if passParticleLoose:
-    #    h_ptRecoTop_2step.Fill( goodtop.Perp(), top_weight )
-    #    h_ptRecoTop_2step_full.Fill( goodtop.Perp(), top_weight )
-    #if passParticle:
-    #    h_ptRecoTop_2step_pt400.Fill( goodtop.Perp(), top_weight )
-    
+    h_ptRecoTop_full2.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_full3.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_pt400.Fill( goodtop.Perp(), top_weight )
+    
     h_ptRecoTop_2step.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_2step_full.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_full2.Fill( goodtop.Perp(), top_weight )
+    h_ptRecoTop_2step_full3.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_2step_pt400.Fill( goodtop.Perp(), top_weight )
     
     if options.makeResponse == True :		
@@ -3635,6 +3793,8 @@ for event in events :
         
         response.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
         response_full.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
+        response_full2.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
+        response_full3.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
         if passParton:
             response_pt400.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)            
         else:
@@ -3642,9 +3802,13 @@ for event in events :
         if passParticleLoose:
             response_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
             response_full_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
+            response_full2_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
+            response_full3_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
         else:
             response_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
             response_full_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
+            response_full2_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
+            response_full3_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
         if passParticle:
             response_pt400_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
         else:
@@ -3668,19 +3832,29 @@ f.cd()
 if options.makeResponse == True :
     response.Write()
     response_full.Write()
+    response_full2.Write()
+    response_full3.Write()
     response_pt400.Write()
     response_nobtag.Write()
     response_nobtag_full.Write()
+    response_nobtag_full2.Write()
+    response_nobtag_full3.Write()
     response_nobtag_pt400.Write()
 
     response_pp.Write()
     response_full_pp.Write()
+    response_full2_pp.Write()
+    response_full3_pp.Write()
     response_pt400_pp.Write()
     response_rp.Write()
     response_full_rp.Write()
+    response_full2_rp.Write()
+    response_full3_rp.Write()
     response_pt400_rp.Write()
     response_nobtag_rp.Write()
     response_nobtag_full_rp.Write()
+    response_nobtag_full2_rp.Write()
+    response_nobtag_full3_rp.Write()
     response_nobtag_pt400_rp.Write()
 
 f.Write()

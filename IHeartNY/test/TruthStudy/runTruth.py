@@ -179,23 +179,35 @@ hw_lep_pt_pt400  = ROOT.TH1F("w_lep_pt_pt400",  ";Muon p_{T} [GeV]; Events / 1 G
 # dummy histogram used only to specify dimensions for reponse matrix
 ptbins       = array('d',[400.0,500.0,600.0,700.0,800.0,1200.0])                               ## default version
 ptbins_full  = array('d',[0.0,100.0,200.0,300.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])  ## including lower/higher pt bins
+ptbins_full2 = array('d',[0.0,200.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])              ## including lower/higher pt bins (alt 2)
+ptbins_full3 = array('d',[0.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])                    ## including lower/higher pt bins (alt 3)
 ptbins_pt400 = array('d',[400.0,500.0,600.0,700.0,800.0,1200.0])                               ## version requiring pt>400 at gen/particle-level
 
-h_bins       = ROOT.TH1F("bins",       ";;", len(ptbins)-1,       ptbins)
-h_bins_full  = ROOT.TH1F("bins_full",  ";;", len(ptbins_full)-1,  ptbins_full)
-h_bins_pt400 = ROOT.TH1F("bins_pt400", ";;", len(ptbins_pt400)-1, ptbins_pt400)
+h_bins       = ROOT.TH1F("bins",       ";;", len(ptbins)-1,        ptbins)
+h_bins_full  = ROOT.TH1F("bins_full",  ";;", len(ptbins_full)-1,   ptbins_full)
+h_bins_full2 = ROOT.TH1F("bins_full2", ";;", len(ptbins_full2)-1,  ptbins_full2)
+h_bins_full3 = ROOT.TH1F("bins_full3", ";;", len(ptbins_full3)-1,  ptbins_full3)
+h_bins_pt400 = ROOT.TH1F("bins_pt400", ";;", len(ptbins_pt400)-1,  ptbins_pt400)
 
 h_ptGenTop          = ROOT.TH1F("ptGenTop",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 h_ptGenTop_noweight = ROOT.TH1F("ptGenTop_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 h_ptGenTop_full          = ROOT.TH1F("ptGenTop_full",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
+h_ptGenTop_full2         = ROOT.TH1F("ptGenTop_full2",         ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
+h_ptGenTop_full3         = ROOT.TH1F("ptGenTop_full3",         ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
 h_ptGenTop_noweight_full = ROOT.TH1F("ptGenTop_noweight_full", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
+h_ptGenTop_noweight_full2 = ROOT.TH1F("ptGenTop_noweight_full2", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
+h_ptGenTop_noweight_full3 = ROOT.TH1F("ptGenTop_noweight_full3", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
 h_ptGenTop_pt400          = ROOT.TH1F("ptGenTop_pt400",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
 h_ptGenTop_noweight_pt400 = ROOT.TH1F("ptGenTop_noweight_pt400", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
 
 h_ptPartTop          = ROOT.TH1F("ptPartTop",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 h_ptPartTop_noweight = ROOT.TH1F("ptPartTop_noweight", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 h_ptPartTop_full          = ROOT.TH1F("ptPartTop_full",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
+h_ptPartTop_full2         = ROOT.TH1F("ptPartTop_full2",         ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
+h_ptPartTop_full3         = ROOT.TH1F("ptPartTop_full3",         ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
 h_ptPartTop_noweight_full = ROOT.TH1F("ptPartTop_noweight_full", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
+h_ptPartTop_noweight_full2 = ROOT.TH1F("ptPartTop_noweight_full2", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
+h_ptPartTop_noweight_full3 = ROOT.TH1F("ptPartTop_noweight_full3", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
 h_ptPartTop_pt400          = ROOT.TH1F("ptPartTop_pt400",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
 h_ptPartTop_noweight_pt400 = ROOT.TH1F("ptPartTop_noweight_pt400", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
 
@@ -225,6 +237,14 @@ response_pp.UseOverflow()
 ## including lower/higher pt bins
 response_full_pp = ROOT.RooUnfoldResponse(h_bins_full, h_bins_full)
 response_full_pp.SetName('response_pt_full_pp')
+
+## including lower/higher pt bins (alt 2)
+response_full2_pp = ROOT.RooUnfoldResponse(h_bins_full2, h_bins_full2)
+response_full2_pp.SetName('response_pt_full2_pp')
+
+## including lower/higher pt bins (alt 3)
+response_full3_pp = ROOT.RooUnfoldResponse(h_bins_full3, h_bins_full3)
+response_full3_pp.SetName('response_pt_full3_pp')
 
 ## version with pt>400 cuts
 response_pt400_pp = ROOT.RooUnfoldResponse(h_bins_pt400, h_bins_pt400)
@@ -655,7 +675,11 @@ for event in events :
     h_ptGenTop.Fill( hadTop.p4.Perp(), weight )
     h_ptGenTop_noweight.Fill( hadTop.p4.Perp() )
     h_ptGenTop_full.Fill( hadTop.p4.Perp(), weight )
+    h_ptGenTop_full2.Fill( hadTop.p4.Perp(), weight )
+    h_ptGenTop_full3.Fill( hadTop.p4.Perp(), weight )
     h_ptGenTop_noweight_full.Fill( hadTop.p4.Perp() )
+    h_ptGenTop_noweight_full2.Fill( hadTop.p4.Perp() )
+    h_ptGenTop_noweight_full3.Fill( hadTop.p4.Perp() )
         
     if passParton :
         h_ptGenTop_pt400.Fill( hadTop.p4.Perp(), weight )
@@ -682,6 +706,8 @@ for event in events :
     if ak5GenJetPtHandle.isValid() == False :
         response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         if passParton: 
             response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
@@ -697,6 +723,8 @@ for event in events :
     if len(ak5GenJetPt) == 0 :
         response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         if passParton: 
             response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
@@ -711,14 +739,9 @@ for event in events :
             ak5GenJets_tight.append(p4)
 
 
-    if options.lepType == "ele": 
-        if abs(leptonEta)<2.5 and leptonPt>35. and len(ak5GenJets_tight) > 1:
-            h_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp())
-            hw_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp(), weight)
-    else:
-        if abs(leptonEta)<2.1 and leptonPt>45. and len(ak5GenJets_tight) > 1:
-            h_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp())
-            hw_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp(), weight)
+    if abs(leptonEta)<2.1 and leptonPt>45. and len(ak5GenJets_tight) > 1:  ## same lepton cuts for particle-level stuff
+        h_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp())
+        hw_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp(), weight)
 
             
     # -------------------------------------------------------------------------------------
@@ -729,6 +752,8 @@ for event in events :
     if ca8GenJetPtHandle.isValid() == False :
         response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         if passParton: 
             response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
@@ -744,6 +769,8 @@ for event in events :
     if len(ca8GenJetPt) == 0 :
         response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         if passParton: 
             response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
@@ -772,7 +799,7 @@ for event in events :
 				genLepton = iMuon
     else :
 		for iEle in genElectrons:
-			if iEle.Perp() > 35. and abs(iEle.Eta()) < 2.5:
+			if iEle.Perp() > 45. and abs(iEle.Eta()) < 2.1:  ## same cuts as for muon for particle-level!!
 				nGenLeptons += 1
 				genLepton = iEle
 
@@ -797,13 +824,21 @@ for event in events :
     if passParticleLoose == False:
         response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
+        response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
     else:
         h_ptPartTop.Fill( genTops[0].Perp(), weight )
         h_ptPartTop_noweight.Fill( genTops[0].Perp() )
         h_ptPartTop_full.Fill( genTops[0].Perp(), weight )
+        h_ptPartTop_full2.Fill( genTops[0].Perp(), weight )
+        h_ptPartTop_full3.Fill( genTops[0].Perp(), weight )
         h_ptPartTop_noweight_full.Fill( genTops[0].Perp() )
+        h_ptPartTop_noweight_full2.Fill( genTops[0].Perp() )
+        h_ptPartTop_noweight_full3.Fill( genTops[0].Perp() )
         response_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
         response_full_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
+        response_full2_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
+        response_full3_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
 
     ## particle-level selection *with* 400 cut
     if passParton: 
@@ -838,6 +873,8 @@ f.cd()
 
 response_pp.Write()
 response_full_pp.Write()
+response_full2_pp.Write()
+response_full3_pp.Write()
 response_pt400_pp.Write()
 
 f.Write()
