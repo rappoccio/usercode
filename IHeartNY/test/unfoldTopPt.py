@@ -195,17 +195,17 @@ if options.lepType == "ele":
         fitted_ttbar = 254.0
 else:
     if nobtag == "_nobtag":
-        fitted_qcd = 9.5+38.4
-        fitted_singletop = 3.7+11.3
-        fitted_wjets = 4.2+153.9
-        fitted_ttbarnonsemilep = 30.8+36.7
-        fitted_ttbar = 291.3+293.1
+        fitted_qcd = 9.5+49.6
+        fitted_singletop = 3.5+12.5
+        fitted_wjets = 4.5+172.4
+        fitted_ttbarnonsemilep = 28.3+42.8
+        fitted_ttbar = 259.7+344.5
     else:
         fitted_qcd = 9.5
-        fitted_singletop = 3.7
-        fitted_wjets = 4.2
-        fitted_ttbarnonsemilep = 30.8
-        fitted_ttbar = 291.3
+        fitted_singletop = 3.5
+        fitted_wjets = 4.5
+        fitted_ttbarnonsemilep = 28.3
+        fitted_ttbar = 259.7
 
 
 # -------------------------------------------------------------------------------------
