@@ -35,9 +35,9 @@ parser.add_option('--ttbarPDF', metavar='F', type='string', action='store',
                   help='Which PDF set and nominal vs up/down? Or Q2 up/down?')
 
 parser.add_option('--unfoldType', metavar='F', type='string', action='store',
-                  default='full',
+                  default='full2',
                   dest='unfold',
-                  help='Unfold using pt > 0 ("full") or pt > 400 ("pt400", default)?')
+                  help='Unfold using pt > 0 ("full" vs "full2" vs "full3", different binnings) or pt > 400 ("pt400")?')
 
 parser.add_option('--addNoBtag', metavar='F', action='store_true',
                   default=False,
@@ -67,7 +67,7 @@ import sys
 unfoldType = "_"
 if options.unfold == "":
     unfoldType = ""
-elif (options.unfold == "full" or options.unfold == "pt400") == False:
+elif (options.unfold == "full" or options.unfold == "full2" or options.unfold == "full3" or options.unfold == "pt400") == False:
     print ""
     print "WARNING - not a valid option for unfolding type (use either \"full\" or \"pt400\"), exiting...!"
     print ""
@@ -609,8 +609,8 @@ if options.closureTest == False :
     hMeas.Draw("axis,same")
     ll.AddEntry(hMeas, "Background-subtracted data","l")
     ll.Draw()
-    cc.SaveAs("UnfoldingPlots/unfold"+DIR+"_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-    cc.SaveAs("UnfoldingPlots/unfold"+DIR+"_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+    #cc.SaveAs("UnfoldingPlots/unfold"+DIR+"_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    #cc.SaveAs("UnfoldingPlots/unfold"+DIR+"_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
 
 if options.closureTest and options.troubleshoot and options.twoStep :
     ct1 = TCanvas("ct1", "", 800, 600)
@@ -679,34 +679,36 @@ if options.closureTest and options.troubleshoot and options.twoStep :
 # -------------------------------------------------------------------------------------
 # trigger SF for particle-level
 
-# *** MUONS ***
-#trigSF_rp [400,500]:  1.19878 +/- 0.00391811
-#trigSF_rp [500,600]:  1.21192 +/- 0.00660688
-#trigSF_rp [600,700]:  1.20806 +/- 0.0107819
-#trigSF_rp [700,800]:  1.23508 +/- 0.0187494
-#trigSF_rp [800,1200]: 1.22596 +/- 0.0218614
-
-# *** ELECTRONS ***
-#trigSF_rp [400,500]:  1.34124 +/- 0.0051957
-#trigSF_rp [500,600]:  1.39423 +/- 0.00979081
-#trigSF_rp [600,700]:  1.4907 +/- 0.0196793
-#trigSF_rp [700,800]:  1.45701 +/- 0.0284001
-#trigSF_rp [800,1200]: 1.58253 +/- 0.0425775
-
 if unfoldType == "_pt400" or unfoldType == "":
     if options.lepType == "ele":
-        #trigSF_rp = [1.34124, 1.39423, 1.4907, 1.45701, 1.58253]
-        trigSF_rp = [1.34297, 1.39335, 1.44372, 1.4941, 1.62005]
+        trigSF_rp = [1.32581, 1.37968, 1.43356, 1.48744, 1.62214]
     else:
-        #trigSF_rp = [1.19878, 1.21192, 1.20806, 1.23508, 1.22596]
         trigSF_rp = [1.20002, 1.20692, 1.21382, 1.22071, 1.23795]
 elif unfoldType == "_full":
     if options.lepType == "ele":
-        #trigSF_rp = [0.0, 0.0, 0.0, 0.0, 1.34124, 1.39423, 1.4907, 1.45701, 1.58253, 0.0]
-        trigSF_rp = [0.0, 0.0, 0.0, 0.0, 1.34297, 1.39335, 1.44372, 1.4941, 1.62005, 0.0]
+        trigSF_rp = [0.0, 0.0, 0.0, 0.0, 1.32581, 1.37968, 1.43356, 1.48744, 1.62214, 0.0]
     else:
-        #trigSF_rp = [0.0, 0.0, 0.0, 0.0, 1.19878, 1.21192, 1.20806, 1.23508, 1.22596, 0.0]
         trigSF_rp = [0.0, 0.0, 0.0, 0.0, 1.20002, 1.20692, 1.21382, 1.22071, 1.23795, 0.0]
+elif unfoldType == "_full2":
+    if options.lepType == "ele":
+        if options.pdf == "scaleup":
+            trigSF_rp = [0.0, 0.0, 1.3516, 1.40157, 1.45154, 1.50151, 1.62643, 0.0]
+        elif options.pdf == "scaledown":
+            trigSF_rp = [0.0, 0.0, 1.33585, 1.38794, 1.44003, 1.49212, 1.62236, 0.0]
+        else:
+            trigSF_rp = [0.0, 0.0, 1.32581, 1.37968, 1.43356, 1.48744, 1.62214, 0.0]
+    else:
+        if options.pdf == "scaleup":
+            trigSF_rp = [0.0, 0.0, 1.17308, 1.17612, 1.17915, 1.18218, 1.18976, 0.0]
+        elif options.pdf == "scaledown":
+            trigSF_rp = [0.0, 0.0, 1.16728, 1.17801, 1.18873, 1.19946, 1.22627, 0.0]
+        else:
+            trigSF_rp = [0.0, 0.0, 1.20002, 1.20692, 1.21382, 1.22071, 1.23795, 0.0]
+elif unfoldType == "_full3":
+    if options.lepType == "ele":
+        trigSF_rp = [0.0, 1.32581, 1.37968, 1.43356, 1.48744, 1.62214, 0.0]
+    else:
+        trigSF_rp = [0.0, 1.20002, 1.20692, 1.21382, 1.22071, 1.23795, 0.0]
 else:
     print "invalid unfolding type option"
 
@@ -784,33 +786,35 @@ if options.closureTest == False :
 
 ## trigger SF (this is for correcting parton-level distribution & one-step unfolded distribution @ parton-level 
 
-# *** MUONS ***
-#trigSF [400,500]: 1.62473 +/- 0.00796161
-#trigSF [500,600]: 1.5741 +/- 0.0131161
-#trigSF [600,700]: 1.50913 +/- 0.0197511
-#trigSF [700,800]: 1.58339 +/- 0.0400283
-#trigSF [800,1200]: 1.41899 +/- 0.0326825
-
-# *** ELECRTONS ***
-#trigSF [400,500]: 1.69319 +/- 0.00854152
-#trigSF [500,600]: 1.7082 +/- 0.015327
-#trigSF [600,700]: 1.81256 +/- 0.0306949
-#trigSF [700,800]: 1.83791 +/- 0.0494666
-#trigSF [800,1200]: 1.99493 +/- 0.07839
-
 if unfoldType == "_full":
     if options.lepType == "ele":
-        #trigSF = [0.0, 0.0, 0.0, 0.0, 1.69319, 1.7082, 1.81256, 1.83791, 1.99493, 0.0]
         trigSF = [0.0, 0.0, 0.0, 0.0, 1.6879, 1.73525, 1.78259, 1.82994, 1.94831, 0.0]
     else:
-        #trigSF = [0.0, 0.0, 0.0, 0.0, 1.62473, 1.5741, 1.50913, 1.58339, 1.41899, 0.0]
         trigSF = [0.0, 0.0, 0.0, 0.0, 1.62046, 1.58152, 1.54259, 1.50365, 1.4063, 0.0]
+elif unfoldType == "_full2":
+    if options.lepType == "ele":
+        if options.pdf == "scaleup":
+            trigSF = [0.0, 0.0, 1.67745, 1.71964, 1.76184, 1.80403, 1.90952, 0.0]
+        elif options.pdf == "scaledown":
+            trigSF = [0.0, 0.0, 1.69947, 1.72769, 1.75592, 1.78415, 1.85471, 0.0]
+        else:
+            trigSF = [0.0, 0.0, 1.6879, 1.73525, 1.78259, 1.82994, 1.94831, 0.0]
+    else:
+        if options.pdf == "scaleup":
+            trigSF = [0.0, 0.0, 1.57944, 1.56532, 1.55121, 1.5371, 1.50182, 0.0]
+        elif options.pdf == "scaledown":
+            trigSF = [0.0, 0.0, 1.56584, 1.55551, 1.54517, 1.53484, 1.509, 0.0]
+        else:
+            trigSF = [0.0, 0.0, 1.62046, 1.58152, 1.54259, 1.50365, 1.4063, 0.0]
+elif unfoldType == "_full3":
+    if options.lepType == "ele":
+        trigSF = [0.0, 1.6879, 1.73525, 1.78259, 1.82994, 1.94831, 0.0]
+    else:
+        trigSF = [0.0, 1.62046, 1.58152, 1.54259, 1.50365, 1.4063, 0.0]
 elif unfoldType == "_pt400" or unfoldType == "":
     if options.lepType == "ele":
-        #trigSF = [1.69319, 1.7082, 1.81256, 1.83791, 1.99493]
         trigSF = [1.6879, 1.73525, 1.78259, 1.82994, 1.94831]
     else:
-        #trigSF = [1.62473, 1.5741, 1.50913, 1.58339, 1.41899]
         trigSF = [1.62046, 1.58152, 1.54259, 1.50365, 1.4063]
 else:
     print "Unvalid unfolding type!!" 
@@ -1117,7 +1121,7 @@ if options.twoStep == False:
             if rowIntegral > 0:
                 newContent = binContent/rowIntegral*100.0
             #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
-            #hResponse2D.SetBinContent(ibx,iby,newContent)
+            hResponse2D.SetBinContent(ibx,iby,newContent)
 
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D.Draw("colz,same,text")
@@ -1125,7 +1129,18 @@ if options.twoStep == False:
     cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
     cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
     cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
-    
+
+    hEmpty2D.SetAxisRange(450,1150,"X")
+    hEmpty2D.SetAxisRange(450,1150,"Y")
+    hResponse2D.SetAxisRange(450,1150,"X")
+    hResponse2D.SetAxisRange(450,1150,"Y")
+    hEmpty2D.Draw()
+    hResponse2D.Draw("colz,same,text")
+    hEmpty2D.Draw("axis,same")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+
     response.Hresponse().SetName("responseMatrix_"+options.syst)
     response.Hresponse().Write()
     
@@ -1185,7 +1200,7 @@ if options.twoStep:
             if rowIntegral > 0:
                 newContent = binContent/rowIntegral*100.0
             #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
-            #hResponse2D_rp.SetBinContent(ibx,iby,newContent)
+            hResponse2D_rp.SetBinContent(ibx,iby,newContent)
 
     hEmpty2D_rp.Draw()
     gStyle.SetPaintTextFormat(".1f")
@@ -1195,6 +1210,18 @@ if options.twoStep:
     cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
     cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
     
+    hEmpty2D_rp.SetAxisRange(450,1150,"X")
+    hEmpty2D_rp.SetAxisRange(450,1150,"Y")
+    hResponse2D_rp.SetAxisRange(450,1150,"X")
+    hResponse2D_rp.SetAxisRange(450,1150,"Y")
+    hEmpty2D_rp.Draw()
+    hResponse2D_rp.Draw("colz,same,text")
+    hEmpty2D_rp.Draw("axis,same")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+
+
     response_rp.Hresponse().SetName("responseMatrix_rp_"+options.syst)
     response_rp.Hresponse().Write()
     
@@ -1253,7 +1280,7 @@ if options.twoStep:
             if rowIntegral > 0:
                 newContent = binContent/rowIntegral*100.0
             #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
-            #hResponse2D_pp.SetBinContent(ibx,iby,newContent)
+            hResponse2D_pp.SetBinContent(ibx,iby,newContent)
 
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D_pp.Draw("colz,same,text")
@@ -1262,6 +1289,17 @@ if options.twoStep:
     cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
     cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
     
+    hEmpty2D_pp.SetAxisRange(450,1150,"X")
+    hEmpty2D_pp.SetAxisRange(450,1150,"Y")
+    hResponse2D_pp.SetAxisRange(450,1150,"X")
+    hResponse2D_pp.SetAxisRange(450,1150,"Y")
+    hEmpty2D_pp.Draw()
+    hResponse2D_pp.Draw("colz,same,text")
+    hEmpty2D_pp.Draw("axis,same")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+
     response_pp.Hresponse().SetName("responseMatrix_pp_"+options.syst)
     response_pp.Hresponse().Write()
 
