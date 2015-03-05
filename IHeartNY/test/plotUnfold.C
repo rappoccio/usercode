@@ -23,43 +23,49 @@ using namespace std;
 
 void SetPlotStyle();
 void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize,char *text); 
+void plot(TString channel, bool wobtag, bool do2step);
 
+void plotUnfold() {
 
-void plotUnfold(TString lepType="muon") {
+  cout << " bla " << endl;
+
+  plot("muon",true,true);
+  plot("muon",false,false);
+  plot("muon",false,true);
+  plot("muon",true,false);
+
+  plot("ele",true,true);
+  plot("ele",false,false);
+  plot("ele",false,true);
+  plot("ele",true,false);
+
+}
+
+void plot(TString channel, bool wobtag, bool do2step) {
   
-  cout << "Make plots!" << endl;
-
   SetPlotStyle();
   
-  // default unfolding, 300-1300 GeV
-  //TString unfoldType = "";
-
   // full range unfolding, including events 0-2000 GeV
-  TString unfoldType = "_full";
-
-  // only unfold for events with gen pt > 400 GeV
-  //TString unfoldType = "_pt400";
+  TString unfoldType = "_full2";
 
   TString nobtag = "_nobtag";
-  //TString nobtag = "";
+  if (!wobtag) nobtag = "";
 
   // do two-step unfolding
   TString twoStep = "_2step";
-  //TString twoStep = "";
+  if (!do2step) twoStep = "";
   
   TString muOrEl = "";
-  if (lepType == "ele") {
-    muOrEl = "_el";
-  }
+  if (channel == "ele") muOrEl = "_el";
 
 
   // ---------------------------------------------------------------------------------------------------------------
   // get files & histograms
   
-  const int nSYST = 11;
+  const int nSYST = 13;
   TString name_syst[nSYST] = {"_CT10_nom_nom",
-			      //"_scaleup_nom",
-			      //"_scaledown_nom",
+			      "_scaleup_nom",
+			      "_scaledown_nom",
 			      "_CT10_pdfup_nom",
 			      "_CT10_pdfdown_nom",
 			      "_CT10_nom_jecup",
@@ -80,18 +86,21 @@ void plotUnfold(TString lepType="muon") {
   TH1F* h_part;
   TH1F* h_unfolded_part[nSYST];
   
-  cout << "Getting files and hists" << endl;
+  cout << endl << "Getting files and hists..." << endl;
 
-  //TFile* f_syst_MSTW  = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_MSTW_nom_nom"+nobtag+unfoldType+".root");
-  //TFile* f_syst_NNPDF = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_NNPDF_nom_nom"+nobtag+unfoldType+".root");
+  /*
+  TFile* f_syst_MSTW  = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_MSTW_nom_nom"+nobtag+unfoldType+".root");
+  TFile* f_syst_NNPDF = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_NNPDF_nom_nom"+nobtag+unfoldType+".root");
 
-  //TH1F* h_true_MSTW  = (TH1F*) f_syst_MSTW->Get("pt_genTop")->Clone();
-  //h_true_MSTW->SetName("pt_genTop_MSTW");
-  //TH1F* h_true_NNPDF = (TH1F*) f_syst_NNPDF->Get("pt_genTop")->Clone();
-  //h_true_NNPDF->SetName("pt_genTop_NNPDF");
-  
+  TH1F* h_true_MSTW  = (TH1F*) f_syst_MSTW->Get("pt_genTop")->Clone();
+  h_true_MSTW->SetName("pt_genTop_MSTW");
+  TH1F* h_true_NNPDF = (TH1F*) f_syst_NNPDF->Get("pt_genTop")->Clone();
+  h_true_NNPDF->SetName("pt_genTop_NNPDF");
+  */
+
+
   for (int is=0; is<nSYST; is++) {
-    cout << "getting UnfoldingPlots/unfold" << muOrEl << twoStep << name_syst[is] << nobtag << unfoldType << ".root" <<endl;
+    
     f_syst[is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+name_syst[is]+nobtag+unfoldType+".root");
     
     if (is==0) {
@@ -129,6 +138,8 @@ void plotUnfold(TString lepType="muon") {
   TH1F* h_dummy_r_part = (TH1F*) h_measured->Clone("dummy_r_part");
   h_dummy_r_part->Reset();
     
+
+
   // ----------------------------------------------------------------------------------------------------------------
   // colors and stuff
   
@@ -158,7 +169,7 @@ void plotUnfold(TString lepType="muon") {
   
   // ----------------------------------------------------------------------------------------------------------------
   // systematics for ratio plot
-  cout << "Making ratio plots" << endl;
+  
   TH1F* h_systEXP_up = (TH1F*) h_measured->Clone("syst_up_exp");
   TH1F* h_systEXP_dn = (TH1F*) h_measured->Clone("syst_dn_exp");
   h_systEXP_up->Reset();
@@ -169,26 +180,32 @@ void plotUnfold(TString lepType="muon") {
   h_systTH_up->Reset();
   h_systTH_dn->Reset();
   
-  //TH1F* h_syst_Q2 = (TH1F*) h_measured->Clone("syst_Q2");
+  TH1F* h_syst_Q2 = (TH1F*) h_measured->Clone("syst_Q2");
   TH1F* h_syst_pdf = (TH1F*) h_measured->Clone("syst_pdf");
   TH1F* h_syst_jec = (TH1F*) h_measured->Clone("syst_jec");
   TH1F* h_syst_jer = (TH1F*) h_measured->Clone("syst_jer");
   TH1F* h_syst_btag = (TH1F*) h_measured->Clone("syst_btag");
   TH1F* h_syst_toptag = (TH1F*) h_measured->Clone("syst_toptag");
   TH1F* h_syst_stat = (TH1F*) h_measured->Clone("syst_stat");
+
+  TH1F* h_syst_tot = (TH1F*) h_measured->Clone("syst_tot");
   
-  //h_syst_Q2->Reset(); 
+  h_syst_Q2->Reset(); 
   h_syst_pdf->Reset();
   h_syst_jec->Reset();   
   h_syst_jer->Reset(); 
   h_syst_btag->Reset();   
   h_syst_toptag->Reset(); 
   h_syst_stat->Reset(); 
+  h_syst_tot->Reset(); 
   
   
   float count[nSYST] = {0};
   float sig[nSYST] = {0};
   
+
+  cout << endl << "*** unfolding result (parton-level) ***" << endl;
+
   for (int i=0; i<h_unfolded[0]->GetNbinsX()+1; i++) {
     
     for (int is=0; is<nSYST; is++) {
@@ -199,31 +216,30 @@ void plotUnfold(TString lepType="muon") {
       sig[is]   = h_unfolded[is]->GetBinError(i+1);
     }
     
-    cout << "Accessing event counts" << endl;
     float this_systEXP_up = 0;
-    this_systEXP_up += (count[3]-count[0])*(count[3]-count[0]);
     this_systEXP_up += (count[5]-count[0])*(count[5]-count[0]);
     this_systEXP_up += (count[7]-count[0])*(count[7]-count[0]);
     this_systEXP_up += (count[9]-count[0])*(count[9]-count[0]);
+    this_systEXP_up += (count[11]-count[0])*(count[11]-count[0]);
     this_systEXP_up += sig[0]*sig[0];
     this_systEXP_up = sqrt(this_systEXP_up);
     
     float this_systEXP_dn = 0;
-    this_systEXP_dn += (count[4]-count[0])*(count[4]-count[0]);
     this_systEXP_dn += (count[6]-count[0])*(count[6]-count[0]);
     this_systEXP_dn += (count[8]-count[0])*(count[8]-count[0]);
     this_systEXP_dn += (count[10]-count[0])*(count[10]-count[0]);
+    this_systEXP_dn += (count[12]-count[0])*(count[12]-count[0]);
     this_systEXP_dn += sig[0]*sig[0];
     this_systEXP_dn = sqrt(this_systEXP_dn);
     
     float this_systTH_up = 0;
     this_systTH_up += (count[1]-count[0])*(count[1]-count[0]);
-    //this_systTH_up += (count[3]-count[0])*(count[3]-count[0]);
+    this_systTH_up += (count[3]-count[0])*(count[3]-count[0]);
     this_systTH_up = sqrt(this_systTH_up);
     
     float this_systTH_dn = 0;
     this_systTH_dn += (count[2]-count[0])*(count[2]-count[0]);
-    //this_systTH_dn += (count[4]-count[0])*(count[4]-count[0]);
+    this_systTH_dn += (count[4]-count[0])*(count[4]-count[0]);
     this_systTH_dn = sqrt(this_systTH_dn);
     
     float upEXP = count[0] + this_systEXP_up;
@@ -237,21 +253,28 @@ void plotUnfold(TString lepType="muon") {
     
     h_systTH_up->SetBinContent(i+1,upTH);
     h_systTH_dn->SetBinContent(i+1,dnTH);  
-    cout << ".... done" << endl;
-
-    cout << "measured = " << count[0] << " +" << this_systEXP_up << " / -" << this_systEXP_dn << " (exp) +" << this_systTH_up << " / -" << this_systTH_dn << " (th)" << endl;
-    cout << "generator (CT10) = " << h_true->GetBinContent(i+1) << endl;
+    
+    int ibin1 = h_systEXP_up->GetBin(i+1);
+    int ibin2 = h_systEXP_up->GetBin(i+2);
+    int lowedge = h_systEXP_up->GetBinLowEdge(ibin1);
+    int highedge = h_systEXP_up->GetBinLowEdge(ibin2);
+    if (lowedge > 300 && highedge < 1300) {
+      cout << "measured [" << lowedge << "," << highedge << "] = " 
+	   << count[0] << " +" << this_systEXP_up << " / -" << this_systEXP_dn << " (exp) +" << this_systTH_up << " / -" << this_systTH_dn << " (th)" << endl;
+      cout << "generator (CT10) = " << h_true->GetBinContent(i+1) << endl;
+    }
   }
-  
-  cout << "Done with all bins" << endl;
+  cout << endl;
   
   h_dummy->GetXaxis()->SetTitle("p_{T} [GeV]");
   h_dummy->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
   h_dummy->SetAxisRange(400,1150,"X");
   h_dummy->SetAxisRange(0,12,"Y");
   
-  //Getting the relative systematics:
-  cout << "Getting the relative systematics" << endl;
+  // getting the relative systematics
+
+  //cout << "*** systematic uncertainties for each bin (parton-level) ***" << endl; 
+
   float count_r[nSYST] = {0};
   float err_r[nSYST] = {0};
   float err_stat = 0;
@@ -264,72 +287,76 @@ void plotUnfold(TString lepType="muon") {
       count_r[is] = h_unfolded[is]->GetBinContent(i+1);
       err_r[is] = h_unfolded[is]->GetBinError(i+1);
     }
-    cout << "MEBUG = " << count_r[0] << " " << count_r[9] << " " << count_r[10] << endl;
+
     double syst_stat   = err_stat/count_r[0]*100;
-    cout << "statistical error for bin "<<i<<": "<<syst_stat<<endl;
-    //double syst_scaleup   = fabs((count_r[1]-count_r[0])/count_r[0])*100;
-    //cout << "relative syst scaleup for bin "<<i<<": "<<syst_scaleup<<endl;
-    //double syst_scaledown = fabs((count_r[2]-count_r[0])/count_r[0])*100;
-    //cout << "relative syst scaledown for bin "<<i<<": "<<syst_scaledown<<endl;
-    //double max_syst_Q2 = max(syst_scaleup,syst_scaledown);
-    //cout << "max(syst_scaleup,syst_scaledown) for bin"<<i<<": "<<max_syst_Q2<<endl;
-    double syst_pdfup     = fabs((count_r[1]-count_r[0])/count_r[0])*100;
-    cout << "relative syst pdfup for bin "<<i<<": "<<syst_pdfup<<endl;
-    double syst_pdfdown   = fabs((count_r[2]-count_r[0])/count_r[0])*100;
-    cout << "relative syst pdfdown for bin "<<i<<": "<<syst_pdfdown<<endl;
+    double syst_scaleup   = fabs((count_r[1]-count_r[0])/count_r[0])*100;
+    double syst_scaledown = fabs((count_r[2]-count_r[0])/count_r[0])*100;
+    double max_syst_Q2 = max(syst_scaleup,syst_scaledown);
+    double syst_pdfup     = fabs((count_r[3]-count_r[0])/count_r[0])*100;
+    double syst_pdfdown   = fabs((count_r[4]-count_r[0])/count_r[0])*100;
     double max_syst_pdf = max(syst_pdfup,syst_pdfdown);
-    cout << "max(syst_pdfup,syst_pdfdown) for bin"<<i<<": "<<max_syst_pdf<<endl;
-    double syst_jecup     = fabs((count_r[3]-count_r[0])/count_r[0])*100;
-    cout << "TROUBLESHOOT: jecup for bin "<<i<<": "<<count_r[3]<<endl;
-    cout << "TROUBLESHOOT: jecup unc. for bin "<<i<<": "<<err_r[3]<<endl;
-    cout << "relative syst jecup for bin "<<i<<": "<<syst_jecup<<endl;
-    double syst_jecdn     = fabs((count_r[4]-count_r[0])/count_r[0])*100;
-    cout << "TROUBLESHOOT: jecdn for bin "<<i<<": "<<count_r[4]<<endl;
-    cout << "TROUBLESHOOT: jecdn unc. for bin "<<i<<": "<<err_r[4]<<endl;
-    cout << "relative syst jecdn for bin "<<i<<": "<<syst_jecdn<<endl;
+    double syst_jecup     = fabs((count_r[5]-count_r[0])/count_r[0])*100;
+    double syst_jecdn     = fabs((count_r[6]-count_r[0])/count_r[0])*100;
     double max_syst_jec = max(syst_jecup,syst_jecdn);
-    cout << "max(syst_jecup,syst_jecdn) for bin"<<i<<": "<<max_syst_jec<<endl;
-    double syst_jerup     = fabs((count_r[5]-count_r[0])/count_r[0])*100;
-    cout << "relative syst jerup for bin "<<i<<": "<<syst_jerup<<endl;
-    double syst_jerdn     = fabs((count_r[6]-count_r[0])/count_r[0])*100;
-    cout << "relative syst jerdn for bin "<<i<<": "<<syst_jerdn<<endl;
+    double syst_jerup     = fabs((count_r[7]-count_r[0])/count_r[0])*100;
+    double syst_jerdn     = fabs((count_r[8]-count_r[0])/count_r[0])*100;
     double max_syst_jer = max(syst_jerup,syst_jerdn);
-    cout << "max(syst_jerup,syst_jerdn) for bin"<<i<<": "<<max_syst_jer<<endl;
-    double syst_btagup    = fabs((count_r[7]-count_r[0])/count_r[0])*100;
-    cout << "relative syst btagup for bin "<<i<<": "<<syst_btagup<<endl;
-    double syst_btagdn    = fabs((count_r[8]-count_r[0])/count_r[0])*100;
-    cout << "relative syst btagdn for bin "<<i<<": "<<syst_btagdn<<endl;
+    double syst_btagup    = fabs((count_r[9]-count_r[0])/count_r[0])*100;
+    double syst_btagdn    = fabs((count_r[10]-count_r[0])/count_r[0])*100;
     double max_syst_btag = max(syst_btagup,syst_btagdn);
-    cout << "max(syst_btagup,syst_btagdn) for bin"<<i<<": "<<max_syst_btag<<endl;
-    double syst_toptagup  = fabs((count_r[9]-count_r[0])/count_r[0])*100;
-    cout << "relative syst toptagup for bin "<<i<<": "<<syst_toptagup<<endl;
-    double syst_toptagdn  = fabs((count_r[10]-count_r[0])/count_r[0])*100;
-    cout << "relative syst toptagdn for bin "<<i<<": "<<syst_toptagdn<<endl;
+    double syst_toptagup  = fabs((count_r[11]-count_r[0])/count_r[0])*100;
+    double syst_toptagdn  = fabs((count_r[12]-count_r[0])/count_r[0])*100;
     double max_syst_toptag = max(syst_toptagup,syst_toptagdn);
-    cout << "max(syst_toptagup,syst_toptagdn) for bin"<<i<<": "<<max_syst_toptag<<endl;
-    cout << "count_r[0] "<<count_r[0]<<endl;
     
-    //h_syst_Q2->SetBinContent(i+1,max_syst_Q2);  
+    double syst_total_up = sqrt(syst_stat*syst_stat + syst_scaleup*syst_scaleup + syst_pdfup*syst_pdfup + 
+    			       syst_jecup*syst_jecup + syst_jerup*syst_jerup + syst_btagup*syst_btagup + syst_toptagup*syst_toptagup);
+    double syst_total_dn = sqrt(syst_stat*syst_stat + syst_scaledown*syst_scaledown + syst_pdfdown*syst_pdfdown + 
+    			       syst_jecdn*syst_jecdn + syst_jerdn*syst_jerdn + syst_btagdn*syst_btagdn + syst_toptagdn*syst_toptagdn);
+    double max_syst_total = max(syst_total_up,syst_total_dn);
+    
+    /*
+    cout << "statistical error for bin "<<i<<": "<<syst_stat<<endl;
+    cout << "relative syst scaleup for bin "<<i<<": "<<syst_scaleup<<endl;
+    cout << "relative syst scaledown for bin "<<i<<": "<<syst_scaledown<<endl;
+    cout << "max(syst_scaleup,syst_scaledown) for bin"<<i<<": "<<max_syst_Q2<<endl;
+    cout << "relative syst pdfup for bin "<<i<<": "<<syst_pdfup<<endl;
+    cout << "relative syst pdfdown for bin "<<i<<": "<<syst_pdfdown<<endl;
+    cout << "max(syst_pdfup,syst_pdfdown) for bin"<<i<<": "<<max_syst_pdf<<endl;
+    cout << "relative syst jecup for bin "<<i<<": "<<syst_jecup<<endl;
+    cout << "relative syst jecdn for bin "<<i<<": "<<syst_jecdn<<endl;
+    cout << "max(syst_jecup,syst_jecdn) for bin"<<i<<": "<<max_syst_jec<<endl;
+    cout << "relative syst jerup for bin "<<i<<": "<<syst_jerup<<endl;
+    cout << "relative syst jerdn for bin "<<i<<": "<<syst_jerdn<<endl;
+    cout << "max(syst_jerup,syst_jerdn) for bin"<<i<<": "<<max_syst_jer<<endl;
+    cout << "relative syst btagup for bin "<<i<<": "<<syst_btagup<<endl;
+    cout << "relative syst btagdn for bin "<<i<<": "<<syst_btagdn<<endl;
+    cout << "max(syst_btagup,syst_btagdn) for bin"<<i<<": "<<max_syst_btag<<endl;
+    cout << "relative syst toptagup for bin "<<i<<": "<<syst_toptagup<<endl;
+    cout << "relative syst toptagdn for bin "<<i<<": "<<syst_toptagdn<<endl;
+    cout << "max(syst_toptagup,syst_toptagdn) for bin"<<i<<": "<<max_syst_toptag<<endl;
+    */
+    
+    h_syst_Q2->SetBinContent(i+1,max_syst_Q2);  
     h_syst_pdf->SetBinContent(i+1,max_syst_pdf);
     h_syst_jec->SetBinContent(i+1,max_syst_jec);    
     h_syst_jer->SetBinContent(i+1,max_syst_jer);    
     h_syst_btag->SetBinContent(i+1,max_syst_btag);   
     h_syst_toptag->SetBinContent(i+1,max_syst_toptag); 
     h_syst_stat->SetBinContent(i+1,syst_stat);  
+    h_syst_tot->SetBinContent(i+1,max_syst_total);  
+
     
-    //h_syst_Q2->SetBinError(i+1,0.001);  
+    h_syst_Q2->SetBinError(i+1,0.001);  
     h_syst_pdf->SetBinError(i+1,0.001);
     h_syst_jec->SetBinError(i+1,0.001);
     h_syst_jer->SetBinError(i+1,0.001);
     h_syst_btag->SetBinError(i+1,0.001);
     h_syst_toptag->SetBinError(i+1,0.001);
     h_syst_stat->SetBinError(i+1,0.001);
-    cout << ".... done" << endl;
+    h_syst_tot->SetBinError(i+1,0.001);
     
   }
-  cout << "Done with all bins, relative uncertainties" << endl;
-  
-  cout << "Making ratio plots" << endl;
+   
 
   // ----------------------------------------------------------------------------------------------------------------
   // RATIO PLOTS !!!!!!!
@@ -383,7 +410,7 @@ void plotUnfold(TString lepType="muon") {
   }
   gr->SetMarkerStyle(8);
   */
-  cout << "Plotting stuff" << endl;
+
   h_dummy->Draw("hist");
   h_true->Draw("hist,same");
   //h_true_MSTW->Draw("hist,same");
@@ -477,7 +504,6 @@ void plotUnfold(TString lepType="muon") {
   
 
   // ----------------------------------------------------------------------------------------------------------------
-  //TLegend* leg = new TLegend(0.45,0.55,0.9,0.9);  
   TLegend* leg = new TLegend(0.45,0.45,0.9,0.75);  
   leg->AddEntry(h_true,"POWHEG t#bar{t} MC (CT10)","l");
   leg->AddEntry(h_unfolded[0],"Unfolded data","pel");
@@ -534,7 +560,6 @@ void plotUnfold(TString lepType="muon") {
   c->SaveAs("UnfoldingPlots/unfoldWithError"+muOrEl+twoStep+nobtag+unfoldType+".pdf");
 
   
-  cout << "plotting relative uncertainties" <<endl;
   TCanvas *c1 = new TCanvas("c1", "", 800, 600);
   c1->SetTopMargin(0.05);
   c1->SetRightMargin(0.05);
@@ -556,54 +581,58 @@ void plotUnfold(TString lepType="muon") {
   h_dummy_r->GetXaxis()->SetLabelSize(0.0455);
   
   c1->cd();
- 
-  /* 
-  h_syst_Q2->SetLineColor(2);
-  h_syst_Q2->SetLineWidth(2);
-  h_syst_Q2->SetMarkerColor(2);
-  h_syst_Q2->SetMarkerStyle(24);
-  */
+
+
+  h_syst_tot->SetFillColor(17);
+  h_syst_tot->SetFillStyle(3344);
+  h_syst_tot->SetLineColor(16);
+  h_syst_tot->SetLineWidth(2);
+
+  h_syst_stat->SetLineColor(1);
+  h_syst_stat->SetLineWidth(2);
+  h_syst_stat->SetMarkerColor(1);
+  h_syst_stat->SetMarkerStyle(20);
+
+  h_syst_jec->SetLineColor(4);
+  h_syst_jec->SetLineWidth(2);
+  h_syst_jec->SetMarkerColor(4);
+  h_syst_jec->SetMarkerStyle(21);
   
+  h_syst_jer->SetLineColor(8);
+  h_syst_jer->SetLineWidth(2);
+  h_syst_jer->SetMarkerColor(8);
+  h_syst_jer->SetMarkerStyle(22);
+  
+  h_syst_toptag->SetLineColor(2);
+  h_syst_toptag->SetLineWidth(2);
+  h_syst_toptag->SetMarkerColor(2);
+  h_syst_toptag->SetMarkerStyle(23);
+
+  h_syst_btag->SetLineColor(kAzure+10);
+  h_syst_btag->SetLineWidth(2);
+  h_syst_btag->SetMarkerColor(kAzure+10);
+  h_syst_btag->SetMarkerStyle(24);  
+
   h_syst_pdf->SetLineColor(6);
   h_syst_pdf->SetLineWidth(2);
   h_syst_pdf->SetMarkerColor(6);
   h_syst_pdf->SetMarkerStyle(25);
-  
-  h_syst_jec->SetLineColor(1);
-  h_syst_jec->SetLineWidth(2);
-  h_syst_jec->SetMarkerColor(1);
-  h_syst_jec->SetMarkerStyle(20);
-  
-  h_syst_jer->SetLineColor(14);
-  h_syst_jer->SetLineWidth(2);
-  h_syst_jer->SetMarkerColor(14);
-  h_syst_jer->SetMarkerStyle(20);
-  
-  h_syst_toptag->SetLineColor(4);
-  h_syst_toptag->SetLineWidth(2);
-  h_syst_toptag->SetMarkerColor(4);
-  h_syst_toptag->SetMarkerStyle(22);
 
-  h_syst_btag->SetLineColor(8);
-  h_syst_btag->SetLineWidth(2);
-  h_syst_btag->SetMarkerColor(8);
-  h_syst_btag->SetMarkerStyle(23);
-
-  h_syst_stat->SetLineColor(kOrange+1);
-  h_syst_stat->SetLineWidth(2);
-  h_syst_stat->SetMarkerColor(kOrange+1);
-  h_syst_stat->SetMarkerStyle(25);
-  
-    
+  h_syst_Q2->SetLineColor(kOrange+1);
+  h_syst_Q2->SetLineWidth(2);
+  h_syst_Q2->SetMarkerColor(kOrange+1);
+  h_syst_Q2->SetMarkerStyle(26);
+        
   
   TLegend* leg2 = new TLegend(0.2,0.68,0.45,0.92);  
+  leg2->AddEntry(h_syst_tot,"Total uncertainty","f");
+  leg2->AddEntry(h_syst_stat,"Statistical uncertainty","lp");
   leg2->AddEntry(h_syst_jec,"Jet energy scale","lp");
   leg2->AddEntry(h_syst_jer,"Jet energy resolution","lp");
   leg2->AddEntry(h_syst_toptag,"Top-tagging efficiency","lp");
-  leg2->AddEntry(h_syst_btag,"b-tagging efficiency","lp");
-  //leg2->AddEntry(h_syst_Q2,"Q^{2} scale","lp");
+  if (nobtag == "") leg2->AddEntry(h_syst_btag,"b-tagging efficiency","lp");
   leg2->AddEntry(h_syst_pdf,"PDF uncertainty","lp");
-  leg2->AddEntry(h_syst_stat,"Statistical uncertainty","lp");
+  leg2->AddEntry(h_syst_Q2,"Q^{2} scale","lp");
   leg2->SetFillStyle(0);
   leg2->SetBorderSize(0);
   leg2->SetTextSize(0.032);
@@ -611,13 +640,14 @@ void plotUnfold(TString lepType="muon") {
 
   	
   h_dummy_r->Draw("hist");
+  h_syst_tot->Draw("hist,same");
+  h_syst_stat->Draw("ep,same");
   h_syst_jec->Draw("ep,same");
   h_syst_jer->Draw("ep,same");
   h_syst_toptag->Draw("ep,same");
-  h_syst_btag->Draw("ep,same");
-  //h_syst_Q2->Draw("ep,same");
+  if (nobtag == "") h_syst_btag->Draw("ep,same");
+  h_syst_Q2->Draw("ep,same");
   h_syst_pdf->Draw("ep,same");
-  h_syst_stat->Draw("ep,same");
   h_dummy_r->Draw("hist,axis,same");
   leg2->Draw(); 
 
@@ -628,14 +658,16 @@ void plotUnfold(TString lepType="muon") {
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+muOrEl+twoStep+nobtag+unfoldType+".pdf");
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+muOrEl+twoStep+nobtag+unfoldType+".eps");
 
+
   // -----------------------------------------------------------
   // Now do particle-level...
   // -----------------------------------------------------------
 
   if (twoStep == "_2step") {
+
     // ----------------------------------------------------------------------------------------------------------------
     // systematics for ratio plot
-    cout << "Making particle-level ratio plots" << endl;
+    
     TH1F* h_systEXP_up_part = (TH1F*) h_measured->Clone("syst_up_exp_part");
     TH1F* h_systEXP_dn_part = (TH1F*) h_measured->Clone("syst_dn_exp_part");
     h_systEXP_up_part->Reset();
@@ -646,26 +678,30 @@ void plotUnfold(TString lepType="muon") {
     h_systTH_up_part->Reset();
     h_systTH_dn_part->Reset();
     
-    //TH1F* h_syst_Q2_part = (TH1F*) h_measured->Clone("syst_Q2_part");
+    TH1F* h_syst_Q2_part = (TH1F*) h_measured->Clone("syst_Q2_part");
     TH1F* h_syst_pdf_part = (TH1F*) h_measured->Clone("syst_pdf_part");
     TH1F* h_syst_jec_part = (TH1F*) h_measured->Clone("syst_jec_part");
     TH1F* h_syst_jer_part = (TH1F*) h_measured->Clone("syst_jer_part");
     TH1F* h_syst_btag_part = (TH1F*) h_measured->Clone("syst_btag_part");
     TH1F* h_syst_toptag_part = (TH1F*) h_measured->Clone("syst_toptag_part");
     TH1F* h_syst_stat_part = (TH1F*) h_measured->Clone("syst_stat_part");
+    TH1F* h_syst_tot_part = (TH1F*) h_measured->Clone("syst_stat_tot");
     
-    //h_syst_Q2_part->Reset(); 
+    h_syst_Q2_part->Reset(); 
     h_syst_pdf_part->Reset();
     h_syst_jec_part->Reset();   
     h_syst_jer_part->Reset(); 
     h_syst_btag_part->Reset();   
     h_syst_toptag_part->Reset(); 
     h_syst_stat_part->Reset(); 
+    h_syst_tot_part->Reset(); 
     
     
     float count_part[nSYST] = {0};
     float sig_part[nSYST] = {0};
     
+    cout << endl << "*** unfolding result (particle-level) ***" << endl;
+
     for (int i=0; i<h_unfolded_part[0]->GetNbinsX()+1; i++) {
       
       for (int is=0; is<nSYST; is++) {
@@ -676,31 +712,30 @@ void plotUnfold(TString lepType="muon") {
 	sig_part[is]   = h_unfolded_part[is]->GetBinError(i+1);
       }
       
-      cout << "Accessing event counts" << endl;
       float this_systEXP_up_part = 0;
-      this_systEXP_up_part += (count_part[3]-count_part[0])*(count_part[3]-count_part[0]);
       this_systEXP_up_part += (count_part[5]-count_part[0])*(count_part[5]-count_part[0]);
       this_systEXP_up_part += (count_part[7]-count_part[0])*(count_part[7]-count_part[0]);
       this_systEXP_up_part += (count_part[9]-count_part[0])*(count_part[9]-count_part[0]);
+      this_systEXP_up_part += (count_part[11]-count_part[0])*(count_part[11]-count_part[0]);
       this_systEXP_up_part += sig_part[0]*sig_part[0];
       this_systEXP_up_part = sqrt(this_systEXP_up_part);
       
       float this_systEXP_dn_part = 0;
-      this_systEXP_dn_part += (count_part[4]-count_part[0])*(count_part[4]-count_part[0]);
       this_systEXP_dn_part += (count_part[6]-count_part[0])*(count_part[6]-count_part[0]);
       this_systEXP_dn_part += (count_part[8]-count_part[0])*(count_part[8]-count_part[0]);
       this_systEXP_dn_part += (count_part[10]-count_part[0])*(count_part[10]-count_part[0]);
+      this_systEXP_dn_part += (count_part[12]-count_part[0])*(count_part[12]-count_part[0]);
       this_systEXP_dn_part += sig_part[0]*sig_part[0];
       this_systEXP_dn_part = sqrt(this_systEXP_dn_part);
       
       float this_systTH_up_part = 0;
       this_systTH_up_part += (count_part[1]-count_part[0])*(count_part[1]-count_part[0]);
-      //this_systTH_up_part += (count_part[3]-count_part[0])*(count_part[3]-count_part[0]);
+      this_systTH_up_part += (count_part[3]-count_part[0])*(count_part[3]-count_part[0]);
       this_systTH_up_part = sqrt(this_systTH_up_part);
       
       float this_systTH_dn_part = 0;
       this_systTH_dn_part += (count_part[2]-count_part[0])*(count_part[2]-count_part[0]);
-      //this_systTH_dn_part += (count_part[4]-count_part[0])*(count_part[4]-count_part[0]);
+      this_systTH_dn_part += (count_part[4]-count_part[0])*(count_part[4]-count_part[0]);
       this_systTH_dn_part = sqrt(this_systTH_dn_part);
       
       float upEXP_part = count_part[0] + this_systEXP_up_part;
@@ -714,21 +749,29 @@ void plotUnfold(TString lepType="muon") {
       
       h_systTH_up_part->SetBinContent(i+1,upTH_part);
       h_systTH_dn_part->SetBinContent(i+1,dnTH_part);  
-      cout << ".... done" << endl;
       
-      cout << "measured = " << count_part[0] << " +" << this_systEXP_up_part << " / -" << this_systEXP_dn_part << " (exp) +" << this_systTH_up_part << " / -" << this_systTH_dn_part << " (th)" << endl;
-      cout << "generator (CT10) = " << h_part->GetBinContent(i+1) << endl;
+      int ibin1_p = h_systEXP_up_part->GetBin(i+1);
+      int ibin2_p = h_systEXP_up_part->GetBin(i+2);
+      int lowedge_p = h_systEXP_up_part->GetBinLowEdge(ibin1_p);
+      int highedge_p = h_systEXP_up_part->GetBinLowEdge(ibin2_p);
+      if (lowedge_p > 300 && highedge_p < 1300) {
+	cout << "measured [" << lowedge_p << "," << highedge_p << "] = " 
+	     << count_part[0] << " +" << this_systEXP_up_part << " / -" << this_systEXP_dn_part 
+	     << " (exp) +" << this_systTH_up_part << " / -" << this_systTH_dn_part << " (th)" << endl;
+	cout << "generator (CT10) = " << h_part->GetBinContent(i+1) << endl;
+      }
     }
+    cout << endl;
   
-    cout << "Done with all bins" << endl;
-    
     h_dummy_part->GetXaxis()->SetTitle("p_{T} [GeV]");
     h_dummy_part->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
     h_dummy_part->SetAxisRange(400,1150,"X");
-    h_dummy_part->SetAxisRange(0,12,"Y");
+    h_dummy_part->SetAxisRange(0,10,"Y");
     
-    //Getting the relative systematics:
-    cout << "Getting the relative systematics" << endl;
+    // getting the relative systematics
+
+    //cout << endl << "*** systematic uncertainties for each bin (particle-level) ***" << endl; 
+
     float count_r_part[nSYST] = {0};
     float err_stat_part = 0;
     for (int i=0; i<h_unfolded_part[0]->GetNbinsX()+1; i++) {
@@ -739,74 +782,80 @@ void plotUnfold(TString lepType="muon") {
 	count_r_part[is] = 0;
 	count_r_part[is] = h_unfolded_part[is]->GetBinContent(i+1);
       }
-      cout << "MEBUG = " << count_r_part[0] << " " << count_r_part[9] << " " << count_r_part[10] << endl;
+
       double syst_stat_part   = err_stat_part/count_r_part[0]*100;
-      cout << "statistical error for bin "<<i<<": "<<syst_stat_part<<endl;
-      //double syst_scaleup_part   = fabs((count_r_part[1]-count_r_part[0])/count_r_part[0])*100;
-      //cout << "relative syst scaleup for bin "<<i<<": "<<syst_scaleup_part<<endl;
-      //double syst_scaledown_part = fabs((count_r_part[2]-count_r_part[0])/count_r_part[0])*100;
-      //cout << "relative syst scaledown for bin "<<i<<": "<<syst_scaledown_part<<endl;
-      //double max_syst_Q2_part = max(syst_scaleup_part,syst_scaledown_part);
-      //cout << "max(syst_scaleup_part,syst_scaledown_part) for bin"<<i<<": "<<max_syst_Q2_part<<endl;
-      double syst_pdfup_part     = fabs((count_r_part[1]-count_r_part[0])/count_r_part[0])*100;
-      cout << "relative syst pdfup for bin "<<i<<": "<<syst_pdfup_part<<endl;
-      double syst_pdfdown_part   = fabs((count_r_part[2]-count_r_part[0])/count_r_part[0])*100;
-      cout << "relative syst pdfdown for bin "<<i<<": "<<syst_pdfdown_part<<endl;
+      double syst_scaleup_part   = fabs((count_r_part[1]-count_r_part[0])/count_r_part[0])*100;
+      double syst_scaledown_part = fabs((count_r_part[2]-count_r_part[0])/count_r_part[0])*100;
+      double max_syst_Q2_part = max(syst_scaleup_part,syst_scaledown_part);
+      double syst_pdfup_part     = fabs((count_r_part[3]-count_r_part[0])/count_r_part[0])*100;
+      double syst_pdfdown_part   = fabs((count_r_part[4]-count_r_part[0])/count_r_part[0])*100;
       double max_syst_pdf_part = max(syst_pdfup_part,syst_pdfdown_part);
-      cout << "max(syst_pdfup,syst_pdfdown) for bin"<<i<<": "<<max_syst_pdf_part<<endl;
-      double syst_jecup_part     = fabs((count_r_part[3]-count_r_part[0])/count_r_part[0])*100;
-      cout << "relative syst jecup for bin "<<i<<": "<<syst_jecup_part<<endl;
-      double syst_jecdn_part     = fabs((count_r_part[4]-count_r_part[0])/count_r_part[0])*100;
-      cout << "relative syst jecdn for bin "<<i<<": "<<syst_jecdn_part<<endl;
+      double syst_jecup_part     = fabs((count_r_part[5]-count_r_part[0])/count_r_part[0])*100;
+      double syst_jecdn_part     = fabs((count_r_part[6]-count_r_part[0])/count_r_part[0])*100;
       double max_syst_jec_part = max(syst_jecup_part,syst_jecdn_part);
-      cout << "max(syst_jecup,syst_jecdn) for bin"<<i<<": "<<max_syst_jec_part<<endl;
-      double syst_jerup_part     = fabs((count_r_part[5]-count_r_part[0])/count_r_part[0])*100;
-      cout << "relative syst jerup for bin "<<i<<": "<<syst_jerup_part<<endl;
-      double syst_jerdn_part     = fabs((count_r_part[6]-count_r_part[0])/count_r_part[0])*100;
-      cout << "relative syst jerdn for bin "<<i<<": "<<syst_jerdn_part<<endl;
+      double syst_jerup_part     = fabs((count_r_part[7]-count_r_part[0])/count_r_part[0])*100;
+      double syst_jerdn_part     = fabs((count_r_part[8]-count_r_part[0])/count_r_part[0])*100;
       double max_syst_jer_part = max(syst_jerup_part,syst_jerdn_part);
-      cout << "max(syst_jerup,syst_jerdn) for bin"<<i<<": "<<max_syst_jer_part<<endl;
-      double syst_btagup_part    = fabs((count_r_part[7]-count_r_part[0])/count_r_part[0])*100;
-      cout << "relative syst btagup for bin "<<i<<": "<<syst_btagup_part<<endl;
-      double syst_btagdn_part    = fabs((count_r_part[8]-count_r_part[0])/count_r_part[0])*100;
-      cout << "relative syst btagdn for bin "<<i<<": "<<syst_btagdn_part<<endl;
+      double syst_btagup_part    = fabs((count_r_part[9]-count_r_part[0])/count_r_part[0])*100;
+      double syst_btagdn_part    = fabs((count_r_part[10]-count_r_part[0])/count_r_part[0])*100;
       double max_syst_btag_part = max(syst_btagup_part,syst_btagdn_part);
-      cout << "max(syst_btagup,syst_btagdn) for bin"<<i<<": "<<max_syst_btag_part<<endl;
-      double syst_toptagup_part  = fabs((count_r_part[9]-count_r_part[0])/count_r_part[0])*100;
-      cout << "relative syst toptagup for bin "<<i<<": "<<syst_toptagup_part<<endl;
-      double syst_toptagdn_part  = fabs((count_r_part[10]-count_r_part[0])/count_r_part[0])*100;
-      cout << "relative syst toptagdn for bin "<<i<<": "<<syst_toptagdn_part<<endl;
+      double syst_toptagup_part  = fabs((count_r_part[11]-count_r_part[0])/count_r_part[0])*100;
+      double syst_toptagdn_part  = fabs((count_r_part[12]-count_r_part[0])/count_r_part[0])*100;
       double max_syst_toptag_part = max(syst_toptagup_part,syst_toptagdn_part);
+
+      double syst_total_up_part = sqrt(syst_stat_part*syst_stat_part + syst_scaleup_part*syst_scaleup_part + syst_pdfup_part*syst_pdfup_part + 
+      			       syst_jecup_part*syst_jecup_part + syst_jerup_part*syst_jerup_part + syst_btagup_part*syst_btagup_part + syst_toptagup_part*syst_toptagup_part);
+      double syst_total_dn_part = sqrt(syst_stat_part*syst_stat_part + syst_scaledown_part*syst_scaledown_part + syst_pdfdown_part*syst_pdfdown_part + 
+      			       syst_jecdn_part*syst_jecdn_part + syst_jerdn_part*syst_jerdn_part + syst_btagdn_part*syst_btagdn_part + syst_toptagdn_part*syst_toptagdn_part);
+      double max_syst_total_part = max(syst_total_up_part,syst_total_dn_part);
+
+      /*
+      cout << "statistical error for bin "<<i<<": "<<syst_stat_part<<endl;
+      cout << "relative syst scaleup for bin "<<i<<": "<<syst_scaleup_part<<endl;
+      cout << "relative syst scaledown for bin "<<i<<": "<<syst_scaledown_part<<endl;
+      cout << "max(syst_scaleup_part,syst_scaledown_part) for bin"<<i<<": "<<max_syst_Q2_part<<endl;
+      cout << "relative syst pdfup for bin "<<i<<": "<<syst_pdfup_part<<endl;
+      cout << "relative syst pdfdown for bin "<<i<<": "<<syst_pdfdown_part<<endl;
+      cout << "max(syst_pdfup,syst_pdfdown) for bin"<<i<<": "<<max_syst_pdf_part<<endl;
+      cout << "relative syst jecup for bin "<<i<<": "<<syst_jecup_part<<endl;
+      cout << "relative syst jecdn for bin "<<i<<": "<<syst_jecdn_part<<endl;
+      cout << "max(syst_jecup,syst_jecdn) for bin"<<i<<": "<<max_syst_jec_part<<endl;
+      cout << "relative syst jerup for bin "<<i<<": "<<syst_jerup_part<<endl;
+      cout << "relative syst jerdn for bin "<<i<<": "<<syst_jerdn_part<<endl;
+      cout << "max(syst_jerup,syst_jerdn) for bin"<<i<<": "<<max_syst_jer_part<<endl;
+      cout << "relative syst btagup for bin "<<i<<": "<<syst_btagup_part<<endl;
+      cout << "relative syst btagdn for bin "<<i<<": "<<syst_btagdn_part<<endl;
+      cout << "max(syst_btagup,syst_btagdn) for bin"<<i<<": "<<max_syst_btag_part<<endl;
+      cout << "relative syst toptagup for bin "<<i<<": "<<syst_toptagup_part<<endl;
+      cout << "relative syst toptagdn for bin "<<i<<": "<<syst_toptagdn_part<<endl;
       cout << "max(syst_toptagup,syst_toptagdn) for bin"<<i<<": "<<max_syst_toptag_part<<endl;
-      cout << "count_r_part[0] "<<count_r_part[0]<<endl;
+      */
       
-      //h_syst_Q2_part->SetBinContent(i+1,max_syst_Q2_part);  
+      h_syst_Q2_part->SetBinContent(i+1,max_syst_Q2_part);  
       h_syst_pdf_part->SetBinContent(i+1,max_syst_pdf_part);
       h_syst_jec_part->SetBinContent(i+1,max_syst_jec_part);    
       h_syst_jer_part->SetBinContent(i+1,max_syst_jer_part);    
       h_syst_btag_part->SetBinContent(i+1,max_syst_btag_part);   
       h_syst_toptag_part->SetBinContent(i+1,max_syst_toptag_part); 
       h_syst_stat_part->SetBinContent(i+1,syst_stat_part);  
+      h_syst_tot_part->SetBinContent(i+1,max_syst_total_part);  
       
-      //h_syst_Q2_part->SetBinError(i+1,0.001);  
+      h_syst_Q2_part->SetBinError(i+1,0.001);  
       h_syst_pdf_part->SetBinError(i+1,0.001);
       h_syst_jec_part->SetBinError(i+1,0.001);
       h_syst_jer_part->SetBinError(i+1,0.001);
       h_syst_btag_part->SetBinError(i+1,0.001);
       h_syst_toptag_part->SetBinError(i+1,0.001);
       h_syst_stat_part->SetBinError(i+1,0.001);
-      cout << ".... done" << endl;
+      h_syst_tot_part->SetBinError(i+1,0.001);
       
     }
-    cout << "Done with all bins, relative uncertainties" << endl;
     
-    cout << "Making ratio plots" << endl;
     
     // ----------------------------------------------------------------------------------------------------------------
     // RATIO PLOTS !!!!!!!
     // ----------------------------------------------------------------------------------------------------------------
     
-    Float_t f_textSize=0.057;
     gStyle->SetPadLeftMargin(0.12);
     gStyle->SetPadRightMargin(0.1);
     gStyle->SetTextSize(f_textSize);
@@ -841,7 +890,6 @@ void plotUnfold(TString lepType="muon") {
     
     p3->cd();
     
-    cout << "Plotting stuff" << endl;
     h_dummy_part->Draw("hist");
     h_part->Draw("hist,same");
     //h_true_MSTW->Draw("hist,same");
@@ -918,13 +966,7 @@ void plotUnfold(TString lepType="muon") {
 
 
     // ----------------------------------------------------------------------------------------------------------------
-    
-    TH1F* line = new TH1F("line",";;",1,400,1300);
-    line->SetBinContent(1,1.0);
-    line->SetLineColor(1);
-    line->SetLineStyle(2);
-    line->SetLineWidth(0.5);  
-    
+        
     p4->cd();
     
     
@@ -955,7 +997,6 @@ void plotUnfold(TString lepType="muon") {
     c2->SaveAs("UnfoldingPlots/unfoldWithError_part"+muOrEl+twoStep+nobtag+unfoldType+".pdf");
     
     
-    cout << "plotting relative uncertainties" <<endl;
     TCanvas *c3 = new TCanvas("c3", "", 800, 600);
     c3->SetTopMargin(0.05);
     c3->SetRightMargin(0.05);
@@ -978,53 +1019,57 @@ void plotUnfold(TString lepType="muon") {
     
     c3->cd();
     
-    /* 
-       h_syst_Q2_part->SetLineColor(2);
-       h_syst_Q2_part->SetLineWidth(2);
-       h_syst_Q2_part->SetMarkerColor(2);
-       h_syst_Q2_part->SetMarkerStyle(24);
-    */
+
+    h_syst_tot_part->SetFillColor(17);
+    h_syst_tot_part->SetFillStyle(3344);
+    h_syst_tot_part->SetLineColor(16);
+    h_syst_tot_part->SetLineWidth(2);
+    
+    h_syst_stat_part->SetLineColor(1);
+    h_syst_stat_part->SetLineWidth(2);
+    h_syst_stat_part->SetMarkerColor(1);
+    h_syst_stat_part->SetMarkerStyle(20);
+    
+    h_syst_jec_part->SetLineColor(4);
+    h_syst_jec_part->SetLineWidth(2);
+    h_syst_jec_part->SetMarkerColor(4);
+    h_syst_jec_part->SetMarkerStyle(21);
+    
+    h_syst_jer_part->SetLineColor(8);
+    h_syst_jer_part->SetLineWidth(2);
+    h_syst_jer_part->SetMarkerColor(8);
+    h_syst_jer_part->SetMarkerStyle(22);
+    
+    h_syst_toptag_part->SetLineColor(2);
+    h_syst_toptag_part->SetLineWidth(2);
+    h_syst_toptag_part->SetMarkerColor(2);
+    h_syst_toptag_part->SetMarkerStyle(23);
+    
+    h_syst_btag_part->SetLineColor(kAzure+10);
+    h_syst_btag_part->SetLineWidth(2);
+    h_syst_btag_part->SetMarkerColor(kAzure+10);
+    h_syst_btag_part->SetMarkerStyle(24);  
     
     h_syst_pdf_part->SetLineColor(6);
     h_syst_pdf_part->SetLineWidth(2);
     h_syst_pdf_part->SetMarkerColor(6);
     h_syst_pdf_part->SetMarkerStyle(25);
     
-    h_syst_jec_part->SetLineColor(1);
-    h_syst_jec_part->SetLineWidth(2);
-    h_syst_jec_part->SetMarkerColor(1);
-    h_syst_jec_part->SetMarkerStyle(20);
-    
-    h_syst_jer_part->SetLineColor(14);
-    h_syst_jer_part->SetLineWidth(2);
-    h_syst_jer_part->SetMarkerColor(14);
-    h_syst_jer_part->SetMarkerStyle(20);
-    
-    h_syst_toptag_part->SetLineColor(4);
-    h_syst_toptag_part->SetLineWidth(2);
-    h_syst_toptag_part->SetMarkerColor(4);
-    h_syst_toptag_part->SetMarkerStyle(22);
-    
-    h_syst_btag_part->SetLineColor(8);
-    h_syst_btag_part->SetLineWidth(2);
-    h_syst_btag_part->SetMarkerColor(8);
-    h_syst_btag_part->SetMarkerStyle(23);
-    
-    h_syst_stat_part->SetLineColor(kOrange+1);
-    h_syst_stat_part->SetLineWidth(2);
-    h_syst_stat_part->SetMarkerColor(kOrange+1);
-    h_syst_stat_part->SetMarkerStyle(25);
-    
+    h_syst_Q2_part->SetLineColor(kOrange+1);
+    h_syst_Q2_part->SetLineWidth(2);
+    h_syst_Q2_part->SetMarkerColor(kOrange+1);
+    h_syst_Q2_part->SetMarkerStyle(26);
     
   
     TLegend* leg4 = new TLegend(0.2,0.68,0.45,0.92);  
+    leg4->AddEntry(h_syst_tot_part,"Total uncertainty","f");
+    leg4->AddEntry(h_syst_stat_part,"Statistical uncertainty","lp");
     leg4->AddEntry(h_syst_jec_part,"Jet energy scale","lp");
     leg4->AddEntry(h_syst_jer_part,"Jet energy resolution","lp");
     leg4->AddEntry(h_syst_toptag_part,"Top-tagging efficiency","lp");
-    leg4->AddEntry(h_syst_btag_part,"b-tagging efficiency","lp");
-    //leg4->AddEntry(h_syst_Q2_part,"Q^{2} scale","lp");
+    if (nobtag == "") leg4->AddEntry(h_syst_btag_part,"b-tagging efficiency","lp");
     leg4->AddEntry(h_syst_pdf_part,"PDF uncertainty","lp");
-    leg4->AddEntry(h_syst_stat_part,"Statistical uncertainty","lp");
+    leg4->AddEntry(h_syst_Q2_part,"Q^{2} scale","lp");
     leg4->SetFillStyle(0);
     leg4->SetBorderSize(0);
     leg4->SetTextSize(0.032);
@@ -1032,13 +1077,14 @@ void plotUnfold(TString lepType="muon") {
     
     
     h_dummy_r_part->Draw("hist");
+    h_syst_tot_part->Draw("hist,same");
+    h_syst_stat_part->Draw("ep,same");
     h_syst_jec_part->Draw("ep,same");
     h_syst_jer_part->Draw("ep,same");
     h_syst_toptag_part->Draw("ep,same");
-    h_syst_btag_part->Draw("ep,same");
-    //h_syst_Q2_part->Draw("ep,same");
+    if (nobtag == "") h_syst_btag_part->Draw("ep,same");
+    h_syst_Q2_part->Draw("ep,same");
     h_syst_pdf_part->Draw("ep,same");
-    h_syst_stat_part->Draw("ep,same");
     h_dummy_r_part->Draw("hist,axis,same");
     leg4->Draw(); 
     
@@ -1049,7 +1095,9 @@ void plotUnfold(TString lepType="muon") {
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part"+muOrEl+twoStep+nobtag+unfoldType+".pdf");
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part"+muOrEl+twoStep+nobtag+unfoldType+".eps");
   }
+
   return;
+
 }
 
 
