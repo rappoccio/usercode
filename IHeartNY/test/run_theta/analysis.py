@@ -263,8 +263,8 @@ for idir in dirs :
                     my_eqcd_err = 0.5*ival[0][1] * (1.0-0.5*ival[0][0])
                         
                     
-        print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err)+", "+str(my_eqcd_err)+"}, \\\\ bkg error for "+idir
-        print "    {"+str(my_toptag)+", "+str(my_toptag_err)+"}, \\\\ toptag (val, err) for "+idir
+        print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err)+", "+str(my_eqcd_err)+"}, // bkg error for "+idir
+        print "    {"+str(my_toptag)+", "+str(my_toptag_err)+"}, // toptag (val, err) for "+idir
 
         parameters = model.get_parameters(['TTbar'])
         print parameters
