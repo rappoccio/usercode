@@ -1,3 +1,5 @@
+[?1034h[INFO]  executing script analysis.py
+TDR Style initialized
 ------------- MLE RESULTS CT10_nom mu channel ---------------
 {'TTbar': {'jer': [(1.8231015858278314, 0.74081695436967998)], 'toptag': [(0.42574904063033192, 0.41608766333721209)], 'btag': [(0.050661828090769509, 0.94981731627555666)], 'beta_signal': [(0.692940578625582, 0.09415106167436682)], 'jec': [(1.0072159878986491, 0.69752384199588768)], 'rate_vjets': [(-0.39655082450649826, 0.17924632733755214)], '__nll': [-35066.337652312679], '__cov': [array([[  8.87918501e-03,  -2.42257461e-02,  -4.45986659e-03,
           3.67590845e-03,  -1.81461782e-02,  -2.19412264e-02,
@@ -341,12 +343,6 @@ rate_qcd             :   0.27 +-   0.24
 rate_st              :   1.17 +-   0.70
 ['beta_signal', 'btag', 'jec', 'jer', 'lumi', 'rate_qcd', 'rate_st', 'rate_vjets', 'toptag']
 ------------- MLE RESULTS scaleup mu channel ---------------
-[INFO]  Running '/uscms_data/d3/sdittmer/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/sdittmer/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-4d89765fa8.cfg --nowarn'
-progress:   1000 / 1000   [100.0%]   errors:     38 [  3.8%]
-Total number of likelihood evaluations: 931291
-[INFO]  Running '/uscms_data/d3/sdittmer/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/sdittmer/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-e9de7a2f0c.cfg --nowarn'
-progress:      1 / 1      [100.0%]   errors:      0 [  0.0%]
-Total number of likelihood evaluations: 656
 {'TTbar': {'jer': [(1.5938058187740303, 0.74735357226266841)], 'toptag': [(0.25672924544934517, 0.39636739191243653)], 'btag': [(-0.28061519109978489, 0.95216353811019305)], 'beta_signal': [(0.69949404887005473, 0.096925014550706678)], 'jec': [(0.10791216653195121, 0.49982535265221878)], 'rate_vjets': [(-0.28116855104471272, 0.15914214058719381)], '__nll': [-35075.47363235768], '__cov': [array([[  9.41072157e-03,  -2.96408299e-02,  -1.00603523e-02,
          -3.38527361e-04,  -1.85082353e-02,  -2.83471703e-02,
           1.02856069e-03,  -2.76317818e-03,  -3.51914586e-02],
@@ -385,12 +381,6 @@ rate_qcd             :  -0.43 +-   0.42
 rate_st              :  -0.85 +-   0.84
 ['beta_signal', 'btag', 'jec', 'jer', 'lumi', 'rate_qcd', 'rate_st', 'rate_vjets', 'toptag']
 ------------- MLE RESULTS scaledown mu channel ---------------
-[INFO]  Running '/uscms_data/d3/sdittmer/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/sdittmer/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-81b2d338ef.cfg --nowarn'
-progress:   1000 / 1000   [100.0%]   errors:    123 [ 12.3%]
-Total number of likelihood evaluations: 1198361
-[INFO]  Running '/uscms_data/d3/sdittmer/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/sdittmer/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-81622f1772.cfg --nowarn'
-progress:      1 / 1      [100.0%]   errors:      0 [  0.0%]
-Total number of likelihood evaluations: 715
 {'TTbar': {'jer': [(1.3047044480164351, 0.73150534071194095)], 'toptag': [(0.79993245433598159, 0.4061828501017879)], 'btag': [(-0.033776808028694344, 0.95769619033967579)], 'beta_signal': [(0.73431425691998009, 0.094293452303840675)], 'jec': [(0.36854341946456781, 0.70382667660229281)], 'rate_vjets': [(-0.38267066602487831, 0.17789122451245024)], '__nll': [-35061.225196303487], '__cov': [array([[  8.90440339e-03,  -2.27894321e-02,  -1.49999773e-02,
          -2.97570440e-03,  -1.93728689e-02,  -1.59201384e-02,
           1.26990644e-03,  -1.70749585e-03,  -3.42756940e-02],

@@ -17,7 +17,6 @@ void run(TString option, bool doElectron, bool combine=true) {
 
     cout << "make theta histograms..." << endl;
 
-    ///*
     makeTheta_subtract("etaAbsLep",4,6,doElectron,"scaleup");
     makeTheta_subtract("etaAbsLep",6,7,doElectron,"scaleup");
     makeTheta_single("vtxMass",7,doElectron,"scaleup");
@@ -25,13 +24,11 @@ void run(TString option, bool doElectron, bool combine=true) {
     makeTheta_subtract("etaAbsLep",4,6,doElectron,"scaledown");
     makeTheta_subtract("etaAbsLep",6,7,doElectron,"scaledown");
     makeTheta_single("vtxMass",7,doElectron,"scaledown");
-    //*/
 
     makeTheta_subtract("etaAbsLep",4,6,doElectron,"CT10_nom");
     makeTheta_subtract("etaAbsLep",6,7,doElectron,"CT10_nom");
     makeTheta_single("vtxMass",7,doElectron,"CT10_nom");
 
-    ///*
     makeTheta_subtract("etaAbsLep",4,6,doElectron,"CT10_pdfup");
     makeTheta_subtract("etaAbsLep",6,7,doElectron,"CT10_pdfup");
     makeTheta_single("vtxMass",7,doElectron,"CT10_pdfup");
@@ -63,7 +60,6 @@ void run(TString option, bool doElectron, bool combine=true) {
     makeTheta_subtract("etaAbsLep",4,6,doElectron,"NNPDF_pdfdown");
     makeTheta_subtract("etaAbsLep",6,7,doElectron,"NNPDF_pdfdown");
     makeTheta_single("vtxMass",7,doElectron,"NNPDF_pdfdown");
-    //*/
 
   } 
   // various plots for kinematic checks
