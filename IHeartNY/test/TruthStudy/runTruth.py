@@ -117,7 +117,10 @@ print "Creating histograms"
 
 
 # read input histogram for PU
-PileFile = ROOT.TFile("Pileup_plots.root")
+if options.pileup=='ttbarQ2up' or options.pileup=='ttbarQ2dn':
+    PileFile = ROOT.TFile("Pileup_plots_scaleupdnnom.root")
+else:
+    PileFile = ROOT.TFile("Pileup_plots.root")
 PilePlot = PileFile.Get("pweight" + options.pileup)
 
 f.cd()

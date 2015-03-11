@@ -29,7 +29,7 @@ void myItalicText(Double_t x,Double_t y,Color_t color,char *text);
 
 void truthEff(TString option, bool doPart, TString pdf) {
 
-  bool doElectron = true;
+  bool doElectron = false;
 
   TString path = "";
   TString muOrEl = "mu";
@@ -120,6 +120,7 @@ void truthEff(TString option, bool doPart, TString pdf) {
   float eff_ttbar700 = 0.074;
   float eff_ttbar1000 = 0.015;
 
+
   h_true0->Scale(ttbar_xs*lumi*eff_ttbar0/n_ttbar0);
   h_true700->Scale(ttbar_xs*lumi*eff_ttbar700/n_ttbar700);
   h_true1000->Scale(ttbar_xs*lumi*eff_ttbar1000/n_ttbar1000);
@@ -140,15 +141,43 @@ void truthEff(TString option, bool doPart, TString pdf) {
   
   h_sf->GetYaxis()->SetTitleOffset(1.1);
   if (option.Contains("eff")) h_sf->GetYaxis()->SetTitle("Efficiency");
-  else h_sf->GetYaxis()->SetTitle("Trigger correction");
+  else h_sf->GetYaxis()->SetTitle("Correction factor");
 
 
   if (option.Contains("eff")) h_sf->SetAxisRange(0.0,0.15,"Y");
-  else if (doPart) h_sf->SetAxisRange(1.0,1.8,"Y");
-  else h_sf->SetAxisRange(1.0,2.2,"Y");
+  else if (doPart && doElectron) h_sf->SetAxisRange(1.0,1.8,"Y");
+  else if (doPart) h_sf->SetAxisRange(1.0,1.4,"Y");
+  else if (doElectron) h_sf->SetAxisRange(1.2,2.2,"Y");
+  else h_sf->SetAxisRange(1.0,2.0,"Y");
+
+
+  TF1* fit = new TF1("fit", "pol1", 400,1200);
+  h_sf->Fit("fit","R");
+  // pol = a + x*b
+  float a  = fit->GetParameter(0);
+  float ea = fit->GetParError(0);
+  float b  = fit->GetParameter(1);
+  float eb = fit->GetParError(1);
+  cout << "a = " << a << " +/- " << ea << ", b = " << b << " +/- " << eb << endl;
+
+  TH1F* h_sf_smooth = (TH1F*) h_sf->Clone("sf_smooth");
+  h_sf_smooth->Clear();
+
+  for (int ib=0; ib<h_sf->GetNbinsX(); ib++) {
+    float bc = a + h_sf_smooth->GetBinCenter(ib+1) * b;
+    float ebc = sqrt(ea*ea + h_sf_smooth->GetBinCenter(ib+1)*eb*h_sf_smooth->GetBinCenter(ib+1)*eb);
+    cout << "bin center = " << h_sf_smooth->GetBinCenter(ib+1) << ", bin content = " << bc << " +/- " << ebc << endl;
+    h_sf_smooth->SetBinContent(ib+1, bc);
+    h_sf_smooth->SetBinError(ib+1, ebc);
+  }
+
 
   TCanvas c;
   h_sf->Draw("lep");
+  h_sf_smooth->SetLineColor(4);
+  h_sf_smooth->SetMarkerColor(4);
+  h_sf_smooth->SetMarkerStyle(24);
+  h_sf_smooth->Draw("lep,same");
 
   if (option=="eff") {
     mySmallText(0.4,0.42,1,"Total selection efficiency");
@@ -161,9 +190,9 @@ void truthEff(TString option, bool doPart, TString pdf) {
     mySmallText(0.4,0.30,1,"vs all semileptonic t#bar{t} #rightarrow #mu+jets)");
   }
   else {
-    mySmallText(0.22,0.36,1,"Trigger correction factor");
-    if (doPart) mySmallText(0.22,0.30,1,"(pass trigger vs pass particle-level)");
-    else mySmallText(0.22,0.30,1,"(pass trigger vs pass parton)");
+    mySmallText(0.22,0.36,1,"Correction factor");
+    if (doPart) mySmallText(0.22,0.30,1,"(pass trigger+SHyFT vs pass particle-level)");
+    else mySmallText(0.22,0.30,1,"(pass trigger+SHyFT vs pass parton)");
   }
 
   if (option=="trigSF") {

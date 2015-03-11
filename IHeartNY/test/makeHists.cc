@@ -272,6 +272,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     max = max*1.4;
   else if (var.Contains("etaAbs") || var=="lepMET" || var=="leptop_mass") 
     max = max*1.2;
+  else if (var.Contains("eta") && doElectron)
+    max = max*1.8;
   else if (var.Contains("eta") || var.Contains("_y") || var.Contains("wboson_"))
     max = max*1.4;
   h_data->SetAxisRange(0,max*1.05,"Y");
