@@ -197,22 +197,22 @@ for idir in dirs :
 
         pdbs = plotdata()
         pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-        plot(pdbs, 'bs', 'ntoys', 'beta_signal_' + idir + '_' + channel + '.pdf')
+        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/beta_signal_' + idir + '_' + channel + '.pdf')
         
         pdd = plotdata()
         pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-        plot(pdd, 'dbs', 'ntoys', 'delta_beta_signal_' + idir + '_' + channel + '.pdf')
+        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/delta_beta_signal_' + idir + '_' + channel + '.pdf')
         
         pdp = plotdata()
         pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-        plot(pdp, 'pull', 'ntoys', 'pull_' + idir + '_' + channel + '.pdf')
+        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pull_' + idir + '_' + channel + '.pdf')
         
 
         # to write the data to a file, use e.g.:
-        pdp.write_txt('pull_' + idir + '_' + channel + '.txt')
+        pdp.write_txt('ThetaPlots/pull_' + idir + '_' + channel + '.txt')
 
         # to write it to a root file:
-        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_mle_' + idir + '_' + channel + '.root')
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_mle_' + idir + '_' + channel + '.root')
 
 
         results2 = mle(model, input='data', n=1, with_covariance = True)
@@ -267,23 +267,23 @@ for idir in dirs :
             
         pdbs = plotdata()
         pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-        plot(pdbs, 'bs', 'ntoys', 'pl_beta_signal_' + idir + '_' + channel + '.pdf')
+        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/pl_beta_signal_' + idir + '_' + channel + '.pdf')
 
         pdd = plotdata()
         pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-        plot(pdd, 'dbs', 'ntoys', 'pl_delta_beta_signal_' + idir + '_' + channel + '.pdf')
+        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/pl_delta_beta_signal_' + idir + '_' + channel + '.pdf')
 
         pdp = plotdata()
         pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-        plot(pdp, 'pull', 'ntoys', 'pl_pull_' + idir + '_' + channel + '.pdf')
+        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pl_pull_' + idir + '_' + channel + '.pdf')
 
 
         # to write the data to a file, use e.g.:
-        pdd.write_txt('pl_dbs_' + idir + '_' + channel + '.txt')
-        pdp.write_txt('pl_pull_' + idir + '_' + channel + '.txt')
+        pdd.write_txt('ThetaPlots/pl_dbs_' + idir + '_' + channel + '.txt')
+        pdp.write_txt('ThetaPlots/pl_pull_' + idir + '_' + channel + '.txt')
 
         # to write it to a root file:
-        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'pulldists_pl_' + idir + '_' + channel + '.root')
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_pl_' + idir + '_' + channel + '.root')
 
         
         results4 = pl_interval(model, input='data', n=1 , **args)
