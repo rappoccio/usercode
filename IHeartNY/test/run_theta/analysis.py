@@ -133,15 +133,15 @@ infilter = histfilter
 
 dirs = ['CT10_nom', 
         'CT10_pdfup', 
-        'CT10_pdfdown'#,
-        #'MSTW_nom', 
-        #'MSTW_pdfup', 
-        #'MSTW_pdfdown',
-        #'NNPDF_nom', 
-        #'NNPDF_pdfup', 
-        #'NNPDF_pdfdown',
-        #'scaleup', 
-        #'scaledown'
+        'CT10_pdfdown',
+        'MSTW_nom', 
+        'MSTW_pdfup', 
+        'MSTW_pdfdown',
+        'NNPDF_nom', 
+        'NNPDF_pdfup', 
+        'NNPDF_pdfdown',
+        'scaleup', 
+        'scaledown'
     ]
 
 channel = 'el'
