@@ -11,7 +11,10 @@ from ROOT import *
 ####################################################################################
 
 def histfilter( hname ) :
-    if hname == None or 'NNPDF' in hname or 'MSTW' in hname or 'TTbar_semiLep' in hname or 'TTbar_nonSemiLep' in hname: #or 'pdf' in hname or 'scale' in hname :
+
+    print hname
+    
+    if hname == None or 'TTbar_semiLep' in hname or 'TTbar_nonSemiLep' in hname:
         return False
     else :
         return True
@@ -20,51 +23,34 @@ def histfilter( hname ) :
 ####################################################################################
 # Here is where we build the model for theta
 ####################################################################################
-def muplusjets(files, infilter, signal, mcstat, ex_to_in):
-    if ex_to_in != None : 
-        model = build_model_from_rootfile(files, histogram_filter=infilter, include_mc_uncertainties = mcstat, root_hname_to_convention = ex_to_in)
-    else :
-        model = build_model_from_rootfile(files, histogram_filter=infilter, include_mc_uncertainties = mcstat)
+
+def lepplusjets(files, infilter, signal, mcstat, elflag=False, muflag=False):
+
+    model = build_model_from_rootfile(files, histogram_filter=infilter, include_mc_uncertainties = mcstat)
     model.fill_histogram_zerobins()
     model.set_signal_processes(signal)
     for p in model.processes:
+        print "DEBUG: model.process = " + p
+        if (p == 'QCD') or (p == 'ElQCD') or (p == 'MuQCD'): 
+            print "DEBUG: model.process = QCD"
+            continue
         model.add_lognormal_uncertainty('lumi', math.log(1.026), p)
-        #model.add_lognormal_uncertainty('subjet_scalefactor', math.log(1.084), p)
-
-
-    #model.add_lognormal_uncertainty('ttbar_rate', math.log(1.15), 'ttbar')
+        
     model.add_lognormal_uncertainty('rate_st', math.log(1.5), 'SingleTop')
     model.add_lognormal_uncertainty('rate_vjets', math.log(1.5), 'WJets')
-    #model.add_lognormal_uncertainty('beta_signal', math.log(1.5), 'TTbar_nonSemiLep')
-    model.add_lognormal_uncertainty('rate_qcd', math.log(2.0), 'QCD')
+    #model.add_lognormal_uncertainty('rate_qcd', math.log(2.0), 'QCD')
 
-    #    model.add_asymmetric_lognormal_uncertainty('scale_vjets', -math.log(1.577), math.log(0.710), 'WJets', obs)
-    #    model.add_asymmetric_lognormal_uncertainty('matching_vjets', -math.log(1.104), math.log(1.052), 'WJets', obs)
+    ## muon+jets channel
+    if muflag:
+        print "DEBUG: muon+jets channel considered"
+        for obs in ['mu_vtxMass7', 'mu_etaAbsLep6', 'mu_etaAbsLep4']:
+            model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
 
-
-    ## if muflag:
-    ##     for obs in ['mu_0btag_mttbar']:
-    ##         for proc in ('wc', 'wb'):
-    ##             model.add_asymmetric_lognormal_uncertainty('scale_vjets', -math.log(1.577), math.log(0.710), proc, obs)
-    ##             model.add_asymmetric_lognormal_uncertainty('matching_vjets', -math.log(1.104), math.log(1.052), proc, obs)
-    ##     for obs in ['mu_1btag_mttbar']:
-    ##         for proc in ('wc', 'wb', 'wlight'):
-    ##             model.add_asymmetric_lognormal_uncertainty('scale_vjets', -math.log(1.577), math.log(0.710), proc, obs)
-    ##             model.add_asymmetric_lognormal_uncertainty('matching_vjets', -math.log(1.104), math.log(1.052), proc, obs)
-
-    ## if eflag:
-    ##     for obs in ['el_0btag_mttbar']:
-    ##         for proc in ('wc', 'wb'):
-    ##             model.add_asymmetric_lognormal_uncertainty('scale_vjets', -math.log(1.584), math.log(0.690), proc, obs)
-    ##             model.add_asymmetric_lognormal_uncertainty('matching_vjets', -math.log(1.0447), math.log(1.0706), proc, obs)
-    ##         for proc in model.processes:
-    ##             model.add_lognormal_uncertainty('elid_rate', math.log(1.05), proc, obs)            
-    ##     for obs in ['el_1btag_mttbar']:
-    ##         for proc in ('wc', 'wb', 'wlight'):
-    ##             model.add_asymmetric_lognormal_uncertainty('scale_vjets', -math.log(1.584), math.log(0.690), proc, obs)
-    ##             model.add_asymmetric_lognormal_uncertainty('matching_vjets', -math.log(1.0447), math.log(1.0706), proc, obs)
-    ##         for proc in model.processes:
-    ##             model.add_lognormal_uncertainty('elid_rate', math.log(1.05), proc, obs)
+    ## electron+jets channel 
+    if elflag:
+        print "DEBUG: electron+jets channel considered"
+        for obs in ['el_vtxMass7', 'el_etaAbsLep6', 'el_etaAbsLep4']:
+            model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
     
     return model
 
@@ -74,48 +60,57 @@ import exceptions
 ####################################################################################
 # Here is where the constructed model is declared to theta
 ####################################################################################
-def build_model(type, indir='', mcstat = True, ex_to_in = None, infilter = None):
+
+def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, muflag=False):
+
     model = None
 
-    
+    ## muon+jets channel ONLY
     if type == 'ttbar_xs_mu' :
-
-        model = muplusjets(
+        
+        model = lepplusjets(
             files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
                    'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
                    'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root'],
             infilter=infilter,
             signal='TTbar',
             mcstat=mcstat,
-            ex_to_in=ex_to_in
+            muflag = True    
         )
-
+        
+    ## electron+jets channel ONLY
     elif type == 'ttbar_xs_el' :
 
-        model = muplusjets(
+        model = lepplusjets(
             files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
                    'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
                    'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root'],
             infilter=infilter,
             signal='TTbar',
             mcstat=mcstat,
-            ex_to_in=ex_to_in
+            elflag = True
         )
 
+    ## COMBINED lepton+jets channel
+    elif type == 'ttbar_xs_comb' :
+
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            muflag = True,
+            elflag = True
+        )
+
+    ## other cases not defined
     else:
-
         raise exceptions.ValueError('Type %s is undefined' % type)
-
-    #for p in model.distribution.get_parameters():
-    #    d = model.distribution.get_distribution(p)
-    #    if d['typ'] == 'gauss' and d['mean'] == 0.0 and d['width'] == 1.0:
-    #        model.distribution.set_distribution_parameters(p, range = [-5.0, 5.0])
-        #if 'rate' in p:
-        #    if d['typ'] == 'gauss' and d['mean'] == 0.0 and d['width'] == 1.0:
-        #        model.distribution.set_distribution_parameters(p, range = [-5.0, 5.0])
-        #else:
-        #    if d['typ'] == 'gauss' and d['mean'] == 0.0 and d['width'] == 1.0:
-        #        model.distribution.set_distribution_parameters(p, range = [-0.0, 0.0])
 
     return model
 
@@ -131,9 +126,9 @@ usePL = False
 # Building the statistical model :
 infilter = histfilter
 
-dirs = ['CT10_nom', 
-        'CT10_pdfup', 
-        'CT10_pdfdown'#,
+dirs = ['CT10_nom'#, 
+#'CT10_pdfup', 
+#        'CT10_pdfdown'#,
         #'MSTW_nom', 
         #'MSTW_pdfup', 
         #'MSTW_pdfdown',
@@ -144,20 +139,35 @@ dirs = ['CT10_nom',
         #'scaledown'
     ]
 
-channel = 'el'
+## muon channel ('mu') / electron channel ('el') / combined ('comb')
+channel = 'comb'
+
+elflag = False
+muflag = False
+if channel == 'el':
+    elflag = True
+elif channel == 'mu':
+    muflag = True
+elif channel == 'comb':
+    elflag = True
+    muflag = True
+else:
+    print "INVALID CHANNEL OPTION!"
+    raise exceptions.ValueError('chosen channel is undefined!')
+
 
 ivar = -1
 for idir in dirs :
     ivar += 1
-    
+
     args = {'type': 'ttbar_xs_'+channel,
-            'mcstat':False,
-            'infilter':infilter,
-            'indir':idir}
+            'mcstat': True,
+            'infilter': infilter,
+            'indir': idir,
+            'elflag': elflag,
+            'muflag': muflag}
     
     model = build_model(**args)
-        
-    #model_summary(model, all_nominal_templates=True, shape_templates=True) 
         
     parameters = model.get_parameters(['TTbar'])
 
@@ -165,12 +175,16 @@ for idir in dirs :
     if ivar == 0 :
         model_summary(model)
 
+
+    ###########################################################################
+    ## Maximum likelihood estimate technique
+    ###########################################################################
+    
     if useMLE == True :        
 
         print '------------- MLE RESULTS ' + idir + ' ' + channel + ' channel ---------------'
 
         results1 = mle(model, input='toys:1.', n=1000)
-
 
         bs = []
         delta_bs = []
@@ -204,8 +218,6 @@ for idir in dirs :
         results2 = mle(model, input='data', n=1, with_covariance = True)
 
 
-
-
         print results2
         ivals = results2['TTbar']
         for ikey, ival in ivals.iteritems() :
@@ -225,11 +237,15 @@ for idir in dirs :
         
         if idir == "CT10_nom" :
             report.write_html('htmlout_'+channel)
+
             
+    ###########################################################################
+    ## Profile likelihood technique
+    ###########################################################################
+
     if usePL == True :
 
         print '------------- PL RESULTS ' + idir + ' ' + channel + ' channel ---------------'
-
 
         args = {}
 

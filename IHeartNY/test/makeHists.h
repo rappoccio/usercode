@@ -179,7 +179,10 @@ SummedHist * getWJets( TString name, TString histname, bool doElectron ) {
     214. * 1.207 * 1000. * LUM  / 13382803.   // W+4 jets
   };
 
-  TString thetaname = histname + "__WJets";
+  TString thetaChannel = "mu_";
+  if (doElectron) thetaChannel = "el_";
+
+  TString thetaname = thetaChannel + histname + "__WJets";
   adjustThetaName( thetaname, name );
   
   SummedHist* wjets = new SummedHist( thetaname, kGreen-3 );
@@ -233,7 +236,10 @@ SummedHist * getSingleTop( TString name, TString histname, bool doElectron ) {
     11.1 * 1000. * LUM / 493460.
   };
 
-  TString thetaname = histname + "__SingleTop";
+  TString thetaChannel = "mu_";
+  if (doElectron) thetaChannel = "el_";
+
+  TString thetaname = thetaChannel + histname + "__SingleTop";
   adjustThetaName( thetaname, name );
 
   SummedHist* singletop = new SummedHist( thetaname, 6 );
@@ -302,7 +308,10 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
     ttbar_xs[iq2] * ttbar_eff[iq2][2] / ttbar_nevents[iq2][2]
   };
   
-  TString thetaname = histname + "__TTbar_nonSemiLep";
+  TString thetaChannel = "mu_";
+  if (doElectron) thetaChannel = "el_";
+
+  TString thetaname = thetaChannel + histname + "__TTbar_nonSemiLep";
   adjustThetaName( thetaname, name );
 
   SummedHist* ttbar = new SummedHist( thetaname, kRed-7);
@@ -372,7 +381,10 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
     ttbar_xs[iq2] * ttbar_eff[iq2][2] / ttbar_nevents[iq2][2],
   };
 
-  TString thetaname = histname + "__TTbar_semiLep";
+  TString thetaChannel = "mu_";
+  if (doElectron) thetaChannel = "el_";
+
+  TString thetaname = thetaChannel + histname + "__TTbar_semiLep";
   adjustThetaName( thetaname, name );
   
   SummedHist* ttbar = new SummedHist( thetaname, kRed +1);
@@ -405,7 +417,9 @@ SummedHist * getQCD( TString var, bool doElectron ) {
   SummedHist* ttbar_qcd = getTTbar( "qcd", var, doElectron );
   SummedHist* ttbar_nonsemilep_qcd = getTTbarNonSemiLep( "qcd", var, doElectron );
 
-  SummedHist* qcd = new SummedHist( var + "__QCD", kYellow);
+  SummedHist* qcd;
+  if (doElectron) qcd = new SummedHist( "el_" + var + "__QCD", kYellow);
+  else qcd = new SummedHist( "mu_" + var + "__QCD", kYellow);
 
   TString filepath;
   if (doElectron && use2D) filepath = "histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root";

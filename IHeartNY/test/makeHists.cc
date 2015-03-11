@@ -57,7 +57,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   TH1::AddDirectory(kFALSE); 
   setStyle();
 
-  if ( !((cut==4 && cut2==6) || (cut==6 && cut2==7) || (cut==7 && cut2==0))) { 
+  if ( !((cut==4 && cut2==6) || (cut==6 && cut2==7) || (cut==7 && cut2==0) || (cut==6 && cut2==0))) { 
     std::cout << "Not a valid option! Syntax is: " << std::endl
 	      << "> makePlots(TString var, int cut, int cut2)" << std::endl
 	      << "where (cut, cut2) = (4,6) or (6,7) or (7,0). Exiting..." << std::endl;
@@ -73,7 +73,14 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   std::pair<double, double> qcdnorm = getQCDnorm(cut, doElectron);
   double nqcd = qcdnorm.first;
   double err_qcd = qcdnorm.second; 
-  
+
+  if (cut==6 && cut2==0) {
+    std::pair<double, double> qcdnorm2 = getQCDnorm(7, doElectron);
+    double nqcd2 = qcdnorm2.first;
+    //double err_qcd2 = qcdnorm2.second; 
+    nqcd += nqcd2;
+  }
+
   // get histograms
   SummedHist* wjets = getWJets( syst, hist, doElectron  );
   SummedHist* singletop = getSingleTop( syst, hist, doElectron  );
@@ -101,12 +108,14 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 
   TFile* dataFile = TFile::Open(filepath);
   TH1F* h_data = (TH1F*) dataFile->Get( hist );
-  h_data->SetName(hist + "__DATA");
+  TString channel = "mu_";
+  if (doElectron) channel = "el_";
+  h_data->SetName(channel + hist + "__DATA");
 
   TH1F* h_data2;
   if (cut2>0) {
     h_data2 = (TH1F*) dataFile->Get( hist2 );
-    h_data2->SetName(hist + "__DATA_2");
+    h_data2->SetName(channel + hist + "__DATA_2");
   } 
  
 
@@ -407,7 +416,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 // make post-fit plots
 // -------------------------------------------------------------------------------------
 
-void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT10_nom") {
+void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT10_nom", bool combined=false) {
 
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -415,13 +424,18 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT1
 
   // read MC histograms
   TFile* fMC;
-  if (doElectron) fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el.root");
-  else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+".root");
+  if (combined) fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb.root");
+  else if (doElectron) fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el.root");
+  else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu.root");
+  
+  TString channel = "mu_";
+  if (doElectron) channel = "el_";
 
-  TH1F* h_qcd = (TH1F*) fMC->Get(what+"__QCD");
-  TH1F* h_wjets = (TH1F*) fMC->Get(what+"__WJets");
-  TH1F* h_ttbar = (TH1F*) fMC->Get(what+"__TTbar");
-  TH1F* h_singletop = (TH1F*) fMC->Get(what+"__SingleTop");
+  TH1F* h_qcd = (TH1F*) fMC->Get(channel+what+"__QCD");
+  TH1F* h_wjets = (TH1F*) fMC->Get(channel+what+"__WJets");
+  TH1F* h_ttbar = (TH1F*) fMC->Get(channel+what+"__TTbar");
+  TH1F* h_singletop = (TH1F*) fMC->Get(channel+what+"__SingleTop");
+
 
   // Construct post-fit ttbar
   // Get pre-fit plots needed
@@ -431,20 +445,20 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT1
   if (what == "etaAbsLep4") {
     if (doElectron) fPre = TFile::Open("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
     else fPre = TFile::Open("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
-    h_pre_ttbar = (TH1F*) fPre->Get(what+"__TTbar");
-    h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(what+"__TTbar_nonSemiLep");
+    h_pre_ttbar = (TH1F*) fPre->Get(channel+what+"__TTbar");
+    h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+"__TTbar_nonSemiLep");
   }
   if (what == "etaAbsLep6") {
     if (doElectron) fPre = TFile::Open("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root");
     else fPre = TFile::Open("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root");
-    h_pre_ttbar = (TH1F*) fPre->Get(what+"__TTbar");
-    h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(what+"__TTbar_nonSemiLep");
+    h_pre_ttbar = (TH1F*) fPre->Get(channel+what+"__TTbar");
+    h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+"__TTbar_nonSemiLep");
   }
   if (what == "vtxMass7") {
     if (doElectron) fPre = TFile::Open("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7.root");
     else fPre = TFile::Open("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7.root");
-    h_pre_ttbar = (TH1F*) fPre->Get(what+"__TTbar");
-    h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(what+"__TTbar_nonSemiLep");
+    h_pre_ttbar = (TH1F*) fPre->Get(channel+what+"__TTbar");
+    h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+"__TTbar_nonSemiLep");
   }
 
   float postPreRatio = h_ttbar->Integral() / h_pre_ttbar->Integral();
@@ -461,9 +475,10 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT1
   else if (use2D) filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   else filepath = "histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root";
 
+
   TFile* dataFile = TFile::Open(filepath);
   TH1F* h_data = (TH1F*) dataFile->Get( what );
-  h_data->SetName(what + "__DATA");
+  h_data->SetName(channel + what + "__DATA");
 
   if (what=="etaAbsLep4") {
     TH1F* h_data2 = (TH1F*) dataFile->Get("etaAbsLep6");
@@ -538,7 +553,6 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT1
   leg->AddEntry(h_singletop, "Single Top", "f");
   leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
   leg->AddEntry(h_qcd, "QCD" , "f");
-
 
   // create stack & summed histogram for ratio plot
   THStack* h_stack = new THStack();    
@@ -625,8 +639,15 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT1
   else if (use2D) outname = "Plots/mu_"+pdfdir+"_";
   else outname = "Plots/mu_relIso_"+pdfdir+"_";
 
-  c->SaveAs(outname+what+"_postfit.png");
-  c->SaveAs(outname+what+"_postfit.pdf");
+  if (combined) {
+    c->SaveAs(outname+what+"_combined_postfit.png");
+    c->SaveAs(outname+what+"_combined_postfit.pdf");
+  }
+  else {
+    c->SaveAs(outname+what+"_postfit.png");
+    c->SaveAs(outname+what+"_postfit.pdf");
+  }
+
 
 }
 
@@ -634,14 +655,18 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT1
 // print post-fit latex table
 // -------------------------------------------------------------------------------------
 
-void makeTable(bool doElectron=false, TString pdfdir="CT10_nom") {
+void makeTable(bool doElectron=false, TString pdfdir="CT10_nom", bool combined=false) {
 
   TString what[3] = {"etaAbsLep4","etaAbsLep6","vtxMass7"};
 
   // post-fit file
   TFile* fMC;
-  if (doElectron) fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el.root");
-  else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+".root");
+  if (combined) fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb.root");
+  else if (doElectron) fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el.root");
+  else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu.root");
+
+  TString channel = "mu_";
+  if (doElectron) channel = "el_";
 
   // post-fit relative errors (from theta_output.txt)
   /*
@@ -656,6 +681,7 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom") {
   float fiterr_wjets = 0;
   float fiterr_qcd = 0;
 
+  /*
   if (doElectron) {
     fiterr_tt = 0.07/0.69;
     fiterr_singletop = (0.5*0.83)/(1.0-0.5*0.86);
@@ -668,6 +694,29 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom") {
     fiterr_wjets = (0.5*0.22)/(1.0-0.5*0.5);
     fiterr_qcd = (1.0*0.35)/(1.0-1.0*0.21);
   }
+  */
+  if (combined) {
+    fiterr_tt = 0.06/0.87;
+    fiterr_singletop = (0.5*0.80)/(1.0-0.5*0.95);
+    fiterr_wjets = (0.5*0.14)/(1.0+0.5*0.0);
+    if (doElectron) fiterr_qcd = (1.0*0.06)/(1.0-1.0*0.43);
+    else fiterr_qcd = 1.0;
+  }
+  else {
+    if (doElectron) {
+      fiterr_tt = 0.07/0.69;
+      fiterr_singletop = (0.5*0.83)/(1.0-0.5*0.86);
+      fiterr_wjets = (0.5*0.14)/(1.0+0.5*0.88);
+      fiterr_qcd = (1.0*0.12)/(1.0-0.5*1.0);
+    }
+    else {
+      fiterr_tt = 0.09/0.69;
+      fiterr_singletop = (0.5*0.84)/(1.0-0.5*0.86);
+      fiterr_wjets = (0.5*0.18)/(1.0-0.5*0.4);
+      fiterr_qcd = (1.0*0.35)/(1.0-1.0*0.21);
+    }
+  }
+
 
 
   // pre-fit & data files
@@ -729,21 +778,21 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom") {
   for (int i=0; i<3; i++) {
 
     // post-fit values
-    h_qcd[i]   = (TH1F*) fMC->Get(what[i]+"__QCD");
-    h_wjets[i] = (TH1F*) fMC->Get(what[i]+"__WJets");
-    h_ttbar[i] = (TH1F*) fMC->Get(what[i]+"__TTbar");
-    h_singletop[i] = (TH1F*) fMC->Get(what[i]+"__SingleTop");
+    h_qcd[i]   = (TH1F*) fMC->Get(channel+what[i]+"__QCD");
+    h_wjets[i] = (TH1F*) fMC->Get(channel+what[i]+"__WJets");
+    h_ttbar[i] = (TH1F*) fMC->Get(channel+what[i]+"__TTbar");
+    h_singletop[i] = (TH1F*) fMC->Get(channel+what[i]+"__SingleTop");
 
     // data
-    h_data[i] = (TH1F*) fDATA[i]->Get(what[i]+"__DATA");
+    h_data[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+"__DATA");
 
     //pre-fit values
-    h_pre_qcd[i]   = (TH1F*) fDATA[i]->Get(what[i]+"__QCD");
-    h_pre_wjets[i] = (TH1F*) fDATA[i]->Get(what[i]+"__WJets");
-    h_pre_ttbar[i] = (TH1F*) fDATA[i]->Get(what[i]+"__TTbar");
-    h_pre_ttbar_semiLep[i] = (TH1F*) fDATA[i]->Get(what[i]+"__TTbar_semiLep");
-    h_pre_ttbar_nonSemiLep[i] = (TH1F*) fDATA[i]->Get(what[i]+"__TTbar_nonSemiLep");
-    h_pre_singletop[i] = (TH1F*) fDATA[i]->Get(what[i]+"__SingleTop");
+    h_pre_qcd[i]   = (TH1F*) fDATA[i]->Get(channel+what[i]+"__QCD");
+    h_pre_wjets[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+"__WJets");
+    h_pre_ttbar[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+"__TTbar");
+    h_pre_ttbar_semiLep[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+"__TTbar_semiLep");
+    h_pre_ttbar_nonSemiLep[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+"__TTbar_nonSemiLep");
+    h_pre_singletop[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+"__SingleTop");
 
     //Construct post-fit ttbar
     float postPreRatio = h_ttbar[i]->Integral() / h_pre_ttbar[i]->Integral();
@@ -876,6 +925,9 @@ void makeTheta_single(TString var, int cut, bool doElectron=false, TString pdfdi
   SummedHist* ttbar_nonSemiLep[nSYST];
   TH1F* ttbar[nSYST];
 
+  TString channel = "mu_";
+  if (doElectron) channel = "el_";
+
   for (int is=0; is<nSYST; is++) {
     wjets[is]     = getWJets( name_syst[is], hist, doElectron );
     singletop[is] = getSingleTop( name_syst[is], hist, doElectron );
@@ -885,7 +937,8 @@ void makeTheta_single(TString var, int cut, bool doElectron=false, TString pdfdi
     // do the ttbar combination
     ttbar[is] = (TH1F*) ttbar_semiLep[is]->hist()->Clone();
     ttbar[is]->Add(ttbar_nonSemiLep[is]->hist());
-    TString tempname = hist + "__TTbar";
+
+    TString tempname = channel + hist + "__TTbar";
     adjustThetaName( tempname, name_syst[is] );
     ttbar[is]->SetName(tempname);
   }
@@ -902,9 +955,8 @@ void makeTheta_single(TString var, int cut, bool doElectron=false, TString pdfdi
 
   TFile* dataFile = TFile::Open(filepath);
   TH1F* data = (TH1F*) dataFile->Get( hist );
-  data->SetName(hist + "__DATA");
+  data->SetName(channel + hist + "__DATA");
   
-
 
   // write the histograms to a file
   TString outname;
@@ -973,6 +1025,9 @@ void makeTheta_subtract(TString var, int cut1, int cut2, bool doElectron=false, 
   SummedHist* ttbar_nonSemiLep[nSYST][2];
   TH1F* ttbar[nSYST][2];
 
+  TString channel = "mu_";
+  if (doElectron) channel = "el_";
+
   for (int ih=0; ih<2; ih++) {
     for (int is=0; is<nSYST; is++) {
       wjets[is][ih]     = getWJets( name_syst[is], hist[ih], doElectron );
@@ -982,7 +1037,7 @@ void makeTheta_subtract(TString var, int cut1, int cut2, bool doElectron=false, 
 
       ttbar[is][ih] = (TH1F*) ttbar_semiLep[is][ih]->hist()->Clone();
       ttbar[is][ih]->Add(ttbar_nonSemiLep[is][ih]->hist());
-      TString tempname = hist[ih] + "__TTbar";
+      TString tempname = channel + hist[ih] + "__TTbar";
       adjustThetaName( tempname, name_syst[is] );
       ttbar[is][ih]->SetName(tempname);
     }
@@ -1004,9 +1059,9 @@ void makeTheta_subtract(TString var, int cut1, int cut2, bool doElectron=false, 
 
   TH1F* data[2];
   data[0] = (TH1F*) dataFile->Get( hist[0] );
-  data[0]->SetName(hist[0] + "__DATA");
+  data[0]->SetName(channel + hist[0] + "__DATA");
   data[1] = (TH1F*) dataFile->Get( hist[1] );
-  data[1]->SetName(hist[1] + "__DATA_2");
+  data[1]->SetName(channel + hist[1] + "__DATA_2");
 
   
   // do the subtraction
@@ -1043,6 +1098,7 @@ void makeTheta_subtract(TString var, int cut1, int cut2, bool doElectron=false, 
 
   qcd[0]->hist()->Write();
   data[0]->Write();
+
 
   fout->Close();
 
