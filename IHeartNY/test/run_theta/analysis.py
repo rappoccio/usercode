@@ -264,7 +264,13 @@ for idir in dirs :
                         
                     
         print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err)+", "+str(my_eqcd_err)+"}, // bkg error for "+idir
-        print "    {"+str(my_toptag)+", "+str(my_toptag_err)+"}, // toptag (val, err) for "+idir
+        toptag_post = (1.0 + 0.25*my_toptag) 
+        if channel=="mu":
+            print "if options.pdf == \"" + idir + "\" and options.lepType == \"muon\" : toptag_post = " + str(toptag_post)
+        elif channel=="el":
+            print "if options.pdf == \"" + idir + "\" and options.lepType == \"ele\" : toptag_post = "+ str(toptag_post)
+        else:
+            print "if options.pdf == \"" + idir + "\" and options.lepType == \"comb\" : toptag_post = "+ str(toptag_post)
 
         parameters = model.get_parameters(['TTbar'])
         print parameters
