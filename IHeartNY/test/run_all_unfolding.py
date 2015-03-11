@@ -11,6 +11,8 @@ for s in [
            
            ## unfolding, combining the 1 top-tag, 1 b-tag and 1 top-tag, 0 b-tag regions
            "python unfoldTopPt.py --addNoBtag --lepType=ele",
+           "python unfoldTopPt.py --addNoBtag --lepType=ele --bkgSyst=bkgup",
+           "python unfoldTopPt.py --addNoBtag --lepType=ele --bkgSyst=bkgdn",
            "python unfoldTopPt.py --addNoBtag --lepType=ele --systVariation=toptagFITup",
            "python unfoldTopPt.py --addNoBtag --lepType=ele --systVariation=toptagFITdn",
            "python unfoldTopPt.py --addNoBtag --lepType=ele --systVariation=jerup",
@@ -24,7 +26,9 @@ for s in [
            "python unfoldTopPt.py --addNoBtag --lepType=ele --ttbarPDF=scaleup",
            "python unfoldTopPt.py --addNoBtag --lepType=ele --ttbarPDF=scaledown",
 
-           "python unfoldTopPt.py --addNoBtag",           
+           "python unfoldTopPt.py --addNoBtag",
+           "python unfoldTopPt.py --addNoBtag --bkgSyst=bkgup",
+           "python unfoldTopPt.py --addNoBtag --bkgSyst=bkgdn",
            "python unfoldTopPt.py --addNoBtag --systVariation=toptagFITup",
            "python unfoldTopPt.py --addNoBtag --systVariation=toptagFITdn",
            "python unfoldTopPt.py --addNoBtag --systVariation=jerup",
@@ -38,7 +42,9 @@ for s in [
            "python unfoldTopPt.py --addNoBtag --ttbarPDF=scaleup",
            "python unfoldTopPt.py --addNoBtag --ttbarPDF=scaledown",
 
-           "python unfoldTopPt.py --addNoBtag --twoStep --lepType=ele",           
+           "python unfoldTopPt.py --addNoBtag --twoStep --lepType=ele",
+           "python unfoldTopPt.py --addNoBtag --twoStep --lepType=ele --bkgSyst=bkgup",
+           "python unfoldTopPt.py --addNoBtag --twoStep --lepType=ele --bkgSyst=bkgdn",
            "python unfoldTopPt.py --addNoBtag --twoStep --lepType=ele --systVariation=toptagFITup",
            "python unfoldTopPt.py --addNoBtag --twoStep --lepType=ele --systVariation=toptagFITdn",
            "python unfoldTopPt.py --addNoBtag --twoStep --lepType=ele --systVariation=jerup",
@@ -52,7 +58,9 @@ for s in [
            "python unfoldTopPt.py --addNoBtag --twoStep --lepType=ele --ttbarPDF=scaleup",
            "python unfoldTopPt.py --addNoBtag --twoStep --lepType=ele --ttbarPDF=scaledown",
 
-           "python unfoldTopPt.py --addNoBtag --twoStep",           
+           "python unfoldTopPt.py --addNoBtag --twoStep",
+           "python unfoldTopPt.py --addNoBtag --twoStep --bkgSyst=bkgup",
+           "python unfoldTopPt.py --addNoBtag --twoStep --bkgSyst=bkgdn",
            "python unfoldTopPt.py --addNoBtag --twoStep --systVariation=toptagFITup",
            "python unfoldTopPt.py --addNoBtag --twoStep --systVariation=toptagFITdn",
            "python unfoldTopPt.py --addNoBtag --twoStep --systVariation=jerup",
@@ -69,6 +77,8 @@ for s in [
 
            ## unfolding using 1 top-tag, 1 b-tag region only
            "python unfoldTopPt.py --lepType=ele",
+           "python unfoldTopPt.py --lepType=ele --bkgSyst=bkgup",
+           "python unfoldTopPt.py --lepType=ele --bkgSyst=bkgdn",
            "python unfoldTopPt.py --lepType=ele --systVariation=toptagFITup",
            "python unfoldTopPt.py --lepType=ele --systVariation=toptagFITdn",
            "python unfoldTopPt.py --lepType=ele --systVariation=jerup",
@@ -82,7 +92,9 @@ for s in [
            "python unfoldTopPt.py --lepType=ele --ttbarPDF=scaleup",
            "python unfoldTopPt.py --lepType=ele --ttbarPDF=scaledown",
 
-           "python unfoldTopPt.py",           
+           "python unfoldTopPt.py",
+           "python unfoldTopPt.py --bkgSyst=bkgup",
+           "python unfoldTopPt.py --bkgSyst=bkgdn",
            "python unfoldTopPt.py --systVariation=toptagFITup",
            "python unfoldTopPt.py --systVariation=toptagFITdn",
            "python unfoldTopPt.py --systVariation=jerup",
@@ -96,7 +108,9 @@ for s in [
            "python unfoldTopPt.py --ttbarPDF=scaleup",
            "python unfoldTopPt.py --ttbarPDF=scaledown",
 
-           "python unfoldTopPt.py --twoStep --lepType=ele",           
+           "python unfoldTopPt.py --twoStep --lepType=ele",
+           "python unfoldTopPt.py --twoStep --lepType=ele --bkgSyst=bkgup",
+           "python unfoldTopPt.py --twoStep --lepType=ele --bkgSyst=bkgdn",
            "python unfoldTopPt.py --twoStep --lepType=ele --systVariation=toptagFITup",
            "python unfoldTopPt.py --twoStep --lepType=ele --systVariation=toptagFITdn",
            "python unfoldTopPt.py --twoStep --lepType=ele --systVariation=jerup",
@@ -110,7 +124,9 @@ for s in [
            "python unfoldTopPt.py --twoStep --lepType=ele --ttbarPDF=scaleup",
            "python unfoldTopPt.py --twoStep --lepType=ele --ttbarPDF=scaledown",
 
-           "python unfoldTopPt.py --twoStep",           
+           "python unfoldTopPt.py --twoStep",
+           "python unfoldTopPt.py --twoStep --bkgSyst=bkgup",
+           "python unfoldTopPt.py --twoStep --bkgSyst=bkgdn",
            "python unfoldTopPt.py --twoStep --systVariation=toptagFITup",
            "python unfoldTopPt.py --twoStep --systVariation=toptagFITdn",
            "python unfoldTopPt.py --twoStep --systVariation=jerup",

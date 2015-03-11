@@ -29,6 +29,11 @@ parser.add_option('--systVariation', metavar='F', type='string', action='store',
                   dest='syst',
                   help='Run nominal or systematic variation?')
 
+parser.add_option('--bkgSyst', metavar='F', type='string', action='store',
+                  default='nom',
+                  dest='bkgSyst',
+                  help='Run nominal or systematic variation for backgrounds (nom or bkgup / bkgdn) ?')
+
 parser.add_option('--ttbarPDF', metavar='F', type='string', action='store',
                   default='CT10_nom',
                   dest='pdf',
@@ -180,32 +185,74 @@ if options.closureTest == True:
 # Scaling of the various backgrounds from the theta fit
 # -------------------------------------------------------------------------------------
 
+bkgerr_qcd = 0.0
+bkgerr_singletop = 0.0
+bkgerr_wjets = 0.0
+bkgerr_ttbarnonsemilep = 0.0
+bkgerr_ttbar = 0.0
+
+if options.bkgSyst == "bkgup" or options.bkgSyst == "bkgdn":
+    if options.lepType == "ele":
+        if nobtag == "_nobtag":
+            bkgerr_qcd = 2.5+31. #sqrt(2.5*2.5 + 31.*31.)
+            bkgerr_singletop = 2.4+8.9 #sqrt(2.4*2.4 + 8.9*8.9)
+            bkgerr_wjets = 0.4+15. #sqrt(0.4*0.4 + 15.*15.)
+            bkgerr_ttbarnonsemilep = 3.0+4.2 #sqrt(3.0*3.0 + 4.2*4.2)
+            bkgerr_ttbar = 26.+33. #sqrt(26.*26. + 33.*33.)
+        else:
+            bkgerr_qcd = 2.5
+            bkgerr_singletop = 2.4
+            bkgerr_wjets = 0.4
+            bkgerr_ttbarnonsemilep = 3.0
+            bkgerr_ttbar = 26
+    else: 
+        if nobtag == "_nobtag":
+            bkgerr_qcd = 4.2+22. #sqrt(4.2*4.2 + 22.*22.)
+            bkgerr_singletop = 2.6+9.2 #sqrt(2.6*2.6 + 9.2*9.2)
+            bkgerr_wjets = 0.7+25. #sqrt(0.7*0.7 + 25.*25.)
+            bkgerr_ttbarnonsemilep = 4.2+6.3 #sqrt(4.2*4.2 + 6.3*6.3)
+            bkgerr_ttbar = 38.+51. #sqrt(38.*38. + 51.*51.)
+        else:
+            bkgerr_qcd = 4.2
+            bkgerr_singletop = 2.6
+            bkgerr_wjets = 0.7
+            bkgerr_ttbarnonsemilep = 4.2
+            bkgerr_ttbar = 38
+        
+if options.bkgSyst == "bkgDn":
+    bkgerr_qcd *= -1.0
+    bkgerr_singletop *= -1.0
+    bkgerr_wjets *= -1.0
+    bkgerr_ttbarnonsemilep *= -1.0
+    bkgerr_ttbar *= -1.0
+
+    
 if options.lepType == "ele":
     if nobtag == "_nobtag":
-        fitted_qcd = 10.2+128.1
-        fitted_singletop = 3.2+12.3
-        fitted_wjets = 8.6+307.4
-        fitted_ttbarnonsemilep = 29.6+41.3
-        fitted_ttbar = 254.0+329.0
+        fitted_qcd = 10.2+128.1+bkgerr_qcd
+        fitted_singletop = 3.2+12.3+bkgerr_singletop
+        fitted_wjets = 8.6+307.4+bkgerr_wjets
+        fitted_ttbarnonsemilep = 29.6+41.3+bkgerr_ttbarnonsemilep
+        fitted_ttbar = 254.0+329.0+bkgerr_ttbar
     else:
-        fitted_qcd = 10.2
-        fitted_singletop = 3.2
-        fitted_wjets = 8.6
-        fitted_ttbarnonsemilep = 29.6
-        fitted_ttbar = 254.0
+        fitted_qcd = 10.2+bkgerr_qcd
+        fitted_singletop = 3.2+bkgerr_singletop
+        fitted_wjets = 8.6+bkgerr_wjets
+        fitted_ttbarnonsemilep = 29.6+bkgerr_ttbarnonsemilep
+        fitted_ttbar = 254.0+bkgerr_ttbar
 else:
     if nobtag == "_nobtag":
-        fitted_qcd = 9.5+49.6
-        fitted_singletop = 3.5+12.5
-        fitted_wjets = 4.5+172.4
-        fitted_ttbarnonsemilep = 28.3+42.8
-        fitted_ttbar = 259.7+344.5
+        fitted_qcd = 9.5+49.6+bkgerr_qcd
+        fitted_singletop = 3.5+12.5+bkgerr_singletop
+        fitted_wjets = 4.5+172.4+bkgerr_wjets
+        fitted_ttbarnonsemilep = 28.3+42.8+bkgerr_ttbarnonsemilep
+        fitted_ttbar = 259.7+344.5+bkgerr_ttbar
     else:
-        fitted_qcd = 9.5
-        fitted_singletop = 3.5
-        fitted_wjets = 4.5
-        fitted_ttbarnonsemilep = 28.3
-        fitted_ttbar = 259.7
+        fitted_qcd = 9.5+bkgerr_qcd
+        fitted_singletop = 3.5+bkgerr_singletop
+        fitted_wjets = 4.5+bkgerr_wjets
+        fitted_ttbarnonsemilep = 28.3+bkgerr_ttbarnonsemilep
+        fitted_ttbar = 259.7+bkgerr_ttbar
 
 
 # -------------------------------------------------------------------------------------
@@ -341,10 +388,13 @@ TH1.AddDirectory(0)
 # output file for storing histograms to  
 # -------------------------------------------------------------------------------------
 
+bkgout = ""
+if options.bkgSyst == "bkgup" or options.bkgSyst == "bkgdn":
+    bkgout = "_"+options.bkgSyst
 if options.twoStep :
-    fout = TFile("UnfoldingPlots/unfold"+DIR+"_2step_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".root","recreate");
+    fout = TFile("UnfoldingPlots/unfold"+DIR+"_2step_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".root","recreate");
 else :
-    fout = TFile("UnfoldingPlots/unfold"+DIR+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".root","recreate");
+    fout = TFile("UnfoldingPlots/unfold"+DIR+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".root","recreate");
 
 
 # -------------------------------------------------------------------------------------
@@ -609,8 +659,8 @@ if options.closureTest == False :
     hMeas.Draw("axis,same")
     ll.AddEntry(hMeas, "Background-subtracted data","l")
     ll.Draw()
-    #cc.SaveAs("UnfoldingPlots/unfold"+DIR+"_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-    #cc.SaveAs("UnfoldingPlots/unfold"+DIR+"_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
+    #cc.SaveAs("UnfoldingPlots/unfold"+DIR+"_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".png")
+    #cc.SaveAs("UnfoldingPlots/unfold"+DIR+"_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".eps")
 
 if options.closureTest and options.troubleshoot and options.twoStep :
     ct1 = TCanvas("ct1", "", 800, 600)
@@ -630,7 +680,7 @@ if options.closureTest and options.troubleshoot and options.twoStep :
     lt1.AddEntry(hMeas, "Unfolding input, even","l")
     lt1.AddEntry(hMeas_odd, "Unfolding input, odd","l")
     lt1.Draw()
-    ct1.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hMeas_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    ct1.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hMeas_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".png")
 
     ct2 = TCanvas("ct2", "", 800, 600)
     
@@ -649,7 +699,7 @@ if options.closureTest and options.troubleshoot and options.twoStep :
     lt2.AddEntry(hPart_even, "Particle-level truth, even","l")
     lt2.AddEntry(hPart, "Particle-level truth, odd","l")
     lt2.Draw()
-    ct2.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hPart_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    ct2.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hPart_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".png")
 
     ct3 = TCanvas("ct3", "", 800, 600)
     
@@ -668,7 +718,7 @@ if options.closureTest and options.troubleshoot and options.twoStep :
     lt3.AddEntry(hTrue_even, "Parton-level truth, even","l")
     lt3.AddEntry(hTrue, "Parton-level truth, odd","l")
     lt3.Draw()
-    ct3.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hTrue_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+    ct3.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hTrue_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".png")
 
 
 # -------------------------------------------------------------------------------------
@@ -768,10 +818,10 @@ if options.twoStep:
 ## correct also to post-fit top-tagging SF !!! 
 if options.closureTest == False : 
     if options.lepType == "muon" :
-        hMeas.Scale(1.0/(1.0+0.25*0.27))
-        hReco.Scale(1.0/(1.0+0.25*0.27))
+        hMeas.Scale(1.0/(1.0+0.25*0.43))
+        hReco.Scale(1.0/(1.0+0.25*0.43))
         if options.twoStep:
-            hReco_rp.Scale(1.0/(1.0+0.25*0.27))
+            hReco_rp.Scale(1.0/(1.0+0.25*0.43))
     else :
         hMeas.Scale(1.0/(1.0+0.25*0.39))
         hReco.Scale(1.0/(1.0+0.25*0.39))
@@ -991,9 +1041,9 @@ if options.twoStep :
 if options.closureTest :
     append += "_closure"
 
-c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf", "pdf")
-c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png", "png")
-c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps", "eps")
+c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".pdf", "pdf")
+c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".png", "png")
+c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".eps", "eps")
 
 
 
@@ -1078,9 +1128,9 @@ if options.twoStep:
     if options.closureTest :
         append += "_closure"
         
-    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf", "pdf")
-    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png", "png")
-    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps", "eps")
+    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".pdf", "pdf")
+    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".png", "png")
+    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".eps", "eps")
 
 
 
