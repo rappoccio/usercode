@@ -12,7 +12,7 @@ from ROOT import *
 
 def histfilter( hname ) :
 
-    print hname
+    #print hname
     
     if hname == None or 'TTbar_semiLep' in hname or 'TTbar_nonSemiLep' in hname:
         return False
@@ -30,9 +30,9 @@ def lepplusjets(files, infilter, signal, mcstat, elflag=False, muflag=False):
     model.fill_histogram_zerobins()
     model.set_signal_processes(signal)
     for p in model.processes:
-        print "DEBUG: model.process = " + p
+        #print "DEBUG: model.process = " + p
         if (p == 'QCD') or (p == 'ElQCD') or (p == 'MuQCD'): 
-            print "DEBUG: model.process = QCD"
+            #print "DEBUG: model.process = QCD"
             continue
         model.add_lognormal_uncertainty('lumi', math.log(1.026), p)
         
@@ -140,7 +140,7 @@ dirs = ['CT10_nom',
     ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
-channel = 'comb'
+channel = 'el'
 
 elflag = False
 muflag = False
@@ -161,7 +161,7 @@ for idir in dirs :
     ivar += 1
 
     args = {'type': 'ttbar_xs_'+channel,
-            'mcstat': True,
+            'mcstat': False,
             'infilter': infilter,
             'indir': idir,
             'elflag': elflag,
@@ -220,11 +220,51 @@ for idir in dirs :
 
         print results2
         ivals = results2['TTbar']
+
+        my_tt_err = 0
+        my_wj_err = 0
+        my_st_err = 0
+        my_eqcd_err = 0
+        my_muqcd_err = 0
+        my_toptag = 0
+        my_toptag_err = 0
+
         for ikey, ival in ivals.iteritems() :
             if ikey != "__nll" and ikey != "__cov":
                 print '{0:20s} : {1:6.2f} +- {2:6.2f}'.format(
                     ikey, ival[0][0], ival[0][1]
                 )
+
+            ## for printing out resulting relative uncertainty for each background source 
+            if ikey == "beta_signal":
+                my_tt_err = ival[0][1] / ival[0][0]
+            elif ikey == "toptag":
+                my_toptag = ival[0][0]
+                my_toptag_err = ival[0][1]
+            elif ikey == "rate_st":
+                if (ival[0][0] > 0): 
+                    my_st_err = 0.5*ival[0][1] / (1.0+0.5*ival[0][0])
+                else:
+                    my_st_err = 0.5*ival[0][1] * (1.0-0.5*ival[0][0])
+            elif ikey == "rate_vjets":
+                if (ival[0][0] > 0): 
+                    my_wj_err = 0.5*ival[0][1] / (1.0+0.5*ival[0][0])
+                else:
+                    my_wj_err = 0.5*ival[0][1] * (1.0-0.5*ival[0][0])
+            elif ikey == "rate_mu_qcd":
+                if (ival[0][0] > 0): 
+                    my_muqcd_err = 0.5*ival[0][1] / (1.0+0.5*ival[0][0])
+                else:
+                    my_muqcd_err = 0.5*ival[0][1] * (1.0-0.5*ival[0][0])
+            elif ikey == "rate_el_qcd":
+                if (ival[0][0] > 0): 
+                    my_eqcd_err = 0.5*ival[0][1] / (1.0+0.5*ival[0][0])
+                else:
+                    my_eqcd_err = 0.5*ival[0][1] * (1.0-0.5*ival[0][0])
+                        
+                    
+        print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err)+", "+str(my_eqcd_err)+"}, \\\\ bkg error for "+idir
+        print "    {"+str(my_toptag)+", "+str(my_toptag_err)+"}, \\\\ toptag (val, err) for "+idir
 
         parameters = model.get_parameters(['TTbar'])
         print parameters
