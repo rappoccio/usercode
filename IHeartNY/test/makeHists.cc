@@ -609,10 +609,6 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString pdfdir="CT1
 
   leg->Draw();
 
-  //mySmallText(0.14,0.96,1,"Posterior fit distributions");
-  //myText(0.48,0.81,1,"#intLdt = 19.7 fb^{-1}");
-  //myText(0.48,0.72,1,"#sqrt{s} = 8 TeV");
-  
   myText(0.45,0.86,1,"CMS Preliminary");
   myText(0.45,0.75,1,"#intLdt = 19.7 fb^{-1}");
   myText(0.45,0.66,1,"#sqrt{s} = 8 TeV");
@@ -668,56 +664,70 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom", bool combined=f
   TString channel = "mu_";
   if (doElectron) channel = "el_";
 
-  // post-fit relative errors (from theta_output.txt)
-  /*
-  float fiterr_tt = 0.10/0.72;
-  float fiterr_singletop = (0.5*0.86)/(1.0-0.5*0.66);
-  float fiterr_wjets = (0.5*0.21)/(1.0-0.5*0.7);
-  float fiterr_qcd = (0.5*0.57)/(1.0-0.5*0.1);
-  */
+  // -------------------------------------------------------------------------------------
+  // post-fit relative errors
+
+  float fiterrors_mu[11][5] = { 
+    {0.136178123407, 0.601654603004, 0.107520601458, 0.189270027384, 0}, // bkg error for CT10_nom
+    {0.143531426537, 0.598861647354, 0.118749010228, 0.17877006537, 0}, // bkg error for CT10_pdfup
+    {0.130687667319, 0.605431130473, 0.101669245525, 0.201031298083, 0}, // bkg error for CT10_pdfdown
+    {0.136783615402, 0.602547816426, 0.106699756697, 0.187132367989, 0}, // bkg error for MSTW_nom
+    {0.140163559205, 0.601482716006, 0.105191778271, 0.178049366831, 0}, // bkg error for MSTW_pdfup
+    {0.133399760853, 0.607158012514, 0.100233756792, 0.187022124435, 0}, // bkg error for MSTW_pdfdown
+    {0.128775723625, 0.60633215304, 0.100101491409, 0.147944135982, 0}, // bkg error for NNPDF_nom
+    {0.137692548323, 0.599663471177, 0.109630997391, 0.157640524812, 0}, // bkg error for NNPDF_pdfup
+    {0.11497450265, 0.221847501289, 0.0987162898554, 0.102294968977, 0}, // bkg error for NNPDF_pdfdown
+    {0.138847207632, 0.600972713537, 0.0909056536277, 0.254303726506, 0}, // bkg error for scaleup
+    {0.128661027311, 0.619019648158, 0.106169998694, 0.144190709959, 0}, // bkg error for scaledown
+  };
+
+  float fiterrors_el[11][5] = { 
+    {0.0957933770128, 0.59028339844, 0.0472103974875, 0, 0.0794465593408}, // bkg error for CT10_nom
+    {0.100258813306, 0.5829512792, 0.0491497479426, 0, 0.084463841562}, // bkg error for CT10_pdfup
+    {0.0926329596172, 0.596707635175, 0.0460935658625, 0, 0.0781396612839}, // bkg error for CT10_pdfdown
+    {0.0962764471065, 0.589462016388, 0.0465616436282, 0, 0.082966625466}, // bkg error for MSTW_nom
+    {0.0990736949562, 0.580679994577, 0.0466003409818, 0, 0.0836971538139}, // bkg error for MSTW_pdfup
+    {0.0942208210793, 0.592406547832, 0.0450632277318, 0, 0.07921780037}, // bkg error for MSTW_pdfdown
+    {0.0946070692168, 0.591418070077, 0.0459171485167, 0, 0.0790261287167}, // bkg error for NNPDF_nom
+    {0.0985517967114, 0.581767527745, 0.0484473989458, 0, 0.0802515066205}, // bkg error for NNPDF_pdfup
+    {0.0924543854678, 0.599885485855, 0.0456366491384, 0, 0.0784735227221}, // bkg error for NNPDF_pdfdown
+    {0.0931884714793, 0.572624704637, 0.0431043866965, 0, 0.078917635113}, // bkg error for scaleup
+    {0.0948258962343, 0.570246409386, 0.0455002470189, 0, 0.0793221134465}, // bkg error for scaledown
+  };
+
+  TString pdfs[11] = {"CT10_nom","CT10_pdfup","CT10_pdfdown",
+		      "MSTW_nom","MSTW_pdfup","MSTW_pdfdown",
+		      "NNPDF_nom","NNPDF_pdfup","NNPDF_pdfdown",
+		      "scaleup","scaledown"};
+  int thispdf = -1;
+  for (int ipdf=0; ipdf<11; ipdf++) {
+    if (pdfdir == pdfs[ipdf]) {
+      thispdf = ipdf;
+      break;
+    }
+  }
+  if (thispdf == -1) {
+    cout << "UNKNOWN PDF! exiting..." << endl;
+    return;
+  }
 
   float fiterr_tt = 0;
   float fiterr_singletop = 0;
   float fiterr_wjets = 0;
   float fiterr_qcd = 0;
 
-  /*
   if (doElectron) {
-    fiterr_tt = 0.07/0.69;
-    fiterr_singletop = (0.5*0.83)/(1.0-0.5*0.86);
-    fiterr_wjets = (0.5*0.14)/(1.0+0.5*0.88);
-    fiterr_qcd = (1.0*0.12)/(1.0-0.5*1.0);
+    fiterr_tt = fiterrors_el[thispdf][0];
+    fiterr_singletop = fiterrors_el[thispdf][1];
+    fiterr_wjets = fiterrors_el[thispdf][2];
+    fiterr_qcd = fiterrors_el[thispdf][4];
   }
   else {
-    fiterr_tt = 0.10/0.68;
-    fiterr_singletop = (0.5*0.83)/(1.0-0.5*0.88);
-    fiterr_wjets = (0.5*0.22)/(1.0-0.5*0.5);
-    fiterr_qcd = (1.0*0.35)/(1.0-1.0*0.21);
+    fiterr_tt = fiterrors_mu[thispdf][0];
+    fiterr_singletop = fiterrors_mu[thispdf][1];
+    fiterr_wjets = fiterrors_mu[thispdf][2];
+    fiterr_qcd = fiterrors_mu[thispdf][3];
   }
-  */
-  if (combined) {
-    fiterr_tt = 0.06/0.87;
-    fiterr_singletop = (0.5*0.80)/(1.0-0.5*0.95);
-    fiterr_wjets = (0.5*0.14)/(1.0+0.5*0.0);
-    if (doElectron) fiterr_qcd = (1.0*0.06)/(1.0-1.0*0.43);
-    else fiterr_qcd = 1.0;
-  }
-  else {
-    if (doElectron) {
-      fiterr_tt = 0.07/0.69;
-      fiterr_singletop = (0.5*0.83)/(1.0-0.5*0.86);
-      fiterr_wjets = (0.5*0.14)/(1.0+0.5*0.88);
-      fiterr_qcd = (1.0*0.12)/(1.0-0.5*1.0);
-    }
-    else {
-      fiterr_tt = 0.09/0.69;
-      fiterr_singletop = (0.5*0.84)/(1.0-0.5*0.86);
-      fiterr_wjets = (0.5*0.18)/(1.0-0.5*0.4);
-      fiterr_qcd = (1.0*0.35)/(1.0-1.0*0.21);
-    }
-  }
-
-
 
   // pre-fit & data files
   TFile* fDATA[3];
@@ -885,7 +895,39 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom", bool combined=f
   std::cout << "Data                 & " << h_data[0]->Integral() << " & " << h_data[1]->Integral() << " & " << h_data[2]->Integral() << " \\\\ " << std::endl;
 
 
+  TString outblaj = "";
+  if (doElectron) outblaj = " and options.lepType == \"ele\" ";
+  else outblaj = " and options.lepType == \"muon\" ";
 
+
+  // 1toptag+1btag (nom, up, dn) + 1toptag+>=0btag (nom, up, dn) 
+  std::cout << std::endl << "---------------------------------------------------------------------------------" << std::endl;
+  std::cout << "For copying to unfolding script!" << std::endl;
+  std::cout << "(background counts: 1toptag+1btag (nom, up, dn), 1toptag+>=0btag (nom, up, dn))" << std::endl;
+  std::cout << "---------------------------------------------------------------------------------" << std::endl;
+  std::cout << "if options.pdf == \"" << pdfdir << "\"" << outblaj << ":   #unfold" << std::endl;
+  std::cout << "    n_ttbarnonsemilep = ["
+	    << h_qcd[2]->Integral() << ", " << h_qcd[2]->Integral()*(1+fiterr_qcd) << ", " << h_qcd[2]->Integral()*(1-fiterr_qcd) << ", "
+	    << (h_qcd[1]->Integral()+h_qcd[2]->Integral()) << ", " 
+	    << (h_qcd[1]->Integral()+h_qcd[2]->Integral())*(1+fiterr_qcd) << ", " 
+	    << (h_qcd[1]->Integral()+h_qcd[2]->Integral())*(1-fiterr_qcd) << "]   #unfold" << std::endl;
+  std::cout << "    n_wjets           = ["
+	    << h_wjets[2]->Integral() << ", " << h_wjets[2]->Integral()*(1+fiterr_wjets) << ", " << h_wjets[2]->Integral()*(1-fiterr_wjets) << ", "
+	    << (h_wjets[1]->Integral()+h_wjets[2]->Integral()) << ", " 
+	    << (h_wjets[1]->Integral()+h_wjets[2]->Integral())*(1+fiterr_wjets) << ", " 
+	    << (h_wjets[1]->Integral()+h_wjets[2]->Integral())*(1-fiterr_wjets) << "]   #unfold" << std::endl;
+  std::cout << "    n_singletop       = ["
+	    << h_singletop[2]->Integral() << ", " << h_singletop[2]->Integral()*(1+fiterr_singletop) << ", " << h_singletop[2]->Integral()*(1-fiterr_singletop) << ", "
+	    << (h_singletop[1]->Integral()+h_singletop[2]->Integral()) << ", " 
+	    << (h_singletop[1]->Integral()+h_singletop[2]->Integral())*(1+fiterr_singletop) << ", " 
+	    << (h_singletop[1]->Integral()+h_singletop[2]->Integral())*(1-fiterr_singletop) << "]   #unfold" << std::endl;
+  std::cout << "    n_qcd             = ["
+	    << h_qcd[2]->Integral() << ", " << h_qcd[2]->Integral()*(1+fiterr_qcd) << ", " << h_qcd[2]->Integral()*(1-fiterr_qcd) << ", "
+	    << (h_qcd[1]->Integral()+h_qcd[2]->Integral()) << ", " 
+	    << (h_qcd[1]->Integral()+h_qcd[2]->Integral())*(1+fiterr_qcd) << ", " 
+	    << (h_qcd[1]->Integral()+h_qcd[2]->Integral())*(1-fiterr_qcd) << "]   #unfold" << std::endl;
+  std::cout << "---------------------------------------------------------------------------------" << std::endl << std::endl;
+  
 }
 
 
