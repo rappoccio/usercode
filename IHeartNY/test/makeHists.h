@@ -24,7 +24,7 @@ bool use2D = true;
 // QCD normalization
 // -------------------------------------------------------------------------------------
 
-std::pair<double, double> getQCDnorm(int cut, bool doElectron) {
+std::pair<double, double> getQCDnorm(int cut, bool doElectron, bool half = false) {
 
   if ( !(cut==4||cut==6||cut==7) ) {
     std::cout << "Not a valid cut option! Options are cut == 4,6,7. Exiting..." << std::endl;
@@ -43,15 +43,18 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron) {
   float qcd_norm = 0;
   float qcd_err  = 0;
   if (use2D && doElectron) {
-    qcd_norm = qcd_el_2Dcut_norm[cut];
+    if (half) {qcd_norm = qcd_el_2Dcut_norm[cut] / 2.;}
+    else {qcd_norm = qcd_el_2Dcut_norm[cut];}
     qcd_err  = qcd_el_2Dcut_err[cut];
   }
   else if (use2D) {
-    qcd_norm = qcd_mu_2Dcut_norm[cut];
+    if (half) {qcd_norm = qcd_mu_2Dcut_norm[cut] / 2.;}
+    else {qcd_norm = qcd_mu_2Dcut_norm[cut];}
     qcd_err  = qcd_mu_2Dcut_err[cut];
   }
   else {
-    qcd_norm = qcd_mu_reliso_norm[cut];
+    if (half) {qcd_norm = qcd_mu_reliso_norm[cut] / 2.;}
+    else {qcd_norm = qcd_mu_reliso_norm[cut];}
     qcd_err  = qcd_mu_reliso_err[cut];
   }
 
@@ -448,6 +451,50 @@ SummedHist * getQCD( TString var, bool doElectron ) {
 
 }
 
+float getPostPreRatio(bool doElectron, TString pdfdir, bool combined, TString sample, int cut){
+
+  // post-fit file
+  TFile* fPOST;
+  if (combined) fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb.root");
+  else if (doElectron) fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el.root");
+  else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu.root");
+
+  // pre-fit file
+  TFile* fPRE;
+  if (doElectron) {
+    if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
+    if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root");
+    if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7.root");
+  }
+  else {
+    if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
+    if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root");
+    if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7.root");
+  }
+
+  TString channel = "mu_";
+  if (doElectron) channel = "el_";
+
+  TString what = "";
+  if (cut == 4) what = "etaAbsLep4";
+  if (cut == 6) what = "etaAbsLep6";
+  if (cut == 7) what = "vtxMass7";
+
+  TString hist = "";
+  if (sample == "ttbar") hist = "__TTbar";
+  if (sample == "singletop") hist = "__SingleTop";
+  if (sample == "wjets") hist = "__WJets";
+  if (sample == "qcd") hist = "__QCD";
+
+  // Get histograms
+  TH1F* h_post = (TH1F*) fPOST->Get(channel+what+hist);
+  TH1F* h_pre = (TH1F*) fPRE->Get(channel+what+hist);
+
+  //Calculate ratio 
+  float postPreRatio = h_post->Integral() / h_pre->Integral();
+
+  return postPreRatio;
+}
 
 
 #endif

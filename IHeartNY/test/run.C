@@ -62,6 +62,17 @@ void run(TString option, bool doElectron, bool combine=true) {
     makeTheta_single("vtxMass",7,doElectron,"NNPDF_pdfdown");
 
   } 
+
+  if (option=="thetaHalf") {
+
+    cout << "make theta histograms using 1/2 QCD..." << endl;
+
+    makeTheta_subtract("etaAbsLep",4,6,doElectron,"CT10_nom",true);
+    makeTheta_subtract("etaAbsLep",6,7,doElectron,"CT10_nom",true);
+    makeTheta_single("vtxMass",7,doElectron,"CT10_nom",true);
+
+  } 
+
   // various plots for kinematic checks
   else if (option=="plot") {
 
@@ -84,6 +95,30 @@ void run(TString option, bool doElectron, bool combine=true) {
     makePlots("vtxMass",7,0,doElectron);
 
   }
+
+  // various plots for kinematic checks
+  else if (option=="plotPost") {
+
+    cout << "Make various post-fit histograms..." << endl;
+
+    const int nREGION = 3;
+    const int nHIST = 11;
+    int region[nREGION] = {4,6,7};
+    int region2[nREGION] = {6,7,0};
+    TString hist[nHIST] = {"etaLep", "etaAbsLep", "ptLep",
+			   "hadtop_pt", "hadtop_mass", "hadtop_y", 
+			   "leptop_pt", "leptop_mass", "leptop_y",
+			   "ht", "ptMET"};
+    
+    for (int ih=0; ih<nHIST; ih++) {
+      for (int ir=0; ir<nREGION; ir++) {
+	makePlots(hist[ih], region[ir], region2[ir], doElectron, "CT10_nom", true, combine);
+      }
+    }  
+    makePlots("vtxMass", 7, 0, doElectron, "CT10_nom", true, combine);
+
+  }
+
 
   // various plots for kinematic checks
   else if (option=="plotex") {
@@ -170,11 +205,11 @@ void run(TString option, bool doElectron, bool combine=true) {
   // make posterior plots
   else if (option=="post") {
 
-    makePosteriorPlots("etaAbsLep4", doElectron, "CT10_nom", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, "CT10_nom", combine);
-    makePosteriorPlots("vtxMass7", doElectron, "CT10_nom", combine);
+    makePosteriorPlots("etaAbsLep4", doElectron, "CT10_nom", combine, "mu");
+    makePosteriorPlots("etaAbsLep6", doElectron, "CT10_nom", combine, "mu");
+    makePosteriorPlots("vtxMass7", doElectron, "CT10_nom", combine, "mu");
 
-    makeTable(doElectron, "CT10_nom", combine);
+    makeTable(doElectron, "CT10_nom", combine, "mu");
 
   }
 
