@@ -451,7 +451,7 @@ SummedHist * getQCD( TString var, bool doElectron ) {
 
 }
 
-float getPostPreRatio(bool doElectron, TString pdfdir, bool combined, TString sample, int cut){
+float getPostPreRatio(bool doElectron, TString pdfdir, bool combined, TString sample, int cut, int cut2){
 
   // post-fit file
   TFile* fPOST;
@@ -490,8 +490,21 @@ float getPostPreRatio(bool doElectron, TString pdfdir, bool combined, TString sa
   TH1F* h_post = (TH1F*) fPOST->Get(channel+what+hist);
   TH1F* h_pre = (TH1F*) fPRE->Get(channel+what+hist);
 
-  //Calculate ratio 
-  float postPreRatio = h_post->Integral() / h_pre->Integral();
+  // Get additional histograms if (cut,cut2) = (6,0)
+  TH1F* h_post2;
+  TH1F* h_pre2;
+  if (cut == 6 && cut2 == 0){
+    TFile* fPRE2;
+    if (doElectron) fPRE2 = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7.root");
+    else fPRE2 = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7.root");
+    h_post2 = (TH1F*) fPOST->Get(channel+"vtxMass7"+hist);
+    h_pre2 = (TH1F*) fPRE2->Get(channel+"vtxMass7"+hist);
+  }
+
+  //Calculate ratio
+  float postPreRatio;
+  if (cut == 6 && cut2 == 0) postPreRatio = ( h_post->Integral() + h_post2->Integral() ) / ( h_pre->Integral() + h_pre2->Integral() );
+  else postPreRatio = h_post->Integral() / h_pre->Integral();
 
   return postPreRatio;
 }

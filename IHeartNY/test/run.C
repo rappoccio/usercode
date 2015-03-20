@@ -101,10 +101,10 @@ void run(TString option, bool doElectron, bool combine=true) {
 
     cout << "Make various post-fit histograms..." << endl;
 
-    const int nREGION = 3;
+    const int nREGION = 4;
     const int nHIST = 11;
-    int region[nREGION] = {4,6,7};
-    int region2[nREGION] = {6,7,0};
+    int region[nREGION] = {4,6,6,7};
+    int region2[nREGION] = {6,7,0,0};
     TString hist[nHIST] = {"etaLep", "etaAbsLep", "ptLep",
 			   "hadtop_pt", "hadtop_mass", "hadtop_y", 
 			   "leptop_pt", "leptop_mass", "leptop_y",

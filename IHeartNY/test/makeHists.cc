@@ -60,7 +60,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if ( !((cut==4 && cut2==6) || (cut==6 && cut2==7) || (cut==7 && cut2==0) || (cut==6 && cut2==0))) { 
     std::cout << "Not a valid option! Syntax is: " << std::endl
 	      << "> makePlots(TString var, int cut, int cut2)" << std::endl
-	      << "where (cut, cut2) = (4,6) or (6,7) or (7,0). Exiting..." << std::endl;
+	      << "where (cut, cut2) = (4,6) or (6,7) or (7,0) or (6,0). Exiting..." << std::endl;
     return;
   }
  
@@ -147,10 +147,10 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   // Rescale to post-fit normalizations if making post-fit plots
   if (postfit) {
     // get ratios
-    float ttbarRatio = getPostPreRatio(doElectron, pdfdir, combined, "ttbar", cut);
-    float singletopRatio = getPostPreRatio(doElectron, pdfdir, combined, "singletop", cut);
-    float wjetsRatio = getPostPreRatio(doElectron, pdfdir, combined, "wjets", cut);
-    float qcdRatio = getPostPreRatio(doElectron, pdfdir, combined, "qcd", cut);
+    float ttbarRatio = getPostPreRatio(doElectron, pdfdir, combined, "ttbar", cut, cut2);
+    float singletopRatio = getPostPreRatio(doElectron, pdfdir, combined, "singletop", cut, cut2);
+    float wjetsRatio = getPostPreRatio(doElectron, pdfdir, combined, "wjets", cut, cut2);
+    float qcdRatio = getPostPreRatio(doElectron, pdfdir, combined, "qcd", cut, cut2);
     
     // And now use post/pre fit ratio to rescale
     h_ttbar->Scale(ttbarRatio);
@@ -366,8 +366,14 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   else outname = "Plots/mu_relIso_"+pdfdir+"_";
 
   if (postfit) {
-    c->SaveAs(outname+hist+"_postfit.png");
-    c->SaveAs(outname+hist+"_postfit.pdf");
+    if (cut==6 && cut2==0){
+      c->SaveAs(outname+hist+"_inc_postfit.png");
+      c->SaveAs(outname+hist+"_inc_postfit.pdf");
+    }
+    else {
+      c->SaveAs(outname+hist+"_postfit.png");
+      c->SaveAs(outname+hist+"_postfit.pdf");
+    }
   }
   else {
     if (cut2==0) {
