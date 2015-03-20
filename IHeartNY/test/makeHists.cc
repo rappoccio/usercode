@@ -943,10 +943,10 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom", bool combined=f
   std::cout << "---------------------------------------------------------------------------------" << std::endl;
   std::cout << "if options.pdf == \"" << pdfdir << "\"" << outblaj << ":   #unfold" << std::endl;
   std::cout << "    n_ttbarnonsemilep = ["
-	    << h_qcd[2]->Integral() << ", " << h_qcd[2]->Integral()*(1+fiterr_qcd) << ", " << h_qcd[2]->Integral()*(1-fiterr_qcd) << ", "
-	    << (h_qcd[1]->Integral()+h_qcd[2]->Integral()) << ", " 
-	    << (h_qcd[1]->Integral()+h_qcd[2]->Integral())*(1+fiterr_qcd) << ", " 
-	    << (h_qcd[1]->Integral()+h_qcd[2]->Integral())*(1-fiterr_qcd) << "]   #unfold" << std::endl;
+	    << h_ttbar_nonSemiLep[2]->Integral() << ", " << h_ttbar_nonSemiLep[2]->Integral()*(1+fiterr_tt) << ", " << h_ttbar_nonSemiLep[2]->Integral()*(1-fiterr_tt) << ", "
+	    << (h_ttbar_nonSemiLep[1]->Integral()+h_ttbar_nonSemiLep[2]->Integral()) << ", " 
+	    << (h_ttbar_nonSemiLep[1]->Integral()+h_ttbar_nonSemiLep[2]->Integral())*(1+fiterr_tt) << ", " 
+	    << (h_ttbar_nonSemiLep[1]->Integral()+h_ttbar_nonSemiLep[2]->Integral())*(1-fiterr_tt) << "]   #unfold" << std::endl;
   std::cout << "    n_wjets           = ["
 	    << h_wjets[2]->Integral() << ", " << h_wjets[2]->Integral()*(1+fiterr_wjets) << ", " << h_wjets[2]->Integral()*(1-fiterr_wjets) << ", "
 	    << (h_wjets[1]->Integral()+h_wjets[2]->Integral()) << ", " 
