@@ -48,7 +48,7 @@ void mySmallText(Double_t x,Double_t y,Color_t color,char const *text) {
 // make pretty plots
 // -------------------------------------------------------------------------------------
 
-void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString pdfdir="CT10_nom", bool postfit = false, bool combined = true) {
+void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString pdfdir="CT10_nom", bool postfit=false, bool combined=false) {
 
 
   TString syst = "nom";
@@ -189,8 +189,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     newtitle = "Events / 10 GeV";
   }
   else if (hist=="hadtop_pt6" || hist=="hadtop_pt7" || var=="leptop_pt") {
-    rebin = 4;
-    newtitle = "Events / 20 GeV";
+    rebin = 5;
+    newtitle = "Events / 25 GeV";
   }
   else if (hist=="hadtop_y6" || hist=="hadtop_y7" || hist=="leptop_y6" || hist=="leptop_y7") {
     rebin = 2;
