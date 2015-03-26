@@ -347,7 +347,7 @@ def getElectronSF(elEta, elPt) :
 
 # -------------------------------------------------------------------------------------
 # Top-tagging SF
-def getToptagSF(jetEta) :
+def getToptagSF(jetEta, pdfSet, pdfSys, isElec) :
 
     toptagSF = 1.0
     if abs(jetEta) < 1.0 :
@@ -355,19 +355,35 @@ def getToptagSF(jetEta) :
     else :
         toptagSF = 0.704
 
+    toptag_post = 1.0
+    #if (pdfSet==1 and pdfSys==0 and isElec==False):
+    #    toptag_post = 1.10649440886
+    #if (pdfSet==1 and pdfSys==1 and isElec==False):
+    #    toptag_post = 1.06707266216
+    #if (pdfSet==1 and pdfSys==-1 and isElec==False):
+    #    toptag_post = 1.13966730776
+    #if (pdfSet==1 and pdfSys==0 and isElec):
+    #    toptag_post = 1.09579275566
+    #if (pdfSet==1 and pdfSys==1 and isElec):
+    #    toptag_post = 1.07216881228
+    #if (pdfSet==1 and pdfSys==-1 and isElec):
+    #    toptag_post = 1.11804095015        
+
+    toptagSF = toptagSF * toptag_post
+    
     return float(toptagSF)
 
 
 # Top-tagging SF error
-def getToptagSFerror(jetEta) :
+def getToptagSFerror(jetEta, pdfSet, pdfSys, isElec) :
 
     toptagSFerr = 0.0
     if abs(jetEta) < 1.1 :
-        toptagSF = 0.092
+        toptagSFerr = 0.092
     else :
-        toptagSF = 0.110
+        toptagSFerr = 0.110
 
-    return float(toptagSF)
+    return float(toptagSFerr)
 # -------------------------------------------------------------------------------------
 
 
@@ -3352,7 +3368,10 @@ for event in events :
     toptagSF = 1.0
     if options.isData == False :
         topEta = goodtop.Eta()
-        toptagSF = getToptagSF(topEta)
+        isElec = True
+        if options.lepType == "muon":
+            isElec = False
+        toptagSF = getToptagSF(topEta, options.pdfSet, options.pdfSys, isElec)
         if options.toptagSys != None :
             toptagSF *= (1.0 + options.toptagSys) ## scale up/down by 25%
 		
