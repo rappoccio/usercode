@@ -783,9 +783,15 @@ if options.lepType == "muon":
     h_etaAbsLep2 = ROOT.TH1F("etaAbsLep2", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep3 = ROOT.TH1F("etaAbsLep3", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep4 = ROOT.TH1F("etaAbsLep4", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4_low = ROOT.TH1F("etaAbsLep4Low", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4_high = ROOT.TH1F("etaAbsLep4High", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep6_low = ROOT.TH1F("etaAbsLep6Low", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep6_high = ROOT.TH1F("etaAbsLep6High", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7_low = ROOT.TH1F("etaAbsLep7Low", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7_high = ROOT.TH1F("etaAbsLep7High", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7_any  = ROOT.TH1F("etaAbsLep7_any",  ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7_lead = ROOT.TH1F("etaAbsLep7_lead", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
 
@@ -831,9 +837,15 @@ else:
     h_etaAbsLep2 = ROOT.TH1F("etaAbsLep2", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep3 = ROOT.TH1F("etaAbsLep3", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep4 = ROOT.TH1F("etaAbsLep4", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4_low = ROOT.TH1F("etaAbsLep4Low", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4_high = ROOT.TH1F("etaAbsLep4High", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep6_low = ROOT.TH1F("etaAbsLep6Low", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep6_high = ROOT.TH1F("etaAbsLep6High", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7_low = ROOT.TH1F("etaAbsLep7Low", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7_high = ROOT.TH1F("etaAbsLep7High", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7_any  = ROOT.TH1F("etaAbsLep7_any",  ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7_lead = ROOT.TH1F("etaAbsLep7_lead", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
 
@@ -985,6 +997,8 @@ h_vtxMass4 = ROOT.TH1F("vtxMass4", ";Leptonic-side secondary vertex mass [GeV]; 
 h_vtxMass5 = ROOT.TH1F("vtxMass5", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass6 = ROOT.TH1F("vtxMass6", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass7 = ROOT.TH1F("vtxMass7", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+h_vtxMass7_low = ROOT.TH1F("vtxMass7Low", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+h_vtxMass7_high = ROOT.TH1F("vtxMass7High", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass7_any  = ROOT.TH1F("vtxMass7_any",  ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass7_lead = ROOT.TH1F("vtxMass7_lead", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 
@@ -3038,6 +3052,10 @@ for event in events :
     h_ptLep4.Fill(lepton.p4().Perp(), weight)
     h_etaLep4.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep4.Fill(abs(lepton.p4().Eta()), weight)
+    if (hadJets[0].Perp() < 600.) :
+        h_etaAbsLep4_low.Fill(abs(lepton.p4().Eta()), weight)
+    if (hadJets[0].Perp() > 600.) :
+        h_etaAbsLep4_high.Fill(abs(lepton.p4().Eta()), weight)
     h_nJets4.Fill(nJets, weight)
     h_nBJets4.Fill(nBJets, weight)
     h_nLepJets4.Fill(len(lepJets), weight)
@@ -3400,6 +3418,10 @@ for event in events :
     h_ptLep6.Fill(lepton.p4().Perp(), weight)
     h_etaLep6.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep6.Fill(abs(lepton.p4().Eta()), weight)
+    if (goodtop.Perp() < 600.) :
+        h_etaAbsLep6_low.Fill(abs(lepton.p4().Eta()), weight)
+    if (goodtop.Perp() > 600.) :
+        h_etaAbsLep6_high.Fill(abs(lepton.p4().Eta()), weight)
     h_nJets6.Fill(nJets, weight)
     h_nBJets6.Fill(nBJets, weight)
     h_nLepJets6.Fill(len(lepJets), weight)
@@ -3738,6 +3760,11 @@ for event in events :
     h_ptLep7.Fill(lepton.p4().Perp(), weight)
     h_etaLep7.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep7.Fill(abs(lepton.p4().Eta()), weight)
+    if (goodtop.Perp() < 600.) :
+        h_etaAbsLep7_low.Fill(abs(lepton.p4().Eta()), weight)
+    if (goodtop.Perp() > 600.) :
+        h_etaAbsLep7_high.Fill(abs(lepton.p4().Eta()), weight)
+
     h_dRvspT7.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     
     if len(lepJets) > 1:
@@ -3749,6 +3776,10 @@ for event in events :
     h_ptBJet7.Fill(bjet_pt, weight)
     h_etaBJet7.Fill(bjet_eta, weight)
     h_vtxMass7.Fill(bjet_vtxmass, weight)
+    if (goodtop.Perp() < 600.) :
+        h_vtxMass7_low.Fill(bjet_vtxmass, weight)
+    if (goodtop.Perp() > 600.) :
+        h_vtxMass7_high.Fill(bjet_vtxmass, weight)
     h_flavorBJet7.Fill(bjet_flavor, weight)
                 
     h_ht7.Fill(ht, weight)
