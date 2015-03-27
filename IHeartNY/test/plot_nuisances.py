@@ -165,7 +165,7 @@ for pdfname in pdfnames :
 		name = "JEC"
             if systematic=="jer":
 		name = "JER"
-            if systematic=="rate_qcd":
+            if systematic=="rate_qcd" or systematic=="rate_el_qcd" or systematic=="rate_mu_qcd":
 		name = "N(QCD)"
             if systematic=="rate_st":
 		name = "N(single top)"
