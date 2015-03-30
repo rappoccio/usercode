@@ -971,7 +971,7 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom", bool combined=f
 // make theta histograms without subtracting
 // -------------------------------------------------------------------------------------
 
-void makeTheta_single(TString var, int cut, bool doElectron=false, TString pdfdir="CT10_nom", bool half = false) {
+void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false, TString pdfdir="CT10_nom", bool half = false) {
   
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -985,6 +985,7 @@ void makeTheta_single(TString var, int cut, bool doElectron=false, TString pdfdi
  
   TString hist = var;
   hist += cut;
+  hist += ptbin;
 
 
   // read QCD normalization
@@ -1007,22 +1008,22 @@ void makeTheta_single(TString var, int cut, bool doElectron=false, TString pdfdi
   if (doElectron) channel = "el_";
 
   for (int is=0; is<nSYST; is++) {
-    wjets[is]     = getWJets( name_syst[is], hist, doElectron );
-    singletop[is] = getSingleTop( name_syst[is], hist, doElectron );
-    ttbar_semiLep[is]     = getTTbar( name_syst[is], hist, doElectron, pdfdir );
-    ttbar_nonSemiLep[is] = getTTbarNonSemiLep( name_syst[is], hist, doElectron, pdfdir );
+    wjets[is]     = getWJets( name_syst[is], hist, doElectron, ptbin );
+    singletop[is] = getSingleTop( name_syst[is], hist, doElectron, ptbin );
+    ttbar_semiLep[is]     = getTTbar( name_syst[is], hist, doElectron, ptbin, pdfdir );
+    ttbar_nonSemiLep[is] = getTTbarNonSemiLep( name_syst[is], hist, doElectron, ptbin, pdfdir );
 
     // do the ttbar combination
     ttbar[is] = (TH1F*) ttbar_semiLep[is]->hist()->Clone();
     ttbar[is]->Add(ttbar_nonSemiLep[is]->hist());
 
     TString tempname = channel + hist + "__TTbar";
-    adjustThetaName( tempname, name_syst[is] );
+    adjustThetaName( tempname, name_syst[is], ptbin );
     ttbar[is]->SetName(tempname);
   }
 
   // QCD
-  SummedHist* qcd = getQCD( hist, doElectron );
+  SummedHist* qcd = getQCD( hist, doElectron, ptbin );
   
 
   // data
@@ -1070,7 +1071,7 @@ void makeTheta_single(TString var, int cut, bool doElectron=false, TString pdfdi
 // make histograms, subtract one from another
 // -------------------------------------------------------------------------------------
 
-void makeTheta_subtract(TString var, int cut1, int cut2, bool doElectron=false, TString pdfdir="_CT10_nom", bool half = false) {
+void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doElectron=false, TString pdfdir="_CT10_nom", bool half = false) {
 
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -1085,7 +1086,8 @@ void makeTheta_subtract(TString var, int cut1, int cut2, bool doElectron=false, 
   TString hist[2] = {var, var};
   hist[0] += cut1;
   hist[1] += cut2;
-
+  hist[0] += ptbin;
+  hist[1] += ptbin;
 
   // read QCD normalization
   std::pair<double, double> qcdnorm = getQCDnorm(cut1, doElectron, half);
@@ -1110,23 +1112,23 @@ void makeTheta_subtract(TString var, int cut1, int cut2, bool doElectron=false, 
 
   for (int ih=0; ih<2; ih++) {
     for (int is=0; is<nSYST; is++) {
-      wjets[is][ih]     = getWJets( name_syst[is], hist[ih], doElectron );
-      singletop[is][ih] = getSingleTop( name_syst[is], hist[ih], doElectron );
-      ttbar_semiLep[is][ih]     = getTTbar( name_syst[is], hist[ih], doElectron, pdfdir );
-      ttbar_nonSemiLep[is][ih] = getTTbarNonSemiLep( name_syst[is], hist[ih], doElectron, pdfdir );
+      wjets[is][ih]     = getWJets( name_syst[is], hist[ih], doElectron, ptbin );
+      singletop[is][ih] = getSingleTop( name_syst[is], hist[ih], doElectron, ptbin );
+      ttbar_semiLep[is][ih]     = getTTbar( name_syst[is], hist[ih], doElectron, ptbin, pdfdir );
+      ttbar_nonSemiLep[is][ih] = getTTbarNonSemiLep( name_syst[is], hist[ih], doElectron, ptbin, pdfdir );
 
       ttbar[is][ih] = (TH1F*) ttbar_semiLep[is][ih]->hist()->Clone();
       ttbar[is][ih]->Add(ttbar_nonSemiLep[is][ih]->hist());
       TString tempname = channel + hist[ih] + "__TTbar";
-      adjustThetaName( tempname, name_syst[is] );
+      adjustThetaName( tempname, name_syst[is], ptbin );
       ttbar[is][ih]->SetName(tempname);
     }
   }
 
   // QCD
   SummedHist* qcd[2];
-  qcd[0] = getQCD( hist[0], doElectron );
-  qcd[1] = getQCD( hist[1], doElectron );
+  qcd[0] = getQCD( hist[0], doElectron, ptbin );
+  qcd[1] = getQCD( hist[1], doElectron, ptbin );
 
 
   // data

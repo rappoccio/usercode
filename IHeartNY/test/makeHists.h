@@ -125,7 +125,7 @@ class SummedHist {
 // modify name for theta input
 // -------------------------------------------------------------------------------------
 
-void adjustThetaName( TString & thetaname, TString name ) {
+void adjustThetaName( TString & thetaname, TString name, TString ptbin = "" ) {
   if      ( name == "nom" ) return;
   else if ( name == "pdfup_CT10" ) thetaname += "__pdf_CT10__up";
   else if ( name == "pdfdn_CT10" ) thetaname += "__pdf_CT10__down";
@@ -141,8 +141,8 @@ void adjustThetaName( TString & thetaname, TString name ) {
   else if ( name == "jerup" ) thetaname += "__jer__up";
   else if ( name == "scaledown_nom" ) thetaname += "__scale__down";
   else if ( name == "scaleup_nom" ) thetaname += "__scale__up";
-  else if ( name == "toptagdn" ) thetaname += "__toptag__down";
-  else if ( name == "toptagup" ) thetaname += "__toptag__up";
+  else if ( name == "toptagdn" ) thetaname += "__toptag"+ptbin+"__down";
+  else if ( name == "toptagup" ) thetaname += "__toptag"+ptbin+"__up";
   else if ( name == "btagdn" ) thetaname += "__btag__down";
   else if ( name == "btagup" ) thetaname += "__btag__up";
   else if ( name == "qcd" ) thetaname += "qcd";
@@ -158,7 +158,7 @@ void adjustThetaName( TString & thetaname, TString name ) {
 // W+jets
 // -------------------------------------------------------------------------------------
 
-SummedHist * getWJets( TString name, TString histname, bool doElectron ) {
+SummedHist * getWJets( TString name, TString histname, bool doElectron, TString ptbin = "") {
 
   const int nwjets = 4;
 
@@ -186,7 +186,7 @@ SummedHist * getWJets( TString name, TString histname, bool doElectron ) {
   if (doElectron) thetaChannel = "el_";
 
   TString thetaname = thetaChannel + histname + "__WJets";
-  adjustThetaName( thetaname, name );
+  adjustThetaName( thetaname, name, ptbin );
   
   SummedHist* wjets = new SummedHist( thetaname, kGreen-3 );
   
@@ -211,7 +211,7 @@ SummedHist * getWJets( TString name, TString histname, bool doElectron ) {
 // single top
 // -------------------------------------------------------------------------------------
 
-SummedHist * getSingleTop( TString name, TString histname, bool doElectron ) {
+SummedHist * getSingleTop( TString name, TString histname, bool doElectron, TString ptbin = "") {
 
   const int nsingletop = 6;
 
@@ -243,7 +243,7 @@ SummedHist * getSingleTop( TString name, TString histname, bool doElectron ) {
   if (doElectron) thetaChannel = "el_";
 
   TString thetaname = thetaChannel + histname + "__SingleTop";
-  adjustThetaName( thetaname, name );
+  adjustThetaName( thetaname, name, ptbin );
 
   SummedHist* singletop = new SummedHist( thetaname, 6 );
 
@@ -268,7 +268,7 @@ SummedHist * getSingleTop( TString name, TString histname, bool doElectron ) {
 // non-semileptonic ttbar
 // -------------------------------------------------------------------------------------
 
-SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron, TString pdfdir = "CT10_nom" ) {
+SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron, TString ptbin = "", TString pdfdir = "CT10_nom" ) {
 
   const int nttbar = 3;
   const int nq2 = 3;
@@ -315,7 +315,7 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
   if (doElectron) thetaChannel = "el_";
 
   TString thetaname = thetaChannel + histname + "__TTbar_nonSemiLep";
-  adjustThetaName( thetaname, name );
+  adjustThetaName( thetaname, name, ptbin );
 
   SummedHist* ttbar = new SummedHist( thetaname, kRed-7);
 
@@ -340,7 +340,7 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
 // signal ttbar
 // -------------------------------------------------------------------------------------
 
-SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString pdfdir = "CT10_nom" ) {
+SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString ptbin = "", TString pdfdir = "CT10_nom" ) {
 
   const int nttbar = 3;
   const int nq2 = 3;
@@ -388,7 +388,7 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
   if (doElectron) thetaChannel = "el_";
 
   TString thetaname = thetaChannel + histname + "__TTbar_semiLep";
-  adjustThetaName( thetaname, name );
+  adjustThetaName( thetaname, name, ptbin );
   
   SummedHist* ttbar = new SummedHist( thetaname, kRed +1);
 	
@@ -413,12 +413,12 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
 // QCD
 // -------------------------------------------------------------------------------------
 
-SummedHist * getQCD( TString var, bool doElectron ) {
+SummedHist * getQCD( TString var, bool doElectron, TString ptbin = "" ) {
 
-  SummedHist* wjets_qcd = getWJets( "qcd", var, doElectron );
-  SummedHist* singletop_qcd = getSingleTop( "qcd", var, doElectron );
-  SummedHist* ttbar_qcd = getTTbar( "qcd", var, doElectron );
-  SummedHist* ttbar_nonsemilep_qcd = getTTbarNonSemiLep( "qcd", var, doElectron );
+  SummedHist* wjets_qcd = getWJets( "qcd", var, doElectron, ptbin );
+  SummedHist* singletop_qcd = getSingleTop( "qcd", var, doElectron, ptbin );
+  SummedHist* ttbar_qcd = getTTbar( "qcd", var, doElectron, ptbin );
+  SummedHist* ttbar_nonsemilep_qcd = getTTbarNonSemiLep( "qcd", var, doElectron, ptbin );
 
   SummedHist* qcd;
   if (doElectron) qcd = new SummedHist( "el_" + var + "__QCD", kYellow);
@@ -451,7 +451,7 @@ SummedHist * getQCD( TString var, bool doElectron ) {
 
 }
 
-float getPostPreRatio(bool doElectron, TString pdfdir, bool combined, TString sample, int cut, int cut2){
+float getPostPreRatio(bool doElectron, TString pdfdir, bool combined, TString sample, int cut, int cut2, TString ptbin = ""){
 
   // post-fit file
   TFile* fPOST;
@@ -462,23 +462,23 @@ float getPostPreRatio(bool doElectron, TString pdfdir, bool combined, TString sa
   // pre-fit file
   TFile* fPRE;
   if (doElectron) {
-    if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
-    if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root");
-    if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7.root");
+    if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+".root");
+    if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+".root");
+    if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7"+ptbin+".root");
   }
   else {
-    if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
-    if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root");
-    if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7.root");
+    if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+".root");
+    if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+".root");
+    if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7"+ptbin+".root");
   }
 
   TString channel = "mu_";
   if (doElectron) channel = "el_";
 
   TString what = "";
-  if (cut == 4) what = "etaAbsLep4";
-  if (cut == 6) what = "etaAbsLep6";
-  if (cut == 7) what = "vtxMass7";
+  if (cut == 4) what = "etaAbsLep4"+ptbin;
+  if (cut == 6) what = "etaAbsLep6"+ptbin;
+  if (cut == 7) what = "vtxMass7"+ptbin;
 
   TString hist = "";
   if (sample == "ttbar") hist = "__TTbar";
@@ -495,10 +495,10 @@ float getPostPreRatio(bool doElectron, TString pdfdir, bool combined, TString sa
   TH1F* h_pre2;
   if (cut == 6 && cut2 == 0){
     TFile* fPRE2;
-    if (doElectron) fPRE2 = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7.root");
-    else fPRE2 = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7.root");
-    h_post2 = (TH1F*) fPOST->Get(channel+"vtxMass7"+hist);
-    h_pre2 = (TH1F*) fPRE2->Get(channel+"vtxMass7"+hist);
+    if (doElectron) fPRE2 = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7"+ptbin+".root");
+    else fPRE2 = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7"+ptbin+".root");
+    h_post2 = (TH1F*) fPOST->Get(channel+"vtxMass7"+ptbin+hist);
+    h_pre2 = (TH1F*) fPRE2->Get(channel+"vtxMass7"+ptbin+hist);
   }
 
   //Calculate ratio
