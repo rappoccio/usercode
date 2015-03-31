@@ -24,7 +24,7 @@ bool use2D = true;
 // QCD normalization
 // -------------------------------------------------------------------------------------
 
-std::pair<double, double> getQCDnorm(int cut, bool doElectron, bool half = false) {
+std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bool half = false) {
 
   if ( !(cut==4||cut==6||cut==7) ) {
     std::cout << "Not a valid cut option! Options are cut == 4,6,7. Exiting..." << std::endl;
@@ -56,6 +56,47 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron, bool half = false
     if (half) {qcd_norm = qcd_mu_reliso_norm[cut] / 2.;}
     else {qcd_norm = qcd_mu_reliso_norm[cut];}
     qcd_err  = qcd_mu_reliso_err[cut];
+  }
+
+  if (ptbin != ""){
+    TH1F* h_qcd_bin;
+    TH1F* h_qcd_sum;
+
+    if (cut == 4){
+      SummedHist* qcd_bin_4 = getQCD("etaAbsLep4"+ptbin, doElectron, ptbin );
+      SummedHist* qcd_bin_6 = getQCD("etaAbsLep6"+ptbin, doElectron, ptbin );
+      SummedHist* qcd_sum_4 = getQCD("etaAbsLep4", doElectron, "");
+      SummedHist* qcd_sum_6 = getQCD("etaAbsLep6", doElectron, "");
+      
+      h_qcd_bin = (TH1F*) qcd_bin_4->hist();
+      h_qcd_sum = (TH1F*) qcd_sum_4->hist();
+      h_qcd_bin->Add(qcd_bin_6->hist(), -1);
+      h_qcd_sum->Add(qcd_sum_6->hist(), -1);      
+    }
+
+    if (cut == 6){
+      SummedHist* qcd_bin_6 = getQCD("etaAbsLep6"+ptbin, doElectron, ptbin );
+      SummedHist* qcd_bin_7 = getQCD("etaAbsLep7"+ptbin, doElectron, ptbin );
+      SummedHist* qcd_sum_6 = getQCD("etaAbsLep6", doElectron, "");
+      SummedHist* qcd_sum_7 = getQCD("etaAbsLep7", doElectron, "");
+      
+      h_qcd_bin = (TH1F*) qcd_bin_6->hist();
+      h_qcd_sum = (TH1F*) qcd_sum_6->hist();
+      h_qcd_bin->Add(qcd_bin_7->hist(), -1);
+      h_qcd_sum->Add(qcd_sum_7->hist(), -1);
+      
+    }
+    
+    if (cut == 7){
+      SummedHist* qcd_bin_0 = getQCD("vtxMass7"+ptbin, doElectron, ptbin );
+      SummedHist* qcd_sum_0 = getQCD("vtxMass7", doElectron, "");
+      
+      h_qcd_bin = (TH1F*) qcd_bin_0->hist();
+      h_qcd_sum = (TH1F*) qcd_sum_0->hist();
+    }
+
+    float ratio = h_qcd_bin->Integral() / h_qcd_sum->Integral();
+    qcd_norm = qcd_norm * ratio;
   }
 
   return std::make_pair(qcd_norm, qcd_err);
@@ -451,13 +492,22 @@ SummedHist * getQCD( TString var, bool doElectron, TString ptbin = "" ) {
 
 }
 
-float getPostPreRatio(bool doElectron, TString pdfdir, bool combined, TString sample, int cut, int cut2, TString ptbin = ""){
+float getPostPreRatio(bool doElectron, TString ptbin, TString pdfdir, bool combined, TString sample, int cut, int cut2){
 
   // post-fit file
   TFile* fPOST;
-  if (combined) fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb.root");
-  else if (doElectron) fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el.root");
-  else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu.root");
+  if (combined) {
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_1bin.root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_2bin.root");
+  }
+  else if (doElectron) {
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el_1bin.root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el_2bin.root");
+  }
+  else {
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu_1bin.root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu_2bin.root");
+  }
 
   // pre-fit file
   TFile* fPRE;

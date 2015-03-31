@@ -155,9 +155,9 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
 
   else if (option=="allpre") {
 
-    makePlots("vtxMass",7,0,doElectron,"CT10_nom");
-    makePlots("etaAbsLep",6,7,doElectron,"CT10_nom");
-    makePlots("etaAbsLep",4,6,doElectron,"CT10_nom");
+    makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_nom");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"CT10_nom");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"CT10_nom");
 
     /*
     makePlots("vtxMass",7,0,doElectron,"CT10_pdfup");
@@ -205,11 +205,11 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
   // make posterior plots
   else if (option=="post") {
 
-    makePosteriorPlots("etaAbsLep4", doElectron, "CT10_nom", combine, "mu");
-    makePosteriorPlots("etaAbsLep6", doElectron, "CT10_nom", combine, "mu");
-    makePosteriorPlots("vtxMass7", doElectron, "CT10_nom", combine, "mu");
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine);
 
-    makeTable(doElectron, "CT10_nom", combine, "mu");
+    //makeTable(doElectron, "CT10_nom", combine, "mu");
 
   }
 
