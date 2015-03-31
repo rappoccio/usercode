@@ -694,7 +694,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 // print post-fit latex table
 // -------------------------------------------------------------------------------------
 // NOTE: THIS HAS NOT BEEN UPDATED FOR THE 2-BIN FIT
-void makeTable(bool doElectron=false, TString pdfdir="CT10_nom", bool combined=false, bool half = false) {
+void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false) {
 
   TString what[3] = {"etaAbsLep4","etaAbsLep6","vtxMass7"};
 
@@ -816,9 +816,9 @@ void makeTable(bool doElectron=false, TString pdfdir="CT10_nom", bool combined=f
 
 
   // read QCD error
-  std::pair<double, double> qcdnorm4 = getQCDnorm(4, doElectron);
-  std::pair<double, double> qcdnorm6 = getQCDnorm(6, doElectron);
-  std::pair<double, double> qcdnorm7 = getQCDnorm(7, doElectron);
+  std::pair<double, double> qcdnorm4 = getQCDnorm(4, doElectron, ptbin);
+  std::pair<double, double> qcdnorm6 = getQCDnorm(6, doElectron, ptbin);
+  std::pair<double, double> qcdnorm7 = getQCDnorm(7, doElectron, ptbin);
   double err_qcd_up[3];
   double err_qcd_dn[3];
   err_qcd_up[0] = qcdnorm4.second; 
