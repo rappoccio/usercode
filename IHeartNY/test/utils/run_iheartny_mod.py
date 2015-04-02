@@ -11,7 +11,7 @@ class SystVar :
         self.flags = flags
 
 class Sample :
-    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, btagsys=False, qcd=False, newiso=False, pu='ttbar', flags='' ) :
+    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, btagsys=False, qcd=False, newiso=True, pu='ttbar', flags='' ) :
         self.directory=directory
 
         if newiso :
