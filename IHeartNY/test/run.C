@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void run(TString option, bool doElectron, bool combine=true) {
+void run(TString option, bool doElectron, bool combine=true, TString ptbin = "") {
   
   cout << "compile macro..." << endl;
   gSystem->CompileMacro("makeHists.cc");
@@ -17,49 +17,49 @@ void run(TString option, bool doElectron, bool combine=true) {
 
     cout << "make theta histograms..." << endl;
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"scaleup");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"scaleup");
-    makeTheta_single("vtxMass",7,doElectron,"scaleup");
+    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"scaleup");
+    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"scaleup");
+    //makeTheta_single("vtxMass",7,ptbin,doElectron"scaleup");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"scaledown");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"scaledown");
-    makeTheta_single("vtxMass",7,doElectron,"scaledown");
+    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"scaledown");
+    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"scaledown");
+    //makeTheta_single("vtxMass",7,ptbin,doElectron,"scaledown");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"CT10_nom");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"CT10_nom");
-    makeTheta_single("vtxMass",7,doElectron,"CT10_nom");
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_nom");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_nom");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_nom");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"CT10_pdfup");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"CT10_pdfup");
-    makeTheta_single("vtxMass",7,doElectron,"CT10_pdfup");
+    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_pdfup");
+    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_pdfup");
+    //makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_pdfup");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"CT10_pdfdown");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"CT10_pdfdown");
-    makeTheta_single("vtxMass",7,doElectron,"CT10_pdfdown");
+    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_pdfdown");
+    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_pdfdown");
+    //makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_pdfdown");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"MSTW_nom");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"MSTW_nom");
-    makeTheta_single("vtxMass",7,doElectron,"MSTW_nom");
+    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"MSTW_nom");
+    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"MSTW_nom");
+    //makeTheta_single("vtxMass",7,ptbin,doElectron,"MSTW_nom");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"MSTW_pdfup");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"MSTW_pdfup");
-    makeTheta_single("vtxMass",7,doElectron,"MSTW_pdfup");
+    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"MSTW_pdfup");
+    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"MSTW_pdfup");
+    //makeTheta_single("vtxMass",7,ptbin,doElectron,"MSTW_pdfup");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"MSTW_pdfdown");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"MSTW_pdfdown");
-    makeTheta_single("vtxMass",7,doElectron,"MSTW_pdfdown");
+    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"MSTW_pdfdown");
+    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"MSTW_pdfdown");
+    //makeTheta_single("vtxMass",7,ptbin,doElectron,"MSTW_pdfdown");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"NNPDF_nom");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"NNPDF_nom");
-    makeTheta_single("vtxMass",7,doElectron,"NNPDF_nom");
+    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"NNPDF_nom");
+    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"NNPDF_nom");
+    //makeTheta_single("vtxMass",7,ptbin,doElectron,"NNPDF_nom");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"NNPDF_pdfup");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"NNPDF_pdfup");
-    makeTheta_single("vtxMass",7,doElectron,"NNPDF_pdfup");
+    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"NNPDF_pdfup");
+    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"NNPDF_pdfup");
+    //makeTheta_single("vtxMass",7,ptbin,doElectron,"NNPDF_pdfup");
 
-    makeTheta_subtract("etaAbsLep",4,6,doElectron,"NNPDF_pdfdown");
-    makeTheta_subtract("etaAbsLep",6,7,doElectron,"NNPDF_pdfdown");
-    makeTheta_single("vtxMass",7,doElectron,"NNPDF_pdfdown");
+    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"NNPDF_pdfdown");
+    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"NNPDF_pdfdown");
+    //makeTheta_single("vtxMass",7,ptbin,doElectron,"NNPDF_pdfdown");
 
   } 
 
@@ -155,9 +155,9 @@ void run(TString option, bool doElectron, bool combine=true) {
 
   else if (option=="allpre") {
 
-    makePlots("vtxMass",7,0,doElectron,"CT10_nom");
-    makePlots("etaAbsLep",6,7,doElectron,"CT10_nom");
-    makePlots("etaAbsLep",4,6,doElectron,"CT10_nom");
+    makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_nom");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"CT10_nom");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"CT10_nom");
 
     /*
     makePlots("vtxMass",7,0,doElectron,"CT10_pdfup");
@@ -205,11 +205,11 @@ void run(TString option, bool doElectron, bool combine=true) {
   // make posterior plots
   else if (option=="post") {
 
-    makePosteriorPlots("etaAbsLep4", doElectron, "CT10_nom", combine, "mu");
-    makePosteriorPlots("etaAbsLep6", doElectron, "CT10_nom", combine, "mu");
-    makePosteriorPlots("vtxMass7", doElectron, "CT10_nom", combine, "mu");
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine);
 
-    makeTable(doElectron, "CT10_nom", combine, "mu");
+    makeTable(doElectron, "", "CT10_nom", combine);
 
   }
 

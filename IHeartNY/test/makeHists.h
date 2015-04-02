@@ -19,50 +19,6 @@
 const double LUM = 19.7;
 bool use2D = true;
 
-
-// -------------------------------------------------------------------------------------
-// QCD normalization
-// -------------------------------------------------------------------------------------
-
-std::pair<double, double> getQCDnorm(int cut, bool doElectron, bool half = false) {
-
-  if ( !(cut==4||cut==6||cut==7) ) {
-    std::cout << "Not a valid cut option! Options are cut == 4,6,7. Exiting..." << std::endl;
-    return std::make_pair(0,0);
-  }
-
-  float qcd_mu_reliso_norm[8] = {0.0, 0.0, 0.0, 0.0,  401.4, 0.0, 28.5,  1.0};
-  float qcd_mu_reliso_err[8]  = {0.0, 0.0, 0.0, 0.0,   71.6, 0.0, 21.5, 10.0};
-  float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1450., 0.0, 58., 11.0};
-  float qcd_mu_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   82., 0.0, 24., 13.0};
-
-  // for now, electrons using same values as for muons -- needs to be updated!
-  float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 4107., 0.0, 257., 20.5};
-  float qcd_el_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   71., 0.0,  18.,  6.7};
-
-  float qcd_norm = 0;
-  float qcd_err  = 0;
-  if (use2D && doElectron) {
-    if (half) {qcd_norm = qcd_el_2Dcut_norm[cut] / 2.;}
-    else {qcd_norm = qcd_el_2Dcut_norm[cut];}
-    qcd_err  = qcd_el_2Dcut_err[cut];
-  }
-  else if (use2D) {
-    if (half) {qcd_norm = qcd_mu_2Dcut_norm[cut] / 2.;}
-    else {qcd_norm = qcd_mu_2Dcut_norm[cut];}
-    qcd_err  = qcd_mu_2Dcut_err[cut];
-  }
-  else {
-    if (half) {qcd_norm = qcd_mu_reliso_norm[cut] / 2.;}
-    else {qcd_norm = qcd_mu_reliso_norm[cut];}
-    qcd_err  = qcd_mu_reliso_err[cut];
-  }
-
-  return std::make_pair(qcd_norm, qcd_err);
-
-}
-
-
 // -------------------------------------------------------------------------------------
 // helper class for summed, weighted histograms (e.g. single top)
 // -------------------------------------------------------------------------------------
@@ -125,7 +81,7 @@ class SummedHist {
 // modify name for theta input
 // -------------------------------------------------------------------------------------
 
-void adjustThetaName( TString & thetaname, TString name ) {
+void adjustThetaName( TString & thetaname, TString name, TString ptbin = "" ) {
   if      ( name == "nom" ) return;
   else if ( name == "pdfup_CT10" ) thetaname += "__pdf_CT10__up";
   else if ( name == "pdfdn_CT10" ) thetaname += "__pdf_CT10__down";
@@ -141,8 +97,8 @@ void adjustThetaName( TString & thetaname, TString name ) {
   else if ( name == "jerup" ) thetaname += "__jer__up";
   else if ( name == "scaledown_nom" ) thetaname += "__scale__down";
   else if ( name == "scaleup_nom" ) thetaname += "__scale__up";
-  else if ( name == "toptagdn" ) thetaname += "__toptag__down";
-  else if ( name == "toptagup" ) thetaname += "__toptag__up";
+  else if ( name == "toptagdn" ) thetaname += "__toptag"+ptbin+"__down";
+  else if ( name == "toptagup" ) thetaname += "__toptag"+ptbin+"__up";
   else if ( name == "btagdn" ) thetaname += "__btag__down";
   else if ( name == "btagup" ) thetaname += "__btag__up";
   else if ( name == "qcd" ) thetaname += "qcd";
@@ -158,7 +114,7 @@ void adjustThetaName( TString & thetaname, TString name ) {
 // W+jets
 // -------------------------------------------------------------------------------------
 
-SummedHist * getWJets( TString name, TString histname, bool doElectron ) {
+SummedHist * getWJets( TString name, TString histname, bool doElectron, TString ptbin = "") {
 
   const int nwjets = 4;
 
@@ -186,7 +142,7 @@ SummedHist * getWJets( TString name, TString histname, bool doElectron ) {
   if (doElectron) thetaChannel = "el_";
 
   TString thetaname = thetaChannel + histname + "__WJets";
-  adjustThetaName( thetaname, name );
+  adjustThetaName( thetaname, name, ptbin );
   
   SummedHist* wjets = new SummedHist( thetaname, kGreen-3 );
   
@@ -211,7 +167,7 @@ SummedHist * getWJets( TString name, TString histname, bool doElectron ) {
 // single top
 // -------------------------------------------------------------------------------------
 
-SummedHist * getSingleTop( TString name, TString histname, bool doElectron ) {
+SummedHist * getSingleTop( TString name, TString histname, bool doElectron, TString ptbin = "") {
 
   const int nsingletop = 6;
 
@@ -243,7 +199,7 @@ SummedHist * getSingleTop( TString name, TString histname, bool doElectron ) {
   if (doElectron) thetaChannel = "el_";
 
   TString thetaname = thetaChannel + histname + "__SingleTop";
-  adjustThetaName( thetaname, name );
+  adjustThetaName( thetaname, name, ptbin );
 
   SummedHist* singletop = new SummedHist( thetaname, 6 );
 
@@ -268,7 +224,7 @@ SummedHist * getSingleTop( TString name, TString histname, bool doElectron ) {
 // non-semileptonic ttbar
 // -------------------------------------------------------------------------------------
 
-SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron, TString pdfdir = "CT10_nom" ) {
+SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron, TString ptbin = "", TString pdfdir = "CT10_nom" ) {
 
   const int nttbar = 3;
   const int nq2 = 3;
@@ -315,7 +271,7 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
   if (doElectron) thetaChannel = "el_";
 
   TString thetaname = thetaChannel + histname + "__TTbar_nonSemiLep";
-  adjustThetaName( thetaname, name );
+  adjustThetaName( thetaname, name, ptbin );
 
   SummedHist* ttbar = new SummedHist( thetaname, kRed-7);
 
@@ -340,7 +296,7 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
 // signal ttbar
 // -------------------------------------------------------------------------------------
 
-SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString pdfdir = "CT10_nom" ) {
+SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString ptbin = "", TString pdfdir = "CT10_nom" ) {
 
   const int nttbar = 3;
   const int nq2 = 3;
@@ -388,7 +344,7 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
   if (doElectron) thetaChannel = "el_";
 
   TString thetaname = thetaChannel + histname + "__TTbar_semiLep";
-  adjustThetaName( thetaname, name );
+  adjustThetaName( thetaname, name, ptbin );
   
   SummedHist* ttbar = new SummedHist( thetaname, kRed +1);
 	
@@ -413,12 +369,12 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
 // QCD
 // -------------------------------------------------------------------------------------
 
-SummedHist * getQCD( TString var, bool doElectron ) {
+SummedHist * getQCD( TString var, bool doElectron, TString ptbin = "" ) {
 
-  SummedHist* wjets_qcd = getWJets( "qcd", var, doElectron );
-  SummedHist* singletop_qcd = getSingleTop( "qcd", var, doElectron );
-  SummedHist* ttbar_qcd = getTTbar( "qcd", var, doElectron );
-  SummedHist* ttbar_nonsemilep_qcd = getTTbarNonSemiLep( "qcd", var, doElectron );
+  SummedHist* wjets_qcd = getWJets( "qcd", var, doElectron, ptbin );
+  SummedHist* singletop_qcd = getSingleTop( "qcd", var, doElectron, ptbin );
+  SummedHist* ttbar_qcd = getTTbar( "qcd", var, doElectron, ptbin );
+  SummedHist* ttbar_nonsemilep_qcd = getTTbarNonSemiLep( "qcd", var, doElectron, ptbin );
 
   SummedHist* qcd;
   if (doElectron) qcd = new SummedHist( "el_" + var + "__QCD", kYellow);
@@ -451,34 +407,43 @@ SummedHist * getQCD( TString var, bool doElectron ) {
 
 }
 
-float getPostPreRatio(bool doElectron, TString pdfdir, bool combined, TString sample, int cut, int cut2){
+float getPostPreRatio(bool doElectron, TString ptbin, TString pdfdir, bool combined, TString sample, int cut, int cut2){
 
   // post-fit file
   TFile* fPOST;
-  if (combined) fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb.root");
-  else if (doElectron) fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el.root");
-  else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu.root");
+  if (combined) {
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_1bin.root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_2bin.root");
+  }
+  else if (doElectron) {
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el_1bin.root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el_2bin.root");
+  }
+  else {
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu_1bin.root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu_2bin.root");
+  }
 
   // pre-fit file
   TFile* fPRE;
   if (doElectron) {
-    if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
-    if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root");
-    if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7.root");
+    if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+".root");
+    if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+".root");
+    if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7"+ptbin+".root");
   }
   else {
-    if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root");
-    if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root");
-    if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7.root");
+    if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+".root");
+    if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+".root");
+    if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7"+ptbin+".root");
   }
 
   TString channel = "mu_";
   if (doElectron) channel = "el_";
 
   TString what = "";
-  if (cut == 4) what = "etaAbsLep4";
-  if (cut == 6) what = "etaAbsLep6";
-  if (cut == 7) what = "vtxMass7";
+  if (cut == 4) what = "etaAbsLep4"+ptbin;
+  if (cut == 6) what = "etaAbsLep6"+ptbin;
+  if (cut == 7) what = "vtxMass7"+ptbin;
 
   TString hist = "";
   if (sample == "ttbar") hist = "__TTbar";
@@ -495,10 +460,10 @@ float getPostPreRatio(bool doElectron, TString pdfdir, bool combined, TString sa
   TH1F* h_pre2;
   if (cut == 6 && cut2 == 0){
     TFile* fPRE2;
-    if (doElectron) fPRE2 = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7.root");
-    else fPRE2 = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7.root");
-    h_post2 = (TH1F*) fPOST->Get(channel+"vtxMass7"+hist);
-    h_pre2 = (TH1F*) fPRE2->Get(channel+"vtxMass7"+hist);
+    if (doElectron) fPRE2 = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7"+ptbin+".root");
+    else fPRE2 = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7"+ptbin+".root");
+    h_post2 = (TH1F*) fPOST->Get(channel+"vtxMass7"+ptbin+hist);
+    h_pre2 = (TH1F*) fPRE2->Get(channel+"vtxMass7"+ptbin+hist);
   }
 
   //Calculate ratio
@@ -508,6 +473,91 @@ float getPostPreRatio(bool doElectron, TString pdfdir, bool combined, TString sa
 
   return postPreRatio;
 }
+
+// -------------------------------------------------------------------------------------
+// QCD normalization
+// -------------------------------------------------------------------------------------
+
+std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bool half = false) {
+
+  if ( !(cut==4||cut==6||cut==7) ) {
+    std::cout << "Not a valid cut option! Options are cut == 4,6,7. Exiting..." << std::endl;
+    return std::make_pair(0,0);
+  }
+
+  float qcd_mu_reliso_norm[8] = {0.0, 0.0, 0.0, 0.0,  401.4, 0.0, 28.5,  1.0};
+  float qcd_mu_reliso_err[8]  = {0.0, 0.0, 0.0, 0.0,   71.6, 0.0, 21.5, 10.0};
+  float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1450., 0.0, 58., 11.0};
+  float qcd_mu_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   82., 0.0, 24., 13.0};
+
+  // for now, electrons using same values as for muons -- needs to be updated!
+  float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 4107., 0.0, 257., 20.5};
+  float qcd_el_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   71., 0.0,  18.,  6.7};
+
+  float qcd_norm = 0;
+  float qcd_err  = 0;
+  if (use2D && doElectron) {
+    if (half) {qcd_norm = qcd_el_2Dcut_norm[cut] / 2.;}
+    else {qcd_norm = qcd_el_2Dcut_norm[cut];}
+    qcd_err  = qcd_el_2Dcut_err[cut];
+  }
+  else if (use2D) {
+    if (half) {qcd_norm = qcd_mu_2Dcut_norm[cut] / 2.;}
+    else {qcd_norm = qcd_mu_2Dcut_norm[cut];}
+    qcd_err  = qcd_mu_2Dcut_err[cut];
+  }
+  else {
+    if (half) {qcd_norm = qcd_mu_reliso_norm[cut] / 2.;}
+    else {qcd_norm = qcd_mu_reliso_norm[cut];}
+    qcd_err  = qcd_mu_reliso_err[cut];
+  }
+
+  if (ptbin != ""){
+    TH1F* h_qcd_bin;
+    TH1F* h_qcd_sum;
+
+    if (cut == 4){
+      SummedHist* qcd_bin_4 = getQCD("etaAbsLep4"+ptbin, doElectron, ptbin );
+      SummedHist* qcd_bin_6 = getQCD("etaAbsLep6"+ptbin, doElectron, ptbin );
+      SummedHist* qcd_sum_4 = getQCD("etaAbsLep4", doElectron, "");
+      SummedHist* qcd_sum_6 = getQCD("etaAbsLep6", doElectron, "");
+      
+      h_qcd_bin = (TH1F*) qcd_bin_4->hist();
+      h_qcd_sum = (TH1F*) qcd_sum_4->hist();
+      h_qcd_bin->Add(qcd_bin_6->hist(), -1);
+      h_qcd_sum->Add(qcd_sum_6->hist(), -1);      
+    }
+
+    if (cut == 6){
+      SummedHist* qcd_bin_6 = getQCD("etaAbsLep6"+ptbin, doElectron, ptbin );
+      SummedHist* qcd_bin_7 = getQCD("etaAbsLep7"+ptbin, doElectron, ptbin );
+      SummedHist* qcd_sum_6 = getQCD("etaAbsLep6", doElectron, "");
+      SummedHist* qcd_sum_7 = getQCD("etaAbsLep7", doElectron, "");
+      
+      h_qcd_bin = (TH1F*) qcd_bin_6->hist();
+      h_qcd_sum = (TH1F*) qcd_sum_6->hist();
+      h_qcd_bin->Add(qcd_bin_7->hist(), -1);
+      h_qcd_sum->Add(qcd_sum_7->hist(), -1);
+      
+    }
+    
+    if (cut == 7){
+      SummedHist* qcd_bin_0 = getQCD("vtxMass7"+ptbin, doElectron, ptbin );
+      SummedHist* qcd_sum_0 = getQCD("vtxMass7", doElectron, "");
+      
+      h_qcd_bin = (TH1F*) qcd_bin_0->hist();
+      h_qcd_sum = (TH1F*) qcd_sum_0->hist();
+    }
+
+    float ratio = h_qcd_bin->Integral() / h_qcd_sum->Integral();
+    qcd_norm = qcd_norm * ratio;
+  }
+
+  return std::make_pair(qcd_norm, qcd_err);
+
+}
+
+
 
 
 #endif

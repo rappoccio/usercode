@@ -24,7 +24,7 @@ def histfilter( hname ) :
 # Here is where we build the model for theta
 ####################################################################################
 
-def lepplusjets(files, infilter, signal, mcstat, elflag=False, muflag=False):
+def lepplusjets(files, infilter, signal, mcstat, nptbin, elflag=False, muflag=False):
 
     model = build_model_from_rootfile(files, histogram_filter=infilter, include_mc_uncertainties = mcstat)
     model.fill_histogram_zerobins()
@@ -43,14 +43,24 @@ def lepplusjets(files, infilter, signal, mcstat, elflag=False, muflag=False):
     ## muon+jets channel
     if muflag:
         print "DEBUG: muon+jets channel considered"
-        for obs in ['mu_vtxMass7', 'mu_etaAbsLep6', 'mu_etaAbsLep4']:
-            model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
+        if nptbin == '1' :
+            for obs in ['mu_vtxMass7', 'mu_etaAbsLep6', 'mu_etaAbsLep4']:
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
+        if nptbin == '2' :
+            for obs in ['mu_vtxMass7Low', 'mu_etaAbsLep6Low', 'mu_etaAbsLep4Low',
+                        'mu_vtxMass7High', 'mu_etaAbsLep6High', 'mu_etaAbsLep4High']:
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
 
     ## electron+jets channel 
     if elflag:
         print "DEBUG: electron+jets channel considered"
-        for obs in ['el_vtxMass7', 'el_etaAbsLep6', 'el_etaAbsLep4']:
-            model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
+        if nptbin == '1' :
+            for obs in ['el_vtxMass7', 'el_etaAbsLep6', 'el_etaAbsLep4']:
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
+        if nptbin == '2' :
+            for obs in ['el_vtxMass7Low', 'el_etaAbsLep6Low', 'el_etaAbsLep4Low',
+                        'el_vtxMass7High', 'el_etaAbsLep6High', 'el_etaAbsLep4High']:
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
     
     return model
 
@@ -66,7 +76,7 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
     model = None
 
     ## muon+jets channel ONLY
-    if type == 'ttbar_xs_mu' :
+    if type == 'ttbar_xs_mu_1bin' :
         
         model = lepplusjets(
             files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
@@ -75,11 +85,29 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             infilter=infilter,
             signal='TTbar',
             mcstat=mcstat,
+            nptbin = '1',
+            muflag = True    
+        )
+
+    ## muon+jets channel ONLY
+    elif type == 'ttbar_xs_mu_2bin' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6Low_subtracted_from_etaAbsLep4Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7Low_subtracted_from_etaAbsLep6Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6High_subtracted_from_etaAbsLep4High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7High_subtracted_from_etaAbsLep6High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7High.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '2',
             muflag = True    
         )
         
     ## electron+jets channel ONLY
-    elif type == 'ttbar_xs_el' :
+    elif type == 'ttbar_xs_el_1bin' :
 
         model = lepplusjets(
             files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
@@ -88,11 +116,28 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             infilter=infilter,
             signal='TTbar',
             mcstat=mcstat,
+            nptbin = '1',
+            elflag = True
+        )
+
+    elif type == 'ttbar_xs_el_2bin' :
+
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6Low_subtracted_from_etaAbsLep4Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7Low_subtracted_from_etaAbsLep6Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6High_subtracted_from_etaAbsLep4High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7High_subtracted_from_etaAbsLep6High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7High.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '2',
             elflag = True
         )
 
     ## COMBINED lepton+jets channel
-    elif type == 'ttbar_xs_comb' :
+    elif type == 'ttbar_xs_comb_1bin' :
 
         model = lepplusjets(
             files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
@@ -104,6 +149,30 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             infilter=infilter,
             signal='TTbar',
             mcstat=mcstat,
+            nptbin = '1',
+            muflag = True,
+            elflag = True
+        )
+
+    elif type == 'ttbar_xs_comb_2bin' :
+
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6Low_subtracted_from_etaAbsLep4Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7Low_subtracted_from_etaAbsLep6Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6Low_subtracted_from_etaAbsLep4Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7Low_subtracted_from_etaAbsLep6Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6High_subtracted_from_etaAbsLep4High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7High_subtracted_from_etaAbsLep6High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6High_subtracted_from_etaAbsLep4High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7High_subtracted_from_etaAbsLep6High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7High.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '2',
             muflag = True,
             elflag = True
         )
@@ -126,21 +195,24 @@ usePL = False
 # Building the statistical model :
 infilter = histfilter
 
-dirs = ['CT10_nom', 
-        'CT10_pdfup', 
-        'CT10_pdfdown',
-        'MSTW_nom', 
-        'MSTW_pdfup', 
-        'MSTW_pdfdown',
-        'NNPDF_nom', 
-        'NNPDF_pdfup', 
-        'NNPDF_pdfdown',
-        'scaleup', 
-        'scaledown'
+dirs = ['CT10_nom'#, 
+        #'CT10_pdfup', 
+        #'CT10_pdfdown',
+        #'MSTW_nom', 
+        #'MSTW_pdfup', 
+        #'MSTW_pdfdown',
+        #'NNPDF_nom', 
+        #'NNPDF_pdfup', 
+        #'NNPDF_pdfdown',
+        #'scaleup', 
+        #'scaledown'
     ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
-channel = 'el'
+channel = 'comb'
+
+## # pt bins
+nptbin = '2'
 
 elflag = False
 muflag = False
@@ -160,7 +232,7 @@ ivar = -1
 for idir in dirs :
     ivar += 1
 
-    args = {'type': 'ttbar_xs_'+channel,
+    args = {'type': 'ttbar_xs_'+channel+"_"+nptbin+"bin",
             'mcstat': False,
             'infilter': infilter,
             'indir': idir,
@@ -182,7 +254,7 @@ for idir in dirs :
     
     if useMLE == True :        
 
-        print '------------- MLE RESULTS ' + idir + ' ' + channel + ' channel ---------------'
+        print '------------- MLE RESULTS ' + idir + ' ' + channel + ' channel ' + nptbin + 'bin ---------------'
 
         results1 = mle(model, input='toys:1.', n=1000)
 
@@ -197,22 +269,22 @@ for idir in dirs :
 
         pdbs = plotdata()
         pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/beta_signal_' + idir + '_' + channel + '.pdf')
+        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/beta_signal_' + idir + '_' + channel + '_' + nptbin + 'bin.pdf')
         
         pdd = plotdata()
         pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/delta_beta_signal_' + idir + '_' + channel + '.pdf')
+        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/delta_beta_signal_' + idir + '_' + channel + '_' + nptbin + 'bin.pdf')
         
         pdp = plotdata()
         pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pull_' + idir + '_' + channel + '.pdf')
+        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pull_' + idir + '_' + channel + '_' + nptbin + 'bin.pdf')
         
 
         # to write the data to a file, use e.g.:
-        pdp.write_txt('ThetaPlots/pull_' + idir + '_' + channel + '.txt')
+        pdp.write_txt('ThetaPlots/pull_' + idir + '_' + channel + '_' + nptbin + 'bin.txt')
 
         # to write it to a root file:
-        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_mle_' + idir + '_' + channel + '.root')
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_mle_' + idir + '_' + channel + '_' + nptbin + 'bin.root')
 
 
         results2 = mle(model, input='data', n=1, with_covariance = True)
@@ -228,6 +300,10 @@ for idir in dirs :
         my_muqcd_err = 0
         my_toptag = 0
         my_toptag_err = 0
+        my_toptagLow = 0
+        my_toptagLow_err = 0
+        my_toptagHigh = 0
+        my_toptagHigh_err = 0
 
         for ikey, ival in ivals.iteritems() :
             if ikey != "__nll" and ikey != "__cov":
@@ -241,6 +317,12 @@ for idir in dirs :
             elif ikey == "toptag":
                 my_toptag = ival[0][0]
                 my_toptag_err = ival[0][1]
+            elif ikey == "toptagLow":
+                my_toptagLow = ival[0][0]
+                my_toptagLow_err = ival[0][1]
+            elif ikey == "toptagHigh":
+                my_toptagHigh = ival[0][0]
+                my_toptagHigh_err = ival[0][1]
             elif ikey == "rate_st":
                 if (ival[0][0] > 0): 
                     my_st_err = 0.5*ival[0][1] / (1.0+0.5*ival[0][0])
@@ -265,12 +347,26 @@ for idir in dirs :
                     
         print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err)+", "+str(my_eqcd_err)+"}, // bkg error for "+idir
         toptag_post = (1.0 + 0.25*my_toptag) 
+        toptagLow_post = (1.0 + 0.25*my_toptagLow) 
+        toptagHigh_post = (1.0 + 0.25*my_toptagHigh) 
         if channel=="mu":
-            print "if options.pdf == \"" + idir + "\" and options.lepType == \"muon\" : toptag_post = " + str(toptag_post)
+            if nptbin == '1':
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"muon\" : toptag_post = " + str(toptag_post)
+            if nptbin == '2':
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"muon\" : toptagLow_post = " + str(toptagLow_post)
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"muon\" : toptagHigh_post = " + str(toptagHigh_post)
         elif channel=="el":
-            print "if options.pdf == \"" + idir + "\" and options.lepType == \"ele\" : toptag_post = "+ str(toptag_post)
+            if nptbin == '1':
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"ele\" : toptag_post = "+ str(toptag_post)
+            if nptbin == '2':
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"ele\" : toptagLow_post = "+ str(toptagLow_post)
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"ele\" : toptagHigh_post = "+ str(toptagHigh_post)
         else:
-            print "if options.pdf == \"" + idir + "\" and options.lepType == \"comb\" : toptag_post = "+ str(toptag_post)
+            if nptbin == '1':
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"comb\" : toptag_post = "+ str(toptag_post)
+            if nptbin == '2':
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"comb\" : toptagLow_post = "+ str(toptagLow_post)
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"comb\" : toptagHigh_post = "+ str(toptagHigh_post)
 
         parameters = model.get_parameters(['TTbar'])
         print parameters
@@ -279,7 +375,7 @@ for idir in dirs :
         for p in parameters :
             parameter_values[p] = results2['TTbar'][p][0][0]
         histos = evaluate_prediction(model, parameter_values, include_signal = True)
-        write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + channel + '.root')
+        write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + channel + '_' + nptbin + 'bin.root')
         
         if idir == "CT10_nom" :
             report.write_html('htmlout_'+channel)
@@ -291,7 +387,7 @@ for idir in dirs :
 
     if usePL == True :
 
-        print '------------- PL RESULTS ' + idir + ' ' + channel + ' channel ---------------'
+        print '------------- PL RESULTS ' + idir + ' ' + channel + ' channel ' + nptbin + 'bin ---------------'
 
         args = {}
 
@@ -313,23 +409,23 @@ for idir in dirs :
             
         pdbs = plotdata()
         pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/pl_beta_signal_' + idir + '_' + channel + '.pdf')
+        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/pl_beta_signal_' + idir + '_' + channel + '_' + nptbin + 'bin.pdf')
 
         pdd = plotdata()
         pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/pl_delta_beta_signal_' + idir + '_' + channel + '.pdf')
+        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/pl_delta_beta_signal_' + idir + '_' + channel + '_' + nptbin + 'bin.pdf')
 
         pdp = plotdata()
         pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pl_pull_' + idir + '_' + channel + '.pdf')
+        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pl_pull_' + idir + '_' + channel + '_' + nptbin + 'bin.pdf')
 
 
         # to write the data to a file, use e.g.:
-        pdd.write_txt('ThetaPlots/pl_dbs_' + idir + '_' + channel + '.txt')
-        pdp.write_txt('ThetaPlots/pl_pull_' + idir + '_' + channel + '.txt')
+        pdd.write_txt('ThetaPlots/pl_dbs_' + idir + '_' + channel + '_' + nptbin + 'bin.txt')
+        pdp.write_txt('ThetaPlots/pl_pull_' + idir + '_' + channel + '_' + nptbin + 'bin.txt')
 
         # to write it to a root file:
-        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_pl_' + idir + '_' + channel + '.root')
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_pl_' + idir + '_' + channel + '_' + nptbin + 'bin.root')
 
         
         results4 = pl_interval(model, input='data', n=1 , **args)
