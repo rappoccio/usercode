@@ -184,6 +184,13 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
     return model
 
 
+####################################################################################
+# theta modification options
+####################################################################################
+
+opts = Options()
+opts.set('minimizer', 'minuit_tolerance_factor', '100')
+
 
 ####################################################################################
 # Here is the "main" part of the script. 
@@ -280,15 +287,12 @@ for idir in dirs :
         plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pull_' + idir + '_' + channel + '_' + nptbin + 'bin.pdf')
         
 
-        # to write the data to a file, use e.g.:
-        pdp.write_txt('ThetaPlots/pull_' + idir + '_' + channel + '_' + nptbin + 'bin.txt')
-
         # to write it to a root file:
         write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_mle_' + idir + '_' + channel + '_' + nptbin + 'bin.root')
 
 
-        results2 = mle(model, input='data', n=1, with_covariance = True)
-
+        #results2 = mle(model, input='data', n=1, with_covariance = True)
+        results2 = mle(model, input='data', n=1, with_covariance = True, options=opts)
 
         print results2
         ivals = results2['TTbar']
