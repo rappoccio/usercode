@@ -30,14 +30,14 @@ void plotUnfold() {
   cout << " bla " << endl;
 
   plot("muon",true,true);
-  plot("muon",false,false);
+  /*plot("muon",false,false);
   plot("muon",false,true);
-  plot("muon",true,false);
+  plot("muon",true,false);*/
 
   plot("ele",true,true);
-  plot("ele",false,false);
+  /*plot("ele",false,false);
   plot("ele",false,true);
-  plot("ele",true,false);
+  plot("ele",true,false);*/
 
 }
 
@@ -243,12 +243,12 @@ void plot(TString channel, bool wobtag, bool do2step) {
     
     float this_systTH_up = 0;
     this_systTH_up += (count[11]-count[0])*(count[11]-count[0]); //pdf
-    this_systTH_up += (count[13]-count[0])*(count[13]-count[0]); //q2
+    //this_systTH_up += (count[13]-count[0])*(count[13]-count[0]); //q2
     this_systTH_up = sqrt(this_systTH_up);
     
     float this_systTH_dn = 0;
     this_systTH_dn += (count[12]-count[0])*(count[12]-count[0]);
-    this_systTH_dn += (count[14]-count[0])*(count[14]-count[0]);
+    //this_systTH_dn += (count[14]-count[0])*(count[14]-count[0]);
     this_systTH_dn = sqrt(this_systTH_dn);
     
     float upEXP = count[0] + this_systEXP_up;
@@ -268,9 +268,13 @@ void plot(TString channel, bool wobtag, bool do2step) {
     int lowedge = h_systEXP_up->GetBinLowEdge(ibin1);
     int highedge = h_systEXP_up->GetBinLowEdge(ibin2);
     if (lowedge > 300 && highedge < 1300) {
-      cout << "measured [" << lowedge << "," << highedge << "] = " 
-	   << count[0] << " +" << this_systEXP_up << " / -" << this_systEXP_dn << " (exp) +" << this_systTH_up << " / -" << this_systTH_dn << " (th)" << endl;
-      cout << "generator (CT10) = " << h_true->GetBinContent(i+1) << endl;
+      //cout << "measured [" << lowedge << "," << highedge << "] = " 
+      //   << count[0] << " +" << this_systEXP_up << " / -" << this_systEXP_dn << " (exp) +" << this_systTH_up << " / -" << this_systTH_dn << " (th)" << endl;
+      //cout << "generator (CT10) = " << h_true->GetBinContent(i+1) << endl;
+
+      cout << (float)lowedge << "--" << (float)highedge << " & $" << count[0] << "~^{+" << this_systEXP_up << "}_{-" << this_systEXP_dn << "}{~(\\rm ex)~}^{+" 
+	   << this_systTH_up << "}_{-" << this_systTH_dn << "}{~(\\rm th)}$ & " << h_true->GetBinContent(i+1) << endl;
+
     }
   }
   cout << endl;
@@ -323,12 +327,18 @@ void plot(TString channel, bool wobtag, bool do2step) {
     double syst_scaledn = fabs((count_r[14]-count_r[0])/count_r[0])*100;
     double max_syst_Q2  = max(syst_scaleup,syst_scaledn);
 
+    /*
     double syst_total_up = sqrt(syst_jecup*syst_jecup + syst_jerup*syst_jerup + syst_btagup*syst_btagup + syst_toptagup*syst_toptagup + syst_bkgup*syst_bkgup + 
 				syst_stat*syst_stat + syst_scaleup*syst_scaleup + syst_pdfup*syst_pdfup);
     double syst_total_dn = sqrt(syst_jecdn*syst_jecdn + syst_jerdn*syst_jerdn + syst_btagdn*syst_btagdn + syst_toptagdn*syst_toptagdn + syst_bkgdn*syst_bkgdn + 
 				syst_stat*syst_stat + syst_scaledn*syst_scaledn + syst_pdfdn*syst_pdfdn);
+    */
+    double syst_total_up = sqrt(syst_jecup*syst_jecup + syst_jerup*syst_jerup + syst_btagup*syst_btagup + syst_toptagup*syst_toptagup + syst_bkgup*syst_bkgup + 
+				syst_pdfup*syst_pdfup);
+    double syst_total_dn = sqrt(syst_jecdn*syst_jecdn + syst_jerdn*syst_jerdn + syst_btagdn*syst_btagdn + syst_toptagdn*syst_toptagdn + syst_bkgdn*syst_bkgdn + 
+				syst_pdfdn*syst_pdfdn);
     double max_syst_total = max(syst_total_up,syst_total_dn);
-    
+
     /*
     cout << "statistical error for bin "<<i<<": "<<syst_stat<<endl;
     cout << "relative syst scaleup for bin "<<i<<": "<<syst_scaleup<<endl;
@@ -589,7 +599,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
   h_dummy_r->GetXaxis()->SetTitle("Top quark p_{T} [GeV]");
   h_dummy_r->GetYaxis()->SetTitle("Uncertainty [%]");
   h_dummy_r->SetAxisRange(400,1150,"X");
-  h_dummy_r->SetAxisRange(0,100,"Y");
+  h_dummy_r->SetAxisRange(0,50,"Y");
   
   h_dummy_r->GetYaxis()->SetTitleSize(0.055);    
   h_dummy_r->GetYaxis()->SetTitleOffset(1.0);
@@ -632,24 +642,25 @@ void plot(TString channel, bool wobtag, bool do2step) {
   h_syst_btag->SetMarkerColor(kAzure+10);
   h_syst_btag->SetMarkerStyle(24);  
 
-  h_syst_bkg->SetLineColor(1);
+  h_syst_bkg->SetLineColor(kOrange+1);
   h_syst_bkg->SetLineWidth(2);
-  h_syst_bkg->SetMarkerColor(1);
-  h_syst_bkg->SetMarkerStyle(24);
+  h_syst_bkg->SetMarkerColor(kOrange+1);
+  h_syst_bkg->SetMarkerStyle(26);
 
   h_syst_pdf->SetLineColor(6);
   h_syst_pdf->SetLineWidth(2);
   h_syst_pdf->SetMarkerColor(6);
   h_syst_pdf->SetMarkerStyle(25);
 
+  /*
   h_syst_Q2->SetLineColor(kOrange+1);
   h_syst_Q2->SetLineWidth(2);
   h_syst_Q2->SetMarkerColor(kOrange+1);
   h_syst_Q2->SetMarkerStyle(26);
-        
+  */    
   
   TLegend* leg2 = new TLegend(0.2,0.58,0.45,0.92);  
-  leg2->AddEntry(h_syst_tot,"Total uncertainty","f");
+  leg2->AddEntry(h_syst_tot,"Total syst. uncertainty","f");
   leg2->AddEntry(h_syst_stat,"Statistical uncertainty","lp");
   leg2->AddEntry(h_syst_jec,"Jet energy scale","lp");
   leg2->AddEntry(h_syst_jer,"Jet energy resolution","lp");
@@ -657,7 +668,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
   if (nobtag == "") leg2->AddEntry(h_syst_btag,"b-tagging efficiency","lp");
   leg2->AddEntry(h_syst_bkg,"Background normalization","lp");
   leg2->AddEntry(h_syst_pdf,"PDF uncertainty","lp");
-  leg2->AddEntry(h_syst_Q2,"Q^{2} scale","lp");
+  //leg2->AddEntry(h_syst_Q2,"Q^{2} scale","lp");
   leg2->SetFillStyle(0);
   leg2->SetBorderSize(0);
   leg2->SetTextSize(0.032);
@@ -672,7 +683,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
   h_syst_toptag->Draw("ep,same");
   if (nobtag == "") h_syst_btag->Draw("ep,same");
   h_syst_bkg->Draw("ep,same");
-  h_syst_Q2->Draw("ep,same");
+  //h_syst_Q2->Draw("ep,same");
   h_syst_pdf->Draw("ep,same");
   h_dummy_r->Draw("hist,axis,same");
   leg2->Draw(); 
@@ -760,12 +771,12 @@ void plot(TString channel, bool wobtag, bool do2step) {
       
       float this_systTH_up_part = 0;
       this_systTH_up_part += (count_part[11]-count_part[0])*(count_part[11]-count_part[0]);
-      this_systTH_up_part += (count_part[13]-count_part[0])*(count_part[13]-count_part[0]);
+      //this_systTH_up_part += (count_part[13]-count_part[0])*(count_part[13]-count_part[0]);
       this_systTH_up_part = sqrt(this_systTH_up_part);
       
       float this_systTH_dn_part = 0;
       this_systTH_dn_part += (count_part[12]-count_part[0])*(count_part[12]-count_part[0]);
-      this_systTH_dn_part += (count_part[14]-count_part[0])*(count_part[14]-count_part[0]);
+      //this_systTH_dn_part += (count_part[14]-count_part[0])*(count_part[14]-count_part[0]);
       this_systTH_dn_part = sqrt(this_systTH_dn_part);
       
       float upEXP_part = count_part[0] + this_systEXP_up_part;
@@ -785,10 +796,15 @@ void plot(TString channel, bool wobtag, bool do2step) {
       int lowedge_p = h_systEXP_up_part->GetBinLowEdge(ibin1_p);
       int highedge_p = h_systEXP_up_part->GetBinLowEdge(ibin2_p);
       if (lowedge_p > 300 && highedge_p < 1300) {
+	/*
 	cout << "measured [" << lowedge_p << "," << highedge_p << "] = " 
 	     << count_part[0] << " +" << this_systEXP_up_part << " / -" << this_systEXP_dn_part 
 	     << " (exp) +" << this_systTH_up_part << " / -" << this_systTH_dn_part << " (th)" << endl;
 	cout << "generator (CT10) = " << h_part->GetBinContent(i+1) << endl;
+	*/
+	cout << lowedge_p << "--" << highedge_p << " & $" << count_part[0] << "~^{+" << this_systEXP_up_part << "}_{-" << this_systEXP_dn_part << "}{~(\\rm ex)~}^{+" 
+	     << this_systTH_up_part << "}_{-" << this_systTH_dn_part << "}{~(\\rm th)}$ & " << h_part->GetBinContent(i+1) << endl;
+
       }
     }
     cout << endl;
@@ -839,12 +855,20 @@ void plot(TString channel, bool wobtag, bool do2step) {
       double syst_scaledn_part = fabs((count_r_part[14]-count_r_part[0])/count_r_part[0])*100;
       double max_syst_Q2_part = max(syst_scaleup_part,syst_scaledn_part);
 
+      /*
       double syst_total_up_part = sqrt(syst_jecup_part*syst_jecup_part + syst_jerup_part*syst_jerup_part + 
 				       syst_btagup_part*syst_btagup_part + syst_toptagup_part*syst_toptagup_part + syst_bkgup_part*syst_bkgup_part +
 				       syst_stat_part*syst_stat_part + syst_scaleup_part*syst_scaleup_part + syst_pdfup_part*syst_pdfup_part);
       double syst_total_dn_part = sqrt(syst_jecdn_part*syst_jecdn_part + syst_jerdn_part*syst_jerdn_part + 
 				       syst_btagdn_part*syst_btagdn_part + syst_toptagdn_part*syst_toptagdn_part + syst_bkgdn_part*syst_bkgdn_part +
 				       syst_stat_part*syst_stat_part + syst_scaledn_part*syst_scaledn_part + syst_pdfdn_part*syst_pdfdn_part );
+      */
+      double syst_total_up_part = sqrt(syst_jecup_part*syst_jecup_part + syst_jerup_part*syst_jerup_part + 
+				       syst_btagup_part*syst_btagup_part + syst_toptagup_part*syst_toptagup_part + syst_bkgup_part*syst_bkgup_part +
+				       syst_pdfup_part*syst_pdfup_part);
+      double syst_total_dn_part = sqrt(syst_jecdn_part*syst_jecdn_part + syst_jerdn_part*syst_jerdn_part + 
+				       syst_btagdn_part*syst_btagdn_part + syst_toptagdn_part*syst_toptagdn_part + syst_bkgdn_part*syst_bkgdn_part +
+				       syst_pdfdn_part*syst_pdfdn_part );
       double max_syst_total_part = max(syst_total_up_part,syst_total_dn_part);
 
       /*
@@ -1050,7 +1074,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
     h_dummy_r_part->GetXaxis()->SetTitle("Particle-level top p_{T} [GeV]");
     h_dummy_r_part->GetYaxis()->SetTitle("Uncertainty [%]");
     h_dummy_r_part->SetAxisRange(400,1150,"X");
-    h_dummy_r_part->SetAxisRange(0,100,"Y");
+    h_dummy_r_part->SetAxisRange(0,50,"Y");
     
     h_dummy_r_part->GetYaxis()->SetTitleSize(0.055);    
     h_dummy_r_part->GetYaxis()->SetTitleOffset(1.0);
@@ -1093,24 +1117,25 @@ void plot(TString channel, bool wobtag, bool do2step) {
     h_syst_btag_part->SetMarkerColor(kAzure+10);
     h_syst_btag_part->SetMarkerStyle(24);  
 
-    h_syst_bkg_part->SetLineColor(1);
+    h_syst_bkg_part->SetLineColor(kOrange+1);
     h_syst_bkg_part->SetLineWidth(2);
-    h_syst_bkg_part->SetMarkerColor(1);
-    h_syst_bkg_part->SetMarkerStyle(24);
+    h_syst_bkg_part->SetMarkerColor(kOrange+1);
+    h_syst_bkg_part->SetMarkerStyle(26);
     
     h_syst_pdf_part->SetLineColor(6);
     h_syst_pdf_part->SetLineWidth(2);
     h_syst_pdf_part->SetMarkerColor(6);
     h_syst_pdf_part->SetMarkerStyle(25);
     
+    /*
     h_syst_Q2_part->SetLineColor(kOrange+1);
     h_syst_Q2_part->SetLineWidth(2);
     h_syst_Q2_part->SetMarkerColor(kOrange+1);
     h_syst_Q2_part->SetMarkerStyle(26);
-    
+    */
   
     TLegend* leg4 = new TLegend(0.2,0.58,0.45,0.92);  
-    leg4->AddEntry(h_syst_tot_part,"Total uncertainty","f");
+    leg4->AddEntry(h_syst_tot_part,"Total syst. uncertainty","f");
     leg4->AddEntry(h_syst_stat_part,"Statistical uncertainty","lp");
     leg4->AddEntry(h_syst_jec_part,"Jet energy scale","lp");
     leg4->AddEntry(h_syst_jer_part,"Jet energy resolution","lp");
@@ -1118,7 +1143,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
     if (nobtag == "") leg4->AddEntry(h_syst_btag_part,"b-tagging efficiency","lp");
     leg4->AddEntry(h_syst_bkg_part,"Background normalization","lp");
     leg4->AddEntry(h_syst_pdf_part,"PDF uncertainty","lp");
-    leg4->AddEntry(h_syst_Q2_part,"Q^{2} scale","lp");
+    //leg4->AddEntry(h_syst_Q2_part,"Q^{2} scale","lp");
     leg4->SetFillStyle(0);
     leg4->SetBorderSize(0);
     leg4->SetTextSize(0.032);
@@ -1133,7 +1158,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
     h_syst_toptag_part->Draw("ep,same");
     if (nobtag == "") h_syst_btag_part->Draw("ep,same");
     h_syst_bkg_part->Draw("ep,same");
-    h_syst_Q2_part->Draw("ep,same");
+    //h_syst_Q2_part->Draw("ep,same");
     h_syst_pdf_part->Draw("ep,same");
     h_dummy_r_part->Draw("hist,axis,same");
     leg4->Draw(); 

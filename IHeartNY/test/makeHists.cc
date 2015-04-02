@@ -455,7 +455,9 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   // read MC histograms
   TFile* fMC;
   if (combined) {
-    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_1bin.root");
+    //if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_1bin.root");
+    //else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_2bin.root");
+    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb.root");
     else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_2bin.root");
   }
   else if (doElectron) {
@@ -738,6 +740,20 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.0948258962343, 0.570246409386, 0.0455002470189, 0, 0.0793221134465}, // bkg error for scaledown
   };
 
+  float fiterrors_comb[11][5] = {
+    {0.0721611675654, 0.591773485402, 0.06841616483, 0.639678706759, 0.0338012148088}, // bkg error for CT10_nom
+    {0.0759518444195, 0.58172119931, 0.0802638564576, 0.641348470177, 0.0337331527381}, // bkg error for CT10_pdfup
+    {0.0694391184851, 0.60146043244, 0.0613154280035, 0.638477452069, 0.0337121836834}, // bkg error for CT10_pdfdown
+    {0.0738743748088, 0.59171420035, 0.0657888916686, 0.602812188588, 0.0332891372117}, // bkg error for MSTW_nom
+    {0.0749048121725, 0.581192580521, 0.0678101767718, 0.646875533048, 0.0336765128127}, // bkg error for MSTW_pdfup
+    {0.0710567974537, 0.593266406591, 0.0595421597412, 0.643082922652, 0.0338992750817}, // bkg error for MSTW_pdfdown
+    {0.072021892116, 0.573476242875, 0.0628321989737, 0.622733591949, 0.0343979197871}, // bkg error for NNPDF_nom
+    {0.0758762718894, 0.56574133453, 0.0736357609411, 0.638645227605, 0.0338018165753}, // bkg error for NNPDF_pdfup
+    {0.0742645332462, 0.112166670243, 0.0557335662488, 0.571708316278, 0.0349474470452}, // bkg error for NNPDF_pdfdown
+    {0.0726118366479, 0.564493383356, 0.0566161939509, 0.665990785481, 0.0322017813192}, // bkg error for scaleup
+    {0.0754581112506, 0.527287398678, 0.0613378760194, 0.657640817449, 0.0319922330817}, // bkg error for scaledown
+  };
+
   TString pdfs[11] = {"CT10_nom","CT10_pdfup","CT10_pdfdown",
 		      "MSTW_nom","MSTW_pdfup","MSTW_pdfdown",
 		      "NNPDF_nom","NNPDF_pdfup","NNPDF_pdfdown",
@@ -759,17 +775,29 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   float fiterr_wjets = 0;
   float fiterr_qcd = 0;
 
-  if (doElectron) {
+  if (doElectron && !combined) {
     fiterr_tt = fiterrors_el[thispdf][0];
     fiterr_singletop = fiterrors_el[thispdf][1];
     fiterr_wjets = fiterrors_el[thispdf][2];
     fiterr_qcd = fiterrors_el[thispdf][4];
   }
-  else {
+  else if (doElectron) {
+    fiterr_tt = fiterrors_comb[thispdf][0];
+    fiterr_singletop = fiterrors_comb[thispdf][1];
+    fiterr_wjets = fiterrors_comb[thispdf][2];
+    fiterr_qcd = fiterrors_comb[thispdf][4];
+  }
+  else if (!doElectron && !combined) {
     fiterr_tt = fiterrors_mu[thispdf][0];
     fiterr_singletop = fiterrors_mu[thispdf][1];
     fiterr_wjets = fiterrors_mu[thispdf][2];
     fiterr_qcd = fiterrors_mu[thispdf][3];
+  }
+  else {
+    fiterr_tt = fiterrors_comb[thispdf][0];
+    fiterr_singletop = fiterrors_comb[thispdf][1];
+    fiterr_wjets = fiterrors_comb[thispdf][2];
+    fiterr_qcd = fiterrors_comb[thispdf][3];
   }
 
   TString append = "";

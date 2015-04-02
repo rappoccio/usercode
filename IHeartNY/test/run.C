@@ -209,7 +209,7 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine);
     makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine);
 
-    //makeTable(doElectron, "CT10_nom", combine, "mu");
+    makeTable(doElectron, "", "CT10_nom", combine);
 
   }
 

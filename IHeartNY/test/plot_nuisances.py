@@ -15,8 +15,10 @@ pdfnames = ["CT10_nom",
             "NNPDF_pdfup",
             "NNPDF_pdfdown",
             "scaleup",
-            "scaledown"]
+            "scaledown"
+]
 channels = ["mu", "el"]
+#channels = ["comb"]
 
 for pdfname in pdfnames :
     for ich in channels :
@@ -108,6 +110,12 @@ for pdfname in pdfnames :
         if pdfname=="scaledown" and ich=="el": 
             ttbar_list = {'TTbar': {'rate_el_qcd': [(-0.96202163472902635, 0.10711888463813067)], 'jer': [(-1.3693669341098396, 0.64145362362543834)], 'toptag': [(0.62648884024317597, 0.26748256434868045)], 'btag': [(-0.046582305097160819, 0.9449210228004542)], 'beta_signal': [(0.72605458947517465, 0.068848777162027308)], 'jec': [(0.75598905844553066, 0.36961680505639216)], 'rate_vjets': [(0.88041613177086397, 0.13105964551278343)], '__nll': [-55755.495465998247], 'lumi': [(0.0086253027754059543, 1.0118962920946653)], 'rate_st': [(-0.74088230303664671, 0.83220853190906119)]}}
 
+        ### CT10 nom, combined
+        if pdfname=="CT10_nom" and ich=="comb": 
+            ttbar_list = {'TTbar': {'rate_el_qcd': [(-0.4319180543286476, 0.055595976597413929)], 'jer': [(1.8676433199602807, 0.85990753674520615)], 'toptag': [(-0.2441794055366874, 0.18958621862541444)], 'btag': [(-0.95050220046888123, 0.8355888302504233)], 'beta_signal': [(0.87537526145222277, 0.063168100924273829)], 'jec': [(0.93855440818723146, 0.47990514098121873)], 'rate_vjets': [(-0.0071290772754024926, 0.1363463179416122)], '__nll': [-90800.698089214289], 'lumi': [(-0.058157051113312021, 1.0220037897969771)], 'rate_mu_qcd': [(-2.9658186899175356, 0.51526545506577959)], 'rate_st': [(-0.94724475243949946, 0.80315485832968303)]}}
+            
+
+
         signal_list = ttbar_list['TTbar']
 
         nuisances = TGraphErrors()
@@ -144,8 +152,11 @@ for pdfname in pdfnames :
         gr1sig.SetLineColor(kGreen)
         gr2sig.SetFillStyle(1001)
         gr2sig.SetFillColor(kYellow)
-        
-        dummy = TH2F("dummy",";Post-fit nuisance parameter value (#sigma); ",10,-3,3,8,0,8)
+
+        nbins = 8
+        if (ich=="comb"):
+            nbins = 9
+        dummy = TH2F("dummy",";Post-fit nuisance parameter value (#sigma); ",10,-3,3,nbins,0,nbins)
         dummy.GetYaxis().SetTitleOffset(3)
         dummy.GetYaxis().SetLabelSize(0.045)
         dummy.GetXaxis().SetTitleSize(0.04)
@@ -165,8 +176,12 @@ for pdfname in pdfnames :
 		name = "JEC"
             if systematic=="jer":
 		name = "JER"
-            if systematic=="rate_qcd" or systematic=="rate_el_qcd" or systematic=="rate_mu_qcd":
+            if systematic=="rate_qcd":
 		name = "N(QCD)"
+            if systematic=="rate_el_qcd":
+		name = "N(el-QCD)"
+            if systematic=="rate_mu_qcd":
+		name = "N(mu-QCD)"
             if systematic=="rate_st":
 		name = "N(single top)"
             if systematic=="rate_vjets":
