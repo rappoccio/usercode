@@ -351,9 +351,15 @@ def getToptagSF(jetEta, pdfSet, pdfSys, isElec) :
 
     toptagSF = 1.0
     if abs(jetEta) < 1.0 :
-        toptagSF = 1.173
+        if "madgraph" in options.outname:
+            toptagSF = 0.985
+        else:
+            toptagSF = 1.173
     else :
-        toptagSF = 0.704
+        if "madgraph" in options.outname:
+            toptagSF = 0.644
+        else:
+            toptagSF = 0.704
 
     toptag_post = 1.0
     #if (pdfSet==1 and pdfSys==0 and isElec==False):
