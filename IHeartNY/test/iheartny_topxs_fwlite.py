@@ -718,24 +718,24 @@ h_mttbarGen7 = ROOT.TH1F("mttbarGen7", "; gen-level m(t#bar{t}) [GeV]; Events / 
 
 
 # numbers of different objects
-h_nMuons     = ROOT.TH1F("nMuons",     "Number of muons, p_{T} > 45 GeV;N_{Muons};Number / event",         5, -0.5, 4.5)
-h_nElectrons = ROOT.TH1F("nElectrons", "Number of electrons, p_{T} > 35 GeV;N_{Electrons};Number / event", 5, -0.5, 4.5)
+#h_nMuons     = ROOT.TH1F("nMuons",     "Number of muons, p_{T} > 45 GeV;N_{Muons};Number / event",         5, -0.5, 4.5)
+#h_nElectrons = ROOT.TH1F("nElectrons", "Number of electrons, p_{T} > 35 GeV;N_{Electrons};Number / event", 5, -0.5, 4.5)
 
-h_nJets0     = ROOT.TH1F("nJets0",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)  #AK5 jets
-h_nJets1     = ROOT.TH1F("nJets1",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
-h_nJets2     = ROOT.TH1F("nJets2",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
-h_nJets3     = ROOT.TH1F("nJets3",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
-h_nJets4     = ROOT.TH1F("nJets4",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
-h_nJets5     = ROOT.TH1F("nJets5",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
-h_nJets6     = ROOT.TH1F("nJets6",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
+#h_nJets0     = ROOT.TH1F("nJets0",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)  #AK5 jets
+#h_nJets1     = ROOT.TH1F("nJets1",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
+#h_nJets2     = ROOT.TH1F("nJets2",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
+#h_nJets3     = ROOT.TH1F("nJets3",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
+#h_nJets4     = ROOT.TH1F("nJets4",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
+#h_nJets5     = ROOT.TH1F("nJets5",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
+#h_nJets6     = ROOT.TH1F("nJets6",     "Number of jets, p_{T} > 30 GeV;N_{jets};Number / event", 20, -0.5, 19.5)
 
-h_nBJets0    = ROOT.TH1F("nBJets0",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
-h_nBJets1    = ROOT.TH1F("nBJets1",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
-h_nBJets2    = ROOT.TH1F("nBJets2",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
-h_nBJets3    = ROOT.TH1F("nBJets3",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
-h_nBJets4    = ROOT.TH1F("nBJets4",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
-h_nBJets5    = ROOT.TH1F("nBJets5",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
-h_nBJets6    = ROOT.TH1F("nBJets6",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
+#h_nBJets0    = ROOT.TH1F("nBJets0",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
+#h_nBJets1    = ROOT.TH1F("nBJets1",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
+#h_nBJets2    = ROOT.TH1F("nBJets2",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
+#h_nBJets3    = ROOT.TH1F("nBJets3",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
+#h_nBJets4    = ROOT.TH1F("nBJets4",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
+#h_nBJets5    = ROOT.TH1F("nBJets5",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
+#h_nBJets6    = ROOT.TH1F("nBJets6",    "Number of b-tagged jets, p_{T} > 30 GeV;N_{b-jets};Number / event", 10, -0.5, 9.5)
 
 h_nLepJets2  = ROOT.TH1F("nLepJets2",  "Number of jets, p_{T} > 30 GeV;N_{lep.side jets};Number / event",   10, -0.5, 9.5)
 h_nLepJets3  = ROOT.TH1F("nLepJets3",  "Number of jets, p_{T} > 30 GeV;N_{lep.side jets};Number / event",   10, -0.5, 9.5)
@@ -871,97 +871,97 @@ h_wboson_mt7 = ROOT.TH1F("wboson_mt7", ";Leptonic W m_{T} [GeV]; Events / 10 GeV
 
 
 # jet properties
-h_pt1Jet0 = ROOT.TH1F("pt1Jet0", ";Leading jet p_{T} [GeV]; Jets / 5 GeV",     60, 0., 300.)
-h_pt1Jet1 = ROOT.TH1F("pt1Jet1", ";Leading jet p_{T} [GeV]; Jets / 5 GeV",     60, 0., 300.)
-h_pt2Jet0 = ROOT.TH1F("pt2Jet0", ";2nd leading jet p_{T} [GeV]; Jets / 5 GeV", 40, 0., 200.)
-h_pt2Jet1 = ROOT.TH1F("pt2Jet1", ";2nd leading jet p_{T} [GeV]; Jets / 5 GeV", 40, 0., 200.)
-h_pt3Jet0 = ROOT.TH1F("pt3Jet0", ";3rd leading jet p_{T} [GeV]; Jets / 5 GeV", 40, 0., 200.)
-h_pt3Jet1 = ROOT.TH1F("pt3Jet1", ";3rd leading jet p_{T} [GeV]; Jets / 5 GeV", 40, 0., 200.)
-h_pt4Jet0 = ROOT.TH1F("pt4Jet0", ";4th leading jet p_{T} [GeV]; Jets / 5 GeV", 40, 0., 200.)
-h_pt4Jet1 = ROOT.TH1F("pt4Jet1", ";4th leading jet p_{T} [GeV]; Jets / 5 GeV", 40, 0., 200.)
+#h_pt1Jet0 = ROOT.TH1F("pt1Jet0", ";Leading jet p_{T} [GeV]; Jets / 5 GeV",     60, 0., 300.)
+#h_pt1Jet1 = ROOT.TH1F("pt1Jet1", ";Leading jet p_{T} [GeV]; Jets / 5 GeV",     60, 0., 300.)
+#h_pt2Jet0 = ROOT.TH1F("pt2Jet0", ";2nd leading jet p_{T} [GeV]; Jets / 5 GeV", 40, 0., 200.)
+#h_pt2Jet1 = ROOT.TH1F("pt2Jet1", ";2nd leading jet p_{T} [GeV]; Jets / 5 GeV", 40, 0., 200.)
+#h_pt3Jet0 = ROOT.TH1F("pt3Jet0", ";3rd leading jet p_{T} [GeV]; Jets / 5 GeV", 40, 0., 200.)
+#h_pt3Jet1 = ROOT.TH1F("pt3Jet1", ";3rd leading jet p_{T} [GeV]; Jets / 5 GeV", 40, 0., 200.)
+#h_pt4Jet0 = ROOT.TH1F("pt4Jet0", ";4th leading jet p_{T} [GeV]; Jets / 5 GeV", 40, 0., 200.)
+#h_pt4Jet1 = ROOT.TH1F("pt4Jet1", ";4th leading jet p_{T} [GeV]; Jets / 5 GeV", 40, 0., 200.)
 
-h_eta1Jet0 = ROOT.TH1F("eta1Jet0", ";Leading jet #eta; Jets / 0.1",     50, -2.5, 2.5)
-h_eta1Jet1 = ROOT.TH1F("eta1Jet1", ";Leading jet #eta; Jets / 0.1",     50, -2.5, 2.5)
-h_eta2Jet0 = ROOT.TH1F("eta2Jet0", ";2nd leading jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta2Jet1 = ROOT.TH1F("eta2Jet1", ";2nd leading jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta3Jet0 = ROOT.TH1F("eta3Jet0", ";3rd leading jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta3Jet1 = ROOT.TH1F("eta3Jet1", ";3rd leading jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta4Jet0 = ROOT.TH1F("eta4Jet0", ";4th leading jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta4Jet1 = ROOT.TH1F("eta4Jet1", ";4th leading jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta1Jet0 = ROOT.TH1F("eta1Jet0", ";Leading jet #eta; Jets / 0.1",     50, -2.5, 2.5)
+#h_eta1Jet1 = ROOT.TH1F("eta1Jet1", ";Leading jet #eta; Jets / 0.1",     50, -2.5, 2.5)
+#h_eta2Jet0 = ROOT.TH1F("eta2Jet0", ";2nd leading jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta2Jet1 = ROOT.TH1F("eta2Jet1", ";2nd leading jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta3Jet0 = ROOT.TH1F("eta3Jet0", ";3rd leading jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta3Jet1 = ROOT.TH1F("eta3Jet1", ";3rd leading jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta4Jet0 = ROOT.TH1F("eta4Jet0", ";4th leading jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta4Jet1 = ROOT.TH1F("eta4Jet1", ";4th leading jet #eta; Jets / 0.1", 50, -2.5, 2.5)
 
-h_csv1Jet0 = ROOT.TH1F("csv1Jet0", ";Leading jet CSV; Events / 0.02",     60, 0., 1.2)
-h_csv1Jet1 = ROOT.TH1F("csv1Jet1", ";Leading jet CSV; Events / 0.02",     60, 0., 1.2)
-h_csv2Jet0 = ROOT.TH1F("csv2Jet0", ";2nd leading jet CSV; Events / 0.02", 60, 0., 1.2)
-h_csv2Jet1 = ROOT.TH1F("csv2Jet1", ";2nd leading jet CSV; Events / 0.02", 60, 0., 1.2)
-h_csv3Jet0 = ROOT.TH1F("csv3Jet0", ";3rd leading jet CSV; Events / 0.02", 60, 0., 1.2)
-h_csv3Jet1 = ROOT.TH1F("csv3Jet1", ";3rd leading jet CSV; Events / 0.02", 60, 0., 1.2)
-h_csv4Jet0 = ROOT.TH1F("csv4Jet0", ";4th leading jet CSV; Events / 0.02", 60, 0., 1.2)
-h_csv4Jet1 = ROOT.TH1F("csv4Jet1", ";4th leading jet CSV; Events / 0.02", 60, 0., 1.2)
+#h_csv1Jet0 = ROOT.TH1F("csv1Jet0", ";Leading jet CSV; Events / 0.02",     60, 0., 1.2)
+#h_csv1Jet1 = ROOT.TH1F("csv1Jet1", ";Leading jet CSV; Events / 0.02",     60, 0., 1.2)
+#h_csv2Jet0 = ROOT.TH1F("csv2Jet0", ";2nd leading jet CSV; Events / 0.02", 60, 0., 1.2)
+#h_csv2Jet1 = ROOT.TH1F("csv2Jet1", ";2nd leading jet CSV; Events / 0.02", 60, 0., 1.2)
+#h_csv3Jet0 = ROOT.TH1F("csv3Jet0", ";3rd leading jet CSV; Events / 0.02", 60, 0., 1.2)
+#h_csv3Jet1 = ROOT.TH1F("csv3Jet1", ";3rd leading jet CSV; Events / 0.02", 60, 0., 1.2)
+#h_csv4Jet0 = ROOT.TH1F("csv4Jet0", ";4th leading jet CSV; Events / 0.02", 60, 0., 1.2)
+#h_csv4Jet1 = ROOT.TH1F("csv4Jet1", ";4th leading jet CSV; Events / 0.02", 60, 0., 1.2)
 
-h_vtxMass1Jet0 = ROOT.TH1F("vtxMass1Jet0", ";Leading jet vertex mass [GeV]; Events / 0.1 GeV",     70, 0., 7.)
-h_vtxMass1Jet1 = ROOT.TH1F("vtxMass1Jet1", ";Leading jet vertex mass [GeV]; Events / 0.1 GeV",     70, 0., 7.)
-h_vtxMass2Jet0 = ROOT.TH1F("vtxMass2Jet0", ";2nd leading jet vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
-h_vtxMass2Jet1 = ROOT.TH1F("vtxMass2Jet1", ";2nd leading jet vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
-h_vtxMass3Jet0 = ROOT.TH1F("vtxMass3Jet0", ";3rd leading jet vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
-h_vtxMass3Jet1 = ROOT.TH1F("vtxMass3Jet1", ";3rd leading jet vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
-h_vtxMass4Jet0 = ROOT.TH1F("vtxMass4Jet0", ";4th leading jet vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
-h_vtxMass4Jet1 = ROOT.TH1F("vtxMass4Jet1", ";4th leading jet vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass1Jet0 = ROOT.TH1F("vtxMass1Jet0", ";Leading jet vertex mass [GeV]; Events / 0.1 GeV",     70, 0., 7.)
+#h_vtxMass1Jet1 = ROOT.TH1F("vtxMass1Jet1", ";Leading jet vertex mass [GeV]; Events / 0.1 GeV",     70, 0., 7.)
+#h_vtxMass2Jet0 = ROOT.TH1F("vtxMass2Jet0", ";2nd leading jet vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass2Jet1 = ROOT.TH1F("vtxMass2Jet1", ";2nd leading jet vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass3Jet0 = ROOT.TH1F("vtxMass3Jet0", ";3rd leading jet vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass3Jet1 = ROOT.TH1F("vtxMass3Jet1", ";3rd leading jet vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass4Jet0 = ROOT.TH1F("vtxMass4Jet0", ";4th leading jet vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass4Jet1 = ROOT.TH1F("vtxMass4Jet1", ";4th leading jet vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 
-h_pt1LepJet2 = ROOT.TH1F("pt1LepJet2", ";Leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 100, 0., 500.)
-h_pt1LepJet3 = ROOT.TH1F("pt1LepJet3", ";Leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 100, 0., 500.)
-h_pt1LepJet4 = ROOT.TH1F("pt1LepJet4", ";Leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 100, 0., 500.)
-h_pt1LepJet5 = ROOT.TH1F("pt1LepJet5", ";Leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 100, 0., 500.)
-h_pt1LepJet6 = ROOT.TH1F("pt1LepJet6", ";Leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 100, 0., 500.)
-h_pt1LepJet7 = ROOT.TH1F("pt1LepJet7", ";Leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 100, 0., 500.)
+#h_pt1LepJet2 = ROOT.TH1F("pt1LepJet2", ";Leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 100, 0., 500.)
+#h_pt1LepJet3 = ROOT.TH1F("pt1LepJet3", ";Leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 100, 0., 500.)
+#h_pt1LepJet4 = ROOT.TH1F("pt1LepJet4", ";Leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 100, 0., 500.)
+#h_pt1LepJet5 = ROOT.TH1F("pt1LepJet5", ";Leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 100, 0., 500.)
+#h_pt1LepJet6 = ROOT.TH1F("pt1LepJet6", ";Leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 100, 0., 500.)
+#h_pt1LepJet7 = ROOT.TH1F("pt1LepJet7", ";Leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 100, 0., 500.)
 
-h_pt2LepJet2 = ROOT.TH1F("pt2LepJet2", ";2nd leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 50, 0., 250.)
-h_pt2LepJet3 = ROOT.TH1F("pt2LepJet3", ";2nd leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 50, 0., 250.)
-h_pt2LepJet4 = ROOT.TH1F("pt2LepJet4", ";2nd leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 50, 0., 250.)
-h_pt2LepJet5 = ROOT.TH1F("pt2LepJet5", ";2nd leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 50, 0., 250.)
-h_pt2LepJet6 = ROOT.TH1F("pt2LepJet6", ";2nd leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 50, 0., 250.)
-h_pt2LepJet7 = ROOT.TH1F("pt2LepJet7", ";2nd leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 50, 0., 250.)
+#h_pt2LepJet2 = ROOT.TH1F("pt2LepJet2", ";2nd leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 50, 0., 250.)
+#h_pt2LepJet3 = ROOT.TH1F("pt2LepJet3", ";2nd leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 50, 0., 250.)
+#h_pt2LepJet4 = ROOT.TH1F("pt2LepJet4", ";2nd leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 50, 0., 250.)
+#h_pt2LepJet5 = ROOT.TH1F("pt2LepJet5", ";2nd leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 50, 0., 250.)
+#h_pt2LepJet6 = ROOT.TH1F("pt2LepJet6", ";2nd leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 50, 0., 250.)
+#h_pt2LepJet7 = ROOT.TH1F("pt2LepJet7", ";2nd leading lep.side jet p_{T} [GeV]; Jets / 5 GeV", 50, 0., 250.)
 
-h_eta1LepJet2 = ROOT.TH1F("eta1LepJet2", ";Leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta1LepJet3 = ROOT.TH1F("eta1LepJet3", ";Leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta1LepJet4 = ROOT.TH1F("eta1LepJet4", ";Leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta1LepJet5 = ROOT.TH1F("eta1LepJet5", ";Leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta1LepJet6 = ROOT.TH1F("eta1LepJet6", ";Leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta1LepJet7 = ROOT.TH1F("eta1LepJet7", ";Leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta1LepJet2 = ROOT.TH1F("eta1LepJet2", ";Leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta1LepJet3 = ROOT.TH1F("eta1LepJet3", ";Leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta1LepJet4 = ROOT.TH1F("eta1LepJet4", ";Leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta1LepJet5 = ROOT.TH1F("eta1LepJet5", ";Leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta1LepJet6 = ROOT.TH1F("eta1LepJet6", ";Leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta1LepJet7 = ROOT.TH1F("eta1LepJet7", ";Leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
 
-h_eta2LepJet2 = ROOT.TH1F("eta2LepJet2", ";2nd leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta2LepJet3 = ROOT.TH1F("eta2LepJet3", ";2nd leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta2LepJet4 = ROOT.TH1F("eta2LepJet4", ";2nd leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta2LepJet5 = ROOT.TH1F("eta2LepJet5", ";2nd leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta2LepJet6 = ROOT.TH1F("eta2LepJet6", ";2nd leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
-h_eta2LepJet7 = ROOT.TH1F("eta2LepJet7", ";2nd leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta2LepJet2 = ROOT.TH1F("eta2LepJet2", ";2nd leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta2LepJet3 = ROOT.TH1F("eta2LepJet3", ";2nd leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta2LepJet4 = ROOT.TH1F("eta2LepJet4", ";2nd leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta2LepJet5 = ROOT.TH1F("eta2LepJet5", ";2nd leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta2LepJet6 = ROOT.TH1F("eta2LepJet6", ";2nd leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
+#h_eta2LepJet7 = ROOT.TH1F("eta2LepJet7", ";2nd leading lep.side jet #eta; Jets / 0.1", 50, -2.5, 2.5)
 
-h_csv1LepJet2 = ROOT.TH1F("csv1LepJet2", ";Leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
-h_csv1LepJet3 = ROOT.TH1F("csv1LepJet3", ";Leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
-h_csv1LepJet4 = ROOT.TH1F("csv1LepJet4", ";Leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
-h_csv1LepJet5 = ROOT.TH1F("csv1LepJet5", ";Leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
-h_csv1LepJet6 = ROOT.TH1F("csv1LepJet6", ";Leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
-h_csv1LepJet7 = ROOT.TH1F("csv1LepJet7", ";Leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
+#h_csv1LepJet2 = ROOT.TH1F("csv1LepJet2", ";Leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
+#h_csv1LepJet3 = ROOT.TH1F("csv1LepJet3", ";Leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
+#h_csv1LepJet4 = ROOT.TH1F("csv1LepJet4", ";Leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
+#h_csv1LepJet5 = ROOT.TH1F("csv1LepJet5", ";Leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
+#h_csv1LepJet6 = ROOT.TH1F("csv1LepJet6", ";Leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
+#h_csv1LepJet7 = ROOT.TH1F("csv1LepJet7", ";Leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
 
-h_csv2LepJet2 = ROOT.TH1F("csv2LepJet2", ";2nd leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
-h_csv2LepJet3 = ROOT.TH1F("csv2LepJet3", ";2nd leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
-h_csv2LepJet4 = ROOT.TH1F("csv2LepJet4", ";2nd leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
-h_csv2LepJet5 = ROOT.TH1F("csv2LepJet5", ";2nd leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
-h_csv2LepJet6 = ROOT.TH1F("csv2LepJet6", ";2nd leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
-h_csv2LepJet7 = ROOT.TH1F("csv2LepJet7", ";2nd leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
+#h_csv2LepJet2 = ROOT.TH1F("csv2LepJet2", ";2nd leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
+#h_csv2LepJet3 = ROOT.TH1F("csv2LepJet3", ";2nd leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
+#h_csv2LepJet4 = ROOT.TH1F("csv2LepJet4", ";2nd leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
+#h_csv2LepJet5 = ROOT.TH1F("csv2LepJet5", ";2nd leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
+#h_csv2LepJet6 = ROOT.TH1F("csv2LepJet6", ";2nd leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
+#h_csv2LepJet7 = ROOT.TH1F("csv2LepJet7", ";2nd leading lep.side jet CSV; Jets / 0.02", 60, 0., 1.2)
 
-h_vtxMass1LepJet2 = ROOT.TH1F("vtxMass1LepJet2", ";Leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
-h_vtxMass1LepJet3 = ROOT.TH1F("vtxMass1LepJet3", ";Leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
-h_vtxMass1LepJet4 = ROOT.TH1F("vtxMass1LepJet4", ";Leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
-h_vtxMass1LepJet5 = ROOT.TH1F("vtxMass1LepJet5", ";Leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
-h_vtxMass1LepJet6 = ROOT.TH1F("vtxMass1LepJet6", ";Leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
-h_vtxMass1LepJet7 = ROOT.TH1F("vtxMass1LepJet7", ";Leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass1LepJet2 = ROOT.TH1F("vtxMass1LepJet2", ";Leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass1LepJet3 = ROOT.TH1F("vtxMass1LepJet3", ";Leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass1LepJet4 = ROOT.TH1F("vtxMass1LepJet4", ";Leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass1LepJet5 = ROOT.TH1F("vtxMass1LepJet5", ";Leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass1LepJet6 = ROOT.TH1F("vtxMass1LepJet6", ";Leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass1LepJet7 = ROOT.TH1F("vtxMass1LepJet7", ";Leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
 
-h_vtxMass2LepJet2 = ROOT.TH1F("vtxMass2LepJet2", ";2nd leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
-h_vtxMass2LepJet3 = ROOT.TH1F("vtxMass2LepJet3", ";2nd leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
-h_vtxMass2LepJet4 = ROOT.TH1F("vtxMass2LepJet4", ";2nd leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
-h_vtxMass2LepJet5 = ROOT.TH1F("vtxMass2LepJet5", ";2nd leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
-h_vtxMass2LepJet6 = ROOT.TH1F("vtxMass2LepJet6", ";2nd leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
-h_vtxMass2LepJet7 = ROOT.TH1F("vtxMass2LepJet7", ";2nd leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass2LepJet2 = ROOT.TH1F("vtxMass2LepJet2", ";2nd leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass2LepJet3 = ROOT.TH1F("vtxMass2LepJet3", ";2nd leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass2LepJet4 = ROOT.TH1F("vtxMass2LepJet4", ";2nd leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass2LepJet5 = ROOT.TH1F("vtxMass2LepJet5", ";2nd leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass2LepJet6 = ROOT.TH1F("vtxMass2LepJet6", ";2nd leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
+#h_vtxMass2LepJet7 = ROOT.TH1F("vtxMass2LepJet7", ";2nd leading lep.side jet vertex mass [GeV]; Jets / 0.1 GeV", 70, 0., 7.)
 
 
 # b-jet quantities
@@ -1095,18 +1095,8 @@ h_toptagSF = ROOT.TH1F("toptagSF", ";; Average top-tagging SF", 1,0.5,1.5)
 ############################################################################################################
 
 # dummy histogram used only to specify dimensions for reponse matrix
-ptbins       = array('d',[400.0,500.0,600.0,700.0,800.0,1200.0])                               ## default version
-ptbins_full  = array('d',[0.0,100.0,200.0,300.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])  ## including lower/higher pt bins
-ptbins_full2 = array('d',[0.0,200.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])              ## including lower/higher pt bins (alt 2)
-ptbins_full3 = array('d',[0.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])                    ## including lower/higher pt bins (alt 3)
-ptbins_pt400 = array('d',[400.0,500.0,600.0,700.0,800.0,1200.0])                               ## version requiring pt>400 at gen/particle-level
-
-h_bins       = ROOT.TH1F("bins",       ";;", len(ptbins)-1,       ptbins)
-h_bins_full  = ROOT.TH1F("bins_full",  ";;", len(ptbins_full)-1,  ptbins_full)
-h_bins_full2 = ROOT.TH1F("bins_full2", ";;", len(ptbins_full2)-1, ptbins_full2)
-h_bins_full3 = ROOT.TH1F("bins_full3", ";;", len(ptbins_full3)-1, ptbins_full3)
-h_bins_pt400 = ROOT.TH1F("bins_pt400", ";;", len(ptbins_pt400)-1, ptbins_pt400)
-
+ptbins = array('d',[0.0,200.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])
+h_bins = ROOT.TH1F("bins",       ";;", len(ptbins)-1,       ptbins)
 
 if options.makeResponse == True : 
 
@@ -1114,159 +1104,62 @@ if options.makeResponse == True :
     ## ONE-STEP UNFOLDING
     ## --------------------------------------------------------------------------------------------------
     
-    ## current default bin widths
     response = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response.SetName('response_pt')
-    response.UseOverflow()
     response_nobtag = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response_nobtag.SetName('response_pt_nobtag')
-    response_nobtag.UseOverflow()
     h_ptGenTop          = ROOT.TH1F("ptGenTop",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
     h_ptGenTop_noweight = ROOT.TH1F("ptGenTop_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
-
-    ## including lower/higher pt bins
-    response_full = ROOT.RooUnfoldResponse(h_bins_full, h_bins_full)
-    response_full.SetName('response_pt_full')
-    response_nobtag_full = ROOT.RooUnfoldResponse(h_bins_full, h_bins_full)
-    response_nobtag_full.SetName('response_pt_nobtag_full')
-    h_ptGenTop_full          = ROOT.TH1F("ptGenTop_full",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
-    h_ptGenTop_noweight_full = ROOT.TH1F("ptGenTop_noweight_full", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
-
-    ## including lower/higher pt bins (alt 2)
-    response_full2 = ROOT.RooUnfoldResponse(h_bins_full2, h_bins_full2)
-    response_full2.SetName('response_pt_full2')
-    response_nobtag_full2 = ROOT.RooUnfoldResponse(h_bins_full2, h_bins_full2)
-    response_nobtag_full2.SetName('response_pt_nobtag_full2')
-    h_ptGenTop_full2          = ROOT.TH1F("ptGenTop_full2",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
-    h_ptGenTop_noweight_full2 = ROOT.TH1F("ptGenTop_noweight_full2", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
-
-    ## including lower/higher pt bins (alt 3)
-    response_full3 = ROOT.RooUnfoldResponse(h_bins_full3, h_bins_full3)
-    response_full3.SetName('response_pt_full3')
-    response_nobtag_full3 = ROOT.RooUnfoldResponse(h_bins_full3, h_bins_full3)
-    response_nobtag_full3.SetName('response_pt_nobtag_full3')
-    h_ptGenTop_full3          = ROOT.TH1F("ptGenTop_full3",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
-    h_ptGenTop_noweight_full3 = ROOT.TH1F("ptGenTop_noweight_full3", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
-
-    ## version with pt>400 cuts
-    response_pt400 = ROOT.RooUnfoldResponse(h_bins_pt400, h_bins_pt400)
-    response_pt400.SetName('response_pt_pt400')
-    response_nobtag_pt400 = ROOT.RooUnfoldResponse(h_bins_pt400, h_bins_pt400)
-    response_nobtag_pt400.SetName('response_pt_nobtag_pt400')
-    h_ptGenTop_pt400          = ROOT.TH1F("ptGenTop_pt400",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-    h_ptGenTop_noweight_pt400 = ROOT.TH1F("ptGenTop_noweight_pt400", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-
 
     ## --------------------------------------------------------------------------------------------------
     ## TWO-STEP UNFOLDING
     ## --------------------------------------------------------------------------------------------------
 
-    ## current default bin widths
     response_pp = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response_pp.SetName('response_pt_pp')
-    response_pp.UseOverflow()
     response_rp = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response_rp.SetName('response_pt_rp')
-    response_rp.UseOverflow()
     response_nobtag_rp = ROOT.RooUnfoldResponse(h_bins, h_bins)
     response_nobtag_rp.SetName('response_pt_nobtag_rp')
-    response_nobtag_rp.UseOverflow()
     h_ptPartTop          = ROOT.TH1F("ptPartTop",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
     h_ptPartTop_noweight = ROOT.TH1F("ptPartTop_noweight", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
-    ## including lower/higher pt bins
-    response_full_pp = ROOT.RooUnfoldResponse(h_bins_full, h_bins_full)
-    response_full_pp.SetName('response_pt_full_pp')
-    response_full_rp = ROOT.RooUnfoldResponse(h_bins_full, h_bins_full)
-    response_full_rp.SetName('response_pt_full_rp')
-    response_nobtag_full_rp = ROOT.RooUnfoldResponse(h_bins_full, h_bins_full)
-    response_nobtag_full_rp.SetName('response_pt_nobtag_full_rp')
-    h_ptPartTop_full          = ROOT.TH1F("ptPartTop_full",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
-    h_ptPartTop_noweight_full = ROOT.TH1F("ptPartTop_noweight_full", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
 
-    ## including lower/higher pt bins (alt 2)
-    response_full2_pp = ROOT.RooUnfoldResponse(h_bins_full2, h_bins_full2)
-    response_full2_pp.SetName('response_pt_full2_pp')
-    response_full2_rp = ROOT.RooUnfoldResponse(h_bins_full2, h_bins_full2)
-    response_full2_rp.SetName('response_pt_full2_rp')
-    response_nobtag_full2_rp = ROOT.RooUnfoldResponse(h_bins_full2, h_bins_full2)
-    response_nobtag_full2_rp.SetName('response_pt_nobtag_full2_rp')
-    h_ptPartTop_full2          = ROOT.TH1F("ptPartTop_full2",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
-    h_ptPartTop_noweight_full2 = ROOT.TH1F("ptPartTop_noweight_full2", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
-
-    ## including lower/higher pt bins (alt 3)
-    response_full3_pp = ROOT.RooUnfoldResponse(h_bins_full3, h_bins_full3)
-    response_full3_pp.SetName('response_pt_full3_pp')
-    response_full3_rp = ROOT.RooUnfoldResponse(h_bins_full3, h_bins_full3)
-    response_full3_rp.SetName('response_pt_full3_rp')
-    response_nobtag_full3_rp = ROOT.RooUnfoldResponse(h_bins_full3, h_bins_full3)
-    response_nobtag_full3_rp.SetName('response_pt_nobtag_full3_rp')
-    h_ptPartTop_full3          = ROOT.TH1F("ptPartTop_full3",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
-    h_ptPartTop_noweight_full3 = ROOT.TH1F("ptPartTop_noweight_full3", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
-
-    ## version with pt>400 cuts
-    response_pt400_pp = ROOT.RooUnfoldResponse(h_bins_pt400, h_bins_pt400)
-    response_pt400_pp.SetName('response_pt_pt400_pp')
-    response_pt400_rp = ROOT.RooUnfoldResponse(h_bins_pt400, h_bins_pt400)
-    response_pt400_rp.SetName('response_pt_pt400_rp')
-    response_nobtag_pt400_rp = ROOT.RooUnfoldResponse(h_bins_pt400, h_bins_pt400)
-    response_nobtag_pt400_rp.SetName('response_pt_nobtag_pt400_rp')
-    h_ptPartTop_pt400          = ROOT.TH1F("ptPartTop_pt400",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-    h_ptPartTop_noweight_pt400 = ROOT.TH1F("ptPartTop_noweight_pt400", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-
-
-    ### for acceptance correction / efficiency, all these are for semileptonic, ttbar->mu+jets only 
+    ### for acceptance correction / efficiency, all these are for semileptonic decays only 
     # passParton = pt(hadronic, gen-level top quark) > 400 GeV
     # passParticle = pass particle-level selection (includes pt(particle-level top jet) > 400 GeV cut)
     # passReco = pass full event selection
     # passRecoNoBtag = pass full event selection MINUS b-tagging
-    h_ptRecoTop_passReco         = ROOT.TH1F("ptRecoTop_passReco",         ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptRecoTop_passRecoParton   = ROOT.TH1F("ptRecoTop_passRecoParton",   ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptRecoTop_passRecoParticle = ROOT.TH1F("ptRecoTop_passRecoParticle", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptRecoTop_passRecoParticleParton = ROOT.TH1F("ptRecoTop_passRecoParticleParton", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptRecoTop_passRecoParticleLoose  = ROOT.TH1F("ptRecoTop_passRecoParticleLoose",  ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
+    h_ptRecoTop_passReco         = ROOT.TH1F("ptRecoTop_passReco",         ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptRecoTop_passRecoParton   = ROOT.TH1F("ptRecoTop_passRecoParton",   ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptRecoTop_passRecoParticle = ROOT.TH1F("ptRecoTop_passRecoParticle", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptRecoTop_passRecoParticleParton = ROOT.TH1F("ptRecoTop_passRecoParticleParton", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptRecoTop_passRecoParticleLoose  = ROOT.TH1F("ptRecoTop_passRecoParticleLoose",  ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
 
-    h_ptRecoTop_passRecoNoBtag         = ROOT.TH1F("ptRecoTop_passRecoNoBtag",         ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptRecoTop_passRecoNoBtagParton   = ROOT.TH1F("ptRecoTop_passRecoNoBtagParton",   ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptRecoTop_passRecoNoBtagParticle = ROOT.TH1F("ptRecoTop_passRecoNoBtagParticle", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptRecoTop_passRecoNoBtagParticleParton = ROOT.TH1F("ptRecoTop_passRecoNoBtagParticleParton", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptRecoTop_passRecoNoBtagParticleLoose  = ROOT.TH1F("ptRecoTop_passRecoNoBtagParticleLoose",  ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
+    h_ptRecoTop_passRecoNoBtag         = ROOT.TH1F("ptRecoTop_passRecoNoBtag",         ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptRecoTop_passRecoNoBtagParton   = ROOT.TH1F("ptRecoTop_passRecoNoBtagParton",   ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptRecoTop_passRecoNoBtagParticle = ROOT.TH1F("ptRecoTop_passRecoNoBtagParticle", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptRecoTop_passRecoNoBtagParticleParton = ROOT.TH1F("ptRecoTop_passRecoNoBtagParticleParton", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptRecoTop_passRecoNoBtagParticleLoose  = ROOT.TH1F("ptRecoTop_passRecoNoBtagParticleLoose",  ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
 
-    h_ptPartTop_passParticle           = ROOT.TH1F("ptPartTop_passParticle",           ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptPartTop_passRecoParticle       = ROOT.TH1F("ptPartTop_passRecoParticle",       ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptPartTop_passRecoNoBtagParticle = ROOT.TH1F("ptPartTop_passRecoNoBtagParticle", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptPartTop_passParticleParton     = ROOT.TH1F("ptPartTop_passParticleParton",     ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptPartTop_passRecoParticleParton       = ROOT.TH1F("ptPartTop_passRecoParticleParton",       ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-    h_ptPartTop_passRecoNoBtagParticleParton = ROOT.TH1F("ptPartTop_passRecoNoBtagParticleParton", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
+    h_ptPartTop_passParticle           = ROOT.TH1F("ptPartTop_passParticle",           ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptPartTop_passRecoParticle       = ROOT.TH1F("ptPartTop_passRecoParticle",       ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptPartTop_passRecoNoBtagParticle = ROOT.TH1F("ptPartTop_passRecoNoBtagParticle", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptPartTop_passParticleParton     = ROOT.TH1F("ptPartTop_passParticleParton",     ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptPartTop_passRecoParticleParton       = ROOT.TH1F("ptPartTop_passRecoParticleParton",       ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+    h_ptPartTop_passRecoNoBtagParticleParton = ROOT.TH1F("ptPartTop_passRecoNoBtagParticleParton", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
     
-    h_ptGenTop_passParton           = ROOT.TH1F("ptGenTop_passParton",           ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-    h_ptGenTop_passRecoParton       = ROOT.TH1F("ptGenTop_passRecoParton",       ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-    h_ptGenTop_passRecoNoBtagParton = ROOT.TH1F("ptGenTop_passRecoNoBtagParton", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-    h_ptGenTop_passParticleParton   = ROOT.TH1F("ptGenTop_passParticleParton",   ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
+    h_ptGenTop_passParton           = ROOT.TH1F("ptGenTop_passParton",           ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+    h_ptGenTop_passRecoParton       = ROOT.TH1F("ptGenTop_passRecoParton",       ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+    h_ptGenTop_passRecoNoBtagParton = ROOT.TH1F("ptGenTop_passRecoNoBtagParton", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+    h_ptGenTop_passParticleParton   = ROOT.TH1F("ptGenTop_passParticleParton",   ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
 
 
-h_ptRecoTop       = ROOT.TH1F("ptRecoTop",       ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,       ptbins)
-h_ptRecoTop_full  = ROOT.TH1F("ptRecoTop_full",  ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full)-1,  ptbins_full)
-h_ptRecoTop_full2 = ROOT.TH1F("ptRecoTop_full2", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
-h_ptRecoTop_full3 = ROOT.TH1F("ptRecoTop_full3", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
-h_ptRecoTop_pt400 = ROOT.TH1F("ptRecoTop_pt400", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-h_ptRecoTop_nobtag       = ROOT.TH1F("ptRecoTop_nobtag",       ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,       ptbins)
-h_ptRecoTop_nobtag_full  = ROOT.TH1F("ptRecoTop_nobtag_full",  ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full)-1,  ptbins_full)
-h_ptRecoTop_nobtag_full2 = ROOT.TH1F("ptRecoTop_nobtag_full2", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
-h_ptRecoTop_nobtag_full3 = ROOT.TH1F("ptRecoTop_nobtag_full3", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
-h_ptRecoTop_nobtag_pt400 = ROOT.TH1F("ptRecoTop_nobtag_pt400", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-
-h_ptRecoTop_2step       = ROOT.TH1F("ptRecoTop_2step",       ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,       ptbins)
-h_ptRecoTop_2step_full  = ROOT.TH1F("ptRecoTop_2step_full",  ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full)-1,  ptbins_full)
-h_ptRecoTop_2step_full2 = ROOT.TH1F("ptRecoTop_2step_full2", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
-h_ptRecoTop_2step_full3 = ROOT.TH1F("ptRecoTop_2step_full3", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
-h_ptRecoTop_2step_pt400 = ROOT.TH1F("ptRecoTop_2step_pt400", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-h_ptRecoTop_2step_nobtag       = ROOT.TH1F("ptRecoTop_2step_nobtag",       ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1,       ptbins)
-h_ptRecoTop_2step_nobtag_full  = ROOT.TH1F("ptRecoTop_2step_nobtag_full",  ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full)-1,  ptbins_full)
-h_ptRecoTop_2step_nobtag_full2 = ROOT.TH1F("ptRecoTop_2step_nobtag_full2", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
-h_ptRecoTop_2step_nobtag_full3 = ROOT.TH1F("ptRecoTop_2step_nobtag_full3", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
-h_ptRecoTop_2step_nobtag_pt400 = ROOT.TH1F("ptRecoTop_2step_nobtag_pt400", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
+h_ptRecoTop        = ROOT.TH1F("ptRecoTop",        ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+h_ptRecoTop_nobtag = ROOT.TH1F("ptRecoTop_nobtag", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+h_ptRecoTop_2step        = ROOT.TH1F("ptRecoTop_2step",        ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+h_ptRecoTop_2step_nobtag = ROOT.TH1F("ptRecoTop_2step_nobtag", ";p_{T}(reconstructed top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
 
 
@@ -1808,22 +1701,11 @@ for event in events :
         if options.makeResponse == True:
             h_ptGenTop.Fill( hadTop.p4.Perp(), weight )
             h_ptGenTop_noweight.Fill( hadTop.p4.Perp() )
-            h_ptGenTop_full.Fill( hadTop.p4.Perp(), weight )
-            h_ptGenTop_full2.Fill( hadTop.p4.Perp(), weight )
-            h_ptGenTop_full3.Fill( hadTop.p4.Perp(), weight )
-            h_ptGenTop_noweight_full.Fill( hadTop.p4.Perp() )
-            h_ptGenTop_noweight_full2.Fill( hadTop.p4.Perp() )
-            h_ptGenTop_noweight_full3.Fill( hadTop.p4.Perp() )
             
             if hadTop.p4.Perp() > 400.0:
                 passParton = True
-
-            if passParton :
                 h_ptGenTop_passParton.Fill(hadTop.p4.Perp(), weight)
-                h_ptGenTop_pt400.Fill( hadTop.p4.Perp(), weight )
-                h_ptGenTop_noweight_pt400.Fill( hadTop.p4.Perp() )
-                
-                
+                                
         # endif (making response matrix)
 
 
@@ -1843,25 +1725,9 @@ for event in events :
         event.getByLabel( ak5GenJetPtLabel, ak5GenJetPtHandle )
         if ak5GenJetPtHandle.isValid() == False :
             if options.makeResponse == True:
-                ## one-step
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-                if passParton: 
-                    response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                    response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                ## two-step
                 response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                if passParton: 
-                    response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
         event.getByLabel( ak5GenJetEtaLabel, ak5GenJetEtaHandle )
         event.getByLabel( ak5GenJetPhiLabel, ak5GenJetPhiHandle )
@@ -1874,25 +1740,9 @@ for event in events :
 
         if len(ak5GenJetPt) == 0 :
             if options.makeResponse == True:
-                ## one-step
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-                if passParton: 
-                    response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                    response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                ## two-step
                 response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                if passParton: 
-                    response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
         # loop over AK5 gen jets
@@ -1906,25 +1756,9 @@ for event in events :
         event.getByLabel( ca8GenJetPtLabel, ca8GenJetPtHandle )
         if ca8GenJetPtHandle.isValid() == False :
             if options.makeResponse == True:
-                ## one-step
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-                if passParton: 
-                    response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                    response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                ## two-step
                 response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                if passParton: 
-                    response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
         event.getByLabel( ca8GenJetEtaLabel, ca8GenJetEtaHandle )
         event.getByLabel( ca8GenJetPhiLabel, ca8GenJetPhiHandle )
@@ -1937,25 +1771,9 @@ for event in events :
         
         if len(ca8GenJetPt) == 0 :
             if options.makeResponse == True:
-                ## one-step
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-                if passParton: 
-                    response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                    response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                ## two-step
                 response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                if passParton: 
-                    response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
             continue
 
         # loop over CA8 gen jets
@@ -2009,40 +1827,17 @@ for event in events :
         ## loose particle-level selection w/o 400 cut
         if passParticleLoose == False:
             response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         else:           
             h_ptPartTop.Fill( genTops[0].Perp(), weight )
             h_ptPartTop_noweight.Fill( genTops[0].Perp() )
-            h_ptPartTop_full.Fill( genTops[0].Perp(), weight )
-            h_ptPartTop_full2.Fill( genTops[0].Perp(), weight )
-            h_ptPartTop_full3.Fill( genTops[0].Perp(), weight )
-            h_ptPartTop_noweight_full.Fill( genTops[0].Perp() )
-            h_ptPartTop_noweight_full2.Fill( genTops[0].Perp() )
-            h_ptPartTop_noweight_full3.Fill( genTops[0].Perp() )
             response_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
-            response_full_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
-            response_full2_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
-            response_full3_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
 
         ## particle-level selection *with* 400 cut
-        if passParton: 
-            if passParticle == False:
-                response_pt400_pp.Miss(hadTop.p4.Perp(), weight*weight_response)
-            else:
-                response_pt400_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
-                            
+        if passParticle:
+            h_ptPartTop_passParticle.Fill(genTops[0].Perp(), weight) 
+            if passParton: 
                 h_ptPartTop_passParticleParton.Fill(genTops[0].Perp(), weight) 
                 h_ptGenTop_passParticleParton.Fill(hadTop.p4.Perp(), weight)
-        elif passParticle:
-            response_pt400_pp.Fake(genTops[0].Perp(), weight*weight_response)
-
-        if passParticle:
-            h_ptPartTop_pt400.Fill( genTops[0].Perp(), weight )
-            h_ptPartTop_noweight_pt400.Fill( genTops[0].Perp() )
-            h_ptPartTop_passParticle.Fill(genTops[0].Perp(), weight) 
-
         
     else :
         passParticleLoose = True
@@ -2057,31 +1852,11 @@ for event in events :
     event.getByLabel (ak5JetPtLabel, ak5JetPtHandle)
     if ak5JetPtHandle.isValid() == False : 
         if options.makeResponse == True:
-            ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-            if passParton: 
-                response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-            ## two-step
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
-            if passParticle: 
-                response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
     
     ak5JetPts = ak5JetPtHandle.product()
@@ -2317,36 +2092,16 @@ for event in events :
             weight = weight*electronSF
     
     leptons = muons + electrons
-    h_nMuons.Fill( nMuons, weight )
-    h_nElectrons.Fill( nElectrons, weight )
+    #h_nMuons.Fill( nMuons, weight )
+    #h_nElectrons.Fill( nElectrons, weight )
         
     if cut == False or cut == None: 
         if options.makeResponse == True:
-            ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-            if passParton: 
-                response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-            ## two-step
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
-            if passParticle: 
-                response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
 
@@ -2508,33 +2263,33 @@ for event in events :
             if ak5JetCSVs[ijet] > options.bDiscCut :
                 nBJets += 1.0
 
-    h_nJets0.Fill(nJets, weight)
-    h_nBJets0.Fill(nBJets, weight)
+    #h_nJets0.Fill(nJets, weight)
+    #h_nBJets0.Fill(nBJets, weight)
 
-    if nJets >= 1 :
-        ij = i_goodjets[0]
-        h_pt1Jet0.Fill(ak5Jets[ij].Perp(), weight)
-        h_eta1Jet0.Fill(ak5Jets[ij].Eta(), weight)
-        h_csv1Jet0.Fill(ak5JetCSVs[ij], weight)
-        h_vtxMass1Jet0.Fill(ak5JetSecvtxMasses[ij], weight)
-    if nJets >= 2 :
-        ij = i_goodjets[1]
-        h_pt2Jet0.Fill(ak5Jets[ij].Perp(), weight)
-        h_eta2Jet0.Fill(ak5Jets[ij].Eta(), weight)
-        h_csv2Jet0.Fill(ak5JetCSVs[ij], weight)
-        h_vtxMass2Jet0.Fill(ak5JetSecvtxMasses[ij], weight)
-    if nJets >= 3 :
-        ij = i_goodjets[2]
-        h_pt3Jet0.Fill(ak5Jets[ij].Perp(), weight)
-        h_eta3Jet0.Fill(ak5Jets[ij].Eta(), weight)
-        h_csv3Jet0.Fill(ak5JetCSVs[ij], weight)
-        h_vtxMass3Jet0.Fill(ak5JetSecvtxMasses[ij], weight)
-    if nJets >= 4 :
-        ij = i_goodjets[3]
-        h_pt4Jet0.Fill(ak5Jets[ij].Perp(), weight)
-        h_eta4Jet0.Fill(ak5Jets[ij].Eta(), weight)
-        h_csv4Jet0.Fill(ak5JetCSVs[ij], weight)
-        h_vtxMass4Jet0.Fill(ak5JetSecvtxMasses[ij], weight)
+    #if nJets >= 1 :
+    #    ij = i_goodjets[0]
+    #    h_pt1Jet0.Fill(ak5Jets[ij].Perp(), weight)
+    #    h_eta1Jet0.Fill(ak5Jets[ij].Eta(), weight)
+    #    h_csv1Jet0.Fill(ak5JetCSVs[ij], weight)
+    #    h_vtxMass1Jet0.Fill(ak5JetSecvtxMasses[ij], weight)
+    #if nJets >= 2 :
+    #    ij = i_goodjets[1]
+    #    h_pt2Jet0.Fill(ak5Jets[ij].Perp(), weight)
+    #    h_eta2Jet0.Fill(ak5Jets[ij].Eta(), weight)
+    #    h_csv2Jet0.Fill(ak5JetCSVs[ij], weight)
+    #    h_vtxMass2Jet0.Fill(ak5JetSecvtxMasses[ij], weight)
+    #if nJets >= 3 :
+    #    ij = i_goodjets[2]
+    #    h_pt3Jet0.Fill(ak5Jets[ij].Perp(), weight)
+    #    h_eta3Jet0.Fill(ak5Jets[ij].Eta(), weight)
+    #    h_csv3Jet0.Fill(ak5JetCSVs[ij], weight)
+    #    h_vtxMass3Jet0.Fill(ak5JetSecvtxMasses[ij], weight)
+    #if nJets >= 4 :
+    #    ij = i_goodjets[3]
+    #    h_pt4Jet0.Fill(ak5Jets[ij].Perp(), weight)
+    #    h_eta4Jet0.Fill(ak5Jets[ij].Eta(), weight)
+    #    h_csv4Jet0.Fill(ak5JetCSVs[ij], weight)
+    #    h_vtxMass4Jet0.Fill(ak5JetSecvtxMasses[ij], weight)
         
     
     # -------------------------------------------------------------------------------------
@@ -2556,31 +2311,11 @@ for event in events :
 
     if nJets < 2 :
         if options.makeResponse == True:
-            ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-            if passParton: 
-                response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-            ## two-step
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
-            if passParticle: 
-                response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
     if options.debug :
         print 'Passed stage1'
@@ -2596,36 +2331,36 @@ for event in events :
     h_ptLep1.Fill(lepton.p4().Perp(), weight)
     h_etaLep1.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep1.Fill(abs(lepton.p4().Eta()), weight)
-    h_nJets1.Fill(nJets, weight)
-    h_nBJets1.Fill(nBJets, weight)
+    #h_nJets1.Fill(nJets, weight)
+    #h_nBJets1.Fill(nBJets, weight)
 
     h_wboson_pt1.Fill(wboson_pt, weight)
     h_wboson_mt1.Fill(wboson_mt, weight)
 
-    if nJets >= 1 :
-        ij = i_goodjets[0]
-        h_pt1Jet1.Fill(ak5Jets[ij].Perp(), weight)
-        h_eta1Jet1.Fill(ak5Jets[ij].Eta(), weight)
-        h_csv1Jet1.Fill(ak5JetCSVs[ij], weight)
-        h_vtxMass1Jet1.Fill(ak5JetSecvtxMasses[ij], weight)
-    if nJets >= 2 :
-        ij = i_goodjets[1]
-        h_pt2Jet1.Fill(ak5Jets[ij].Perp(), weight)
-        h_eta2Jet1.Fill(ak5Jets[ij].Eta(), weight)
-        h_csv2Jet1.Fill(ak5JetCSVs[ij], weight)
-        h_vtxMass2Jet1.Fill(ak5JetSecvtxMasses[ij], weight)
-    if nJets >= 3 :
-        ij = i_goodjets[2]
-        h_pt3Jet1.Fill(ak5Jets[ij].Perp(), weight)
-        h_eta3Jet1.Fill(ak5Jets[ij].Eta(), weight)
-        h_csv3Jet1.Fill(ak5JetCSVs[ij], weight)
-        h_vtxMass3Jet1.Fill(ak5JetSecvtxMasses[ij], weight)
-    if nJets >= 4 :
-        ij = i_goodjets[3]
-        h_pt4Jet1.Fill(ak5Jets[ij].Perp(), weight)
-        h_eta4Jet1.Fill(ak5Jets[ij].Eta(), weight)
-        h_csv4Jet1.Fill(ak5JetCSVs[ij], weight)
-        h_vtxMass4Jet1.Fill(ak5JetSecvtxMasses[ij], weight)
+    #if nJets >= 1 :
+    #    ij = i_goodjets[0]
+    #    h_pt1Jet1.Fill(ak5Jets[ij].Perp(), weight)
+    #    h_eta1Jet1.Fill(ak5Jets[ij].Eta(), weight)
+    #    h_csv1Jet1.Fill(ak5JetCSVs[ij], weight)
+    #    h_vtxMass1Jet1.Fill(ak5JetSecvtxMasses[ij], weight)
+    #if nJets >= 2 :
+    #    ij = i_goodjets[1]
+    #    h_pt2Jet1.Fill(ak5Jets[ij].Perp(), weight)
+    #    h_eta2Jet1.Fill(ak5Jets[ij].Eta(), weight)
+    #    h_csv2Jet1.Fill(ak5JetCSVs[ij], weight)
+    #    h_vtxMass2Jet1.Fill(ak5JetSecvtxMasses[ij], weight)
+    #if nJets >= 3 :
+    #    ij = i_goodjets[2]
+    #    h_pt3Jet1.Fill(ak5Jets[ij].Perp(), weight)
+    #    h_eta3Jet1.Fill(ak5Jets[ij].Eta(), weight)
+    #    h_csv3Jet1.Fill(ak5JetCSVs[ij], weight)
+    #    h_vtxMass3Jet1.Fill(ak5JetSecvtxMasses[ij], weight)
+    #if nJets >= 4 :
+    #    ij = i_goodjets[3]
+    #    h_pt4Jet1.Fill(ak5Jets[ij].Perp(), weight)
+    #    h_eta4Jet1.Fill(ak5Jets[ij].Eta(), weight)
+    #    h_csv4Jet1.Fill(ak5JetCSVs[ij], weight)
+    #    h_vtxMass4Jet1.Fill(ak5JetSecvtxMasses[ij], weight)
 
         
     # -------------------------------------------------------------------------------------
@@ -2634,31 +2369,11 @@ for event in events :
 
     if options.metCut is not None and met < options.metCut :
         if options.makeResponse == True:
-            ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-            if passParton: 
-                response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-            ## two-step
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
-            if passParticle: 
-                response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -2675,8 +2390,8 @@ for event in events :
     h_ptLep2.Fill(lepton.p4().Perp(), weight)
     h_etaLep2.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep2.Fill(abs(lepton.p4().Eta()), weight)
-    h_nJets2.Fill(nJets, weight)
-    h_nBJets2.Fill(nBJets, weight)
+    #h_nJets2.Fill(nJets, weight)
+    #h_nBJets2.Fill(nBJets, weight)
 
     h_wboson_pt2.Fill(wboson_pt, weight)
     h_wboson_mt2.Fill(wboson_mt, weight)
@@ -2851,16 +2566,16 @@ for event in events :
 
     h_nLepJets2.Fill(len(lepJets), weight)
 
-    if len(lepJets) > 0:
-        h_pt1LepJet2.Fill(lepJets[0].Perp(), weight)
-        h_eta1LepJet2.Fill(lepJets[0].Eta(), weight)
-        h_csv1LepJet2.Fill(lepcsvs[0], weight)
-        h_vtxMass1LepJet2.Fill(lepVtxMass[0], weight)
-    if len(lepJets) > 1:
-        h_pt2LepJet2.Fill(lepJets[1].Perp(), weight)
-        h_eta2LepJet2.Fill(lepJets[1].Eta(), weight)
-        h_csv2LepJet2.Fill(lepcsvs[1], weight)
-        h_vtxMass2LepJet2.Fill(lepVtxMass[1], weight)
+    #if len(lepJets) > 0:
+    #    h_pt1LepJet2.Fill(lepJets[0].Perp(), weight)
+    #    h_eta1LepJet2.Fill(lepJets[0].Eta(), weight)
+    #    h_csv1LepJet2.Fill(lepcsvs[0], weight)
+    #    h_vtxMass1LepJet2.Fill(lepVtxMass[0], weight)
+    #if len(lepJets) > 1:
+    #    h_pt2LepJet2.Fill(lepJets[1].Perp(), weight)
+    #    h_eta2LepJet2.Fill(lepJets[1].Eta(), weight)
+    #    h_csv2LepJet2.Fill(lepcsvs[1], weight)
+    #    h_vtxMass2LepJet2.Fill(lepVtxMass[1], weight)
 
     
     # -------------------------------------------------------------------------------------
@@ -2869,31 +2584,11 @@ for event in events :
 
     if len(lepJets) < 1 or len(hadJets) < 1 or hadJets[0].Perp() < options.jetPtCut :
         if options.makeResponse == True:
-            ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-            if passParton: 
-                response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-            ## two-step
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
-            if passParticle: 
-                response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -2911,20 +2606,20 @@ for event in events :
     h_ptLep3.Fill(lepton.p4().Perp(), weight)
     h_etaLep3.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep3.Fill(abs(lepton.p4().Eta()), weight)
-    h_nJets3.Fill(nJets, weight)
-    h_nBJets3.Fill(nBJets, weight)
+    #h_nJets3.Fill(nJets, weight)
+    #h_nBJets3.Fill(nBJets, weight)
     h_nLepJets3.Fill(len(lepJets), weight)
 
-    if len(lepJets) > 0:
-        h_pt1LepJet3.Fill(lepJets[0].Perp(), weight)
-        h_eta1LepJet3.Fill(lepJets[0].Eta(), weight)
-        h_csv1LepJet3.Fill(lepcsvs[0], weight)
-        h_vtxMass1LepJet3.Fill(lepVtxMass[0], weight)
-    if len(lepJets) > 1:
-        h_pt2LepJet3.Fill(lepJets[1].Perp(), weight)
-        h_eta2LepJet3.Fill(lepJets[1].Eta(), weight)
-        h_csv2LepJet3.Fill(lepcsvs[1], weight)
-        h_vtxMass2LepJet3.Fill(lepVtxMass[1], weight)
+    #if len(lepJets) > 0:
+    #    h_pt1LepJet3.Fill(lepJets[0].Perp(), weight)
+    #    h_eta1LepJet3.Fill(lepJets[0].Eta(), weight)
+    #    h_csv1LepJet3.Fill(lepcsvs[0], weight)
+    #    h_vtxMass1LepJet3.Fill(lepVtxMass[0], weight)
+    #if len(lepJets) > 1:
+    #    h_pt2LepJet3.Fill(lepJets[1].Perp(), weight)
+    #    h_eta2LepJet3.Fill(lepJets[1].Eta(), weight)
+    #    h_csv2LepJet3.Fill(lepcsvs[1], weight)
+    #    h_vtxMass2LepJet3.Fill(lepVtxMass[1], weight)
 
     h_wboson_pt3.Fill(wboson_pt, weight)
     h_wboson_mt3.Fill(wboson_mt, weight)
@@ -2964,31 +2659,11 @@ for event in events :
 
     if hadJets[0].Perp() < 400.0 :
         if options.makeResponse == True:
-            ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-            if passParton: 
-                response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-            ## two-step
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
-            if passParticle: 
-                response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -3008,21 +2683,21 @@ for event in events :
         h_etaAbsLep4_low.Fill(abs(lepton.p4().Eta()), weight)
     if (hadJets[0].Perp() > 600.) :
         h_etaAbsLep4_high.Fill(abs(lepton.p4().Eta()), weight)
-    h_nJets4.Fill(nJets, weight)
-    h_nBJets4.Fill(nBJets, weight)
+    #h_nJets4.Fill(nJets, weight)
+    #h_nBJets4.Fill(nBJets, weight)
     h_nLepJets4.Fill(len(lepJets), weight)
     h_dRvspT4.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
 
-    if len(lepJets) > 0:
-        h_pt1LepJet4.Fill(lepJets[0].Perp(), weight)
-        h_eta1LepJet4.Fill(lepJets[0].Eta(), weight)
-        h_csv1LepJet4.Fill(lepcsvs[0], weight)
-        h_vtxMass1LepJet4.Fill(lepVtxMass[0], weight)
-    if len(lepJets) > 1:
-        h_pt2LepJet4.Fill(lepJets[1].Perp(), weight)
-        h_eta2LepJet4.Fill(lepJets[1].Eta(), weight)
-        h_csv2LepJet4.Fill(lepcsvs[1], weight)
-        h_vtxMass2LepJet4.Fill(lepVtxMass[1], weight)
+    #if len(lepJets) > 0:
+    #    h_pt1LepJet4.Fill(lepJets[0].Perp(), weight)
+    #    h_eta1LepJet4.Fill(lepJets[0].Eta(), weight)
+    #    h_csv1LepJet4.Fill(lepcsvs[0], weight)
+    #    h_vtxMass1LepJet4.Fill(lepVtxMass[0], weight)
+    #if len(lepJets) > 1:
+    #    h_pt2LepJet4.Fill(lepJets[1].Perp(), weight)
+    #    h_eta2LepJet4.Fill(lepJets[1].Eta(), weight)
+    #    h_csv2LepJet4.Fill(lepcsvs[1], weight)
+    #    h_vtxMass2LepJet4.Fill(lepVtxMass[1], weight)
 
     h_wboson_pt4.Fill(wboson_pt, weight)
     h_wboson_mt4.Fill(wboson_mt, weight)
@@ -3045,60 +2720,20 @@ for event in events :
     
     if options.htLepCut is not None and htLep < options.htLepCut :
         if options.makeResponse == True:
-            ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-            if passParton: 
-                response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-            ## two-step
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
-            if passParticle: 
-                response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     if options.htCut is not None and ht < options.htCut :
         if options.makeResponse == True:
-            ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-            if passParton: 
-                response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-            ## two-step
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
-            if passParticle: 
-                response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -3115,21 +2750,21 @@ for event in events :
     h_etaAbsLep5.Fill(abs(lepton.p4().Eta()), weight)
     h_ptMET5.Fill(met, weight)
     h_phiMET5.Fill(metphi, weight)
-    h_nJets5.Fill(nJets, weight)
-    h_nBJets5.Fill(nBJets, weight)
+    #h_nJets5.Fill(nJets, weight)
+    #h_nBJets5.Fill(nBJets, weight)
     h_nLepJets5.Fill(len(lepJets), weight)
     h_dRvspT5.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
 
-    if len(lepJets) > 0:
-        h_pt1LepJet5.Fill(lepJets[0].Perp(), weight)
-        h_eta1LepJet5.Fill(lepJets[0].Eta(), weight)
-        h_csv1LepJet5.Fill(lepcsvs[0], weight)
-        h_vtxMass1LepJet5.Fill(lepVtxMass[0], weight)
-    if len(lepJets) > 1:
-        h_pt2LepJet5.Fill(lepJets[1].Perp(), weight)
-        h_eta2LepJet5.Fill(lepJets[1].Eta(), weight)
-        h_csv2LepJet5.Fill(lepcsvs[1], weight)
-        h_vtxMass2LepJet5.Fill(lepVtxMass[1], weight)
+    #if len(lepJets) > 0:
+    #    h_pt1LepJet5.Fill(lepJets[0].Perp(), weight)
+    #    h_eta1LepJet5.Fill(lepJets[0].Eta(), weight)
+    #    h_csv1LepJet5.Fill(lepcsvs[0], weight)
+    #    h_vtxMass1LepJet5.Fill(lepVtxMass[0], weight)
+    #if len(lepJets) > 1:
+    #    h_pt2LepJet5.Fill(lepJets[1].Perp(), weight)
+    #    h_eta2LepJet5.Fill(lepJets[1].Eta(), weight)
+    #    h_csv2LepJet5.Fill(lepcsvs[1], weight)
+    #    h_vtxMass2LepJet5.Fill(lepVtxMass[1], weight)
 
     h_wboson_pt5.Fill(wboson_pt, weight)
     h_wboson_mt5.Fill(wboson_mt, weight)
@@ -3300,31 +2935,11 @@ for event in events :
 
     if not passSelection:
         if options.makeResponse == True:
-            ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_nobtag_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-            if passParton: 
-                response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-                response_nobtag_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-            ## two-step
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
-            if passParticle: 
-                response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_nobtag_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
     if options.debug :
         print 'Passed stage6'
@@ -3372,21 +2987,21 @@ for event in events :
         h_etaAbsLep6_low.Fill(abs(lepton.p4().Eta()), weight)
     if (goodtop.Perp() > 600.) :
         h_etaAbsLep6_high.Fill(abs(lepton.p4().Eta()), weight)
-    h_nJets6.Fill(nJets, weight)
-    h_nBJets6.Fill(nBJets, weight)
+    #h_nJets6.Fill(nJets, weight)
+    #h_nBJets6.Fill(nBJets, weight)
     h_nLepJets6.Fill(len(lepJets), weight)
     h_dRvspT6.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     
-    if len(lepJets) > 0:
-        h_pt1LepJet6.Fill(lepJets[0].Perp(), weight)
-        h_eta1LepJet6.Fill(lepJets[0].Eta(), weight)
-        h_csv1LepJet6.Fill(lepcsvs[0], weight)
-        h_vtxMass1LepJet6.Fill(lepVtxMass[0], weight)
-    if len(lepJets) > 1:
-        h_pt2LepJet6.Fill(lepJets[1].Perp(), weight)
-        h_eta2LepJet6.Fill(lepJets[1].Eta(), weight)
-        h_csv2LepJet6.Fill(lepcsvs[1], weight)
-        h_vtxMass2LepJet6.Fill(lepVtxMass[1], weight)
+    #if len(lepJets) > 0:
+    #    h_pt1LepJet6.Fill(lepJets[0].Perp(), weight)
+    #    h_eta1LepJet6.Fill(lepJets[0].Eta(), weight)
+    #    h_csv1LepJet6.Fill(lepcsvs[0], weight)
+    #    h_vtxMass1LepJet6.Fill(lepVtxMass[0], weight)
+    #if len(lepJets) > 1:
+    #    h_pt2LepJet6.Fill(lepJets[1].Perp(), weight)
+    #    h_eta2LepJet6.Fill(lepJets[1].Eta(), weight)
+    #    h_csv2LepJet6.Fill(lepcsvs[1], weight)
+    #    h_vtxMass2LepJet6.Fill(lepVtxMass[1], weight)
     
     h_wboson_pt6.Fill(wboson_pt, weight)
     h_wboson_mt6.Fill(wboson_mt, weight)
@@ -3406,16 +3021,7 @@ for event in events :
     ### ------------------------------------------------------------------------------------------------
 
     h_ptRecoTop_nobtag.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_nobtag_full.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_nobtag_full2.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_nobtag_full3.Fill( goodtop.Perp(), top_weight )
-
-    h_ptRecoTop_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_2step_nobtag.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_2step_nobtag_full.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_2step_nobtag_full2.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_2step_nobtag_full3.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_2step_nobtag_pt400.Fill( goodtop.Perp(), top_weight )
     
     if options.makeResponse == True :		
         h_ptRecoTop_passRecoNoBtag.Fill( goodtop.Perp(), top_weight )
@@ -3433,27 +3039,10 @@ for event in events :
             h_ptPartTop_passRecoNoBtagParticleParton.Fill(genTops[0].Perp(), top_weight)
             
         response_nobtag.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
-        response_nobtag_full.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
-        response_nobtag_full2.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
-        response_nobtag_full3.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
-        if passParton:
-            response_nobtag_pt400.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
-        else:
-            response_nobtag_pt400.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
         if passParticleLoose:
             response_nobtag_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
-            response_nobtag_full_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
-            response_nobtag_full2_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
-            response_nobtag_full3_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
         else:
             response_nobtag_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
-            response_nobtag_full_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
-            response_nobtag_full2_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
-            response_nobtag_full3_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
-        if passParticle:
-            response_nobtag_pt400_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
-        else:
-            response_nobtag_pt400_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
     ### ------------------------------------------------------------------------------------------------
 
     
@@ -3649,21 +3238,9 @@ for event in events :
     # require a b-tagged jet (using closest jet as b-tag candidate!)
     if passBtag == False:
         if options.makeResponse == True:
-            ## one-step
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full2.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_full3.Miss( hadTop.p4.Perp(), weight*weight_response )
-            if passParton: 
-                response_pt400.Miss( hadTop.p4.Perp(), weight*weight_response )
-            ## two-step
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full2_rp.Miss( genTops[0].Perp(), weight*weight_response )
-                response_full3_rp.Miss( genTops[0].Perp(), weight*weight_response )
-            if passParticle: 
-                response_pt400_rp.Miss( genTops[0].Perp(), weight*weight_response )
         continue
 
     if options.debug :
@@ -3681,10 +3258,10 @@ for event in events :
     h_wboson_pt7.Fill(wboson_pt, weight)
     h_wboson_mt7.Fill(wboson_mt, weight)
     
-    h_pt1LepJet7.Fill(lepJets[0].Perp(), weight)
-    h_eta1LepJet7.Fill(lepJets[0].Eta(), weight)
-    h_csv1LepJet7.Fill(lepcsvs[0], weight)
-    h_vtxMass1LepJet7.Fill(lepVtxMass[0], weight)
+    #h_pt1LepJet7.Fill(lepJets[0].Perp(), weight)
+    #h_eta1LepJet7.Fill(lepJets[0].Eta(), weight)
+    #h_csv1LepJet7.Fill(lepcsvs[0], weight)
+    #h_vtxMass1LepJet7.Fill(lepVtxMass[0], weight)
     h_ptLep7.Fill(lepton.p4().Perp(), weight)
     h_etaLep7.Fill(lepton.p4().Eta(), weight)
     h_etaAbsLep7.Fill(abs(lepton.p4().Eta()), weight)
@@ -3695,11 +3272,11 @@ for event in events :
 
     h_dRvspT7.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     
-    if len(lepJets) > 1:
-        h_pt2LepJet7.Fill(lepJets[1].Perp(), weight)
-        h_eta2LepJet7.Fill(lepJets[1].Eta(), weight)
-        h_csv2LepJet7.Fill(lepcsvs[1], weight)
-        h_vtxMass2LepJet7.Fill(lepVtxMass[1], weight)
+    #if len(lepJets) > 1:
+    #    h_pt2LepJet7.Fill(lepJets[1].Perp(), weight)
+    #    h_eta2LepJet7.Fill(lepJets[1].Eta(), weight)
+    #    h_csv2LepJet7.Fill(lepcsvs[1], weight)
+    #    h_vtxMass2LepJet7.Fill(lepVtxMass[1], weight)
         
     h_ptBJet7.Fill(bjet_pt, weight)
     h_etaBJet7.Fill(bjet_eta, weight)
@@ -3742,16 +3319,7 @@ for event in events :
     # -------------------------------------------------------------------------------------
 
     h_ptRecoTop.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_full.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_full2.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_full3.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_pt400.Fill( goodtop.Perp(), top_weight )
-    
     h_ptRecoTop_2step.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_2step_full.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_2step_full2.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_2step_full3.Fill( goodtop.Perp(), top_weight )
-    h_ptRecoTop_2step_pt400.Fill( goodtop.Perp(), top_weight )
     
     if options.makeResponse == True :		
         h_ptRecoTop_passReco.Fill( goodtop.Perp(), top_weight )
@@ -3769,29 +3337,10 @@ for event in events :
             h_ptPartTop_passRecoParticleParton.Fill(genTops[0].Perp(), top_weight)
         
         response.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
-        response_full.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
-        response_full2.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
-        response_full3.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
-        if passParton:
-            response_pt400.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)            
-        else:
-            response_pt400.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
         if passParticleLoose:
             response_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
-            response_full_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
-            response_full2_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
-            response_full3_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
         else:
-            response_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
-            response_full_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
-            response_full2_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
-            response_full3_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
-        if passParticle:
-            response_pt400_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
-        else:
-            response_pt400_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
-    
-    
+            response_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)    
 
 
  
@@ -3808,31 +3357,11 @@ f.cd()
 
 if options.makeResponse == True :
     response.Write()
-    response_full.Write()
-    response_full2.Write()
-    response_full3.Write()
-    response_pt400.Write()
     response_nobtag.Write()
-    response_nobtag_full.Write()
-    response_nobtag_full2.Write()
-    response_nobtag_full3.Write()
-    response_nobtag_pt400.Write()
 
     response_pp.Write()
-    response_full_pp.Write()
-    response_full2_pp.Write()
-    response_full3_pp.Write()
-    response_pt400_pp.Write()
     response_rp.Write()
-    response_full_rp.Write()
-    response_full2_rp.Write()
-    response_full3_rp.Write()
-    response_pt400_rp.Write()
     response_nobtag_rp.Write()
-    response_nobtag_full_rp.Write()
-    response_nobtag_full2_rp.Write()
-    response_nobtag_full3_rp.Write()
-    response_nobtag_pt400_rp.Write()
 
 f.Write()
 f.Close()
