@@ -494,7 +494,7 @@ parser.add_option('--htCut', metavar='F', type='float', action='store',
 parser.add_option('--htLepCut', metavar='F', type='float', action='store',
                   default=None,
                   dest='htLepCut',
-                  help='Leptonic HT cut (default is None) [GeV]. Leptonic HT defined as scalar sum of pt of jets and lepton.')
+                  help='Cut on MET+lepton pt (default is None) [GeV].')
 
 parser.add_option('--jetPtCut', metavar='F', type='float', action='store',
                   default=200.0,
@@ -997,14 +997,14 @@ h_phiMET5 = ROOT.TH1F("phiMET5", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
 h_phiMET6 = ROOT.TH1F("phiMET6", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
 h_phiMET7 = ROOT.TH1F("phiMET7", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
 
-h_htLep0 = ROOT.TH1F("htLep0", ";H_{T}^{lep} [GeV]; Events / 10 GeV", 300, 0., 3000.)
-h_htLep1 = ROOT.TH1F("htLep1", ";H_{T}^{lep} [GeV]; Events / 10 GeV", 300, 0., 3000.)
-h_htLep2 = ROOT.TH1F("htLep2", ";H_{T}^{lep} [GeV]; Events / 10 GeV", 300, 0., 3000.)
-h_htLep3 = ROOT.TH1F("htLep3", ";H_{T}^{lep} [GeV]; Events / 10 GeV", 300, 0., 3000.)
-h_htLep4 = ROOT.TH1F("htLep4", ";H_{T}^{lep} [GeV]; Events / 10 GeV", 300, 0., 3000.)
-h_htLep5 = ROOT.TH1F("htLep5", ";H_{T}^{lep} [GeV]; Events / 10 GeV", 300, 0., 3000.)
-h_htLep6 = ROOT.TH1F("htLep6", ";H_{T}^{lep} [GeV]; Events / 10 GeV", 300, 0., 3000.)
-h_htLep7 = ROOT.TH1F("htLep7", ";H_{T}^{lep} [GeV]; Events / 10 GeV", 300, 0., 3000.)
+h_htLep0 = ROOT.TH1F("htLep0", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep1 = ROOT.TH1F("htLep1", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep2 = ROOT.TH1F("htLep2", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep3 = ROOT.TH1F("htLep3", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep4 = ROOT.TH1F("htLep4", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep5 = ROOT.TH1F("htLep5", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep6 = ROOT.TH1F("htLep6", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep7 = ROOT.TH1F("htLep7", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
 
 h_ht0 = ROOT.TH1F("ht0", ";H_{T} [GeV]; Events / 10 GeV", 300, 0., 3000.)
 h_ht1 = ROOT.TH1F("ht1", ";H_{T} [GeV]; Events / 10 GeV", 300, 0., 3000.)
@@ -1014,15 +1014,6 @@ h_ht4 = ROOT.TH1F("ht4", ";H_{T} [GeV]; Events / 10 GeV", 300, 0., 3000.)
 h_ht5 = ROOT.TH1F("ht5", ";H_{T} [GeV]; Events / 10 GeV", 300, 0., 3000.)
 h_ht6 = ROOT.TH1F("ht6", ";H_{T} [GeV]; Events / 10 GeV", 300, 0., 3000.)
 h_ht7 = ROOT.TH1F("ht7", ";H_{T} [GeV]; Events / 10 GeV", 300, 0., 3000.)
-
-h_lepMET0 = ROOT.TH1F("lepMET0", ";MET+lepton p_{T} [GeV]; Events / 2 GeV", 300, 0., 600.)
-h_lepMET1 = ROOT.TH1F("lepMET1", ";MET+lepton p_{T} [GeV]; Events / 2 GeV", 300, 0., 600.)
-h_lepMET2 = ROOT.TH1F("lepMET2", ";MET+lepton p_{T} [GeV]; Events / 2 GeV", 300, 0., 600.)
-h_lepMET3 = ROOT.TH1F("lepMET3", ";MET+lepton p_{T} [GeV]; Events / 2 GeV", 300, 0., 600.)
-h_lepMET4 = ROOT.TH1F("lepMET4", ";MET+lepton p_{T} [GeV]; Events / 2 GeV", 300, 0., 600.)
-h_lepMET5 = ROOT.TH1F("lepMET5", ";MET+lepton p_{T} [GeV]; Events / 2 GeV", 300, 0., 600.)
-h_lepMET6 = ROOT.TH1F("lepMET6", ";MET+lepton p_{T} [GeV]; Events / 2 GeV", 300, 0., 600.)
-h_lepMET7 = ROOT.TH1F("lepMET7", ";MET+lepton p_{T} [GeV]; Events / 2 GeV", 300, 0., 600.)
 
 # leptonic top variables
 h_leptop_pt3 = ROOT.TH1F("leptop_pt3", ";p_{T}(leptonic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
@@ -2477,8 +2468,7 @@ for event in events :
     metv = ROOT.TLorentzVector()
     metv.SetPtEtaPhiM( met, 0.0, metphi, 0.0)
 
-    htLep = ht + lepton.p4().Perp()
-    lepMET = lepton.p4().Perp() + met
+    htLep = lepton.p4().Perp() + met
     
     if options.debug :
         print 'Passed stage0'
@@ -2486,7 +2476,6 @@ for event in events :
     
     h_ht0.Fill(ht, weight)
     h_htLep0.Fill(htLep, weight)
-    h_lepMET0.Fill(lepMET, weight)
     h_ptMET0.Fill(met, weight)
     h_phiMET0.Fill(metphi, weight)
     h_pfIso0.Fill(lepton.getIsoPU(), weight)
@@ -2600,7 +2589,6 @@ for event in events :
     h_mttbarGen1.Fill(mttbarGen, weight)
     h_ht1.Fill(ht, weight)
     h_htLep1.Fill(htLep, weight)
-    h_lepMET1.Fill(lepMET, weight)
     h_ptMET1.Fill(met, weight)
     h_phiMET1.Fill(metphi, weight)
     h_pfIso1.Fill(lepton.getIsoPU(), weight)
@@ -2680,7 +2668,6 @@ for event in events :
     h_mttbarGen2.Fill(mttbarGen, weight)
     h_ht2.Fill(ht, weight)
     h_htLep2.Fill(htLep, weight)
-    h_lepMET2.Fill(lepMET, weight)
     h_ptMET2.Fill(met, weight)
     h_phiMET2.Fill(metphi, weight)
     h_pfIso2.Fill(lepton.getIsoPU(), weight)
@@ -2916,7 +2903,6 @@ for event in events :
     h_mttbarGen3.Fill(mttbarGen, weight)
     h_ht3.Fill(ht, weight)
     h_htLep3.Fill(htLep, weight)
-    h_lepMET3.Fill(lepMET, weight)
     h_vtxMass3.Fill(bjet_vtxmass, weight)
     h_ptMET3.Fill(met, weight)
     h_phiMET3.Fill(metphi, weight)
@@ -3012,7 +2998,6 @@ for event in events :
     h_mttbarGen4.Fill(mttbarGen, weight)
     h_ht4.Fill(ht, weight)
     h_htLep4.Fill(htLep, weight)
-    h_lepMET4.Fill(lepMET, weight)
     h_ptMET4.Fill(met, weight)
     h_phiMET4.Fill(metphi, weight)
     h_vtxMass4.Fill(bjet_vtxmass, weight)
@@ -3057,7 +3042,7 @@ for event in events :
     # -------------------------------------------------------------------------------------
     # STEP (5): cut on HT or leptonic HT?
     # -------------------------------------------------------------------------------------
-
+    
     if options.htLepCut is not None and htLep < options.htLepCut :
         if options.makeResponse == True:
             ## one-step
@@ -3124,7 +3109,6 @@ for event in events :
     h_mttbarGen5.Fill(mttbarGen, weight)
     h_ht5.Fill(ht, weight)
     h_htLep5.Fill(htLep, weight)
-    h_lepMET5.Fill(lepMET, weight)
     h_vtxMass5.Fill(bjet_vtxmass, weight)
     h_ptLep5.Fill(lepton.p4().Perp(), weight)
     h_etaLep5.Fill(lepton.p4().Eta(), weight)
@@ -3378,7 +3362,6 @@ for event in events :
     h_mttbarGen6.Fill(mttbarGen, weight)
     h_ht6.Fill(ht, weight)
     h_htLep6.Fill(htLep, weight)
-    h_lepMET6.Fill(lepMET, weight)
     h_vtxMass6.Fill(bjet_vtxmass, weight)
     h_ptMET6.Fill(met, weight)
     h_phiMET6.Fill(metphi, weight)
@@ -3729,7 +3712,6 @@ for event in events :
                 
     h_ht7.Fill(ht, weight)
     h_htLep7.Fill(htLep, weight)
-    h_lepMET7.Fill(lepMET, weight)
     h_ptMET7.Fill(met, weight)
     h_phiMET7.Fill(metphi, weight)
     
