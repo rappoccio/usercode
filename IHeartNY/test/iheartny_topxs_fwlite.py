@@ -481,6 +481,11 @@ parser.add_option('--printEvents', metavar='F', action='store_true',
                   dest='printEvents',
                   help='Print events that pass selection (run:lumi:event)')
 
+parser.add_option('--useTriangular', metavar='F', action='store_true',
+                  default=False,
+                  dest='useTriangular',
+                  help='Use triangular cut to reject electron QCD?')
+
 parser.add_option('--metCut', metavar='F', type='float', action='store',
                   default=None,
                   dest='metCut',
@@ -2224,6 +2229,38 @@ for event in events :
     metv.SetPtEtaPhiM( met, 0.0, metphi, 0.0)
 
     htLep = lepton.p4().Perp() + met
+
+
+    # -------------------------------------------------------------------------------------
+    ## additional triangular cut for electron channel to reject QCD
+
+    passTriangular = True
+    
+    if options.lepType == "ele" and options.useTriangular:
+        dphi_emet = abs(metphi - lepton.p4().Phi())
+        while dphi_emet > 3.14159 : 
+            dphi_emet = abs(2*3.14159 - dphi_emet)
+        dphi_jetmet = abs(metphi - ak5Jets[0].Phi())
+        while dphi_jetmet > 3.14159 : 
+            dphi_jetmet = abs(2*3.14159 - dphi_jetmet)
+        
+        if not options.doQCD:
+            if ( abs(dphi_emet-1.5) > 1.5*met/75.0 or abs(dphi_jetmet-1.5) > 1.5*met/75.0 ):
+                passTriangular = False
+        else: 
+            if ( abs(dphi_emet-1.5) < 1.5*met/75.0 and abs(dphi_jetmet-1.5) < 1.5*met/75.0 ):
+                passTriangular = False
+
+    if passTriangular == False:
+        if options.makeResponse == True:
+            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+            response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
+            if passParticleLoose:
+                response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+                response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
+        continue
+    # -------------------------------------------------------------------------------------
+
     
     if options.debug :
         print 'Passed stage0'
