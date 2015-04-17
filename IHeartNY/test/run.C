@@ -28,7 +28,7 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_nom");
     makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_nom");
     makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_nom");
-
+    
     //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_pdfup");
     //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_pdfup");
     //makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_pdfup");
@@ -72,6 +72,16 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     makeTheta_single("vtxMass",7,doElectron,"CT10_nom",true);
 
   } 
+
+  if (option=="theta5") {
+
+    cout << "make theta histograms for steps 5,6,7..." << endl;
+
+    makeTheta_subtract("etaAbsLep",5,6,ptbin,doElectron,"CT10_nom");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_nom");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_nom");
+  }
+
 
   // various plots for kinematic checks
   else if (option=="plot") {
@@ -142,7 +152,6 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
 
   // debug thing
   else if (option=="plotmini") {
-
     makePlots("hadtop_pt",7,0, doElectron);
     makePlots("hadtop_pt",6,7, doElectron);
     makePlots("hadtop_pt",4,6, doElectron);
@@ -150,7 +159,13 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     makePlots("vtxMass",7,0, doElectron);
     makePlots("etaAbsLep",6,7, doElectron);
     makePlots("etaAbsLep",4,6, doElectron);
+  }
 
+  // debug thing
+  else if (option=="plotmini5") {
+    makePlots("vtxMass",7,0, doElectron);
+    makePlots("etaAbsLep",6,7, doElectron);
+    makePlots("etaAbsLep",5,6, doElectron);
   }
 
   else if (option=="allpre") {

@@ -57,13 +57,13 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   TH1::AddDirectory(kFALSE); 
   setStyle();
 
-  if ( !((cut==4 && cut2==6) || (cut==6 && cut2==7) || (cut==7 && cut2==0) || (cut==6 && cut2==0))) { 
+  if ( !((cut==4 && cut2==6) || (cut==5 && cut2==6) || (cut==6 && cut2==7) || (cut==7 && cut2==0) || (cut==6 && cut2==0))) { 
     std::cout << "Not a valid option! Syntax is: " << std::endl
 	      << "> makePlots(TString var, int cut, int cut2)" << std::endl
-	      << "where (cut, cut2) = (4,6) or (6,7) or (7,0) or (6,0). Exiting..." << std::endl;
+	      << "where (cut, cut2) = (4,6) or (5,6) or (6,7) or (7,0) or (6,0). Exiting..." << std::endl;
     return;
   }
- 
+
   TString hist = var;
   hist += cut;
   hist += ptbin;
@@ -107,6 +107,11 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (use2D && doElectron) filepath = "histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
   else if (use2D) filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   else filepath = "histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root";
+
+  if (doHtlepTriang) {
+    if (doElectron) filepath = "histfiles_htlep150qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles_htlep150/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+  }
 
   TFile* dataFile = TFile::Open(filepath);
   TH1F* h_data = (TH1F*) dataFile->Get( hist );
@@ -455,17 +460,15 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   // read MC histograms
   TFile* fMC;
   if (combined) {
-    //if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_1bin.root");
-    //else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_2bin.root");
     if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb.root");
     else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_2bin.root");
   }
   else if (doElectron) {
-    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el_1bin.root");
+    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el.root");
     else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el_2bin.root");
   }
   else {
-    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu_1bin.root");
+    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu.root");
     else fMC = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu_2bin.root");
   }
   
@@ -521,6 +524,11 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   if (use2D && doElectron) filepath = "histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
   else if (use2D) filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   else filepath = "histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root";
+
+  if (doHtlepTriang) {
+    if (doElectron) filepath = "histfiles_htlep150qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles_htlep150/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+  }
 
   TFile* dataFile = TFile::Open(filepath);
   TH1F* h_data = (TH1F*) dataFile->Get( what+ptbin );
@@ -1070,6 +1078,11 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
   else if (use2D) filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   else filepath = "histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root";
 
+  if (doHtlepTriang) {
+    if (doElectron) filepath = "histfiles_htlep150qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles_htlep150/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+  }
+
   TFile* dataFile = TFile::Open(filepath);
   TH1F* data = (TH1F*) dataFile->Get( hist );
   data->SetName(channel + hist + "__DATA");
@@ -1114,7 +1127,7 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   TH1::AddDirectory(kFALSE); 
   setStyle();
 
-  if ( !((cut1==4 && cut2==6) || (cut1==6 && cut2==7)) ) {
+  if ( !((cut1==4 && cut2==6) || (cut1==5 && cut2==6) || (cut1==6 && cut2==7)) ) {
     std::cout << "Not a valid option! Syntax is: " << std::endl
 	      << "> makeTheta_subtract(TString var, int cut1, int cut2)" << std::endl
 	      << "where (cut1, cut2) = (4,6) or (6,7). Exiting..." << std::endl;
@@ -1174,6 +1187,11 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   if (use2D && doElectron) filepath = "histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
   else if (use2D) filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   else filepath = "histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root";
+
+  if (doHtlepTriang) {
+    if (doElectron) filepath = "histfiles_htlep150qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles_htlep150/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+  }
 
   TFile* dataFile = TFile::Open(filepath);
 
