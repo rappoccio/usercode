@@ -75,12 +75,27 @@ TString binsize = "20";      // 2 * binfac
 TString numberofbins = "20"; // 200 / binfac
 
 TString whichHist = "2Dcut_";
-TString whichDir = "2Dhist_el/";
-TString whichDirv2 = "2Dhists_el/";
+
+//muons
+TString whichDir = "2Dhist/";
+TString whichDirv2 = "2Dhists/";
+TString channel = "mu";
+TString FOLDER = "histfiles_htlep150";
+TString FOLDER_TT = "histfiles_htlep150";
+
+//electrons
+/*
+//TString whichDir = "2Dhist_el/";
+//TString whichDirv2 = "2Dhists_el/";
+TString whichDir = "2Dhist/";
+TString whichDirv2 = "2Dhists/";
 TString channel = "el";
-//TString whichHist = "";
-//TString whichDir = "";
-//TString whichDirv2 = "";
+TString FOLDER = "histfiles_htlep150qcd";
+TString FOLDER_TT = "histfiles_htlep150qcd";
+*/
+
+//TString FOLDER = "histfiles";
+//TString FOLDER_TT = "histfiles_CT10_nom";
 
 double Nraw[5];
 double Nnorm[5];
@@ -102,11 +117,11 @@ int QCDminfit() {
   cout << "Beginning QCD normalization..." << endl;
 
   // User inputs
-  TString temp_num = "4";
-  TString QCD_temp_num = "4";
+  TString temp_num = "5";
+  TString QCD_temp_num = "5";
   bool dosub = true;
   bool exclusive = true; 
-  TString var = "raw";    // Amount of non-QCD subtracted from the sideband
+  TString var = "";    // Amount of non-QCD subtracted from the sideband
                          //"raw" = none, "" = nominal, "up" = nominal x 2, "dn" = nominal x 1/2
 
   int nbins_new = nbins / binfac;
@@ -386,14 +401,19 @@ void getData(TString& temp_num, int binfac, bool exclusive, TString channel){
   TH1D* h_data = new TH1D("data", "data", nbins, xmin, xmax);
   TFile* datafile;
   if (channel == "mu") {
-    datafile = TFile::Open("../histfiles/"+whichDir+"SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"nom.root", "READ");
+    datafile = TFile::Open("../"+FOLDER+"/SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"nom.root", "READ");
   }
   if (channel == "el") {
-    datafile = TFile::Open("../histfiles/"+whichDir+"SingleEl_iheartNY_V1_el_Run2012_"+whichHist+"nom.root", "READ");
+    datafile = TFile::Open("../"+FOLDER+"/SingleEl_iheartNY_V1_el_Run2012_"+whichHist+"nom.root", "READ");
   }
   h_data = (TH1D*) gDirectory->Get("ptMET"+temp_num);
   h_data->Sumw2();
   if (exclusive && temp_num == "4"){
+    TH1D* h_data_sub = (TH1D*) gDirectory->Get("ptMET6");
+    h_data_sub->Sumw2();
+    h_data->Add(h_data_sub, -1);
+  }
+  if (exclusive && temp_num == "5"){
     TH1D* h_data_sub = (TH1D*) gDirectory->Get("ptMET6");
     h_data_sub->Sumw2();
     h_data->Add(h_data_sub, -1);
@@ -467,9 +487,13 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   // Do first recombination
   // TTjets semilep
   for(int i=0; i<3; i++){
-    top_file_array[i] = TFile::Open("../histfiles_CT10_nom/"+whichDirv2+sample_array[i]+whichHist+"nom.root", "READ");
+    top_file_array[i] = TFile::Open("../"+FOLDER_TT+"/"+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
     if (exclusive && temp_num == "4"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    if (exclusive && temp_num == "5"){
       TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
       top_his_array[i]->Add(hist_sub, -1);
     }
@@ -484,9 +508,13 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   }
   // TTjets nonsemilep
   for(int i=3; i<6; i++){
-    top_file_array[i] = TFile::Open("../histfiles_CT10_nom/"+whichDirv2+sample_array[i]+whichHist+"nom.root", "READ");
+    top_file_array[i] = TFile::Open("../"+FOLDER_TT+"/"+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
     if (exclusive && temp_num == "4"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    if (exclusive && temp_num == "5"){
       TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
       top_his_array[i]->Add(hist_sub, -1);
     }
@@ -501,9 +529,13 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   }
   // Stop
   for(int i=6; i<12; i++){
-    top_file_array[i] = TFile::Open("../histfiles/"+whichDir+sample_array[i]+whichHist+"nom.root", "READ");
+    top_file_array[i] = TFile::Open("../"+FOLDER+"/"+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
     if (exclusive && temp_num == "4"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    if (exclusive && temp_num == "5"){
       TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
       top_his_array[i]->Add(hist_sub, -1);
     }
@@ -518,9 +550,13 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   }
   // WJets
   for(int i=12; i<16; i++){
-    top_file_array[i] = TFile::Open("../histfiles/"+whichDir+sample_array[i]+whichHist+"nom.root", "READ");
+    top_file_array[i] = TFile::Open("../"+FOLDER+"/"+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get("ptMET"+temp_num);
     if (exclusive && temp_num == "4"){
+      TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+      top_his_array[i]->Add(hist_sub, -1);
+    }
+    if (exclusive && temp_num == "5"){
       TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
       top_his_array[i]->Add(hist_sub, -1);
     }
@@ -543,14 +579,18 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   
   // Get QCD template
   if (channel == "mu") {
-    qcd_file_array[0] = TFile::Open("../histfiles/"+whichDir+"SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"qcd.root", "READ");
+    qcd_file_array[0] = TFile::Open("../"+FOLDER+"/SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"qcd.root", "READ");
   }
   if (channel == "el") {
-    qcd_file_array[0] = TFile::Open("../histfiles/"+whichDir+"SingleEl_iheartNY_V1_el_Run2012_"+whichHist+"qcd.root", "READ");
+    qcd_file_array[0] = TFile::Open("../"+FOLDER+"/SingleEl_iheartNY_V1_el_Run2012_"+whichHist+"qcd.root", "READ");
   }
 
   qcd_his_array[0] = (TH1D*) gDirectory->Get("ptMET"+QCD_temp_num);
   if (exclusive && QCD_temp_num == "4"){
+    TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+    qcd_his_array[0]->Add(hist_sub, -1);
+  }
+  if (exclusive && QCD_temp_num == "5"){
     TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
     qcd_his_array[0]->Add(hist_sub, -1);
   }
@@ -563,13 +603,17 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   if (dosub && var != "raw") {
     for(int i=0; i<16; i++){
       if (i < 6){
-	qcd_file_array[i+1] = TFile::Open("../histfiles_CT10_nom/"+whichDirv2+sample_array[i]+whichHist+"qcd.root", "READ");
+	qcd_file_array[i+1] = TFile::Open("../"+FOLDER_TT+"/"+sample_array[i]+whichHist+"qcd.root", "READ");
       }
       else {
-	qcd_file_array[i+1] = TFile::Open("../histfiles/"+whichDir+sample_array[i]+whichHist+"qcd.root", "READ");
+	qcd_file_array[i+1] = TFile::Open("../"+FOLDER+"/"+sample_array[i]+whichHist+"qcd.root", "READ");
       }
       qcd_his_array[i+1] = (TH1D*) gDirectory->Get("ptMET"+QCD_temp_num);
       if (exclusive && QCD_temp_num == "4"){
+	TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
+	qcd_his_array[i+1]->Add(hist_sub, -1);
+      }
+      if (exclusive && QCD_temp_num == "5"){
 	TH1D* hist_sub = (TH1D*) gDirectory->Get("ptMET6");
 	qcd_his_array[i+1]->Add(hist_sub, -1);
       }
