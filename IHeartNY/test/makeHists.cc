@@ -116,6 +116,10 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     if (doElectron) filepath = "histfiles_met50qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
+  else if (do_qcd) {
+    if (doElectron) filepath = "histfiles_qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles_qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+  }
 
   TFile* dataFile = TFile::Open(filepath);
   TH1F* h_data = (TH1F*) dataFile->Get( hist );
@@ -536,6 +540,10 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   else if (do_met50qcd) {
     if (doElectron) filepath = "histfiles_met50qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+  }
+  else if (do_qcd) {
+    if (doElectron) filepath = "histfiles_qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles_qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
 
   TFile* dataFile = TFile::Open(filepath);
@@ -1094,6 +1102,10 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
     if (doElectron) filepath = "histfiles_met50qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
+  else if (do_qcd) {
+    if (doElectron) filepath = "histfiles_qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles_qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+  }
 
   TFile* dataFile = TFile::Open(filepath);
   TH1F* data = (TH1F*) dataFile->Get( hist );
@@ -1207,6 +1219,10 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   else if (do_met50qcd) {
     if (doElectron) filepath = "histfiles_met50qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+  }
+  else if (do_qcd) {
+    if (doElectron) filepath = "histfiles_qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles_qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
 
   TFile* dataFile = TFile::Open(filepath);

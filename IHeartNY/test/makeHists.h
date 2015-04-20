@@ -21,7 +21,7 @@ bool use2D = true;
 
 bool do_htlep150qcd = false;
 bool do_met50qcd = false;
-
+bool do_qcd = false;
 
 // -------------------------------------------------------------------------------------
 // helper class for summed, weighted histograms (e.g. single top)
@@ -133,6 +133,9 @@ SummedHist * getWJets( TString name, TString histname, bool doElectron, TString 
   else if (do_met50qcd) {
     DIR = "histfiles_met50qcd/";
   }
+  else if (do_qcd) {
+    DIR = "histfiles_qcd/";
+  }
 
   TString muOrEl = "mu";
   if (doElectron) muOrEl = "el";
@@ -193,6 +196,9 @@ SummedHist * getSingleTop( TString name, TString histname, bool doElectron, TStr
   }
   else if (do_met50qcd) {
     DIR = "histfiles_met50qcd/";
+  }
+  else if (do_qcd) {
+    DIR = "histfiles_qcd/";
   }
 
   TString muOrEl = "mu";
@@ -259,6 +265,9 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
   }
   else if (do_met50qcd) {
     DIR = "histfiles_met50qcd/";
+  }
+  else if (do_qcd) {
+    DIR = "histfiles_qcd/";
   }
 
   TString muOrEl = "mu";
@@ -339,6 +348,9 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
   }
   else if (do_met50qcd) {
     DIR = "histfiles_met50qcd/";
+  }
+  else if (do_qcd) {
+    DIR = "histfiles_qcd/";
   }
 
   TString muOrEl = "mu";
@@ -428,6 +440,10 @@ SummedHist * getQCD( TString var, bool doElectron, TString ptbin = "" ) {
   else if (do_met50qcd) {
     if (doElectron) filepath = "histfiles_met50qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root";
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root";
+  }
+  else if (do_qcd) {
+    if (doElectron) filepath = "histfiles_qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root";
+    else filepath = "histfiles_qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root";
   }
 
   TFile* qcdFile = TFile::Open(filepath);
@@ -556,6 +572,9 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bo
     qcd_mu_2Dcut_err[6] = 0.0;;
     qcd_mu_2Dcut_err[7] = 0.0;
   }
+  else if (do_qcd) {
+    // this means the default scenario for muons
+  }
 
   float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 4107., 0.0, 257., 20.5};
   float qcd_el_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   71., 0.0,  18.,  6.7};
@@ -584,6 +603,16 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bo
     qcd_el_2Dcut_err[5] = 0.0;
     qcd_el_2Dcut_err[6] = 0.0;
     qcd_el_2Dcut_err[7] = 0.0;
+  }
+  else if (do_qcd) {
+    qcd_el_2Dcut_norm[4] = 448.;
+    qcd_el_2Dcut_norm[5] = 448.;
+    qcd_el_2Dcut_norm[6] = 40.3;
+    qcd_el_2Dcut_norm[7] = 6.2;
+    qcd_el_2Dcut_err[4] = 23.;
+    qcd_el_2Dcut_err[5] = 23.;
+    qcd_el_2Dcut_err[6] = 6.5;
+    qcd_el_2Dcut_err[7] = 3.0;
   }
 
   float qcd_norm = 0;
