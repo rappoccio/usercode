@@ -1,0 +1,44 @@
+Total number of likelihood evaluations: 1273452
+Total number of likelihood evaluations: 647
+[INFO]  executing script analysis.py
+DEBUG: muon+jets channel considered
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS qcd comb channel 1bin ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-8fdde0e3d8.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-f3f2ad0d5f.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(0.86285816424693396, 0.15956123883129739)], 'jer': [(1.4730369527828557, 0.59116110203957051)], 'toptag': [(-0.31523912497074508, 0.20213665732445579)], 'beta_signal': [(0.89461878221138647, 0.062242059311851894)], 'jec': [(0.85858814463163124, 0.519426688838171)], 'rate_vjets': [(-0.32530520328977869, 0.14266445099152741)], '__nll': [-64702.221414670217], '__cov': [array([[  3.87569096e-03,  -4.85632528e-03,  -2.24851011e-03,
+         -3.25527404e-04,  -4.63151147e-03,  -1.99507428e-02,
+         -4.17639438e-03,  -1.08926933e-02],
+       [ -4.85632528e-03,   2.69804085e-01,  -1.07249817e-01,
+          5.64396125e-03,   2.92585681e-02,  -3.00123908e-02,
+         -4.23915682e-02,  -2.43685880e-03],
+       [ -2.24851011e-03,  -1.07249817e-01,   3.49471449e-01,
+         -3.80294580e-04,   2.09459205e-02,   5.87200139e-03,
+          7.29053308e-03,   9.94146414e-03],
+       [ -3.25527404e-04,   5.64396125e-03,  -3.80294580e-04,
+          2.54597889e-02,   3.25150334e-02,  -6.26349586e-03,
+         -7.76984539e-03,  -1.42892511e-03],
+       [ -4.63151147e-03,   2.92585681e-02,   2.09459205e-02,
+          3.25150334e-02,   1.45102139e-01,  -1.30993100e-02,
+         -1.80219706e-02,   7.93204286e-03],
+       [ -1.99507428e-02,  -3.00123908e-02,   5.87200139e-03,
+         -6.26349586e-03,  -1.30993100e-02,   6.96994880e-01,
+         -4.31130741e-04,   5.40088323e-02],
+       [ -4.17639438e-03,  -4.23915682e-02,   7.29053308e-03,
+         -7.76984539e-03,  -1.80219706e-02,  -4.31130741e-04,
+          2.03531456e-02,   1.66737024e-02],
+       [ -1.08926933e-02,  -2.43685880e-03,   9.94146414e-03,
+         -1.42892511e-03,   7.93204286e-03,   5.40088323e-02,
+          1.66737024e-02,   4.08592282e-02]])], 'rate_mu_qcd': [(-1.5630716841823664, 0.38092274735384801)], 'rate_st': [(-0.19101268018762052, 0.83486219234053716)]}}
+rate_el_qcd          :   0.86 +-   0.16
+jer                  :   1.47 +-   0.59
+toptag               :  -0.32 +-   0.20
+beta_signal          :   0.89 +-   0.06
+jec                  :   0.86 +-   0.52
+rate_vjets           :  -0.33 +-   0.14
+rate_mu_qcd          :  -1.56 +-   0.38
+rate_st              :  -0.19 +-   0.83
+    {0.0695738347433, 0.457298412407, 0.0829345975538, 0.339313763739, 0.0557349437789}, // bkg error for qcd
+if options.pdf == "qcd" and options.lepType == "comb" : toptag_post = 0.921190218757
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_mu_qcd', 'rate_st', 'rate_vjets', 'toptag']
+[INFO]  workdir is /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis
