@@ -20,7 +20,7 @@ const double LUM = 19.7;
 bool use2D = true;
 
 bool do_htlep150qcd = false;
-bool do_met50qcd = false;
+bool do_met50qcd = true;
 bool do_qcd = false;
 
 // -------------------------------------------------------------------------------------
@@ -562,15 +562,16 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bo
     qcd_mu_2Dcut_err[6] = 10.0;
     qcd_mu_2Dcut_err[7] = 0.0;
   }
+  // MET > 50 GeV
   else if (do_met50qcd) {
-    qcd_mu_2Dcut_norm[4] = 0.0;
+    qcd_mu_2Dcut_norm[4] = 180.0;
     qcd_mu_2Dcut_norm[5] = 0.0;
-    qcd_mu_2Dcut_norm[6] = 0.0;
+    qcd_mu_2Dcut_norm[6] = 31.0;
     qcd_mu_2Dcut_norm[7] = 0.0;
-    qcd_mu_2Dcut_err[4] = 0.0;
+    qcd_mu_2Dcut_err[4] = 44.0;
     qcd_mu_2Dcut_err[5] = 0.0;
-    qcd_mu_2Dcut_err[6] = 0.0;;
-    qcd_mu_2Dcut_err[7] = 0.0;
+    qcd_mu_2Dcut_err[6] = 13.0;;
+    qcd_mu_2Dcut_err[7] = 3.2;
   }
   else if (do_qcd) {
     // this means the default scenario for muons
@@ -594,15 +595,16 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bo
     qcd_el_2Dcut_err[6] = 5.7;
     qcd_el_2Dcut_err[7] = 2.9;
   }
+  // MET > 50 GeV + triangular cut
   else if (do_met50qcd) {
-    qcd_el_2Dcut_norm[4] = 0.0;
+    qcd_el_2Dcut_norm[4] = 101.0;
     qcd_el_2Dcut_norm[5] = 0.0;
-    qcd_el_2Dcut_norm[6] = 0.0;
-    qcd_el_2Dcut_norm[7] = 0.0;
-    qcd_el_2Dcut_err[4] = 0.0;
+    qcd_el_2Dcut_norm[6] = 23.0;
+    qcd_el_2Dcut_norm[7] = 2.2;
+    qcd_el_2Dcut_err[4] = 35.0;
     qcd_el_2Dcut_err[5] = 0.0;
-    qcd_el_2Dcut_err[6] = 0.0;
-    qcd_el_2Dcut_err[7] = 0.0;
+    qcd_el_2Dcut_err[6] = 15.0;
+    qcd_el_2Dcut_err[7] = 1.9;
   }
   else if (do_qcd) {
     qcd_el_2Dcut_norm[4] = 448.;

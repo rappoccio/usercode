@@ -1115,10 +1115,15 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
   // write the histograms to a file
   TString outname;
   TString append = "";
+  TString mydir = pdfdir;
   if (half) {append = "_half";}
-  if (use2D && doElectron) outname = "NormalizedHists_" + pdfdir + "/normalized2d_eljets_"+hist+append+".root";
-  else if (use2D) outname = "NormalizedHists_" + pdfdir + "/normalized2d_mujets_"+hist+append+".root";
-  else outname = "NormalizedHists_" + pdfdir + "/normalized_mujets_"+hist+append+".root";
+  if (do_htlep150qcd) mydir = "htlep150qcd";
+  if (do_met50qcd) mydir = "met50qcd";
+
+  if (use2D && doElectron) outname = "NormalizedHists_" + mydir + "/normalized2d_eljets_"+hist+append+".root";
+  else if (use2D) outname = "NormalizedHists_" + mydir + "/normalized2d_mujets_"+hist+append+".root";
+  else outname = "NormalizedHists_" + mydir + "/normalized_mujets_"+hist+append+".root";
+  
 
   TFile* fout = new TFile(outname, "RECREATE");
 
@@ -1251,10 +1256,15 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   // write the histograms to a file
   TString outname;
   TString append = "";
+  TString mydir = pdfdir;
   if (half) {append = "_half";}
-  if (use2D && doElectron) outname = "NormalizedHists_" + pdfdir + "/normalized2d_eljets_"+hist[1]+"_subtracted_from_"+hist[0]+append+".root";
-  else if (use2D) outname = "NormalizedHists_" + pdfdir + "/normalized2d_mujets_"+hist[1]+"_subtracted_from_"+hist[0]+append+".root";
-  else outname = "NormalizedHists_" + pdfdir + "/normalized_mujets_"+hist[1]+"_subtracted_from_"+hist[0]+append+".root";
+  if (do_htlep150qcd) mydir = "htlep150qcd";
+  if (do_met50qcd) mydir = "met50qcd";
+
+  if (use2D && doElectron) outname = "NormalizedHists_" + mydir + "/normalized2d_eljets_"+hist[1]+"_subtracted_from_"+hist[0]+append+".root";
+  else if (use2D) outname = "NormalizedHists_" + mydir + "/normalized2d_mujets_"+hist[1]+"_subtracted_from_"+hist[0]+append+".root";
+  else outname = "NormalizedHists_" + mydir + "/normalized_mujets_"+hist[1]+"_subtracted_from_"+hist[0]+append+".root";
+  
 
   TFile* fout = new TFile(outname, "RECREATE");
 
