@@ -578,19 +578,11 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   // rebinning
   float rebin = 1;
   TString newtitle;
-  if (what.Contains("etaAbsLep")) {
-    rebin = 2;
-    newtitle = "Muons / 0.1";
-  }
-  else if (what=="hadtop_pt6" || what=="hadtop_pt7") {
+  if (what=="hadtop_pt6" || what=="hadtop_pt7") {
     rebin = 4;
     newtitle = "Events / 20 GeV";
   }
-  else if (what=="vtxMass7") {
-    rebin = 2;
-    newtitle = "Events / 0.2 GeV";
-  }
-
+  
   if (rebin > 0) {
     h_data->Rebin(rebin);
     h_data->GetYaxis()->SetTitle(newtitle);
@@ -1111,6 +1103,18 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
   TH1F* data = (TH1F*) dataFile->Get( hist );
   data->SetName(channel + hist + "__DATA");
   
+  // rebinning
+  float rebin = 1;
+  TString newtitle;
+  if (hist.Contains("etaAbsLep")) {
+    rebin = 2;
+    newtitle = "Muons / 0.1";
+    if (doElectron) newtitle = "Electrons / 0.1";
+  }
+  else if (hist=="vtxMass7") {
+    rebin = 2;
+    newtitle = "Events / 0.2 GeV";
+  }
 
   // write the histograms to a file
   TString outname;
@@ -1130,6 +1134,14 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
   fout->cd();
 
   for (int is=0; is<nSYST; is++) {
+    // rebin
+    wjets[is]->hist()->Rebin(rebin);
+    singletop[is]->hist()->Rebin(rebin);
+    ttbar_semiLep[is]->hist()->Rebin(rebin);
+    ttbar_nonSemiLep[is]->hist()->Rebin(rebin);
+    ttbar[is]->Rebin(rebin);
+
+    //write to file
     wjets[is]->hist()->Write();
     singletop[is]->hist()->Write();
     ttbar_semiLep[is]->hist()->Write();
@@ -1139,7 +1151,9 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
 
   TH1F* h_qcd = qcd->hist();
   h_qcd->Scale(nqcd / h_qcd->GetSum());
+  h_qcd->Rebin(rebin);
   h_qcd->Write();
+  data->Rebin(rebin);
   data->Write();
 
   fout->Close();
@@ -1253,6 +1267,19 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   data[0]->Add(data[1], -1);
 
 
+  // rebinning
+  float rebin = 1;
+  TString newtitle;
+  if (hist.Contains("etaAbsLep")) {
+    rebin = 2;
+    newtitle = "Muons / 0.1";
+    if (doElectron) newtitle = "Electrons / 0.1";
+  }
+  else if (hist=="vtxMass7") {
+    rebin = 2;
+    newtitle = "Events / 0.2 GeV";
+  }
+
   // write the histograms to a file
   TString outname;
   TString append = "";
@@ -1271,6 +1298,14 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   fout->cd();
 
   for (int is=0; is<nSYST; is++) {
+    // rebin
+    wjets[is]->hist()->Rebin(rebin);
+    singletop[is]->hist()->Rebin(rebin);
+    ttbar_semiLep[is]->hist()->Rebin(rebin);
+    ttbar_nonSemiLep[is]->hist()->Rebin(rebin);
+    ttbar[is]->Rebin(rebin);
+
+    //write to file
     wjets[is][0]->hist()->Write();
     singletop[is][0]->hist()->Write();
     ttbar_semiLep[is][0]->hist()->Write();
@@ -1278,7 +1313,9 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
     ttbar[is][0]->Write();
   }
 
+  qcd[0]->hist()->Rebin(2);
   qcd[0]->hist()->Write();
+  data[0]->Rebin(2);
   data[0]->Write();
 
 

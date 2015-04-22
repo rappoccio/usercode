@@ -20,7 +20,7 @@ const double LUM = 19.7;
 bool use2D = true;
 
 bool do_htlep150qcd = false;
-bool do_met50qcd = true;
+bool do_met50qcd = false;
 bool do_qcd = false;
 
 // -------------------------------------------------------------------------------------
