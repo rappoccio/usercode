@@ -1,6 +1,22 @@
 from ROOT import *
 
 ####################################################################################
+## which nuisance parameters? 
+
+extBtag = False
+extLumi = False
+extJet = False
+
+extName = ""
+if extBtag:
+    extName += "_nobtag"
+if extLumi:
+    extName += "_nolumi"
+if extJet:
+    extName += "_nojet"
+
+
+####################################################################################
 # We have to externalize the PDF and Q2 uncertainties.
 # This is done by skipping them in the nominal variations,
 # but then re-running with "nominal" set to "PDF up", "PDF down", etc, respectively.
@@ -12,8 +28,11 @@ from ROOT import *
 
 def histfilter( hname ) :
 
-    #if hname == None or 'TTbar_semiLep' in hname or 'TTbar_nonSemiLep' in hname:
-    if hname == None or 'TTbar_semiLep' in hname or 'TTbar_nonSemiLep' in hname or 'btag' in hname:  ## remove b-tagging nuisance parameter
+    if hname == None or 'TTbar_semiLep' in hname or 'TTbar_nonSemiLep' in hname:
+        return False
+    elif extBtag and 'btag' in hname:  ## remove b-tagging nuisance parameter
+        return False
+    elif extJet and ('jer' in hname or 'jec' in hname):  ## remove JER/JEC nuisance parameter
         return False
     else :
         return True
@@ -28,10 +47,11 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, elflag=False, muflag=Fa
     model = build_model_from_rootfile(files, histogram_filter=infilter, include_mc_uncertainties = mcstat)
     model.fill_histogram_zerobins()
     model.set_signal_processes(signal)
-    #for p in model.processes: 
-    #    if (p == 'QCD') or (p == 'ElQCD') or (p == 'MuQCD'): 
-    #        continue
-    #    model.add_lognormal_uncertainty('lumi', math.log(1.026), p)  ## when commented out -- remove luminosity nuisance parameter
+    if extLumi == False:
+        for p in model.processes: 
+            if (p == 'QCD') or (p == 'ElQCD') or (p == 'MuQCD'): 
+                continue
+            model.add_lognormal_uncertainty('lumi', math.log(1.026), p)
         
     model.add_lognormal_uncertainty('rate_st', math.log(1.5), 'SingleTop')
     model.add_lognormal_uncertainty('rate_vjets', math.log(1.5), 'WJets')
@@ -204,7 +224,7 @@ usePL = False
 # Building the statistical model :
 infilter = histfilter
 
-dirs = ['CT10_nom'#, 
+dirs = ['CT10_nom'#,
         #'CT10_pdfup', 
         #'CT10_pdfdown',
         #'MSTW_nom', 
@@ -217,6 +237,7 @@ dirs = ['CT10_nom'#,
         #'scaledown'
         #'htlep150qcd'
         #'met50qcd'
+        #'qcd'
     ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
@@ -285,19 +306,19 @@ for idir in dirs :
 
         pdbs = plotdata()
         pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/beta_signal_' + idir + '_' + channel + binname + '.pdf')
+        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/beta_signal_' + idir + '_' + channel + extName + binname + '.pdf')
         
         pdd = plotdata()
         pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/delta_beta_signal_' + idir + '_' + channel + binname + '.pdf')
+        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/delta_beta_signal_' + idir + '_' + channel + extName + binname + '.pdf')
         
         pdp = plotdata()
         pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pull_' + idir + '_' + channel + binname + '.pdf')
+        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pull_' + idir + '_' + channel + extName + binname + '.pdf')
         
 
         # to write it to a root file:
-        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_mle_' + idir + '_' + channel + binname + '.root')
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_mle_' + idir + '_' + channel + extName + binname + '.root')
 
 
         #results2 = mle(model, input='data', n=1, with_covariance = True)
@@ -389,7 +410,7 @@ for idir in dirs :
         for p in parameters :
             parameter_values[p] = results2['TTbar'][p][0][0]
         histos = evaluate_prediction(model, parameter_values, include_signal = True)
-        write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + channel + binname + '.root')
+        write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + channel + extName + binname + '.root')
         
         ## option to print html output file
         #if idir == "CT10_nom" :
@@ -424,23 +445,23 @@ for idir in dirs :
             
         pdbs = plotdata()
         pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/pl_beta_signal_' + idir + '_' + channel + binname + '.pdf')
+        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/pl_beta_signal_' + idir + '_' + channel + extName + binname + '.pdf')
 
         pdd = plotdata()
         pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/pl_delta_beta_signal_' + idir + '_' + channel + binname + '.pdf')
+        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/pl_delta_beta_signal_' + idir + '_' + channel + extName + binname + '.pdf')
 
         pdp = plotdata()
         pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pl_pull_' + idir + '_' + channel + binname + '.pdf')
+        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pl_pull_' + idir + '_' + channel + extName + binname + '.pdf')
 
 
         # to write the data to a file, use e.g.:
-        pdd.write_txt('ThetaPlots/pl_dbs_' + idir + '_' + channel + binname + '.txt')
-        pdp.write_txt('ThetaPlots/pl_pull_' + idir + '_' + channel + binname + '.txt')
+        pdd.write_txt('ThetaPlots/pl_dbs_' + idir + '_' + channel + extName + binname + '.txt')
+        pdp.write_txt('ThetaPlots/pl_pull_' + idir + '_' + channel + extName + binname + '.txt')
 
         # to write it to a root file:
-        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_pl_' + idir + '_' + channel + binname + '.root')
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_pl_' + idir + '_' + channel + extName + binname + '.root')
 
         
         results4 = pl_interval(model, input='data', n=1 , **args)
