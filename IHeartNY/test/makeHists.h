@@ -19,9 +19,12 @@
 const double LUM = 19.7;
 bool use2D = true;
 
+int rebinSVM = 2;
+int rebinEta = 2;
+
 bool do_htlep150qcd = false;
 bool do_met50qcd = false;
-bool do_qcd = false;
+bool do_qcd = true;
 
 // -------------------------------------------------------------------------------------
 // helper class for summed, weighted histograms (e.g. single top)
@@ -489,11 +492,13 @@ float getPostPreRatio(bool doElectron, TString ptbin, TString pdfdir, bool combi
   TFile* fPRE;
   if (doElectron) {
     if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+".root");
+    if (cut == 5) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+".root");
     if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+".root");
     if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7"+ptbin+".root");
   }
   else {
     if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+".root");
+    if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+".root");
     if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+".root");
     if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7"+ptbin+".root");
   }
@@ -503,6 +508,7 @@ float getPostPreRatio(bool doElectron, TString ptbin, TString pdfdir, bool combi
 
   TString what = "";
   if (cut == 4) what = "etaAbsLep4"+ptbin;
+  if (cut == 5) what = "etaAbsLep5"+ptbin;
   if (cut == 6) what = "etaAbsLep6"+ptbin;
   if (cut == 7) what = "vtxMass7"+ptbin;
 
@@ -647,6 +653,18 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bo
       
       h_qcd_bin = (TH1F*) qcd_bin_4->hist();
       h_qcd_sum = (TH1F*) qcd_sum_4->hist();
+      h_qcd_bin->Add(qcd_bin_6->hist(), -1);
+      h_qcd_sum->Add(qcd_sum_6->hist(), -1);      
+    }
+
+    if (cut == 5){
+      SummedHist* qcd_bin_5 = getQCD("etaAbsLep5"+ptbin, doElectron, ptbin );
+      SummedHist* qcd_bin_6 = getQCD("etaAbsLep6"+ptbin, doElectron, ptbin );
+      SummedHist* qcd_sum_5 = getQCD("etaAbsLep5", doElectron, "");
+      SummedHist* qcd_sum_6 = getQCD("etaAbsLep6", doElectron, "");
+      
+      h_qcd_bin = (TH1F*) qcd_bin_5->hist();
+      h_qcd_sum = (TH1F*) qcd_sum_5->hist();
       h_qcd_bin->Add(qcd_bin_6->hist(), -1);
       h_qcd_sum->Add(qcd_sum_6->hist(), -1);      
     }

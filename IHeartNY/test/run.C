@@ -217,12 +217,23 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     */
 
   }
+
   // make posterior plots
   else if (option=="post") {
 
-    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine);
-    makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine);
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine, false, true);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine, false, true);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, true);
+
+    makeTable(doElectron, "", "CT10_nom", combine);
+
+  }
+
+  else if (option=="post5") {
+
+    makePosteriorPlots("etaAbsLep5", doElectron, ptbin, "CT10_nom", combine, false, true);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine, false, true);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, true);
 
     makeTable(doElectron, "", "CT10_nom", combine);
 

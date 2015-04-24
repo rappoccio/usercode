@@ -67,6 +67,12 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, elflag=False, muflag=Fa
             for obs in ['mu_vtxMass7Low', 'mu_etaAbsLep6Low', 'mu_etaAbsLep4Low',
                         'mu_vtxMass7High', 'mu_etaAbsLep6High', 'mu_etaAbsLep4High']:
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
+        if nptbin == 'Low' :
+            for obs in ['mu_vtxMass7Low', 'mu_etaAbsLep6Low', 'mu_etaAbsLep4Low']:
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
+        if nptbin == 'High' :
+            for obs in ['mu_vtxMass7High', 'mu_etaAbsLep6High', 'mu_etaAbsLep4High']:
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
 
     ## electron+jets channel 
     if elflag:
@@ -78,6 +84,12 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, elflag=False, muflag=Fa
         if nptbin == '2' :
             for obs in ['el_vtxMass7Low', 'el_etaAbsLep6Low', 'el_etaAbsLep4Low',
                         'el_vtxMass7High', 'el_etaAbsLep6High', 'el_etaAbsLep4High']:
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
+        if nptbin == 'Low' :
+            for obs in ['el_vtxMass7Low', 'el_etaAbsLep6Low', 'el_etaAbsLep4Low']:
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
+        if nptbin == 'High' :
+            for obs in ['el_vtxMass7High', 'el_etaAbsLep6High', 'el_etaAbsLep4High']:
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
     
     return model
@@ -124,6 +136,32 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             nptbin = '2',
             muflag = True    
         )
+
+    elif type == 'ttbar_xs_mu_Lowbin' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6Low_subtracted_from_etaAbsLep4Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7Low_subtracted_from_etaAbsLep6Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7Low.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = 'Low',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_mu_Highbin' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6High_subtracted_from_etaAbsLep4High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7High_subtracted_from_etaAbsLep6High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7High.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = 'High',
+            muflag = True    
+        )
         
     ## electron+jets channel ONLY
     elif type == 'ttbar_xs_el' :
@@ -153,6 +191,32 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             signal='TTbar',
             mcstat=mcstat,
             nptbin = '2',
+            elflag = True
+        )
+
+    elif type == 'ttbar_xs_el_Lowbin' :
+
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6Low_subtracted_from_etaAbsLep4Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7Low_subtracted_from_etaAbsLep6Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7Low.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = 'Low',
+            elflag = True
+        )
+
+    elif type == 'ttbar_xs_el_Highbin' :
+
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6High_subtracted_from_etaAbsLep4High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7High_subtracted_from_etaAbsLep6High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7High.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = 'High',
             elflag = True
         )
 
@@ -195,6 +259,38 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             signal='TTbar',
             mcstat=mcstat,
             nptbin = '2',
+            muflag = True,
+            elflag = True
+        )
+
+    elif type == 'ttbar_xs_comb_Lowbin' :
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6Low_subtracted_from_etaAbsLep4Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7Low_subtracted_from_etaAbsLep6Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6Low_subtracted_from_etaAbsLep4Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7Low_subtracted_from_etaAbsLep6Low.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7Low.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = 'Low',
+            muflag = True,
+            elflag = True
+        )
+
+    elif type == 'ttbar_xs_comb_Highbin' :
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6High_subtracted_from_etaAbsLep4High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7High_subtracted_from_etaAbsLep6High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6High_subtracted_from_etaAbsLep4High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7High_subtracted_from_etaAbsLep6High.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7High.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = 'High',
             muflag = True,
             elflag = True
         )
@@ -248,7 +344,7 @@ nptbin = '1'
 
 ## for output file/plot names
 binname = ""
-if nptbin == '2':
+if nptbin != '1':
     binname = "_"+nptbin+"bin"
 
 elflag = False
