@@ -29,7 +29,7 @@ void plotToys(TString channel, TString syst="CT10_nom") {
   
   SetPlotStyle();
 
-  TFile* f = new TFile("run_theta/ThetaPlots/pulldists_mle_"+syst+"_"+channel+"_1bin.root"); 
+  TFile* f = new TFile("run_theta/ThetaPlots/pulldists_mle_"+syst+"_"+channel+".root"); 
 
   TH1F* h_pull = (TH1F*) f->Get("pull");
   TH1F* h_dbs  = (TH1F*) f->Get("delta_bs");
