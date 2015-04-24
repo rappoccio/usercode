@@ -351,12 +351,12 @@ def getToptagSF(jetEta, pdfSet, pdfSys, isElec) :
 
     toptagSF = 1.0
     if abs(jetEta) < 1.0 :
-        if "madgraph" in options.outname:
+        if "madgraph" in options.outname and "TTJet" in options.outname:
             toptagSF = 0.985
         else:
             toptagSF = 1.173
     else :
-        if "madgraph" in options.outname:
+        if "madgraph" in options.outname and "TTJet" in options.outname:
             toptagSF = 0.644
         else:
             toptagSF = 0.704
@@ -472,7 +472,7 @@ parser.add_option('--doQCD', metavar='F', action='store_true',
                   help='Use loose leptons (exclusive from tight), for QCD studies')
 
 parser.add_option('--use2Dcut', metavar='F', action='store_true',
-                  default=True,
+                  default=False,
                   dest='use2Dcut',
                   help='Use 2D cut instead of relative isolation')
 
@@ -482,7 +482,7 @@ parser.add_option('--printEvents', metavar='F', action='store_true',
                   help='Print events that pass selection (run:lumi:event)')
 
 parser.add_option('--useTriangular', metavar='F', action='store_true',
-                  default=False,
+                  default=True,
                   dest='useTriangular',
                   help='Use triangular cut to reject electron QCD?')
 
