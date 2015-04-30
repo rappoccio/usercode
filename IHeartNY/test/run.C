@@ -221,11 +221,11 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
   // make posterior plots
   else if (option=="post") {
 
-    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine, false, true);
-    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine, false, true);
-    makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, true);
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine, false, false);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine, false, false);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, false);
 
-    makeTable(doElectron, "", "CT10_nom", combine);
+    makeTable(doElectron, ptbin, "CT10_nom", combine, false, false);
 
   }
 

@@ -464,7 +464,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 // make post-fit plots
 // -------------------------------------------------------------------------------------
 
-void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = true) {
+void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false) {
 
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -714,8 +714,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 // -------------------------------------------------------------------------------------
 // print post-fit latex table
 // -------------------------------------------------------------------------------------
-//NOTE: need to add numbers for triangular cut fit
-void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false) {
+void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false) {
 
   TString what[3] = {"etaAbsLep4","etaAbsLep6","vtxMass7"};
   if (do_htlep150qcd) what[0] = "etaAbsLep5";
@@ -727,9 +726,22 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
 
   // post-fit file
   TFile* fMC;
-  if (combined) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb.root");
-  else if (doElectron) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el.root");
-  else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu.root");
+  if (combined) {
+    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb.root");
+    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb_"+ptbin+"bin.root");
+    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb_2bin.root");
+  }
+  else if (doElectron) {
+    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el.root");
+    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el_"+ptbin+"bin.root");
+    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el_2bin.root");
+  }
+  else {
+    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu.root");
+    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu_"+ptbin+"bin.root");
+    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu_2bin.root");
+  }
+  if (fMC->IsOpen()) cout << "fMC exists." << endl;
 
   TString channel = "mu_";
   if (doElectron) channel = "el_";
@@ -737,7 +749,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   // -------------------------------------------------------------------------------------
   // post-fit relative errors
 
-  float fiterrors_mu[13][5] = { 
+  float fiterrors_mu[14][5] = { 
     //{0.136178123407, 0.601654603004, 0.107520601458, 0.189270027384, 0}, // bkg error for CT10_nom
     {0.134833771366, 0.589591484549, 0.0903075025146, 0.192926881092, 0}, // bkg error for CT10_nom, rebin2
     {0.143531426537, 0.598861647354, 0.118749010228, 0.17877006537, 0}, // bkg error for CT10_pdfup
@@ -752,9 +764,10 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.128661027311, 0.619019648158, 0.106169998694, 0.144190709959, 0}, // bkg error for scaledown
     {0.150840299166, 0.580282203849, 0.112694931383, 0.115630776147, 0}, // bkg error for htlep150qcd, rebin2
     {0.113860903688, 0.519957519596, 0.111445745701, 0.277144566273, 0}, // bkg error for met50qcd, rebin2
+    {0.142308035867, 0.605517180963, 0.107221545724, 0.171248812895, 0}, // bkg error for qcd, rebin2
   };
 
-  float fiterrors_el[13][5] = { 
+  float fiterrors_el[14][5] = { 
     //{0.0957933770128, 0.59028339844, 0.0472103974875, 0, 0.0794465593408}, // bkg error for CT10_nom
     {0.0915689893828, 0.589524196093, 0.0434118764149, 0, 0.0936672929441}, // bkg error for CT10_nom, rebin2
     {0.100258813306, 0.5829512792, 0.0491497479426, 0, 0.084463841562}, // bkg error for CT10_pdfup
@@ -769,9 +782,10 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.0948258962343, 0.570246409386, 0.0455002470189, 0, 0.0793221134465}, // bkg error for scaledown
     {0.124257831545, 0.453711536078, 0.109832396368, 0, 0.248553564316}, // bkg error for htlep150qcd, rebin2
     {0.107660903977, 0.51702094822, 0.0703718085366, 0, 0.356673438468}, // bkg error for met50qcd, rebin2
+    {0.107740627952, 0.4421410844, 0.106870033597, 0, 0.117778031187}, // bkg error for qcd, rebin2
   };
 
-  float fiterrors_comb[13][5] = {
+  float fiterrors_comb[14][5] = {
     //{0.0721611675654, 0.591773485402, 0.06841616483, 0.639678706759, 0.0338012148088}, // bkg error for CT10_nom
     {0.0706994856803, 0.536838090537, 0.0560114073749, 0.666940896433, 0.0349182297444}, // bkg error for CT10_nom, rebin2
     {0.0759518444195, 0.58172119931, 0.0802638564576, 0.641348470177, 0.0337331527381}, // bkg error for CT10_pdfup
@@ -786,14 +800,34 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.0754581112506, 0.527287398678, 0.0613378760194, 0.657640817449, 0.0319922330817}, // bkg error for scaledown
     {0.0797793432868, 0.436673982919, 0.117476264232, 0.479697791925, 0.0676021303369}, // bkg error for htlep150qcd, rebin2
     {0.0777933806133, 0.472702127417, 0.0831352554973, 0.566704700279, 0.0932475666115}, // bkg error for met50qcd, rebin2
+    {0.0759080952546, 0.502342636381, 0.0989305408165, 0.351178483059, 0.055901103397}, // bkg error for qcd, rebin2
   };
 
-  TString pdfs[13] = {"CT10_nom","CT10_pdfup","CT10_pdfdown",
+  float fiterrors_mu_2ptbin[3][5] = {
+    {0.153410569218, 0.598937742677, 0.0921718236121, 0.199318659013, 0}, // bkg error for qcd, rebin2, Low pt(top) bin
+    {0.230492312482, 0.476344069781, 0.18863020012, 0.301444715873, 0}, // bkg error for qcd, rebin2, High pt(top) bin
+    {0.137690466395, 0.501412830187, 0.0949918112146, 0.28190079064, 0}, // bkg error for qcd, rebin2, 2 pt(top) bins
+  };
+
+  float fiterrors_el_2ptbin[3][5] = {
+    {0.106755944098, 0.546974887111, 0.138810247851, 0, 0.164205434212}, // bkg error for qcd, rebin2, Low pt(top) bin
+    {0.250142036318, 0.486119993791, 0.143680218105, 0, 0.124425736415}, // bkg error for qcd, rebin2, High pt(top) bin
+    {0.102892639303, 0.478512779649, 0.0957950113209, 0, 0.137517557153}, // bkg error for qcd, rebin2, 2 pt(top) bins
+  };
+
+  float fiterrors_comb_2ptbin[3][5] = {
+    {0.0809715225269, 0.566120896293, 0.097587110604, 0.501370440187, 0.0713407774204}, // bkg error for qcd, rebin2, Low pt(top) bin
+    {0.164614561913, 0.406930486902, 0.170859948591, 0.286234154767, 0.066887070246}, // bkg error for qcd, rebin2, High pt(top) bin
+    {0.0769810174487, 0.489022966152, 0.0828255065459, 0.466077480054, 0.0660274098057}, // bkg error for qcd, rebin2, 2 pt(top) bins
+  };
+
+
+  TString pdfs[14] = {"CT10_nom","CT10_pdfup","CT10_pdfdown",
 		      "MSTW_nom","MSTW_pdfup","MSTW_pdfdown",
 		      "NNPDF_nom","NNPDF_pdfup","NNPDF_pdfdown",
-		      "scaleup","scaledown","htlep150qcd","met50qcd"};
+		      "scaleup","scaledown","htlep150qcd","met50qcd","qcd"};
   int thispdf = -1;
-  for (int ipdf=0; ipdf<13; ipdf++) {
+  for (int ipdf=0; ipdf<14; ipdf++) {
     if (mydir == pdfs[ipdf]) {
       thispdf = ipdf;
       break;
@@ -810,28 +844,108 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   float fiterr_qcd = 0;
 
   if (doElectron && !combined) {
-    fiterr_tt = fiterrors_el[thispdf][0];
-    fiterr_singletop = fiterrors_el[thispdf][1];
-    fiterr_wjets = fiterrors_el[thispdf][2];
-    fiterr_qcd = fiterrors_el[thispdf][4];
+    if (ptbin == "") {
+      fiterr_tt = fiterrors_el[thispdf][0];
+      fiterr_singletop = fiterrors_el[thispdf][1];
+      fiterr_wjets = fiterrors_el[thispdf][2];
+      fiterr_qcd = fiterrors_el[thispdf][4];
+    }
+    else if (ptbin == "Low") {
+      fiterr_tt = fiterrors_el_2ptbin[0][0];
+      fiterr_singletop = fiterrors_el_2ptbin[0][1];
+      fiterr_wjets = fiterrors_el_2ptbin[0][2];
+      fiterr_qcd = fiterrors_el_2ptbin[0][4];
+    }
+    else if (ptbin == "High") {
+      fiterr_tt = fiterrors_el_2ptbin[1][0];
+      fiterr_singletop = fiterrors_el_2ptbin[1][1];
+      fiterr_wjets = fiterrors_el_2ptbin[1][2];
+      fiterr_qcd = fiterrors_el_2ptbin[1][4];
+    }
+    else if (ptbin == "2") {
+      fiterr_tt = fiterrors_el_2ptbin[2][0];
+      fiterr_singletop = fiterrors_el_2ptbin[2][1];
+      fiterr_wjets = fiterrors_el_2ptbin[2][2];
+      fiterr_qcd = fiterrors_el_2ptbin[2][4];
+    }
   }
   else if (doElectron) {
-    fiterr_tt = fiterrors_comb[thispdf][0];
-    fiterr_singletop = fiterrors_comb[thispdf][1];
-    fiterr_wjets = fiterrors_comb[thispdf][2];
-    fiterr_qcd = fiterrors_comb[thispdf][4];
+    if (ptbin == "") {
+      fiterr_tt = fiterrors_comb[thispdf][0];
+      fiterr_singletop = fiterrors_comb[thispdf][1];
+      fiterr_wjets = fiterrors_comb[thispdf][2];
+      fiterr_qcd = fiterrors_comb[thispdf][4];
+    }
+    else if (ptbin == "Low") {
+      fiterr_tt = fiterrors_comb_2ptbin[0][0];
+      fiterr_singletop = fiterrors_comb_2ptbin[0][1];
+      fiterr_wjets = fiterrors_comb_2ptbin[0][2];
+      fiterr_qcd = fiterrors_comb_2ptbin[0][4];
+    }
+    else if (ptbin == "High") {
+      fiterr_tt = fiterrors_comb_2ptbin[1][0];
+      fiterr_singletop = fiterrors_comb_2ptbin[1][1];
+      fiterr_wjets = fiterrors_comb_2ptbin[1][2];
+      fiterr_qcd = fiterrors_comb_2ptbin[1][4];
+    }
+    else if (ptbin == "2") {
+      fiterr_tt = fiterrors_comb_2ptbin[2][0];
+      fiterr_singletop = fiterrors_comb_2ptbin[2][1];
+      fiterr_wjets = fiterrors_comb_2ptbin[2][2];
+      fiterr_qcd = fiterrors_comb_2ptbin[2][4];
+    }
   }
   else if (!doElectron && !combined) {
-    fiterr_tt = fiterrors_mu[thispdf][0];
-    fiterr_singletop = fiterrors_mu[thispdf][1];
-    fiterr_wjets = fiterrors_mu[thispdf][2];
-    fiterr_qcd = fiterrors_mu[thispdf][3];
+    if (ptbin == ""){
+      fiterr_tt = fiterrors_mu[thispdf][0];
+      fiterr_singletop = fiterrors_mu[thispdf][1];
+      fiterr_wjets = fiterrors_mu[thispdf][2];
+      fiterr_qcd = fiterrors_mu[thispdf][3];
+    }
+    else if (ptbin == "Low") {
+      fiterr_tt = fiterrors_mu_2ptbin[0][0];
+      fiterr_singletop = fiterrors_mu_2ptbin[0][1];
+      fiterr_wjets = fiterrors_mu_2ptbin[0][2];
+      fiterr_qcd = fiterrors_mu_2ptbin[0][3];
+    }
+    else if (ptbin == "High") {
+      fiterr_tt = fiterrors_mu_2ptbin[1][0];
+      fiterr_singletop = fiterrors_mu_2ptbin[1][1];
+      fiterr_wjets = fiterrors_mu_2ptbin[1][2];
+      fiterr_qcd = fiterrors_mu_2ptbin[1][3];
+    }
+    else if (ptbin == "2") {
+      fiterr_tt = fiterrors_mu_2ptbin[2][0];
+      fiterr_singletop = fiterrors_mu_2ptbin[2][1];
+      fiterr_wjets = fiterrors_mu_2ptbin[2][2];
+      fiterr_qcd = fiterrors_mu_2ptbin[2][3];
+    }
   }
   else {
-    fiterr_tt = fiterrors_comb[thispdf][0];
-    fiterr_singletop = fiterrors_comb[thispdf][1];
-    fiterr_wjets = fiterrors_comb[thispdf][2];
-    fiterr_qcd = fiterrors_comb[thispdf][3];
+    if (ptbin == "") {
+      fiterr_tt = fiterrors_comb[thispdf][0];
+      fiterr_singletop = fiterrors_comb[thispdf][1];
+      fiterr_wjets = fiterrors_comb[thispdf][2];
+      fiterr_qcd = fiterrors_comb[thispdf][3];
+    }
+    else if (ptbin == "Low") {
+      fiterr_tt = fiterrors_comb_2ptbin[0][0];
+      fiterr_singletop = fiterrors_comb_2ptbin[0][1];
+      fiterr_wjets = fiterrors_comb_2ptbin[0][2];
+      fiterr_qcd = fiterrors_comb_2ptbin[0][3];
+    }
+    else if (ptbin == "High") {
+      fiterr_tt = fiterrors_comb_2ptbin[1][0];
+      fiterr_singletop = fiterrors_comb_2ptbin[1][1];
+      fiterr_wjets = fiterrors_comb_2ptbin[1][2];
+      fiterr_qcd = fiterrors_comb_2ptbin[1][3];
+    }
+    else if (ptbin == "2") {
+      fiterr_tt = fiterrors_comb_2ptbin[2][0];
+      fiterr_singletop = fiterrors_comb_2ptbin[2][1];
+      fiterr_wjets = fiterrors_comb_2ptbin[2][2];
+      fiterr_qcd = fiterrors_comb_2ptbin[2][3];
+    }
   }
 
   TString append = "";
@@ -840,16 +954,20 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   // pre-fit & data files
   TFile* fDATA[3];
   if (doElectron) {
-    if (do_htlep150qcd) fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep5"+append+".root");
-    else fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4"+append+".root");
-    fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6"+append+".root");
-    fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+append+".root");
+    if (do_htlep150qcd) fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+append+".root");
+    else fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
+    fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
+    fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
   }
   else {
-    if (do_htlep150qcd) fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep5"+append+".root");
-    else fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4"+append+".root");
-    fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6"+append+".root");
-    fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+append+".root");
+    if (do_htlep150qcd) fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+append+".root");
+    else fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
+    fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
+    fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
+  }
+
+  for (int ii = 0; ii < 3; ii++){
+    if (fDATA[ii]->IsOpen()) cout << "fDATA[" << ii << "] exists." << endl;
   }
 
   TH1F* h_pre_qcd[3];
@@ -881,12 +999,14 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
 
   // read QCD error
   std::pair<double, double> qcdnorm4 = getQCDnorm(4, doElectron, ptbin);
-  std::pair<double, double> qcdnorm5 = getQCDnorm(5, doElectron, ptbin);
   std::pair<double, double> qcdnorm6 = getQCDnorm(6, doElectron, ptbin);
   std::pair<double, double> qcdnorm7 = getQCDnorm(7, doElectron, ptbin);
   double err_qcd_up[3];
   double err_qcd_dn[3];
-  if (do_htlep150qcd) err_qcd_up[0] = qcdnorm5.second; 
+  if (do_htlep150qcd) {
+    std::pair<double, double> qcdnorm5 = getQCDnorm(5, doElectron, ptbin);
+    err_qcd_up[0] = qcdnorm5.second; 
+  }
   else err_qcd_up[0] = qcdnorm4.second; 
   err_qcd_dn[0] = err_qcd_up[0];
   err_qcd_up[1] = qcdnorm6.second; 
@@ -894,27 +1014,26 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   err_qcd_up[2] = qcdnorm7.second; 
   if (err_qcd_up[2] > qcdnorm7.first) err_qcd_dn[2] = qcdnorm7.first;
   else err_qcd_dn[2] = err_qcd_up[2];
-  
 
   // get histograms
   for (int i=0; i<3; i++) {
 
     // post-fit values
-    h_qcd[i]   = (TH1F*) fMC->Get(channel+what[i]+"__QCD");
-    h_wjets[i] = (TH1F*) fMC->Get(channel+what[i]+"__WJets");
-    h_ttbar[i] = (TH1F*) fMC->Get(channel+what[i]+"__TTbar");
-    h_singletop[i] = (TH1F*) fMC->Get(channel+what[i]+"__SingleTop");
+    h_qcd[i]   = (TH1F*) fMC->Get(channel+what[i]+ptbin+"__QCD");
+    h_wjets[i] = (TH1F*) fMC->Get(channel+what[i]+ptbin+"__WJets");
+    h_ttbar[i] = (TH1F*) fMC->Get(channel+what[i]+ptbin+"__TTbar");
+    h_singletop[i] = (TH1F*) fMC->Get(channel+what[i]+ptbin+"__SingleTop");
 
     // data
-    h_data[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+"__DATA");
+    h_data[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+ptbin+"__DATA");
 
     //pre-fit values
-    h_pre_qcd[i]   = (TH1F*) fDATA[i]->Get(channel+what[i]+"__QCD");
-    h_pre_wjets[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+"__WJets");
-    h_pre_ttbar[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+"__TTbar");
-    h_pre_ttbar_semiLep[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+"__TTbar_semiLep");
-    h_pre_ttbar_nonSemiLep[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+"__TTbar_nonSemiLep");
-    h_pre_singletop[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+"__SingleTop");
+    h_pre_qcd[i]   = (TH1F*) fDATA[i]->Get(channel+what[i]+ptbin+"__QCD");
+    h_pre_wjets[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+ptbin+"__WJets");
+    h_pre_ttbar[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+ptbin+"__TTbar");
+    h_pre_ttbar_semiLep[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+ptbin+"__TTbar_semiLep");
+    h_pre_ttbar_nonSemiLep[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+ptbin+"__TTbar_nonSemiLep");
+    h_pre_singletop[i] = (TH1F*) fDATA[i]->Get(channel+what[i]+ptbin+"__SingleTop");
 
     //Construct post-fit ttbar
     float postPreRatio = h_ttbar[i]->Integral() / h_pre_ttbar[i]->Integral();
@@ -925,12 +1044,12 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     h_ttbar_semiLep[i] = (TH1F*) h_ttbar[i]->Clone();
     h_ttbar_semiLep[i]->Add(h_ttbar_nonSemiLep[i], -1);
 
-    h_total[i] = (TH1F*) h_qcd[i]->Clone(what[i]+"_total");
+    h_total[i] = (TH1F*) h_qcd[i]->Clone(what[i]+ptbin+"_total");
     h_total[i]->Add(h_wjets[i]);
     h_total[i]->Add(h_ttbar[i]);
     h_total[i]->Add(h_singletop[i]);
 
-    h_pre_total[i] = (TH1F*) h_pre_qcd[i]->Clone(what[i]+"_pre_total");
+    h_pre_total[i] = (TH1F*) h_pre_qcd[i]->Clone(what[i]+ptbin+"_pre_total");
     h_pre_total[i]->Add(h_pre_wjets[i]);
     h_pre_total[i]->Add(h_pre_ttbar[i]);
     h_pre_total[i]->Add(h_pre_singletop[i]);

@@ -320,7 +320,7 @@ usePL = False
 # Building the statistical model :
 infilter = histfilter
 
-dirs = ['CT10_nom'#,
+dirs = [#'CT10_nom',
         #'CT10_pdfup', 
         #'CT10_pdfdown',
         #'MSTW_nom', 
@@ -333,14 +333,14 @@ dirs = ['CT10_nom'#,
         #'scaledown'
         #'htlep150qcd'
         #'met50qcd'
-        #'qcd'
+        'qcd'
     ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
 channel = 'comb'
 
 ## # pt bins
-nptbin = '1'
+nptbin = '2'
 
 ## for output file/plot names
 binname = ""
