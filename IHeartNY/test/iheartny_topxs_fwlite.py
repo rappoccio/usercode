@@ -776,6 +776,7 @@ if options.lepType == "muon":
     h_etaAbsLep2 = ROOT.TH1F("etaAbsLep2", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep3 = ROOT.TH1F("etaAbsLep3", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep4 = ROOT.TH1F("etaAbsLep4", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4b = ROOT.TH1F("etaAbsLep4b", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep4_low = ROOT.TH1F("etaAbsLep4Low", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep4_high = ROOT.TH1F("etaAbsLep4High", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
@@ -828,6 +829,7 @@ else:
     h_etaAbsLep2 = ROOT.TH1F("etaAbsLep2", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep3 = ROOT.TH1F("etaAbsLep3", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep4 = ROOT.TH1F("etaAbsLep4", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4b = ROOT.TH1F("etaAbsLep4b", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep4_low = ROOT.TH1F("etaAbsLep4Low", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep4_high = ROOT.TH1F("etaAbsLep4High", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
@@ -974,8 +976,13 @@ h_ptBJet7       = ROOT.TH1F("ptBJet7",      ";b-tagged jet p_{T} [GeV]; b-jets /
 h_etaBJet7      = ROOT.TH1F("etaBJet7",     ";b-tagged jet #eta; b-jets / 0.1", 50, -2.5, 2.5)
 h_flavorBJet7   = ROOT.TH1F("flavorBJet7",     ";b-tagged jet true flavor; b-jets", 5, 0.5, 5.5)
 
+h_ptBJet4b       = ROOT.TH1F("ptBJet4b",      ";b-tagged jet p_{T} [GeV]; b-jets / 10 GeV", 50, 0., 500.)
+h_etaBJet4b      = ROOT.TH1F("etaBJet4b",     ";b-tagged jet #eta; b-jets / 0.1", 50, -2.5, 2.5)
+h_flavorBJet4b   = ROOT.TH1F("flavorBJet4b",     ";b-tagged jet true flavor; b-jets", 5, 0.5, 5.5)
+
 h_vtxMass3 = ROOT.TH1F("vtxMass3", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass4 = ROOT.TH1F("vtxMass4", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+h_vtxMass4b = ROOT.TH1F("vtxMass4b", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass5 = ROOT.TH1F("vtxMass5", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass6 = ROOT.TH1F("vtxMass6", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass7 = ROOT.TH1F("vtxMass7", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
@@ -989,6 +996,7 @@ h_ptMET1 = ROOT.TH1F("ptMET1", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 h_ptMET2 = ROOT.TH1F("ptMET2", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 h_ptMET3 = ROOT.TH1F("ptMET3", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 h_ptMET4 = ROOT.TH1F("ptMET4", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
+h_ptMET4b = ROOT.TH1F("ptMET4b", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 h_ptMET5 = ROOT.TH1F("ptMET5", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 h_ptMET6 = ROOT.TH1F("ptMET6", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
 h_ptMET7 = ROOT.TH1F("ptMET7", ";MET [GeV]; Events / 2 GeV", 200, 0., 400.)
@@ -998,6 +1006,7 @@ h_phiMET1 = ROOT.TH1F("phiMET1", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
 h_phiMET2 = ROOT.TH1F("phiMET2", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
 h_phiMET3 = ROOT.TH1F("phiMET3", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
 h_phiMET4 = ROOT.TH1F("phiMET4", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
+h_phiMET4b = ROOT.TH1F("phiMET4b", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
 h_phiMET5 = ROOT.TH1F("phiMET5", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
 h_phiMET6 = ROOT.TH1F("phiMET6", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
 h_phiMET7 = ROOT.TH1F("phiMET7", ";#phi(MET); Events / 0.05", 140, -3.5, 3.5)
@@ -1007,6 +1016,7 @@ h_htLep1 = ROOT.TH1F("htLep1", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 10
 h_htLep2 = ROOT.TH1F("htLep2", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
 h_htLep3 = ROOT.TH1F("htLep3", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
 h_htLep4 = ROOT.TH1F("htLep4", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep4b = ROOT.TH1F("htLep4b", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
 h_htLep5 = ROOT.TH1F("htLep5", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
 h_htLep6 = ROOT.TH1F("htLep6", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
 h_htLep7 = ROOT.TH1F("htLep7", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
@@ -1044,6 +1054,7 @@ h_lepVShad_pt3 = ROOT.TH2F("lepVShad_pt3", ";p_{T}(hadronic top) [GeV]; p_{T}(le
 # hadronic top variables
 h_hadtop_pt3 = ROOT.TH1F("hadtop_pt3", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 h_hadtop_pt4 = ROOT.TH1F("hadtop_pt4", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
+h_hadtop_pt4b = ROOT.TH1F("hadtop_pt4b", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 h_hadtop_pt5 = ROOT.TH1F("hadtop_pt5", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 
 h_hadtop_pt_pt      = ROOT.TH1F("hadtop_pt_pt",      ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # pass pt > 200 GeV
@@ -2750,6 +2761,57 @@ for event in events :
 
     h_ttbar_mass4.Fill(ttbar_mass, top_weight)
 
+
+
+    # -------------------------------------------------------------------------------------
+    # STEP (4b): require b-tagging!
+    # -------------------------------------------------------------------------------------
+    
+    # -------------------------------------------------------------------------------------
+    # check if closest dR jet fulfills b-tagging
+    # -------------------------------------------------------------------------------------
+
+    passBtag = False
+    btagSF = 1.0
+
+    if bjet_csv > options.bDiscCut and bjet_vtxmass > 0.0:
+
+        passBtag = True
+        
+        # b-tagging SF 
+        if options.isData == False :
+            
+            ### SF for b-jets and c-jets
+            if (abs(bjet_flavor)==5 or abs(bjet_flavor)==4): 
+                btagSF = getBtagSF(bjet_pt)
+                if options.btagSys != None :
+                    btagSFerr = getBtagSFerror(bjet_pt)
+                    if (abs(bjet_flavor)==4):
+                        btagSFerr *= 2.0 ##for c-jets, use twice the uncertainty
+                    if options.btagSys > 0 :
+                        btagSF += btagSFerr
+                    else :
+                        btagSF -= btagSFerr
+            ### SF for light-jets
+            else:
+                if options.btagSys == None :
+                    btagSF = getBtagSF_light(bjet_pt,bjet_eta,0)
+                else : 
+                    btagSF = getBtagSF_light(bjet_pt,bjet_eta,options.btagSys)
+    # -------------------------------------------------------------------------------------
+
+    # pass b-tagging?
+    if passBtag == True:
+        h_ptBJet4b.Fill(bjet_pt, weight*btagSF)
+        h_etaBJet4b.Fill(bjet_eta, weight*btagSF)
+        h_flavorBJet4b.Fill(bjet_flavor, weight*btagSF)
+        h_htLep4b.Fill(htLep, weight*btagSF)
+        h_ptMET4b.Fill(met, weight*btagSF)
+        h_phiMET4b.Fill(metphi, weight*btagSF)
+        h_vtxMass4b.Fill(bjet_vtxmass, weight*btagSF)
+        h_etaAbsLep4b.Fill(abs(lepton.p4().Eta()), weight*btagSF)
+        h_hadtop_pt4b.Fill(hadJets[0].Perp(), top_weight*btagSF)
+
     
     # -------------------------------------------------------------------------------------
     # STEP (5): cut on HT or leptonic HT?
@@ -3127,39 +3189,40 @@ for event in events :
     # STEP (7): require b-tagging!
     # -------------------------------------------------------------------------------------
     
+    ### THIS IS MOVED EARLIER !!!
     
-    # -------------------------------------------------------------------------------------
-    # check if closest dR jet fulfills b-tagging
-    # -------------------------------------------------------------------------------------
-
-    passBtag = False
-    btagSF = 1.0
-
-    if bjet_csv > options.bDiscCut and bjet_vtxmass > 0.0:
-
-        passBtag = True
-        
-        # b-tagging SF 
-        if options.isData == False :
-            
-            ### SF for b-jets and c-jets
-            if (abs(bjet_flavor)==5 or abs(bjet_flavor)==4): 
-                btagSF = getBtagSF(bjet_pt)
-                if options.btagSys != None :
-                    btagSFerr = getBtagSFerror(bjet_pt)
-                    if (abs(bjet_flavor)==4):
-                        btagSFerr *= 2.0 ##for c-jets, use twice the uncertainty
-                    if options.btagSys > 0 :
-                        btagSF += btagSFerr
-                    else :
-                        btagSF -= btagSFerr
-            ### SF for light-jets
-            else:
-                if options.btagSys == None :
-                    btagSF = getBtagSF_light(bjet_pt,bjet_eta,0)
-                else : 
-                    btagSF = getBtagSF_light(bjet_pt,bjet_eta,options.btagSys)
-    # -------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------
+    ## check if closest dR jet fulfills b-tagging
+    ## -------------------------------------------------------------------------------------
+    #
+    #passBtag = False
+    #btagSF = 1.0
+    #
+    #if bjet_csv > options.bDiscCut and bjet_vtxmass > 0.0:
+    #
+    #    passBtag = True
+    #    
+    #    # b-tagging SF 
+    #    if options.isData == False :
+    #        
+    #        ### SF for b-jets and c-jets
+    #        if (abs(bjet_flavor)==5 or abs(bjet_flavor)==4): 
+    #            btagSF = getBtagSF(bjet_pt)
+    #            if options.btagSys != None :
+    #                btagSFerr = getBtagSFerror(bjet_pt)
+    #                if (abs(bjet_flavor)==4):
+    #                    btagSFerr *= 2.0 ##for c-jets, use twice the uncertainty
+    #                if options.btagSys > 0 :
+    #                    btagSF += btagSFerr
+    #                else :
+    #                    btagSF -= btagSFerr
+    #        ### SF for light-jets
+    #        else:
+    #           if options.btagSys == None :
+    #                btagSF = getBtagSF_light(bjet_pt,bjet_eta,0)
+    #            else : 
+    #                btagSF = getBtagSF_light(bjet_pt,bjet_eta,options.btagSys)
+    ## -------------------------------------------------------------------------------------
 
     
     # -------------------------------------------------------------------------------------
