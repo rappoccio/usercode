@@ -194,6 +194,10 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     if (doElectron) newtitle = "Electrons / 0.1";
     else newtitle = "Muons / 0.1";
   }
+  else if (var.Contains("hadtop_eta")){
+    rebin = 2;
+    newtitle = "Events / 0.2";
+  }  
   else if (hist=="hadtop_mass6" || hist=="hadtop_mass7" || hist=="leptop_mass4") {
     rebin = 2;
     newtitle = "Events / 10 GeV";
