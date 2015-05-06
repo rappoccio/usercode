@@ -218,6 +218,10 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
 
   }
 
+  else if (option=="table") {
+    makeTable(doElectron, "", "CT10_nom", combine);
+  }
+
   // make posterior plots
   else if (option=="post") {
 

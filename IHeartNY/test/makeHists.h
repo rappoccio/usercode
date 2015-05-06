@@ -554,7 +554,9 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bo
 
   float qcd_mu_reliso_norm[8] = {0.0, 0.0, 0.0, 0.0,  401.4, 0.0, 28.5,  1.0};
   float qcd_mu_reliso_err[8]  = {0.0, 0.0, 0.0, 0.0,   71.6, 0.0, 21.5, 10.0};
-  float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1450., 0.0, 58., 11.0};
+  //float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1450., 0.0, 58., 11.0};
+  //float qcd_mu_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   82., 0.0, 24., 13.0};
+  float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1471., 0.0, 55., 12.0};
   float qcd_mu_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   82., 0.0, 24., 13.0};
 
   // HTlep > 150 GeV
@@ -583,8 +585,11 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bo
     // this means the default scenario for muons
   }
 
-  float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 4107., 0.0, 257., 20.5};
-  float qcd_el_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   71., 0.0,  18.,  6.7};
+  //Old version, using numbers from Feb. 6
+  //float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 4107., 0.0, 257., 20.5};
+  //float qcd_el_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   71., 0.0,  18.,  6.7};
+  float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 4202., 0.0, 256., 27.8};
+  float qcd_el_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   73., 0.0,  18.,  7.1};
   
   // HTlep > 150 GeV
   //float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 0.0, 2981., 194., 16.2};
@@ -613,9 +618,18 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bo
     qcd_el_2Dcut_err[7] = 1.9;
   }
   else if (do_qcd) {
+    //qcd_el_2Dcut_norm[4] = 448.;
+    //qcd_el_2Dcut_norm[5] = 448.;
+    //qcd_el_2Dcut_norm[6] = 40.3;
+    //qcd_el_2Dcut_norm[7] = 6.2;
+    //qcd_el_2Dcut_err[4] = 23.;
+    //qcd_el_2Dcut_err[5] = 23.;
+    //qcd_el_2Dcut_err[6] = 6.5;
+    //qcd_el_2Dcut_err[7] = 3.0;
+
     qcd_el_2Dcut_norm[4] = 448.;
     qcd_el_2Dcut_norm[5] = 448.;
-    qcd_el_2Dcut_norm[6] = 40.3;
+    qcd_el_2Dcut_norm[6] = 40.0;
     qcd_el_2Dcut_norm[7] = 6.2;
     qcd_el_2Dcut_err[4] = 23.;
     qcd_el_2Dcut_err[5] = 23.;

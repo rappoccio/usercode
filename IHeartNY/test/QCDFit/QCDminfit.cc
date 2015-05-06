@@ -12,19 +12,20 @@ minimizes is fcn = -2*log(L). The factor of -2 allows for easy insertion of cons
 through adding quadratic terms to fcn.
 For more info on TMinuit see root.cern.ch/root/html/TMinuit.html .
 
-The inputs to be changed when running the program are found in lines 68, 69, 70, 88, 
-and 89. 
-Line 69 gives the rebinning factor (number of bins in the original histogram to be 
-combined before the fit)
-Line 70 gives the new binsize (in GeV)
-Line 71 gives the new number of bins
-Lines 73-78 set whether the fit is done for 2D isolation (first three lines) or relIso (last three lines)
+The inputs to be changed when running the program are found in the following lines:  
+Lines 70-73 describe the histogram being fitted
+Line 76 gives the rebinning factor
+Line 77 gives the new binsize (in GeV)
+Line 78 gives the new number of bins
+Lines 82-106 describe the channel and the paths to the relevant .root files
 
-Line 102 specifies which histogram to fit
-Line 103 specifies whether MC sidebands are subtracted from the data sideband to give the
+Line 127 gives the cut stage for the MC template
+Line 128 gives the cut stage for the QCD template
+Line 129 specifies whether MC sidebands are subtracted from the data sideband to give the
 QCD template.
-Line 104 specifies whether to fit in exclusive regions or inclusive
-Line 105 indicates whether to scale up or down the amount of non-QCD subtracted from the sideband
+Line 130 specifies whether to fit in exclusive regions or inclusive
+Line 131 indicates whether to scale up or down the amount of non-QCD subtracted from the sideband
+Line 133 indicates the percent by which the parameters are constrained to their input values in the fit
 
 */
 
@@ -65,46 +66,49 @@ vector<double> qcd_Vec; //qcd template from data driven method
 double L = 19700; //UPDATED (in pb)
 
 int Ntotal; //Total # of events -- define as global, currently rewritten for each Njets bin
+
+TString fitDist = "ptMET";
 int nbins = 200;
 double xmin = 0.;
-double xmax = 1000.;
+double xmax = 400.;
 
 // Rebinning factor, giving number of bins to combine into one (1 means no rebinning).
 int binfac = 10;
-TString binsize = "50";      // 5 * binfac
-TString numberofbins = "20"; // 200 / binfac
+TString binsize = "20";      // xmax / numberofbins
+TString numberofbins = "20"; // nbins / binfac
 
 TString whichHist = "2Dcut_";
 
 //muons
 /*
-TString whichDir = "2Dhist/";
-TString whichDirv2 = "2Dhists/";
 TString channel = "mu";
-TString FOLDER = "histfiles_met50qcd";
-TString FOLDER_TT = "histfiles_met50qcd";
-TString fitDist = "htLep";
+//TString DIR = "/2Dhist";
+//TString DIR_TT = "/2Dhists";
+//TString FOLDER = "histfiles";
+//TString FOLDER_TT = "histfiles_CT10_nom";
+TString DIR = "/qcd";
+TString DIR_TT = "/qcd";
+TString FOLDER = "histfiles";
+TString FOLDER_TT = "histfiles_CT10_nom";
 */
 
 //electrons
-//TString whichDir = "2Dhist_el/";
-//TString whichDirv2 = "2Dhists_el/";
-TString whichDir = "2Dhist/";
-TString whichDirv2 = "2Dhists/";
+
 TString channel = "el";
-TString FOLDER = "histfiles_met50qcd";
-TString FOLDER_TT = "histfiles_met50qcd";
-TString fitDist = "htLep";
-
-
+//TString DIR = "/2Dhist_el";
+//TString DIR_TT = "/2Dhists_el";
 //TString FOLDER = "histfiles";
 //TString FOLDER_TT = "histfiles_CT10_nom";
+TString DIR = "/qcd_el";
+TString DIR_TT = "/qcd_el";
+TString FOLDER = "histfiles";
+TString FOLDER_TT = "histfiles_CT10_nom";
+
 
 double Nraw[5];
 double Nnorm[5];
 double Nfit[5];
 double Nside[5];
-double numEvent[2]; //set it global use to set limit in fcn
 
 // Helper functions
 void fcn(int& npar, double* deriv, double& f, double par[], int flag);
@@ -121,11 +125,12 @@ int QCDminfit() {
 
   // User inputs
   TString temp_num = "7";
-  TString QCD_temp_num = "6";
+  TString QCD_temp_num = "7";
   bool dosub = true;
   bool exclusive = true; 
   TString var = "";    // Amount of non-QCD subtracted from the sideband
                          //"_raw" = none, "" = nominal, "_up" = nominal x 2, "_dn" = nominal x 1/2
+  double cons[2] = {-1.0, -1.0}; //% constraints on parameters (negative = no constraint)
 
   int nbins_new = nbins / binfac;
   cout << "New # of bins is " << nbins_new << endl;
@@ -145,12 +150,30 @@ int QCDminfit() {
   int ierflg = 0;
   string parName[npar] = {"top", "qcd"};
   double par[npar];
-  
-  par[0] = 0.5 * Ntotal;
-  par[1] = 0.5 * Ntotal;
-  numEvent[0] = 0.5 * Ntotal;
-  numEvent[1] = 0.5 * Ntotal;
 
+  double ini_val[npar] = {Nnorm[0] + Nnorm[1] + Nnorm[2] + Nnorm[3],
+  			  0.1 * Ntotal};
+
+  //double ini_val[npar] = {0.95 * Ntotal,
+  //			  0.05 * Ntotal};
+
+  // Determine upper and lower bounds for parameters
+  double lowerbound[npar];
+  double upperbound[npar];
+  for (int ii = 0; ii < npar; ii++){
+    if (cons[ii] < 0.) {
+      lowerbound[ii] = 0.;
+      upperbound[ii] = Ntotal;
+    }
+    else {
+      lowerbound[ii] = ini_val[ii]*(1-cons[ii]);
+      upperbound[ii] = ini_val[ii]*(1+cons[ii]);
+    }
+  }
+  
+  par[0] = ini_val[0];
+  par[1] = ini_val[1];
+  
   for(int i=0; i<npar; i++){
     // optimize parameters with initial value of par[i], moving in increments
     // of 1., between 0 and Ntotal
@@ -256,7 +279,7 @@ int QCDminfit() {
   
   gStyle->SetOptStat(0);
   gStyle->SetPadBottomMargin(0.11);
-  gStyle->SetPadTopMargin(0.05);
+  gStyle->SetPadTopMargin(0.08);
   gStyle->SetPadLeftMargin(0.1);
   gStyle->SetPadRightMargin(0.05);
   his_Temp[0]->Draw();
@@ -265,7 +288,7 @@ int QCDminfit() {
   his_Temp[0]->SetMaximum(1.2 * max(sigmax, qcdmax));
   his_Temp[0]->SetTitle("");
   if (fitDist == "ptMET") his_Temp[0]->GetXaxis()->SetTitle("missing E_{T} (GeV)");
-  if (fitDist == "htLep") his_Temp[0]->GetXaxis()->SetTitle("HT_{lep} (GeV)");
+  if (fitDist == "htLep") his_Temp[0]->GetXaxis()->SetTitle("H_{T}^{lep} (GeV)");
   his_Temp[0]->GetYaxis()->SetTitle("a.u.");
   his_Temp[0]->GetXaxis()->SetTitleSize(0.05);
   his_Temp[0]->GetYaxis()->SetTitleSize(0.05);
@@ -273,8 +296,7 @@ int QCDminfit() {
   
   his_Temp[1]->Draw("same");
   
-  //TLegend* legTemp = new TLegend(0.53, 0.45, 0.73, 0.8);
-  TLegend* legTemp = new TLegend(0.72, 0.70, 0.92, 0.90);
+  TLegend* legTemp = new TLegend(0.72, 0.63, 0.92, 0.83);
   legTemp->SetBorderSize(0);
   legTemp->SetTextFont(42);
   legTemp->SetFillColor(0);
@@ -283,7 +305,7 @@ int QCDminfit() {
   
   legTemp->SetTextSize(0.045);
   legTemp->Draw("same");
-  TText* textPrelimA = doPrelim(L/1000, 0.525, 0.915);
+  TText* textPrelimA = doPrelim(L/1000, 0.600, 0.875);
   textPrelimA->Draw();
   textPrelimA->SetTextFont(42);
 
@@ -310,7 +332,7 @@ int QCDminfit() {
   data->SetLineWidth(1);
   
   gStyle->SetPadBottomMargin(0.11);
-  gStyle->SetPadTopMargin(0.05);
+  gStyle->SetPadTopMargin(0.08);
   gStyle->SetPadLeftMargin(0.1);
   gStyle->SetPadRightMargin(0.05);
   hs->SetTitle("");
@@ -320,7 +342,7 @@ int QCDminfit() {
   hs->Draw();
   hs->SetMaximum(1.2*comb_max);
   if (fitDist == "ptMET") hs->GetXaxis()->SetTitle("missing E_{T} (GeV)");
-  if (fitDist == "htLep") hs->GetXaxis()->SetTitle("HT_{lep} (GeV)");  
+  if (fitDist == "htLep") hs->GetXaxis()->SetTitle("H_{T}^{lep} (GeV)");  
   hs->GetYaxis()->SetTitle("Number of Events / "+binsize+" GeV");
   hs->GetXaxis()->SetTitleSize(0.05);
   hs->GetYaxis()->SetTitleSize(0.05);
@@ -328,8 +350,7 @@ int QCDminfit() {
   result->Draw("same");
   data->Draw("same");
   
-  //TLegend* legFit = new TLegend(0.56, 0.5, 0.86, 0.82);
-  TLegend* legFit = new TLegend(0.72, 0.60, 0.92, 0.92);
+  TLegend* legFit = new TLegend(0.72, 0.53, 0.92, 0.85);
   legFit->SetBorderSize(0);
   legFit->SetTextFont(42);
   legFit->SetFillColor(0);
@@ -340,7 +361,7 @@ int QCDminfit() {
   legFit->SetTextSize(0.04);
   legFit->Draw("same");
   
-  TText* textPrelimB = doPrelim(L/1000, 0.525, 0.915);
+  TText* textPrelimB = doPrelim(L/1000, 0.600, 0.875);
   textPrelimB->Draw();
   textPrelimB->SetTextFont(42);
   gPad->RedrawAxis();
@@ -423,10 +444,10 @@ void getData(TString& temp_num, int binfac, bool exclusive, TString channel){
   TH1D* h_data = new TH1D("data", "data", nbins, xmin, xmax);
   TFile* datafile;
   if (channel == "mu") {
-    datafile = TFile::Open("../"+FOLDER+"/SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"nom.root", "READ");
+    datafile = TFile::Open("../"+FOLDER+DIR+"/SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"nom.root", "READ");
   }
   if (channel == "el") {
-    datafile = TFile::Open("../"+FOLDER+"/SingleEl_iheartNY_V1_el_Run2012_"+whichHist+"nom.root", "READ");
+    datafile = TFile::Open("../"+FOLDER+DIR+"/SingleEl_iheartNY_V1_el_Run2012_"+whichHist+"nom.root", "READ");
   }
   h_data = (TH1D*) gDirectory->Get(fitDist+temp_num);
   h_data->Sumw2();
@@ -499,7 +520,7 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   int nbins_new = nbins / binfac;
 
   gStyle->SetPadBottomMargin(0.11);
-  gStyle->SetPadTopMargin(0.05);
+  gStyle->SetPadTopMargin(0.08);
   gStyle->SetPadLeftMargin(0.1);
   gStyle->SetPadRightMargin(0.05);
 
@@ -514,7 +535,7 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   // Do first recombination
   // TTjets semilep
   for(int i=0; i<3; i++){
-    top_file_array[i] = TFile::Open("../"+FOLDER_TT+"/"+sample_array[i]+whichHist+"nom.root", "READ");
+    top_file_array[i] = TFile::Open("../"+FOLDER_TT+DIR_TT+"/"+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get(fitDist+temp_num);
     if (exclusive && temp_num == "4"){
       TH1D* hist_sub = (TH1D*) gDirectory->Get(fitDist+"6");
@@ -535,7 +556,7 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   }
   // TTjets nonsemilep
   for(int i=3; i<6; i++){
-    top_file_array[i] = TFile::Open("../"+FOLDER_TT+"/"+sample_array[i]+whichHist+"nom.root", "READ");
+    top_file_array[i] = TFile::Open("../"+FOLDER_TT+DIR_TT+"/"+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get(fitDist+temp_num);
     if (exclusive && temp_num == "4"){
       TH1D* hist_sub = (TH1D*) gDirectory->Get(fitDist+"6");
@@ -556,7 +577,7 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   }
   // Stop
   for(int i=6; i<12; i++){
-    top_file_array[i] = TFile::Open("../"+FOLDER+"/"+sample_array[i]+whichHist+"nom.root", "READ");
+    top_file_array[i] = TFile::Open("../"+FOLDER+DIR+"/"+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get(fitDist+temp_num);
     if (exclusive && temp_num == "4"){
       TH1D* hist_sub = (TH1D*) gDirectory->Get(fitDist+"6");
@@ -577,7 +598,7 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   }
   // WJets
   for(int i=12; i<16; i++){
-    top_file_array[i] = TFile::Open("../"+FOLDER+"/"+sample_array[i]+whichHist+"nom.root", "READ");
+    top_file_array[i] = TFile::Open("../"+FOLDER+DIR+"/"+sample_array[i]+whichHist+"nom.root", "READ");
     top_his_array[i] = (TH1D*) gDirectory->Get(fitDist+temp_num);
     if (exclusive && temp_num == "4"){
       TH1D* hist_sub = (TH1D*) gDirectory->Get(fitDist+"6");
@@ -606,10 +627,10 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   
   // Get QCD template
   if (channel == "mu") {
-    qcd_file_array[0] = TFile::Open("../"+FOLDER+"/SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"qcd.root", "READ");
+    qcd_file_array[0] = TFile::Open("../"+FOLDER+DIR+"/SingleMu_iheartNY_V1_mu_Run2012_"+whichHist+"qcd.root", "READ");
   }
   if (channel == "el") {
-    qcd_file_array[0] = TFile::Open("../"+FOLDER+"/SingleEl_iheartNY_V1_el_Run2012_"+whichHist+"qcd.root", "READ");
+    qcd_file_array[0] = TFile::Open("../"+FOLDER+DIR+"/SingleEl_iheartNY_V1_el_Run2012_"+whichHist+"qcd.root", "READ");
   }
 
   qcd_his_array[0] = (TH1D*) gDirectory->Get(fitDist+QCD_temp_num);
@@ -630,10 +651,10 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   if (dosub && var != "_raw") {
     for(int i=0; i<16; i++){
       if (i < 6){
-	qcd_file_array[i+1] = TFile::Open("../"+FOLDER_TT+"/"+sample_array[i]+whichHist+"qcd.root", "READ");
+	qcd_file_array[i+1] = TFile::Open("../"+FOLDER_TT+DIR_TT+"/"+sample_array[i]+whichHist+"qcd.root", "READ");
       }
       else {
-	qcd_file_array[i+1] = TFile::Open("../"+FOLDER+"/"+sample_array[i]+whichHist+"qcd.root", "READ");
+	qcd_file_array[i+1] = TFile::Open("../"+FOLDER+DIR+"/"+sample_array[i]+whichHist+"qcd.root", "READ");
       }
       qcd_his_array[i+1] = (TH1D*) gDirectory->Get(fitDist+QCD_temp_num);
       if (exclusive && QCD_temp_num == "4"){
@@ -674,21 +695,20 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   }
 
   gStyle->SetPadBottomMargin(0.11);
-  gStyle->SetPadTopMargin(0.05);
+  gStyle->SetPadTopMargin(0.08);
   gStyle->SetPadLeftMargin(0.1);
   gStyle->SetPadRightMargin(0.05);
-  //topcont->SetTitle("Contributions to Non-QCD template");
+  topcont->SetTitle("Contributions to Non-QCD template");
+  //topcont->SetTitle("");
   topcont->Draw();
   if (fitDist == "ptMET") topcont->GetXaxis()->SetTitle("missing E_{T} (GeV)");
-  if (fitDist == "htLep") topcont->GetXaxis()->SetTitle("HT_{lep} (GeV)");
-  topcont->SetTitle("");
+  if (fitDist == "htLep") topcont->GetXaxis()->SetTitle("H_{T}^{lep} (GeV)");
   topcont->GetXaxis()->SetTitleSize(0.05);
   topcont->GetYaxis()->SetTitle("Number of Events / "+binsize+" GeV");
   topcont->GetYaxis()->SetTitleSize(0.05);
   topcont->GetYaxis()->SetTitleOffset(0.9);
 
-  //TLegend* leg1 = new TLegend(0.56, 0.5, 0.86, 0.82);
-  TLegend* leg1 = new TLegend(0.72, 0.60, 0.92, 0.92);
+  TLegend* leg1 = new TLegend(0.72, 0.63, 0.92, 0.85);
   leg1->SetBorderSize(0);
   leg1->SetTextFont(42);
   leg1->SetFillColor(0);
@@ -699,7 +719,7 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   leg1->SetTextSize(0.04);
   leg1->Draw("same");
 
-  TText* textPrelim1 = doPrelim(L/1000, 0.525, 0.895);
+  TText* textPrelim1 = doPrelim(L/1000, 0.600, 0.875);
   textPrelim1->Draw();
   textPrelim1->SetTextFont(42);
   gPad->RedrawAxis();
@@ -725,16 +745,16 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   }
 
   gStyle->SetPadBottomMargin(0.11);
-  gStyle->SetPadTopMargin(0.05);
+  gStyle->SetPadTopMargin(0.08);
   gStyle->SetPadLeftMargin(0.1);
   gStyle->SetPadRightMargin(0.05);
   top_cont_array[0]->Draw();
   top_cont_array[0]->GetXaxis()->SetTitleSize(0.05);
   top_cont_array[0]->SetMaximum(1.2 * tempmax);
-  //top_cont_array[0]->SetTitle("Components of Non-QCD template");
-  top_cont_array[0]->SetTitle("");
+  top_cont_array[0]->SetTitle("Components of Non-QCD template");
+  //top_cont_array[0]->SetTitle("");
   if (fitDist == "ptMET") top_cont_array[0]->GetXaxis()->SetTitle("missing E_{T} (GeV)");
-  if (fitDist == "htLep") top_cont_array[0]->GetXaxis()->SetTitle("HT_{lep} (GeV)");
+  if (fitDist == "htLep") top_cont_array[0]->GetXaxis()->SetTitle("H_{T}^{lep} (GeV)");
   top_cont_array[0]->GetYaxis()->SetTitle("a.u.");
   top_cont_array[0]->GetYaxis()->SetTitleSize(0.05);
   top_cont_array[0]->GetYaxis()->SetTitleOffset(0.9);
@@ -743,8 +763,7 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   top_cont_array[2]->Draw("same");
   top_cont_array[3]->Draw("same");
 
-  TLegend* leg2 = new TLegend(0.72, 0.60, 0.92, 0.92);
-  //TLegend* leg2 = new TLegend(0.56, 0.5, 0.86, 0.82);
+  TLegend* leg2 = new TLegend(0.72, 0.63, 0.92, 0.85);
   leg2->SetBorderSize(0);
   leg2->SetTextFont(42);
   leg2->SetFillColor(0);
@@ -755,7 +774,7 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
   leg2->SetTextSize(0.04);
   leg2->Draw("same");
   
-  TText* textPrelim2 = doPrelim(L/1000, 0.6, 0.915);
+  TText* textPrelim2 = doPrelim(L/1000, 0.600, 0.875);
   textPrelim2->Draw();
   textPrelim2->SetTextFont(42);
   gPad->RedrawAxis();
@@ -801,15 +820,15 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
     }
 
     gStyle->SetPadBottomMargin(0.11);
-    gStyle->SetPadTopMargin(0.05);
+    gStyle->SetPadTopMargin(0.08);
     gStyle->SetPadLeftMargin(0.1);
     gStyle->SetPadRightMargin(0.05);
-    //QCDcont->SetTitle("Contributions to data sideband");
+    QCDcont->SetTitle("Contributions to data sideband");
+    //QCDcont->SetTitle("");
     QCDcont->Draw();
     if (fitDist == "ptMET") QCDcont->GetXaxis()->SetTitle("missing E_{T} (GeV)");
-    if (fitDist == "htLep") QCDcont->GetXaxis()->SetTitle("HT_{lep} (GeV)");
+    if (fitDist == "htLep") QCDcont->GetXaxis()->SetTitle("H_{T}^{lep} (GeV)");
     QCDcont->GetXaxis()->SetTitleSize(0.05);
-    QCDcont->SetTitle("");
     QCDcont->GetYaxis()->SetTitle("Number of Events / "+binsize+" GeV");
     QCDcont->GetYaxis()->SetTitleSize(0.05);
     QCDcont->GetYaxis()->SetTitleOffset(0.9);
@@ -818,8 +837,7 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
     qcd_cont_array[5]->SetLineWidth(3);
     qcd_cont_array[5]->Draw("same");
 
-    //TLegend* leg3 = new TLegend(0.56, 0.5, 0.86, 0.82);
-    TLegend* leg3 = new TLegend(0.72, 0.60, 0.92, 0.92);
+    TLegend* leg3 = new TLegend(0.72, 0.53, 0.92, 0.85);
     leg3->SetBorderSize(0);
     leg3->SetTextFont(42);
     leg3->SetFillColor(0);
@@ -832,7 +850,7 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
     leg3->SetTextSize(0.04);
     leg3->Draw("same");
 
-    TText* textPrelim3 = doPrelim(L/1000, 0.525, 0.895);
+    TText* textPrelim3 = doPrelim(L/1000, 0.600, 0.875);
     textPrelim3->Draw();
     textPrelim3->SetTextFont(42);
     gPad->RedrawAxis();
@@ -859,16 +877,16 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
     }
 
     gStyle->SetPadBottomMargin(0.11);
-    gStyle->SetPadTopMargin(0.05);
+    gStyle->SetPadTopMargin(0.08);
     gStyle->SetPadLeftMargin(0.1);
     gStyle->SetPadRightMargin(0.05);
     qcd_cont_array[1]->Draw();
     qcd_cont_array[1]->GetXaxis()->SetTitleSize(0.05);
     qcd_cont_array[1]->SetMaximum(1.2 * tempmax2);
-    //qcd_cont_array[1]->SetTitle("Distributions in sideband");
-    qcd_cont_array[1]->SetTitle("");
+    qcd_cont_array[1]->SetTitle("Distributions in sideband");
+    //qcd_cont_array[1]->SetTitle("");
     if (fitDist == "ptMET") qcd_cont_array[1]->GetXaxis()->SetTitle("missing E_{T} (GeV)");
-    if (fitDist == "htLep") qcd_cont_array[1]->GetXaxis()->SetTitle("HT_{lep} (GeV)");
+    if (fitDist == "htLep") qcd_cont_array[1]->GetXaxis()->SetTitle("H_{T}^{lep} (GeV)");
     qcd_cont_array[1]->GetYaxis()->SetTitle("a.u.");
     qcd_cont_array[1]->GetYaxis()->SetTitleSize(0.05);
     qcd_cont_array[1]->GetYaxis()->SetTitleOffset(0.9);
@@ -877,8 +895,7 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
     qcd_cont_array[4]->Draw("same");
     qcd_cont_array[5]->Draw("same");
 
-    //TLegend* leg4 = new TLegend(0.56, 0.5, 0.86, 0.82);
-    TLegend* leg4 = new TLegend(0.72, 0.60, 0.92, 0.92);
+    TLegend* leg4 = new TLegend(0.72, 0.53, 0.92, 0.85);
     leg4->SetBorderSize(0);
     leg4->SetTextFont(42);
     leg4->SetFillColor(0);
@@ -890,7 +907,7 @@ double* getTemp(TString& temp_num, TString& QCD_temp_num, int binfac, bool dosub
     leg4->SetTextSize(0.04);
     leg4->Draw("same");
 
-    TText* textPrelim4 = doPrelim(L/1000, 0.525, 0.915);
+    TText* textPrelim4 = doPrelim(L/1000, 0.600, 0.875);
     textPrelim4->Draw();
     textPrelim4->SetTextFont(42);
     gPad->RedrawAxis();
