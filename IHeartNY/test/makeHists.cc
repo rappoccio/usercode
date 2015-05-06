@@ -53,7 +53,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   TString mydir = pdfdir;
   if (do_htlep150qcd) mydir = "htlep150qcd";
   else if (do_met50qcd) mydir = "met50qcd";
-  else if (do_qcd) mydir = "qcd";
+  else if (do_qcd) mydir += "_qcd";
 
   TString syst = "nom";
 
@@ -120,8 +120,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
   else if (do_qcd) {
-    if (doElectron) filepath = "histfiles_qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
-    else filepath = "histfiles_qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+    if (doElectron) filepath = "histfiles/qcd_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles/qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
 
   TFile* dataFile = TFile::Open(filepath);
@@ -476,7 +476,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   TString mydir = pdfdir;
   if (do_htlep150qcd) mydir = "htlep150qcd";
   else if (do_met50qcd) mydir = "met50qcd";
-  else if (do_qcd) mydir = "qcd";
+  else if (do_qcd) mydir += "_qcd";
 
   // read MC histograms
   TFile* fMC;
@@ -565,8 +565,8 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
   else if (do_qcd) {
-    if (doElectron) filepath = "histfiles_qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
-    else filepath = "histfiles_qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+    if (doElectron) filepath = "histfiles/qcd_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles/qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
 
   TFile* dataFile = TFile::Open(filepath);
@@ -726,7 +726,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   TString mydir = pdfdir;
   if (do_htlep150qcd) mydir = "htlep150qcd";
   else if (do_met50qcd) mydir = "met50qcd";
-  else if (do_qcd) mydir = "qcd";
+  else if (do_qcd) mydir += "_qcd";
 
   // post-fit file
   TFile* fMC;
@@ -826,12 +826,13 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   };
 
 
-  TString pdfs[14] = {"CT10_nom","CT10_pdfup","CT10_pdfdown",
+  TString pdfs[16] = {"CT10_nom","CT10_pdfup","CT10_pdfdown",
 		      "MSTW_nom","MSTW_pdfup","MSTW_pdfdown",
 		      "NNPDF_nom","NNPDF_pdfup","NNPDF_pdfdown",
-		      "scaleup","scaledown","htlep150qcd","met50qcd","qcd"};
+		      "scaleup","scaledown","htlep150qcd","met50qcd",
+		      "CT10_nom_qcd", "CT10_pdfup_qcd", "CT10_pdfdown_qcd"};
   int thispdf = -1;
-  for (int ipdf=0; ipdf<14; ipdf++) {
+  for (int ipdf=0; ipdf<16; ipdf++) {
     if (mydir == pdfs[ipdf]) {
       thispdf = ipdf;
       break;
@@ -1185,7 +1186,7 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
   TString mydir = pdfdir;
   if (do_htlep150qcd) mydir = "htlep150qcd";
   else if (do_met50qcd) mydir = "met50qcd";
-  else if (do_qcd) mydir = "qcd";
+  else if (do_qcd) mydir += "_qcd";
  
   TString hist = var;
   hist += cut;
@@ -1252,8 +1253,8 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
   else if (do_qcd) {
-    if (doElectron) filepath = "histfiles_qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
-    else filepath = "histfiles_qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+    if (doElectron) filepath = "histfiles/qcd_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles/qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
 
   TFile* dataFile = TFile::Open(filepath);
@@ -1312,7 +1313,7 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   TString mydir = pdfdir;
   if (do_htlep150qcd) mydir = "htlep150qcd";
   else if (do_met50qcd) mydir = "met50qcd";
-  else if (do_qcd) mydir = "qcd";
+  else if (do_qcd) mydir += "_qcd";
  
   TString hist[2] = {var, var};
   hist[0] += cut1;
@@ -1385,8 +1386,8 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
   else if (do_qcd) {
-    if (doElectron) filepath = "histfiles_qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
-    else filepath = "histfiles_qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+    if (doElectron) filepath = "histfiles/qcd_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles/qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
 
   TFile* dataFile = TFile::Open(filepath);

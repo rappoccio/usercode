@@ -126,7 +126,9 @@ SummedHist * getWJets( TString name, TString histname, bool doElectron, TString 
   const int nwjets = 4;
 
   TString DIR = "histfiles/";
-  if (use2D && doElectron) DIR += "2Dhist_el/";
+  if (do_qcd && doElectron) DIR += "qcd_el/";
+  else if (do_qcd) DIR += "qcd/";
+  else if (use2D && doElectron) DIR += "2Dhist_el/";
   else if (use2D) DIR += "2Dhist/";
 
   if (do_htlep150qcd) {
@@ -135,9 +137,6 @@ SummedHist * getWJets( TString name, TString histname, bool doElectron, TString 
   }
   else if (do_met50qcd) {
     DIR = "histfiles_met50qcd/";
-  }
-  else if (do_qcd) {
-    DIR = "histfiles_qcd/";
   }
 
   TString muOrEl = "mu";
@@ -190,7 +189,9 @@ SummedHist * getSingleTop( TString name, TString histname, bool doElectron, TStr
   const int nsingletop = 6;
 
   TString DIR = "histfiles/";
-  if (use2D && doElectron) DIR += "2Dhist_el/";
+  if (do_qcd && doElectron) DIR += "qcd_el/";
+  else if (do_qcd) DIR += "qcd/";
+  else if (use2D && doElectron) DIR += "2Dhist_el/";
   else if (use2D) DIR += "2Dhist/";
 
   if (do_htlep150qcd) {
@@ -199,9 +200,6 @@ SummedHist * getSingleTop( TString name, TString histname, bool doElectron, TStr
   }
   else if (do_met50qcd) {
     DIR = "histfiles_met50qcd/";
-  }
-  else if (do_qcd) {
-    DIR = "histfiles_qcd/";
   }
 
   TString muOrEl = "mu";
@@ -259,8 +257,10 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
   const int nq2 = 3;
 
   TString DIR = "histfiles_" + pdfdir + "/";
-  if (use2D && doElectron) DIR += "2Dhists_el/";
-  else if (use2D) DIR += "2Dhists/";
+  if (do_qcd && doElectron) DIR += "qcd_el/";
+  else if (do_qcd) DIR += "qcd/";
+  else if (use2D && doElectron) DIR += "2Dhist_el/";
+  else if (use2D) DIR += "2Dhist/";
 
   if (do_htlep150qcd) {
     DIR = "histfiles_htlep150/";
@@ -268,9 +268,6 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
   }
   else if (do_met50qcd) {
     DIR = "histfiles_met50qcd/";
-  }
-  else if (do_qcd) {
-    DIR = "histfiles_qcd/";
   }
 
   TString muOrEl = "mu";
@@ -342,8 +339,10 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
   const int nq2 = 3;
 
   TString DIR = "histfiles_" + pdfdir + "/";
-  if (use2D && doElectron) DIR += "2Dhists_el/";
-  else if (use2D) DIR += "2Dhists/";
+  if (do_qcd && doElectron) DIR += "qcd_el/";
+  else if (do_qcd) DIR += "qcd/";
+  else if (use2D && doElectron) DIR += "2Dhist_el/";
+  else if (use2D) DIR += "2Dhist/";
 
   if (do_htlep150qcd) {
     DIR = "histfiles_htlep150/";
@@ -351,9 +350,6 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
   }
   else if (do_met50qcd) {
     DIR = "histfiles_met50qcd/";
-  }
-  else if (do_qcd) {
-    DIR = "histfiles_qcd/";
   }
 
   TString muOrEl = "mu";
@@ -445,8 +441,8 @@ SummedHist * getQCD( TString var, bool doElectron, TString ptbin = "" ) {
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root";
   }
   else if (do_qcd) {
-    if (doElectron) filepath = "histfiles_qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root";
-    else filepath = "histfiles_qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root";
+    if (doElectron) filepath = "histfiles/qcd_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root";
+    else filepath = "histfiles/qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root";
   }
 
   TFile* qcdFile = TFile::Open(filepath);
