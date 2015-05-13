@@ -26,6 +26,20 @@ bool do_htlep150qcd = false;
 bool do_met50qcd = false;
 bool do_qcd = true;
 
+bool extLumi = true;
+bool extBtag = true;
+bool extJet = false;
+bool extToptag = false;
+
+TString extName = "";
+
+void setExtName () {
+  if (extBtag) extName += "_nobtag";
+  if (extLumi) extName += "_nolumi";
+  if (extJet) extName += "_nojet";
+  if (extToptag) extName += "_notoptag";
+}
+
 // -------------------------------------------------------------------------------------
 // helper class for summed, weighted histograms (e.g. single top)
 // -------------------------------------------------------------------------------------
@@ -472,16 +486,16 @@ float getPostPreRatio(bool doElectron, TString ptbin, TString pdfdir, bool combi
   // post-fit file
   TFile* fPOST;
   if (combined) {
-    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb.root");
-    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_2bin.root");
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_comb.root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_comb_2bin.root");
   }
   else if (doElectron) {
-    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el.root");
-    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el_2bin.root");
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_el.root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_el_2bin.root");
   }
   else {
-    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu.root");
-    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu_2bin.root");
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_mu.root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_mu_2bin.root");
   }
 
   // pre-fit file

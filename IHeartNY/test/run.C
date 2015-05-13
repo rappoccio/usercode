@@ -175,14 +175,14 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     makePlots("etaAbsLep",4,6,doElectron,ptbin,"CT10_nom");
 
     /*
-    makePlots("vtxMass",7,0,doElectron,"CT10_pdfup");
-    makePlots("etaAbsLep",6,7,doElectron,"CT10_pdfup");
-    makePlots("etaAbsLep",4,6,doElectron,"CT10_pdfup");
+    makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_pdfup");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"CT10_pdfup");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"CT10_pdfup");
 
-    makePlots("vtxMass",7,0,doElectron,"CT10_pdfdown");
-    makePlots("etaAbsLep",6,7,doElectron,"CT10_pdfdown");
-    makePlots("etaAbsLep",4,6,doElectron,"CT10_pdfdown");
-
+    makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_pdfdown");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"CT10_pdfdown");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"CT10_pdfdown");
+    
     makePlots("vtxMass",7,0,doElectron,"MSTW_nom");
     makePlots("etaAbsLep",6,7,doElectron,"MSTW_nom");
     makePlots("etaAbsLep",4,6,doElectron,"MSTW_nom");
@@ -219,11 +219,14 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
   }
 
   else if (option=="table") {
+    setExtName();
     makeTable(doElectron, "", "CT10_nom", combine);
   }
 
   // make posterior plots
   else if (option=="post") {
+
+    setExtName();
 
     makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine, false, false);
     makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine, false, false);
@@ -245,20 +248,23 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
 
   else if (option=="allpost") {
 
-    makePosteriorPlots("etaAbsLep4", doElectron, "CT10_nom", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, "CT10_nom", combine);
-    makePosteriorPlots("vtxMass7", doElectron, "CT10_nom", combine);
-    makeTable(doElectron, "CT10_nom", combine);
+    setExtName();
 
-    makePosteriorPlots("etaAbsLep4", doElectron, "CT10_pdfup", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, "CT10_pdfup", combine);
-    makePosteriorPlots("vtxMass7", doElectron, "CT10_pdfup", combine);
-    makeTable(doElectron, "CT10_pdfup", combine);
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine);
+    makeTable(doElectron, ptbin, "CT10_nom", combine);
 
-    makePosteriorPlots("etaAbsLep4", doElectron, "CT10_pdfdown", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, "CT10_pdfdown", combine);
-    makePosteriorPlots("vtxMass7", doElectron, "CT10_pdfdown", combine);
-    makeTable(doElectron, "CT10_pdfdown", combine);
+    /*
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_pdfup", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_pdfup", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_pdfup", combine);
+    makeTable(doElectron, ptbin, "CT10_pdfup", combine);
+
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_pdfdown", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_pdfdown", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_pdfdown", combine);
+    makeTable(doElectron, ptbin, "CT10_pdfdown", combine);
 
     makePosteriorPlots("etaAbsLep4", doElectron, "MSTW_nom", combine);
     makePosteriorPlots("etaAbsLep6", doElectron, "MSTW_nom", combine);
@@ -299,6 +305,7 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     makePosteriorPlots("etaAbsLep6", doElectron, "scaledown", combine);
     makePosteriorPlots("vtxMass7", doElectron, "scaledown", combine);
     makeTable(doElectron, "scaledown", combine);
+    */
 
   }
 

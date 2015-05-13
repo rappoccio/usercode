@@ -126,6 +126,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 
   TFile* dataFile = TFile::Open(filepath);
   TH1F* h_data = (TH1F*) dataFile->Get( hist );
+
   TString channel = "mu_";
   if (doElectron) channel = "el_";
   h_data->SetName(channel + hist + "__DATA");
@@ -135,7 +136,6 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     h_data2 = (TH1F*) dataFile->Get( hist2 );
     h_data2->SetName(channel + hist + "__DATA_2");
   } 
- 
 
   // -------------------------------------------------------------------------------------
   // do the subtraction ?
@@ -147,7 +147,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     qcd->hist() ->Add(qcd2->hist(), -1);
     h_data->Add(h_data2, -1);
   }
-
+  
   // -------------------------------------------------------------------------------------
   // get the TH1F versions
 
@@ -384,9 +384,9 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   // save output
   TString outname;
 
-  if (use2D && doElectron) outname = "Plots/el_"+mydir+"_";
-  else if (use2D) outname = "Plots/mu_"+mydir+"_";
-  else outname = "Plots/mu_relIso_"+mydir+"_";
+  if (use2D && doElectron) outname = "Plots/el_"+mydir+extName+"_";
+  else if (use2D) outname = "Plots/mu_"+mydir+extName+"_";
+  else outname = "Plots/mu_relIso_"+mydir+extName+"_";
 
   if (postfit) {
     if (cut==6 && cut2==0){
@@ -481,19 +481,19 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   // read MC histograms
   TFile* fMC;
   if (combined) {
-    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb.root");
-    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb_"+ptbin+"bin.root");
-    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb_2bin.root");
+    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb"+extName+".root");
+    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb"+extName+"_"+ptbin+"bin.root");
+    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb"+extName+"_2bin.root");
   }
   else if (doElectron) {
-    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el.root");
-    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el_"+ptbin+"bin.root");
-    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el_2bin.root");
+    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el"+extName+".root");
+    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el"+extName+"_"+ptbin+"bin.root");
+    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el"+extName+"_2bin.root");
   }
   else {
-    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu.root");
-    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu_"+ptbin+"bin.root");
-    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu_2bin.root");
+    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu"+extName+".root");
+    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu"+extName+"_"+ptbin+"bin.root");
+    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu"+extName+"_2bin.root");
   }
   
   TString channel = "mu_";
@@ -699,9 +699,9 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 
   // save output
   TString outname;
-  if (use2D && doElectron) outname = "Plots/el_"+mydir+"_";
-  else if (use2D) outname = "Plots/mu_"+mydir+"_";
-  else outname = "Plots/mu_relIso_"+mydir+"_";
+  if (use2D && doElectron) outname = "Plots/el_"+mydir+extName+"_";
+  else if (use2D) outname = "Plots/mu_"+mydir+extName+"_";
+  else outname = "Plots/mu_relIso_"+mydir+extName+"_";
 
   if (combined) {
     c->SaveAs(outname+what+ptbin+"_combined_postfit.png");
@@ -731,19 +731,19 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   // post-fit file
   TFile* fMC;
   if (combined) {
-    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb.root");
-    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb_"+ptbin+"bin.root");
-    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb_2bin.root");
+    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb"+extName+".root");
+    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb"+extName+"_"+ptbin+"bin.root");
+    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_comb"+extName+"_2bin.root");
   }
   else if (doElectron) {
-    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el.root");
-    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el_"+ptbin+"bin.root");
-    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el_2bin.root");
+    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el"+extName+".root");
+    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el"+extName+"_"+ptbin+"bin.root");
+    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_el"+extName+"_2bin.root");
   }
   else {
-    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu.root");
-    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu_"+ptbin+"bin.root");
-    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu_2bin.root");
+    if (ptbin == "") fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu"+extName+".root");
+    else if (separate) fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu"+extName+"_"+ptbin+"bin.root");
+    else fMC = new TFile("run_theta/histos-mle-2d-"+mydir+"_mu"+extName+"_2bin.root");
   }
   if (fMC->IsOpen()) cout << "fMC exists." << endl;
 
@@ -753,7 +753,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   // -------------------------------------------------------------------------------------
   // post-fit relative errors
 
-  float fiterrors_mu[14][5] = { 
+  float fiterrors_mu[16][5] = { 
     //{0.136178123407, 0.601654603004, 0.107520601458, 0.189270027384, 0}, // bkg error for CT10_nom
     {0.134833771366, 0.589591484549, 0.0903075025146, 0.192926881092, 0}, // bkg error for CT10_nom, rebin2
     {0.143531426537, 0.598861647354, 0.118749010228, 0.17877006537, 0}, // bkg error for CT10_pdfup
@@ -768,10 +768,13 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.128661027311, 0.619019648158, 0.106169998694, 0.144190709959, 0}, // bkg error for scaledown
     {0.150840299166, 0.580282203849, 0.112694931383, 0.115630776147, 0}, // bkg error for htlep150qcd, rebin2
     {0.113860903688, 0.519957519596, 0.111445745701, 0.277144566273, 0}, // bkg error for met50qcd, rebin2
-    {0.142308035867, 0.605517180963, 0.107221545724, 0.171248812895, 0}, // bkg error for qcd, rebin2
+    //{0.142308035867, 0.605517180963, 0.107221545724, 0.171248812895, 0}, // bkg error for qcd, rebin2
+    {0.14233992583, 0.588366909773, 0.0966644482962, 0.187297205978, 0}, // bkg error for CT10_nom_qcd
+    {0.148900355145, 0.584040663808, 0.104486046526, 0.171407585385, 0}, // bkg error for CT10_pdfup_qcd
+    {0.137422092924, 0.592953339951, 0.0917191834416, 0.204112452524, 0}, // bkg error for CT10_pdfdown_qcd
   };
 
-  float fiterrors_el[14][5] = { 
+  float fiterrors_el[16][5] = { 
     //{0.0957933770128, 0.59028339844, 0.0472103974875, 0, 0.0794465593408}, // bkg error for CT10_nom
     {0.0915689893828, 0.589524196093, 0.0434118764149, 0, 0.0936672929441}, // bkg error for CT10_nom, rebin2
     {0.100258813306, 0.5829512792, 0.0491497479426, 0, 0.084463841562}, // bkg error for CT10_pdfup
@@ -786,10 +789,13 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.0948258962343, 0.570246409386, 0.0455002470189, 0, 0.0793221134465}, // bkg error for scaledown
     {0.124257831545, 0.453711536078, 0.109832396368, 0, 0.248553564316}, // bkg error for htlep150qcd, rebin2
     {0.107660903977, 0.51702094822, 0.0703718085366, 0, 0.356673438468}, // bkg error for met50qcd, rebin2
-    {0.107740627952, 0.4421410844, 0.106870033597, 0, 0.117778031187}, // bkg error for qcd, rebin2
+    //{0.107740627952, 0.4421410844, 0.106870033597, 0, 0.117778031187}, // bkg error for qcd, rebin2
+    {0.111198745365, 0.49520090423, 0.0961484453914, 0, 0.183234148794}, // bkg error for CT10_nom_qcd
+    {0.119894577492, 0.472670684273, 0.108381170271, 0, 0.195048976431}, // bkg error for CT10_pdfup_qcd
+    {0.105808337774, 0.509788114892, 0.0898689479213, 0, 0.17421934127}, // bkg error for CT10_pdfdown_qcd
   };
 
-  float fiterrors_comb[14][5] = {
+  float fiterrors_comb[16][5] = {
     //{0.0721611675654, 0.591773485402, 0.06841616483, 0.639678706759, 0.0338012148088}, // bkg error for CT10_nom
     {0.0706994856803, 0.536838090537, 0.0560114073749, 0.666940896433, 0.0349182297444}, // bkg error for CT10_nom, rebin2
     {0.0759518444195, 0.58172119931, 0.0802638564576, 0.641348470177, 0.0337331527381}, // bkg error for CT10_pdfup
@@ -804,7 +810,64 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.0754581112506, 0.527287398678, 0.0613378760194, 0.657640817449, 0.0319922330817}, // bkg error for scaledown
     {0.0797793432868, 0.436673982919, 0.117476264232, 0.479697791925, 0.0676021303369}, // bkg error for htlep150qcd, rebin2
     {0.0777933806133, 0.472702127417, 0.0831352554973, 0.566704700279, 0.0932475666115}, // bkg error for met50qcd, rebin2
-    {0.0759080952546, 0.502342636381, 0.0989305408165, 0.351178483059, 0.055901103397}, // bkg error for qcd, rebin2
+    //{0.0759080952546, 0.502342636381, 0.0989305408165, 0.351178483059, 0.055901103397}, // bkg error for qcd, rebin2
+    {0.0815074213867, 0.506215593091, 0.0929108168233, 0.437850024213, 0.0618909937692}, // bkg error for CT10_nom_qcd
+    {0.0860113813096, 0.500431332739, 0.110765667144, 0.447219642445, 0.0626467566922}, // bkg error for CT10_pdfup_qcd
+    {0.0779548144815, 0.511557879358, 0.0827799442684, 0.441300030822, 0.0609911993437}, // bkg error for CT10_pdfdown_qcd
+  };
+
+  float fiterrors_mu_extLumi[3][5] = {
+    {0.139728638053, 0.587758962716, 0.089614488774, 0.187493775092, 0}, // bkg error for CT10_nom_qcd
+    {0.146261274645, 0.584641476542, 0.0976914685997, 0.171916043978, 0}, // bkg error for CT10_pdfup_qcd
+    {0.13447618083, 0.593129000686, 0.0845506908215, 0.204370908917, 0}, // bkg error for CT10_pdfdown_qcd
+  };
+
+  float fiterrors_el_extLumi[3][5] = {
+    {0.107666308332, 0.495241251931, 0.0917709728859, 0, 0.183676945237}, // bkg error for CT10_nom_qcd
+    {0.116569466624, 0.47313994249, 0.104417472918, 0, 0.194897773826}, // bkg error for CT10_pdfup_qcd
+    {0.102142467713, 0.509762513298, 0.085377199899, 0, 0.174015328632}, // bkg error for CT10_pdfdown_qcd
+  };
+
+  float fiterrors_comb_extLumi[3][5] = {
+    {0.0764013719724, 0.505962238523, 0.0842880123265, 0.439347847736, 0.0619944601817}, // bkg error for CT10_nom_qcd
+    {0.0813135217986, 0.500461926923, 0.103051404796, 0.446697276192, 0.0626115646919}, // bkg error for CT10_pdfup_qcd
+    {0.0726738136535, 0.51324228625, 0.0738902940207, 0.44270007131, 0.0611051275899}, // bkg error for CT10_pdfdown_qcd
+  };
+
+  float fiterrors_mu_extLumi_extBtag[3][5] = {
+    {0.13623799557, 0.588013259541, 0.0896067390956, 0.190280435213, 0}, // bkg error for CT10_nom_qcd
+    {0.141047195591, 0.584563234787, 0.0970293967236, 0.172037540546, 0}, // bkg error for CT10_pdfup_qcd
+    {0.13201839681, 0.592757087347, 0.0846483545142, 0.209374249831, 0}, // bkg error for CT10_pdfdown_qcd
+  };
+
+  float fiterrors_el_extLumi_extBtag[3][5] = {
+    {0.104168517361, 0.488891930375, 0.088292381878, 0, 0.185694929179}, // bkg error for CT10_nom_qcd
+    {0.111230824282, 0.462081793096, 0.0975843837009, 0, 0.198637175933}, // bkg error for CT10_pdfup_qcd
+    {0.0995412715042, 0.506136119673, 0.0833208500129, 0, 0.174993040682}, // bkg error for CT10_pdfdown_qcd
+  };
+
+  float fiterrors_comb_extLumi_extBtag[3][5] = {
+    {0.0739013415172, 0.465465869686, 0.078490070614, 0.432458085567, 0.0621258763276}, // bkg error for CT10_nom_qcd
+    {0.0796353685898, 0.428566892826, 0.090950911035, 0.435103553405, 0.0629574417432}, // bkg error for CT10_pdfup_qcd
+    {0.0701039019112, 0.488312009939, 0.0708568064238, 0.43711151761, 0.0609922366663}, // bkg error for CT10_pdfdown_qcd
+  };
+
+  float fiterrors_mu_extToptag[3][5] = {
+    {0.0561587568931, 0.589002459596, 0.100211854509, 0.223323968988, 0}, // bkg error for CT10_nom_qcd
+    {0.0563348122246, 0.584710188569, 0.107073480288, 0.185129543141, 0}, // bkg error for CT10_pdfup_qcd
+    {0.0560203026138, 0.596297304913, 0.0953582983249, 0.267864192571, 0}, // bkg error for CT10_pdfdown_qcd
+  };
+
+  float fiterrors_el_extToptag[3][5] = {
+    {0.0615881259521, 0.470818523792, 0.0700865322464, 0, 0.186913150011}, // bkg error for CT10_nom_qcd
+    {0.0619700611052, 0.434503189393, 0.0714167296073, 0, 0.210923257856}, // bkg error for CT10_pdfup_qcd
+    {0.0613754790889, 0.495154654305, 0.0700257546827, 0, 0.168050590124}, // bkg error for CT10_pdfdown_qcd
+  };
+
+  float fiterrors_comb_extToptag[3][5] = {
+    {0.0470788662116, 0.330338932452, 0.0763185781885, 0.408165436954, 0.0636613443404}, // bkg error for CT10_nom_qcd
+    {0.0477913605204, 0.2538074885, 0.0818792661251, 0.404294975895, 0.0653129387711}, // bkg error for CT10_pdfup_qcd
+    {0.0465130684786, 0.403477108666, 0.0727925792178, 0.421859706648, 0.0620597380683}, // bkg error for CT10_pdfdown_qcd
   };
 
   float fiterrors_mu_2ptbin[3][5] = {
@@ -824,6 +887,43 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.164614561913, 0.406930486902, 0.170859948591, 0.286234154767, 0.066887070246}, // bkg error for qcd, rebin2, High pt(top) bin
     {0.0769810174487, 0.489022966152, 0.0828255065459, 0.466077480054, 0.0660274098057}, // bkg error for qcd, rebin2, 2 pt(top) bins
   };
+
+  float fiterrors_mu_extLumi_2ptbin[3][5] = {
+    {0.147952305427, 0.594512890892, 0.0856468795133, 0.220735205322, 0}, // bkg error for CT10_nom_qcd, low pt(top) bin
+    {0.22134575507, 0.480240589179, 0.18691685987, 0.307038922867, 0}, // bkg error for CT10_nom_qcd, high pt(top) bin
+    {0.129432881177, 0.50701441916, 0.0862003377431, 0.300895802024, 0}, // bkg error for CT10_nom_qcd, 2 pt(top) bins
+  };
+
+  float fiterrors_el_extLumi_2ptbin[3][5] = {
+    {0.0988884514937, 0.553449168392, 0.136388594557, 0, 0.159214598655}, // bkg error for CT10_nom_qcd, low pt(top) bin
+    {0.241427123048, 0.488973633435, 0.14846282326, 0, 0.122360873293}, // bkg error for CT10_nom_qcd, high pt(top) bin
+    {0.0948889857829, 0.492554929569, 0.0920541823484, 0, 0.134336568436}, // bkg error for CT10_nom_qcd, 2 pt(top) bins
+  };
+
+  float fiterrors_comb_extLumi_2ptbin[3][5] = {
+    {0.0735805880826, 0.570170360188, 0.0878598365075, 0.507120267218, 0.0716646600481}, // bkg error for CT10_nom_qcd, low pt(top) bin
+    {0.154139329982, 0.413985948024, 0.168299722943, 0.288599063144, 0.0662182460453}, // bkg error for CT10_nom_qcd, high pt(top) bin
+    {0.0689552074032, 0.501804872263, 0.0727686211891, 0.470325356958, 0.0659156140907}, // bkg error for CT10_nom_qcd, 2 pt(top) bins
+  };
+
+  float fiterrors_mu_extLumi_extBtag_2ptbin[3][5] = {
+    {0.144185754146, 0.595267795985, 0.0851145280679, 0.220851193806, 0}, // bkg error for CT10_nom_qcd, low pt(top) bin
+    {0.220346227202, 0.48123544188, 0.187707517336, 0.309229966385, 0}, // bkg error for CT10_nom_qcd, high pt(top) bin
+    {0.12390394931, 0.506892618336, 0.0853467823414, 0.295793355281, 0}, // bkg error for CT10_nom_qcd, 2 pt(top) bins
+  };
+
+  float fiterrors_el_extLumi_extBtag_2ptbin[3][5] = {
+    {0.0975309532275, 0.546273272155, 0.130447887546, 0, 0.161579223668}, // bkg error for CT10_nom_qcd, low pt(top) bin
+    {0.240678135538, 0.490308567282, 0.144964487797, 0, 0.122943005108}, // bkg error for CT10_nom_qcd, high pt(top) bin
+    {0.0926825163495, 0.474877499166, 0.0858181578576, 0, 0.136737870038}, // bkg error for CT10_nom_qcd, 2 pt(top) bins
+  };
+
+  float fiterrors_comb_extLumi_extBtag_2ptbin[3][5] = {
+    {0.0723820309327, 0.541472047842, 0.0812303488497, 0.497657367747, 0.071454738068}, // bkg error for CT10_nom_qcd, low pt(top) bin
+    {0.15197539398, 0.413081154581, 0.166243158779, 0.287880837398, 0.0662488489516}, // bkg error for CT10_nom_qcd, high pt(top) bin
+    {0.0672259798079, 0.457061060254, 0.0674990374532, 0.46003974723, 0.0660621052319}, // bkg error for CT10_nom_qcd, 2 pt(top) bins
+  };
+
 
 
   TString pdfs[16] = {"CT10_nom","CT10_pdfup","CT10_pdfdown",
@@ -849,11 +949,42 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   float fiterr_qcd = 0;
 
   if (doElectron && !combined) {
+    if (ptbin == "" && extBtag && extLumi) {
+      fiterr_tt = fiterrors_el_extLumi_extBtag[thispdf - 13][0];
+      fiterr_singletop = fiterrors_el_extLumi_extBtag[thispdf - 13][1];
+      fiterr_wjets = fiterrors_el_extLumi_extBtag[thispdf - 13][2];
+      fiterr_qcd = fiterrors_el_extLumi_extBtag[thispdf - 13][4];
+    }
+    else if (ptbin == "" && extLumi) {
+      fiterr_tt = fiterrors_el_extLumi[thispdf - 13][0];
+      fiterr_singletop = fiterrors_el_extLumi[thispdf - 13][1];
+      fiterr_wjets = fiterrors_el_extLumi[thispdf - 13][2];
+      fiterr_qcd = fiterrors_el_extLumi[thispdf - 13][4];
+    }
+    else if (ptbin == "" && extToptag) {
+      fiterr_tt = fiterrors_el_extToptag[thispdf - 13][0];
+      fiterr_singletop = fiterrors_el_extToptag[thispdf - 13][1];
+      fiterr_wjets = fiterrors_el_extToptag[thispdf - 13][2];
+      fiterr_qcd = fiterrors_el_extToptag[thispdf - 13][4];
+    }
     if (ptbin == "") {
       fiterr_tt = fiterrors_el[thispdf][0];
       fiterr_singletop = fiterrors_el[thispdf][1];
       fiterr_wjets = fiterrors_el[thispdf][2];
       fiterr_qcd = fiterrors_el[thispdf][4];
+    }
+
+    else if (ptbin == "Low" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_el_extLumi_extBtag_2ptbin[0][0];
+      fiterr_singletop = fiterrors_el_extLumi_extBtag_2ptbin[0][1];
+      fiterr_wjets = fiterrors_el_extLumi_extBtag_2ptbin[0][2];
+      fiterr_qcd = fiterrors_el_extLumi_extBtag_2ptbin[0][4];
+    }
+    else if (ptbin == "Low" && extLumi) {
+      fiterr_tt = fiterrors_el_extLumi_2ptbin[0][0];
+      fiterr_singletop = fiterrors_el_extLumi_2ptbin[0][1];
+      fiterr_wjets = fiterrors_el_extLumi_2ptbin[0][2];
+      fiterr_qcd = fiterrors_el_extLumi_2ptbin[0][4];
     }
     else if (ptbin == "Low") {
       fiterr_tt = fiterrors_el_2ptbin[0][0];
@@ -861,11 +992,37 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fiterr_wjets = fiterrors_el_2ptbin[0][2];
       fiterr_qcd = fiterrors_el_2ptbin[0][4];
     }
+
+    else if (ptbin == "High" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_el_extLumi_extBtag_2ptbin[1][0];
+      fiterr_singletop = fiterrors_el_extLumi_extBtag_2ptbin[1][1];
+      fiterr_wjets = fiterrors_el_extLumi_extBtag_2ptbin[1][2];
+      fiterr_qcd = fiterrors_el_extLumi_extBtag_2ptbin[1][4];
+    }
+    else if (ptbin == "High" && extLumi) {
+      fiterr_tt = fiterrors_el_extLumi_2ptbin[1][0];
+      fiterr_singletop = fiterrors_el_extLumi_2ptbin[1][1];
+      fiterr_wjets = fiterrors_el_extLumi_2ptbin[1][2];
+      fiterr_qcd = fiterrors_el_extLumi_2ptbin[1][4];
+    }
     else if (ptbin == "High") {
       fiterr_tt = fiterrors_el_2ptbin[1][0];
       fiterr_singletop = fiterrors_el_2ptbin[1][1];
       fiterr_wjets = fiterrors_el_2ptbin[1][2];
       fiterr_qcd = fiterrors_el_2ptbin[1][4];
+    }
+
+    else if (ptbin == "2" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_el_extLumi_extBtag_2ptbin[2][0];
+      fiterr_singletop = fiterrors_el_extLumi_extBtag_2ptbin[2][1];
+      fiterr_wjets = fiterrors_el_extLumi_extBtag_2ptbin[2][2];
+      fiterr_qcd = fiterrors_el_extLumi_extBtag_2ptbin[2][4];
+    }
+    else if (ptbin == "2" && extLumi) {
+      fiterr_tt = fiterrors_el_extLumi_2ptbin[2][0];
+      fiterr_singletop = fiterrors_el_extLumi_2ptbin[2][1];
+      fiterr_wjets = fiterrors_el_extLumi_2ptbin[2][2];
+      fiterr_qcd = fiterrors_el_extLumi_2ptbin[2][4];
     }
     else if (ptbin == "2") {
       fiterr_tt = fiterrors_el_2ptbin[2][0];
@@ -874,12 +1031,44 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fiterr_qcd = fiterrors_el_2ptbin[2][4];
     }
   }
+
   else if (doElectron) {
+    if (ptbin == "" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_comb_extLumi_extBtag[thispdf - 13][0];
+      fiterr_singletop = fiterrors_comb_extLumi_extBtag[thispdf - 13][1];
+      fiterr_wjets = fiterrors_comb_extLumi_extBtag[thispdf - 13][2];
+      fiterr_qcd = fiterrors_comb_extLumi_extBtag[thispdf - 13][4];
+    }
+    if (ptbin == "" && extLumi) {
+      fiterr_tt = fiterrors_comb_extLumi[thispdf - 13][0];
+      fiterr_singletop = fiterrors_comb_extLumi[thispdf - 13][1];
+      fiterr_wjets = fiterrors_comb_extLumi[thispdf - 13][2];
+      fiterr_qcd = fiterrors_comb_extLumi[thispdf - 13][4];
+    }
+    if (ptbin == "" && extToptag) {
+      fiterr_tt = fiterrors_comb_extToptag[thispdf - 13][0];
+      fiterr_singletop = fiterrors_comb_extToptag[thispdf - 13][1];
+      fiterr_wjets = fiterrors_comb_extToptag[thispdf - 13][2];
+      fiterr_qcd = fiterrors_comb_extToptag[thispdf - 13][4];
+    }
     if (ptbin == "") {
       fiterr_tt = fiterrors_comb[thispdf][0];
       fiterr_singletop = fiterrors_comb[thispdf][1];
       fiterr_wjets = fiterrors_comb[thispdf][2];
       fiterr_qcd = fiterrors_comb[thispdf][4];
+    }
+
+    else if (ptbin == "Low" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_comb_extLumi_extBtag_2ptbin[0][0];
+      fiterr_singletop = fiterrors_comb_extLumi_extBtag_2ptbin[0][1];
+      fiterr_wjets = fiterrors_comb_extLumi_extBtag_2ptbin[0][2];
+      fiterr_qcd = fiterrors_comb_extLumi_extBtag_2ptbin[0][4];
+    }
+    else if (ptbin == "Low" && extLumi) {
+      fiterr_tt = fiterrors_comb_extLumi_2ptbin[0][0];
+      fiterr_singletop = fiterrors_comb_extLumi_2ptbin[0][1];
+      fiterr_wjets = fiterrors_comb_extLumi_2ptbin[0][2];
+      fiterr_qcd = fiterrors_comb_extLumi_2ptbin[0][4];
     }
     else if (ptbin == "Low") {
       fiterr_tt = fiterrors_comb_2ptbin[0][0];
@@ -887,11 +1076,37 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fiterr_wjets = fiterrors_comb_2ptbin[0][2];
       fiterr_qcd = fiterrors_comb_2ptbin[0][4];
     }
+
+    else if (ptbin == "High" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_comb_extLumi_extBtag_2ptbin[1][0];
+      fiterr_singletop = fiterrors_comb_extLumi_extBtag_2ptbin[1][1];
+      fiterr_wjets = fiterrors_comb_extLumi_extBtag_2ptbin[1][2];
+      fiterr_qcd = fiterrors_comb_extLumi_extBtag_2ptbin[1][4];
+    }
+    else if (ptbin == "High" && extLumi) {
+      fiterr_tt = fiterrors_comb_extLumi_2ptbin[1][0];
+      fiterr_singletop = fiterrors_comb_extLumi_2ptbin[1][1];
+      fiterr_wjets = fiterrors_comb_extLumi_2ptbin[1][2];
+      fiterr_qcd = fiterrors_comb_extLumi_2ptbin[1][4];
+    }
     else if (ptbin == "High") {
       fiterr_tt = fiterrors_comb_2ptbin[1][0];
       fiterr_singletop = fiterrors_comb_2ptbin[1][1];
       fiterr_wjets = fiterrors_comb_2ptbin[1][2];
       fiterr_qcd = fiterrors_comb_2ptbin[1][4];
+    }
+
+    else if (ptbin == "2" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_comb_extLumi_extBtag_2ptbin[2][0];
+      fiterr_singletop = fiterrors_comb_extLumi_extBtag_2ptbin[2][1];
+      fiterr_wjets = fiterrors_comb_extLumi_extBtag_2ptbin[2][2];
+      fiterr_qcd = fiterrors_comb_extLumi_extBtag_2ptbin[2][4];
+    }
+    else if (ptbin == "2" && extLumi) {
+      fiterr_tt = fiterrors_comb_extLumi_2ptbin[2][0];
+      fiterr_singletop = fiterrors_comb_extLumi_2ptbin[2][1];
+      fiterr_wjets = fiterrors_comb_extLumi_2ptbin[2][2];
+      fiterr_qcd = fiterrors_comb_extLumi_2ptbin[2][4];
     }
     else if (ptbin == "2") {
       fiterr_tt = fiterrors_comb_2ptbin[2][0];
@@ -900,12 +1115,44 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fiterr_qcd = fiterrors_comb_2ptbin[2][4];
     }
   }
+
   else if (!doElectron && !combined) {
+    if (ptbin == "" && extLumi && extBtag){
+      fiterr_tt = fiterrors_mu_extLumi_extBtag[thispdf - 13][0];
+      fiterr_singletop = fiterrors_mu_extLumi_extBtag[thispdf - 13][1];
+      fiterr_wjets = fiterrors_mu_extLumi_extBtag[thispdf - 13][2];
+      fiterr_qcd = fiterrors_mu_extLumi_extBtag[thispdf - 13][3];
+    }
+    if (ptbin == "" && extLumi){
+      fiterr_tt = fiterrors_mu_extLumi[thispdf - 13][0];
+      fiterr_singletop = fiterrors_mu_extLumi[thispdf - 13][1];
+      fiterr_wjets = fiterrors_mu_extLumi[thispdf - 13][2];
+      fiterr_qcd = fiterrors_mu_extLumi[thispdf - 13][3];
+    }
+    if (ptbin == "" && extToptag){
+      fiterr_tt = fiterrors_mu_extToptag[thispdf - 13][0];
+      fiterr_singletop = fiterrors_mu_extToptag[thispdf - 13][1];
+      fiterr_wjets = fiterrors_mu_extToptag[thispdf - 13][2];
+      fiterr_qcd = fiterrors_mu_extToptag[thispdf - 13][3];
+    }
     if (ptbin == ""){
       fiterr_tt = fiterrors_mu[thispdf][0];
       fiterr_singletop = fiterrors_mu[thispdf][1];
       fiterr_wjets = fiterrors_mu[thispdf][2];
       fiterr_qcd = fiterrors_mu[thispdf][3];
+    }
+
+    else if (ptbin == "Low" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_mu_extLumi_extBtag_2ptbin[0][0];
+      fiterr_singletop = fiterrors_mu_extLumi_extBtag_2ptbin[0][1];
+      fiterr_wjets = fiterrors_mu_extLumi_extBtag_2ptbin[0][2];
+      fiterr_qcd = fiterrors_mu_extLumi_extBtag_2ptbin[0][3];
+    }
+    else if (ptbin == "Low" && extLumi) {
+      fiterr_tt = fiterrors_mu_extLumi_2ptbin[0][0];
+      fiterr_singletop = fiterrors_mu_extLumi_2ptbin[0][1];
+      fiterr_wjets = fiterrors_mu_extLumi_2ptbin[0][2];
+      fiterr_qcd = fiterrors_mu_extLumi_2ptbin[0][3];
     }
     else if (ptbin == "Low") {
       fiterr_tt = fiterrors_mu_2ptbin[0][0];
@@ -913,11 +1160,37 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fiterr_wjets = fiterrors_mu_2ptbin[0][2];
       fiterr_qcd = fiterrors_mu_2ptbin[0][3];
     }
+
+    else if (ptbin == "High" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_mu_extLumi_extBtag_2ptbin[1][0];
+      fiterr_singletop = fiterrors_mu_extLumi_extBtag_2ptbin[1][1];
+      fiterr_wjets = fiterrors_mu_extLumi_extBtag_2ptbin[1][2];
+      fiterr_qcd = fiterrors_mu_extLumi_extBtag_2ptbin[1][3];
+    }
+    else if (ptbin == "High" && extLumi) {
+      fiterr_tt = fiterrors_mu_extLumi_2ptbin[1][0];
+      fiterr_singletop = fiterrors_mu_extLumi_2ptbin[1][1];
+      fiterr_wjets = fiterrors_mu_extLumi_2ptbin[1][2];
+      fiterr_qcd = fiterrors_mu_extLumi_2ptbin[1][3];
+    }
     else if (ptbin == "High") {
       fiterr_tt = fiterrors_mu_2ptbin[1][0];
       fiterr_singletop = fiterrors_mu_2ptbin[1][1];
       fiterr_wjets = fiterrors_mu_2ptbin[1][2];
       fiterr_qcd = fiterrors_mu_2ptbin[1][3];
+    }
+
+    else if (ptbin == "2" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_mu_extLumi_extBtag_2ptbin[2][0];
+      fiterr_singletop = fiterrors_mu_extLumi_extBtag_2ptbin[2][1];
+      fiterr_wjets = fiterrors_mu_extLumi_extBtag_2ptbin[2][2];
+      fiterr_qcd = fiterrors_mu_extLumi_extBtag_2ptbin[2][3];
+    }
+    else if (ptbin == "2" && extLumi) {
+      fiterr_tt = fiterrors_mu_extLumi_2ptbin[2][0];
+      fiterr_singletop = fiterrors_mu_extLumi_2ptbin[2][1];
+      fiterr_wjets = fiterrors_mu_extLumi_2ptbin[2][2];
+      fiterr_qcd = fiterrors_mu_extLumi_2ptbin[2][3];
     }
     else if (ptbin == "2") {
       fiterr_tt = fiterrors_mu_2ptbin[2][0];
@@ -927,11 +1200,42 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     }
   }
   else {
+    if (ptbin == "" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_comb_extLumi_extBtag[thispdf - 13][0];
+      fiterr_singletop = fiterrors_comb_extLumi_extBtag[thispdf - 13][1];
+      fiterr_wjets = fiterrors_comb_extLumi_extBtag[thispdf - 13][2];
+      fiterr_qcd = fiterrors_comb_extLumi_extBtag[thispdf - 13][3];
+    }
+    if (ptbin == "" && extLumi) {
+      fiterr_tt = fiterrors_comb_extLumi[thispdf - 13][0];
+      fiterr_singletop = fiterrors_comb_extLumi[thispdf - 13][1];
+      fiterr_wjets = fiterrors_comb_extLumi[thispdf - 13][2];
+      fiterr_qcd = fiterrors_comb_extLumi[thispdf - 13][3];
+    }
+    if (ptbin == "" && extToptag) {
+      fiterr_tt = fiterrors_comb_extToptag[thispdf - 13][0];
+      fiterr_singletop = fiterrors_comb_extToptag[thispdf - 13][1];
+      fiterr_wjets = fiterrors_comb_extToptag[thispdf - 13][2];
+      fiterr_qcd = fiterrors_comb_extToptag[thispdf - 13][3];
+    }
     if (ptbin == "") {
       fiterr_tt = fiterrors_comb[thispdf][0];
       fiterr_singletop = fiterrors_comb[thispdf][1];
       fiterr_wjets = fiterrors_comb[thispdf][2];
       fiterr_qcd = fiterrors_comb[thispdf][3];
+    }
+
+    else if (ptbin == "Low" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_comb_extLumi_extBtag_2ptbin[0][0];
+      fiterr_singletop = fiterrors_comb_extLumi_extBtag_2ptbin[0][1];
+      fiterr_wjets = fiterrors_comb_extLumi_extBtag_2ptbin[0][2];
+      fiterr_qcd = fiterrors_comb_extLumi_extBtag_2ptbin[0][3];
+    }
+    else if (ptbin == "Low" && extLumi) {
+      fiterr_tt = fiterrors_comb_extLumi_2ptbin[0][0];
+      fiterr_singletop = fiterrors_comb_extLumi_2ptbin[0][1];
+      fiterr_wjets = fiterrors_comb_extLumi_2ptbin[0][2];
+      fiterr_qcd = fiterrors_comb_extLumi_2ptbin[0][3];
     }
     else if (ptbin == "Low") {
       fiterr_tt = fiterrors_comb_2ptbin[0][0];
@@ -939,11 +1243,37 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fiterr_wjets = fiterrors_comb_2ptbin[0][2];
       fiterr_qcd = fiterrors_comb_2ptbin[0][3];
     }
+
+    else if (ptbin == "High" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_comb_extLumi_extBtag_2ptbin[1][0];
+      fiterr_singletop = fiterrors_comb_extLumi_extBtag_2ptbin[1][1];
+      fiterr_wjets = fiterrors_comb_extLumi_extBtag_2ptbin[1][2];
+      fiterr_qcd = fiterrors_comb_extLumi_extBtag_2ptbin[1][3];
+    }
+    else if (ptbin == "High" && extLumi) {
+      fiterr_tt = fiterrors_comb_extLumi_2ptbin[1][0];
+      fiterr_singletop = fiterrors_comb_extLumi_2ptbin[1][1];
+      fiterr_wjets = fiterrors_comb_extLumi_2ptbin[1][2];
+      fiterr_qcd = fiterrors_comb_extLumi_2ptbin[1][3];
+    }
     else if (ptbin == "High") {
       fiterr_tt = fiterrors_comb_2ptbin[1][0];
       fiterr_singletop = fiterrors_comb_2ptbin[1][1];
       fiterr_wjets = fiterrors_comb_2ptbin[1][2];
       fiterr_qcd = fiterrors_comb_2ptbin[1][3];
+    }
+
+    else if (ptbin == "2" && extLumi && extBtag) {
+      fiterr_tt = fiterrors_comb_extLumi_extBtag_2ptbin[2][0];
+      fiterr_singletop = fiterrors_comb_extLumi_extBtag_2ptbin[2][1];
+      fiterr_wjets = fiterrors_comb_extLumi_extBtag_2ptbin[2][2];
+      fiterr_qcd = fiterrors_comb_extLumi_extBtag_2ptbin[2][3];
+    }
+    else if (ptbin == "2" && extLumi) {
+      fiterr_tt = fiterrors_comb_extLumi_2ptbin[2][0];
+      fiterr_singletop = fiterrors_comb_extLumi_2ptbin[2][1];
+      fiterr_wjets = fiterrors_comb_extLumi_2ptbin[2][2];
+      fiterr_qcd = fiterrors_comb_extLumi_2ptbin[2][3];
     }
     else if (ptbin == "2") {
       fiterr_tt = fiterrors_comb_2ptbin[2][0];

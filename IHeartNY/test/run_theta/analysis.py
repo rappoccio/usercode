@@ -6,6 +6,7 @@ from ROOT import *
 extBtag = False
 extLumi = False
 extJet = False
+extTopTag = False
 
 extName = ""
 if extBtag:
@@ -14,7 +15,8 @@ if extLumi:
     extName += "_nolumi"
 if extJet:
     extName += "_nojet"
-
+if extTopTag:
+    extName += "_notoptag"
 
 ####################################################################################
 # We have to externalize the PDF and Q2 uncertainties.
@@ -33,6 +35,8 @@ def histfilter( hname ) :
     elif extBtag and 'btag' in hname:  ## remove b-tagging nuisance parameter
         return False
     elif extJet and ('jer' in hname or 'jec' in hname):  ## remove JER/JEC nuisance parameter
+        return False
+    elif extTopTag and 'toptag' in hname: ## fix top tagging nuisance parameter
         return False
     else :
         return True
@@ -333,7 +337,10 @@ dirs = [#'CT10_nom',
         #'scaledown'
         #'htlep150qcd'
         #'met50qcd'
-        'qcd'
+    #'qcd',
+    'CT10_nom_qcd',
+    #'CT10_pdfup_qcd',
+    #'CT10_pdfdown_qcd'
     ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
@@ -483,18 +490,30 @@ for idir in dirs :
         if channel=="mu":
             if nptbin == '1':
                 print "if options.pdf == \"" + idir + "\" and options.lepType == \"muon\" : toptag_post = " + str(toptag_post)
+            if nptbin == 'Low':
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"muon\" : toptagLow_post = " + str(toptagLow_post)
+            if nptbin == 'High':
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"muon\" : toptagHigh_post = " + str(toptagHigh_post)
             if nptbin == '2':
                 print "if options.pdf == \"" + idir + "\" and options.lepType == \"muon\" : toptagLow_post = " + str(toptagLow_post)
                 print "if options.pdf == \"" + idir + "\" and options.lepType == \"muon\" : toptagHigh_post = " + str(toptagHigh_post)
         elif channel=="el":
             if nptbin == '1':
                 print "if options.pdf == \"" + idir + "\" and options.lepType == \"ele\" : toptag_post = "+ str(toptag_post)
+            if nptbin == 'Low':
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"ele\" : toptagLow_post = "+ str(toptagLow_post)
+            if nptbin == 'High':
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"ele\" : toptagHigh_post = "+ str(toptagHigh_post)
             if nptbin == '2':
                 print "if options.pdf == \"" + idir + "\" and options.lepType == \"ele\" : toptagLow_post = "+ str(toptagLow_post)
                 print "if options.pdf == \"" + idir + "\" and options.lepType == \"ele\" : toptagHigh_post = "+ str(toptagHigh_post)
         else:
             if nptbin == '1':
                 print "if options.pdf == \"" + idir + "\" and options.lepType == \"comb\" : toptag_post = "+ str(toptag_post)
+            if nptbin == 'Low':
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"comb\" : toptagLow_post = "+ str(toptagLow_post)
+            if nptbin == 'High':
+                print "if options.pdf == \"" + idir + "\" and options.lepType == \"comb\" : toptagHigh_post = "+ str(toptagHigh_post)
             if nptbin == '2':
                 print "if options.pdf == \"" + idir + "\" and options.lepType == \"comb\" : toptagLow_post = "+ str(toptagLow_post)
                 print "if options.pdf == \"" + idir + "\" and options.lepType == \"comb\" : toptagHigh_post = "+ str(toptagHigh_post)
