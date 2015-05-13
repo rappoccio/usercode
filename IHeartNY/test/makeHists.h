@@ -26,6 +26,20 @@ bool do_htlep150qcd = false;
 bool do_met50qcd = false;
 bool do_qcd = true;
 
+bool extLumi = true;
+bool extBtag = true;
+bool extJet = false;
+bool extToptag = false;
+
+TString extName = "";
+
+void setExtName () {
+  if (extBtag) extName += "_nobtag";
+  if (extLumi) extName += "_nolumi";
+  if (extJet) extName += "_nojet";
+  if (extToptag) extName += "_notoptag";
+}
+
 // -------------------------------------------------------------------------------------
 // helper class for summed, weighted histograms (e.g. single top)
 // -------------------------------------------------------------------------------------
@@ -126,7 +140,9 @@ SummedHist * getWJets( TString name, TString histname, bool doElectron, TString 
   const int nwjets = 4;
 
   TString DIR = "histfiles/";
-  if (use2D && doElectron) DIR += "2Dhist_el/";
+  if (do_qcd && doElectron) DIR += "qcd_el/";
+  else if (do_qcd) DIR += "qcd/";
+  else if (use2D && doElectron) DIR += "2Dhist_el/";
   else if (use2D) DIR += "2Dhist/";
 
   if (do_htlep150qcd) {
@@ -135,9 +151,6 @@ SummedHist * getWJets( TString name, TString histname, bool doElectron, TString 
   }
   else if (do_met50qcd) {
     DIR = "histfiles_met50qcd/";
-  }
-  else if (do_qcd) {
-    DIR = "histfiles_qcd/";
   }
 
   TString muOrEl = "mu";
@@ -190,7 +203,9 @@ SummedHist * getSingleTop( TString name, TString histname, bool doElectron, TStr
   const int nsingletop = 6;
 
   TString DIR = "histfiles/";
-  if (use2D && doElectron) DIR += "2Dhist_el/";
+  if (do_qcd && doElectron) DIR += "qcd_el/";
+  else if (do_qcd) DIR += "qcd/";
+  else if (use2D && doElectron) DIR += "2Dhist_el/";
   else if (use2D) DIR += "2Dhist/";
 
   if (do_htlep150qcd) {
@@ -199,9 +214,6 @@ SummedHist * getSingleTop( TString name, TString histname, bool doElectron, TStr
   }
   else if (do_met50qcd) {
     DIR = "histfiles_met50qcd/";
-  }
-  else if (do_qcd) {
-    DIR = "histfiles_qcd/";
   }
 
   TString muOrEl = "mu";
@@ -259,8 +271,10 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
   const int nq2 = 3;
 
   TString DIR = "histfiles_" + pdfdir + "/";
-  if (use2D && doElectron) DIR += "2Dhists_el/";
-  else if (use2D) DIR += "2Dhists/";
+  if (do_qcd && doElectron) DIR += "qcd_el/";
+  else if (do_qcd) DIR += "qcd/";
+  else if (use2D && doElectron) DIR += "2Dhist_el/";
+  else if (use2D) DIR += "2Dhist/";
 
   if (do_htlep150qcd) {
     DIR = "histfiles_htlep150/";
@@ -268,9 +282,6 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
   }
   else if (do_met50qcd) {
     DIR = "histfiles_met50qcd/";
-  }
-  else if (do_qcd) {
-    DIR = "histfiles_qcd/";
   }
 
   TString muOrEl = "mu";
@@ -342,8 +353,10 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
   const int nq2 = 3;
 
   TString DIR = "histfiles_" + pdfdir + "/";
-  if (use2D && doElectron) DIR += "2Dhists_el/";
-  else if (use2D) DIR += "2Dhists/";
+  if (do_qcd && doElectron) DIR += "qcd_el/";
+  else if (do_qcd) DIR += "qcd/";
+  else if (use2D && doElectron) DIR += "2Dhist_el/";
+  else if (use2D) DIR += "2Dhist/";
 
   if (do_htlep150qcd) {
     DIR = "histfiles_htlep150/";
@@ -351,9 +364,6 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
   }
   else if (do_met50qcd) {
     DIR = "histfiles_met50qcd/";
-  }
-  else if (do_qcd) {
-    DIR = "histfiles_qcd/";
   }
 
   TString muOrEl = "mu";
@@ -445,8 +455,8 @@ SummedHist * getQCD( TString var, bool doElectron, TString ptbin = "" ) {
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root";
   }
   else if (do_qcd) {
-    if (doElectron) filepath = "histfiles_qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root";
-    else filepath = "histfiles_qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root";
+    if (doElectron) filepath = "histfiles/qcd_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root";
+    else filepath = "histfiles/qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root";
   }
 
   TFile* qcdFile = TFile::Open(filepath);
@@ -476,16 +486,16 @@ float getPostPreRatio(bool doElectron, TString ptbin, TString pdfdir, bool combi
   // post-fit file
   TFile* fPOST;
   if (combined) {
-    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb.root");
-    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb_2bin.root");
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_comb.root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_comb_2bin.root");
   }
   else if (doElectron) {
-    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el.root");
-    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el_2bin.root");
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_el.root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_el_2bin.root");
   }
   else {
-    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu.root");
-    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu_2bin.root");
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_mu.root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_mu_2bin.root");
   }
 
   // pre-fit file
@@ -554,7 +564,9 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bo
 
   float qcd_mu_reliso_norm[8] = {0.0, 0.0, 0.0, 0.0,  401.4, 0.0, 28.5,  1.0};
   float qcd_mu_reliso_err[8]  = {0.0, 0.0, 0.0, 0.0,   71.6, 0.0, 21.5, 10.0};
-  float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1450., 0.0, 58., 11.0};
+  //float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1450., 0.0, 58., 11.0};
+  //float qcd_mu_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   82., 0.0, 24., 13.0};
+  float qcd_mu_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 1471., 0.0, 55., 12.0};
   float qcd_mu_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   82., 0.0, 24., 13.0};
 
   // HTlep > 150 GeV
@@ -583,8 +595,11 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bo
     // this means the default scenario for muons
   }
 
-  float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 4107., 0.0, 257., 20.5};
-  float qcd_el_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   71., 0.0,  18.,  6.7};
+  //Old version, using numbers from Feb. 6
+  //float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 4107., 0.0, 257., 20.5};
+  //float qcd_el_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   71., 0.0,  18.,  6.7};
+  float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 4202., 0.0, 256., 27.8};
+  float qcd_el_2Dcut_err[8]   = {0.0, 0.0, 0.0, 0.0,   73., 0.0,  18.,  7.1};
   
   // HTlep > 150 GeV
   //float qcd_el_2Dcut_norm[8]  = {0.0, 0.0, 0.0, 0.0, 0.0, 2981., 194., 16.2};
@@ -613,9 +628,18 @@ std::pair<double, double> getQCDnorm(int cut, bool doElectron, TString ptbin, bo
     qcd_el_2Dcut_err[7] = 1.9;
   }
   else if (do_qcd) {
+    //qcd_el_2Dcut_norm[4] = 448.;
+    //qcd_el_2Dcut_norm[5] = 448.;
+    //qcd_el_2Dcut_norm[6] = 40.3;
+    //qcd_el_2Dcut_norm[7] = 6.2;
+    //qcd_el_2Dcut_err[4] = 23.;
+    //qcd_el_2Dcut_err[5] = 23.;
+    //qcd_el_2Dcut_err[6] = 6.5;
+    //qcd_el_2Dcut_err[7] = 3.0;
+
     qcd_el_2Dcut_norm[4] = 448.;
     qcd_el_2Dcut_norm[5] = 448.;
-    qcd_el_2Dcut_norm[6] = 40.3;
+    qcd_el_2Dcut_norm[6] = 40.0;
     qcd_el_2Dcut_norm[7] = 6.2;
     qcd_el_2Dcut_err[4] = 23.;
     qcd_el_2Dcut_err[5] = 23.;
