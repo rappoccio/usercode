@@ -9,7 +9,7 @@ gStyle.SetPadTopMargin(0.05);
 gStyle.SetPadBottomMargin(0.15);
 
 
-pdfnames = ["CT10_nom", "CT10_pdfup", "CT10_pdfdown"]
+pdfnames = ["CT10_nom_qcd", "CT10_pdfup_qcd", "CT10_pdfdown_qcd"]
 channels = ["mu", "el", "comb"]
 
 ### THESE BELOW ARE FOR EXTERNALIZE LUMINOSITY & B-TAGGING !!! ###
@@ -18,7 +18,7 @@ for pdfname in pdfnames :
     for ich in channels :
 
         # ---------------------------------- muon only fit ----------------------------------
-        if pdfname=="CT10_nom" and ich=="mu": 
+        if pdfname=="CT10_nom_qcd" and ich=="mu": 
             cov = [[  7.80352257e-03,  -7.64687565e-03,   4.52530308e-03,
          -2.11672895e-02,  -5.88042230e-04,  -2.45134891e-03,
          -3.53282979e-02],
@@ -41,7 +41,7 @@ for pdfname in pdfnames :
           9.86551067e-02,  -1.06613928e-02,   1.37541366e-02,
           1.85306176e-01]]
 
-        if pdfname=="CT10_pdfup" and ich=="mu": 
+        if pdfname=="CT10_pdfup_qcd" and ich=="mu": 
             cov = [[  5.53234173e-03,  -6.54592312e-03,   3.36006405e-03,
          -1.63397768e-02,  -3.64606402e-05,  -3.16699119e-03,
          -3.05063617e-02],
@@ -64,7 +64,7 @@ for pdfname in pdfnames :
           9.22106570e-02,  -1.27334111e-02,   2.05761451e-02,
           1.92744680e-01]]
 
-        if pdfname=="CT10_pdfdown" and ich=="mu": 
+        if pdfname=="CT10_pdfdown_qcd" and ich=="mu": 
             cov = [[ 0.01049687, -0.00916292,  0.00536292, -0.02645036, -0.00101409,
         -0.00177476, -0.03995128],
        [-0.00916292,  0.43792172, -0.06252493,  0.02294021, -0.00846001,
@@ -81,7 +81,7 @@ for pdfname in pdfnames :
          0.00911181,  0.17819396]]
             
         # ---------------------------------- electron only fit ----------------------------------
-        if pdfname=="CT10_nom" and ich=="el": 
+        if pdfname=="CT10_nom_qcd" and ich=="el": 
             cov = [[  7.24661044e-03,  -7.62172841e-03,   6.46097297e-04,
           8.88850619e-03,  -1.96068661e-02,  -9.70377331e-03,
          -2.10310504e-02],
@@ -104,7 +104,7 @@ for pdfname in pdfnames :
          -4.34088354e-02,   4.29041950e-02,   3.93772522e-02,
           8.43702337e-02]]
 
-        if pdfname=="CT10_pdfup" and ich=="el": 
+        if pdfname=="CT10_pdfup_qcd" and ich=="el": 
             cov = [[  5.66337058e-03,  -6.28457971e-03,   3.16142146e-03,
           8.55452774e-03,  -1.82485163e-02,  -1.01148881e-02,
          -1.98141516e-02],
@@ -127,7 +127,7 @@ for pdfname in pdfnames :
          -4.79115552e-02,   4.83737061e-02,   4.69832783e-02,
           9.16294720e-02]]
 
-        if pdfname=="CT10_pdfdown" and ich=="el": 
+        if pdfname=="CT10_pdfdown_qcd" and ich=="el": 
             cov = [[ 0.00929047, -0.00928307, -0.0016466 ,  0.00937497, -0.02140631,
         -0.00975695, -0.02275962],
        [-0.00928307,  0.25388022,  0.07097258,  0.03947211,  0.03797439,
@@ -144,7 +144,7 @@ for pdfname in pdfnames :
          0.03493075,  0.08000869]]
 
         # ---------------------------------- combined fit ----------------------------------
-        if pdfname=="CT10_nom" and ich=="comb": 
+        if pdfname=="CT10_nom_qcd" and ich=="comb": 
             cov = [[  4.21709327e-03,  -8.12854362e-03,   9.57135774e-04,
          -1.96369990e-04,  -5.25913727e-03,  -2.73696838e-02,
          -3.59297387e-03,  -1.11414324e-02],
@@ -170,7 +170,7 @@ for pdfname in pdfnames :
          -1.58546388e-03,   9.26102463e-03,   6.93732035e-02,
           1.41961739e-02,   3.92265305e-02]]
             
-        if pdfname=="CT10_pdfup" and ich=="comb": 
+        if pdfname=="CT10_pdfup_qcd" and ich=="comb": 
             cov = [[  3.52197508e-03,  -6.61365645e-03,   6.36907160e-04,
          -8.73836118e-05,  -4.47250171e-03,  -2.78558481e-02,
          -4.42362636e-03,  -1.07583616e-02],
@@ -196,7 +196,7 @@ for pdfname in pdfnames :
          -1.85598364e-03,   8.71535693e-03,   8.20498558e-02,
           1.84442834e-02,   4.18692654e-02]]
             
-        if pdfname=="CT10_pdfdown" and ich=="comb": 
+        if pdfname=="CT10_pdfdown_qcd" and ich=="comb": 
             cov = [[  5.12011559e-03,  -9.43792036e-03,   1.11646802e-03,
          -2.60890585e-04,  -6.17684781e-03,  -2.76233469e-02,
          -3.20390133e-03,  -1.18287073e-02],
