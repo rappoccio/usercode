@@ -147,7 +147,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     qcd->hist() ->Add(qcd2->hist(), -1);
     h_data->Add(h_data2, -1);
   }
-  
+
   // -------------------------------------------------------------------------------------
   // get the TH1F versions
 
@@ -834,22 +834,46 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.0726738136535, 0.51324228625, 0.0738902940207, 0.44270007131, 0.0611051275899}, // bkg error for CT10_pdfdown_qcd
   };
 
-  float fiterrors_mu_extLumi_extBtag[3][5] = {
+  float fiterrors_mu_extLumi_extBtag[11][5] = {
     {0.13623799557, 0.588013259541, 0.0896067390956, 0.190280435213, 0}, // bkg error for CT10_nom_qcd
     {0.141047195591, 0.584563234787, 0.0970293967236, 0.172037540546, 0}, // bkg error for CT10_pdfup_qcd
     {0.13201839681, 0.592757087347, 0.0846483545142, 0.209374249831, 0}, // bkg error for CT10_pdfdown_qcd
+    {0.136654966326, 0.589173345724, 0.0880843814416, 0.188347196546, 0}, // bkg error for MSTW_nom_qcd
+    {0.138961814824, 0.58798341699, 0.0881657981411, 0.174282317016, 0}, // bkg error for MSTW_pdfup_qcd
+    {0.134224586658, 0.59296525239, 0.0831164994984, 0.195891932211, 0}, // bkg error for MSTW_pdfdown_qcd
+    {0.130503514562, 0.595436400976, 0.0870571804119, 0.157450123033, 0}, // bkg error for NNPDF_nom_qcd
+    {0.135198342114, 0.588280316998, 0.0919980761697, 0.152869682499, 0}, // bkg error for NNPDF_pdfup_qcd
+    {0.124032832097, 0.574155316422, 0.083228620927, 0.156804230287, 0}, // bkg error for NNPDF_pdfdown_qcd
+    {0.136621242877, 0.585878298604, 0.0813713702842, 0.228854103339, 0}, // bkg error for scaleup_qcd
+    {0.132321463273, 0.58477773733, 0.102224845937, 0.156264820702, 0}, // bkg error for scaledown_qcd
   };
 
-  float fiterrors_el_extLumi_extBtag[3][5] = {
+  float fiterrors_el_extLumi_extBtag[11][5] = {
     {0.104168517361, 0.488891930375, 0.088292381878, 0, 0.185694929179}, // bkg error for CT10_nom_qcd
     {0.111230824282, 0.462081793096, 0.0975843837009, 0, 0.198637175933}, // bkg error for CT10_pdfup_qcd
     {0.0995412715042, 0.506136119673, 0.0833208500129, 0, 0.174993040682}, // bkg error for CT10_pdfdown_qcd
+    {0.104896323332, 0.487690699466, 0.0866648199766, 0, 0.189066564151}, // bkg error for MSTW_nom_qcd
+    {0.108943871217, 0.471114685485, 0.0874028863754, 0, 0.196842972481}, // bkg error for MSTW_pdfup_qcd
+    {0.10236371942, 0.50114712153, 0.0812027187363, 0, 0.188747056115}, // bkg error for MSTW_pdfdown_qcd
+    {0.102410543364, 0.496088356318, 0.083502864763, 0, 0.183884335303}, // bkg error for NNPDF_nom_qcd
+    {0.108646998903, 0.467279359104, 0.0925967028263, 0, 0.195067048014}, // bkg error for NNPDF_pdfup_qcd
+    {0.0988421728534, 0.510857094608, 0.0822526946667, 0, 0.176028402388}, // bkg error for NNPDF_pdfdown_qcd
+    {0.0979624945502, 0.515321474438, 0.073779724345, 0, 0.167480450102}, // bkg error for scaleup_qcd
+    {0.108398956294, 0.532045553364, 0.0700946366173, 0, 0.160976337304}, // bkg error for scaledown_qcd
   };
 
-  float fiterrors_comb_extLumi_extBtag[3][5] = {
+  float fiterrors_comb_extLumi_extBtag[11][5] = {
     {0.0739013415172, 0.465465869686, 0.078490070614, 0.432458085567, 0.0621258763276}, // bkg error for CT10_nom_qcd
     {0.0796353685898, 0.428566892826, 0.090950911035, 0.435103553405, 0.0629574417432}, // bkg error for CT10_pdfup_qcd
     {0.0701039019112, 0.488312009939, 0.0708568064238, 0.43711151761, 0.0609922366663}, // bkg error for CT10_pdfdown_qcd
+    {0.0745127436608, 0.460054651877, 0.0764168758694, 0.435410180448, 0.0618880632933}, // bkg error for MSTW_nom_qcd
+    {0.0782341493623, 0.432058563547, 0.0779329246619, 0.436988306562, 0.0620284244625}, // bkg error for MSTW_pdfup_qcd
+    {0.072211010775, 0.473627797319, 0.0674083582713, 0.447188106768, 0.0617511371678}, // bkg error for MSTW_pdfdown_qcd
+    {0.0738939001901, 0.454166222516, 0.0746672442105, 0.391636328584, 0.0623970784146}, // bkg error for NNPDF_nom_qcd
+    {0.0799710972846, 0.407393972095, 0.0851276557633, 0.41958715279, 0.0621094398969}, // bkg error for NNPDF_pdfup_qcd
+    {0.0718589728601, 0.43754562125, 0.0685572372873, 0.390909528978, 0.0636112129686}, // bkg error for NNPDF_pdfdown_qcd
+    {0.072912219575, 0.452157721558, 0.0662276523962, 0.432030158382, 0.0534507144485}, // bkg error for scaleup_qcd
+    {0.07805843213, 0.417980831055, 0.0681304415129, 0.467189896857, 0.0503790440233}, // bkg error for scaledown_qcd
   };
 
   float fiterrors_mu_extToptag[3][5] = {
@@ -924,15 +948,18 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.0672259798079, 0.457061060254, 0.0674990374532, 0.46003974723, 0.0660621052319}, // bkg error for CT10_nom_qcd, 2 pt(top) bins
   };
 
+  cout << "PDF = " << mydir << endl;
 
-
-  TString pdfs[16] = {"CT10_nom","CT10_pdfup","CT10_pdfdown",
+  TString pdfs[24] = {"CT10_nom","CT10_pdfup","CT10_pdfdown",
 		      "MSTW_nom","MSTW_pdfup","MSTW_pdfdown",
 		      "NNPDF_nom","NNPDF_pdfup","NNPDF_pdfdown",
 		      "scaleup","scaledown","htlep150qcd","met50qcd",
-		      "CT10_nom_qcd", "CT10_pdfup_qcd", "CT10_pdfdown_qcd"};
+		      "CT10_nom_qcd", "CT10_pdfup_qcd", "CT10_pdfdown_qcd",
+		      "MSTW_nom_qcd","MSTW_pdfup_qcd","MSTW_pdfdown_qcd",
+		      "NNPDF_nom_qcd","NNPDF_pdfup_qcd","NNPDF_pdfdown_qcd",
+		      "scaleup_qcd","scaledown_qcd"};
   int thispdf = -1;
-  for (int ipdf=0; ipdf<16; ipdf++) {
+  for (int ipdf=0; ipdf<24; ipdf++) {
     if (mydir == pdfs[ipdf]) {
       thispdf = ipdf;
       break;
@@ -967,7 +994,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fiterr_wjets = fiterrors_el_extToptag[thispdf - 13][2];
       fiterr_qcd = fiterrors_el_extToptag[thispdf - 13][4];
     }
-    if (ptbin == "") {
+    else if (ptbin == "") {
       fiterr_tt = fiterrors_el[thispdf][0];
       fiterr_singletop = fiterrors_el[thispdf][1];
       fiterr_wjets = fiterrors_el[thispdf][2];
@@ -1039,19 +1066,19 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fiterr_wjets = fiterrors_comb_extLumi_extBtag[thispdf - 13][2];
       fiterr_qcd = fiterrors_comb_extLumi_extBtag[thispdf - 13][4];
     }
-    if (ptbin == "" && extLumi) {
+    else if (ptbin == "" && extLumi) {
       fiterr_tt = fiterrors_comb_extLumi[thispdf - 13][0];
       fiterr_singletop = fiterrors_comb_extLumi[thispdf - 13][1];
       fiterr_wjets = fiterrors_comb_extLumi[thispdf - 13][2];
       fiterr_qcd = fiterrors_comb_extLumi[thispdf - 13][4];
     }
-    if (ptbin == "" && extToptag) {
+    else if (ptbin == "" && extToptag) {
       fiterr_tt = fiterrors_comb_extToptag[thispdf - 13][0];
       fiterr_singletop = fiterrors_comb_extToptag[thispdf - 13][1];
       fiterr_wjets = fiterrors_comb_extToptag[thispdf - 13][2];
       fiterr_qcd = fiterrors_comb_extToptag[thispdf - 13][4];
     }
-    if (ptbin == "") {
+    else if (ptbin == "") {
       fiterr_tt = fiterrors_comb[thispdf][0];
       fiterr_singletop = fiterrors_comb[thispdf][1];
       fiterr_wjets = fiterrors_comb[thispdf][2];
@@ -1123,19 +1150,19 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fiterr_wjets = fiterrors_mu_extLumi_extBtag[thispdf - 13][2];
       fiterr_qcd = fiterrors_mu_extLumi_extBtag[thispdf - 13][3];
     }
-    if (ptbin == "" && extLumi){
+    else if (ptbin == "" && extLumi){
       fiterr_tt = fiterrors_mu_extLumi[thispdf - 13][0];
       fiterr_singletop = fiterrors_mu_extLumi[thispdf - 13][1];
       fiterr_wjets = fiterrors_mu_extLumi[thispdf - 13][2];
       fiterr_qcd = fiterrors_mu_extLumi[thispdf - 13][3];
     }
-    if (ptbin == "" && extToptag){
+    else if (ptbin == "" && extToptag){
       fiterr_tt = fiterrors_mu_extToptag[thispdf - 13][0];
       fiterr_singletop = fiterrors_mu_extToptag[thispdf - 13][1];
       fiterr_wjets = fiterrors_mu_extToptag[thispdf - 13][2];
       fiterr_qcd = fiterrors_mu_extToptag[thispdf - 13][3];
     }
-    if (ptbin == ""){
+    else if (ptbin == ""){
       fiterr_tt = fiterrors_mu[thispdf][0];
       fiterr_singletop = fiterrors_mu[thispdf][1];
       fiterr_wjets = fiterrors_mu[thispdf][2];
@@ -1206,19 +1233,19 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fiterr_wjets = fiterrors_comb_extLumi_extBtag[thispdf - 13][2];
       fiterr_qcd = fiterrors_comb_extLumi_extBtag[thispdf - 13][3];
     }
-    if (ptbin == "" && extLumi) {
+    else if (ptbin == "" && extLumi) {
       fiterr_tt = fiterrors_comb_extLumi[thispdf - 13][0];
       fiterr_singletop = fiterrors_comb_extLumi[thispdf - 13][1];
       fiterr_wjets = fiterrors_comb_extLumi[thispdf - 13][2];
       fiterr_qcd = fiterrors_comb_extLumi[thispdf - 13][3];
     }
-    if (ptbin == "" && extToptag) {
+    else if (ptbin == "" && extToptag) {
       fiterr_tt = fiterrors_comb_extToptag[thispdf - 13][0];
       fiterr_singletop = fiterrors_comb_extToptag[thispdf - 13][1];
       fiterr_wjets = fiterrors_comb_extToptag[thispdf - 13][2];
       fiterr_qcd = fiterrors_comb_extToptag[thispdf - 13][3];
     }
-    if (ptbin == "") {
+    else if (ptbin == "") {
       fiterr_tt = fiterrors_comb[thispdf][0];
       fiterr_singletop = fiterrors_comb[thispdf][1];
       fiterr_wjets = fiterrors_comb[thispdf][2];

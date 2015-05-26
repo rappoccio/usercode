@@ -272,9 +272,9 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
 
   TString DIR = "histfiles_" + pdfdir + "/";
   if (do_qcd && doElectron) DIR += "qcd_el/";
-  else if (do_qcd) DIR += "qcd/";
-  else if (use2D && doElectron) DIR += "2Dhist_el/";
-  else if (use2D) DIR += "2Dhist/";
+  //else if (do_qcd) DIR += "qcd/";
+  else if (use2D && doElectron) DIR += "2Dhists_el/";
+  else if (use2D) DIR += "2Dhists/";
 
   if (do_htlep150qcd) {
     DIR = "histfiles_htlep150/";
@@ -354,9 +354,9 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
 
   TString DIR = "histfiles_" + pdfdir + "/";
   if (do_qcd && doElectron) DIR += "qcd_el/";
-  else if (do_qcd) DIR += "qcd/";
-  else if (use2D && doElectron) DIR += "2Dhist_el/";
-  else if (use2D) DIR += "2Dhist/";
+  //else if (do_qcd) DIR += "qcd/";
+  else if (use2D && doElectron) DIR += "2Dhists_el/";
+  else if (use2D) DIR += "2Dhists/";
 
   if (do_htlep150qcd) {
     DIR = "histfiles_htlep150/";

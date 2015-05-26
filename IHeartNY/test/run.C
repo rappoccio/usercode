@@ -17,17 +17,17 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
 
     cout << "make theta histograms..." << endl;
 
-    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"scaleup");
-    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"scaleup");
-    //makeTheta_single("vtxMass",7,ptbin,doElectron"scaleup");
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"scaleup");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"scaleup");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"scaleup");
 
-    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"scaledown");
-    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"scaledown");
-    //makeTheta_single("vtxMass",7,ptbin,doElectron,"scaledown");
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"scaledown");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"scaledown");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"scaledown");
 
-    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_nom");
-    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_nom");
-    makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_nom");
+    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_nom");
+    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_nom");
+    //makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_nom");
     
     //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_pdfup");
     //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_pdfup");
@@ -37,29 +37,29 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_pdfdown");
     //makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_pdfdown");
 
-    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"MSTW_nom");
-    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"MSTW_nom");
-    //makeTheta_single("vtxMass",7,ptbin,doElectron,"MSTW_nom");
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"MSTW_nom");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"MSTW_nom");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"MSTW_nom");
 
-    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"MSTW_pdfup");
-    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"MSTW_pdfup");
-    //makeTheta_single("vtxMass",7,ptbin,doElectron,"MSTW_pdfup");
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"MSTW_pdfup");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"MSTW_pdfup");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"MSTW_pdfup");
 
-    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"MSTW_pdfdown");
-    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"MSTW_pdfdown");
-    //makeTheta_single("vtxMass",7,ptbin,doElectron,"MSTW_pdfdown");
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"MSTW_pdfdown");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"MSTW_pdfdown");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"MSTW_pdfdown");
 
-    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"NNPDF_nom");
-    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"NNPDF_nom");
-    //makeTheta_single("vtxMass",7,ptbin,doElectron,"NNPDF_nom");
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"NNPDF_nom");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"NNPDF_nom");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"NNPDF_nom");
 
-    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"NNPDF_pdfup");
-    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"NNPDF_pdfup");
-    //makeTheta_single("vtxMass",7,ptbin,doElectron,"NNPDF_pdfup");
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"NNPDF_pdfup");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"NNPDF_pdfup");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"NNPDF_pdfup");
 
-    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"NNPDF_pdfdown");
-    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"NNPDF_pdfdown");
-    //makeTheta_single("vtxMass",7,ptbin,doElectron,"NNPDF_pdfdown");
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"NNPDF_pdfdown");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"NNPDF_pdfdown");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"NNPDF_pdfdown");
 
   } 
 
@@ -170,9 +170,9 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
 
   else if (option=="allpre") {
 
-    makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_nom");
-    makePlots("etaAbsLep",6,7,doElectron,ptbin,"CT10_nom");
-    makePlots("etaAbsLep",4,6,doElectron,ptbin,"CT10_nom");
+    //makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_nom");
+    //makePlots("etaAbsLep",6,7,doElectron,ptbin,"CT10_nom");
+    //makePlots("etaAbsLep",4,6,doElectron,ptbin,"CT10_nom");
 
     /*
     makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_pdfup");
@@ -182,39 +182,39 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_pdfdown");
     makePlots("etaAbsLep",6,7,doElectron,ptbin,"CT10_pdfdown");
     makePlots("etaAbsLep",4,6,doElectron,ptbin,"CT10_pdfdown");
-    
-    makePlots("vtxMass",7,0,doElectron,"MSTW_nom");
-    makePlots("etaAbsLep",6,7,doElectron,"MSTW_nom");
-    makePlots("etaAbsLep",4,6,doElectron,"MSTW_nom");
-
-    makePlots("vtxMass",7,0,doElectron,"MSTW_pdfup");
-    makePlots("etaAbsLep",6,7,doElectron,"MSTW_pdfup");
-    makePlots("etaAbsLep",4,6,doElectron,"MSTW_pdfup");
-
-    makePlots("vtxMass",7,0,doElectron,"MSTW_pdfdown");
-    makePlots("etaAbsLep",6,7,doElectron,"MSTW_pdfdown");
-    makePlots("etaAbsLep",4,6,doElectron,"MSTW_pdfdown");
-
-    makePlots("vtxMass",7,0,doElectron,"NNPDF_nom");
-    makePlots("etaAbsLep",6,7,doElectron,"NNPDF_nom");
-    makePlots("etaAbsLep",4,6,doElectron,"NNPDF_nom");
-
-    makePlots("vtxMass",7,0,doElectron,"NNPDF_pdfup");
-    makePlots("etaAbsLep",6,7,doElectron,"NNPDF_pdfup");
-    makePlots("etaAbsLep",4,6,doElectron,"NNPDF_pdfup");
-
-    makePlots("vtxMass",7,0,doElectron,"NNPDF_pdfdown");
-    makePlots("etaAbsLep",6,7,doElectron,"NNPDF_pdfdown");
-    makePlots("etaAbsLep",4,6,doElectron,"NNPDF_pdfdown");
-
-    makePlots("vtxMass",7,0,doElectron,"scaleup");
-    makePlots("etaAbsLep",6,7,doElectron,"scaleup");
-    makePlots("etaAbsLep",4,6,doElectron,"scaleup");
-
-    makePlots("vtxMass",7,0,doElectron,"scaledown");
-    makePlots("etaAbsLep",6,7,doElectron,"scaledown");
-    makePlots("etaAbsLep",4,6,doElectron,"scaledown");
     */
+
+    makePlots("vtxMass",7,0,doElectron,ptbin,"MSTW_nom");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"MSTW_nom");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"MSTW_nom");
+
+    makePlots("vtxMass",7,0,doElectron,ptbin,"MSTW_pdfup");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"MSTW_pdfup");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"MSTW_pdfup");
+
+    makePlots("vtxMass",7,0,doElectron,ptbin,"MSTW_pdfdown");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"MSTW_pdfdown");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"MSTW_pdfdown");
+
+    makePlots("vtxMass",7,0,doElectron,ptbin,"NNPDF_nom");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"NNPDF_nom");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"NNPDF_nom");
+
+    makePlots("vtxMass",7,0,doElectron,ptbin,"NNPDF_pdfup");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"NNPDF_pdfup");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"NNPDF_pdfup");
+
+    makePlots("vtxMass",7,0,doElectron,ptbin,"NNPDF_pdfdown");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"NNPDF_pdfdown");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"NNPDF_pdfdown");
+
+    makePlots("vtxMass",7,0,doElectron,ptbin,"scaleup");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"scaleup");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"scaleup");
+
+    makePlots("vtxMass",7,0,doElectron,ptbin,"scaledown");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"scaledown");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"scaledown");
 
   }
 
@@ -249,13 +249,13 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
   else if (option=="allpost") {
 
     setExtName();
-
+    
+    /*
     makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine);
     makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine);
     makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine);
     makeTable(doElectron, ptbin, "CT10_nom", combine);
 
-    /*
     makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_pdfup", combine);
     makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_pdfup", combine);
     makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_pdfup", combine);
@@ -265,47 +265,47 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_pdfdown", combine);
     makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_pdfdown", combine);
     makeTable(doElectron, ptbin, "CT10_pdfdown", combine);
-
-    makePosteriorPlots("etaAbsLep4", doElectron, "MSTW_nom", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, "MSTW_nom", combine);
-    makePosteriorPlots("vtxMass7", doElectron, "MSTW_nom", combine);
-    makeTable(doElectron, "MSTW_nom", combine);
-
-    makePosteriorPlots("etaAbsLep4", doElectron, "MSTW_pdfup", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, "MSTW_pdfup", combine);
-    makePosteriorPlots("vtxMass7", doElectron, "MSTW_pdfup", combine);
-    makeTable(doElectron, "MSTW_pdfup", combine);
-
-    makePosteriorPlots("etaAbsLep4", doElectron, "MSTW_pdfdown", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, "MSTW_pdfdown", combine);
-    makePosteriorPlots("vtxMass7", doElectron, "MSTW_pdfdown", combine);
-    makeTable(doElectron, "MSTW_pdfdown", combine);
-
-    makePosteriorPlots("etaAbsLep4", doElectron, "NNPDF_nom", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, "NNPDF_nom", combine);
-    makePosteriorPlots("vtxMass7", doElectron, "NNPDF_nom", combine);
-    makeTable(doElectron, "NNPDF_nom", combine);
-
-    makePosteriorPlots("etaAbsLep4", doElectron, "NNPDF_pdfup", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, "NNPDF_pdfup", combine);
-    makePosteriorPlots("vtxMass7", doElectron, "NNPDF_pdfup", combine);
-    makeTable(doElectron, "NNPDF_pdfup", combine);
-
-    makePosteriorPlots("etaAbsLep4", doElectron, "NNPDF_pdfdown", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, "NNPDF_pdfdown", combine);
-    makePosteriorPlots("vtxMass7", doElectron, "NNPDF_pdfdown", combine);
-    makeTable(doElectron, "NNPDF_pdfdown", combine);
-
-    makePosteriorPlots("etaAbsLep4", doElectron, "scaleup", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, "scaleup", combine);
-    makePosteriorPlots("vtxMass7", doElectron, "scaleup", combine);
-    makeTable(doElectron, "scaleup", combine);
-
-    makePosteriorPlots("etaAbsLep4", doElectron, "scaledown", combine);
-    makePosteriorPlots("etaAbsLep6", doElectron, "scaledown", combine);
-    makePosteriorPlots("vtxMass7", doElectron, "scaledown", combine);
-    makeTable(doElectron, "scaledown", combine);
     */
+
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "MSTW_nom", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "MSTW_nom", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "MSTW_nom", combine);
+    makeTable(doElectron, ptbin, "MSTW_nom", combine);
+
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "MSTW_pdfup", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "MSTW_pdfup", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "MSTW_pdfup", combine);
+    makeTable(doElectron, ptbin, "MSTW_pdfup", combine);
+
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "MSTW_pdfdown", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "MSTW_pdfdown", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "MSTW_pdfdown", combine);
+    makeTable(doElectron, ptbin, "MSTW_pdfdown", combine);
+
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "NNPDF_nom", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "NNPDF_nom", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "NNPDF_nom", combine);
+    makeTable(doElectron, ptbin, "NNPDF_nom", combine);
+
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "NNPDF_pdfup", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "NNPDF_pdfup", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "NNPDF_pdfup", combine);
+    makeTable(doElectron, ptbin, "NNPDF_pdfup", combine);
+
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "NNPDF_pdfdown", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "NNPDF_pdfdown", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "NNPDF_pdfdown", combine);
+    makeTable(doElectron, ptbin, "NNPDF_pdfdown", combine);
+
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "scaleup", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "scaleup", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "scaleup", combine);
+    makeTable(doElectron, ptbin, "scaleup", combine);
+
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "scaledown", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "scaledown", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "scaledown", combine);
+    makeTable(doElectron, ptbin, "scaledown", combine);
 
   }
 

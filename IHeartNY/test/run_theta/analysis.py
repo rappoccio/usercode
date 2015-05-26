@@ -3,8 +3,8 @@ from ROOT import *
 ####################################################################################
 ## which nuisance parameters? 
 
-extBtag = False
-extLumi = False
+extBtag = True
+extLumi = True
 extJet = False
 extTopTag = False
 
@@ -338,16 +338,24 @@ dirs = [#'CT10_nom',
         #'htlep150qcd'
         #'met50qcd'
     #'qcd',
-    'CT10_nom_qcd',
+    #'CT10_nom_qcd',
     #'CT10_pdfup_qcd',
     #'CT10_pdfdown_qcd'
+    'MSTW_nom_qcd', 
+    'MSTW_pdfup_qcd', 
+    'MSTW_pdfdown_qcd',
+    'NNPDF_nom_qcd', 
+    'NNPDF_pdfup_qcd', 
+    'NNPDF_pdfdown_qcd',
+    'scaleup_qcd', 
+    'scaledown_qcd'
     ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
 channel = 'comb'
 
 ## # pt bins
-nptbin = '2'
+nptbin = '1'
 
 ## for output file/plot names
 binname = ""

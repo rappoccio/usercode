@@ -29,7 +29,9 @@ void plotToys(TString channel, TString syst="CT10_nom") {
   
   SetPlotStyle();
 
-  TFile* f = new TFile("run_theta/ThetaPlots/pulldists_mle_"+syst+"_"+channel+".root"); 
+  TString ext = "_nobtag_nolumi";
+
+  TFile* f = new TFile("run_theta/ThetaPlots/pulldists_mle_"+syst+"_"+channel+ext+".root"); 
 
   TH1F* h_pull = (TH1F*) f->Get("pull");
   TH1F* h_dbs  = (TH1F*) f->Get("delta_bs");
@@ -61,8 +63,8 @@ void plotToys(TString channel, TString syst="CT10_nom") {
   sprintf(ctxt,"RMS = %.2f",rms);
   mySmallText(0.22,0.54,1,ctxt);
 
-  c.SaveAs("pull_"+syst+"_"+channel+".png");
-  c.SaveAs("pull_"+syst+"_"+channel+".pdf");
+  c.SaveAs("pull_"+syst+"_"+channel+ext+".png");
+  c.SaveAs("pull_"+syst+"_"+channel+ext+".pdf");
 
 
   h_dbs->SetLineColor(1);
@@ -87,8 +89,8 @@ void plotToys(TString channel, TString syst="CT10_nom") {
   sprintf(ctxt,"Mean = %.2f, RMS = %.2f",mean,rms);
   mySmallText(0.5,0.67,1,ctxt);
 
-  c.SaveAs("delta_beta_signal_"+syst+"_"+channel+".png");
-  c.SaveAs("delta_beta_signal_"+syst+"_"+channel+".pdf");
+  c.SaveAs("delta_beta_signal_"+syst+"_"+channel+ext+".png");
+  c.SaveAs("delta_beta_signal_"+syst+"_"+channel+ext+".pdf");
 
 }
 
