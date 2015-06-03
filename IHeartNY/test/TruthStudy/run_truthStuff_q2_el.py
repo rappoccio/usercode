@@ -23,8 +23,10 @@ outname = [
     '--outname=TT_Mtt-1000toInf_scaledown_'
 ]
 
-oddeven = [ '', '--oddeven=1', '--oddeven=2' ]
-name_oddeven = [ '', '_odd', '_even' ]
+#oddeven = [ '', '--oddeven=1', '--oddeven=2' ]
+#name_oddeven = [ '', '_odd', '_even' ]
+oddeven = [ '' ]
+name_oddeven = [ '' ]
 
 
 def worker(q):

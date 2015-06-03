@@ -17,8 +17,10 @@ outname = [
     '--outname=TT_Mtt-1000toInf_'
 ]
 
-oddeven = [ '', '--oddeven=1', '--oddeven=2' ]
-name_oddeven = [ '', '_odd', '_even' ]
+#oddeven = [ '', '--oddeven=1', '--oddeven=2' ]
+#name_oddeven = [ '', '_odd', '_even' ]
+oddeven = [ '' ]
+name_oddeven = [ '' ]
 
 pdfsysts = [ '--pdfSys=0.0', '--pdfSys=1.0', '--pdfSys=-1.0' ]
 name_pdfsysts = [ "_nom", "_pdfup", "_pdfdown" ]

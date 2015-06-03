@@ -4,6 +4,25 @@ import glob
 import time
 import math
 
+# -------------------------------------------------------------------------------------
+# define selection values
+# -------------------------------------------------------------------------------------
+
+# muons
+MIN_MU_PT  = 45.0
+MAX_MU_ETA = 2.1
+MAX_MU_ISO = 0.12
+MAX_MU_ISO_FOR_CLEANING = 0.20
+
+# electrons
+MIN_EL_PT  = 35.0
+MAX_EL_ETA = 2.5
+MAX_EL_ISO = 0.1
+MAX_EL_ISO_FOR_CLEANING = 0.15
+
+# jets
+MIN_JET_PT  = 30.0
+MAX_JET_ETA = 2.4
 
 # -------------------------------------------------------------------------------------
 # define input options
@@ -61,7 +80,7 @@ ROOT.gROOT.Macro("rootlogon.C")
 ## array needed for response matrix binning
 from array import *
 
-ROOT.gSystem.Load("RooUnfold-1.1.1/libRooUnfold")
+ROOT.gSystem.Load("../RooUnfold-1.1.1/libRooUnfold")
 
 
 # -------------------------------------------------------------------------------------
@@ -118,24 +137,48 @@ print "Creating histograms"
 
 # read input histogram for PU
 if options.pileup=='ttbarQ2up' or options.pileup=='ttbarQ2dn':
-    PileFile = ROOT.TFile("Pileup_plots_scaleupdnnom.root")
+    PileFile = ROOT.TFile("../Pileup_plots_scaleupdnnom.root")
 else:
-    PileFile = ROOT.TFile("Pileup_plots.root")
+    PileFile = ROOT.TFile("../Pileup_plots.root")
 PilePlot = PileFile.Get("pweight" + options.pileup)
 
 f.cd()
 
 ### only relevant for m(ttbar)<700 GeV - histos without mttgen cut applied
-h_ttbar_mass_all_incl   = ROOT.TH1F("ttbar_mass_all_incl",   ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
-h_ttbar_mass_pt400_incl = ROOT.TH1F("ttbar_mass_pt400_incl", ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
-hw_ttbar_mass_all_incl   = ROOT.TH1F("w_ttbar_mass_all_incl",   ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
-hw_ttbar_mass_pt400_incl = ROOT.TH1F("w_ttbar_mass_pt400_incl", ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
+h_ttbar_mass_all_incl     = ROOT.TH1F("ttbar_mass_all_incl",   ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
+h_ttbar_mass_pt400_incl   = ROOT.TH1F("ttbar_mass_pt400_incl", ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
+h_hadtop_mass_all_incl    = ROOT.TH1F("hadtop_mass_all_incl",   ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_hadtop_mass_pt400_incl  = ROOT.TH1F("hadtop_mass_pt400_incl", ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_hadtop_pt_all_incl      = ROOT.TH1F("hadtop_pt_all_incl",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+h_hadtop_pt_pt400_incl    = ROOT.TH1F("hadtop_pt_pt400_incl", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+h_hadtop_eta_all_incl     = ROOT.TH1F("hadtop_eta_all_incl",   ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
+h_hadtop_eta_pt400_incl   = ROOT.TH1F("hadtop_eta_pt400_incl", ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
+hw_ttbar_mass_all_incl    = ROOT.TH1F("w_ttbar_mass_all_incl",   ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
+hw_ttbar_mass_pt400_incl  = ROOT.TH1F("w_ttbar_mass_pt400_incl", ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
+hw_hadtop_mass_all_incl   = ROOT.TH1F("w_hadtop_mass_all_incl",   ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
+hw_hadtop_mass_pt400_incl = ROOT.TH1F("w_hadtop_mass_pt400_incl", ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
+hw_hadtop_pt_all_incl     = ROOT.TH1F("w_hadtop_pt_all_incl",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+hw_hadtop_pt_pt400_incl   = ROOT.TH1F("w_hadtop_pt_pt400_incl", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+hw_hadtop_eta_all_incl     = ROOT.TH1F("w_hadtop_eta_all_incl",   ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
+hw_hadtop_eta_pt400_incl   = ROOT.TH1F("w_hadtop_eta_pt400_incl", ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
 
 ### all semileptonic events
 h_ttbar_mass_all_emutau   = ROOT.TH1F("ttbar_mass_all_emutau",   ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
 h_ttbar_mass_pt400_emutau = ROOT.TH1F("ttbar_mass_pt400_emutau", ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
+h_hadtop_mass_all_emutau    = ROOT.TH1F("hadtop_mass_all_emutau",   ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_hadtop_mass_pt400_emutau  = ROOT.TH1F("hadtop_mass_pt400_emutau", ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_hadtop_pt_all_emutau      = ROOT.TH1F("hadtop_pt_all_emutau",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+h_hadtop_pt_pt400_emutau    = ROOT.TH1F("hadtop_pt_pt400_emutau", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+h_hadtop_eta_all_emutau     = ROOT.TH1F("hadtop_eta_all_emutau",   ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
+h_hadtop_eta_pt400_emutau   = ROOT.TH1F("hadtop_eta_pt400_emutau", ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
 hw_ttbar_mass_all_emutau   = ROOT.TH1F("w_ttbar_mass_all_emutau",   ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
 hw_ttbar_mass_pt400_emutau = ROOT.TH1F("w_ttbar_mass_pt400_emutau", ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
+hw_hadtop_mass_all_emutau   = ROOT.TH1F("w_hadtop_mass_all_emutau",   ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
+hw_hadtop_mass_pt400_emutau = ROOT.TH1F("w_hadtop_mass_pt400_emutau", ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
+hw_hadtop_pt_all_emutau     = ROOT.TH1F("w_hadtop_pt_all_emutau",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+hw_hadtop_pt_pt400_emutau   = ROOT.TH1F("w_hadtop_pt_pt400_emutau", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+hw_hadtop_eta_all_emutau     = ROOT.TH1F("w_hadtop_eta_all_emutau",   ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
+hw_hadtop_eta_pt400_emutau   = ROOT.TH1F("w_hadtop_eta_pt400_emutau", ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
 
 ### semileptonic ttbar --> MUON+jets final state
 h_ttbar_mass_all   = ROOT.TH1F("ttbar_mass_all",   ";Mass(t#bar{t}) [GeV]; Events / 10 GeV", 300, 0, 3000)
@@ -149,16 +192,22 @@ hw_ttbar_pt_pt400   = ROOT.TH1F("w_ttbar_pt_pt400", ";p_{T}(t#bar{t}) [GeV]; Eve
 
 h_hadtop_mass_all   = ROOT.TH1F("hadtop_mass_all",   ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
 h_hadtop_mass_pt400 = ROOT.TH1F("hadtop_mass_pt400", ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_hadtop_mass_pt400_pass = ROOT.TH1F("hadtop_mass_pt400_pass", ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
 h_hadtop_pt_all     = ROOT.TH1F("hadtop_pt_all",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 h_hadtop_pt_pt400   = ROOT.TH1F("hadtop_pt_pt400", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 h_hadtop_pt_pt400_pass = ROOT.TH1F("hadtop_pt_pt400_pass", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
-h_hadtop_pt_pt400_passTight = ROOT.TH1F("hadtop_pt_pt400_passTight", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+h_hadtop_eta_all     = ROOT.TH1F("hadtop_eta_all",   ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
+h_hadtop_eta_pt400   = ROOT.TH1F("hadtop_eta_pt400", ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
+h_hadtop_eta_pt400_pass   = ROOT.TH1F("hadtop_eta_pt400_pass", ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
 hw_hadtop_mass_all   = ROOT.TH1F("w_hadtop_mass_all",   ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
 hw_hadtop_mass_pt400 = ROOT.TH1F("w_hadtop_mass_pt400", ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
+hw_hadtop_mass_pt400_pass = ROOT.TH1F("w_hadtop_mass_pt400_pass", ";Mass(hadronic top) [GeV]; Events / 1 GeV", 300, 0, 300)
 hw_hadtop_pt_all     = ROOT.TH1F("w_hadtop_pt_all",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 hw_hadtop_pt_pt400   = ROOT.TH1F("w_hadtop_pt_pt400", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
 hw_hadtop_pt_pt400_pass = ROOT.TH1F("w_hadtop_pt_pt400_pass", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
-hw_hadtop_pt_pt400_passTight = ROOT.TH1F("w_hadtop_pt_pt400_passTight", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0, 1500)
+hw_hadtop_eta_all     = ROOT.TH1F("w_hadtop_eta_all",   ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
+hw_hadtop_eta_pt400   = ROOT.TH1F("w_hadtop_eta_pt400", ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
+hw_hadtop_eta_pt400_pass   = ROOT.TH1F("w_hadtop_eta_pt400_pass", ";#eta(hadronic top); Events / 0.025", 240, -3, 3)
 
 h_leptop_mass_all   = ROOT.TH1F("leptop_mass_all",   ";Mass(leptonic top) [GeV]; Events / 1 GeV", 300, 0, 300)
 h_leptop_mass_pt400 = ROOT.TH1F("leptop_mass_pt400", ";Mass(leptonic top) [GeV]; Events / 1 GeV", 300, 0, 300)
@@ -178,81 +227,48 @@ hw_lep_eta_pt400 = ROOT.TH1F("w_lep_eta_pt400", ";Muon #eta; Events / 0.025", 24
 hw_lep_pt_all    = ROOT.TH1F("w_lep_pt_all",    ";Muon p_{T} [GeV]; Events / 1 GeV", 300, 0, 300)
 hw_lep_pt_pt400  = ROOT.TH1F("w_lep_pt_pt400",  ";Muon p_{T} [GeV]; Events / 1 GeV", 300, 0, 300)
 
-
 # dummy histogram used only to specify dimensions for reponse matrix
-ptbins       = array('d',[400.0,500.0,600.0,700.0,800.0,1200.0])                               ## default version
-ptbins_full  = array('d',[0.0,100.0,200.0,300.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])  ## including lower/higher pt bins
-ptbins_full2 = array('d',[0.0,200.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])              ## including lower/higher pt bins (alt 2)
-ptbins_full3 = array('d',[0.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])                    ## including lower/higher pt bins (alt 3)
-ptbins_pt400 = array('d',[400.0,500.0,600.0,700.0,800.0,1200.0])                               ## version requiring pt>400 at gen/particle-level
-
-h_bins       = ROOT.TH1F("bins",       ";;", len(ptbins)-1,        ptbins)
-h_bins_full  = ROOT.TH1F("bins_full",  ";;", len(ptbins_full)-1,   ptbins_full)
-h_bins_full2 = ROOT.TH1F("bins_full2", ";;", len(ptbins_full2)-1,  ptbins_full2)
-h_bins_full3 = ROOT.TH1F("bins_full3", ";;", len(ptbins_full3)-1,  ptbins_full3)
-h_bins_pt400 = ROOT.TH1F("bins_pt400", ";;", len(ptbins_pt400)-1,  ptbins_pt400)
+ptbins = array('d',[0.0,200.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])
+h_bins = ROOT.TH1F("bins",       ";;", len(ptbins)-1,       ptbins)
 
 h_ptGenTop          = ROOT.TH1F("ptGenTop",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 h_ptGenTop_noweight = ROOT.TH1F("ptGenTop_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
-h_ptGenTop_full          = ROOT.TH1F("ptGenTop_full",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
-h_ptGenTop_full2         = ROOT.TH1F("ptGenTop_full2",         ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
-h_ptGenTop_full3         = ROOT.TH1F("ptGenTop_full3",         ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
-h_ptGenTop_noweight_full = ROOT.TH1F("ptGenTop_noweight_full", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
-h_ptGenTop_noweight_full2 = ROOT.TH1F("ptGenTop_noweight_full2", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
-h_ptGenTop_noweight_full3 = ROOT.TH1F("ptGenTop_noweight_full3", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
-h_ptGenTop_pt400          = ROOT.TH1F("ptGenTop_pt400",          ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-h_ptGenTop_noweight_pt400 = ROOT.TH1F("ptGenTop_noweight_pt400", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
+
+h_ptPartTop_raw          = ROOT.TH1F("ptPartTop_raw",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+h_ptPartTop_raw_noweight   = ROOT.TH1F("ptPartTop_raw_noweight",   ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
 h_ptPartTop          = ROOT.TH1F("ptPartTop",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
-h_ptPartTop_noweight = ROOT.TH1F("ptPartTop_noweight", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
-h_ptPartTop_full          = ROOT.TH1F("ptPartTop_full",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
-h_ptPartTop_full2         = ROOT.TH1F("ptPartTop_full2",         ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
-h_ptPartTop_full3         = ROOT.TH1F("ptPartTop_full3",         ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
-h_ptPartTop_noweight_full = ROOT.TH1F("ptPartTop_noweight_full", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full)-1, ptbins_full)
-h_ptPartTop_noweight_full2 = ROOT.TH1F("ptPartTop_noweight_full2", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full2)-1, ptbins_full2)
-h_ptPartTop_noweight_full3 = ROOT.TH1F("ptPartTop_noweight_full3", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_full3)-1, ptbins_full3)
-h_ptPartTop_pt400          = ROOT.TH1F("ptPartTop_pt400",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-h_ptPartTop_noweight_pt400 = ROOT.TH1F("ptPartTop_noweight_pt400", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
+h_massPartTop        = ROOT.TH1F("massPartTop",        ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_etaPartTop         = ROOT.TH1F("etaPartTop",         ";#eta(particle-level top); Events / 0.025", 240, -3, 3)
+h_ptPartTop_noweight   = ROOT.TH1F("ptPartTop_noweight",   ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+h_massPartTop_noweight = ROOT.TH1F("massPartTop_noweight", ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_etaPartTop_noweight  = ROOT.TH1F("etaPartTop_noweight",  ";#eta(particle-level top); Events / 0.025", 240, -3, 3)
 
 ### for acceptance correction / efficiency, all these are for semileptonic, ttbar->mu+jets only 
 # passParton = pt(hadronic, gen-level top quark) > 400 GeV
 # passParticle = pass particle-level selection (includes pt(particle-level top jet) > 400 GeV cut)
-h_ptPartTop_passParticle       = ROOT.TH1F("ptPartTop_passParticle",      ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-h_ptPartTop_passParticleParton = ROOT.TH1F("ptPartTop_passParticleParton",";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-h_ptGenTop_passParton          = ROOT.TH1F("ptGenTop_passParton",         ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-h_ptGenTop_passParticleParton  = ROOT.TH1F("ptGenTop_passParticleParton", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
+h_ptPartTop_passParticle       = ROOT.TH1F("ptPartTop_passParticle",      ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+h_massPartTop_passParticle        = ROOT.TH1F("massPartTop_passParticle", ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_etaPartTop_passParticle         = ROOT.TH1F("etaPartTop_passParticle",  ";#eta(particle-level top); Events / 0.025", 240, -3, 3)
+h_ptPartTop_passParticleParton   = ROOT.TH1F("ptPartTop_passParticleParton",   ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+h_massPartTop_passParticleParton = ROOT.TH1F("massPartTop_passParticleParton", ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_etaPartTop_passParticleParton  = ROOT.TH1F("etaPartTop_passParticleParton",  ";#eta(particle-level top); Events / 0.025", 240, -3, 3)
+h_ptGenTop_passParton          = ROOT.TH1F("ptGenTop_passParton",         ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+h_ptGenTop_passParticleParton  = ROOT.TH1F("ptGenTop_passParticleParton", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
-h_ptPartTop_passParticle_noweight       = ROOT.TH1F("ptPartTop_passParticle_noweight",      ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-h_ptPartTop_passParticleParton_noweight = ROOT.TH1F("ptPartTop_passParticleParton_noweight",";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1,  ptbins_pt400)
-h_ptGenTop_passParton_noweight          = ROOT.TH1F("ptGenTop_passParton_noweight",         ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-h_ptGenTop_passParticleParton_noweight  = ROOT.TH1F("ptGenTop_passParticleParton_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins_pt400)-1, ptbins_pt400)
-
-
-## --------------------------------------------------------------------------------------------------
-## TWO-STEP UNFOLDING
-## --------------------------------------------------------------------------------------------------
+h_ptPartTop_passParticle_noweight       = ROOT.TH1F("ptPartTop_passParticle_noweight",      ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+h_massPartTop_passParticle_noweight        = ROOT.TH1F("massPartTop_passParticle_noweight", ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_etaPartTop_passParticle_noweight         = ROOT.TH1F("etaPartTop_passParticle_noweight",  ";#eta(particle-level top); Events / 0.025", 240, -3, 3)
+h_ptPartTop_passParticleParton_noweight = ROOT.TH1F("ptPartTop_passParticleParton_noweight",";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+h_massPartTop_passParticleParton_noweight = ROOT.TH1F("massPartTop_passParticleParton_noweight", ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_etaPartTop_passParticleParton_noweight  = ROOT.TH1F("etaPartTop_passParticleParton_noweight",  ";#eta(particle-level top); Events / 0.025", 240, -3, 3)
+h_ptGenTop_passParton_noweight          = ROOT.TH1F("ptGenTop_passParton_noweight",         ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+h_ptGenTop_passParticleParton_noweight  = ROOT.TH1F("ptGenTop_passParticleParton_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
 ## current default bin widths
 response_pp = ROOT.RooUnfoldResponse(h_bins, h_bins)
 response_pp.SetName('response_pt_pp')
 response_pp.UseOverflow()
-
-## including lower/higher pt bins
-response_full_pp = ROOT.RooUnfoldResponse(h_bins_full, h_bins_full)
-response_full_pp.SetName('response_pt_full_pp')
-
-## including lower/higher pt bins (alt 2)
-response_full2_pp = ROOT.RooUnfoldResponse(h_bins_full2, h_bins_full2)
-response_full2_pp.SetName('response_pt_full2_pp')
-
-## including lower/higher pt bins (alt 3)
-response_full3_pp = ROOT.RooUnfoldResponse(h_bins_full3, h_bins_full3)
-response_full3_pp.SetName('response_pt_full3_pp')
-
-## version with pt>400 cuts
-response_pt400_pp = ROOT.RooUnfoldResponse(h_bins_pt400, h_bins_pt400)
-response_pt400_pp.SetName('response_pt_pt400_pp')
-
 
 # -------------------------------------------------------------------------------------
 # define all variables to be read from input files
@@ -279,16 +295,16 @@ if options.pdfSys != 0.0 or options.pdfSet != 0.0:
 
     
 # gen-level particles
-topPtHandle    = Handle("std::vector<float>")
-topPtLabel     = ("pfShyftTupleTopQuarks", "pt")
-topEtaHandle   = Handle("std::vector<float>")
-topEtaLabel    = ("pfShyftTupleTopQuarks", "eta")
-topPhiHandle   = Handle("std::vector<float>")
-topPhiLabel    = ("pfShyftTupleTopQuarks", "phi")
-topMassHandle  = Handle("std::vector<float>")
-topMassLabel   = ("pfShyftTupleTopQuarks", "mass")
-topPdgIdHandle = Handle("std::vector<float>")
-topPdgIdLabel  = ("pfShyftTupleTopQuarks", "pdgId")
+genParticlesPtHandle     = Handle("std::vector<float>")
+genParticlesPtLabel      = ("pfShyftTupleTopQuarks", "pt")
+genParticlesEtaHandle    = Handle("std::vector<float>")
+genParticlesEtaLabel     = ("pfShyftTupleTopQuarks", "eta")
+genParticlesPhiHandle    = Handle("std::vector<float>")
+genParticlesPhiLabel     = ("pfShyftTupleTopQuarks", "phi")
+genParticlesMassHandle   = Handle("std::vector<float>")
+genParticlesMassLabel    = ("pfShyftTupleTopQuarks", "mass")
+genParticlesPdgIdHandle  = Handle("std::vector<float>")
+genParticlesPdgIdLabel   = ("pfShyftTupleTopQuarks", "pdgId")
 
 # AK5 / CA8 gen jets
 ak5GenJetPtHandle   = Handle("std::vector<float>")
@@ -308,8 +324,6 @@ ca8GenJetPhiHandle  = Handle("std::vector<float>")
 ca8GenJetPhiLabel   = ("pfShyftTupleCA8GenJets", "phi")
 ca8GenJetMassHandle = Handle("std::vector<float>")
 ca8GenJetMassLabel  = ("pfShyftTupleCA8GenJets", "mass")
-
-
 
 # -------------------------------------------------------------------------------------
 # need to fill response matrix with weights already from the beginning!
@@ -406,161 +420,28 @@ for event in events :
     	bin1 = PilePlot.FindBin(PileUp[0]) 
     	weight *= PilePlot.GetBinContent(bin1)
 
-
-
-    # -------------------------------------------------------------------------------------
-    # read / store truth information
-    # -------------------------------------------------------------------------------------
-
-    topQuarks = []
-    genMuons = []
-    genElectrons = []
-    hadTop = None
-    lepTop = None
-    ttbar = None
-    isSemiLeptonicGen = True
-    isMuon = False
-    isElectron = False
-    
-    event.getByLabel( topPtLabel, topPtHandle )
-    event.getByLabel( topEtaLabel, topEtaHandle )
-    event.getByLabel( topPhiLabel, topPhiHandle )
-    event.getByLabel( topMassLabel, topMassHandle )
-    event.getByLabel( topPdgIdLabel, topPdgIdHandle )
-
-    topPt  = topPtHandle.product()
-    topEta = topEtaHandle.product()
-    topPhi = topPhiHandle.product()
-    topMass   = topMassHandle.product()
-    topPdgId  = topPdgIdHandle.product()
-        
-    p4Top = ROOT.TLorentzVector()
-    p4Antitop = ROOT.TLorentzVector()
-    topDecay = 0        # 0 = hadronic, 1 = leptonic
-    antitopDecay = 0    # 0 = hadronic, 1 = leptonic
-
-    leptonEta = 0
-    leptonPt = 0
-    
-    # -------------------------------------------------------------------------------------
-    # loop over gen particules
-    for igen in xrange( len(topPt) ) :
-        
-        if topPdgId[igen] == 6 :
-            gen = ROOT.TLorentzVector()
-            gen.SetPtEtaPhiM( topPt[igen], topEta[igen], topPhi[igen], topMass[igen] )                    
-            p4Top = gen
-        elif topPdgId[igen] == -6 :
-            gen = ROOT.TLorentzVector()
-            gen.SetPtEtaPhiM( topPt[igen], topEta[igen], topPhi[igen], topMass[igen] )
-            p4Antitop = gen
-        # If there is an antilepton (e+, mu+, tau+) then the top is leptonic
-        elif ( topPdgId[igen] == -11 or topPdgId[igen] == -13 or topPdgId[igen] == -15) :
-            topDecay = 1
-        # If there is an lepton (e-, mu-, tau-) then the antitop is leptonic
-        elif ( topPdgId[igen] == 11 or topPdgId[igen] == 13 or topPdgId[igen] == 15) :                
-            antitopDecay = 1
-
-        # muon final state?
-        if abs(topPdgId[igen]) == 13 :
-            isMuon = True
-            p4Muon = ROOT.TLorentzVector()
-            p4Muon.SetPtEtaPhiM( topPt[igen], topEta[igen], topPhi[igen], topMass[igen] )
-            genMuons.append(p4Muon)
-            leptonEta = topEta[igen]
-            leptonPt = topPt[igen]
-
-        # electron final state?
-        if abs(topPdgId[igen]) == 11 :
-            isElectron = True
-            p4Electron = ROOT.TLorentzVector()
-            p4Electron.SetPtEtaPhiM( topPt[igen], topEta[igen], topPhi[igen], topMass[igen] )
-            genElectrons.append(p4Electron)
-            leptonEta = topEta[igen]
-            leptonPt = topPt[igen]
-
-        
-    # -------------------------------------------------------------------------------------
-    # end loop over gen particles
-    # -------------------------------------------------------------------------------------
-
-    topQuarks.append( GenTopQuark( 6, p4Top, topDecay) )
-    topQuarks.append( GenTopQuark( -6, p4Antitop, antitopDecay) )
-    
-    if topDecay + antitopDecay == 1 :
-        isSemiLeptonicGen = True
-    else :
-        isSemiLeptonicGen = False
-        
-        
-    # consider semi-leptonic ttbar decays only !
-    if isSemiLeptonicGen == False :
-        continue	
-    
-    if topDecay == 0 :
-        hadTop = topQuarks[0]
-        lepTop = topQuarks[1]
-    else :
-        hadTop = topQuarks[1]
-        lepTop = topQuarks[0]
-        
-    ttbar = hadTop.p4 + lepTop.p4
-
-    
-    # -------------------------------------------------------------------------------------
-    # fill histograms!        
-    # -------------------------------------------------------------------------------------
-
-    ## histograms without mtt gen.level cut
-    h_ttbar_mass_all_incl.Fill( ttbar.M() )
-    hw_ttbar_mass_all_incl.Fill( ttbar.M(), weight )
-
-    if hadTop.p4.Perp() > 400. :
-        h_ttbar_mass_pt400_incl.Fill( ttbar.M() )
-        hw_ttbar_mass_pt400_incl.Fill( ttbar.M(), weight )
-
-
-    ## cut on generated m(ttbar) if stitching sample
-    if options.mttGenMax is not None :
-        if ttbar.M() > options.mttGenMax :
-            continue
-
-
-    ## histograms for e+mu+tau final states
-    h_ttbar_mass_all_emutau.Fill( ttbar.M() )
-    hw_ttbar_mass_all_emutau.Fill( ttbar.M(), weight )
-
-    if hadTop.p4.Perp() > 400. :
-        h_ttbar_mass_pt400_emutau.Fill( ttbar.M() )
-        hw_ttbar_mass_pt400_emutau.Fill( ttbar.M(), weight )
-
-    ## now require mu/e+jets final state only
-    if ((isMuon == False) or (isElectron == True)) and (options.lepType == "muon"):
-		continue
-    if ((isMuon == True) or (isElectron == False)) and (options.lepType == "ele"):
-		continue
-
-    ## passParton?
-    if hadTop.p4.Perp() > 400.0:
-        passParton = True
-
-
     # -------------------------------------------------------------------------------------
     # If doing PDF systematatics:
     # Get the envelopes of the various PDF sets for this event.
     # Use the max and min values of all of the eigenvectors as the envelope. 
     # -------------------------------------------------------------------------------------
 
-    if (options.pdfSys != 0.0 or options.pdfSet != 0.0) and (passParton) :
+    if options.pdfSys != 0.0 or options.pdfSet != 0.0 :
         
         if options.pdfSet == 1.0 :
             event.getByLabel( pdfWeightMSTWLabel, pdfWeightMSTWHandle )
+            if pdfWeightMSTWHandle.isValid() == False :
+                continue
             pdfWeight  = pdfWeightMSTWHandle.product()
         elif options.pdfSet == 2.0 :
             event.getByLabel( pdfWeightNNPDFLabel, pdfWeightNNPDFHandle )
+            if pdfWeightNNPDFHandle.isValid() == False :
+                continue
             pdfWeight = pdfWeightNNPDFHandle.product()
         else :
             event.getByLabel( pdfWeightCT10Label, pdfWeightCT10Handle )
+            if pdfWeightCT10Handle.isValid() == False :
+                continue
             pdfWeight  = pdfWeightCT10Handle.product()
         
 
@@ -623,7 +504,164 @@ for event in events :
     
     #endof if doing pdfSys
 
+    # -------------------------------------------------------------------------------------
+    # read / store truth information
+    # -------------------------------------------------------------------------------------
+
+    topQuarks = []
+    genMuons = []
+    genElectrons = []
+    hadTop = None
+    lepTop = None
+    ttbar = None
+    isSemiLeptonicGen = True
+    isMuon = False
+    isElectron = False
     
+    event.getByLabel( genParticlesPtLabel, genParticlesPtHandle )
+    event.getByLabel( genParticlesEtaLabel, genParticlesEtaHandle )
+    event.getByLabel( genParticlesPhiLabel, genParticlesPhiHandle )
+    event.getByLabel( genParticlesMassLabel, genParticlesMassHandle )
+    event.getByLabel( genParticlesPdgIdLabel, genParticlesPdgIdHandle )
+    
+    genParticlesPt  = genParticlesPtHandle.product()
+    genParticlesEta = genParticlesEtaHandle.product()
+    genParticlesPhi = genParticlesPhiHandle.product()
+    genParticlesMass   = genParticlesMassHandle.product()
+    genParticlesPdgId  = genParticlesPdgIdHandle.product()
+
+    p4Top = ROOT.TLorentzVector()
+    p4Antitop = ROOT.TLorentzVector()
+    topDecay = 0        # 0 = hadronic, 1 = leptonic
+    antitopDecay = 0    # 0 = hadronic, 1 = leptonic
+
+    leptonEta = 0
+    leptonPt = 0
+
+    # loop over gen particles
+    for igen in xrange( len(genParticlesPt) ) :
+
+        if  abs(genParticlesPdgId[igen]) < 6 :
+            continue
+        if  abs(genParticlesPdgId[igen]) > 16 :
+            continue
+            
+        if genParticlesPdgId[igen] == 6 :
+            gen = ROOT.TLorentzVector()
+            gen.SetPtEtaPhiM( genParticlesPt[igen], genParticlesEta[igen], genParticlesPhi[igen], genParticlesMass[igen] )                
+            p4Top = gen
+        elif genParticlesPdgId[igen] == -6 :
+            gen = ROOT.TLorentzVector()
+            gen.SetPtEtaPhiM( genParticlesPt[igen], genParticlesEta[igen], genParticlesPhi[igen], genParticlesMass[igen] )
+            p4Antitop = gen
+
+        # If there is an antilepton (e+, mu+, tau+) then the top is leptonic
+        elif ( genParticlesPdgId[igen] == -11 or genParticlesPdgId[igen] == -13 or genParticlesPdgId[igen] == -15) :
+            topDecay = 1
+        # If there is an lepton (e-, mu-, tau-) then the antitop is leptonic
+        elif ( genParticlesPdgId[igen] == 11 or genParticlesPdgId[igen] == 13 or genParticlesPdgId[igen] == 15) :                
+            antitopDecay = 1
+
+        if (abs(genParticlesPdgId[igen]) == 13) :
+            isMuon = True
+            p4Muon = ROOT.TLorentzVector()
+            p4Muon.SetPtEtaPhiM( genParticlesPt[igen], genParticlesEta[igen], genParticlesPhi[igen], genParticlesMass[igen] )
+            genMuons.append(p4Muon)
+            leptonEta = genParticlesEta[igen]
+            leptonPt = genParticlesPt[igen]
+
+        if (abs(genParticlesPdgId[igen]) == 11) :
+            isElectron = True
+            p4Electron = ROOT.TLorentzVector()
+            p4Electron.SetPtEtaPhiM( genParticlesPt[igen], genParticlesEta[igen], genParticlesPhi[igen], genParticlesMass[igen] )
+            genElectrons.append(p4Electron)
+            leptonEta = genParticlesEta[igen]
+            leptonPt = genParticlesPt[igen]
+
+    # -------------------------------------------------------------------------------------
+    # end loop over gen particles
+    # -------------------------------------------------------------------------------------
+
+    topQuarks.append( GenTopQuark( 6, p4Top, topDecay) )
+    topQuarks.append( GenTopQuark( -6, p4Antitop, antitopDecay) )
+        
+    if topDecay + antitopDecay == 1 :
+        isSemiLeptonicGen = True
+    else :
+        isSemiLeptonicGen = False
+        
+    # consider semi-leptonic ttbar decays only !
+    if isSemiLeptonicGen == False :
+        continue	
+    
+    if topDecay == 0 :
+        hadTop = topQuarks[0]
+        lepTop = topQuarks[1]
+    else :
+        hadTop = topQuarks[1]
+        lepTop = topQuarks[0]
+        
+    ttbar = hadTop.p4 + lepTop.p4
+    
+    # -------------------------------------------------------------------------------------
+    # fill histograms!        
+    # -------------------------------------------------------------------------------------
+
+    ## histograms without mtt gen.level cut
+    h_ttbar_mass_all_incl.Fill( ttbar.M() )
+    h_hadtop_mass_all_incl.Fill( hadTop.p4.M() )
+    h_hadtop_pt_all_incl.Fill( hadTop.p4.Perp() )
+    h_hadtop_eta_all_incl.Fill( hadTop.p4.Eta() )
+    hw_ttbar_mass_all_incl.Fill( ttbar.M(), weight )
+    hw_hadtop_mass_all_incl.Fill( hadTop.p4.M(), weight )
+    hw_hadtop_pt_all_incl.Fill( hadTop.p4.Perp(), weight )
+    hw_hadtop_eta_all_incl.Fill( hadTop.p4.Eta(), weight )
+
+    if hadTop.p4.Perp() > 400. :
+        h_ttbar_mass_pt400_incl.Fill( ttbar.M() )
+        h_hadtop_mass_pt400_incl.Fill( hadTop.p4.M() )
+        h_hadtop_pt_pt400_incl.Fill( hadTop.p4.Perp() )
+        h_hadtop_eta_pt400_incl.Fill( hadTop.p4.Eta() )
+        hw_ttbar_mass_pt400_incl.Fill( ttbar.M(), weight )
+        hw_hadtop_mass_pt400_incl.Fill( hadTop.p4.M(), weight )
+        hw_hadtop_pt_pt400_incl.Fill( hadTop.p4.Perp(), weight )
+        hw_hadtop_eta_pt400_incl.Fill( hadTop.p4.Eta(), weight )
+
+
+    ## cut on generated m(ttbar) if stitching sample
+    if options.mttGenMax is not None :
+        if ttbar.M() > options.mttGenMax :
+            continue
+
+    ## histograms for e+mu+tau final states
+    h_ttbar_mass_all_emutau.Fill( ttbar.M() )
+    h_hadtop_mass_all_emutau.Fill( hadTop.p4.M() )
+    h_hadtop_pt_all_emutau.Fill( hadTop.p4.Perp() )
+    h_hadtop_eta_all_emutau.Fill( hadTop.p4.Eta() )
+    hw_ttbar_mass_all_emutau.Fill( ttbar.M(), weight )
+    hw_hadtop_mass_all_emutau.Fill( hadTop.p4.M(), weight )
+    hw_hadtop_pt_all_emutau.Fill( hadTop.p4.Perp(), weight )
+    hw_hadtop_eta_all_emutau.Fill( hadTop.p4.Eta(), weight )
+
+    if hadTop.p4.Perp() > 400. :
+        h_ttbar_mass_pt400_emutau.Fill( ttbar.M() )
+        h_hadtop_mass_pt400_emutau.Fill( hadTop.p4.M() )
+        h_hadtop_pt_pt400_emutau.Fill( hadTop.p4.Perp() )
+        h_hadtop_eta_pt400_emutau.Fill( hadTop.p4.Eta() )
+        hw_ttbar_mass_pt400_emutau.Fill( ttbar.M(), weight )
+        hw_hadtop_mass_pt400_emutau.Fill( hadTop.p4.M(), weight )
+        hw_hadtop_pt_pt400_emutau.Fill( hadTop.p4.Perp(), weight )
+        hw_hadtop_eta_pt400_emutau.Fill( hadTop.p4.Eta(), weight )
+
+    ## now require mu/e+jets final state only
+    if ((isMuon == False) or (isElectron == True)) and (options.lepType == "muon"):
+		continue
+    if ((isMuon == True) or (isElectron == False)) and (options.lepType == "ele"):
+		continue
+
+    ## passParton?
+    if hadTop.p4.Perp() > 400.0:
+        passParton = True
 
     # -------------------------------------------------------------------------------------
     # fill histograms!        
@@ -634,6 +672,7 @@ for event in events :
     h_ttbar_pt_all.Fill( ttbar.Perp() )
     h_hadtop_mass_all.Fill( hadTop.p4.M() )
     h_hadtop_pt_all.Fill( hadTop.p4.Perp() )
+    h_hadtop_eta_all.Fill( hadTop.p4.Eta() )
     h_leptop_mass_all.Fill( lepTop.p4.M() )
     h_leptop_pt_all.Fill( lepTop.p4.Perp() )
     h_lep_eta_all.Fill(leptonEta)    
@@ -643,6 +682,7 @@ for event in events :
     hw_ttbar_pt_all.Fill( ttbar.Perp(), weight )
     hw_hadtop_mass_all.Fill( hadTop.p4.M(), weight )
     hw_hadtop_pt_all.Fill( hadTop.p4.Perp(), weight )
+    hw_hadtop_eta_all.Fill( hadTop.p4.Eta(), weight )
     hw_leptop_mass_all.Fill( lepTop.p4.M(), weight )
     hw_leptop_pt_all.Fill( lepTop.p4.Perp(), weight )
     hw_lep_eta_all.Fill(leptonEta, weight)    
@@ -653,6 +693,7 @@ for event in events :
         h_ttbar_pt_pt400.Fill( ttbar.Perp() )            
         h_hadtop_mass_pt400.Fill( hadTop.p4.M() )
         h_hadtop_pt_pt400.Fill( hadTop.p4.Perp() )
+        h_hadtop_eta_pt400.Fill( hadTop.p4.Eta() )
         h_leptop_mass_pt400.Fill( lepTop.p4.M() )
         h_leptop_pt_pt400.Fill( lepTop.p4.Perp() )
         h_lep_eta_pt400.Fill(leptonEta)
@@ -662,44 +703,31 @@ for event in events :
         hw_ttbar_pt_pt400.Fill( ttbar.Perp(), weight )            
         hw_hadtop_mass_pt400.Fill( hadTop.p4.M(), weight )
         hw_hadtop_pt_pt400.Fill( hadTop.p4.Perp(), weight )
+        hw_hadtop_eta_pt400.Fill( hadTop.p4.Eta(), weight )
         hw_leptop_mass_pt400.Fill( lepTop.p4.M(), weight )
         hw_leptop_pt_pt400.Fill( lepTop.p4.Perp(), weight )
         hw_lep_eta_pt400.Fill(leptonEta, weight)
         hw_lep_pt_pt400.Fill(leptonPt, weight)
 
         if abs(leptonEta)<2.1 and leptonPt>40 :
+            h_hadtop_mass_pt400_pass.Fill(hadTop.p4.M())
             h_hadtop_pt_pt400_pass.Fill(hadTop.p4.Perp())
+            h_hadtop_eta_pt400_pass.Fill(hadTop.p4.Eta())
+            hw_hadtop_mass_pt400_pass.Fill(hadTop.p4.M(), weight)
             hw_hadtop_pt_pt400_pass.Fill(hadTop.p4.Perp(), weight)
-
-
+            hw_hadtop_eta_pt400_pass.Fill(hadTop.p4.Eta(), weight)
 
     ## more histograms to compare with unfolding 
 
     h_ptGenTop.Fill( hadTop.p4.Perp(), weight )
     h_ptGenTop_noweight.Fill( hadTop.p4.Perp() )
-    h_ptGenTop_full.Fill( hadTop.p4.Perp(), weight )
-    h_ptGenTop_full2.Fill( hadTop.p4.Perp(), weight )
-    h_ptGenTop_full3.Fill( hadTop.p4.Perp(), weight )
-    h_ptGenTop_noweight_full.Fill( hadTop.p4.Perp() )
-    h_ptGenTop_noweight_full2.Fill( hadTop.p4.Perp() )
-    h_ptGenTop_noweight_full3.Fill( hadTop.p4.Perp() )
         
     if passParton :
-        h_ptGenTop_pt400.Fill( hadTop.p4.Perp(), weight )
-        h_ptGenTop_noweight_pt400.Fill( hadTop.p4.Perp() )
         h_ptGenTop_passParton.Fill(hadTop.p4.Perp(), weight)
         h_ptGenTop_passParton_noweight.Fill(hadTop.p4.Perp())
 
-        
-    # -------------------------------------------------------------------------------------
-    # end truth loop
-    # -------------------------------------------------------------------------------------
-
-
     ak5GenJets = []
     ca8GenJets = []
-
-    ak5GenJets_tight = []
 
     # -------------------------------------------------------------------------------------
     # get AK5 gen jets
@@ -708,11 +736,6 @@ for event in events :
     event.getByLabel( ak5GenJetPtLabel, ak5GenJetPtHandle )
     if ak5GenJetPtHandle.isValid() == False :
         response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        if passParton: 
-            response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
     event.getByLabel( ak5GenJetEtaLabel, ak5GenJetEtaHandle )
     event.getByLabel( ak5GenJetPhiLabel, ak5GenJetPhiHandle )
@@ -725,11 +748,6 @@ for event in events :
     
     if len(ak5GenJetPt) == 0 :
         response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        if passParton: 
-            response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
 
     # loop over AK5 gen jets
@@ -738,15 +756,6 @@ for event in events :
         p4.SetPtEtaPhiM( ak5GenJetPt[iak5], ak5GenJetEta[iak5], ak5GenJetPhi[iak5], ak5GenJetMass[iak5] )
         ak5GenJets.append(p4)
 
-        if ak5GenJetPt[iak5] > 30.0 and abs(ak5GenJetEta[iak5]) < 2.4:
-            ak5GenJets_tight.append(p4)
-
-
-    if abs(leptonEta)<2.1 and leptonPt>45. and len(ak5GenJets_tight) > 1:  ## same lepton cuts for particle-level stuff
-        h_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp())
-        hw_hadtop_pt_pt400_passTight.Fill(hadTop.p4.Perp(), weight)
-
-            
     # -------------------------------------------------------------------------------------
     # get CA8 gen jets
     # -------------------------------------------------------------------------------------
@@ -754,11 +763,6 @@ for event in events :
     event.getByLabel( ca8GenJetPtLabel, ca8GenJetPtHandle )
     if ca8GenJetPtHandle.isValid() == False :
         response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        if passParton: 
-            response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
     event.getByLabel( ca8GenJetEtaLabel, ca8GenJetEtaHandle )
     event.getByLabel( ca8GenJetPhiLabel, ca8GenJetPhiHandle )
@@ -771,11 +775,6 @@ for event in events :
     
     if len(ca8GenJetPt) == 0 :
         response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        if passParton: 
-            response_pt400_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
         continue
 
     # loop over CA8 gen jets
@@ -796,23 +795,23 @@ for event in events :
     genTops = []
 
     if (options.lepType == "muon") :
-		for iMuon in genMuons:
-			if iMuon.Perp() > 45. and abs(iMuon.Eta()) < 2.1:
-				nGenLeptons += 1
-				genLepton = iMuon
+        for iMuon in genMuons:
+            if iMuon.Perp() > MIN_MU_PT and abs(iMuon.Eta()) < MAX_MU_ETA:  ## pt>45, |eta|<2.1
+                nGenLeptons += 1
+                genLepton = iMuon
     else :
-		for iEle in genElectrons:
-			if iEle.Perp() > 45. and abs(iEle.Eta()) < 2.1:  ## same cuts as for muon for particle-level!!
-				nGenLeptons += 1
-				genLepton = iEle
+        for iEle in genElectrons:
+            if iEle.Perp() > MIN_MU_PT and abs(iEle.Eta()) < MAX_MU_ETA:  ## pt>45, |eta|<2.1  (same selection as for muons here!)
+                nGenLeptons += 1
+                genLepton = iEle
 
     if nGenLeptons == 1:
         for iak5Gen in ak5GenJets:
-            if iak5Gen.DeltaR(genLepton) < ROOT.TMath.Pi() / 2.0 and iak5Gen.Perp() > 30. and abs(iak5Gen.Eta()) < 2.4:
+            if iak5Gen.DeltaR(genLepton) < ROOT.TMath.Pi() / 2.0 and iak5Gen.Perp() > MIN_JET_PT and abs(iak5Gen.Eta()) < MAX_JET_ETA:
                 nGenBJets += 1
 
         for ica8Gen in ca8GenJets:
-            if ica8Gen.DeltaR(genLepton) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > 30. and abs(ica8Gen.Eta()) < 2.4:
+            if ica8Gen.DeltaR(genLepton) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > MIN_JET_PT and abs(ica8Gen.Eta()) < MAX_JET_ETA:
                 genTops.append(ica8Gen)
                 nGenTops += 1
 
@@ -822,47 +821,40 @@ for event in events :
     if passParticleLoose and genTops[0].Perp() > 400.0 :
         passParticle = True
 
+    if nGenTops > 0:
+        h_ptPartTop_raw.Fill( genTops[0].Perp(), weight )
+        h_ptPartTop_raw_noweight.Fill( genTops[0].Perp() )
 
     ## loose particle-level selection w/o 400 cut
     if passParticleLoose == False:
         response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full2_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-        response_full3_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
     else:
         h_ptPartTop.Fill( genTops[0].Perp(), weight )
         h_ptPartTop_noweight.Fill( genTops[0].Perp() )
-        h_ptPartTop_full.Fill( genTops[0].Perp(), weight )
-        h_ptPartTop_full2.Fill( genTops[0].Perp(), weight )
-        h_ptPartTop_full3.Fill( genTops[0].Perp(), weight )
-        h_ptPartTop_noweight_full.Fill( genTops[0].Perp() )
-        h_ptPartTop_noweight_full2.Fill( genTops[0].Perp() )
-        h_ptPartTop_noweight_full3.Fill( genTops[0].Perp() )
+        h_etaPartTop.Fill( genTops[0].Eta(), weight )
+        h_etaPartTop_noweight.Fill( genTops[0].Eta() )
+        h_massPartTop.Fill( genTops[0].M(), weight )
+        h_massPartTop_noweight.Fill( genTops[0].M() )
         response_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
-        response_full_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
-        response_full2_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
-        response_full3_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
 
     ## particle-level selection *with* 400 cut
-    if passParton: 
-        if passParticle == False:
-            response_pt400_pp.Miss(hadTop.p4.Perp(), weight*weight_response)
-        else:
-            response_pt400_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
-            
-            h_ptPartTop_passParticleParton.Fill(genTops[0].Perp(), weight) 
-            h_ptPartTop_passParticleParton_noweight.Fill(genTops[0].Perp()) 
-            h_ptGenTop_passParticleParton.Fill(hadTop.p4.Perp(), weight)
-            h_ptGenTop_passParticleParton_noweight.Fill(hadTop.p4.Perp())
-    elif passParticle:
-        response_pt400_pp.Fake(genTops[0].Perp(), weight*weight_response)
-
     if passParticle:
-        h_ptPartTop_pt400.Fill( genTops[0].Perp(), weight )
-        h_ptPartTop_noweight_pt400.Fill( genTops[0].Perp() )
-
         h_ptPartTop_passParticle.Fill(genTops[0].Perp(), weight) 
         h_ptPartTop_passParticle_noweight.Fill(genTops[0].Perp()) 
+        h_etaPartTop_passParticle.Fill(genTops[0].Eta(), weight) 
+        h_etaPartTop_passParticle_noweight.Fill(genTops[0].Eta()) 
+        h_massPartTop_passParticle.Fill(genTops[0].M(), weight) 
+        h_massPartTop_passParticle_noweight.Fill(genTops[0].M()) 
+
+        if passParton: 
+            h_ptPartTop_passParticleParton.Fill(genTops[0].Perp(), weight) 
+            h_ptPartTop_passParticleParton_noweight.Fill(genTops[0].Perp()) 
+            h_etaPartTop_passParticleParton.Fill(genTops[0].Eta(), weight) 
+            h_etaPartTop_passParticleParton_noweight.Fill(genTops[0].Eta()) 
+            h_massPartTop_passParticleParton.Fill(genTops[0].M(), weight) 
+            h_massPartTop_passParticleParton_noweight.Fill(genTops[0].M()) 
+            h_ptGenTop_passParticleParton.Fill(hadTop.p4.Perp(), weight)
+            h_ptGenTop_passParticleParton_noweight.Fill(hadTop.p4.Perp())
 
     ## end particle-level selection
     
@@ -875,10 +867,6 @@ for event in events :
 f.cd()
 
 response_pp.Write()
-response_full_pp.Write()
-response_full2_pp.Write()
-response_full3_pp.Write()
-response_pt400_pp.Write()
 
 f.Write()
 f.Close()
