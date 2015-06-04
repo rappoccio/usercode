@@ -64,7 +64,6 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, elflag=False, muflag=Fa
     if muflag:
         print "DEBUG: muon+jets channel considered"
         if nptbin == '1' :
-            #for obs in ['mu_vtxMass7', 'mu_etaAbsLep6', 'mu_etaAbsLep5']:
             for obs in ['mu_vtxMass7', 'mu_etaAbsLep6', 'mu_etaAbsLep4']:
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
         if nptbin == '2' :
@@ -82,7 +81,6 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, elflag=False, muflag=Fa
     if elflag:
         print "DEBUG: electron+jets channel considered"
         if nptbin == '1' :
-            #for obs in ['el_vtxMass7', 'el_etaAbsLep6', 'el_etaAbsLep5']:
             for obs in ['el_vtxMass7', 'el_etaAbsLep6', 'el_etaAbsLep4']:
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
         if nptbin == '2' :
@@ -114,7 +112,6 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
         
         model = lepplusjets(
             files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
-                   #'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep5.root',
                    'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
                    'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root'],
             infilter=infilter,
@@ -172,7 +169,6 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
 
         model = lepplusjets(
             files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
-                   #'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep5.root',
                    'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
                    'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root'],
             infilter=infilter,
@@ -229,11 +225,9 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
 
         model = lepplusjets(
             files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
-                   #'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep5.root',
                    'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
                    'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root',
                    'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
-                   #'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep5.root',
                    'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
                    'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root'],
             infilter=infilter,
@@ -324,31 +318,17 @@ usePL = False
 # Building the statistical model :
 infilter = histfilter
 
-dirs = [#'CT10_nom',
-        #'CT10_pdfup', 
-        #'CT10_pdfdown',
-        #'MSTW_nom', 
-        #'MSTW_pdfup', 
-        #'MSTW_pdfdown',
-        #'NNPDF_nom', 
-        #'NNPDF_pdfup', 
-        #'NNPDF_pdfdown',
-        #'scaleup', 
-        #'scaledown'
-        #'htlep150qcd'
-        #'met50qcd'
-    #'qcd',
-    #'CT10_nom_qcd',
-    #'CT10_pdfup_qcd',
-    #'CT10_pdfdown_qcd'
-    'MSTW_nom_qcd', 
-    'MSTW_pdfup_qcd', 
-    'MSTW_pdfdown_qcd',
-    'NNPDF_nom_qcd', 
-    'NNPDF_pdfup_qcd', 
-    'NNPDF_pdfdown_qcd',
-    'scaleup_qcd', 
-    'scaledown_qcd'
+dirs = ['CT10_nom',
+        'CT10_pdfup', 
+        'CT10_pdfdown',
+        'MSTW_nom', 
+        'MSTW_pdfup', 
+        'MSTW_pdfdown',
+        'NNPDF_nom', 
+        'NNPDF_pdfup', 
+        'NNPDF_pdfdown',
+        'scaleup', 
+        'scaledown'
     ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
