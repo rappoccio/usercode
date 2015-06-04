@@ -305,7 +305,8 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
 ####################################################################################
 
 opts = Options()
-opts.set('minimizer', 'minuit_tolerance_factor', '100')
+opts.set('minimizer', 'minuit_tolerance_factor', '1000')
+opts.set('minimizer', 'strategy', 'robust')
 
 
 ####################################################################################
@@ -318,18 +319,19 @@ usePL = False
 # Building the statistical model :
 infilter = histfilter
 
-dirs = ['CT10_nom',
-        'CT10_pdfup', 
-        'CT10_pdfdown',
-        'MSTW_nom', 
-        'MSTW_pdfup', 
-        'MSTW_pdfdown',
-        'NNPDF_nom', 
-        'NNPDF_pdfup', 
-        'NNPDF_pdfdown',
-        'scaleup', 
-        'scaledown'
-    ]
+dirs = [
+    'CT10_nom',
+    'CT10_pdfup', 
+    'CT10_pdfdown',
+    'MSTW_nom', 
+    'MSTW_pdfup', 
+    'MSTW_pdfdown',
+    'NNPDF_nom', 
+    'NNPDF_pdfup', 
+    'NNPDF_pdfdown',
+    'scaleup', 
+    'scaledown'
+]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
 channel = 'comb'

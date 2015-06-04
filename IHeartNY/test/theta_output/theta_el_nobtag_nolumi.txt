@@ -1,0 +1,381 @@
+Total number of likelihood evaluations: 666451
+Total number of likelihood evaluations: 452
+Total number of likelihood evaluations: 675315
+Total number of likelihood evaluations: 480
+Total number of likelihood evaluations: 676069
+Total number of likelihood evaluations: 432
+Total number of likelihood evaluations: 993900
+Total number of likelihood evaluations: 434
+Total number of likelihood evaluations: 658545
+Total number of likelihood evaluations: 416
+Total number of likelihood evaluations: 646716
+Total number of likelihood evaluations: 437
+Total number of likelihood evaluations: 659185
+Total number of likelihood evaluations: 470
+Total number of likelihood evaluations: 656475
+Total number of likelihood evaluations: 414
+Total number of likelihood evaluations: 640983
+Total number of likelihood evaluations: 434
+Total number of likelihood evaluations: 658320
+Total number of likelihood evaluations: 407
+Total number of likelihood evaluations: 616151
+Total number of likelihood evaluations: 465
+[INFO]  executing script analysis.py
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS CT10_nom el channel 1bin ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-0fcf416bae.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-2675c0e83f.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(0.027189921421924779, 0.37792149325753693)], 'jer': [(-1.6642924911956354, 0.72895479388438378)], 'toptag': [(-0.15726757696804933, 0.29038207699970581)], 'beta_signal': [(0.81648045342359477, 0.085044941232408688)], 'jec': [(0.49600698130161375, 0.50550250321968326)], 'rate_vjets': [(0.34215631911398209, 0.20625298774686043)], '__nll': [-34840.834296477791], '__cov': [array([[  7.23955792e-03,  -7.66396630e-03,   6.49763473e-04,
+          8.89660025e-03,  -1.95374870e-02,  -9.67277962e-03,
+         -2.10122803e-02],
+       [ -7.66396630e-03,   2.55532781e-01,   6.95698881e-02,
+          3.99666847e-02,   3.96701566e-02,  -5.47054934e-02,
+          2.75998984e-04],
+       [  6.49763473e-04,   6.95698881e-02,   5.31375092e-01,
+          5.63763411e-02,   5.06713990e-02,  -5.50597632e-02,
+         -2.57096588e-02],
+       [  8.89660025e-03,   3.99666847e-02,   5.63763411e-02,
+          1.42824655e-01,   3.34766030e-02,  -5.32400975e-02,
+         -4.34638414e-02],
+       [ -1.95374870e-02,   3.96701566e-02,   5.06713990e-02,
+          3.34766030e-02,   8.47308016e-01,  -3.56744866e-02,
+          4.27067696e-02],
+       [ -9.67277962e-03,  -5.47054934e-02,  -5.50597632e-02,
+         -5.32400975e-02,  -3.56744866e-02,   4.25402950e-02,
+          3.92858790e-02],
+       [ -2.10122803e-02,   2.75998984e-04,  -2.57096588e-02,
+         -4.34638414e-02,   4.27067696e-02,   3.92858790e-02,
+          8.43217506e-02]])], 'rate_st': [(-0.12777205196436375, 0.92049335478736549)]}}
+rate_el_qcd          :   0.03 +-   0.38
+jer                  :  -1.66 +-   0.73
+toptag               :  -0.16 +-   0.29
+beta_signal          :   0.82 +-   0.09
+jec                  :   0.50 +-   0.51
+rate_vjets           :   0.34 +-   0.21
+rate_st              :  -0.13 +-   0.92
+    {0.104160412997, 0.489650008584, 0.0880611537597, 0, 0.18642628856}, // bkg error for CT10_nom
+if options.pdf == "CT10_nom" and options.lepType == "ele" : toptag_post = 0.960683105758
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS CT10_pdfup el channel 1bin ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-cd3a135fc3.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-fa43c1d558.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(-0.029475128608773892, 0.39150452869843383)], 'jer': [(-1.5292484802422726, 0.72853456085795298)], 'toptag': [(-0.26490181383539563, 0.30270360421885562)], 'beta_signal': [(0.67619211946369173, 0.075213406820911044)], 'jec': [(0.49124589678824443, 0.50847713024237595)], 'rate_vjets': [(0.28394193705962495, 0.22287706633671123)], '__nll': [-34839.47091271184], '__cov': [array([[  5.66337058e-03,  -6.28457971e-03,   3.16142146e-03,
+          8.55452774e-03,  -1.82485163e-02,  -1.01148881e-02,
+         -1.98141516e-02],
+       [ -6.28457971e-03,   2.58548992e-01,   6.77589636e-02,
+          4.02337395e-02,   4.32301142e-02,  -5.57384679e-02,
+         -4.28940086e-04],
+       [  3.16142146e-03,   6.77589636e-02,   5.30762606e-01,
+          6.13463485e-02,   5.01141973e-02,  -6.13518735e-02,
+         -3.50795170e-02],
+       [  8.55452774e-03,   4.02337395e-02,   6.13463485e-02,
+          1.53275796e-01,   3.82349895e-02,  -5.89417047e-02,
+         -4.79115552e-02],
+       [ -1.82485163e-02,   4.32301142e-02,   5.01141973e-02,
+          3.82349895e-02,   8.78670700e-01,  -3.75870735e-02,
+          4.83737061e-02],
+       [ -1.01148881e-02,  -5.57384679e-02,  -6.13518735e-02,
+         -5.89417047e-02,  -3.75870735e-02,   4.96741867e-02,
+          4.69832783e-02],
+       [ -1.98141516e-02,  -4.28940086e-04,  -3.50795170e-02,
+         -4.79115552e-02,   4.83737061e-02,   4.69832783e-02,
+          9.16294720e-02]])], 'rate_st': [(0.028589698029544818, 0.93737436512131156)]}}
+rate_el_qcd          :  -0.03 +-   0.39
+jer                  :  -1.53 +-   0.73
+toptag               :  -0.26 +-   0.30
+beta_signal          :   0.68 +-   0.08
+jec                  :   0.49 +-   0.51
+rate_vjets           :   0.28 +-   0.22
+rate_st              :   0.03 +-   0.94
+    {0.111230824282, 0.462081793096, 0.0975843837009, 0, 0.198637175933}, // bkg error for CT10_pdfup
+if options.pdf == "CT10_pdfup" and options.lepType == "ele" : toptag_post = 0.933774546541
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS CT10_pdfdown el channel 1bin ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-7fc839c33f.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-88ce3963df.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(0.085881306267730079, 0.36383932364439742)], 'jer': [(-1.7744134846905941, 0.73104021423379495)], 'toptag': [(-0.070356414316708027, 0.28243372164875707)], 'beta_signal': [(0.96874875856710263, 0.096355757866714353)], 'jec': [(0.5032041391516261, 0.50473480144790162)], 'rate_vjets': [(0.36927189486127526, 0.19722088796927845)], '__nll': [-34841.365131449849], '__cov': [array([[ 0.00929219, -0.00933367, -0.00163226,  0.00934412, -0.02135074,
+        -0.00974558, -0.02271929],
+       [-0.00933367,  0.25475722,  0.07068626,  0.03928641,  0.03799599,
+        -0.05426127,  0.00110676],
+       [-0.00163226,  0.07068626,  0.53441979,  0.05220984,  0.05046613,
+        -0.05160753, -0.0196575 ],
+       [ 0.00934412,  0.03928641,  0.05220984,  0.13237905,  0.03010344,
+        -0.0493561 , -0.04002365],
+       [-0.02135074,  0.03799599,  0.05046613,  0.03010344,  0.82712773,
+        -0.03449731,  0.03910588],
+       [-0.00974558, -0.05426127, -0.05160753, -0.0493561 , -0.03449731,
+         0.03889608,  0.03485463],
+       [-0.02271929,  0.00110676, -0.0196575 , -0.04002365,  0.03910588,
+         0.03485463,  0.07976881]])], 'rate_st': [(-0.23131017809489782, 0.90946563041217543)]}}
+rate_el_qcd          :   0.09 +-   0.36
+jer                  :  -1.77 +-   0.73
+toptag               :  -0.07 +-   0.28
+beta_signal          :   0.97 +-   0.10
+jec                  :   0.50 +-   0.50
+rate_vjets           :   0.37 +-   0.20
+rate_st              :  -0.23 +-   0.91
+    {0.0994641355817, 0.507324979442, 0.0832411376664, 0, 0.174429543307}, // bkg error for CT10_pdfdown
+if options.pdf == "CT10_pdfdown" and options.lepType == "ele" : toptag_post = 0.982410896421
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS MSTW_nom el channel 1bin ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-4223a20c93.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-c2f841f9c0.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(-1.0085365155259511, 0.11018230718157683)], 'jer': [(-1.1790098642751692, 0.72383264938967606)], 'toptag': [(0.39011304518232454, 0.25964651382102655)], 'beta_signal': [(0.67693612166242012, 0.060423760154630246)], 'jec': [(0.69616423249529735, 0.40958062624967367)], 'rate_vjets': [(0.89266275613575385, 0.11555029185377633)], '__nll': [-55779.655223163194], '__cov': [array([[  3.65365192e-03,  -4.23591838e-03,  -6.27285869e-04,
+          1.01190748e-03,  -7.44313483e-03,  -3.40094144e-03,
+         -1.30057968e-02],
+       [ -4.23591838e-03,   1.67756289e-01,   1.91947552e-02,
+          3.72544980e-03,  -6.86632418e-03,  -2.53550194e-02,
+          8.92400636e-03],
+       [ -6.27285869e-04,   1.91947552e-02,   5.23933704e-01,
+          9.41493087e-03,   1.35510508e-02,  -2.10680655e-02,
+          3.85529222e-03],
+       [  1.01190748e-03,   3.72544980e-03,   9.41493087e-03,
+          1.21401408e-02,   4.55451106e-03,  -7.47287589e-03,
+         -5.08032545e-03],
+       [ -7.44313483e-03,  -6.86632418e-03,   1.35510508e-02,
+          4.55451106e-03,   6.78819537e-01,  -1.35211596e-02,
+          2.08512717e-02],
+       [ -3.40094144e-03,  -2.53550194e-02,  -2.10680655e-02,
+         -7.47287589e-03,  -1.35211596e-02,   1.33518699e-02,
+          1.47315819e-02],
+       [ -1.30057968e-02,   8.92400636e-03,   3.85529222e-03,
+         -5.08032545e-03,   2.08512717e-02,   1.47315819e-02,
+          6.74163121e-02]])], 'rate_st': [(-0.85774924740281688, 0.82390505343971865)]}}
+rate_el_qcd          :  -1.01 +-   0.11
+jer                  :  -1.18 +-   0.72
+toptag               :   0.39 +-   0.26
+beta_signal          :   0.68 +-   0.06
+jec                  :   0.70 +-   0.41
+rate_vjets           :   0.89 +-   0.12
+rate_st              :  -0.86 +-   0.82
+    {0.089260652846, 0.5886285116, 0.0399459949518, 0, 0.0828718736302}, // bkg error for MSTW_nom
+if options.pdf == "MSTW_nom" and options.lepType == "ele" : toptag_post = 1.0975282613
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS MSTW_pdfup el channel 1bin ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-cc0ffdabc8.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-e8b0520e47.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(-0.02064063688046773, 0.38958799080117329)], 'jer': [(-1.7134260060351669, 0.73738423361602956)], 'toptag': [(-0.21324929115000577, 0.2980932453509989)], 'beta_signal': [(0.70960175248024981, 0.077389332807685562)], 'jec': [(0.47295169363747619, 0.50349625839770207)], 'rate_vjets': [(0.36941248845350599, 0.20733879916960637)], '__nll': [-34840.235002209898], '__cov': [array([[  5.99551162e-03,  -7.12208562e-03,   7.55771532e-04,
+          8.44769213e-03,  -1.85253669e-02,  -8.94396897e-03,
+         -1.99127770e-02],
+       [ -7.12208562e-03,   2.53508482e-01,   6.99450437e-02,
+          4.00986662e-02,   4.44399724e-02,  -5.35934581e-02,
+          1.66011446e-03],
+       [  7.55771532e-04,   6.99450437e-02,   5.43735508e-01,
+          6.03280467e-02,   5.67435000e-02,  -5.62962865e-02,
+         -2.62487427e-02],
+       [  8.44769213e-03,   4.00986662e-02,   6.03280467e-02,
+          1.51778803e-01,   3.80032495e-02,  -5.51336060e-02,
+         -4.62777160e-02],
+       [ -1.85253669e-02,   4.44399724e-02,   5.67435000e-02,
+          3.80032495e-02,   8.71575516e-01,  -3.85368253e-02,
+          4.64780720e-02],
+       [ -8.94396897e-03,  -5.35934581e-02,  -5.62962865e-02,
+         -5.51336060e-02,  -3.85368253e-02,   4.29893776e-02,
+          4.09177094e-02],
+       [ -1.99127770e-02,   1.66011446e-03,  -2.62487427e-02,
+         -4.62777160e-02,   4.64780720e-02,   4.09177094e-02,
+          8.88595829e-02]])], 'rate_st': [(-0.023727707700345428, 0.93358208829091183)]}}
+rate_el_qcd          :  -0.02 +-   0.39
+jer                  :  -1.71 +-   0.74
+toptag               :  -0.21 +-   0.30
+beta_signal          :   0.71 +-   0.08
+jec                  :   0.47 +-   0.50
+rate_vjets           :   0.37 +-   0.21
+rate_st              :  -0.02 +-   0.93
+    {0.109060233486, 0.472328984872, 0.0875064178061, 0, 0.196804331463}, // bkg error for MSTW_pdfup
+if options.pdf == "MSTW_pdfup" and options.lepType == "ele" : toptag_post = 0.946687677212
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS MSTW_pdfdown el channel 1bin ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-67a130a30b.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-8e8a30a499.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(0.013364915117761755, 0.3800176660502762)], 'jer': [(-1.9044687615756599, 0.73368659740826614)], 'toptag': [(-0.12631124147304196, 0.28418305335399952)], 'beta_signal': [(0.91083046277189972, 0.09324054365079204)], 'jec': [(0.43039748486307317, 0.51963822319482389)], 'rate_vjets': [(0.41119291421545429, 0.19588019158470205)], '__nll': [-34841.44019835582], '__cov': [array([[ 0.00870163, -0.01040136, -0.0019388 ,  0.00916851, -0.02081816,
+        -0.00911122, -0.02232726],
+       [-0.01040136,  0.27002388,  0.06631779,  0.04094581,  0.04423186,
+        -0.05531581,  0.00411134],
+       [-0.0019388 ,  0.06631779,  0.53829602,  0.05413934,  0.05223151,
+        -0.04984072, -0.01779727],
+       [ 0.00916851,  0.04094581,  0.05413934,  0.14441343,  0.03403913,
+        -0.05084883, -0.04159672],
+       [-0.02081816,  0.04423186,  0.05223151,  0.03403913,  0.83297893,
+        -0.03628078,  0.04001929],
+       [-0.00911122, -0.05531581, -0.04984072, -0.05084883, -0.03628078,
+         0.03836905,  0.03445846],
+       [-0.02232726,  0.00411134, -0.01779727, -0.04159672,  0.04001929,
+         0.03445846,  0.08076001]])], 'rate_st': [(-0.18577324324065342, 0.91267679605548446)]}}
+rate_el_qcd          :   0.01 +-   0.38
+jer                  :  -1.90 +-   0.73
+toptag               :  -0.13 +-   0.28
+beta_signal          :   0.91 +-   0.09
+jec                  :   0.43 +-   0.52
+rate_vjets           :   0.41 +-   0.20
+rate_st              :  -0.19 +-   0.91
+    {0.102368714554, 0.498726130136, 0.081237876252, 0, 0.188747535629}, // bkg error for MSTW_pdfdown
+if options.pdf == "MSTW_pdfdown" and options.lepType == "ele" : toptag_post = 0.968422189632
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS NNPDF_nom el channel 1bin ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-053339b28f.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-f19e120db1.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(0.035106757253881911, 0.37586625902380577)], 'jer': [(-1.7307209568349577, 0.73237507331434359)], 'toptag': [(-0.12857785934068508, 0.28683698958738035)], 'beta_signal': [(0.85304805430442632, 0.087328190817316576)], 'jec': [(0.50777465100835517, 0.50351268148466044)], 'rate_vjets': [(0.38241564108295029, 0.19862370282942451)], '__nll': [-34840.91869109228], '__cov': [array([[  7.63319403e-03,  -8.16552973e-03,  -7.55284573e-04,
+          8.79822275e-03,  -1.98661988e-02,  -9.06388220e-03,
+         -2.11556644e-02],
+       [ -8.16552973e-03,   2.53525020e-01,   7.11333512e-02,
+          4.03487197e-02,   3.92528149e-02,  -5.40812576e-02,
+          7.42680622e-04],
+       [ -7.55284573e-04,   7.11333512e-02,   5.36373248e-01,
+          5.60224592e-02,   5.38741171e-02,  -5.31395813e-02,
+         -2.17981093e-02],
+       [  8.79822275e-03,   4.03487197e-02,   5.60224592e-02,
+          1.41275445e-01,   3.29354183e-02,  -5.12015198e-02,
+         -4.21590224e-02],
+       [ -1.98661988e-02,   3.92528149e-02,   5.38741171e-02,
+          3.29354183e-02,   8.40526248e-01,  -3.56176985e-02,
+          4.14161111e-02],
+       [ -9.06388220e-03,  -5.40812576e-02,  -5.31395813e-02,
+         -5.12015198e-02,  -3.56176985e-02,   3.94513753e-02,
+          3.61868297e-02],
+       [ -2.11556644e-02,   7.42680622e-04,  -2.17981093e-02,
+         -4.21590224e-02,   4.14161111e-02,   3.61868297e-02,
+          8.22754586e-02]])], 'rate_st': [(-0.17320755897520998, 0.91680218581157502)]}}
+rate_el_qcd          :   0.04 +-   0.38
+jer                  :  -1.73 +-   0.73
+toptag               :  -0.13 +-   0.29
+beta_signal          :   0.85 +-   0.09
+jec                  :   0.51 +-   0.50
+rate_vjets           :   0.38 +-   0.20
+rate_st              :  -0.17 +-   0.92
+    {0.102371947719, 0.498100360073, 0.0833707181083, 0, 0.184691175381}, // bkg error for NNPDF_nom
+if options.pdf == "NNPDF_nom" and options.lepType == "ele" : toptag_post = 0.967855535165
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS NNPDF_pdfup el channel 1bin ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-2079385401.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-1afd8d2549.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(-0.011487938087920972, 0.38602091757950086)], 'jer': [(-1.6002810283104922, 0.7275811395791052)], 'toptag': [(-0.19257427908281588, 0.29911128657963465)], 'beta_signal': [(0.72822655173999085, 0.079101302770984705)], 'jec': [(0.4833874543593823, 0.5031817168931968)], 'rate_vjets': [(0.31735193063331879, 0.21441197497640002)], '__nll': [-34838.886182217975], '__cov': [array([[  6.26363455e-03,  -6.80347650e-03,   2.14165218e-03,
+          8.66318894e-03,  -1.88246217e-02,  -9.85237598e-03,
+         -2.04181176e-02],
+       [ -6.80347650e-03,   2.53191840e-01,   6.82198616e-02,
+          3.91609648e-02,   4.31649181e-02,  -5.42955368e-02,
+          4.92478142e-04],
+       [  2.14165218e-03,   6.82198616e-02,   5.29374315e-01,
+          5.93197872e-02,   5.25110682e-02,  -5.83127089e-02,
+         -3.10007232e-02],
+       [  8.66318894e-03,   3.91609648e-02,   5.93197872e-02,
+          1.49012149e-01,   3.75554492e-02,  -5.60605076e-02,
+         -4.59882189e-02],
+       [ -1.88246217e-02,   4.31649181e-02,   5.25110682e-02,
+          3.75554492e-02,   8.68934791e-01,  -3.81639300e-02,
+          4.60505732e-02],
+       [ -9.85237598e-03,  -5.42955368e-02,  -5.83127089e-02,
+         -5.60605076e-02,  -3.81639300e-02,   4.59724950e-02,
+          4.34227480e-02],
+       [ -2.04181176e-02,   4.92478142e-04,  -3.10007232e-02,
+         -4.59882189e-02,   4.60505732e-02,   4.34227480e-02,
+          8.94675618e-02]])], 'rate_st': [(-0.0048507433818652862, 0.93216671836102094)]}}
+rate_el_qcd          :  -0.01 +-   0.39
+jer                  :  -1.60 +-   0.73
+toptag               :  -0.19 +-   0.30
+beta_signal          :   0.73 +-   0.08
+jec                  :   0.48 +-   0.50
+rate_vjets           :   0.32 +-   0.21
+rate_st              :  -0.00 +-   0.93
+    {0.108621832838, 0.467213784565, 0.0925245631197, 0, 0.19411910489}, // bkg error for NNPDF_pdfup
+if options.pdf == "NNPDF_pdfup" and options.lepType == "ele" : toptag_post = 0.951856430229
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS NNPDF_pdfdown el channel 1bin ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-219d3ca3fb.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-2f2bac8d6e.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(0.078136202234015698, 0.36599992032507483)], 'jer': [(-1.7243970836002125, 0.73149313539487137)], 'toptag': [(-0.095632036404356177, 0.28081402945169093)], 'beta_signal': [(0.92242138059556145, 0.091185505355598329)], 'jec': [(0.53323958965963691, 0.50468262870758906)], 'rate_vjets': [(0.37427619551183516, 0.1956321979590038)], '__nll': [-34842.72556762876], '__cov': [array([[  8.32175745e-03,  -8.64967785e-03,  -1.38059390e-03,
+          8.76308274e-03,  -2.01757164e-02,  -9.06983832e-03,
+         -2.13576631e-02],
+       [ -8.64967785e-03,   2.54704556e-01,   7.05958797e-02,
+          4.05182633e-02,   3.58009498e-02,  -5.44339890e-02,
+          3.36415962e-04],
+       [ -1.38059390e-03,   7.05958797e-02,   5.35082207e-01,
+          5.28154273e-02,   4.89616290e-02,  -5.15762322e-02,
+         -1.98477954e-02],
+       [  8.76308274e-03,   4.05182633e-02,   5.28154273e-02,
+          1.33955942e-01,   2.95319971e-02,  -4.92973804e-02,
+         -3.98658848e-02],
+       [ -2.01757164e-02,   3.58009498e-02,   4.89616290e-02,
+          2.95319971e-02,   8.22230961e-01,  -3.35081019e-02,
+          3.91021151e-02],
+       [ -9.06983832e-03,  -5.44339890e-02,  -5.15762322e-02,
+         -4.92973804e-02,  -3.35081019e-02,   3.82719569e-02,
+          3.42647500e-02],
+       [ -2.13576631e-02,   3.36415962e-04,  -1.98477954e-02,
+         -3.98658848e-02,   3.91021151e-02,   3.42647500e-02,
+          7.88565191e-02]])], 'rate_st': [(-0.25209015597387874, 0.9067695193476929)]}}
+rate_el_qcd          :   0.08 +-   0.37
+jer                  :  -1.72 +-   0.73
+toptag               :  -0.10 +-   0.28
+beta_signal          :   0.92 +-   0.09
+jec                  :   0.53 +-   0.50
+rate_vjets           :   0.37 +-   0.20
+rate_st              :  -0.25 +-   0.91
+    {0.0988545010706, 0.510531677065, 0.082396562931, 0, 0.176119313032}, // bkg error for NNPDF_pdfdown
+if options.pdf == "NNPDF_pdfdown" and options.lepType == "ele" : toptag_post = 0.976091990899
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS scaleup el channel 1bin ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-c7f8de3d95.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-20705fabe0.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(0.11766738625428089, 0.35750809445283133)], 'jer': [(-2.0503309275458754, 0.77442991404130201)], 'toptag': [(0.1660578605609899, 0.28608736827649733)], 'beta_signal': [(0.67939988583911792, 0.066657956213982184)], 'jec': [(0.46441671018406705, 0.52528398865855419)], 'rate_vjets': [(0.48618278398686399, 0.18416646021754618)], '__nll': [-34833.670519197382], '__cov': [array([[ 0.00444714, -0.00765788, -0.00086316,  0.00669368, -0.01424125,
+        -0.00558269, -0.01571656],
+       [-0.00765788,  0.27592327,  0.07772356,  0.03408543,  0.05472384,
+        -0.05488713,  0.00763029],
+       [-0.00086316,  0.07772356,  0.59974169,  0.05047347,  0.07652826,
+        -0.0544353 , -0.02544469],
+       [ 0.00669368,  0.03408543,  0.05047347,  0.12781204,  0.03236191,
+        -0.04498882, -0.04047715],
+       [-0.01424125,  0.05472384,  0.07652826,  0.03236191,  0.8235905 ,
+        -0.04022351,  0.03406859],
+       [-0.00558269, -0.05488713, -0.0544353 , -0.04498882, -0.04022351,
+         0.03391729,  0.03014077],
+       [-0.01571656,  0.00763029, -0.02544469, -0.04047715,  0.03406859,
+         0.03014077,  0.08184598]])], 'rate_st': [(-0.2734574478757667, 0.90751886917373226)]}}
+rate_el_qcd          :   0.12 +-   0.36
+jer                  :  -2.05 +-   0.77
+toptag               :   0.17 +-   0.29
+beta_signal          :   0.68 +-   0.07
+jec                  :   0.46 +-   0.53
+rate_vjets           :   0.49 +-   0.18
+rate_st              :  -0.27 +-   0.91
+    {0.0981129929565, 0.515801383053, 0.0740759936895, 0, 0.168821646295}, // bkg error for scaleup
+if options.pdf == "scaleup" and options.lepType == "ele" : toptag_post = 1.04151446514
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS scaledown el channel 1bin ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-d738dd4fc7.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-d6c44c5ada.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(0.14869368226337892, 0.34604921550057249)], 'jer': [(-2.0781745856707885, 0.7020206528336902)], 'toptag': [(0.095486705120245124, 0.28696929594180948)], 'beta_signal': [(0.89464793972913559, 0.097061864731593506)], 'jec': [(-1.0953572817049981, 0.69294849070757447)], 'rate_vjets': [(0.67684270840346583, 0.18700463377168572)], '__nll': [-34824.56807823167], '__cov': [array([[ 0.00943059, -0.02039318,  0.00542791,  0.01288492, -0.01810973,
+        -0.00895821, -0.02346889],
+       [-0.02039318,  0.48017761, -0.09702618, -0.02626601,  0.0917199 ,
+        -0.06449728,  0.01769921],
+       [ 0.00542791, -0.09702618,  0.492833  ,  0.03723114,  0.00538633,
+        -0.02054648, -0.02038767],
+       [ 0.01288492, -0.02626601,  0.03723114,  0.11975006,  0.01675735,
+        -0.03624612, -0.04445254],
+       [-0.01810973,  0.0917199 ,  0.00538633,  0.01675735,  0.80675925,
+        -0.03657619,  0.02950842],
+       [-0.00895821, -0.06449728, -0.02054648, -0.03624612, -0.03657619,
+         0.03497073,  0.03355789],
+       [-0.02346889,  0.01769921, -0.02038767, -0.04445254,  0.02950842,
+         0.03355789,  0.08235138]])], 'rate_st': [(-0.35655083220184208, 0.89819778046255494)]}}
+rate_el_qcd          :   0.15 +-   0.35
+jer                  :  -2.08 +-   0.70
+toptag               :   0.10 +-   0.29
+beta_signal          :   0.89 +-   0.10
+jec                  :  -1.10 +-   0.69
+rate_vjets           :   0.68 +-   0.19
+rate_st              :  -0.36 +-   0.90
+    {0.108491687536, 0.529162181758, 0.0698601502377, 0, 0.161050976394}, // bkg error for scaledown
+if options.pdf == "scaledown" and options.lepType == "ele" : toptag_post = 1.02387167628
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
+[INFO]  workdir is /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis
