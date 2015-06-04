@@ -17,25 +17,17 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
 
     cout << "make theta histograms..." << endl;
 
-    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"scaleup");
-    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"scaleup");
-    makeTheta_single("vtxMass",7,ptbin,doElectron,"scaleup");
-
-    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"scaledown");
-    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"scaledown");
-    makeTheta_single("vtxMass",7,ptbin,doElectron,"scaledown");
-
-    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_nom");
-    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_nom");
-    //makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_nom");
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_nom");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_nom");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_nom");
     
-    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_pdfup");
-    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_pdfup");
-    //makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_pdfup");
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_pdfup");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_pdfup");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_pdfup");
 
-    //makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_pdfdown");
-    //makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_pdfdown");
-    //makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_pdfdown");
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"CT10_pdfdown");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_pdfdown");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_pdfdown");
 
     makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"MSTW_nom");
     makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"MSTW_nom");
@@ -60,6 +52,14 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"NNPDF_pdfdown");
     makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"NNPDF_pdfdown");
     makeTheta_single("vtxMass",7,ptbin,doElectron,"NNPDF_pdfdown");
+
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"scaleup");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"scaleup");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"scaleup");
+
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,"scaledown");
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"scaledown");
+    makeTheta_single("vtxMass",7,ptbin,doElectron,"scaledown");
 
   } 
 
@@ -170,11 +170,10 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
 
   else if (option=="allpre") {
 
-    //makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_nom");
-    //makePlots("etaAbsLep",6,7,doElectron,ptbin,"CT10_nom");
-    //makePlots("etaAbsLep",4,6,doElectron,ptbin,"CT10_nom");
+    makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_nom");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"CT10_nom");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"CT10_nom");
 
-    /*
     makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_pdfup");
     makePlots("etaAbsLep",6,7,doElectron,ptbin,"CT10_pdfup");
     makePlots("etaAbsLep",4,6,doElectron,ptbin,"CT10_pdfup");
@@ -182,7 +181,6 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_pdfdown");
     makePlots("etaAbsLep",6,7,doElectron,ptbin,"CT10_pdfdown");
     makePlots("etaAbsLep",4,6,doElectron,ptbin,"CT10_pdfdown");
-    */
 
     makePlots("vtxMass",7,0,doElectron,ptbin,"MSTW_nom");
     makePlots("etaAbsLep",6,7,doElectron,ptbin,"MSTW_nom");

@@ -24,7 +24,7 @@ int rebinEta = 2;
 
 bool do_htlep150qcd = false;
 bool do_met50qcd = false;
-bool do_qcd = true;
+bool do_qcd = true;  //add triangular cut for electrons
 
 bool extLumi = true;
 bool extBtag = true;
@@ -141,7 +141,6 @@ SummedHist * getWJets( TString name, TString histname, bool doElectron, TString 
 
   TString DIR = "histfiles/";
   if (do_qcd && doElectron) DIR += "qcd_el/";
-  else if (do_qcd) DIR += "qcd/";
   else if (use2D && doElectron) DIR += "2Dhist_el/";
   else if (use2D) DIR += "2Dhist/";
 
@@ -204,7 +203,6 @@ SummedHist * getSingleTop( TString name, TString histname, bool doElectron, TStr
 
   TString DIR = "histfiles/";
   if (do_qcd && doElectron) DIR += "qcd_el/";
-  else if (do_qcd) DIR += "qcd/";
   else if (use2D && doElectron) DIR += "2Dhist_el/";
   else if (use2D) DIR += "2Dhist/";
 
@@ -272,7 +270,6 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
 
   TString DIR = "histfiles_" + pdfdir + "/";
   if (do_qcd && doElectron) DIR += "qcd_el/";
-  //else if (do_qcd) DIR += "qcd/";
   else if (use2D && doElectron) DIR += "2Dhists_el/";
   else if (use2D) DIR += "2Dhists/";
 
@@ -354,7 +351,6 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
 
   TString DIR = "histfiles_" + pdfdir + "/";
   if (do_qcd && doElectron) DIR += "qcd_el/";
-  //else if (do_qcd) DIR += "qcd/";
   else if (use2D && doElectron) DIR += "2Dhists_el/";
   else if (use2D) DIR += "2Dhists/";
 
@@ -456,7 +452,7 @@ SummedHist * getQCD( TString var, bool doElectron, TString ptbin = "" ) {
   }
   else if (do_qcd) {
     if (doElectron) filepath = "histfiles/qcd_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root";
-    else filepath = "histfiles/qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root";
+    else filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root";
   }
 
   TFile* qcdFile = TFile::Open(filepath);
@@ -543,7 +539,7 @@ float getPostPreRatio(bool doElectron, TString ptbin, TString pdfdir, bool combi
     h_pre2 = (TH1F*) fPRE2->Get(channel+"vtxMass7"+ptbin+hist);
   }
 
-  //Calculate ratio
+  // Calculate ratio
   float postPreRatio;
   if (cut == 6 && cut2 == 0) postPreRatio = ( h_post->Integral() + h_post2->Integral() ) / ( h_pre->Integral() + h_pre2->Integral() );
   else postPreRatio = h_post->Integral() / h_pre->Integral();
