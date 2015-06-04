@@ -11,14 +11,10 @@ import math
 # muons
 MIN_MU_PT  = 45.0
 MAX_MU_ETA = 2.1
-MAX_MU_ISO = 0.12
-MAX_MU_ISO_FOR_CLEANING = 0.20
 
 # electrons
 MIN_EL_PT  = 35.0
 MAX_EL_ETA = 2.5
-MAX_EL_ISO = 0.1
-MAX_EL_ISO_FOR_CLEANING = 0.15
 
 # jets
 MIN_JET_PT  = 30.0
@@ -235,7 +231,7 @@ h_ptGenTop          = ROOT.TH1F("ptGenTop",          ";p_{T}(generated top) [GeV
 h_ptGenTop_noweight = ROOT.TH1F("ptGenTop_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
 h_ptPartTop_raw          = ROOT.TH1F("ptPartTop_raw",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
-h_ptPartTop_raw_noweight   = ROOT.TH1F("ptPartTop_raw_noweight",   ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+h_ptPartTop_raw_noweight = ROOT.TH1F("ptPartTop_raw_noweight", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
 h_ptPartTop          = ROOT.TH1F("ptPartTop",          ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 h_massPartTop        = ROOT.TH1F("massPartTop",        ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
@@ -247,28 +243,29 @@ h_etaPartTop_noweight  = ROOT.TH1F("etaPartTop_noweight",  ";#eta(particle-level
 ### for acceptance correction / efficiency, all these are for semileptonic, ttbar->mu+jets only 
 # passParton = pt(hadronic, gen-level top quark) > 400 GeV
 # passParticle = pass particle-level selection (includes pt(particle-level top jet) > 400 GeV cut)
-h_ptPartTop_passParticle       = ROOT.TH1F("ptPartTop_passParticle",      ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
-h_massPartTop_passParticle        = ROOT.TH1F("massPartTop_passParticle", ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
-h_etaPartTop_passParticle         = ROOT.TH1F("etaPartTop_passParticle",  ";#eta(particle-level top); Events / 0.025", 240, -3, 3)
+h_ptPartTop_passParticle       = ROOT.TH1F("ptPartTop_passParticle",   ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+h_massPartTop_passParticle     = ROOT.TH1F("massPartTop_passParticle", ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_etaPartTop_passParticle      = ROOT.TH1F("etaPartTop_passParticle",  ";#eta(particle-level top); Events / 0.025", 240, -3, 3)
 h_ptPartTop_passParticleParton   = ROOT.TH1F("ptPartTop_passParticleParton",   ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
 h_massPartTop_passParticleParton = ROOT.TH1F("massPartTop_passParticleParton", ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
 h_etaPartTop_passParticleParton  = ROOT.TH1F("etaPartTop_passParticleParton",  ";#eta(particle-level top); Events / 0.025", 240, -3, 3)
-h_ptGenTop_passParton          = ROOT.TH1F("ptGenTop_passParton",         ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
-h_ptGenTop_passParticleParton  = ROOT.TH1F("ptGenTop_passParticleParton", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
-h_ptPartTop_passParticle_noweight       = ROOT.TH1F("ptPartTop_passParticle_noweight",      ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
-h_massPartTop_passParticle_noweight        = ROOT.TH1F("massPartTop_passParticle_noweight", ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
-h_etaPartTop_passParticle_noweight         = ROOT.TH1F("etaPartTop_passParticle_noweight",  ";#eta(particle-level top); Events / 0.025", 240, -3, 3)
-h_ptPartTop_passParticleParton_noweight = ROOT.TH1F("ptPartTop_passParticleParton_noweight",";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+h_ptPartTop_passParticle_noweight       = ROOT.TH1F("ptPartTop_passParticle_noweight",   ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
+h_massPartTop_passParticle_noweight     = ROOT.TH1F("massPartTop_passParticle_noweight", ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
+h_etaPartTop_passParticle_noweight      = ROOT.TH1F("etaPartTop_passParticle_noweight",  ";#eta(particle-level top); Events / 0.025", 240, -3, 3)
+h_ptPartTop_passParticleParton_noweight   = ROOT.TH1F("ptPartTop_passParticleParton_noweight",   ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
 h_massPartTop_passParticleParton_noweight = ROOT.TH1F("massPartTop_passParticleParton_noweight", ";Mass(particle-level top) [GeV]; Events / 1 GeV", 300, 0, 300)
 h_etaPartTop_passParticleParton_noweight  = ROOT.TH1F("etaPartTop_passParticleParton_noweight",  ";#eta(particle-level top); Events / 0.025", 240, -3, 3)
+
+h_ptGenTop_passParton          = ROOT.TH1F("ptGenTop_passParton",         ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
+h_ptGenTop_passParticleParton  = ROOT.TH1F("ptGenTop_passParticleParton", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 h_ptGenTop_passParton_noweight          = ROOT.TH1F("ptGenTop_passParton_noweight",         ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 h_ptGenTop_passParticleParton_noweight  = ROOT.TH1F("ptGenTop_passParticleParton_noweight", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
 ## current default bin widths
 response_pp = ROOT.RooUnfoldResponse(h_bins, h_bins)
 response_pp.SetName('response_pt_pp')
-response_pp.UseOverflow()
+
 
 # -------------------------------------------------------------------------------------
 # define all variables to be read from input files
@@ -324,6 +321,8 @@ ca8GenJetPhiHandle  = Handle("std::vector<float>")
 ca8GenJetPhiLabel   = ("pfShyftTupleCA8GenJets", "phi")
 ca8GenJetMassHandle = Handle("std::vector<float>")
 ca8GenJetMassLabel  = ("pfShyftTupleCA8GenJets", "mass")
+
+
 
 # -------------------------------------------------------------------------------------
 # need to fill response matrix with weights already from the beginning!
@@ -419,6 +418,7 @@ for event in events :
     	PileUp = puHandle.product()
     	bin1 = PilePlot.FindBin(PileUp[0]) 
     	weight *= PilePlot.GetBinContent(bin1)
+
 
     # -------------------------------------------------------------------------------------
     # If doing PDF systematatics:
@@ -538,6 +538,8 @@ for event in events :
     leptonEta = 0
     leptonPt = 0
 
+
+    # -------------------------------------------------------------------------------------
     # loop over gen particles
     for igen in xrange( len(genParticlesPt) ) :
 
@@ -602,6 +604,7 @@ for event in events :
         lepTop = topQuarks[0]
         
     ttbar = hadTop.p4 + lepTop.p4
+
     
     # -------------------------------------------------------------------------------------
     # fill histograms!        
@@ -726,9 +729,12 @@ for event in events :
         h_ptGenTop_passParton.Fill(hadTop.p4.Perp(), weight)
         h_ptGenTop_passParton_noweight.Fill(hadTop.p4.Perp())
 
+
+        
     ak5GenJets = []
     ca8GenJets = []
 
+    
     # -------------------------------------------------------------------------------------
     # get AK5 gen jets
     # -------------------------------------------------------------------------------------
@@ -756,6 +762,7 @@ for event in events :
         p4.SetPtEtaPhiM( ak5GenJetPt[iak5], ak5GenJetEta[iak5], ak5GenJetPhi[iak5], ak5GenJetMass[iak5] )
         ak5GenJets.append(p4)
 
+        
     # -------------------------------------------------------------------------------------
     # get CA8 gen jets
     # -------------------------------------------------------------------------------------
