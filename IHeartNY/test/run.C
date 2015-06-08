@@ -73,16 +73,6 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
 
   } 
 
-  if (option=="theta5") {
-
-    cout << "make theta histograms for steps 5,6,7..." << endl;
-
-    makeTheta_subtract("etaAbsLep",5,6,ptbin,doElectron,"CT10_nom");
-    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,"CT10_nom");
-    makeTheta_single("vtxMass",7,ptbin,doElectron,"CT10_nom");
-  }
-
-
   // various plots for kinematic checks
   else if (option=="plot") {
 
@@ -161,13 +151,6 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     makePlots("etaAbsLep",4,6, doElectron);
   }
 
-  // debug thing
-  else if (option=="plotmini5") {
-    makePlots("vtxMass",7,0, doElectron);
-    makePlots("etaAbsLep",6,7, doElectron);
-    makePlots("etaAbsLep",5,6, doElectron);
-  }
-
   else if (option=="allpre") {
 
     makePlots("vtxMass",7,0,doElectron,ptbin,"CT10_nom");
@@ -234,21 +217,10 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
 
   }
 
-  else if (option=="post5") {
-
-    makePosteriorPlots("etaAbsLep5", doElectron, ptbin, "CT10_nom", combine, false, true);
-    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine, false, true);
-    makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, true);
-
-    makeTable(doElectron, "", "CT10_nom", combine);
-
-  }
-
   else if (option=="allpost") {
 
     setExtName();
     
-    /*
     makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine);
     makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine);
     makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine);
@@ -263,7 +235,6 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_pdfdown", combine);
     makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_pdfdown", combine);
     makeTable(doElectron, ptbin, "CT10_pdfdown", combine);
-    */
 
     makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "MSTW_nom", combine);
     makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "MSTW_nom", combine);
