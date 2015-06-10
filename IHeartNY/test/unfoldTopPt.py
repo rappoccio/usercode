@@ -9,7 +9,7 @@ import math
 from optparse import OptionParser
 parser = OptionParser()
 
-    
+
 # -------------------------------------------------------------------------------------
 # input options
 # -------------------------------------------------------------------------------------
@@ -18,6 +18,11 @@ parser.add_option('--closureTest', metavar='F', action='store_true',
                   default=False,
                   dest='closureTest',
                   help='Run closure test')
+
+parser.add_option('--normalize', metavar='F', action='store_true',
+                  default=True,
+                  dest='normalize',
+                  help='Do normalized differential cross section')
 
 parser.add_option('--twoStep', metavar='F', action='store_true',
                   default=False,
@@ -38,11 +43,6 @@ parser.add_option('--ttbarPDF', metavar='F', type='string', action='store',
                   default='CT10_nom',
                   dest='pdf',
                   help='Which PDF set and nominal vs up/down? Or Q2 up/down?')
-
-parser.add_option('--unfoldType', metavar='F', type='string', action='store',
-                  default='full2',
-                  dest='unfold',
-                  help='Unfold using pt > 0 ("full" vs "full2" vs "full3", different binnings) or pt > 400 ("pt400")?')
 
 parser.add_option('--addNoBtag', metavar='F', action='store_true',
                   default=False,
@@ -69,25 +69,9 @@ argv = []
 
 import sys
 
-unfoldType = "_"
-if options.unfold == "":
-    unfoldType = ""
-elif (options.unfold == "full" or options.unfold == "full2" or options.unfold == "full3" or options.unfold == "pt400") == False:
-    print ""
-    print "WARNING - not a valid option for unfolding type (use either \"full\" or \"pt400\"), exiting...!"
-    print ""
-    sys.exit()
-else :
-    unfoldType += options.unfold 
-    print ""
-    print "Unfolding using option \"" + options.unfold +"\" "
-    print ""
-
-
 nobtag = ""
 if options.addNoBtag == True:
     nobtag = "_nobtag"
-
 
     
 from ROOT import gRandom, TH1, TH1D, cout, TFile, gSystem, TCanvas, TPad, gPad, gROOT, gStyle, THStack, TLegend, TLatex, TColor
@@ -183,6 +167,7 @@ if options.closureTest == True:
 
 # -------------------------------------------------------------------------------------
 # Scaling of the various backgrounds from the theta fit
+# *** these are using the combined fit result ***
 # -------------------------------------------------------------------------------------
 
 ### background counts: 1toptag+1btag (nom, up, dn), 1toptag+>=0btag (nom, up, dn))
@@ -203,117 +188,117 @@ else:
     
 ### muon channel
 if options.pdf == "CT10_nom" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [28.1642, 31.9996, 24.3289, 70.8412, 80.4882, 61.1942]   #unfold
-    n_wjets           = [4.364, 4.83321, 3.89478, 174.952, 193.763, 156.141]   #unfold
-    n_singletop       = [3.54622, 5.67982, 1.41262, 15.7152, 25.1704, 6.2601]   #unfold
-    n_qcd             = [9.52228, 11.3246, 7.72, 59.7344, 71.0403, 48.4285]   #unfold
+    n_ttbarnonsemilep = [29.5454, 31.7288, 27.362, 74.3116, 79.8033, 68.8199]   #unfold
+    n_wjets           = [3.84511, 4.14691, 3.5433, 155.559, 167.769, 143.349]   #unfold
+    n_singletop       = [4.1156, 6.03127, 2.19993, 18.5079, 27.1227, 9.8931]   #unfold
+    n_qcd             = [3.24901, 4.65408, 1.84395, 18.1419, 25.9874, 10.2963]   #unfold
 if options.pdf == "CT10_pdfup" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [27.9857, 32.0025, 23.9689, 70.8017, 80.964, 60.6394]   #unfold
-    n_wjets           = [4.00972, 4.48587, 3.53357, 162.632, 181.944, 143.319]   #unfold
-    n_singletop       = [3.44369, 5.50598, 1.38139, 15.3059, 24.472, 6.13979]   #unfold
-    n_qcd             = [9.87787, 11.6437, 8.112, 61.965, 73.0425, 50.8875]   #unfold
+    n_ttbarnonsemilep = [29.6872, 32.0514, 27.3231, 74.8188, 80.777, 68.8606]   #unfold
+    n_wjets           = [3.48582, 3.80286, 3.16878, 141.044, 153.872, 128.216]   #unfold
+    n_singletop       = [4.26181, 6.08828, 2.43534, 19.1602, 27.3717, 10.9488]   #unfold
+    n_qcd             = [3.22307, 4.62543, 1.8207, 17.997, 25.8275, 10.1664]   #unfold
 if options.pdf == "CT10_pdfdown" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [28.1156, 31.7899, 24.4412, 70.6088, 79.8365, 61.3811]   #unfold
-    n_wjets           = [4.65365, 5.12678, 4.18052, 185.117, 203.938, 166.296]   #unfold
-    n_singletop       = [3.61272, 5.79998, 1.42547, 15.9794, 25.6539, 6.30498]   #unfold
-    n_qcd             = [9.15339, 10.9935, 7.31327, 57.4203, 68.9636, 45.877]   #unfold
+    n_ttbarnonsemilep = [29.2976, 31.3514, 27.2437, 73.745, 78.9148, 68.5752]   #unfold
+    n_wjets           = [4.12607, 4.41843, 3.83371, 166.834, 178.655, 155.012]   #unfold
+    n_singletop       = [4.06546, 6.05067, 2.08025, 18.2779, 27.2032, 9.35258]   #unfold
+    n_qcd             = [3.21379, 4.61857, 1.809, 17.9452, 25.7892, 10.1011]   #unfold
 if options.pdf == "MSTW_nom" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [28.1887, 32.0444, 24.3329, 70.932, 80.6343, 61.2297]   #unfold
-    n_wjets           = [4.3956, 4.86461, 3.92659, 176.183, 194.982, 157.384]   #unfold
-    n_singletop       = [3.54129, 5.67508, 1.40749, 15.6908, 25.1453, 6.23634]   #unfold
-    n_qcd             = [9.59676, 11.3926, 7.80089, 60.2016, 71.4673, 48.9359]   #unfold
+    n_ttbarnonsemilep = [30.0253, 32.2625, 27.788, 75.6538, 81.291, 70.0167]   #unfold
+    n_wjets           = [4.51859, 4.86389, 4.17329, 181.614, 195.492, 167.735]   #unfold
+    n_singletop       = [3.10571, 4.53451, 1.67692, 13.7171, 20.0276, 7.40646]   #unfold
+    n_qcd             = [1.4205, 2.039, 0.802001, 8.91098, 12.7909, 5.03105]   #unfold
 if options.pdf == "MSTW_pdfup" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [28.0767, 32.012, 24.1413, 70.8849, 80.8204, 60.9495]   #unfold
-    n_wjets           = [4.3325, 4.78824, 3.87675, 174.031, 192.338, 155.725]   #unfold
-    n_singletop       = [3.51415, 5.62785, 1.40045, 15.5649, 24.9269, 6.20288]   #unfold
-    n_qcd             = [9.89875, 11.6612, 8.13628, 62.096, 73.1522, 51.0399]   #unfold
+    n_ttbarnonsemilep = [29.6667, 31.9876, 27.3457, 74.7976, 80.6493, 68.9459]   #unfold
+    n_wjets           = [3.77654, 4.07085, 3.48222, 152.73, 164.632, 140.827]   #unfold
+    n_singletop       = [4.36679, 6.2535, 2.48008, 19.6357, 28.1195, 11.1519]   #unfold
+    n_qcd             = [3.19734, 4.59454, 1.80014, 17.8533, 25.655, 10.0516]   #unfold
 if options.pdf == "MSTW_pdfdown" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [28.2873, 32.0608, 24.5138, 70.8918, 80.3488, 61.4349]   #unfold
-    n_wjets           = [4.63485, 5.09942, 4.17028, 184.932, 203.468, 166.395]   #unfold
-    n_singletop       = [3.5838, 5.75973, 1.40787, 15.8732, 25.5108, 6.23567]   #unfold
-    n_qcd             = [9.57173, 11.3619, 7.7816, 60.0446, 71.2742, 48.8149]   #unfold
+    n_ttbarnonsemilep = [29.6932, 31.8374, 27.549, 74.5324, 79.9145, 69.1504]   #unfold
+    n_wjets           = [4.08374, 4.35902, 3.80846, 164.957, 176.076, 153.837]   #unfold
+    n_singletop       = [4.10387, 6.04757, 2.16016, 18.4372, 27.1696, 9.70485]   #unfold
+    n_qcd             = [3.12785, 4.52659, 1.72911, 17.4653, 25.2756, 9.65504]   #unfold
 if options.pdf == "NNPDF_nom" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [27.3348, 30.8549, 23.8147, 68.5254, 77.3499, 59.701]   #unfold
-    n_wjets           = [4.74339, 5.21821, 4.26857, 188.575, 207.451, 169.698]   #unfold
-    n_singletop       = [3.7092, 5.95821, 1.46019, 16.4049, 26.3518, 6.4581]   #unfold
-    n_qcd             = [10.6747, 12.2539, 9.09542, 66.9635, 76.8704, 57.0566]   #unfold
+    n_ttbarnonsemilep = [29.2599, 31.4221, 27.0978, 73.5471, 78.9818, 68.1124]   #unfold
+    n_wjets           = [4.01603, 4.3159, 3.71617, 162.739, 174.89, 150.587]   #unfold
+    n_singletop       = [4.26249, 6.19837, 2.32661, 19.2003, 27.9204, 10.4802]   #unfold
+    n_qcd             = [3.59548, 5.00361, 2.18736, 20.0765, 27.9392, 12.2138]   #unfold
 if options.pdf == "NNPDF_pdfup" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [27.872, 31.7098, 24.0342, 69.0227, 78.5266, 59.5188]   #unfold
-    n_wjets           = [4.32935, 4.80398, 3.85472, 174.491, 193.62, 155.361]   #unfold
-    n_singletop       = [3.60122, 5.76074, 1.4417, 15.9802, 25.5629, 6.39745]   #unfold
-    n_qcd             = [10.4378, 12.0832, 8.79236, 65.4774, 75.7993, 55.1555]   #unfold
+    n_ttbarnonsemilep = [29.9064, 32.298, 27.5147, 73.9191, 79.8304, 68.0077]   #unfold
+    n_wjets           = [3.71731, 4.03376, 3.40086, 150.297, 163.091, 137.502]   #unfold
+    n_singletop       = [4.59115, 6.46155, 2.72074, 20.6152, 29.0137, 12.2167]   #unfold
+    n_qcd             = [3.35005, 4.75569, 1.94441, 18.706, 26.5548, 10.8572]   #unfold
 if options.pdf == "NNPDF_pdfdown" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [23.9143, 26.6638, 21.1647, 61.8445, 68.955, 54.7339]   #unfold
-    n_wjets           = [5.7301, 6.29576, 5.16445, 222.504, 244.468, 200.539]   #unfold
-    n_singletop       = [10.38, 12.6828, 8.07721, 45.6484, 55.7754, 35.5214]   #unfold
-    n_qcd             = [13.2824, 14.6411, 11.9237, 83.3221, 91.8455, 74.7987]   #unfold
+    n_ttbarnonsemilep = [28.4181, 30.4602, 26.376, 74.0566, 79.3782, 68.7349]   #unfold
+    n_wjets           = [4.28231, 4.5759, 3.98873, 173.532, 185.429, 161.635]   #unfold
+    n_singletop       = [4.55516, 6.54825, 2.56207, 20.5461, 29.5359, 11.5562]   #unfold
+    n_qcd             = [3.63054, 5.04976, 2.21133, 20.2722, 28.1969, 12.3476]   #unfold
 if options.pdf == "scaleup" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [28.5788, 32.5469, 24.6107, 72.3536, 82.3997, 62.3075]   #unfold
-    n_wjets           = [4.29936, 4.69019, 3.90852, 173.868, 189.674, 158.063]   #unfold
-    n_singletop       = [3.41799, 5.4721, 1.36387, 15.068, 24.1234, 6.01253]   #unfold
-    n_qcd             = [8.14429, 10.2154, 6.07317, 51.0901, 64.0825, 38.0977]   #unfold
+    n_ttbarnonsemilep = [29.1199, 31.2431, 26.9967, 73.1421, 78.4751, 67.8092]   #unfold
+    n_wjets           = [4.17536, 4.45188, 3.89884, 167.269, 178.347, 156.191]   #unfold
+    n_singletop       = [4.3735, 6.35102, 2.39599, 19.4241, 28.2069, 10.6414]   #unfold
+    n_qcd             = [3.20629, 4.5915, 1.82107, 17.9033, 25.638, 10.1685]   #unfold
 if options.pdf == "scaledown" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [25.7471, 29.0597, 22.4344, 72.3859, 81.6991, 63.0726]   #unfold
-    n_wjets           = [4.73317, 5.23569, 4.23065, 189.358, 209.462, 169.254]   #unfold
-    n_singletop       = [3.67313, 5.94687, 1.39939, 16.259, 26.3237, 6.19437]   #unfold
-    n_qcd             = [10.7492, 12.2991, 9.19925, 67.4309, 77.1538, 57.708]   #unfold
-
+    n_ttbarnonsemilep = [27.2267, 29.352, 25.1014, 77.0442, 83.0582, 71.0303]   #unfold
+    n_wjets           = [4.47126, 4.77589, 4.16663, 166.264, 177.592, 154.937]   #unfold
+    n_singletop       = [4.55842, 6.46376, 2.65309, 20.5063, 29.0776, 11.9351]   #unfold
+    n_qcd             = [2.93531, 4.30665, 1.56396, 16.3902, 24.0475, 8.73285]   #unfold
+    
 ### electron channel
 if options.pdf == "CT10_nom" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [29.8444, 32.7033, 26.9855, 71.3904, 78.2291, 64.5516]   #unfold
-    n_wjets           = [8.42257, 8.8202, 8.02493, 310.527, 325.187, 295.867]   #unfold
-    n_singletop       = [3.00695, 4.78191, 1.232, 15.3119, 24.3502, 6.27353]   #unfold
-    n_qcd             = [10.42, 11.2478, 9.59218, 140.985, 152.185, 129.784]   #unfold
+    n_ttbarnonsemilep = [30.4236, 32.672, 28.1753, 70.4531, 75.6596, 65.2465]   #unfold
+    n_wjets           = [2.69465, 2.90616, 2.48315, 130.705, 140.964, 120.446]   #unfold
+    n_singletop       = [3.23182, 4.73612, 1.72752, 15.1449, 22.1944, 8.09549]   #unfold
+    n_qcd             = [10.4881, 11.1397, 9.8365, 78.1238, 82.9773, 73.2703]   #unfold
 if options.pdf == "CT10_pdfup" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [30.1086, 33.1272, 27.0899, 72.439, 79.7017, 65.1764]   #unfold
-    n_wjets           = [8.23543, 8.6402, 7.83066, 305.644, 320.666, 290.622]   #unfold
-    n_singletop       = [3.23379, 5.11893, 1.34865, 15.5016, 24.5382, 6.46491]   #unfold
-    n_qcd             = [10.0758, 10.9269, 9.22478, 136.328, 147.842, 124.813]   #unfold
+    n_ttbarnonsemilep = [31.0298, 33.5009, 28.5587, 71.7269, 77.4389, 66.0149]   #unfold
+    n_wjets           = [2.44589, 2.66835, 2.22343, 118.454, 129.228, 107.681]   #unfold
+    n_singletop       = [3.33209, 4.76012, 1.90407, 15.663, 22.3757, 8.95036]   #unfold
+    n_qcd             = [10.4024, 11.0573, 9.74747, 77.4854, 82.3637, 72.6071]   #unfold
 if options.pdf == "CT10_pdfdown" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [29.4114, 32.1358, 26.6869, 70.2933, 76.8048, 63.7818]   #unfold
-    n_wjets           = [8.69967, 9.10066, 8.29867, 318.012, 332.67, 303.354]   #unfold
-    n_singletop       = [3.01138, 4.80829, 1.21446, 15.3209, 24.463, 6.17881]   #unfold
-    n_qcd             = [10.5412, 11.3649, 9.71752, 142.624, 153.769, 131.48]   #unfold
+    n_ttbarnonsemilep = [29.8529, 31.9457, 27.7601, 69.4357, 74.3034, 64.568]   #unfold
+    n_wjets           = [2.89077, 3.0956, 2.68594, 140.116, 150.045, 130.188]   #unfold
+    n_singletop       = [3.17698, 4.72834, 1.62562, 14.9404, 22.2359, 7.64481]   #unfold
+    n_qcd             = [10.597, 11.2433, 9.95063, 78.9348, 83.7492, 74.1204]   #unfold
 if options.pdf == "MSTW_nom" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [29.3959, 32.226, 26.5658, 70.223, 76.9838, 63.4622]   #unfold
-    n_wjets           = [8.62878, 9.03055, 8.22701, 317.016, 331.777, 302.255]   #unfold
-    n_singletop       = [3.22865, 5.13182, 1.32549, 15.5334, 24.6898, 6.37706]   #unfold
-    n_qcd             = [10.2005, 11.0468, 9.35424, 138.015, 149.466, 126.564]   #unfold
+    n_ttbarnonsemilep = [32.5295, 34.9534, 30.1056, 77.6335, 83.4182, 71.8488]   #unfold
+    n_wjets           = [5.33551, 5.74324, 4.92779, 202.842, 218.342, 187.341]   #unfold
+    n_singletop       = [3.09066, 4.51253, 1.66879, 14.1608, 20.6756, 7.64606]   #unfold
+    n_qcd             = [15.1826, 16.1222, 14.2429, 205.423, 218.136, 192.709]   #unfold
 if options.pdf == "MSTW_pdfup" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [29.4136, 32.3277, 26.4995, 69.6511, 76.5517, 62.7505]   #unfold
-    n_wjets           = [8.49389, 8.88971, 8.09807, 314.226, 328.869, 299.583]   #unfold
-    n_singletop       = [3.24127, 5.12342, 1.35913, 15.6518, 24.7405, 6.56312]   #unfold
-    n_qcd             = [10.1431, 10.992, 9.29415, 137.238, 148.724, 125.752]   #unfold
+    n_ttbarnonsemilep = [30.2959, 32.6661, 27.9257, 69.133, 74.5416, 63.7244]   #unfold
+    n_wjets           = [2.65105, 2.85765, 2.44444, 128.026, 138.004, 118.049]   #unfold
+    n_singletop       = [3.374, 4.83177, 1.91623, 15.9862, 22.8932, 9.07924]   #unfold
+    n_qcd             = [10.4802, 11.1303, 9.83011, 78.0649, 82.9072, 73.2227]   #unfold
 if options.pdf == "MSTW_pdfdown" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [29.0022, 31.7348, 26.2696, 69.2073, 75.7281, 62.6865]   #unfold
-    n_wjets           = [8.72571, 9.11892, 8.33251, 318.833, 333.201, 304.465]   #unfold
-    n_singletop       = [2.95214, 4.70101, 1.20327, 15.3144, 24.3868, 6.24205]   #unfold
-    n_qcd             = [10.4353, 11.2619, 9.60862, 141.191, 152.376, 130.006]   #unfold
+    n_ttbarnonsemilep = [29.4834, 31.6124, 27.3544, 68.3667, 73.3035, 63.4299]   #unfold
+    n_wjets           = [2.86815, 3.06149, 2.67481, 138.079, 147.386, 128.771]   #unfold
+    n_singletop       = [3.1211, 4.59934, 1.64286, 14.9587, 22.0436, 7.87385]   #unfold
+    n_qcd             = [10.5141, 11.1634, 9.86484, 78.3175, 83.1537, 73.4813]   #unfold
 if options.pdf == "NNPDF_nom" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [29.6279, 32.4309, 26.8249, 70.2968, 76.9474, 63.6462]   #unfold
-    n_wjets           = [8.58248, 8.97657, 8.1884, 315.561, 330.05, 301.071]   #unfold
-    n_singletop       = [3.01911, 4.80467, 1.23356, 15.368, 24.457, 6.2791]   #unfold
-    n_qcd             = [10.4597, 11.2862, 9.63307, 141.521, 152.705, 130.337]   #unfold
+    n_ttbarnonsemilep = [29.9561, 32.1696, 27.7425, 68.9934, 74.0916, 63.8952]   #unfold
+    n_wjets           = [2.81272, 3.02274, 2.6027, 136.948, 147.174, 126.723]   #unfold
+    n_singletop       = [3.41655, 4.96823, 1.86487, 15.7704, 22.9328, 8.60801]   #unfold
+    n_qcd             = [10.5615, 11.2205, 9.90251, 78.6707, 83.5796, 73.7619]   #unfold
 if options.pdf == "NNPDF_pdfup" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [29.9074, 32.8549, 26.96, 71.6679, 78.7309, 64.6049]   #unfold
-    n_wjets           = [8.24029, 8.63951, 7.84107, 305.28, 320.07, 290.49]   #unfold
-    n_singletop       = [3.05021, 4.82472, 1.2757, 15.5176, 24.5453, 6.48998]   #unfold
-    n_qcd             = [10.346, 11.1763, 9.5157, 139.983, 151.217, 128.749]   #unfold
+    n_ttbarnonsemilep = [30.0837, 32.4895, 27.6779, 69.5541, 75.1164, 63.9917]   #unfold
+    n_wjets           = [2.60593, 2.82776, 2.38409, 126.424, 137.186, 115.662]   #unfold
+    n_singletop       = [3.59811, 5.06395, 2.13226, 16.9029, 23.789, 10.0168]   #unfold
+    n_qcd             = [10.54, 11.1946, 9.88535, 78.5103, 83.3866, 73.6341]   #unfold
 if options.pdf == "NNPDF_pdfdown" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [29.7156, 32.463, 26.9683, 70.9149, 77.4713, 64.3585]   #unfold
-    n_wjets           = [8.68883, 9.08536, 8.2923, 318.267, 332.791, 303.742]   #unfold
-    n_singletop       = [2.97043, 4.75234, 1.18851, 15.1351, 24.2145, 6.05579]   #unfold
-    n_qcd             = [10.5091, 11.3338, 9.68441, 142.19, 153.348, 131.032]   #unfold
+    n_ttbarnonsemilep = [30.1898, 32.3592, 28.0204, 70.061, 75.0955, 65.0265]   #unfold
+    n_wjets           = [2.99923, 3.20485, 2.79361, 145.669, 155.656, 135.683]   #unfold
+    n_singletop       = [3.62101, 5.20537, 2.03665, 16.7915, 24.1385, 9.44444]   #unfold
+    n_qcd             = [10.4654, 11.1311, 9.79968, 77.9548, 82.9136, 72.996]   #unfold
 if options.pdf == "scaleup" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [28.9284, 31.6242, 26.2326, 65.8302, 71.9649, 59.6956]   #unfold
-    n_wjets           = [9.28813, 9.68849, 8.88777, 342.661, 357.431, 327.89]   #unfold
-    n_singletop       = [3.63993, 5.72424, 1.55562, 17.2889, 27.189, 7.38886]   #unfold
-    n_qcd             = [10.5541, 11.387, 9.7212, 142.799, 154.068, 131.53]   #unfold
+    n_ttbarnonsemilep = [30.5948, 32.8256, 28.3641, 67.7576, 72.698, 62.8173]   #unfold
+    n_wjets           = [2.9727, 3.16958, 2.77583, 138.739, 147.928, 129.551]   #unfold
+    n_singletop       = [2.87133, 4.16962, 1.57303, 15.3831, 22.3388, 8.42754]   #unfold
+    n_qcd             = [11.644, 12.2664, 11.0217, 86.7342, 91.3703, 82.0982]   #unfold
 if options.pdf == "scaledown" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [31.289, 34.256, 28.322, 66.1724, 72.4473, 59.8976]   #unfold
-    n_wjets           = [9.01791, 9.42822, 8.60759, 332.791, 347.933, 317.649]   #unfold
-    n_singletop       = [3.57937, 5.6205, 1.53825, 17.1463, 26.924, 7.3687]   #unfold
-    n_qcd             = [10.5305, 11.3658, 9.69518, 142.479, 153.781, 131.177]   #unfold
+    n_ttbarnonsemilep = [31.4704, 33.9269, 29.0139, 65.4972, 70.6098, 60.3845]   #unfold
+    n_wjets           = [2.63983, 2.81968, 2.45998, 136.729, 146.044, 127.413]   #unfold
+    n_singletop       = [2.82311, 4.00312, 1.64311, 15.8357, 22.4547, 9.21667]   #unfold
+    n_qcd             = [12.1023, 12.712, 11.4926, 90.1481, 94.6896, 85.6065]   #unfold
 
 
 ### finally extract relevant background normalizations
@@ -328,12 +313,16 @@ fitted_ttbarnonsemilep = n_ttbarnonsemilep[i_bkgnorm]
 # -------------------------------------------------------------------------------------
 
 DIR = ""
+ttDIR = "2Dhists"
+dataDIR = "2Dhist"
 muOrEl = "mu"
 if options.lepType=="ele":
     print ""
     print "UNFOLDING FOR ELECTRON CHANNEL !!!" 
     print ""
     DIR = "_el"
+    ttDIR = "qcd_el"
+    dataDIR = "qcd_el"
     muOrEl = "el"
 else:
     print ""
@@ -342,20 +331,20 @@ else:
     
 
 if options.lepType=="ele":
-    f_data = TFile("histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root")
-    f_QCD  = TFile("histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root")
+    f_data = TFile("histfiles/"+dataDIR+"/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root")
+    f_QCD  = TFile("histfiles/"+dataDIR+"/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root")
 else:
-    f_data = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root")
-    f_QCD  = TFile("histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root")
+    f_data = TFile("histfiles/"+dataDIR+"/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root")
+    f_QCD  = TFile("histfiles/"+dataDIR+"/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root")
 
     
 if options.closureTest == True : 
-    f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
-    f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
-    f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
-    f_ttbar_max700_odd    = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
-    f_ttbar_700to1000_odd = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
-    f_ttbar_1000toInf_odd = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
+    f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
+    f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
+    f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
+    f_ttbar_max700_odd    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
+    f_ttbar_700to1000_odd = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
+    f_ttbar_1000toInf_odd = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
     ## full truth samples for unfolding (two-step) particle-level to parton 
     f_ttbar_max700_pp    = TFile("TruthStudy/TT_max700_"+options.pdf+DIR+"_fullTruth_even.root")
     f_ttbar_700to1000_pp = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+DIR+"_fullTruth_even.root")
@@ -364,43 +353,44 @@ if options.closureTest == True :
     f_ttbar_700to1000_pp_odd = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+DIR+"_fullTruth_odd.root")
     f_ttbar_1000toInf_pp_odd = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+DIR+"_fullTruth_odd.root")
 else :
-    #f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
-    #f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
-    #f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
-    f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/postfit/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
-    f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/postfit/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
-    f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/postfit/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+    f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+    f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+    f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
     ## full truth samples for unfolding (two-step) particle-level to parton 
     f_ttbar_max700_pp    = TFile("TruthStudy/TT_max700_"+options.pdf+DIR+"_fullTruth.root")
     f_ttbar_700to1000_pp = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+DIR+"_fullTruth.root")
     f_ttbar_1000toInf_pp = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+DIR+"_fullTruth.root")
 
-f_ttbar_nonsemilep_max700    = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
-f_ttbar_nonsemilep_700to1000 = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
-f_ttbar_nonsemilep_1000toInf = TFile("histfiles_"+options.pdf+"/2Dhists"+DIR+"/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+f_ttbar_nonsemilep_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+f_ttbar_nonsemilep_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+f_ttbar_nonsemilep_1000toInf = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
 
-f_T_t     = TFile("histfiles/2Dhist"+DIR+"/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
-f_Tbar_t  = TFile("histfiles/2Dhist"+DIR+"/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
-f_T_s     = TFile("histfiles/2Dhist"+DIR+"/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
-f_Tbar_s  = TFile("histfiles/2Dhist"+DIR+"/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
-f_T_tW    = TFile("histfiles/2Dhist"+DIR+"/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
-f_Tbar_tW = TFile("histfiles/2Dhist"+DIR+"/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_T_t     = TFile("histfiles/"+dataDIR+"/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_Tbar_t  = TFile("histfiles/"+dataDIR+"/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_T_s     = TFile("histfiles/"+dataDIR+"/T_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_Tbar_s  = TFile("histfiles/"+dataDIR+"/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_T_tW    = TFile("histfiles/"+dataDIR+"/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_Tbar_tW = TFile("histfiles/"+dataDIR+"/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
 
-f_WJets_1jet   = TFile("histfiles/2Dhist"+DIR+"/W1JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
-f_WJets_2jet   = TFile("histfiles/2Dhist"+DIR+"/W2JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
-f_WJets_3jet   = TFile("histfiles/2Dhist"+DIR+"/W3JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
-f_WJets_4jet   = TFile("histfiles/2Dhist"+DIR+"/W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_WJets_1jet   = TFile("histfiles/"+dataDIR+"/W1JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_WJets_2jet   = TFile("histfiles/"+dataDIR+"/W2JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_WJets_3jet   = TFile("histfiles/"+dataDIR+"/W3JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+f_WJets_4jet   = TFile("histfiles/"+dataDIR+"/W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
 
+
+unfold = "_full2"
+if (muOrEl=="el"):
+    unfold = ""
 
 # the response matrices are simply added here, but have been filled with the full event weights (taking sample size, efficiency, etx. into account)
 if options.closureTest == True : 
-    response_ttbar_max700    = f_ttbar_max700_odd.Get("response_pt"+nobtag+unfoldType)
-    response_ttbar_700to1000 = f_ttbar_700to1000_odd.Get("response_pt"+nobtag+unfoldType)
-    response_ttbar_1000toInf = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag+unfoldType)
+    response_ttbar_max700    = f_ttbar_max700_odd.Get("response_pt"+nobtag+unfold)
+    response_ttbar_700to1000 = f_ttbar_700to1000_odd.Get("response_pt"+nobtag+unfold)
+    response_ttbar_1000toInf = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag+unfold)
 else :
-    response_ttbar_max700    = f_ttbar_max700.Get("response_pt"+nobtag+unfoldType)
-    response_ttbar_700to1000 = f_ttbar_700to1000.Get("response_pt"+nobtag+unfoldType)
-    response_ttbar_1000toInf = f_ttbar_1000toInf.Get("response_pt"+nobtag+unfoldType)
+    response_ttbar_max700    = f_ttbar_max700.Get("response_pt"+nobtag+unfold)
+    response_ttbar_700to1000 = f_ttbar_700to1000.Get("response_pt"+nobtag+unfold)
+    response_ttbar_1000toInf = f_ttbar_1000toInf.Get("response_pt"+nobtag+unfold)
 
 response = response_ttbar_max700.Clone()
 response.SetName("response_pt_"+options.syst)
@@ -410,26 +400,26 @@ response.Add(response_ttbar_1000toInf)
 ## response matrices for two-step unfolding
 if options.twoStep == True :
     if options.closureTest == True : 
-        response_ttbar_max700_rp    = f_ttbar_max700_odd.Get("response_pt"+nobtag+unfoldType+"_rp")
-        response_ttbar_700to1000_rp = f_ttbar_700to1000_odd.Get("response_pt"+nobtag+unfoldType+"_rp")
-        response_ttbar_1000toInf_rp = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag+unfoldType+"_rp")
-        response_ttbar_max700_pp    = f_ttbar_max700_pp_odd.Get("response_pt"+unfoldType+"_pp")
-        response_ttbar_700to1000_pp = f_ttbar_700to1000_pp_odd.Get("response_pt"+unfoldType+"_pp")
-        response_ttbar_1000toInf_pp = f_ttbar_1000toInf_pp_odd.Get("response_pt"+unfoldType+"_pp")
+        response_ttbar_max700_rp    = f_ttbar_max700_odd.Get("response_pt"+nobtag+unfold+"_rp")
+        response_ttbar_700to1000_rp = f_ttbar_700to1000_odd.Get("response_pt"+nobtag+unfold+"_rp")
+        response_ttbar_1000toInf_rp = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag+unfold+"_rp")
+        response_ttbar_max700_pp    = f_ttbar_max700_pp_odd.Get("response_pt_full2_pp")
+        response_ttbar_700to1000_pp = f_ttbar_700to1000_pp_odd.Get("response_pt_full2_pp")
+        response_ttbar_1000toInf_pp = f_ttbar_1000toInf_pp_odd.Get("response_pt_full2_pp")
         if options.troubleshoot == True:
-            response_ttbar_max700_rp_even    = f_ttbar_max700.Get("response_pt"+nobtag+unfoldType+"_rp")
-            response_ttbar_700to1000_rp_even = f_ttbar_700to1000.Get("response_pt"+nobtag+unfoldType+"_rp")
-            response_ttbar_1000toInf_rp_even = f_ttbar_1000toInf.Get("response_pt"+nobtag+unfoldType+"_rp")
-            response_ttbar_max700_pp_even    = f_ttbar_max700_pp.Get("response_pt"+unfoldType+"_pp")
-            response_ttbar_700to1000_pp_even = f_ttbar_700to1000_pp.Get("response_pt"+unfoldType+"_pp")
-            response_ttbar_1000toInf_pp_even = f_ttbar_1000toInf_pp.Get("response_pt"+unfoldType+"_pp")
+            response_ttbar_max700_rp_even    = f_ttbar_max700.Get("response_pt"+nobtag+unfold+"_rp")
+            response_ttbar_700to1000_rp_even = f_ttbar_700to1000.Get("response_pt"+nobtag+unfold+"_rp")
+            response_ttbar_1000toInf_rp_even = f_ttbar_1000toInf.Get("response_pt"+nobtag+unfold+"_rp")
+            response_ttbar_max700_pp_even    = f_ttbar_max700_pp.Get("response_pt_full2_pp")
+            response_ttbar_700to1000_pp_even = f_ttbar_700to1000_pp.Get("response_pt_full2_pp")
+            response_ttbar_1000toInf_pp_even = f_ttbar_1000toInf_pp.Get("response_pt_full2_pp")
     else:
-        response_ttbar_max700_rp    = f_ttbar_max700.Get("response_pt"+nobtag+unfoldType+"_rp")
-        response_ttbar_700to1000_rp = f_ttbar_700to1000.Get("response_pt"+nobtag+unfoldType+"_rp")
-        response_ttbar_1000toInf_rp = f_ttbar_1000toInf.Get("response_pt"+nobtag+unfoldType+"_rp")
-        response_ttbar_max700_pp    = f_ttbar_max700_pp.Get("response_pt"+unfoldType+"_pp")
-        response_ttbar_700to1000_pp = f_ttbar_700to1000_pp.Get("response_pt"+unfoldType+"_pp")
-        response_ttbar_1000toInf_pp = f_ttbar_1000toInf_pp.Get("response_pt"+unfoldType+"_pp")
+        response_ttbar_max700_rp    = f_ttbar_max700.Get("response_pt"+nobtag+unfold+"_rp")
+        response_ttbar_700to1000_rp = f_ttbar_700to1000.Get("response_pt"+nobtag+unfold+"_rp")
+        response_ttbar_1000toInf_rp = f_ttbar_1000toInf.Get("response_pt"+nobtag+unfold+"_rp")
+        response_ttbar_max700_pp    = f_ttbar_max700_pp.Get("response_pt_full2_pp")
+        response_ttbar_700to1000_pp = f_ttbar_700to1000_pp.Get("response_pt_full2_pp")
+        response_ttbar_1000toInf_pp = f_ttbar_1000toInf_pp.Get("response_pt_full2_pp")
 
     response_rp = response_ttbar_max700_rp.Clone()
     response_rp.SetName("response_pt_"+options.syst+"_rp")
@@ -463,9 +453,9 @@ bkgout = ""
 if options.bkgSyst == "bkgup" or options.bkgSyst == "bkgdn":
     bkgout = "_"+options.bkgSyst
 if options.twoStep :
-    fout = TFile("UnfoldingPlots/unfold"+DIR+"_2step_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".root","recreate");
+    fout = TFile("UnfoldingPlots/unfold"+DIR+"_2step_"+options.pdf+"_"+options.syst+bkgout+nobtag+".root","recreate");
 else :
-    fout = TFile("UnfoldingPlots/unfold"+DIR+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".root","recreate");
+    fout = TFile("UnfoldingPlots/unfold"+DIR+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".root","recreate");
 
 
 # -------------------------------------------------------------------------------------
@@ -473,31 +463,31 @@ else :
 # -------------------------------------------------------------------------------------
 
 if options.closureTest == True : 
-    hTrue_max700    = f_ttbar_max700_odd.Get("ptGenTop"+unfoldType)
-    hTrue_700to1000 = f_ttbar_700to1000_odd.Get("ptGenTop"+unfoldType)
-    hTrue_1000toInf = f_ttbar_1000toInf_odd.Get("ptGenTop"+unfoldType)
+    hTrue_max700    = f_ttbar_max700_odd.Get("ptGenTop"+unfold)
+    hTrue_700to1000 = f_ttbar_700to1000_odd.Get("ptGenTop"+unfold)
+    hTrue_1000toInf = f_ttbar_1000toInf_odd.Get("ptGenTop"+unfold)
 
     if options.twoStep :
-        hPart_max700    = f_ttbar_max700_odd.Get("ptPartTop"+unfoldType)
-        hPart_700to1000 = f_ttbar_700to1000_odd.Get("ptPartTop"+unfoldType)
-        hPart_1000toInf = f_ttbar_1000toInf_odd.Get("ptPartTop"+unfoldType)
+        hPart_max700    = f_ttbar_max700_odd.Get("ptPartTop"+unfold)
+        hPart_700to1000 = f_ttbar_700to1000_odd.Get("ptPartTop"+unfold)
+        hPart_1000toInf = f_ttbar_1000toInf_odd.Get("ptPartTop"+unfold)
 
         if options.troubleshoot :
-            hTrue_max700_even    = f_ttbar_max700.Get("ptGenTop"+unfoldType)
-            hTrue_700to1000_even = f_ttbar_700to1000.Get("ptGenTop"+unfoldType)
-            hTrue_1000toInf_even = f_ttbar_1000toInf.Get("ptGenTop"+unfoldType)
-            hPart_max700_even    = f_ttbar_max700.Get("ptPartTop"+unfoldType)
-            hPart_700to1000_even = f_ttbar_700to1000.Get("ptPartTop"+unfoldType)
-            hPart_1000toInf_even = f_ttbar_1000toInf.Get("ptPartTop"+unfoldType)
+            hTrue_max700_even    = f_ttbar_max700.Get("ptGenTop"+unfold)
+            hTrue_700to1000_even = f_ttbar_700to1000.Get("ptGenTop"+unfold)
+            hTrue_1000toInf_even = f_ttbar_1000toInf.Get("ptGenTop"+unfold)
+            hPart_max700_even    = f_ttbar_max700.Get("ptPartTop"+unfold)
+            hPart_700to1000_even = f_ttbar_700to1000.Get("ptPartTop"+unfold)
+            hPart_1000toInf_even = f_ttbar_1000toInf.Get("ptPartTop"+unfold)
 else :
-    hTrue_max700    = f_ttbar_max700.Get("ptGenTop"+unfoldType)
-    hTrue_700to1000 = f_ttbar_700to1000.Get("ptGenTop"+unfoldType)
-    hTrue_1000toInf = f_ttbar_1000toInf.Get("ptGenTop"+unfoldType)
+    hTrue_max700    = f_ttbar_max700.Get("ptGenTop"+unfold)
+    hTrue_700to1000 = f_ttbar_700to1000.Get("ptGenTop"+unfold)
+    hTrue_1000toInf = f_ttbar_1000toInf.Get("ptGenTop"+unfold)
 
     if options.twoStep :
-        hPart_max700    = f_ttbar_max700.Get("ptPartTop"+unfoldType)
-        hPart_700to1000 = f_ttbar_700to1000.Get("ptPartTop"+unfoldType)
-        hPart_1000toInf = f_ttbar_1000toInf.Get("ptPartTop"+unfoldType)
+        hPart_max700    = f_ttbar_max700.Get("ptPartTop"+unfold)
+        hPart_700to1000 = f_ttbar_700to1000.Get("ptPartTop"+unfold)
+        hPart_1000toInf = f_ttbar_1000toInf.Get("ptPartTop"+unfold)
 
 hTrue_max700.Sumw2()
 hTrue_700to1000.Sumw2()
@@ -521,46 +511,46 @@ if options.twoStep:
     isTwoStep = "_2step"
    
 
-hRecoData = f_data.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType).Clone()
-hRecoData.SetName("hRecoData"+unfoldType)
+hRecoData = f_data.Get("ptRecoTop"+isTwoStep+nobtag+unfold).Clone()
+hRecoData.SetName("hRecoData")
 
-hRecoQCD = f_QCD.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType).Clone()
+hRecoQCD = f_QCD.Get("ptRecoTop"+isTwoStep+nobtag+unfold).Clone()
 hRecoQCD.SetName("hRecoQCD")
 hRecoQCD.Sumw2()
 hRecoQCD.SetFillColor(TColor.kYellow)
 
 if options.closureTest == False : 
-    hMeas = f_data.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
+    hMeas = f_data.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
 else :
-    hMeas_max700    = f_ttbar_max700.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-    hMeas_700to1000 = f_ttbar_700to1000.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-    hMeas_1000toInf = f_ttbar_1000toInf.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
+    hMeas_max700    = f_ttbar_max700.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+    hMeas_700to1000 = f_ttbar_700to1000.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+    hMeas_1000toInf = f_ttbar_1000toInf.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
     hMeas_max700.Sumw2()
     hMeas_700to1000.Sumw2()
     hMeas_1000toInf.Sumw2()
 
     if options.troubleshoot :
-        hMeas_max700_odd    = f_ttbar_max700_odd.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-        hMeas_700to1000_odd = f_ttbar_700to1000_odd.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-        hMeas_1000toInf_odd = f_ttbar_1000toInf_odd.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
+        hMeas_max700_odd    = f_ttbar_max700_odd.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+        hMeas_700to1000_odd = f_ttbar_700to1000_odd.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+        hMeas_1000toInf_odd = f_ttbar_1000toInf_odd.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
         hMeas_max700_odd.Sumw2()
         hMeas_700to1000_odd.Sumw2()
         hMeas_1000toInf_odd.Sumw2()
     
 
-hMeas_T_t     = f_T_t.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-hMeas_Tbar_t  = f_Tbar_t.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-hMeas_T_s     = f_T_s.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-hMeas_Tbar_s  = f_Tbar_s.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-hMeas_T_tW    = f_T_tW.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-hMeas_Tbar_tW = f_Tbar_tW.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-hMeas_WJets_1jet   = f_WJets_1jet.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-hMeas_WJets_2jet   = f_WJets_2jet.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-hMeas_WJets_3jet   = f_WJets_3jet.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-hMeas_WJets_4jet   = f_WJets_4jet.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-hMeas_tt0_nonsemi = f_ttbar_nonsemilep_max700.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-hMeas_tt700_nonsemi = f_ttbar_nonsemilep_700to1000.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
-hMeas_tt1000_nonsemi = f_ttbar_nonsemilep_1000toInf.Get("ptRecoTop"+isTwoStep+nobtag+unfoldType)
+hMeas_T_t     = f_T_t.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_Tbar_t  = f_Tbar_t.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_T_s     = f_T_s.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_Tbar_s  = f_Tbar_s.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_T_tW    = f_T_tW.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_Tbar_tW = f_Tbar_tW.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_WJets_1jet   = f_WJets_1jet.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_WJets_2jet   = f_WJets_2jet.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_WJets_3jet   = f_WJets_3jet.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_WJets_4jet   = f_WJets_4jet.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_tt0_nonsemi = f_ttbar_nonsemilep_max700.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_tt700_nonsemi = f_ttbar_nonsemilep_700to1000.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_tt1000_nonsemi = f_ttbar_nonsemilep_1000toInf.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
 
 hMeas_T_t.Sumw2()
 hMeas_Tbar_t.Sumw2()
@@ -696,24 +686,6 @@ if options.closureTest == False :
 # draw background-subtracted data distribution 
 # -------------------------------------------------------------------------------------
 
-#if options.closureTest == False : 
-#    cc = TCanvas("cc", "", 800, 600)
-#    
-#    ll = TLegend(0.4, 0.65, 0.7, 0.9)
-#    ll.SetFillStyle(0)
-#    ll.SetTextFont(42)
-#    ll.SetTextSize(0.045)
-#    ll.SetBorderSize(0)
-#    
-#    hMeas.SetLineColor(1)
-#    hMeas.SetLineWidth(2)
-#    hMeas.Draw("hist")
-#    hMeas.Draw("axis,same")
-#    ll.AddEntry(hMeas, "Background-subtracted data","l")
-#    ll.Draw()
-#    cc.SaveAs("UnfoldingPlots/unfold"+DIR+"_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".png")
-#    cc.SaveAs("UnfoldingPlots/unfold"+DIR+"_input"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".eps")
-
 if options.closureTest and options.troubleshoot and options.twoStep :
     ct1 = TCanvas("ct1", "", 800, 600)
     
@@ -732,7 +704,7 @@ if options.closureTest and options.troubleshoot and options.twoStep :
     lt1.AddEntry(hMeas, "Unfolding input, even","l")
     lt1.AddEntry(hMeas_odd, "Unfolding input, odd","l")
     lt1.Draw()
-    ct1.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hMeas_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".png")
+    ct1.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hMeas_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".png")
 
     ct2 = TCanvas("ct2", "", 800, 600)
     
@@ -751,7 +723,7 @@ if options.closureTest and options.troubleshoot and options.twoStep :
     lt2.AddEntry(hPart_even, "Particle-level truth, even","l")
     lt2.AddEntry(hPart, "Particle-level truth, odd","l")
     lt2.Draw()
-    ct2.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hPart_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".png")
+    ct2.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hPart_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".png")
 
     ct3 = TCanvas("ct3", "", 800, 600)
     
@@ -770,9 +742,10 @@ if options.closureTest and options.troubleshoot and options.twoStep :
     lt3.AddEntry(hTrue_even, "Parton-level truth, even","l")
     lt3.AddEntry(hTrue, "Parton-level truth, odd","l")
     lt3.Draw()
-    ct3.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hTrue_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+".png")
+    ct3.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_hTrue_evenVsOdd"+isTwoStep+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".png")
 
 
+    
 # -------------------------------------------------------------------------------------
 # do the actual unfolding
 # -------------------------------------------------------------------------------------
@@ -781,38 +754,20 @@ if options.closureTest and options.troubleshoot and options.twoStep :
 # -------------------------------------------------------------------------------------
 # trigger SF for particle-level
 
-if unfoldType == "_pt400" or unfoldType == "":
-    if options.lepType == "ele":
-        trigSF_rp = [1.32581, 1.37968, 1.43356, 1.48744, 1.62214]
+if options.lepType == "ele":
+    if options.pdf == "scaleup":
+        trigSF_rp = [0.0, 0.0, 1.3516, 1.40157, 1.45154, 1.50151, 1.62643, 0.0]
+    elif options.pdf == "scaledown":
+        trigSF_rp = [0.0, 0.0, 1.33585, 1.38794, 1.44003, 1.49212, 1.62236, 0.0]
     else:
-        trigSF_rp = [1.20002, 1.20692, 1.21382, 1.22071, 1.23795]
-elif unfoldType == "_full":
-    if options.lepType == "ele":
-        trigSF_rp = [0.0, 0.0, 0.0, 0.0, 1.32581, 1.37968, 1.43356, 1.48744, 1.62214, 0.0]
-    else:
-        trigSF_rp = [0.0, 0.0, 0.0, 0.0, 1.20002, 1.20692, 1.21382, 1.22071, 1.23795, 0.0]
-elif unfoldType == "_full2":
-    if options.lepType == "ele":
-        if options.pdf == "scaleup":
-            trigSF_rp = [0.0, 0.0, 1.3516, 1.40157, 1.45154, 1.50151, 1.62643, 0.0]
-        elif options.pdf == "scaledown":
-            trigSF_rp = [0.0, 0.0, 1.33585, 1.38794, 1.44003, 1.49212, 1.62236, 0.0]
-        else:
-            trigSF_rp = [0.0, 0.0, 1.32581, 1.37968, 1.43356, 1.48744, 1.62214, 0.0]
-    else:
-        if options.pdf == "scaleup":
-            trigSF_rp = [0.0, 0.0, 1.17308, 1.17612, 1.17915, 1.18218, 1.18976, 0.0]
-        elif options.pdf == "scaledown":
-            trigSF_rp = [0.0, 0.0, 1.16728, 1.17801, 1.18873, 1.19946, 1.22627, 0.0]
-        else:
-            trigSF_rp = [0.0, 0.0, 1.20002, 1.20692, 1.21382, 1.22071, 1.23795, 0.0]
-elif unfoldType == "_full3":
-    if options.lepType == "ele":
-        trigSF_rp = [0.0, 1.32581, 1.37968, 1.43356, 1.48744, 1.62214, 0.0]
-    else:
-        trigSF_rp = [0.0, 1.20002, 1.20692, 1.21382, 1.22071, 1.23795, 0.0]
+        trigSF_rp = [0.0, 0.0, 1.32581, 1.37968, 1.43356, 1.48744, 1.62214, 0.0]
 else:
-    print "invalid unfolding type option"
+    if options.pdf == "scaleup":
+        trigSF_rp = [0.0, 0.0, 1.17308, 1.17612, 1.17915, 1.18218, 1.18976, 0.0]
+    elif options.pdf == "scaledown":
+        trigSF_rp = [0.0, 0.0, 1.16728, 1.17801, 1.18873, 1.19946, 1.22627, 0.0]
+    else:
+        trigSF_rp = [0.0, 0.0, 1.20002, 1.20692, 1.21382, 1.22071, 1.23795, 0.0]
 
 
 # -------------------------------------------------------------------------------------
@@ -867,55 +822,55 @@ if options.twoStep:
     hPart.Scale(1.0/(lum*4/27))    # true @ parton level
     hReco_rp.Scale(1.0/(lum*4/27)) # unfolded to particle level
 
-## correct also to post-fit top-tagging SF !!! 
-# nuisance_toptag = X +/- eX
-# prior = 25%
-# posterior_toptag = prior_toptag * (1.0 + 0.25*X) 
-
-if options.pdf == "CT10_nom" and options.lepType == "muon" : 
-    toptag_post = 1.10649440886
-if options.pdf == "CT10_pdfup" and options.lepType == "muon" : 
-    toptag_post = 1.06707266216
-if options.pdf == "CT10_pdfdown" and options.lepType == "muon" : 
-    toptag_post = 1.13966730776
-if options.pdf == "MSTW_nom" and options.lepType == "muon" : 
-    toptag_post = 1.10744665435
-if options.pdf == "MSTW_pdfup" and options.lepType == "muon" : 
-    toptag_post = 1.09450114957
-if options.pdf == "MSTW_pdfdown" and options.lepType == "muon" : 
-    toptag_post = 1.13594832035
-if options.pdf == "NNPDF_nom" and options.lepType == "muon" : 
-    toptag_post = 1.16550559607
-if options.pdf == "NNPDF_pdfup" and options.lepType == "muon" : 
-    toptag_post = 1.11834541764
-if options.pdf == "NNPDF_pdfdown" and options.lepType == "muon" : 
-    toptag_post = 1.40246183384
-if options.pdf == "scaleup" and options.lepType == "muon" : 
-    toptag_post = 1.06423533136
-if options.pdf == "scaledown" and options.lepType == "muon" : 
-    toptag_post = 1.19994741704
-if options.pdf == "CT10_nom" and options.lepType == "ele" : 
-    toptag_post = 1.09579275566
-if options.pdf == "CT10_pdfup" and options.lepType == "ele" : 
-    toptag_post = 1.07216881228
-if options.pdf == "CT10_pdfdown" and options.lepType == "ele" : 
-    toptag_post = 1.11804095015
-if options.pdf == "MSTW_nom" and options.lepType == "ele" : 
-    toptag_post = 1.09751083131
-if options.pdf == "MSTW_pdfup" and options.lepType == "ele" : 
-    toptag_post = 1.0842812137
-if options.pdf == "MSTW_pdfdown" and options.lepType == "ele" : 
-    toptag_post = 1.1092318743
-if options.pdf == "NNPDF_nom" and options.lepType == "ele" : 
-    toptag_post = 1.10402528198
-if options.pdf == "NNPDF_pdfup" and options.lepType == "ele" : 
-    toptag_post = 1.08350599359
-if options.pdf == "NNPDF_pdfdown" and options.lepType == "ele" : 
-    toptag_post = 1.11391002882
-if options.pdf == "scaleup" and options.lepType == "ele" : 
-    toptag_post = 1.16876619788
-if options.pdf == "scaledown" and options.lepType == "ele" : 
-    toptag_post = 1.15662221006
+### correct also to post-fit top-tagging SF !!! 
+## nuisance_toptag = X +/- eX
+## prior = 25%
+## posterior_toptag = prior_toptag * (1.0 + 0.25*X) 
+#
+#if options.pdf == "CT10_nom" and options.lepType == "muon" : 
+#    toptag_post = 1.10649440886
+#if options.pdf == "CT10_pdfup" and options.lepType == "muon" : 
+#    toptag_post = 1.06707266216
+#if options.pdf == "CT10_pdfdown" and options.lepType == "muon" : 
+#    toptag_post = 1.13966730776
+#if options.pdf == "MSTW_nom" and options.lepType == "muon" : 
+#    toptag_post = 1.10744665435
+#if options.pdf == "MSTW_pdfup" and options.lepType == "muon" : 
+#    toptag_post = 1.09450114957
+#if options.pdf == "MSTW_pdfdown" and options.lepType == "muon" : 
+#    toptag_post = 1.13594832035
+#if options.pdf == "NNPDF_nom" and options.lepType == "muon" : 
+#    toptag_post = 1.16550559607
+#if options.pdf == "NNPDF_pdfup" and options.lepType == "muon" : 
+#    toptag_post = 1.11834541764
+#if options.pdf == "NNPDF_pdfdown" and options.lepType == "muon" : 
+#    toptag_post = 1.40246183384
+#if options.pdf == "scaleup" and options.lepType == "muon" : 
+#    toptag_post = 1.06423533136
+#if options.pdf == "scaledown" and options.lepType == "muon" : 
+#    toptag_post = 1.19994741704
+#if options.pdf == "CT10_nom" and options.lepType == "ele" : 
+#    toptag_post = 1.09579275566
+#if options.pdf == "CT10_pdfup" and options.lepType == "ele" : 
+#    toptag_post = 1.07216881228
+#if options.pdf == "CT10_pdfdown" and options.lepType == "ele" : 
+#    toptag_post = 1.11804095015
+#if options.pdf == "MSTW_nom" and options.lepType == "ele" : 
+#    toptag_post = 1.09751083131
+#if options.pdf == "MSTW_pdfup" and options.lepType == "ele" : 
+#    toptag_post = 1.0842812137
+#if options.pdf == "MSTW_pdfdown" and options.lepType == "ele" : 
+#    toptag_post = 1.1092318743
+#if options.pdf == "NNPDF_nom" and options.lepType == "ele" : 
+#    toptag_post = 1.10402528198
+#if options.pdf == "NNPDF_pdfup" and options.lepType == "ele" : 
+#    toptag_post = 1.08350599359
+#if options.pdf == "NNPDF_pdfdown" and options.lepType == "ele" : 
+#    toptag_post = 1.11391002882
+#if options.pdf == "scaleup" and options.lepType == "ele" : 
+#    toptag_post = 1.16876619788
+#if options.pdf == "scaledown" and options.lepType == "ele" : 
+#    toptag_post = 1.15662221006
 
 
 #if options.closureTest == False : 
@@ -931,40 +886,22 @@ if options.pdf == "scaledown" and options.lepType == "ele" :
 
 ## trigger SF (this is for correcting parton-level distribution & one-step unfolded distribution @ parton-level 
 
-if unfoldType == "_full":
-    if options.lepType == "ele":
-        trigSF = [0.0, 0.0, 0.0, 0.0, 1.6879, 1.73525, 1.78259, 1.82994, 1.94831, 0.0]
+if options.lepType == "ele":
+    if options.pdf == "scaleup":
+        trigSF = [0.0, 0.0, 1.67745, 1.71964, 1.76184, 1.80403, 1.90952, 0.0]
+    elif options.pdf == "scaledown":
+        trigSF = [0.0, 0.0, 1.69947, 1.72769, 1.75592, 1.78415, 1.85471, 0.0]
     else:
-        trigSF = [0.0, 0.0, 0.0, 0.0, 1.62046, 1.58152, 1.54259, 1.50365, 1.4063, 0.0]
-elif unfoldType == "_full2":
-    if options.lepType == "ele":
-        if options.pdf == "scaleup":
-            trigSF = [0.0, 0.0, 1.67745, 1.71964, 1.76184, 1.80403, 1.90952, 0.0]
-        elif options.pdf == "scaledown":
-            trigSF = [0.0, 0.0, 1.69947, 1.72769, 1.75592, 1.78415, 1.85471, 0.0]
-        else:
-            trigSF = [0.0, 0.0, 1.6879, 1.73525, 1.78259, 1.82994, 1.94831, 0.0]
-    else:
-        if options.pdf == "scaleup":
-            trigSF = [0.0, 0.0, 1.57944, 1.56532, 1.55121, 1.5371, 1.50182, 0.0]
-        elif options.pdf == "scaledown":
-            trigSF = [0.0, 0.0, 1.56584, 1.55551, 1.54517, 1.53484, 1.509, 0.0]
-        else:
-            trigSF = [0.0, 0.0, 1.62046, 1.58152, 1.54259, 1.50365, 1.4063, 0.0]
-elif unfoldType == "_full3":
-    if options.lepType == "ele":
-        trigSF = [0.0, 1.6879, 1.73525, 1.78259, 1.82994, 1.94831, 0.0]
-    else:
-        trigSF = [0.0, 1.62046, 1.58152, 1.54259, 1.50365, 1.4063, 0.0]
-elif unfoldType == "_pt400" or unfoldType == "":
-    if options.lepType == "ele":
-        trigSF = [1.6879, 1.73525, 1.78259, 1.82994, 1.94831]
-    else:
-        trigSF = [1.62046, 1.58152, 1.54259, 1.50365, 1.4063]
+        trigSF = [0.0, 0.0, 1.6879, 1.73525, 1.78259, 1.82994, 1.94831, 0.0]
 else:
-    print "Unvalid unfolding type!!" 
+    if options.pdf == "scaleup":
+        trigSF = [0.0, 0.0, 1.57944, 1.56532, 1.55121, 1.5371, 1.50182, 0.0]
+    elif options.pdf == "scaledown":
+        trigSF = [0.0, 0.0, 1.56584, 1.55551, 1.54517, 1.53484, 1.509, 0.0]
+    else:
+        trigSF = [0.0, 0.0, 1.62046, 1.58152, 1.54259, 1.50365, 1.4063, 0.0]
 
-    
+
 sumReco = 0
 sumTrue = 0
 sumMeas = 0
@@ -994,15 +931,47 @@ for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
     # correct measured distribution for bin width
     hMeas.SetBinContent(ibin,  hMeas.GetBinContent(ibin) / width )
     hMeas.SetBinError(ibin,  hMeas.GetBinError(ibin) / width )
-    
-    sumReco += hReco.GetBinContent(ibin)*width
-    sumTrue += hTrue.GetBinContent(ibin)*width
-    sumMeas += hMeas.GetBinContent(ibin)*width
+
+    # total cross section for pt > 400 GeV 
+    if hReco.GetBinLowEdge(ibin) > 399. :
+        print "ibin = " + str(ibin) + " hReco = " + str(int(hReco.GetBinContent(ibin)*width))
+        sumReco += hReco.GetBinContent(ibin)*width
+    if hTrue.GetBinLowEdge(ibin) > 399. :
+        print "ibin = " + str(ibin) + " hTrue = " + str(int(hTrue.GetBinContent(ibin)*width))
+        sumTrue += hTrue.GetBinContent(ibin)*width
+    if hMeas.GetBinLowEdge(ibin) > 399. :
+        sumMeas += hMeas.GetBinContent(ibin)*width
     if options.twoStep:
-        sumReco_rp += hReco_rp.GetBinContent(ibin)*width
-        sumPart += hPart.GetBinContent(ibin)*width
+        if hReco_rp.GetBinLowEdge(ibin) > 399. :
+            sumReco_rp += hReco_rp.GetBinContent(ibin)*width
+        if hPart.GetBinLowEdge(ibin) > 399. :
+            sumPart += hPart.GetBinContent(ibin)*width
     
 
+
+# -------------------------------------------------------------------------------------
+# do NORMALIZED differential cross section instead??
+# -------------------------------------------------------------------------------------
+if options.normalize: 
+    hTrue.Scale(1.0/sumTrue)
+    hReco.Scale(1.0/sumReco)
+    hMeas.Scale(1.0/sumMeas)
+    if options.twoStep:
+        hReco_rp.Scale(1.0/sumReco_rp)
+        hPart.Scale(1.0/sumPart)
+    
+print ''
+for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
+
+    width = hTrue.GetBinWidth(ibin)
+
+    # total cross section for pt > 400 GeV 
+    if hReco.GetBinLowEdge(ibin) > 399. :
+        print "ibin = " + str(ibin) + " hReco = " + str(hReco.GetBinContent(ibin)*width)
+    if hTrue.GetBinLowEdge(ibin) > 399. :
+        print "ibin = " + str(ibin) + " hTrue = " + str(hTrue.GetBinContent(ibin)*width)
+
+        
 # -------------------------------------------------------------------------------------
 # print & draw
 # -------------------------------------------------------------------------------------
@@ -1020,23 +989,16 @@ if options.twoStep:
     hFrac_rp.SetTitle(";Particle-level top p_{T} [GeV];Data/MC")
     hFrac_rp.Divide(hPart)
 
-
-bin400 = hMeas.GetXaxis().FindBin(400.)
-binmax = hMeas.GetXaxis().FindBin(10000.)
-
-print 'htrue = ' + str(hTrue.Integral(bin400,binmax))
-print 'hmeas = ' + str(hMeas.Integral(bin400,binmax))
-print 'hreco = ' + str(hReco.Integral(bin400,binmax))
+print ''
+print '-------------------------------------------------------------------------------------'
+print 'sigma (raw data) = ' + str(int(sumMeas)) + ' fb'
+print 'true sigma @ parton-level (pt > 400 GeV)      = ' + str(int(sumTrue)) + ' fb'
+print 'measured sigma (unfolded data) @ parton-level = ' + str(int(sumReco)) + ' fb'
 if options.twoStep:
-    print 'hreco_rp = ' + str(hReco_rp.Integral(bin400,binmax))
-    print 'hpart    = ' + str(hPart.Integral(bin400,binmax))
-        
-print 'true sigma = ' + str(sumTrue)
-print 'meas sigma = ' + str(sumMeas)
-print 'reco sigma = ' + str(sumReco)
-if options.twoStep:
-    print 'reco_rp sigma = ' + str(sumReco_rp)
-    print 'part sigma    = ' + str(sumPart)
+    print 'true sigma @ particle-level                     = ' + str(int(sumPart)) + ' fb'
+    print 'measured sigma (unfolded data) @ particle-level = ' + str(int(sumReco_rp)) + ' fb'
+print '-------------------------------------------------------------------------------------'
+print ''
 
 
 # -------------------------------------------------------------------------------------
@@ -1057,7 +1019,12 @@ hReco.GetXaxis().SetRangeUser(400.,1200.)
 hTrue.GetXaxis().SetRangeUser(400.,1200.)
 hMeas.GetXaxis().SetRangeUser(400.,1200.)
 
-hReco.SetTitle(";;d#sigma/dp_{T} [fb/GeV]")
+
+xsec_title = ";;d#sigma/dp_{T} [fb/GeV]"
+if options.normalize:    
+    xsec_title = ";;1/#sigma d#sigma/dp_{T} [1/GeV]"
+
+hReco.SetTitle(xsec_title)
 hReco.GetYaxis().SetTitleOffset(1.2)
 hReco.SetMinimum(0.0)
 max = hTrue.GetMaximum()
@@ -1136,11 +1103,9 @@ if options.twoStep :
 if options.closureTest :
     append += "_closure"
 
-#postfit = "_postfit"
-postfit = ""
-c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+postfit+".pdf", "pdf")
-c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+postfit+".png", "png")
-c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+postfit+".eps", "eps")
+c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".pdf", "pdf")
+c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".png", "png")
+c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".eps", "eps")
 
 
 
@@ -1158,7 +1123,7 @@ if options.twoStep:
     hPart.GetXaxis().SetRangeUser(400.,1200.)
     hMeas.GetXaxis().SetRangeUser(400.,1200.)
 
-    hReco_rp.SetTitle(";;d#sigma/dp_{T} [fb/GeV]")
+    hReco_rp.SetTitle(xsec_title)
     hReco_rp.GetYaxis().SetTitleOffset(1.2)
     hReco_rp.SetMinimum(0.0)
     max = hPart.GetMaximum()
@@ -1225,9 +1190,9 @@ if options.twoStep:
     if options.closureTest :
         append += "_closure"
         
-    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+postfit+".pdf", "pdf")
-    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+postfit+".png", "png")
-    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+unfoldType+postfit+".eps", "eps")
+    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".pdf", "pdf")
+    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".png", "png")
+    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".eps", "eps")
 
 
 
@@ -1273,9 +1238,9 @@ if options.twoStep == False:
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D.Draw("colz,same,text")
     hEmpty2D.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".png")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
     hEmpty2D.SetAxisRange(450,1150,"X")
     hEmpty2D.SetAxisRange(450,1150,"Y")
@@ -1284,9 +1249,9 @@ if options.twoStep == False:
     hEmpty2D.Draw()
     hResponse2D.Draw("colz,same,text")
     hEmpty2D.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
     response.Hresponse().SetName("responseMatrix_"+options.syst)
     response.Hresponse().Write()
@@ -1327,13 +1292,13 @@ if options.twoStep:
         gStyle.SetPaintTextFormat(".1f")
         hResponse2D_rp.Draw("colz,same,text")
         hEmpty2D_rp.Draw("axis,same")
-        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_rp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_rp_odd_"+options.pdf+"_"+options.syst+nobtag+".png")
 
         hEmpty2D_rp_even.Draw()
         gStyle.SetPaintTextFormat(".1f")
         hResponse2D_rp_even.Draw("colz,same,text")
         hEmpty2D_rp_even.Draw("axis,same")
-        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_rp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_rp_even_"+options.pdf+"_"+options.syst+nobtag+".png")
     
     # normalize so that for each bin of particle-level top pt, the bins in measured top pt add up to 100%
     nbinsX = hResponse2D_rp.GetNbinsX()
@@ -1353,9 +1318,9 @@ if options.twoStep:
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+postfit+".png")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+postfit+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+postfit+".pdf")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".png")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".pdf")
     
     hEmpty2D_rp.SetAxisRange(450,1150,"X")
     hEmpty2D_rp.SetAxisRange(450,1150,"Y")
@@ -1364,9 +1329,9 @@ if options.twoStep:
     hEmpty2D_rp.Draw()
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+postfit+".png")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+postfit+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+postfit+".pdf")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
 
     response_rp.Hresponse().SetName("responseMatrix_rp_"+options.syst)
@@ -1403,17 +1368,17 @@ if options.twoStep:
         gStyle.SetPaintTextFormat(".1f")
         hResponse2D_pp.Draw("colz,same,text")
         hEmpty2D_pp.Draw("axis,same")
-        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+".png")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+".eps")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_odd_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
         hEmpty2D_pp_even.Draw()
         gStyle.SetPaintTextFormat(".1f")
         hResponse2D_pp_even.Draw("colz,same,text")
         hEmpty2D_pp_even.Draw("axis,same")
-        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+".png")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+".eps")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_even_"+options.pdf+"_"+options.syst+nobtag+".pdf")
     
     # normalize so that for each bin of particle-level top pt, the bins in measured top pt add up to 100%
     nbinsX = hResponse2D_pp.GetNbinsX()
@@ -1432,9 +1397,9 @@ if options.twoStep:
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D_pp.Draw("colz,same,text")
     hEmpty2D_pp.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".png")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".pdf")
     
     hEmpty2D_pp.SetAxisRange(450,1150,"X")
     hEmpty2D_pp.SetAxisRange(450,1150,"Y")
@@ -1443,9 +1408,9 @@ if options.twoStep:
     hEmpty2D_pp.Draw()
     hResponse2D_pp.Draw("colz,same,text")
     hEmpty2D_pp.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".png")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+unfoldType+".pdf")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
+    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
     response_pp.Hresponse().SetName("responseMatrix_pp_"+options.syst)
     response_pp.Hresponse().Write()

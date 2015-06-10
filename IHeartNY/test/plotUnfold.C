@@ -8,6 +8,7 @@
 #include "TLeaf.h"
 #include "TCanvas.h"
 #include "TLegend.h"
+#include "TPad.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TF1.h"
@@ -27,41 +28,50 @@ void plot(TString channel, bool wobtag, bool do2step);
 
 void plotUnfold() {
 
-  cout << " bla " << endl;
+  bool doNormalized=true;
 
-  plot("muon",true,true);
-  /*plot("muon",false,false);
-  plot("muon",false,true);
-  plot("muon",true,false);*/
+  plot("mu",true,true, doNormalized);
+  //plot("mu",true,false, doNormalized);
+  //plot("mu",false,false, doNormalized);
+  //plot("mu",false,true, doNormalized);
 
-  plot("ele",true,true);
-  /*plot("ele",false,false);
-  plot("ele",false,true);
-  plot("ele",true,false);*/
+  plot("el",true,true, doNormalized);
+  //plot("el",true,false, doNormalized);
+  //plot("el",false,false, doNormalized);
+  //plot("el",false,true, doNormalized);
+
+  plot("comb",true,true, doNormalized);
 
 }
 
-void plot(TString channel, bool wobtag, bool do2step) {
+void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
   
   SetPlotStyle();
   
-  // full range unfolding, including events 0-2000 GeV
-  TString unfoldType = "_full2";
+  bool doQ2 = true;
+  
+  if (doQ2) cout << endl << "Running WITH Q2 uncertainty" << endl << endl;
+  else cout << endl << "Running WITHOUT Q2 uncertainty" << endl << endl;
 
   TString nobtag = "_nobtag";
   if (!wobtag) nobtag = "";
 
-  // do two-step unfolding
   TString twoStep = "_2step";
   if (!do2step) twoStep = "";
   
   TString muOrEl = "";
-  if (channel == "ele") muOrEl = "_el";
+  if (channel == "el") muOrEl = "_el";
+
+  TString unfoldType = "";
+  if (channel == "mu") unfoldType = "_full2";
 
 
   // ---------------------------------------------------------------------------------------------------------------
   // get files & histograms
+  // ---------------------------------------------------------------------------------------------------------------
   
+  cout << endl << "Getting files and hists..." << endl;
+
   const int nSYST = 1+10+4; //nominal+expSyst+thSyst
   TString name_syst[nSYST] = {"_CT10_nom_nom",
 			      "_CT10_nom_jecup",
@@ -77,81 +87,243 @@ void plot(TString channel, bool wobtag, bool do2step) {
 			      "_CT10_pdfup_nom",
 			      "_CT10_pdfdown_nom",
 			      "_scaleup_nom",
-			      "_scaledown_nom",
+			      "_scaledown_nom"
   };
   
-  TFile* f_syst[nSYST];
-  TH1F* h_unfolded[nSYST];
-  TH1F* h_true;
-  TH1F* h_measured;
-  
-  TH1F* h_part;
-  TH1F* h_unfolded_part[nSYST];
-  
-  cout << endl << "Getting files and hists..." << endl;
+  if (channel == "comb") const int nCHANNEL = 2;
+  else const int nCHANNEL = 1;
 
-  /*
-  TFile* f_syst_MSTW  = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_MSTW_nom_nom"+nobtag+unfoldType+".root");
-  TFile* f_syst_NNPDF = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_NNPDF_nom_nom"+nobtag+unfoldType+".root");
-
-  TH1F* h_true_MSTW  = (TH1F*) f_syst_MSTW->Get("pt_genTop")->Clone();
-  h_true_MSTW->SetName("pt_genTop_MSTW");
-  TH1F* h_true_NNPDF = (TH1F*) f_syst_NNPDF->Get("pt_genTop")->Clone();
-  h_true_NNPDF->SetName("pt_genTop_NNPDF");
-  */
-
-
-  for (int is=0; is<nSYST; is++) {
-    
-    f_syst[is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+name_syst[is]+nobtag+unfoldType+".root");
-    
-    if (is==0) {
-      h_true = (TH1F*) f_syst[is]->Get("pt_genTop")->Clone();
-      h_measured = (TH1F*) f_syst[is]->Get("ptRecoTop"+twoStep+nobtag+unfoldType)->Clone();
-      h_true->SetAxisRange(400,1150,"X");
-      h_measured->SetAxisRange(400,1150,"X");
-      if (twoStep == "_2step") {
-	h_part = (TH1F*) f_syst[is]->Get("pt_partTop")->Clone();
-	h_part->SetAxisRange(400,1150,"X");
-      }
-	
-    }
-    
-    h_unfolded[is] = (TH1F*) f_syst[is]->Get("UnfoldedData")->Clone();
-    h_unfolded[is]->SetName("UnfoldedData"+name_syst[is]);
-    h_unfolded[is]->SetAxisRange(400,1150,"X");
-    if (twoStep == "_2step") {
-      h_unfolded_part[is] = (TH1F*) f_syst[is]->Get("UnfoldedData_rp")->Clone();
-      h_unfolded_part[is]->SetName("UnfoldedData_part"+name_syst[is]);
-      h_unfolded_part[is]->SetAxisRange(400,1150,"X");
-    }
+  TString channel_name[nCHANNEL];
+  if (nCHANNEL == 1) channel_name[0] = channel;
+  else if (nCHANNEL == 2) {
+    channel_name[0] = "el";
+    channel_name[1] = "mu";
   }
-  
+  else return; //shouldn't happen
 
-  TH1F* h_dummy = (TH1F*) h_measured->Clone("dummy");
-  h_dummy->Reset();
-  
-  TH1F* h_dummy_r = (TH1F*) h_measured->Clone("dummy_r");
-  h_dummy_r->Reset();
 
-  TH1F* h_dummy_part = (TH1F*) h_measured->Clone("dummy_part");
-  h_dummy_part->Reset();
+  TFile* f_syst[nCHANNEL][nSYST];
+
+  TH1F* h_true_tmp[nCHANNEL];
+  TH1F* h_unfolded_tmp[nCHANNEL][nSYST];
+  TH1F* h_part_tmp[nCHANNEL];
+  TH1F* h_unfolded_part_tmp[nCHANNEL][nSYST];
+
+
+  for (int ic=0; ic<nCHANNEL; ic++) {
+    for (int is=0; is<nSYST; is++) {
+      
+      if (channel == "comb") {
+	if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+twoStep+name_syst[is]+nobtag+".root");
+	else if (ic==1) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold_el"+twoStep+name_syst[is]+nobtag+".root");
+	else return; //shouldn't happen
+      }
+      else {
+	if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+name_syst[is]+nobtag+".root");
+	else return; //shouldn't happen
+      }
+            
+      if (is==0) {
+	h_true_tmp[ic] = (TH1F*) f_syst[ic][is]->Get("pt_genTop")->Clone();
+	h_true_tmp[ic]->SetName("pt_genTop_"+channel_name[ic]);
+	h_true_tmp[ic]->SetAxisRange(400,1150,"X");
+	
+	if (twoStep == "_2step") {
+	  h_part_tmp[ic] = (TH1F*) f_syst[ic][is]->Get("pt_partTop")->Clone();
+	  h_part_tmp[ic]->SetName("pt_partTop_"+channel_name[ic]);
+	  h_part_tmp[ic]->SetAxisRange(400,1150,"X");
+	}
+      }
+      
+      h_unfolded_tmp[ic][is] = (TH1F*) f_syst[ic][is]->Get("UnfoldedData")->Clone();
+      h_unfolded_tmp[ic][is]->SetName("UnfoldedData"+name_syst[is]+"_"+channel_name[ic]);
+      h_unfolded_tmp[ic][is]->SetAxisRange(400,1150,"X");
+
+      if (twoStep == "_2step") {
+	h_unfolded_part_tmp[ic][is] = (TH1F*) f_syst[ic][is]->Get("UnfoldedData_rp")->Clone();
+	h_unfolded_part_tmp[ic][is]->SetName("UnfoldedData_part"+name_syst[is]+"_"+channel_name[ic]);
+	h_unfolded_part_tmp[ic][is]->SetAxisRange(400,1150,"X");
+      }
     
-  TH1F* h_dummy_r_part = (TH1F*) h_measured->Clone("dummy_r_part");
-  h_dummy_r_part->Reset();
-    
+    }//end systematic loop
+  }//end channel loop
+
 
 
   // ----------------------------------------------------------------------------------------------------------------
-  // colors and stuff
+  // possibly perform combination of electron+muon channels
+  // ----------------------------------------------------------------------------------------------------------------
+
+  // histograms that need to be combined:
+  // h_true_tmp[ic] --> top pt @ parton-level
+  // h_unfolded_tmp[ic][is] --> data unfolded to parton-level
+  // h_part_tmp[ic] --> top pt @ particle-level
+  // h_unfolded_part_tmp[ic][is] --> data unfolded to particle-level
+
+
+  TH1F* h_true;
+  TH1F* h_unfolded[nSYST];
+  TH1F* h_part;
+  TH1F* h_unfolded_part[nSYST];
+
+
+  // ----------------------------------------------------------------------------------------------------------------
+  // no combination -- just copy the electron/muon histograms
+  if (channel != "comb") {
+
+    h_true = (TH1F*) h_true_tmp[0]->Clone();
+    h_true->SetName("pt_genTop");
+    if (twoStep == "_2step") {
+      h_part = (TH1F*) h_part_tmp[0]->Clone();
+      h_part->SetName("pt_partTop");
+    }
+
+    for (int is=0; is<nSYST; is++) {
+      h_unfolded[is] = (TH1F*) h_unfolded_tmp[0][is]->Clone();
+      h_unfolded[is]->SetName("UnfoldedData"+name_syst[is]);
+      if (twoStep == "_2step") {
+	h_unfolded_part[is] = (TH1F*) h_unfolded_part_tmp[0][is]->Clone();
+	h_unfolded_part[is]->SetName("UnfoldedData_part"+name_syst[is]);
+      }
+    }
+
+  }
+  // ----------------------------------------------------------------------------------------------------------------
+  // combination of the channels
+  else {
+
+    int nBIN = h_true_tmp[0]->GetNbinsX();
+
+    // first create empty histograms
+    h_true = (TH1F*) h_true_tmp[0]->Clone();
+    h_true->SetName("pt_genTop");
+    h_true->Reset();
+    if (twoStep == "_2step") {
+      h_part = (TH1F*) h_part_tmp[0]->Clone();
+      h_part->SetName("pt_partTop");
+      h_part->Reset();
+    }
+
+    for (int is=0; is<nSYST; is++) {
+      h_unfolded[is] = (TH1F*) h_unfolded_tmp[0][is]->Clone();
+      h_unfolded[is]->SetName("UnfoldedData"+name_syst[is]);
+      h_unfolded[is]->Reset();
+      if (twoStep == "_2step") {
+	h_unfolded_part[is] = (TH1F*) h_unfolded_part_tmp[0][is]->Clone();
+	h_unfolded_part[is]->SetName("UnfoldedData_part"+name_syst[is]);
+	h_unfolded_part[is]->Reset();
+      }
+    }
+
+    
+    //then do the combination
+    float nel = 0;
+    float nmu = 0;
+    float ncomb = 0;
+    float snel = 0;
+    float snmu = 0;
+    float sncomb = 0;
+
+    for (int ib=0; ib<nBIN+1; ib++) {
+    
+      // h_true
+      nel = h_true_tmp[0]->GetBinContent(ib+1);
+      nmu = h_true_tmp[1]->GetBinContent(ib+1);
+      snel = h_true_tmp[0]->GetBinError(ib+1);
+      snmu = h_true_tmp[1]->GetBinError(ib+1);
+      if (snel==0 || snmu==0) {
+	ncomb = 0;
+	sncomb = 0;
+      }
+      else {
+	ncomb = (nel/(snel*snel) + nmu/(snmu*snmu)) / (1.0/(snel*snel) + 1.0/(snmu*snmu));
+	sncomb = 1.0 / (1.0/(snel*snel) + 1.0/(snmu*snmu));
+	sncomb = sqrt(sncomb);
+      }
+      h_true->SetBinContent(ib+1,ncomb);
+      h_true->SetBinError(ib+1,sncomb);
+
+      // h_part
+      if (twoStep == "_2step") {
+	nel = h_part_tmp[0]->GetBinContent(ib+1);
+	nmu = h_part_tmp[1]->GetBinContent(ib+1);
+	snel = h_part_tmp[0]->GetBinError(ib+1);
+	snmu = h_part_tmp[1]->GetBinError(ib+1);
+	if (snel==0 || snmu==0) {
+	  ncomb = 0;
+	  sncomb = 0;
+	}
+	else {
+	  ncomb = (nel/(snel*snel) + nmu/(snmu*snmu)) / (1.0/(snel*snel) + 1.0/(snmu*snmu));
+	  sncomb = 1.0 / (1.0/(snel*snel) + 1.0/(snmu*snmu));
+	  sncomb = sqrt(sncomb);
+	}
+	h_part->SetBinContent(ib+1,ncomb);
+	h_part->SetBinError(ib+1,sncomb);
+      }
+
+
+      for (int is=0; is<nSYST; is++) {
+	// h_unfolded
+	nel = h_unfolded_tmp[0][is]->GetBinContent(ib+1);
+	nmu = h_unfolded_tmp[1][is]->GetBinContent(ib+1);
+	snel = h_unfolded_tmp[0][is]->GetBinError(ib+1);
+	snmu = h_unfolded_tmp[1][is]->GetBinError(ib+1);
+	if (snel==0 || snmu==0) {
+	  ncomb = 0;
+	  sncomb = 0;
+	}
+	else {
+	  ncomb = (nel/(snel*snel) + nmu/(snmu*snmu)) / (1.0/(snel*snel) + 1.0/(snmu*snmu));
+	  sncomb = 1.0 / (1.0/(snel*snel) + 1.0/(snmu*snmu));
+	  sncomb = sqrt(sncomb);
+	}
+	h_unfolded[is]->SetBinContent(ib+1,ncomb);
+	h_unfolded[is]->SetBinError(ib+1,sncomb);
+
+	// h_unfolded_part
+	if (twoStep == "_2step") {
+	  nel = h_unfolded_part_tmp[0][is]->GetBinContent(ib+1);
+	  nmu = h_unfolded_part_tmp[1][is]->GetBinContent(ib+1);
+	  snel = h_unfolded_part_tmp[0][is]->GetBinError(ib+1);
+	  snmu = h_unfolded_part_tmp[1][is]->GetBinError(ib+1);
+	  if (snel==0 || snmu==0) {
+	    ncomb = 0;
+	    sncomb = 0;
+	  }
+	  else {
+	    ncomb = (nel/(snel*snel) + nmu/(snmu*snmu)) / (1.0/(snel*snel) + 1.0/(snmu*snmu));
+	    sncomb = 1.0 / (1.0/(snel*snel) + 1.0/(snmu*snmu));
+	    sncomb = sqrt(sncomb);
+	  }
+	  h_unfolded_part[is]->SetBinContent(ib+1,ncomb);
+	  h_unfolded_part[is]->SetBinError(ib+1,sncomb);
+	}
+	
+      }//end loop systematics
+
+    }//end bin loop
+  }//end do combination
+
+
+  TH1F* h_dummy = (TH1F*) h_unfolded[0]->Clone("dummy");
+  h_dummy->Reset();
   
-  h_measured->SetLineColor(1);
-  h_measured->SetMarkerColor(1);
-  h_measured->SetMarkerStyle(24);
+  TH1F* h_dummy_r = (TH1F*) h_unfolded[0]->Clone("dummy_r");
+  h_dummy_r->Reset();
+
+  TH1F* h_dummy_part = (TH1F*) h_unfolded[0]->Clone("dummy_part");
+  h_dummy_part->Reset();
+    
+  TH1F* h_dummy_r_part = (TH1F*) h_unfolded[0]->Clone("dummy_r_part");
+  h_dummy_r_part->Reset();
+    
+
+  // ----------------------------------------------------------------------------------------------------------------
+  // colors and stuff
+  // ----------------------------------------------------------------------------------------------------------------
   
   h_true->SetLineColor(2);
-  //h_true_MSTW->SetLineColor(4);
-  //h_true_NNPDF->SetLineColor(8);
   
   h_unfolded[0]->SetLineColor(1);
   h_unfolded[0]->SetMarkerColor(1);
@@ -163,7 +335,6 @@ void plot(TString channel, bool wobtag, bool do2step) {
     h_unfolded_part[0]->SetLineColor(1);
     h_unfolded_part[0]->SetMarkerColor(1);
     h_unfolded_part[0]->SetMarkerStyle(8);
-
   }
   
   float tmp_max = 0;
@@ -172,29 +343,29 @@ void plot(TString channel, bool wobtag, bool do2step) {
   // ----------------------------------------------------------------------------------------------------------------
   // systematics for ratio plot
   
-  TH1F* h_systEXP_up = (TH1F*) h_measured->Clone("syst_up_exp");
-  TH1F* h_systEXP_dn = (TH1F*) h_measured->Clone("syst_dn_exp");
+  TH1F* h_systEXP_up = (TH1F*) h_true->Clone("syst_up_exp");
+  TH1F* h_systEXP_dn = (TH1F*) h_true->Clone("syst_dn_exp");
   h_systEXP_up->Reset();
   h_systEXP_dn->Reset();
   
-  TH1F* h_systTH_up = (TH1F*) h_measured->Clone("syst_up_th");
-  TH1F* h_systTH_dn = (TH1F*) h_measured->Clone("syst_dn_th");
+  TH1F* h_systTH_up = (TH1F*) h_true->Clone("syst_up_th");
+  TH1F* h_systTH_dn = (TH1F*) h_true->Clone("syst_dn_th");
   h_systTH_up->Reset();
   h_systTH_dn->Reset();
 
   // experimental  
-  TH1F* h_syst_jec    = (TH1F*) h_measured->Clone("syst_jec");
-  TH1F* h_syst_jer    = (TH1F*) h_measured->Clone("syst_jer");
-  TH1F* h_syst_btag   = (TH1F*) h_measured->Clone("syst_btag");
-  TH1F* h_syst_toptag = (TH1F*) h_measured->Clone("syst_toptag");
-  TH1F* h_syst_bkg    = (TH1F*) h_measured->Clone("syst_bkg");
+  TH1F* h_syst_jec    = (TH1F*) h_true->Clone("syst_jec");
+  TH1F* h_syst_jer    = (TH1F*) h_true->Clone("syst_jer");
+  TH1F* h_syst_btag   = (TH1F*) h_true->Clone("syst_btag");
+  TH1F* h_syst_toptag = (TH1F*) h_true->Clone("syst_toptag");
+  TH1F* h_syst_bkg    = (TH1F*) h_true->Clone("syst_bkg");
   // statistics
-  TH1F* h_syst_stat   = (TH1F*) h_measured->Clone("syst_stat");
+  TH1F* h_syst_stat   = (TH1F*) h_true->Clone("syst_stat");
   // theory
-  TH1F* h_syst_pdf    = (TH1F*) h_measured->Clone("syst_pdf");
-  TH1F* h_syst_Q2     = (TH1F*) h_measured->Clone("syst_Q2");
+  TH1F* h_syst_pdf    = (TH1F*) h_true->Clone("syst_pdf");
+  TH1F* h_syst_Q2     = (TH1F*) h_true->Clone("syst_Q2");
 
-  TH1F* h_syst_tot = (TH1F*) h_measured->Clone("syst_tot");
+  TH1F* h_syst_tot = (TH1F*) h_true->Clone("syst_tot");
   
   h_syst_jec->Reset();   
   h_syst_jer->Reset(); 
@@ -211,7 +382,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
   float sig[nSYST] = {0};
   
 
-  cout << endl << "*** unfolding result (parton-level) ***" << endl;
+  cout << endl << "*** unfolding result (parton-level) for " << channel << " channel ***" << endl;
 
   for (int i=0; i<h_unfolded[0]->GetNbinsX()+1; i++) {
     
@@ -243,12 +414,12 @@ void plot(TString channel, bool wobtag, bool do2step) {
     
     float this_systTH_up = 0;
     this_systTH_up += (count[11]-count[0])*(count[11]-count[0]); //pdf
-    //this_systTH_up += (count[13]-count[0])*(count[13]-count[0]); //q2
+    if (doQ2) this_systTH_up += (count[13]-count[0])*(count[13]-count[0]); //q2
     this_systTH_up = sqrt(this_systTH_up);
     
     float this_systTH_dn = 0;
     this_systTH_dn += (count[12]-count[0])*(count[12]-count[0]);
-    //this_systTH_dn += (count[14]-count[0])*(count[14]-count[0]);
+    if (doQ2) this_systTH_dn += (count[14]-count[0])*(count[14]-count[0]);
     this_systTH_dn = sqrt(this_systTH_dn);
     
     float upEXP = count[0] + this_systEXP_up;
@@ -268,10 +439,6 @@ void plot(TString channel, bool wobtag, bool do2step) {
     int lowedge = h_systEXP_up->GetBinLowEdge(ibin1);
     int highedge = h_systEXP_up->GetBinLowEdge(ibin2);
     if (lowedge > 300 && highedge < 1300) {
-      //cout << "measured [" << lowedge << "," << highedge << "] = " 
-      //   << count[0] << " +" << this_systEXP_up << " / -" << this_systEXP_dn << " (exp) +" << this_systTH_up << " / -" << this_systTH_dn << " (th)" << endl;
-      //cout << "generator (CT10) = " << h_true->GetBinContent(i+1) << endl;
-
       cout << (float)lowedge << "--" << (float)highedge << " & $" << count[0] << "~^{+" << this_systEXP_up << "}_{-" << this_systEXP_dn << "}{~(\\rm ex)~}^{+" 
 	   << this_systTH_up << "}_{-" << this_systTH_dn << "}{~(\\rm th)}$ & " << h_true->GetBinContent(i+1) << endl;
 
@@ -279,14 +446,18 @@ void plot(TString channel, bool wobtag, bool do2step) {
   }
   cout << endl;
   
-  h_dummy->GetXaxis()->SetTitle("p_{T} [GeV]");
-  h_dummy->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
-  h_dummy->SetAxisRange(400,1150,"X");
-  h_dummy->SetAxisRange(0,12,"Y");
-  
+  if (doNormalized) {
+    h_dummy->GetYaxis()->SetTitle("1/#sigma d#sigma/dp_{T} [1/GeV]");
+    h_dummy->SetAxisRange(0,0.008,"Y");
+  }
+  else {
+    h_dummy->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
+    h_dummy->SetAxisRange(0,12,"Y");
+  }
+
   // getting the relative systematics
 
-  //cout << "*** systematic uncertainties for each bin (parton-level) ***" << endl; 
+  //cout << "*** systematic uncertainties for each bin (parton-level) for " << channel << " channel ***" << endl;
 
   float count_r[nSYST] = {0};
   float err_r[nSYST] = {0};
@@ -327,25 +498,26 @@ void plot(TString channel, bool wobtag, bool do2step) {
     double syst_scaledn = fabs((count_r[14]-count_r[0])/count_r[0])*100;
     double max_syst_Q2  = max(syst_scaleup,syst_scaledn);
 
-    /*
+    if (!doQ2) {
+      syst_scaleup = 0;
+      syst_scaledn = 0;
+      max_syst_Q2 = 0;
+    }
+
     double syst_total_up = sqrt(syst_jecup*syst_jecup + syst_jerup*syst_jerup + syst_btagup*syst_btagup + syst_toptagup*syst_toptagup + syst_bkgup*syst_bkgup + 
-				syst_stat*syst_stat + syst_scaleup*syst_scaleup + syst_pdfup*syst_pdfup);
+				syst_scaleup*syst_scaleup + syst_pdfup*syst_pdfup);
     double syst_total_dn = sqrt(syst_jecdn*syst_jecdn + syst_jerdn*syst_jerdn + syst_btagdn*syst_btagdn + syst_toptagdn*syst_toptagdn + syst_bkgdn*syst_bkgdn + 
-				syst_stat*syst_stat + syst_scaledn*syst_scaledn + syst_pdfdn*syst_pdfdn);
-    */
-    double syst_total_up = sqrt(syst_jecup*syst_jecup + syst_jerup*syst_jerup + syst_btagup*syst_btagup + syst_toptagup*syst_toptagup + syst_bkgup*syst_bkgup + 
-				syst_pdfup*syst_pdfup);
-    double syst_total_dn = sqrt(syst_jecdn*syst_jecdn + syst_jerdn*syst_jerdn + syst_btagdn*syst_btagdn + syst_toptagdn*syst_toptagdn + syst_bkgdn*syst_bkgdn + 
-				syst_pdfdn*syst_pdfdn);
+				syst_scaledn*syst_scaledn + syst_pdfdn*syst_pdfdn);
     double max_syst_total = max(syst_total_up,syst_total_dn);
 
     /*
+    cout << endl;
     cout << "statistical error for bin "<<i<<": "<<syst_stat<<endl;
     cout << "relative syst scaleup for bin "<<i<<": "<<syst_scaleup<<endl;
     cout << "relative syst scaledown for bin "<<i<<": "<<syst_scaledn<<endl;
     cout << "max(syst_scaleup,syst_scaledown) for bin"<<i<<": "<<max_syst_Q2<<endl;
     cout << "relative syst pdfup for bin "<<i<<": "<<syst_pdfup<<endl;
-    cout << "relative syst pdfdown for bin "<<i<<": "<<syst_pdfdown<<endl;
+    cout << "relative syst pdfdn for bin "<<i<<": "<<syst_pdfdn<<endl;
     cout << "max(syst_pdfup,syst_pdfdown) for bin"<<i<<": "<<max_syst_pdf<<endl;
     cout << "relative syst jecup for bin "<<i<<": "<<syst_jecup<<endl;
     cout << "relative syst jecdn for bin "<<i<<": "<<syst_jecdn<<endl;
@@ -401,33 +573,34 @@ void plot(TString channel, bool wobtag, bool do2step) {
   gStyle->SetTitleSize(f_textSize,"y");
   gStyle->SetOptStat(0);
   
+
   TCanvas *c = new TCanvas("c", "", 700, 625);
   
   float ratio_size = 0.35;
   
   TPad* p1 = new TPad("p1","p1",0,ratio_size+0.0,1,1);
   p1->SetBottomMargin(0.04);
-  p1->SetLeftMargin(0.13);
+  p1->SetLeftMargin(0.16);
   p1->SetRightMargin(0.075);
   
   TPad* p2 = new TPad("p2","p2",0,0,1,ratio_size-0.0);
   p2->SetTopMargin(0.00);
   p2->SetBottomMargin(0.4);
-  p2->SetLeftMargin(0.13);
+  p2->SetLeftMargin(0.16);
   p2->SetRightMargin(0.075);
   
   p1->Draw();
   p2->Draw();
-  
+    
+  p1->cd();
+
   h_dummy->GetYaxis()->SetTitleSize(0.065);    
-  h_dummy->GetYaxis()->SetTitleOffset(0.7);
+  h_dummy->GetYaxis()->SetTitleOffset(1.1);
   h_dummy->GetYaxis()->SetLabelSize(0.054);
-  
+
   h_dummy->GetXaxis()->SetTitleSize(0);
   h_dummy->GetXaxis()->SetLabelSize(0);
-  
-  p1->cd();
-  
+
   
   /*
   // asymmetric errors for data
@@ -440,15 +613,19 @@ void plot(TString channel, bool wobtag, bool do2step) {
   gr->SetMarkerStyle(8);
   */
 
+  /*
+  h_dummy->SetAxisRange(0.00001,0.1,"Y");
+  h_true->SetAxisRange(0.00001,0.1,"Y");
+  h_unfolded[0]->SetAxisRange(0.00001,0.1,"Y");
+  gPad->SetLogy();
+  */
+
   h_dummy->Draw("hist");
   h_true->Draw("hist,same");
-  //h_true_MSTW->Draw("hist,same");
-  //h_true_NNPDF->Draw("hist,same");
   h_unfolded[0]->Draw("hist,ep,same");
   //gr->Draw("ep,same");
   h_dummy->Draw("hist,axis,same"); 
-  
-    
+
   
   // ----------------------------------------------------------------------------------------------------------------
   // making ratio part of plot
@@ -556,7 +733,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
   line->SetLineWidth(0.5);  
 
   p2->cd();
-  
+  //p2->SetGridy();
 
   h_ratio->GetXaxis()->SetTitleSize(0.12);
   h_ratio->GetXaxis()->SetLabelSize(0.12);
@@ -570,7 +747,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
   h_ratio->GetYaxis()->SetTitleOffset(0.38);
   h_ratio->GetXaxis()->SetTitleOffset(1.2);
   
-  h_ratio->SetAxisRange(0.0,2.0,"Y");
+  h_ratio->SetAxisRange(0.6,1.4,"Y");
   h_ratio->Draw("ep,hist");
   //grr->Draw("p,same");
   //grr->Draw("p,same");
@@ -579,14 +756,11 @@ void plot(TString channel, bool wobtag, bool do2step) {
   h_ratio->Draw("pe,same,hist");
   //grr->Draw("p,same");
   h_ratio->Draw("same,axis");
-  line->Draw("same");
+  line->Draw("same"); 
   
-  p1->cd();
-  
-  
-  c->SaveAs("UnfoldingPlots/unfoldWithError"+muOrEl+twoStep+nobtag+unfoldType+".png");
-  c->SaveAs("UnfoldingPlots/unfoldWithError"+muOrEl+twoStep+nobtag+unfoldType+".eps");
-  c->SaveAs("UnfoldingPlots/unfoldWithError"+muOrEl+twoStep+nobtag+unfoldType+".pdf");
+  c->SaveAs("UnfoldingPlots/unfoldWithError_"+channel+twoStep+nobtag+".png");
+  c->SaveAs("UnfoldingPlots/unfoldWithError_"+channel+twoStep+nobtag+".eps");
+  c->SaveAs("UnfoldingPlots/unfoldWithError_"+channel+twoStep+nobtag+".pdf");
 
   
   TCanvas *c1 = new TCanvas("c1", "", 800, 600);
@@ -599,7 +773,8 @@ void plot(TString channel, bool wobtag, bool do2step) {
   h_dummy_r->GetXaxis()->SetTitle("Top quark p_{T} [GeV]");
   h_dummy_r->GetYaxis()->SetTitle("Uncertainty [%]");
   h_dummy_r->SetAxisRange(400,1150,"X");
-  h_dummy_r->SetAxisRange(0,50,"Y");
+  if (doQ2) h_dummy_r->SetAxisRange(0,70,"Y");
+  else h_dummy_r->SetAxisRange(0,25,"Y");
   
   h_dummy_r->GetYaxis()->SetTitleSize(0.055);    
   h_dummy_r->GetYaxis()->SetTitleOffset(1.0);
@@ -652,12 +827,10 @@ void plot(TString channel, bool wobtag, bool do2step) {
   h_syst_pdf->SetMarkerColor(6);
   h_syst_pdf->SetMarkerStyle(25);
 
-  /*
-  h_syst_Q2->SetLineColor(kOrange+1);
+  h_syst_Q2->SetLineColor(kAzure+10);
   h_syst_Q2->SetLineWidth(2);
-  h_syst_Q2->SetMarkerColor(kOrange+1);
-  h_syst_Q2->SetMarkerStyle(26);
-  */    
+  h_syst_Q2->SetMarkerColor(kAzure+10);
+  h_syst_Q2->SetMarkerStyle(24);
   
   TLegend* leg2 = new TLegend(0.2,0.58,0.45,0.92);  
   leg2->AddEntry(h_syst_tot,"Total syst. uncertainty","f");
@@ -668,7 +841,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
   if (nobtag == "") leg2->AddEntry(h_syst_btag,"b-tagging efficiency","lp");
   leg2->AddEntry(h_syst_bkg,"Background normalization","lp");
   leg2->AddEntry(h_syst_pdf,"PDF uncertainty","lp");
-  //leg2->AddEntry(h_syst_Q2,"Q^{2} scale","lp");
+  if (doQ2) leg2->AddEntry(h_syst_Q2,"Q^{2} scale","lp");
   leg2->SetFillStyle(0);
   leg2->SetBorderSize(0);
   leg2->SetTextSize(0.032);
@@ -683,7 +856,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
   h_syst_toptag->Draw("ep,same");
   if (nobtag == "") h_syst_btag->Draw("ep,same");
   h_syst_bkg->Draw("ep,same");
-  //h_syst_Q2->Draw("ep,same");
+  if (doQ2) h_syst_Q2->Draw("ep,same");
   h_syst_pdf->Draw("ep,same");
   h_dummy_r->Draw("hist,axis,same");
   leg2->Draw(); 
@@ -691,9 +864,9 @@ void plot(TString channel, bool wobtag, bool do2step) {
   mySmallText(0.6,0.87,1,0.04,"CMS Preliminary");
   mySmallText(0.6,0.82,1,0.04,"L = 19.7 fb^{-1}, #sqrt{s} = 8 TeV");
 
-  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+muOrEl+twoStep+nobtag+unfoldType+".png");
-  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+muOrEl+twoStep+nobtag+unfoldType+".pdf");
-  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties"+muOrEl+twoStep+nobtag+unfoldType+".eps");
+  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+channel+twoStep+nobtag+".png");
+  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+channel+twoStep+nobtag+".pdf");
+  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+channel+twoStep+nobtag+".eps");
 
 
   // -----------------------------------------------------------
@@ -705,25 +878,25 @@ void plot(TString channel, bool wobtag, bool do2step) {
     // ----------------------------------------------------------------------------------------------------------------
     // systematics for ratio plot
     
-    TH1F* h_systEXP_up_part = (TH1F*) h_measured->Clone("syst_up_exp_part");
-    TH1F* h_systEXP_dn_part = (TH1F*) h_measured->Clone("syst_dn_exp_part");
+    TH1F* h_systEXP_up_part = (TH1F*) h_true->Clone("syst_up_exp_part");
+    TH1F* h_systEXP_dn_part = (TH1F*) h_true->Clone("syst_dn_exp_part");
     h_systEXP_up_part->Reset();
     h_systEXP_dn_part->Reset();
     
-    TH1F* h_systTH_up_part = (TH1F*) h_measured->Clone("syst_up_th_part");
-    TH1F* h_systTH_dn_part = (TH1F*) h_measured->Clone("syst_dn_th_part");
+    TH1F* h_systTH_up_part = (TH1F*) h_true->Clone("syst_up_th_part");
+    TH1F* h_systTH_dn_part = (TH1F*) h_true->Clone("syst_dn_th_part");
     h_systTH_up_part->Reset();
     h_systTH_dn_part->Reset();
     
-    TH1F* h_syst_jec_part    = (TH1F*) h_measured->Clone("syst_jec_part");
-    TH1F* h_syst_jer_part    = (TH1F*) h_measured->Clone("syst_jer_part");
-    TH1F* h_syst_btag_part   = (TH1F*) h_measured->Clone("syst_btag_part");
-    TH1F* h_syst_toptag_part = (TH1F*) h_measured->Clone("syst_toptag_part");
-    TH1F* h_syst_bkg_part    = (TH1F*) h_measured->Clone("syst_bkg_part");
-    TH1F* h_syst_stat_part   = (TH1F*) h_measured->Clone("syst_stat_part");
-    TH1F* h_syst_pdf_part    = (TH1F*) h_measured->Clone("syst_pdf_part");
-    TH1F* h_syst_Q2_part     = (TH1F*) h_measured->Clone("syst_Q2_part");
-    TH1F* h_syst_tot_part    = (TH1F*) h_measured->Clone("syst_stat_tot");
+    TH1F* h_syst_jec_part    = (TH1F*) h_true->Clone("syst_jec_part");
+    TH1F* h_syst_jer_part    = (TH1F*) h_true->Clone("syst_jer_part");
+    TH1F* h_syst_btag_part   = (TH1F*) h_true->Clone("syst_btag_part");
+    TH1F* h_syst_toptag_part = (TH1F*) h_true->Clone("syst_toptag_part");
+    TH1F* h_syst_bkg_part    = (TH1F*) h_true->Clone("syst_bkg_part");
+    TH1F* h_syst_stat_part   = (TH1F*) h_true->Clone("syst_stat_part");
+    TH1F* h_syst_pdf_part    = (TH1F*) h_true->Clone("syst_pdf_part");
+    TH1F* h_syst_Q2_part     = (TH1F*) h_true->Clone("syst_Q2_part");
+    TH1F* h_syst_tot_part    = (TH1F*) h_true->Clone("syst_stat_tot");
     
     h_syst_jec_part->Reset();   
     h_syst_jer_part->Reset(); 
@@ -739,7 +912,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
     float count_part[nSYST] = {0};
     float sig_part[nSYST] = {0};
     
-    cout << endl << "*** unfolding result (particle-level) ***" << endl;
+    cout << endl << "*** unfolding result (particle-level) for " << channel << " channel ***" << endl;
 
     for (int i=0; i<h_unfolded_part[0]->GetNbinsX()+1; i++) {
       
@@ -771,12 +944,12 @@ void plot(TString channel, bool wobtag, bool do2step) {
       
       float this_systTH_up_part = 0;
       this_systTH_up_part += (count_part[11]-count_part[0])*(count_part[11]-count_part[0]);
-      //this_systTH_up_part += (count_part[13]-count_part[0])*(count_part[13]-count_part[0]);
+      if (doQ2) this_systTH_up_part += (count_part[13]-count_part[0])*(count_part[13]-count_part[0]);
       this_systTH_up_part = sqrt(this_systTH_up_part);
       
       float this_systTH_dn_part = 0;
       this_systTH_dn_part += (count_part[12]-count_part[0])*(count_part[12]-count_part[0]);
-      //this_systTH_dn_part += (count_part[14]-count_part[0])*(count_part[14]-count_part[0]);
+      if (doQ2) this_systTH_dn_part += (count_part[14]-count_part[0])*(count_part[14]-count_part[0]);
       this_systTH_dn_part = sqrt(this_systTH_dn_part);
       
       float upEXP_part = count_part[0] + this_systEXP_up_part;
@@ -796,12 +969,6 @@ void plot(TString channel, bool wobtag, bool do2step) {
       int lowedge_p = h_systEXP_up_part->GetBinLowEdge(ibin1_p);
       int highedge_p = h_systEXP_up_part->GetBinLowEdge(ibin2_p);
       if (lowedge_p > 300 && highedge_p < 1300) {
-	/*
-	cout << "measured [" << lowedge_p << "," << highedge_p << "] = " 
-	     << count_part[0] << " +" << this_systEXP_up_part << " / -" << this_systEXP_dn_part 
-	     << " (exp) +" << this_systTH_up_part << " / -" << this_systTH_dn_part << " (th)" << endl;
-	cout << "generator (CT10) = " << h_part->GetBinContent(i+1) << endl;
-	*/
 	cout << lowedge_p << "--" << highedge_p << " & $" << count_part[0] << "~^{+" << this_systEXP_up_part << "}_{-" << this_systEXP_dn_part << "}{~(\\rm ex)~}^{+" 
 	     << this_systTH_up_part << "}_{-" << this_systTH_dn_part << "}{~(\\rm th)}$ & " << h_part->GetBinContent(i+1) << endl;
 
@@ -809,14 +976,18 @@ void plot(TString channel, bool wobtag, bool do2step) {
     }
     cout << endl;
   
-    h_dummy_part->GetXaxis()->SetTitle("p_{T} [GeV]");
-    h_dummy_part->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
-    h_dummy_part->SetAxisRange(400,1150,"X");
-    h_dummy_part->SetAxisRange(0,10,"Y");
+    if (doNormalized) {
+      h_dummy_part->GetYaxis()->SetTitle("1/#sigma d#sigma/dp_{T} [1/GeV]");
+      h_dummy_part->SetAxisRange(0,0.008,"Y");
+    }
+    else {
+      h_dummy_part->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
+      h_dummy_part->SetAxisRange(0,10,"Y");
+    }
     
     // getting the relative systematics
 
-    //cout << endl << "*** systematic uncertainties for each bin (particle-level) ***" << endl; 
+    //cout << endl << "*** systematic uncertainties for each bin (particle-level) for " << channel << " channel ***" << endl;
 
     float count_r_part[nSYST] = {0};
     float err_stat_part = 0;
@@ -855,20 +1026,18 @@ void plot(TString channel, bool wobtag, bool do2step) {
       double syst_scaledn_part = fabs((count_r_part[14]-count_r_part[0])/count_r_part[0])*100;
       double max_syst_Q2_part = max(syst_scaleup_part,syst_scaledn_part);
 
-      /*
+      if (!doQ2) {
+	syst_scaleup_part = 0;
+	syst_scaledn_part = 0;
+	max_syst_Q2_part = 0;
+      }
+
       double syst_total_up_part = sqrt(syst_jecup_part*syst_jecup_part + syst_jerup_part*syst_jerup_part + 
 				       syst_btagup_part*syst_btagup_part + syst_toptagup_part*syst_toptagup_part + syst_bkgup_part*syst_bkgup_part +
-				       syst_stat_part*syst_stat_part + syst_scaleup_part*syst_scaleup_part + syst_pdfup_part*syst_pdfup_part);
+				       syst_scaleup_part*syst_scaleup_part + syst_pdfup_part*syst_pdfup_part);
       double syst_total_dn_part = sqrt(syst_jecdn_part*syst_jecdn_part + syst_jerdn_part*syst_jerdn_part + 
 				       syst_btagdn_part*syst_btagdn_part + syst_toptagdn_part*syst_toptagdn_part + syst_bkgdn_part*syst_bkgdn_part +
-				       syst_stat_part*syst_stat_part + syst_scaledn_part*syst_scaledn_part + syst_pdfdn_part*syst_pdfdn_part );
-      */
-      double syst_total_up_part = sqrt(syst_jecup_part*syst_jecup_part + syst_jerup_part*syst_jerup_part + 
-				       syst_btagup_part*syst_btagup_part + syst_toptagup_part*syst_toptagup_part + syst_bkgup_part*syst_bkgup_part +
-				       syst_pdfup_part*syst_pdfup_part);
-      double syst_total_dn_part = sqrt(syst_jecdn_part*syst_jecdn_part + syst_jerdn_part*syst_jerdn_part + 
-				       syst_btagdn_part*syst_btagdn_part + syst_toptagdn_part*syst_toptagdn_part + syst_bkgdn_part*syst_bkgdn_part +
-				       syst_pdfdn_part*syst_pdfdn_part );
+				       syst_scaledn_part*syst_scaledn_part + syst_pdfdn_part*syst_pdfdn_part );
       double max_syst_total_part = max(syst_total_up_part,syst_total_dn_part);
 
       /*
@@ -936,20 +1105,20 @@ void plot(TString channel, bool wobtag, bool do2step) {
     
     TPad* p3 = new TPad("p3","p3",0,ratio_size+0.0,1,1);
     p3->SetBottomMargin(0.04);
-    p3->SetLeftMargin(0.13);
+    p3->SetLeftMargin(0.16);
     p3->SetRightMargin(0.075);
     
     TPad* p4 = new TPad("p4","p4",0,0,1,ratio_size-0.0);
     p4->SetTopMargin(0.00);
     p4->SetBottomMargin(0.4);
-    p4->SetLeftMargin(0.13);
+    p4->SetLeftMargin(0.16);
     p4->SetRightMargin(0.075);
     
     p3->Draw();
     p4->Draw();
     
     h_dummy_part->GetYaxis()->SetTitleSize(0.065);    
-    h_dummy_part->GetYaxis()->SetTitleOffset(0.7);
+    h_dummy_part->GetYaxis()->SetTitleOffset(1.1);
     h_dummy_part->GetYaxis()->SetLabelSize(0.054);
     
     h_dummy_part->GetXaxis()->SetTitleSize(0);
@@ -959,8 +1128,6 @@ void plot(TString channel, bool wobtag, bool do2step) {
     
     h_dummy_part->Draw("hist");
     h_part->Draw("hist,same");
-    //h_true_MSTW->Draw("hist,same");
-    //h_true_NNPDF->Draw("hist,same");
     h_unfolded_part[0]->Draw("hist,ep,same");
     //gr->Draw("ep,same");
     h_dummy_part->Draw("hist,axis,same"); 
@@ -1035,7 +1202,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
     // ----------------------------------------------------------------------------------------------------------------
         
     p4->cd();
-    
+    //p4->SetGridy();
     
     h_ratio_part->GetXaxis()->SetTitleSize(0.12);
     h_ratio_part->GetXaxis()->SetLabelSize(0.12);
@@ -1048,7 +1215,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
     h_ratio_part->GetYaxis()->SetTitleOffset(0.38);
     h_ratio_part->GetXaxis()->SetTitleOffset(1.2);
     
-    h_ratio_part->SetAxisRange(0.0,2.0,"Y");
+    h_ratio_part->SetAxisRange(0.6,1.4,"Y");
     h_ratio_part->Draw("ep,hist");
     blaEXP_part->Draw("same,e2");
     blaTH_part->Draw("same,e2");
@@ -1059,9 +1226,9 @@ void plot(TString channel, bool wobtag, bool do2step) {
     p3->cd();
     
     
-    c2->SaveAs("UnfoldingPlots/unfoldWithError_part"+muOrEl+twoStep+nobtag+unfoldType+".png");
-    c2->SaveAs("UnfoldingPlots/unfoldWithError_part"+muOrEl+twoStep+nobtag+unfoldType+".eps");
-    c2->SaveAs("UnfoldingPlots/unfoldWithError_part"+muOrEl+twoStep+nobtag+unfoldType+".pdf");
+    c2->SaveAs("UnfoldingPlots/unfoldWithError_part_"+channel+twoStep+nobtag+".png");
+    c2->SaveAs("UnfoldingPlots/unfoldWithError_part_"+channel+twoStep+nobtag+".eps");
+    c2->SaveAs("UnfoldingPlots/unfoldWithError_part_"+channel+twoStep+nobtag+".pdf");
     
     
     TCanvas *c3 = new TCanvas("c3", "", 800, 600);
@@ -1074,7 +1241,8 @@ void plot(TString channel, bool wobtag, bool do2step) {
     h_dummy_r_part->GetXaxis()->SetTitle("Particle-level top p_{T} [GeV]");
     h_dummy_r_part->GetYaxis()->SetTitle("Uncertainty [%]");
     h_dummy_r_part->SetAxisRange(400,1150,"X");
-    h_dummy_r_part->SetAxisRange(0,50,"Y");
+    if (doQ2) h_dummy_r_part->SetAxisRange(0,70,"Y");
+    else h_dummy_r_part->SetAxisRange(0,25,"Y");
     
     h_dummy_r_part->GetYaxis()->SetTitleSize(0.055);    
     h_dummy_r_part->GetYaxis()->SetTitleOffset(1.0);
@@ -1127,13 +1295,11 @@ void plot(TString channel, bool wobtag, bool do2step) {
     h_syst_pdf_part->SetMarkerColor(6);
     h_syst_pdf_part->SetMarkerStyle(25);
     
-    /*
-    h_syst_Q2_part->SetLineColor(kOrange+1);
+    h_syst_Q2_part->SetLineColor(kAzure+10);
     h_syst_Q2_part->SetLineWidth(2);
-    h_syst_Q2_part->SetMarkerColor(kOrange+1);
-    h_syst_Q2_part->SetMarkerStyle(26);
-    */
-  
+    h_syst_Q2_part->SetMarkerColor(kAzure+10);
+    h_syst_Q2_part->SetMarkerStyle(24);
+    
     TLegend* leg4 = new TLegend(0.2,0.58,0.45,0.92);  
     leg4->AddEntry(h_syst_tot_part,"Total syst. uncertainty","f");
     leg4->AddEntry(h_syst_stat_part,"Statistical uncertainty","lp");
@@ -1143,7 +1309,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
     if (nobtag == "") leg4->AddEntry(h_syst_btag_part,"b-tagging efficiency","lp");
     leg4->AddEntry(h_syst_bkg_part,"Background normalization","lp");
     leg4->AddEntry(h_syst_pdf_part,"PDF uncertainty","lp");
-    //leg4->AddEntry(h_syst_Q2_part,"Q^{2} scale","lp");
+    if (doQ2) leg4->AddEntry(h_syst_Q2_part,"Q^{2} scale","lp");
     leg4->SetFillStyle(0);
     leg4->SetBorderSize(0);
     leg4->SetTextSize(0.032);
@@ -1158,7 +1324,7 @@ void plot(TString channel, bool wobtag, bool do2step) {
     h_syst_toptag_part->Draw("ep,same");
     if (nobtag == "") h_syst_btag_part->Draw("ep,same");
     h_syst_bkg_part->Draw("ep,same");
-    //h_syst_Q2_part->Draw("ep,same");
+    if (doQ2) h_syst_Q2_part->Draw("ep,same");
     h_syst_pdf_part->Draw("ep,same");
     h_dummy_r_part->Draw("hist,axis,same");
     leg4->Draw(); 
@@ -1166,9 +1332,9 @@ void plot(TString channel, bool wobtag, bool do2step) {
     mySmallText(0.6,0.87,1,0.04,"CMS Preliminary");
     mySmallText(0.6,0.82,1,0.04,"L = 19.7 fb^{-1}, #sqrt{s} = 8 TeV");
     
-    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part"+muOrEl+twoStep+nobtag+unfoldType+".png");
-    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part"+muOrEl+twoStep+nobtag+unfoldType+".pdf");
-    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part"+muOrEl+twoStep+nobtag+unfoldType+".eps");
+    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+channel+twoStep+nobtag+".png");
+    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+channel+twoStep+nobtag+".pdf");
+    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+channel+twoStep+nobtag+".eps");
   }
 
   return;
