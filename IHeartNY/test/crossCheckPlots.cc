@@ -72,7 +72,7 @@ double ttbar_norms[nttbar] = {
 };
 
 void ptRel() {
-	bool doElectron=false;
+	bool doElectron=true;
 
 	TString muOrEl = "mu";
 	if (doElectron) muOrEl = "el";
@@ -134,7 +134,7 @@ void ptRel() {
 	
 	// Project the 2-D histogram into a 1-D histogram along Y
 	TH1D* h_ptRel = h_dRvspT4->ProjectionY();
-	h_ptRel->Rebin(5);
+	h_ptRel->Rebin(2.5);
 
 	// plot
 	cout<<"plotting ptRel"<<endl;
@@ -149,6 +149,7 @@ void ptRel() {
 	h_ptRel->GetYaxis()->SetTitleSize(0.035);
 	h_ptRel->GetXaxis()->SetLabelSize(0.035);
 	h_ptRel->GetXaxis()->SetTitleSize(0.035);
+	h_ptRel->GetYaxis()->SetRangeUser(0,200);
 	h_ptRel->SetLineColor(1);
 	h_ptRel->SetLineWidth(2.0);
 	h_ptRel->SetMarkerColor(1);
