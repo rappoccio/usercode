@@ -29,13 +29,15 @@ void myItalicText(Double_t x,Double_t y,Color_t color,char *text);
 
 void truthEff(TString option, bool doPart, TString pdf) {
 
-  bool doElectron = false;
+  bool doElectron = true;
 
   TString path = "";
   TString muOrEl = "mu";
+  TString DIR = "2Dhists";
   if (doElectron) {
     path = "_el";
     muOrEl = "el";
+    DIR = "qcd_el";
   }
 
   SetPlotStyle();
@@ -65,60 +67,104 @@ void truthEff(TString option, bool doPart, TString pdf) {
   h_true1000->Sumw2();
 
   // default samples with trigger (aka numerator) 
-  TFile* f_trig0    = new TFile("../histfiles_"+pdf+"/2Dhists"+path+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+pdf+"_2Dcut_nom.root");
-  TFile* f_trig700  = new TFile("../histfiles_"+pdf+"/2Dhists"+path+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+pdf+"_2Dcut_nom.root");
-  TFile* f_trig1000 = new TFile("../histfiles_"+pdf+"/2Dhists"+path+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+pdf+"_2Dcut_nom.root");
+  TFile* f_trig0    = new TFile("../histfiles_"+pdf+"/"+DIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+pdf+"_2Dcut_nom.root");
+  TFile* f_trig700  = new TFile("../histfiles_"+pdf+"/"+DIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+pdf+"_2Dcut_nom.root");
+  TFile* f_trig1000 = new TFile("../histfiles_"+pdf+"/"+DIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+pdf+"_2Dcut_nom.root");
 
   if (doPart) {
     if (option=="eff") {
-      TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptPartTop_passRecoParticle");
-      TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptPartTop_passRecoParticle");
-      TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptPartTop_passRecoParticle");
+      TH1F* hh_trig0    = (TH1F*) f_trig0->Get("ptPartTop_passRecoParticle");
+      TH1F* hh_trig700  = (TH1F*) f_trig700->Get("ptPartTop_passRecoParticle");
+      TH1F* hh_trig1000 = (TH1F*) f_trig1000->Get("ptPartTop_passRecoParticle");
     }
     else if (option=="eff_nobtag") {
-      TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptPartTop_passRecoNoBtagParticle");
-      TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptPartTop_passRecoNoBtagParticle");
-      TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptPartTop_passRecoNoBtagParticle");
+      TH1F* hh_trig0    = (TH1F*) f_trig0->Get("ptPartTop_passRecoNoBtagParticle");
+      TH1F* hh_trig700  = (TH1F*) f_trig700->Get("ptPartTop_passRecoNoBtagParticle");
+      TH1F* hh_trig1000 = (TH1F*) f_trig1000->Get("ptPartTop_passRecoNoBtagParticle");
     }
     else if (option=="trigSF") {
-      TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptPartTop");
-      TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptPartTop");
-      TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptPartTop");
+      TH1F* hh_trig0    = (TH1F*) f_trig0->Get("ptPartTop");
+      TH1F* hh_trig700  = (TH1F*) f_trig700->Get("ptPartTop");
+      TH1F* hh_trig1000 = (TH1F*) f_trig1000->Get("ptPartTop");
     }
   }
   else {
     if (option=="eff") {
-      TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptGenTop_passRecoParton");
-      TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptGenTop_passRecoParton");
-      TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop_passRecoParton");
+      TH1F* hh_trig0    = (TH1F*) f_trig0->Get("ptGenTop_passRecoParton");
+      TH1F* hh_trig700  = (TH1F*) f_trig700->Get("ptGenTop_passRecoParton");
+      TH1F* hh_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop_passRecoParton");
     }
     else if (option=="eff_nobtag") {
-      TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptGenTop_passRecoNoBtagParton");
-      TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptGenTop_passRecoNoBtagParton");
-      TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop_passRecoNoBtagParton");
+      TH1F* hh_trig0    = (TH1F*) f_trig0->Get("ptGenTop_passRecoNoBtagParton");
+      TH1F* hh_trig700  = (TH1F*) f_trig700->Get("ptGenTop_passRecoNoBtagParton");
+      TH1F* hh_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop_passRecoNoBtagParton");
     }
     else if (option=="trigSF") {
-      TH1F* h_trig0    = (TH1F*) f_trig0->Get("ptGenTop");
-      TH1F* h_trig700  = (TH1F*) f_trig700->Get("ptGenTop");
-      TH1F* h_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop");
+      TH1F* hh_trig0    = (TH1F*) f_trig0->Get("ptGenTop");
+      TH1F* hh_trig700  = (TH1F*) f_trig700->Get("ptGenTop");
+      TH1F* hh_trig1000 = (TH1F*) f_trig1000->Get("ptGenTop");
     }
   }
-  h_trig0->Sumw2();
-  h_trig700->Sumw2();
-  h_trig1000->Sumw2();
+  hh_trig0->Sumw2();
+  hh_trig700->Sumw2();
+  hh_trig1000->Sumw2();
+
+
+  if (!doElectron) {
+    TH1F* h_trig0 = (TH1F*) hh_trig0->Clone("tmp0");
+    TH1F* h_trig700 = (TH1F*) hh_trig700->Clone("tmp700");
+    TH1F* h_trig1000 = (TH1F*) hh_trig1000->Clone("tmp1000");
+  }
+  else {
+    TH1F* h_trig0 = (TH1F*) h_true0->Clone("tmp0");
+    h_trig0->Reset();
+    TH1F* h_trig700 = (TH1F*) h_true700->Clone("tmp700");
+    h_trig700->Reset();
+    TH1F* h_trig1000 = (TH1F*) h_true1000->Clone("tmp1000");
+    h_trig1000->Reset();
+
+    for (int ib=1; ib<h_true0->GetNbinsX()+1; ib++) {
+      h_trig0->SetBinContent(ib,hh_trig0->GetBinContent(ib+2));
+      h_trig0->SetBinError(ib,hh_trig0->GetBinError(ib+2));
+      h_trig700->SetBinContent(ib,hh_trig700->GetBinContent(ib+2));
+      h_trig700->SetBinError(ib,hh_trig700->GetBinError(ib+2));
+      h_trig1000->SetBinContent(ib,hh_trig1000->GetBinContent(ib+2));
+      h_trig1000->SetBinError(ib,hh_trig1000->GetBinError(ib+2));
+    }
+  }
 
 
   // normalize to be able to switch together the three mass ranges
   float ttbar_xs = 245.8;
+  if (pdf=="scaleup") ttbar_xs = 252.0;
+  if (pdf=="scaledown") ttbar_xs = 237.4; 
   float lumi = 19.7*1000;
 
   float n_ttbar0 = 21675970.;
   float n_ttbar700 = 3082812.;
   float n_ttbar1000 = 1249111.;
+  if (pdf=="scaleup") {
+    n_ttbar0 = 14983686.;
+    n_ttbar700 = 2243672.;
+    n_ttbar1000 = 1241650.;
+  }
+  if (pdf=="scaledown") {
+    n_ttbar0 = 14545715*89./102.;
+    n_ttbar700 = 2170074.;
+    n_ttbar1000 = 1308090.;
+  }
 
   float eff_ttbar0 = 1.0;
   float eff_ttbar700 = 0.074;
   float eff_ttbar1000 = 0.015;
+  if (pdf=="scaleup") {
+    eff_ttbar700 = 0.074;
+    eff_ttbar1000 = 0.014;
+  }
+  if (pdf=="scaledown") {
+    eff_ttbar700 = 0.081;
+    eff_ttbar1000 = 0.016;
+  }
 
 
   h_true0->Scale(ttbar_xs*lumi*eff_ttbar0/n_ttbar0);

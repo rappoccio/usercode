@@ -345,21 +345,10 @@ if options.closureTest == True :
     f_ttbar_max700_odd    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
     f_ttbar_700to1000_odd = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
     f_ttbar_1000toInf_odd = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
-    ## full truth samples for unfolding (two-step) particle-level to parton 
-    f_ttbar_max700_pp    = TFile("TruthStudy/TT_max700_"+options.pdf+DIR+"_fullTruth_even.root")
-    f_ttbar_700to1000_pp = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+DIR+"_fullTruth_even.root")
-    f_ttbar_1000toInf_pp = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+DIR+"_fullTruth_even.root")
-    f_ttbar_max700_pp_odd    = TFile("TruthStudy/TT_max700_"+options.pdf+DIR+"_fullTruth_odd.root")
-    f_ttbar_700to1000_pp_odd = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+DIR+"_fullTruth_odd.root")
-    f_ttbar_1000toInf_pp_odd = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+DIR+"_fullTruth_odd.root")
 else :
-    f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
-    f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
-    f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
-    ## full truth samples for unfolding (two-step) particle-level to parton 
-    f_ttbar_max700_pp    = TFile("TruthStudy/TT_max700_"+options.pdf+DIR+"_fullTruth.root")
-    f_ttbar_700to1000_pp = TFile("TruthStudy/TT_Mtt-700to1000_"+options.pdf+DIR+"_fullTruth.root")
-    f_ttbar_1000toInf_pp = TFile("TruthStudy/TT_Mtt-1000toInf_"+options.pdf+DIR+"_fullTruth.root")
+    f_ttbar_max700    = TFile("FullTruth/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+    f_ttbar_700to1000 = TFile("FullTruth/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+    f_ttbar_1000toInf = TFile("FullTruth/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
 
 f_ttbar_nonsemilep_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
 f_ttbar_nonsemilep_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
@@ -378,19 +367,16 @@ f_WJets_3jet   = TFile("histfiles/"+dataDIR+"/W3JetsToLNu_TuneZ2Star_8TeV-madgra
 f_WJets_4jet   = TFile("histfiles/"+dataDIR+"/W4JetsToLNu_TuneZ2Star_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
 
 
-unfold = "_full2"
-if (muOrEl=="el"):
-    unfold = ""
 
 # the response matrices are simply added here, but have been filled with the full event weights (taking sample size, efficiency, etx. into account)
 if options.closureTest == True : 
-    response_ttbar_max700    = f_ttbar_max700_odd.Get("response_pt"+nobtag+unfold)
-    response_ttbar_700to1000 = f_ttbar_700to1000_odd.Get("response_pt"+nobtag+unfold)
-    response_ttbar_1000toInf = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag+unfold)
+    response_ttbar_max700    = f_ttbar_max700_odd.Get("response_pt"+nobtag)
+    response_ttbar_700to1000 = f_ttbar_700to1000_odd.Get("response_pt"+nobtag)
+    response_ttbar_1000toInf = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag)
 else :
-    response_ttbar_max700    = f_ttbar_max700.Get("response_pt"+nobtag+unfold)
-    response_ttbar_700to1000 = f_ttbar_700to1000.Get("response_pt"+nobtag+unfold)
-    response_ttbar_1000toInf = f_ttbar_1000toInf.Get("response_pt"+nobtag+unfold)
+    response_ttbar_max700    = f_ttbar_max700.Get("response_pt"+nobtag)
+    response_ttbar_700to1000 = f_ttbar_700to1000.Get("response_pt"+nobtag)
+    response_ttbar_1000toInf = f_ttbar_1000toInf.Get("response_pt"+nobtag)
 
 response = response_ttbar_max700.Clone()
 response.SetName("response_pt_"+options.syst)
@@ -400,26 +386,26 @@ response.Add(response_ttbar_1000toInf)
 ## response matrices for two-step unfolding
 if options.twoStep == True :
     if options.closureTest == True : 
-        response_ttbar_max700_rp    = f_ttbar_max700_odd.Get("response_pt"+nobtag+unfold+"_rp")
-        response_ttbar_700to1000_rp = f_ttbar_700to1000_odd.Get("response_pt"+nobtag+unfold+"_rp")
-        response_ttbar_1000toInf_rp = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag+unfold+"_rp")
-        response_ttbar_max700_pp    = f_ttbar_max700_pp_odd.Get("response_pt_full2_pp")
-        response_ttbar_700to1000_pp = f_ttbar_700to1000_pp_odd.Get("response_pt_full2_pp")
-        response_ttbar_1000toInf_pp = f_ttbar_1000toInf_pp_odd.Get("response_pt_full2_pp")
+        response_ttbar_max700_rp    = f_ttbar_max700_odd.Get("response_pt"+nobtag+"_rp")
+        response_ttbar_700to1000_rp = f_ttbar_700to1000_odd.Get("response_pt"+nobtag+"_rp")
+        response_ttbar_1000toInf_rp = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag+"_rp")
+        response_ttbar_max700_pp    = f_ttbar_max700_odd.Get("response_pt_pp")
+        response_ttbar_700to1000_pp = f_ttbar_700to1000_odd.Get("response_pt_pp")
+        response_ttbar_1000toInf_pp = f_ttbar_1000toInf_odd.Get("response_pt_pp")
         if options.troubleshoot == True:
-            response_ttbar_max700_rp_even    = f_ttbar_max700.Get("response_pt"+nobtag+unfold+"_rp")
-            response_ttbar_700to1000_rp_even = f_ttbar_700to1000.Get("response_pt"+nobtag+unfold+"_rp")
-            response_ttbar_1000toInf_rp_even = f_ttbar_1000toInf.Get("response_pt"+nobtag+unfold+"_rp")
-            response_ttbar_max700_pp_even    = f_ttbar_max700_pp.Get("response_pt_full2_pp")
-            response_ttbar_700to1000_pp_even = f_ttbar_700to1000_pp.Get("response_pt_full2_pp")
-            response_ttbar_1000toInf_pp_even = f_ttbar_1000toInf_pp.Get("response_pt_full2_pp")
+            response_ttbar_max700_rp_even    = f_ttbar_max700.Get("response_pt"+nobtag+"_rp")
+            response_ttbar_700to1000_rp_even = f_ttbar_700to1000.Get("response_pt"+nobtag+"_rp")
+            response_ttbar_1000toInf_rp_even = f_ttbar_1000toInf.Get("response_pt"+nobtag+"_rp")
+            response_ttbar_max700_pp_even    = f_ttbar_max700.Get("response_pt_pp")
+            response_ttbar_700to1000_pp_even = f_ttbar_700to1000.Get("response_pt_pp")
+            response_ttbar_1000toInf_pp_even = f_ttbar_1000toInf.Get("response_pt_pp")
     else:
-        response_ttbar_max700_rp    = f_ttbar_max700.Get("response_pt"+nobtag+unfold+"_rp")
-        response_ttbar_700to1000_rp = f_ttbar_700to1000.Get("response_pt"+nobtag+unfold+"_rp")
-        response_ttbar_1000toInf_rp = f_ttbar_1000toInf.Get("response_pt"+nobtag+unfold+"_rp")
-        response_ttbar_max700_pp    = f_ttbar_max700_pp.Get("response_pt_full2_pp")
-        response_ttbar_700to1000_pp = f_ttbar_700to1000_pp.Get("response_pt_full2_pp")
-        response_ttbar_1000toInf_pp = f_ttbar_1000toInf_pp.Get("response_pt_full2_pp")
+        response_ttbar_max700_rp    = f_ttbar_max700.Get("response_pt"+nobtag+"_rp")
+        response_ttbar_700to1000_rp = f_ttbar_700to1000.Get("response_pt"+nobtag+"_rp")
+        response_ttbar_1000toInf_rp = f_ttbar_1000toInf.Get("response_pt"+nobtag+"_rp")
+        response_ttbar_max700_pp    = f_ttbar_max700.Get("response_pt_pp")
+        response_ttbar_700to1000_pp = f_ttbar_700to1000.Get("response_pt_pp")
+        response_ttbar_1000toInf_pp = f_ttbar_1000toInf.Get("response_pt_pp")
 
     response_rp = response_ttbar_max700_rp.Clone()
     response_rp.SetName("response_pt_"+options.syst+"_rp")
@@ -463,31 +449,31 @@ else :
 # -------------------------------------------------------------------------------------
 
 if options.closureTest == True : 
-    hTrue_max700    = f_ttbar_max700_odd.Get("ptGenTop"+unfold)
-    hTrue_700to1000 = f_ttbar_700to1000_odd.Get("ptGenTop"+unfold)
-    hTrue_1000toInf = f_ttbar_1000toInf_odd.Get("ptGenTop"+unfold)
+    hTrue_max700    = f_ttbar_max700_odd.Get("ptGenTop")
+    hTrue_700to1000 = f_ttbar_700to1000_odd.Get("ptGenTop")
+    hTrue_1000toInf = f_ttbar_1000toInf_odd.Get("ptGenTop")
 
     if options.twoStep :
-        hPart_max700    = f_ttbar_max700_odd.Get("ptPartTop"+unfold)
-        hPart_700to1000 = f_ttbar_700to1000_odd.Get("ptPartTop"+unfold)
-        hPart_1000toInf = f_ttbar_1000toInf_odd.Get("ptPartTop"+unfold)
+        hPart_max700    = f_ttbar_max700_odd.Get("ptPartTop")
+        hPart_700to1000 = f_ttbar_700to1000_odd.Get("ptPartTop")
+        hPart_1000toInf = f_ttbar_1000toInf_odd.Get("ptPartTop")
 
         if options.troubleshoot :
-            hTrue_max700_even    = f_ttbar_max700.Get("ptGenTop"+unfold)
-            hTrue_700to1000_even = f_ttbar_700to1000.Get("ptGenTop"+unfold)
-            hTrue_1000toInf_even = f_ttbar_1000toInf.Get("ptGenTop"+unfold)
-            hPart_max700_even    = f_ttbar_max700.Get("ptPartTop"+unfold)
-            hPart_700to1000_even = f_ttbar_700to1000.Get("ptPartTop"+unfold)
-            hPart_1000toInf_even = f_ttbar_1000toInf.Get("ptPartTop"+unfold)
+            hTrue_max700_even    = f_ttbar_max700.Get("ptGenTop")
+            hTrue_700to1000_even = f_ttbar_700to1000.Get("ptGenTop")
+            hTrue_1000toInf_even = f_ttbar_1000toInf.Get("ptGenTop")
+            hPart_max700_even    = f_ttbar_max700.Get("ptPartTop")
+            hPart_700to1000_even = f_ttbar_700to1000.Get("ptPartTop")
+            hPart_1000toInf_even = f_ttbar_1000toInf.Get("ptPartTop")
 else :
-    hTrue_max700    = f_ttbar_max700.Get("ptGenTop"+unfold)
-    hTrue_700to1000 = f_ttbar_700to1000.Get("ptGenTop"+unfold)
-    hTrue_1000toInf = f_ttbar_1000toInf.Get("ptGenTop"+unfold)
+    hTrue_max700    = f_ttbar_max700.Get("ptGenTop")
+    hTrue_700to1000 = f_ttbar_700to1000.Get("ptGenTop")
+    hTrue_1000toInf = f_ttbar_1000toInf.Get("ptGenTop")
 
     if options.twoStep :
-        hPart_max700    = f_ttbar_max700.Get("ptPartTop"+unfold)
-        hPart_700to1000 = f_ttbar_700to1000.Get("ptPartTop"+unfold)
-        hPart_1000toInf = f_ttbar_1000toInf.Get("ptPartTop"+unfold)
+        hPart_max700    = f_ttbar_max700.Get("ptPartTop")
+        hPart_700to1000 = f_ttbar_700to1000.Get("ptPartTop")
+        hPart_1000toInf = f_ttbar_1000toInf.Get("ptPartTop")
 
 hTrue_max700.Sumw2()
 hTrue_700to1000.Sumw2()
@@ -511,46 +497,46 @@ if options.twoStep:
     isTwoStep = "_2step"
    
 
-hRecoData = f_data.Get("ptRecoTop"+isTwoStep+nobtag+unfold).Clone()
+hRecoData = f_data.Get("ptRecoTop"+isTwoStep+nobtag).Clone()
 hRecoData.SetName("hRecoData")
 
-hRecoQCD = f_QCD.Get("ptRecoTop"+isTwoStep+nobtag+unfold).Clone()
+hRecoQCD = f_QCD.Get("ptRecoTop"+isTwoStep+nobtag).Clone()
 hRecoQCD.SetName("hRecoQCD")
 hRecoQCD.Sumw2()
 hRecoQCD.SetFillColor(TColor.kYellow)
 
 if options.closureTest == False : 
-    hMeas = f_data.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+    hMeas = f_data.Get("ptRecoTop"+isTwoStep+nobtag)
 else :
-    hMeas_max700    = f_ttbar_max700.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-    hMeas_700to1000 = f_ttbar_700to1000.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-    hMeas_1000toInf = f_ttbar_1000toInf.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+    hMeas_max700    = f_ttbar_max700.Get("ptRecoTop"+isTwoStep+nobtag)
+    hMeas_700to1000 = f_ttbar_700to1000.Get("ptRecoTop"+isTwoStep+nobtag)
+    hMeas_1000toInf = f_ttbar_1000toInf.Get("ptRecoTop"+isTwoStep+nobtag)
     hMeas_max700.Sumw2()
     hMeas_700to1000.Sumw2()
     hMeas_1000toInf.Sumw2()
 
     if options.troubleshoot :
-        hMeas_max700_odd    = f_ttbar_max700_odd.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-        hMeas_700to1000_odd = f_ttbar_700to1000_odd.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-        hMeas_1000toInf_odd = f_ttbar_1000toInf_odd.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+        hMeas_max700_odd    = f_ttbar_max700_odd.Get("ptRecoTop"+isTwoStep+nobtag)
+        hMeas_700to1000_odd = f_ttbar_700to1000_odd.Get("ptRecoTop"+isTwoStep+nobtag)
+        hMeas_1000toInf_odd = f_ttbar_1000toInf_odd.Get("ptRecoTop"+isTwoStep+nobtag)
         hMeas_max700_odd.Sumw2()
         hMeas_700to1000_odd.Sumw2()
         hMeas_1000toInf_odd.Sumw2()
     
 
-hMeas_T_t     = f_T_t.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-hMeas_Tbar_t  = f_Tbar_t.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-hMeas_T_s     = f_T_s.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-hMeas_Tbar_s  = f_Tbar_s.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-hMeas_T_tW    = f_T_tW.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-hMeas_Tbar_tW = f_Tbar_tW.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-hMeas_WJets_1jet   = f_WJets_1jet.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-hMeas_WJets_2jet   = f_WJets_2jet.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-hMeas_WJets_3jet   = f_WJets_3jet.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-hMeas_WJets_4jet   = f_WJets_4jet.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-hMeas_tt0_nonsemi = f_ttbar_nonsemilep_max700.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-hMeas_tt700_nonsemi = f_ttbar_nonsemilep_700to1000.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
-hMeas_tt1000_nonsemi = f_ttbar_nonsemilep_1000toInf.Get("ptRecoTop"+isTwoStep+nobtag+unfold)
+hMeas_T_t     = f_T_t.Get("ptRecoTop"+isTwoStep+nobtag)
+hMeas_Tbar_t  = f_Tbar_t.Get("ptRecoTop"+isTwoStep+nobtag)
+hMeas_T_s     = f_T_s.Get("ptRecoTop"+isTwoStep+nobtag)
+hMeas_Tbar_s  = f_Tbar_s.Get("ptRecoTop"+isTwoStep+nobtag)
+hMeas_T_tW    = f_T_tW.Get("ptRecoTop"+isTwoStep+nobtag)
+hMeas_Tbar_tW = f_Tbar_tW.Get("ptRecoTop"+isTwoStep+nobtag)
+hMeas_WJets_1jet   = f_WJets_1jet.Get("ptRecoTop"+isTwoStep+nobtag)
+hMeas_WJets_2jet   = f_WJets_2jet.Get("ptRecoTop"+isTwoStep+nobtag)
+hMeas_WJets_3jet   = f_WJets_3jet.Get("ptRecoTop"+isTwoStep+nobtag)
+hMeas_WJets_4jet   = f_WJets_4jet.Get("ptRecoTop"+isTwoStep+nobtag)
+hMeas_tt0_nonsemi = f_ttbar_nonsemilep_max700.Get("ptRecoTop"+isTwoStep+nobtag)
+hMeas_tt700_nonsemi = f_ttbar_nonsemilep_700to1000.Get("ptRecoTop"+isTwoStep+nobtag)
+hMeas_tt1000_nonsemi = f_ttbar_nonsemilep_1000toInf.Get("ptRecoTop"+isTwoStep+nobtag)
 
 hMeas_T_t.Sumw2()
 hMeas_Tbar_t.Sumw2()
@@ -752,25 +738,6 @@ if options.closureTest and options.troubleshoot and options.twoStep :
 
 
 # -------------------------------------------------------------------------------------
-# trigger SF for particle-level
-
-if options.lepType == "ele":
-    if options.pdf == "scaleup":
-        trigSF_rp = [0.0, 0.0, 1.3516, 1.40157, 1.45154, 1.50151, 1.62643, 0.0]
-    elif options.pdf == "scaledown":
-        trigSF_rp = [0.0, 0.0, 1.33585, 1.38794, 1.44003, 1.49212, 1.62236, 0.0]
-    else:
-        trigSF_rp = [0.0, 0.0, 1.32581, 1.37968, 1.43356, 1.48744, 1.62214, 0.0]
-else:
-    if options.pdf == "scaleup":
-        trigSF_rp = [0.0, 0.0, 1.17308, 1.17612, 1.17915, 1.18218, 1.18976, 0.0]
-    elif options.pdf == "scaledown":
-        trigSF_rp = [0.0, 0.0, 1.16728, 1.17801, 1.18873, 1.19946, 1.22627, 0.0]
-    else:
-        trigSF_rp = [0.0, 0.0, 1.20002, 1.20692, 1.21382, 1.22071, 1.23795, 0.0]
-
-
-# -------------------------------------------------------------------------------------
 # one-step unfolding
 if options.twoStep == False:                
     
@@ -794,21 +761,13 @@ else :
     # get the distribution unfolded to particle-level
     hReco_rp = unfold_rp.Hreco()
 
-    # apply trigger SF correction for particle-level -> parton
-    hRecoCorr_rp = hReco_rp.Clone()
-    hRecoCorr_rp.SetName("hRecoCorr_rp")
-    for ibin in range(1, hReco_rp.GetXaxis().GetNbins()+1 ) :
-        hRecoCorr_rp.SetBinContent(ibin, hReco_rp.GetBinContent(ibin) * trigSF_rp[ibin-1] )
-        hRecoCorr_rp.SetBinError(ibin, hReco_rp.GetBinError(ibin) * trigSF_rp[ibin-1] )
-
     print "------------ UNFOLD TO PARTON-LEVEL (set: " + options.pdf + ", syst: " + options.syst + ") ------------"
-    #unfold = RooUnfoldBayes(response_pp, hRecoCorr_rp, 10);
-    unfold = RooUnfoldSvd(response_pp, hRecoCorr_rp, 2);
-    #unfold = RooUnfoldTUnfold(response_pp, hRecoCorr_rp);
+    #unfold = RooUnfoldBayes(response_pp, hReco_rp, 10);
+    unfold = RooUnfoldSvd(response_pp, hReco_rp, 2);
+    #unfold = RooUnfoldTUnfold(response_pp, hReco_rp);
 
     # get the distribution unfolded to parton-level
     hReco = unfold.Hreco()
-
     
 
 # -------------------------------------------------------------------------------------
@@ -822,85 +781,10 @@ if options.twoStep:
     hPart.Scale(1.0/(lum*4/27))    # true @ parton level
     hReco_rp.Scale(1.0/(lum*4/27)) # unfolded to particle level
 
-### correct also to post-fit top-tagging SF !!! 
-## nuisance_toptag = X +/- eX
-## prior = 25%
-## posterior_toptag = prior_toptag * (1.0 + 0.25*X) 
-#
-#if options.pdf == "CT10_nom" and options.lepType == "muon" : 
-#    toptag_post = 1.10649440886
-#if options.pdf == "CT10_pdfup" and options.lepType == "muon" : 
-#    toptag_post = 1.06707266216
-#if options.pdf == "CT10_pdfdown" and options.lepType == "muon" : 
-#    toptag_post = 1.13966730776
-#if options.pdf == "MSTW_nom" and options.lepType == "muon" : 
-#    toptag_post = 1.10744665435
-#if options.pdf == "MSTW_pdfup" and options.lepType == "muon" : 
-#    toptag_post = 1.09450114957
-#if options.pdf == "MSTW_pdfdown" and options.lepType == "muon" : 
-#    toptag_post = 1.13594832035
-#if options.pdf == "NNPDF_nom" and options.lepType == "muon" : 
-#    toptag_post = 1.16550559607
-#if options.pdf == "NNPDF_pdfup" and options.lepType == "muon" : 
-#    toptag_post = 1.11834541764
-#if options.pdf == "NNPDF_pdfdown" and options.lepType == "muon" : 
-#    toptag_post = 1.40246183384
-#if options.pdf == "scaleup" and options.lepType == "muon" : 
-#    toptag_post = 1.06423533136
-#if options.pdf == "scaledown" and options.lepType == "muon" : 
-#    toptag_post = 1.19994741704
-#if options.pdf == "CT10_nom" and options.lepType == "ele" : 
-#    toptag_post = 1.09579275566
-#if options.pdf == "CT10_pdfup" and options.lepType == "ele" : 
-#    toptag_post = 1.07216881228
-#if options.pdf == "CT10_pdfdown" and options.lepType == "ele" : 
-#    toptag_post = 1.11804095015
-#if options.pdf == "MSTW_nom" and options.lepType == "ele" : 
-#    toptag_post = 1.09751083131
-#if options.pdf == "MSTW_pdfup" and options.lepType == "ele" : 
-#    toptag_post = 1.0842812137
-#if options.pdf == "MSTW_pdfdown" and options.lepType == "ele" : 
-#    toptag_post = 1.1092318743
-#if options.pdf == "NNPDF_nom" and options.lepType == "ele" : 
-#    toptag_post = 1.10402528198
-#if options.pdf == "NNPDF_pdfup" and options.lepType == "ele" : 
-#    toptag_post = 1.08350599359
-#if options.pdf == "NNPDF_pdfdown" and options.lepType == "ele" : 
-#    toptag_post = 1.11391002882
-#if options.pdf == "scaleup" and options.lepType == "ele" : 
-#    toptag_post = 1.16876619788
-#if options.pdf == "scaledown" and options.lepType == "ele" : 
-#    toptag_post = 1.15662221006
-
-
-#if options.closureTest == False : 
-#    hMeas.Scale(1.0/toptag_post)
-#    hReco.Scale(1.0/toptag_post)
-#    if options.twoStep:
-#        hReco_rp.Scale(1.0/toptag_post)
-
     
 # -------------------------------------------------------------------------------------
-# Correct for selection bias in requiring trigger & bin width
+# Adjust for bin width
 # -------------------------------------------------------------------------------------
-
-## trigger SF (this is for correcting parton-level distribution & one-step unfolded distribution @ parton-level 
-
-if options.lepType == "ele":
-    if options.pdf == "scaleup":
-        trigSF = [0.0, 0.0, 1.67745, 1.71964, 1.76184, 1.80403, 1.90952, 0.0]
-    elif options.pdf == "scaledown":
-        trigSF = [0.0, 0.0, 1.69947, 1.72769, 1.75592, 1.78415, 1.85471, 0.0]
-    else:
-        trigSF = [0.0, 0.0, 1.6879, 1.73525, 1.78259, 1.82994, 1.94831, 0.0]
-else:
-    if options.pdf == "scaleup":
-        trigSF = [0.0, 0.0, 1.57944, 1.56532, 1.55121, 1.5371, 1.50182, 0.0]
-    elif options.pdf == "scaledown":
-        trigSF = [0.0, 0.0, 1.56584, 1.55551, 1.54517, 1.53484, 1.509, 0.0]
-    else:
-        trigSF = [0.0, 0.0, 1.62046, 1.58152, 1.54259, 1.50365, 1.4063, 0.0]
-
 
 sumReco = 0
 sumTrue = 0
@@ -909,44 +793,34 @@ sumReco_rp = 0
 sumPart = 0
 for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
 
+    # total cross section for pt > 400 GeV 
+    if hReco.GetBinLowEdge(ibin) > 399. :
+        sumReco += hReco.GetBinContent(ibin)
+    if hTrue.GetBinLowEdge(ibin) > 399. :
+        sumTrue += hTrue.GetBinContent(ibin)
+    if hMeas.GetBinLowEdge(ibin) > 399. :
+        sumMeas += hMeas.GetBinContent(ibin)
+    if options.twoStep:
+        if hReco_rp.GetBinLowEdge(ibin) > 399. :
+            sumReco_rp += hReco_rp.GetBinContent(ibin)
+        if hPart.GetBinLowEdge(ibin) > 399. :
+            sumPart += hPart.GetBinContent(ibin)
+
     width = hTrue.GetBinWidth(ibin)
     
-    # correct top-quark pt @ gen-level for trigger bias (for both one-step & two-step)
-    hTrue.SetBinContent(ibin, hTrue.GetBinContent(ibin) * trigSF[ibin-1] / width )
-    hTrue.SetBinError(ibin, hTrue.GetBinError(ibin) * trigSF[ibin-1] / width )
-
-    # correct one-step unfolded distribution for trigger bias
-    if options.twoStep == False:
-        hReco.SetBinContent(ibin, hReco.GetBinContent(ibin) * trigSF[ibin-1] / width )
-        hReco.SetBinError(ibin, hReco.GetBinError(ibin) * trigSF[ibin-1] / width )
-    else:
-        hReco.SetBinContent(ibin, hReco.GetBinContent(ibin) / width )
-        hReco.SetBinError(ibin, hReco.GetBinError(ibin) / width )
-        hReco_rp.SetBinContent(ibin, hReco_rp.GetBinContent(ibin) * trigSF_rp[ibin-1] / width )
-        hReco_rp.SetBinError(ibin, hReco_rp.GetBinError(ibin) * trigSF_rp[ibin-1] / width )
-        hPart.SetBinContent(ibin, hPart.GetBinContent(ibin) * trigSF_rp[ibin-1] / width )
-        hPart.SetBinError(ibin, hPart.GetBinError(ibin) * trigSF_rp[ibin-1] / width )
-            
-    
-    # correct measured distribution for bin width
     hMeas.SetBinContent(ibin,  hMeas.GetBinContent(ibin) / width )
     hMeas.SetBinError(ibin,  hMeas.GetBinError(ibin) / width )
 
-    # total cross section for pt > 400 GeV 
-    if hReco.GetBinLowEdge(ibin) > 399. :
-        print "ibin = " + str(ibin) + " hReco = " + str(int(hReco.GetBinContent(ibin)*width))
-        sumReco += hReco.GetBinContent(ibin)*width
-    if hTrue.GetBinLowEdge(ibin) > 399. :
-        print "ibin = " + str(ibin) + " hTrue = " + str(int(hTrue.GetBinContent(ibin)*width))
-        sumTrue += hTrue.GetBinContent(ibin)*width
-    if hMeas.GetBinLowEdge(ibin) > 399. :
-        sumMeas += hMeas.GetBinContent(ibin)*width
+    hTrue.SetBinContent(ibin, hTrue.GetBinContent(ibin) / width )
+    hTrue.SetBinError(ibin, hTrue.GetBinError(ibin) / width )
+
+    hReco.SetBinContent(ibin, hReco.GetBinContent(ibin) / width )
+    hReco.SetBinError(ibin, hReco.GetBinError(ibin) / width )
     if options.twoStep:
-        if hReco_rp.GetBinLowEdge(ibin) > 399. :
-            sumReco_rp += hReco_rp.GetBinContent(ibin)*width
-        if hPart.GetBinLowEdge(ibin) > 399. :
-            sumPart += hPart.GetBinContent(ibin)*width
-    
+        hReco_rp.SetBinContent(ibin, hReco_rp.GetBinContent(ibin) / width )
+        hReco_rp.SetBinError(ibin, hReco_rp.GetBinError(ibin) / width )
+        hPart.SetBinContent(ibin, hPart.GetBinContent(ibin) / width )
+        hPart.SetBinError(ibin, hPart.GetBinError(ibin) / width )            
 
 
 # -------------------------------------------------------------------------------------
@@ -960,17 +834,6 @@ if options.normalize:
         hReco_rp.Scale(1.0/sumReco_rp)
         hPart.Scale(1.0/sumPart)
     
-print ''
-for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
-
-    width = hTrue.GetBinWidth(ibin)
-
-    # total cross section for pt > 400 GeV 
-    if hReco.GetBinLowEdge(ibin) > 399. :
-        print "ibin = " + str(ibin) + " hReco = " + str(hReco.GetBinContent(ibin)*width)
-    if hTrue.GetBinLowEdge(ibin) > 399. :
-        print "ibin = " + str(ibin) + " hTrue = " + str(hTrue.GetBinContent(ibin)*width)
-
         
 # -------------------------------------------------------------------------------------
 # print & draw
@@ -1083,14 +946,14 @@ pad2.SetTopMargin(0.05);
 pad2.SetBottomMargin(0.4);
 pad2.Draw();
 pad2.cd();
-hFrac.SetMaximum(2.0)
-hFrac.SetMinimum(0.0)
+hFrac.SetMaximum(1.4)
+hFrac.SetMinimum(0.6)
 hFrac.UseCurrentStyle()
 hFrac.GetYaxis().SetTitleSize(25)
 hFrac.GetYaxis().SetTitleOffset(2.0)
 hFrac.GetXaxis().SetTitleOffset(4.0)
 hFrac.GetXaxis().SetLabelSize(25)
-hFrac.GetYaxis().SetNdivisions(2,4,0,False)
+hFrac.GetYaxis().SetNdivisions(4,4,0,False)
 
 hFrac.Draw("e")
 hFrac.GetXaxis().SetRangeUser(400., 1200.)
@@ -1172,14 +1035,14 @@ if options.twoStep:
     c1.cd()
     pad2.cd()
 
-    hFrac_rp.SetMaximum(2.0)
-    hFrac_rp.SetMinimum(0.0)
+    hFrac_rp.SetMaximum(1.4)
+    hFrac_rp.SetMinimum(0.6)
     hFrac_rp.UseCurrentStyle()
     hFrac_rp.GetYaxis().SetTitleSize(25)
     hFrac_rp.GetYaxis().SetTitleOffset(2.0)
     hFrac_rp.GetXaxis().SetTitleOffset(4.0)
     hFrac_rp.GetXaxis().SetLabelSize(25)
-    hFrac_rp.GetYaxis().SetNdivisions(2,4,0,False)
+    hFrac_rp.GetYaxis().SetNdivisions(4,4,0,False)
 
     hFrac_rp.Draw("e")
     hFrac_rp.GetXaxis().SetRangeUser(400., 1200.)

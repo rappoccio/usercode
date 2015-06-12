@@ -31,17 +31,22 @@ void plotUnfold() {
   bool doNormalized=true;
 
   plot("mu",true,true, doNormalized);
-  //plot("mu",true,false, doNormalized);
-  //plot("mu",false,false, doNormalized);
-  //plot("mu",false,true, doNormalized);
-
   plot("el",true,true, doNormalized);
-  //plot("el",true,false, doNormalized);
-  //plot("el",false,false, doNormalized);
-  //plot("el",false,true, doNormalized);
-
   plot("comb",true,true, doNormalized);
+  
+  /*
+  plot("mu",true,false, doNormalized);
+  plot("mu",false,false, doNormalized);
+  plot("mu",false,true, doNormalized);
 
+  plot("el",true,false, doNormalized);
+  plot("el",false,false, doNormalized);
+  plot("el",false,true, doNormalized);
+
+  plot("comb",true,false, doNormalized);
+  plot("comb",false,false, doNormalized);
+  plot("comb",false,false, doNormalized);
+  */
 }
 
 void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
