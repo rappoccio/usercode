@@ -319,7 +319,7 @@ def getMuonSF(muEta) :
 
 # -------------------------------------------------------------------------------------
 # Electron trigger * ID SF
-def getElectronSF(elEta, elPt) :
+def getElectronSF(elEta, elPt, DIR) :
 
     ## from here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentification#Triggering_MVA
     
@@ -327,7 +327,7 @@ def getElectronSF(elEta, elPt) :
     if elPt > 199. :
         elPt = 199.
     
-    f_elSF = ROOT.TFile("electrons_scale_factors.root")
+    f_elSF = ROOT.TFile(DIR+"electrons_scale_factors.root")
     h_elSF = f_elSF.Get("electronsDATAMCratio_FO_ID")
     
     ibin = h_elSF.FindBin(abs(elEta), elPt)
@@ -445,6 +445,11 @@ parser.add_option('--isData', metavar='F', action='store_true',
                   default=False,
                   dest='isData',
                   help='Flag for data (True) or MC (False), used to decide whether to apply b-tagging SF')
+
+parser.add_option('--condor', metavar='F', action='store_true',
+                  default=False,
+                  dest='condor',
+                  help='is this running on the batch system?')
 
 parser.add_option('--pileup', metavar='F', type='string', action='store',
                   default='none',
@@ -575,14 +580,18 @@ parser.add_option('--WjetsHF', metavar='F', type='string', action='store',
 (options, args) = parser.parse_args()
 argv = []
 
+DIR = ""
+if options.condor:
+    DIR = "tardir/"
+
 import ROOT
-ROOT.gROOT.Macro("rootlogon.C")
+ROOT.gROOT.Macro(DIR+"rootlogon.C")
 
 ## array needed for response matrix binning
 from array import *
 
 if options.makeResponse == True:
-    ROOT.gSystem.Load("RooUnfold-1.1.1/libRooUnfold")
+    ROOT.gSystem.Load(DIR+"RooUnfold-1.1.1/libRooUnfold")
 
 
 # -------------------------------------------------------------------------------------
@@ -596,24 +605,24 @@ ROOT.gSystem.Load('libCondFormatsJetMETObjects')
 
 # Read JEC uncertainties
 if options.jecSys != None or options.jerSys != None :
-    jecParStrAK5 = ROOT.std.string('START53_V27_Uncertainty_AK5PFchs.txt')
+    jecParStrAK5 = ROOT.std.string(DIR+'START53_V27_Uncertainty_AK5PFchs.txt')
     jecUncAK5 = ROOT.JetCorrectionUncertainty( jecParStrAK5 )
-    jecParStrAK7 = ROOT.std.string('START53_V27_Uncertainty_AK7PFchs.txt')
+    jecParStrAK7 = ROOT.std.string(DIR+'START53_V27_Uncertainty_AK7PFchs.txt')
     jecUncAK7 = ROOT.JetCorrectionUncertainty( jecParStrAK7 )    
 
 # read nominal JEC corrections for AK7 jets to be applied to CA8 jets
 if options.isData == False:
     jecNomStrAK7 = [
-        'START53_V27_L1FastJet_AK7PFchs.txt',
-        'START53_V27_L2Relative_AK7PFchs.txt',
-        'START53_V27_L3Absolute_AK7PFchs.txt'
+        DIR+'START53_V27_L1FastJet_AK7PFchs.txt',
+        DIR+'START53_V27_L2Relative_AK7PFchs.txt',
+        DIR+'START53_V27_L3Absolute_AK7PFchs.txt'
         ]
 else:
     jecNomStrAK7 = [
-        'FT_53_V21_AN6_L1FastJet_AK7PFchs.txt',
-        'FT_53_V21_AN6_L2Relative_AK7PFchs.txt',
-        'FT_53_V21_AN6_L3Absolute_AK7PFchs.txt',
-        'FT_53_V21_AN6_L2L3Residual_AK7PFchs.txt',
+        DIR+'FT_53_V21_AN6_L1FastJet_AK7PFchs.txt',
+        DIR+'FT_53_V21_AN6_L2Relative_AK7PFchs.txt',
+        DIR+'FT_53_V21_AN6_L3Absolute_AK7PFchs.txt',
+        DIR+'FT_53_V21_AN6_L2L3Residual_AK7PFchs.txt',
         ]
 
 v_jecNomAK7 = ROOT.std.vector(ROOT.JetCorrectorParameters)()
@@ -706,9 +715,9 @@ print "Creating histograms"
 
 # read input histogram for PU
 if options.pileup=='ttbarQ2up' or options.pileup=='ttbarQ2dn':
-    PileFile = ROOT.TFile("Pileup_plots_scaleupdnnom.root")
+    PileFile = ROOT.TFile(DIR+"Pileup_plots_scaleupdnnom.root")
 else:
-    PileFile = ROOT.TFile("Pileup_plots.root")
+    PileFile = ROOT.TFile(DIR+"Pileup_plots.root")
 PilePlot = PileFile.Get("pweight" + options.pileup)
 
 f.cd()
@@ -1062,8 +1071,8 @@ h_hadtop_pt_pt      = ROOT.TH1F("hadtop_pt_pt",      ";p_{T}(hadronic top) [GeV]
 h_hadtop_pt_nsub    = ROOT.TH1F("hadtop_pt_nsub",    ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass nsub >= 3
 h_hadtop_pt_minmass = ROOT.TH1F("hadtop_pt_minmass", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass minmass > 50 GeV
 h_hadtop_pt6        = ROOT.TH1F("hadtop_pt6",        ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass 140 < mass < 250 GeV *** FINAL SELECTION ***
-h_hadtop_pt_tau32   = ROOT.TH1F("hadtop_pt_tau32",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass tau32 cut (beyond current selection!)
-h_hadtop_pt_csv     = ROOT.TH1F("hadtop_pt_csv",     ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass subjet b-tag cut (beyond current selection!)
+#h_hadtop_pt_tau32   = ROOT.TH1F("hadtop_pt_tau32",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass tau32 cut (beyond current selection!)
+#h_hadtop_pt_csv     = ROOT.TH1F("hadtop_pt_csv",     ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass subjet b-tag cut (beyond current selection!)
 h_hadtop_pt7        = ROOT.TH1F("hadtop_pt7",        ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass pt > 400 GeV
 
 h_hadtop_mass3 = ROOT.TH1F("hadtop_mass3", ";m(hadronic top) [GeV]; Events / 5 GeV", 100, 0., 500.)
@@ -1092,14 +1101,14 @@ h_hadtop_eta7 = ROOT.TH1F("hadtop_eta7", ";top-tagged jet #eta; Events / 0.1", 5
 h_hadtop_precut_nsub    = ROOT.TH1F("hadtop_precut_nsub",    ";Number of subjets; Events / 1.0",                11, -0.5, 10.5)
 h_hadtop_precut_minmass = ROOT.TH1F("hadtop_precut_minmass", ";Min pairwise mass [GeV]; Events / 1 GeV",        150, 0., 150.)
 h_hadtop_precut_mass    = ROOT.TH1F("hadtop_precut_mass",    ";m(hadronic top) [GeV]; Events / 5 GeV",          100, 0., 500.)
-h_hadtop_precut_tau32   = ROOT.TH1F("hadtop_precut_tau32",   ";#tau_{32}(hadronic top); Events / 0.02",          70, 0., 1.4)
-h_hadtop_precut_csv     = ROOT.TH1F("hadtop_precut_csv",     ";CSV discriminator(hadronic top); Events / 0.01", 110, 0., 1.1)
+#h_hadtop_precut_tau32   = ROOT.TH1F("hadtop_precut_tau32",   ";#tau_{32}(hadronic top); Events / 0.02",          70, 0., 1.4)
+#h_hadtop_precut_csv     = ROOT.TH1F("hadtop_precut_csv",     ";CSV discriminator(hadronic top); Events / 0.01", 110, 0., 1.1)
 
 h_hadtop_precut_nvtx_nsub    = ROOT.TH2F("hadtop_precut_nvtx_nsub",    ";Number of PV; Number of subjets",               40, 0, 80, 11, -0.5, 10.5)
 h_hadtop_precut_nvtx_minmass = ROOT.TH2F("hadtop_precut_nvtx_minmass", ";Number of PV; Min pairwise mass [GeV]",         40, 0, 80, 150, 0., 150.)
 h_hadtop_precut_nvtx_mass    = ROOT.TH2F("hadtop_precut_nvtx_mass",    ";Number of PV; m(hadronic top) [GeV]",           40, 0, 80, 100, 0., 500.)
-h_hadtop_precut_nvtx_tau32   = ROOT.TH2F("hadtop_precut_nvtx_tau32",   ";Number of PV; #tau_{32}(hadronic top)",         40, 0, 80, 70, 0., 1.4)
-h_hadtop_precut_nvtx_csv     = ROOT.TH2F("hadtop_precut_nvtx_csv",     ";Number of PV; CSV discriminator(hadronic top)", 40, 0, 80, 110, 0., 1.1)
+#h_hadtop_precut_nvtx_tau32   = ROOT.TH2F("hadtop_precut_nvtx_tau32",   ";Number of PV; #tau_{32}(hadronic top)",         40, 0, 80, 70, 0., 1.4)
+#h_hadtop_precut_nvtx_csv     = ROOT.TH2F("hadtop_precut_nvtx_csv",     ";Number of PV; CSV discriminator(hadronic top)", 40, 0, 80, 110, 0., 1.1)
 
 h_muonSF   = ROOT.TH1F("muonSF",   ";; Average muon trigger+ID SF", 1,0.5,1.5)
 h_btagSF   = ROOT.TH1F("btagSF",   ";; Average b-tagging SF", 1,0.5,1.5)
@@ -1278,50 +1287,50 @@ TopTau3Handle = Handle("std::vector<double>")
 TopTau3Label  = ("nsub", "Tau3")
 
 # top-tagged subjets variables
-topTagsj0csvHandle = Handle("std::vector<float>")
-topTagsj0csvLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj0csv")
-topTagsj1csvHandle = Handle("std::vector<float>")
-topTagsj1csvLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj1csv")
-topTagsj2csvHandle = Handle("std::vector<float>")
-topTagsj2csvLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj2csv")
-topTagsj3csvHandle = Handle("std::vector<float>")
-topTagsj3csvLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj3csv")
-
-topTagsj0ptHandle = Handle("std::vector<float>")
-topTagsj0ptLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj0pt")
-topTagsj1ptHandle = Handle("std::vector<float>")
-topTagsj1ptLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj1pt")
-topTagsj2ptHandle = Handle("std::vector<float>")
-topTagsj2ptLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj2pt")
-topTagsj3ptHandle = Handle("std::vector<float>")
-topTagsj3ptLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj3pt")
-
-topTagsj0etaHandle = Handle("std::vector<float>")
-topTagsj0etaLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj0eta")
-topTagsj1etaHandle = Handle("std::vector<float>")
-topTagsj1etaLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj1eta")
-topTagsj2etaHandle = Handle("std::vector<float>")
-topTagsj2etaLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj2eta")
-topTagsj3etaHandle = Handle("std::vector<float>")
-topTagsj3etaLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj3eta")
-
-topTagsj0phiHandle = Handle("std::vector<float>")
-topTagsj0phiLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj0phi")
-topTagsj1phiHandle = Handle("std::vector<float>")
-topTagsj1phiLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj1phi")
-topTagsj2phiHandle = Handle("std::vector<float>")
-topTagsj2phiLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj2phi")
-topTagsj3phiHandle = Handle("std::vector<float>")
-topTagsj3phiLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj3phi")
-
-topTagsj0massHandle = Handle("std::vector<float>")
-topTagsj0massLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj0mass")
-topTagsj1massHandle = Handle("std::vector<float>")
-topTagsj1massLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj1mass")
-topTagsj2massHandle = Handle("std::vector<float>")
-topTagsj2massLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj2mass")
-topTagsj3massHandle = Handle("std::vector<float>")
-topTagsj3massLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj3mass")
+#topTagsj0csvHandle = Handle("std::vector<float>")
+#topTagsj0csvLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj0csv")
+#topTagsj1csvHandle = Handle("std::vector<float>")
+#topTagsj1csvLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj1csv")
+#topTagsj2csvHandle = Handle("std::vector<float>")
+#topTagsj2csvLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj2csv")
+#topTagsj3csvHandle = Handle("std::vector<float>")
+#topTagsj3csvLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj3csv")
+#
+#topTagsj0ptHandle = Handle("std::vector<float>")
+#topTagsj0ptLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj0pt")
+#topTagsj1ptHandle = Handle("std::vector<float>")
+#topTagsj1ptLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj1pt")
+#topTagsj2ptHandle = Handle("std::vector<float>")
+#topTagsj2ptLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj2pt")
+#topTagsj3ptHandle = Handle("std::vector<float>")
+#topTagsj3ptLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj3pt")
+#
+#topTagsj0etaHandle = Handle("std::vector<float>")
+#topTagsj0etaLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj0eta")
+#topTagsj1etaHandle = Handle("std::vector<float>")
+#topTagsj1etaLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj1eta")
+#topTagsj2etaHandle = Handle("std::vector<float>")
+#topTagsj2etaLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj2eta")
+#topTagsj3etaHandle = Handle("std::vector<float>")
+#topTagsj3etaLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj3eta")
+#
+#topTagsj0phiHandle = Handle("std::vector<float>")
+#topTagsj0phiLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj0phi")
+#topTagsj1phiHandle = Handle("std::vector<float>")
+#topTagsj1phiLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj1phi")
+#topTagsj2phiHandle = Handle("std::vector<float>")
+#topTagsj2phiLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj2phi")
+#topTagsj3phiHandle = Handle("std::vector<float>")
+#topTagsj3phiLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj3phi")
+#
+#topTagsj0massHandle = Handle("std::vector<float>")
+#topTagsj0massLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj0mass")
+#topTagsj1massHandle = Handle("std::vector<float>")
+#topTagsj1massLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj1mass")
+#topTagsj2massHandle = Handle("std::vector<float>")
+#topTagsj2massLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj2mass")
+#topTagsj3massHandle = Handle("std::vector<float>")
+#topTagsj3massLabel  = ("pfShyftTupleJetsLooseTopTag", "topsj3mass")
 
 
 # variables for PDF systematics (three different PDF sets)
@@ -1389,13 +1398,13 @@ if options.jerSys != None or options.makeResponse == True:
 
 if options.set == 'mcatnlo':
 	print "Using MC@NLO weights"
-	weightFile = ROOT.TFile("ptlepNewSelmcatnlo_weight.root")
+	weightFile = ROOT.TFile(DIR+"ptlepNewSelmcatnlo_weight.root")
 elif options.set == 'powheg':
 	print "Using Powheg weights"
-	weightFile = ROOT.TFile("ptlepNewSelpowheg_weight.root")
+	weightFile = ROOT.TFile(DIR+"ptlepNewSelpowheg_weight.root")
 else:
 	print "Using MadGraph weights"
-	weightFile = ROOT.TFile("ptlepNewSel_weight.root")
+	weightFile = ROOT.TFile(DIR+"ptlepNewSel_weight.root")
 
 weightPlot = weightFile.Get("lepptweight")
 if options.ptWeight == False :
@@ -1497,13 +1506,18 @@ for event in events :
         if options.oddeven == 2 and event.object().id().event()%2 == 0 :
             continue
         
-
+        
     # -------------------------------------------------------------------------------------
     # read PU information & do PU reweighting
     # -------------------------------------------------------------------------------------
 
     if options.pileup != 'none':   
     	event.getByLabel (puLabel, puHandle)
+        
+        if puHandle.isValid() == False :
+            print "MEBUG: puHandle is not valid! continuing..." 
+            continue
+        
     	PileUp = puHandle.product()
     	bin1 = PilePlot.FindBin(PileUp[0]) 
     	weight *= PilePlot.GetBinContent(bin1)
@@ -1511,6 +1525,11 @@ for event in events :
             print "PU weight is " + str(weight)
 
     event.getByLabel (npvLabel, npvHandle)
+
+    if npvHandle.isValid() == False :
+        print "MEBUG: npvHandle is not valid! continuing..." 
+        continue
+
     numvert = npvHandle.product()
     nvtx = float(numvert[0])
 
@@ -1528,12 +1547,21 @@ for event in events :
 
         if options.pdfSet == 1.0 :
             event.getByLabel( pdfWeightMSTWLabel, pdfWeightMSTWHandle )
+            if pdfWeightMSTWHandle.isValid() == False :
+                print "MEBUG: pdfWeightMSTWHandle is not valid! continuing..." 
+                continue
             pdfWeight  = pdfWeightMSTWHandle.product()
         elif options.pdfSet == 2.0 :
             event.getByLabel( pdfWeightNNPDFLabel, pdfWeightNNPDFHandle )
+            if pdfWeightNNPDFHandle.isValid() == False :
+                print "MEBUG: pdfWeightNNPDFHandle is not valid! continuing..." 
+                continue
             pdfWeight = pdfWeightNNPDFHandle.product()
         else :
             event.getByLabel( pdfWeightCT10Label, pdfWeightCT10Handle )
+            if pdfWeightCT10Handle.isValid() == False :
+                print "MEBUG: pdfWeightCT10Handle is not valid! continuing..." 
+                continue
             pdfWeight  = pdfWeightCT10Handle.product()
         
 
@@ -1629,6 +1657,10 @@ for event in events :
         event.getByLabel( genParticlesPdgIdLabel, genParticlesPdgIdHandle )
         event.getByLabel( genParticlesStatusLabel, genParticlesStatusHandle )
 
+        if genParticlesPtHandle.isValid() == False :
+            print "MEBUG: genParticlesPtHandle is not valid! continuing..." 
+            continue
+        
         genParticlesPt  = genParticlesPtHandle.product()
         genParticlesEta = genParticlesEtaHandle.product()
         genParticlesPhi = genParticlesPhiHandle.product()
@@ -1744,6 +1776,10 @@ for event in events :
         event.getByLabel( genParticlesPdgIdLabel, genParticlesPdgIdHandle )
         event.getByLabel( genParticlesStatusLabel, genParticlesStatusHandle )
 
+        if genParticlesPtHandle.isValid() == False :
+            print "MEBUG: genParticlesPtHandle is not valid! continuing..." 
+            continue
+        
         genParticlesPt  = genParticlesPtHandle.product()
         genParticlesPdgId  = genParticlesPdgIdHandle.product()
         genParticlesStatus = genParticlesStatusHandle.product()
@@ -2168,7 +2204,7 @@ for event in events :
         if nElectrons == 1 and options.isData == False :
             elEta = electrons[igoodEle].p4().Eta()
             elPt = electrons[igoodEle].p4().Pt()
-            electronSF = getElectronSF(elEta, elPt)
+            electronSF = getElectronSF(elEta, elPt,DIR)
             weight = weight*electronSF
     
     leptons = muons + electrons
@@ -3044,87 +3080,117 @@ for event in events :
     # -------------------------------------------------------------------------------------
     # get variables for subjets of top-tagged jet 
     # -------------------------------------------------------------------------------------
-
-    # top subjet information
-    event.getByLabel (topTagsj0ptLabel, topTagsj0ptHandle)
-    Topsj0pt = topTagsj0ptHandle.product() 
-    event.getByLabel (topTagsj0etaLabel, topTagsj0etaHandle)
-    Topsj0eta = topTagsj0etaHandle.product() 
-    event.getByLabel (topTagsj0phiLabel, topTagsj0phiHandle)
-    Topsj0phi = topTagsj0phiHandle.product() 
-    event.getByLabel (topTagsj0massLabel, topTagsj0massHandle)
-    Topsj0mass = topTagsj0massHandle.product() 
-
-    # lists of variables for all subjets 
-    sjmass = []
-    sjeta = []
-    sjphi = []
-    sjpt = []
-
-    sjmass.append(Topsj0mass[0])
-    sjeta.append(Topsj0eta[0])
-    sjphi.append(Topsj0phi[0])
-    sjpt.append(Topsj0pt[0])
-    
-    if topTagNSub[0] > 1:
-    	event.getByLabel (topTagsj1ptLabel, topTagsj1ptHandle)
-    	Topsj1pt = topTagsj1ptHandle.product() 
-    	event.getByLabel (topTagsj1etaLabel, topTagsj1etaHandle)
-    	Topsj1eta = topTagsj1etaHandle.product() 
-    	event.getByLabel (topTagsj1phiLabel, topTagsj1phiHandle)
-    	Topsj1phi = topTagsj1phiHandle.product() 
-    	event.getByLabel (topTagsj1massLabel, topTagsj1massHandle)
-    	Topsj1mass = topTagsj1massHandle.product() 
-
-    	sjmass.append(Topsj1mass[0])
-    	sjeta.append(Topsj1eta[0])
-    	sjphi.append(Topsj1phi[0])
-    	sjpt.append(Topsj1pt[0])
-        
-    if topTagNSub[0] > 2:
-    	event.getByLabel (topTagsj2ptLabel, topTagsj2ptHandle)
-    	Topsj2pt = topTagsj2ptHandle.product() 
-    	event.getByLabel (topTagsj2etaLabel, topTagsj2etaHandle)
-    	Topsj2eta = topTagsj2etaHandle.product() 
-    	event.getByLabel (topTagsj2phiLabel, topTagsj2phiHandle)
-    	Topsj2phi = topTagsj2phiHandle.product()
-    	event.getByLabel (topTagsj2massLabel, topTagsj2massHandle)
-    	Topsj2mass = topTagsj2massHandle.product() 
-
-    	sjmass.append(Topsj2mass[0])
-    	sjeta.append(Topsj2eta[0])
-    	sjphi.append(Topsj2phi[0])
-    	sjpt.append(Topsj2pt[0])
-
-    if topTagNSub[0] > 3:
-    	event.getByLabel (topTagsj3ptLabel, topTagsj3ptHandle)
-    	Topsj3pt = topTagsj3ptHandle.product()
-    	event.getByLabel (topTagsj3etaLabel, topTagsj3etaHandle)
-    	Topsj3eta = topTagsj3etaHandle.product()
-    	event.getByLabel (topTagsj3phiLabel, topTagsj3phiHandle)
-    	Topsj3phi = topTagsj3phiHandle.product() 
-    	event.getByLabel (topTagsj3massLabel, topTagsj3massHandle)
-    	Topsj3mass = topTagsj3massHandle.product()
-
-    	sjmass.append(Topsj3mass[0])
-    	sjeta.append(Topsj3eta[0])
-    	sjphi.append(Topsj3phi[0])
-    	sjpt.append(Topsj3pt[0])
-
-
-    # create lorentzvector for subjets
-    sj = ROOT.TLorentzVector()
-    sjets = []
-    sjets.append(ROOT.TLorentzVector())
-    sjets[0].SetPtEtaPhiM( sjpt[0], sjeta[0], sjphi[0], sjmass[0] )
-    topcomp = ROOT.TLorentzVector()
-    topcomp.SetPtEtaPhiM( sjpt[0], sjeta[0], sjphi[0], sjmass[0] )
-    
-    for isub in range(1,int(topTagNSub[0])):
-        sj.SetPtEtaPhiM( sjpt[isub], sjeta[isub], sjphi[isub], sjmass[isub] )
-        sjets.append(ROOT.TLorentzVector())	
-        sjets[isub].SetPtEtaPhiM( sjpt[isub], sjeta[isub], sjphi[isub], sjmass[isub] )
-        topcomp+=sj
+    #
+    ## top subjet information
+    #event.getByLabel (topTagsj0ptLabel, topTagsj0ptHandle)
+    #
+    #if topTagsj0ptHandle.isValid() == False :
+    #    if options.makeResponse == True:
+    #        response.Miss( hadTop.p4.Perp(), weight*weight_response )
+    #        response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
+    #        if passParticleLoose:
+    #            response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+    #            response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
+    #    continue
+    #
+    #Topsj0pt = topTagsj0ptHandle.product() 
+    #event.getByLabel (topTagsj0etaLabel, topTagsj0etaHandle)
+    #Topsj0eta = topTagsj0etaHandle.product() 
+    #event.getByLabel (topTagsj0phiLabel, topTagsj0phiHandle)
+    #Topsj0phi = topTagsj0phiHandle.product() 
+    #event.getByLabel (topTagsj0massLabel, topTagsj0massHandle)
+    #Topsj0mass = topTagsj0massHandle.product() 
+    #
+    ## lists of variables for all subjets 
+    #sjmass = []
+    #sjeta = []
+    #sjphi = []
+    #sjpt = []
+    #
+    #sjmass.append(Topsj0mass[0])
+    #sjeta.append(Topsj0eta[0])
+    #sjphi.append(Topsj0phi[0])
+    #sjpt.append(Topsj0pt[0])
+    # 
+    #if topTagNSub[0] > 1:
+    # 	event.getByLabel (topTagsj1ptLabel, topTagsj1ptHandle)
+    #
+    #    if topTagsj2ptHandle.isValid() == False :
+    #        if options.makeResponse == True:
+    #            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+    #            response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
+    #            if passParticleLoose:
+    #                response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+    #                response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
+    #            continue
+    #
+    #    Topsj1pt = topTagsj1ptHandle.product() 
+    # 	event.getByLabel (topTagsj1etaLabel, topTagsj1etaHandle)
+    # 	Topsj1eta = topTagsj1etaHandle.product() 
+    # 	event.getByLabel (topTagsj1phiLabel, topTagsj1phiHandle)
+    # 	Topsj1phi = topTagsj1phiHandle.product() 
+    # 	event.getByLabel (topTagsj1massLabel, topTagsj1massHandle)
+    # 	Topsj1mass = topTagsj1massHandle.product() 
+    #
+    # 	sjmass.append(Topsj1mass[0])
+    # 	sjeta.append(Topsj1eta[0])
+    # 	sjphi.append(Topsj1phi[0])
+    # 	sjpt.append(Topsj1pt[0])
+    #    
+    #if topTagNSub[0] > 2:
+    # 	event.getByLabel (topTagsj2ptLabel, topTagsj2ptHandle)
+    #
+    #    if topTagsj1ptHandle.isValid() == False :
+    #        if options.makeResponse == True:
+    #            response.Miss( hadTop.p4.Perp(), weight*weight_response )
+    #            response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
+    #            if passParticleLoose:
+    #                response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+    #                response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
+    #            continue
+    #
+    # 	Topsj2pt = topTagsj2ptHandle.product() 
+    # 	event.getByLabel (topTagsj2etaLabel, topTagsj2etaHandle)
+    # 	Topsj2eta = topTagsj2etaHandle.product() 
+    # 	event.getByLabel (topTagsj2phiLabel, topTagsj2phiHandle)
+    # 	Topsj2phi = topTagsj2phiHandle.product()
+    # 	event.getByLabel (topTagsj2massLabel, topTagsj2massHandle)
+    # 	Topsj2mass = topTagsj2massHandle.product() 
+    #
+    # 	sjmass.append(Topsj2mass[0])
+    # 	sjeta.append(Topsj2eta[0])
+    # 	sjphi.append(Topsj2phi[0])
+    # 	sjpt.append(Topsj2pt[0])
+    #
+    #if topTagNSub[0] > 3:
+    # 	event.getByLabel (topTagsj3ptLabel, topTagsj3ptHandle)
+    # 	Topsj3pt = topTagsj3ptHandle.product()
+    # 	event.getByLabel (topTagsj3etaLabel, topTagsj3etaHandle)
+    # 	Topsj3eta = topTagsj3etaHandle.product()
+    # 	event.getByLabel (topTagsj3phiLabel, topTagsj3phiHandle)
+    # 	Topsj3phi = topTagsj3phiHandle.product() 
+    # 	event.getByLabel (topTagsj3massLabel, topTagsj3massHandle)
+    # 	Topsj3mass = topTagsj3massHandle.product()
+    #
+    # 	sjmass.append(Topsj3mass[0])
+    # 	sjeta.append(Topsj3eta[0])
+    # 	sjphi.append(Topsj3phi[0])
+    # 	sjpt.append(Topsj3pt[0])
+    #
+    #
+    ## create lorentzvector for subjets
+    #sj = ROOT.TLorentzVector()
+    #sjets = []
+    #sjets.append(ROOT.TLorentzVector())
+    #sjets[0].SetPtEtaPhiM( sjpt[0], sjeta[0], sjphi[0], sjmass[0] )
+    #topcomp = ROOT.TLorentzVector()
+    #topcomp.SetPtEtaPhiM( sjpt[0], sjeta[0], sjphi[0], sjmass[0] )
+    #
+    #for isub in range(1,int(topTagNSub[0])):
+    #    sj.SetPtEtaPhiM( sjpt[isub], sjeta[isub], sjphi[isub], sjmass[isub] )
+    #    sjets.append(ROOT.TLorentzVector())	
+    #    sjets[isub].SetPtEtaPhiM( sjpt[isub], sjeta[isub], sjphi[isub], sjmass[isub] )
+    #    topcomp+=sj
 
     
 
@@ -3213,12 +3279,27 @@ for event in events :
     toptagSF = 1.0
     if options.isData == False :
         topEta = goodtop.Eta()
+        topPt = goodtop.Perp()
         isElec = True
         if options.lepType == "muon":
             isElec = False
         toptagSF = getToptagSF(topEta, options.pdfSet, options.pdfSys, isElec)
         if options.toptagSys != None :
-            toptagSF *= (1.0 + options.toptagSys) ## scale up/down by 25%
+            ### HACK! posterior top-tagging SF
+            if options.toptagSys > 99: ##scaled up
+                if (topPt < 600.0):
+                    toptagSF *= (1.0 + 0.05)
+                else :
+                    toptagSF *= (1.0 + 0.18)
+            ### HACK! posterior top-tagging SF
+            elif options.toptagSys < -99: ##scaled down
+                if (topPt < 600.0):
+                    toptagSF *= (1.0 - 0.05)
+                else :
+                    toptagSF *= (1.0 - 0.18)
+            ### PRIOR TOP-TAGGING SF, scale up/down by +/- 25%
+            else:
+                toptagSF *= (1.0 + options.toptagSys)
 		
         #if options.toptagSys != None :
         #toptagSFerr = getToptagSFerror(topEta)
@@ -3307,43 +3388,43 @@ for event in events :
     ### ------------------------------------------------------------------------------------------------
 
     
-    # look at more variables for top-tagged subjets, even though we're not cutting on them at the moment
-    event.getByLabel (nsubCA8Label, nsubCA8Handle)
-    nsubCA8Jets = nsubCA8Handle.product() 
-    event.getByLabel (topTagsj0csvLabel, topTagsj0csvHandle)
-    Topsj0BDiscCSV = topTagsj0csvHandle.product() 
-    event.getByLabel (topTagsj1csvLabel, topTagsj1csvHandle)
-    Topsj1BDiscCSV = topTagsj1csvHandle.product() 
-    event.getByLabel (topTagsj2csvLabel, topTagsj2csvHandle)
-    Topsj2BDiscCSV = topTagsj2csvHandle.product() 
-    event.getByLabel (TopTau2Label, TopTau2Handle)
-    Tau2 = TopTau2Handle.product() 
-    event.getByLabel (TopTau3Label, TopTau3Handle)
-    Tau3 = TopTau3Handle.product() 
-    
-    # loop over CA8 subjets
-    index = -1
-    for iCAjet in range(0,len(nsubCA8Jets)):
-        CAjetTLV = ROOT.TLorentzVector()
-        CAjetTLV.SetPtEtaPhiM( nsubCA8Jets[iCAjet].pt(), nsubCA8Jets[iCAjet].eta(), nsubCA8Jets[iCAjet].phi(), nsubCA8Jets[iCAjet].mass() )
-        if (abs(goodtop.DeltaR(CAjetTLV))<0.5):
-            index = iCAjet
-            break
-            
-    tau32 = Tau3[index]/Tau2[index]
-    
-    h_hadtop_precut_tau32.Fill(tau32, top_weight)
-    h_hadtop_precut_nvtx_tau32.Fill(nvtx, tau32, top_weight)
-
-    # this is selection beyond our standard selection, only as a check!!
-    if tau32 < 0.6:
-        subjet_csv = max(Topsj0BDiscCSV[igoodtop],Topsj1BDiscCSV[igoodtop],Topsj2BDiscCSV[igoodtop])
-        h_hadtop_precut_csv.Fill(subjet_csv, top_weight)
-        h_hadtop_precut_nvtx_csv.Fill(nvtx, subjet_csv, top_weight)
-        h_hadtop_pt_tau32.Fill(goodtop.Perp(), top_weight) 
-        
-        if subjet_csv > options.bDiscCut:
-            h_hadtop_pt_csv.Fill(goodtop.Perp(), top_weight) 
+    ## look at more variables for top-tagged subjets, even though we're not cutting on them at the moment
+    #event.getByLabel (nsubCA8Label, nsubCA8Handle)
+    #nsubCA8Jets = nsubCA8Handle.product() 
+    #event.getByLabel (topTagsj0csvLabel, topTagsj0csvHandle)
+    #Topsj0BDiscCSV = topTagsj0csvHandle.product() 
+    #event.getByLabel (topTagsj1csvLabel, topTagsj1csvHandle)
+    #Topsj1BDiscCSV = topTagsj1csvHandle.product() 
+    #event.getByLabel (topTagsj2csvLabel, topTagsj2csvHandle)
+    #Topsj2BDiscCSV = topTagsj2csvHandle.product() 
+    #event.getByLabel (TopTau2Label, TopTau2Handle)
+    #Tau2 = TopTau2Handle.product() 
+    #event.getByLabel (TopTau3Label, TopTau3Handle)
+    #Tau3 = TopTau3Handle.product() 
+    #
+    ## loop over CA8 subjets
+    #index = -1
+    #for iCAjet in range(0,len(nsubCA8Jets)):
+    #    CAjetTLV = ROOT.TLorentzVector()
+    #    CAjetTLV.SetPtEtaPhiM( nsubCA8Jets[iCAjet].pt(), nsubCA8Jets[iCAjet].eta(), nsubCA8Jets[iCAjet].phi(), nsubCA8Jets[iCAjet].mass() )
+    #    if (abs(goodtop.DeltaR(CAjetTLV))<0.5):
+    #        index = iCAjet
+    #        break
+    #       
+    #tau32 = Tau3[index]/Tau2[index]
+    #
+    #h_hadtop_precut_tau32.Fill(tau32, top_weight)
+    #h_hadtop_precut_nvtx_tau32.Fill(nvtx, tau32, top_weight)
+    #
+    ## this is selection beyond our standard selection, only as a check!!
+    #if tau32 < 0.6:
+    #    subjet_csv = max(Topsj0BDiscCSV[igoodtop],Topsj1BDiscCSV[igoodtop],Topsj2BDiscCSV[igoodtop])
+    #    h_hadtop_precut_csv.Fill(subjet_csv, top_weight)
+    #    h_hadtop_precut_nvtx_csv.Fill(nvtx, subjet_csv, top_weight)
+    #    h_hadtop_pt_tau32.Fill(goodtop.Perp(), top_weight) 
+    #    
+    #    if subjet_csv > options.bDiscCut:
+    #        h_hadtop_pt_csv.Fill(goodtop.Perp(), top_weight) 
     
 
 
