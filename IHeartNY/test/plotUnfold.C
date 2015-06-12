@@ -32,7 +32,7 @@ void plotUnfold(TString channel) {
 
   plot(channel,true,true, doNormalized);
   plot(channel,true,false, doNormalized);
-  plot(channel,false,false, doNormalized);
+  plot(channel,false,true, doNormalized);
   plot(channel,false,false, doNormalized);
 
 }
