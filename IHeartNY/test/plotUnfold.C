@@ -26,21 +26,14 @@ void SetPlotStyle();
 void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize,char *text); 
 void plot(TString channel, bool wobtag, bool do2step);
 
-void plotUnfold() {
+void plotUnfold(TString channel) {
 
   bool doNormalized=true;
 
-  plot("mu",true,true, doNormalized);
-  //plot("mu",true,false, doNormalized);
-  //plot("mu",false,false, doNormalized);
-  //plot("mu",false,true, doNormalized);
-
-  plot("el",true,true, doNormalized);
-  //plot("el",true,false, doNormalized);
-  //plot("el",false,false, doNormalized);
-  //plot("el",false,true, doNormalized);
-
-  plot("comb",true,true, doNormalized);
+  plot(channel,true,true, doNormalized);
+  plot(channel,true,false, doNormalized);
+  plot(channel,false,true, doNormalized);
+  plot(channel,false,false, doNormalized);
 
 }
 
@@ -773,7 +766,8 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
   h_dummy_r->GetXaxis()->SetTitle("Top quark p_{T} [GeV]");
   h_dummy_r->GetYaxis()->SetTitle("Uncertainty [%]");
   h_dummy_r->SetAxisRange(400,1150,"X");
-  if (doQ2) h_dummy_r->SetAxisRange(0,70,"Y");
+  if (doQ2 && channel == "comb") h_dummy_r->SetAxisRange(0,40,"Y");
+  else if (doQ2) h_dummy_r->SetAxisRange(0,70,"Y");
   else h_dummy_r->SetAxisRange(0,25,"Y");
   
   h_dummy_r->GetYaxis()->SetTitleSize(0.055);    
@@ -1241,7 +1235,8 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     h_dummy_r_part->GetXaxis()->SetTitle("Particle-level top p_{T} [GeV]");
     h_dummy_r_part->GetYaxis()->SetTitle("Uncertainty [%]");
     h_dummy_r_part->SetAxisRange(400,1150,"X");
-    if (doQ2) h_dummy_r_part->SetAxisRange(0,70,"Y");
+    if (doQ2 && channel == "comb") h_dummy_r_part->SetAxisRange(0,40,"Y");
+    else if (doQ2) h_dummy_r_part->SetAxisRange(0,70,"Y");
     else h_dummy_r_part->SetAxisRange(0,25,"Y");
     
     h_dummy_r_part->GetYaxis()->SetTitleSize(0.055);    
