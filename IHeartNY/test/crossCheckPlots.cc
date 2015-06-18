@@ -224,8 +224,8 @@ void toptagging_e() {
 
 	// rebin
 	double ptbins[9] = {400,450,500,550,600,700,800,1000,1200};
-    TH1F* h_num_new = (TH1F*) h_hadtopPt6->Rebin(8,"num_new",ptbins);
-    TH1F* h_den_new = (TH1F*) h_hadtopPt4->Rebin(8,"den_new",ptbins);
+	TH1F* h_num_new = (TH1F*) h_hadtopPt6->Rebin(8,"num_new",ptbins);
+	TH1F* h_den_new = (TH1F*) h_hadtopPt4->Rebin(8,"den_new",ptbins);
 
 	h_hadtopEta6->Rebin(5);
 	h_hadtopEta4->Rebin(5);
