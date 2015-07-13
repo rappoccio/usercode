@@ -101,6 +101,8 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
 
     cout << "Make various post-fit histograms..." << endl;
 
+    setExtName();
+
     const int nREGION = 4;
     const int nHIST = 11;
     int region[nREGION] = {4,6,6,7};
@@ -112,10 +114,10 @@ void run(TString option, bool doElectron, bool combine=true, TString ptbin = "")
     
     for (int ih=0; ih<nHIST; ih++) {
       for (int ir=0; ir<nREGION; ir++) {
-	makePlots(hist[ih], region[ir], region2[ir], doElectron, "CT10_nom", true, combine);
+	makePlots(hist[ih], region[ir], region2[ir], doElectron, "", "CT10_nom", true, combine);
       }
     }  
-    makePlots("vtxMass", 7, 0, doElectron, "CT10_nom", true, combine);
+    makePlots("vtxMass", 7, 0, doElectron, "", "CT10_nom", true, combine);
 
   }
 

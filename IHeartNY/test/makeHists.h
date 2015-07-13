@@ -482,29 +482,27 @@ float getPostPreRatio(bool doElectron, TString ptbin, TString pdfdir, bool combi
   // post-fit file
   TFile* fPOST;
   if (combined) {
-    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_comb.root");
-    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_comb_2bin.root");
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb"+extName+".root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_comb"+extName+"_2bin.root");
   }
   else if (doElectron) {
-    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_el.root");
-    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_el_2bin.root");
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el"+extName+".root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_el"+extName+"_2bin.root");
   }
   else {
-    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_mu.root");
-    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+extName+"_mu_2bin.root");
+    if (ptbin == "") fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu"+extName+".root");
+    else fPOST = new TFile("run_theta/histos-mle-2d-"+pdfdir+"_mu"+extName+"_2bin.root");
   }
 
   // pre-fit file
   TFile* fPRE;
   if (doElectron) {
     if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+".root");
-    if (cut == 5) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+".root");
     if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+".root");
     if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_eljets_vtxMass7"+ptbin+".root");
   }
   else {
     if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+".root");
-    if (cut == 4) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+".root");
     if (cut == 6) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+".root");
     if (cut == 7) fPRE = new TFile("NormalizedHists_"+pdfdir+"/normalized2d_mujets_vtxMass7"+ptbin+".root");
   }
@@ -514,7 +512,6 @@ float getPostPreRatio(bool doElectron, TString ptbin, TString pdfdir, bool combi
 
   TString what = "";
   if (cut == 4) what = "etaAbsLep4"+ptbin;
-  if (cut == 5) what = "etaAbsLep5"+ptbin;
   if (cut == 6) what = "etaAbsLep6"+ptbin;
   if (cut == 7) what = "vtxMass7"+ptbin;
 
