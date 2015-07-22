@@ -247,6 +247,10 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     rebin = 3;
     newtitle = "Events / 30 GeV";
   }
+  else if (var.Contains("htLep")){
+    rebin = rebinHTlep;
+    newtitle = "Events / 40 GeV";
+  }
 
   if (rebin > 0) {
     h_data->Rebin(rebin);
@@ -504,7 +508,6 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   TH1F* h_ttbar = (TH1F*) fMC->Get(channel+what+ptbin+"__TTbar");
   TH1F* h_singletop = (TH1F*) fMC->Get(channel+what+ptbin+"__SingleTop");
 
-
   // Construct post-fit ttbar
   // Get pre-fit plots needed
   TFile* fPre;
@@ -538,6 +541,27 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   if (what == "vtxMass7") {
     if (doElectron) fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
     else fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
+    h_pre_ttbar = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar");
+    h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar_nonSemiLep");
+  }
+
+  if (what == "htLep4") {
+    if (doElectron) fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep6"+ptbin+"_subtracted_from_htLep4"+ptbin+append+".root");
+    else fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep6"+ptbin+"_subtracted_from_htLep4"+ptbin+append+".root");
+    h_pre_ttbar = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar");
+    h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar_nonSemiLep");
+  }
+
+  if (what == "htLep6") {
+    if (doElectron) fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+    else fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+    h_pre_ttbar = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar");
+    h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar_nonSemiLep");
+  }
+
+  if (what == "htLep7") {
+    if (doElectron) fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+append+".root");
+    else fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+append+".root");
     h_pre_ttbar = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar");
     h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar_nonSemiLep");
   }
@@ -582,8 +606,18 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
     h_data->Add(h_data2,-1);
   }
 
+  else if (what=="htLep4") {
+    TH1F* h_data2 = (TH1F*) dataFile->Get("htLep6"+ptbin);
+    h_data->Add(h_data2,-1);
+  }
+  else if (what=="htLep6") {
+    TH1F* h_data2 = (TH1F*) dataFile->Get("htLep7"+ptbin);
+    h_data->Add(h_data2,-1);
+  }
+
   if (what.Contains("etaAbsLep")) h_data->Rebin(rebinEta);
   if (what.Contains("vtxMass")) h_data->Rebin(rebinSVM);
+  if (what.Contains("htLep")) h_data->Rebin(rebinHTlep);
 
   // -------------------------------------------------------------------------------------
   // various hist plotting edits
@@ -722,6 +756,13 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false) {
 
   TString what[3] = {"etaAbsLep4","etaAbsLep6","vtxMass7"};
+  if (useHTlep == "6" || useHTlep == "46" || useHTlep == "467") {
+    what[1] = "htLep6";
+  }
+  if (useHTlep == "46" || useHTlep == "467"){
+    what[0] = "htLep4";
+  }
+  if (useHTlep == "467") what[2] = "htLep7";
   if (do_htlep150qcd) what[0] = "etaAbsLep5";
 
   TString mydir = pdfdir;
@@ -1073,17 +1114,27 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
 
   // pre-fit & data files
   TFile* fDATA[3];
+  
   if (doElectron) {
-    if (do_htlep150qcd) fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+append+".root");
-    else fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
+    fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
     fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
     fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
+
+    if (useHTlep == "467" || useHTlep == "46" || useHTlep == "6") fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+    if (useHTlep == "467" || useHTlep == "46") fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep6"+ptbin+"_subtracted_from_htLep4"+ptbin+append+".root");
+    if (useHTlep == "467") fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+append+".root");
+    if (do_htlep150qcd) fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+append+".root");
   }
+  
   else {
-    if (do_htlep150qcd) fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+append+".root");
-    else fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
+    fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
     fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
     fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
+
+    if (useHTlep == "6" || useHTlep == "46" || useHTlep == "467") fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+    if (useHTlep == "46" || useHTlep == "467") fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep6"+ptbin+"_subtracted_from_htLep4"+ptbin+append+".root");
+    if (useHTlep == "467") fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+append+".root");
+    if (do_htlep150qcd) fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+append+".root");
   }
 
   for (int ii = 0; ii < 3; ii++){
@@ -1342,16 +1393,16 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
     ttbar[is]->SetName(tempname);
 
     // Do rebinning
-    wjets[is]->hist()->Rebin(rebinSVM);
-    singletop[is]->hist()->Rebin(rebinSVM);
-    ttbar_semiLep[is]->hist()->Rebin(rebinSVM);
-    ttbar_nonSemiLep[is]->hist()->Rebin(rebinSVM);
-    ttbar[is]->Rebin(rebinSVM);  
+    wjets[is]->hist()->Rebin(rebin[2]);
+    singletop[is]->hist()->Rebin(rebin[2]);
+    ttbar_semiLep[is]->hist()->Rebin(rebin[2]);
+    ttbar_nonSemiLep[is]->hist()->Rebin(rebin[2]);
+    ttbar[is]->Rebin(rebin[2]);  
   }
 
   // QCD
   SummedHist* qcd = getQCD( hist, doElectron, ptbin );
-  qcd->hist()->Rebin(rebinSVM);    
+  qcd->hist()->Rebin(rebin[2]);    
 
   // data
   TString filepath;
@@ -1375,7 +1426,7 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
   TFile* dataFile = TFile::Open(filepath);
   TH1F* data = (TH1F*) dataFile->Get( hist );
   data->SetName(channel + hist + "__DATA");
-  data->Rebin(rebinSVM);  
+  data->Rebin(rebin[2]);  
 
   // write the histograms to a file
   TString outname;
@@ -1471,11 +1522,11 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
       ttbar[is][ih]->SetName(tempname);
 
       // Do rebinning
-      wjets[is][ih]->hist()->Rebin(rebinEta);
-      singletop[is][ih]->hist()->Rebin(rebinEta);
-      ttbar_semiLep[is][ih]->hist()->Rebin(rebinEta);
-      ttbar_nonSemiLep[is][ih]->hist()->Rebin(rebinEta);
-      ttbar[is][ih]->Rebin(rebinEta); 
+      wjets[is][ih]->hist()->Rebin(rebin[ih]);
+      singletop[is][ih]->hist()->Rebin(rebin[ih]);
+      ttbar_semiLep[is][ih]->hist()->Rebin(rebin[ih]);
+      ttbar_nonSemiLep[is][ih]->hist()->Rebin(rebin[ih]);
+      ttbar[is][ih]->Rebin(rebin[ih]); 
     }
   }
 
@@ -1483,8 +1534,8 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   SummedHist* qcd[2];
   qcd[0] = getQCD( hist[0], doElectron, ptbin );
   qcd[1] = getQCD( hist[1], doElectron, ptbin );
-  qcd[0]->hist()->Rebin(rebinEta);
-  qcd[1]->hist()->Rebin(rebinEta);
+  qcd[0]->hist()->Rebin(rebin[0]);
+  qcd[1]->hist()->Rebin(rebin[1]);
 
   // data
   TString filepath;
@@ -1510,10 +1561,10 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   TH1F* data[2];
   data[0] = (TH1F*) dataFile->Get( hist[0] );
   data[0]->SetName(channel + hist[0] + "__DATA");
-  data[0]->Rebin(rebinEta);
+  data[0]->Rebin(rebin[0]);
   data[1] = (TH1F*) dataFile->Get( hist[1] );
   data[1]->SetName(channel + hist[1] + "__DATA_2");
-  data[1]->Rebin(rebinEta);
+  data[1]->Rebin(rebin[1]);
   
   // do the subtraction
   for (int is=0; is<nSYST; is++) {

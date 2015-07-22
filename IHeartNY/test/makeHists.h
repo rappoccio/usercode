@@ -19,9 +19,6 @@
 const double LUM = 19.7;
 bool use2D = true;
 
-int rebinSVM = 2;
-int rebinEta = 2;
-
 bool do_htlep150qcd = false;
 bool do_met50qcd = false;
 bool do_qcd = true;  //add triangular cut for electrons
@@ -31,6 +28,18 @@ bool extBtag = true;
 bool extJet = false;
 bool extToptag = false;
 
+TString useHTlep = "467";
+
+// END USER SETTINGS
+
+int rebinSVM = 2;
+int rebinEta = 2;
+int rebinHTlep = 8;
+int rebin[3] = {rebinEta, rebinEta, rebinSVM};
+if (useHTlep == "6" || useHTlep == "46" || useHTlep == "467") rebin[1] = rebinHTlep;
+if (useHTlep == "46" || useHTlep == "467") rebin[0] = rebinHTlep;
+if (useHTlep == "467") rebin[2] = rebinHTlep;
+
 TString extName = "";
 
 void setExtName () {
@@ -38,6 +47,9 @@ void setExtName () {
   if (extLumi) extName += "_nolumi";
   if (extJet) extName += "_nojet";
   if (extToptag) extName += "_notoptag";
+  if (useHTlep == "6") extName += "_htLep6";
+  if (useHTlep == "46") extName += "_htLep46";
+  if (useHTlep == "467") extName += "_htLep467";
 }
 
 // -------------------------------------------------------------------------------------
