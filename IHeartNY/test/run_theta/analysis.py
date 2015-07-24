@@ -46,7 +46,7 @@ def histfilter( hname ) :
 # Here is where we build the model for theta
 ####################################################################################
 
-def lepplusjets(files, infilter, signal, mcstat, nptbin, elflag=False, muflag=False):
+def lepplusjets(files, infilter, signal, mcstat, nptbin, fittype='', elflag=False, muflag=False):
 
     model = build_model_from_rootfile(files, histogram_filter=infilter, include_mc_uncertainties = mcstat)
     model.fill_histogram_zerobins()
@@ -64,34 +64,54 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, elflag=False, muflag=Fa
     if muflag:
         print "DEBUG: muon+jets channel considered"
         if nptbin == '1' :
-            for obs in ['mu_vtxMass7', 'mu_etaAbsLep6', 'mu_etaAbsLep4']:
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
+            if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' :
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_etaAbsLep4')
+            if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' :
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_htLep4')
+            if fittype == '' :
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_etaAbsLep6')
+            if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' :
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_htLep6')
+            if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' :
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_vtxMass7')
+            if fittype == 'htLep467' :
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD', 'mu_htLep7')
         if nptbin == '2' :
-            for obs in ['mu_vtxMass7Low', 'mu_etaAbsLep6Low', 'mu_etaAbsLep4Low',
-                        'mu_vtxMass7High', 'mu_etaAbsLep6High', 'mu_etaAbsLep4High']:
+            for obs in ['mu_vtxMass7Low', 'mu_htLep6Low', 'mu_etaAbsLep4Low',
+                        'mu_vtxMass7High', 'mu_htLep6High', 'mu_etaAbsLep4High']:
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
         if nptbin == 'Low' :
-            for obs in ['mu_vtxMass7Low', 'mu_etaAbsLep6Low', 'mu_etaAbsLep4Low']:
+            for obs in ['mu_vtxMass7Low', 'mu_htLep6Low', 'mu_etaAbsLep4Low']:
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
         if nptbin == 'High' :
-            for obs in ['mu_vtxMass7High', 'mu_etaAbsLep6High', 'mu_etaAbsLep4High']:
+            for obs in ['mu_vtxMass7High', 'mu_htLep6High', 'mu_etaAbsLep4High']:
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
 
     ## electron+jets channel 
     if elflag:
         print "DEBUG: electron+jets channel considered"
         if nptbin == '1' :
-            for obs in ['el_vtxMass7', 'el_etaAbsLep6', 'el_etaAbsLep4']:
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
+            if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' :
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_etaAbsLep4')
+            if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' :
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_htLep4')
+            if fittype == '' :
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_etaAbsLep6')
+            if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' :
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_htLep6')
+            if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' :
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_vtxMass7')
+            if fittype == 'htLep467' :
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD', 'el_htLep7')
         if nptbin == '2' :
-            for obs in ['el_vtxMass7Low', 'el_etaAbsLep6Low', 'el_etaAbsLep4Low',
-                        'el_vtxMass7High', 'el_etaAbsLep6High', 'el_etaAbsLep4High']:
+            for obs in ['el_vtxMass7Low', 'el_htLep6Low', 'el_etaAbsLep4Low',
+                        'el_vtxMass7High', 'el_htLep6High', 'el_etaAbsLep4High']:
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
         if nptbin == 'Low' :
-            for obs in ['el_vtxMass7Low', 'el_etaAbsLep6Low', 'el_etaAbsLep4Low']:
+            for obs in ['el_vtxMass7Low', 'el_htLep6Low', 'el_etaAbsLep4Low']:
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
         if nptbin == 'High' :
-            for obs in ['el_vtxMass7High', 'el_etaAbsLep6High', 'el_etaAbsLep4High']:
+            for obs in ['el_vtxMass7High', 'el_htLep6High', 'el_etaAbsLep4High']:
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
     
     return model
@@ -118,6 +138,64 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             signal='TTbar',
             mcstat=mcstat,
             nptbin = '1',
+            fittype = '',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_mu_htLep6' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep6',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_mu_htLep46' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep46',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_mu_htLep467' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep467',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_mu_2temp0t' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = '2temp0t',
             muflag = True    
         )
 
@@ -175,7 +253,65 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             signal='TTbar',
             mcstat=mcstat,
             nptbin = '1',
+            fittype = '',
             elflag = True
+        )
+
+    elif type == 'ttbar_xs_el_htLep6' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep6',
+            elflag = True    
+        )
+
+    elif type == 'ttbar_xs_el_htLep46' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep46',
+            elflag = True    
+        )
+
+    elif type == 'ttbar_xs_el_htLep467' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep467',
+            elflag = True    
+        )
+
+    elif type == 'ttbar_xs_el_2temp0t' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = '2temp0t',
+            elflag = True    
         )
 
     elif type == 'ttbar_xs_el_2bin' :
@@ -236,6 +372,76 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             nptbin = '1',
             muflag = True,
             elflag = True
+        )
+
+    elif type == 'ttbar_xs_comb_htLep6' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep6',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_comb_htLep46' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep46',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_comb_htLep467' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep7.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep467',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_comb_2temp0t' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = '2temp0t',
+            muflag = True    
         )
 
     elif type == 'ttbar_xs_comb_2bin' :
@@ -320,29 +526,35 @@ usePL = False
 infilter = histfilter
 
 dirs = [
-    'CT10_nom',
-    'CT10_pdfup', 
-    'CT10_pdfdown',
-    'MSTW_nom', 
-    'MSTW_pdfup', 
-    'MSTW_pdfdown',
-    'NNPDF_nom', 
-    'NNPDF_pdfup', 
-    'NNPDF_pdfdown',
-    'scaleup', 
-    'scaledown'
+    'CT10_nom'#,
+    #'CT10_pdfup', 
+    #'CT10_pdfdown',
+    #'MSTW_nom', 
+    #'MSTW_pdfup', 
+    #'MSTW_pdfdown',
+    #'NNPDF_nom', 
+    #'NNPDF_pdfup', 
+    #'NNPDF_pdfdown',
+    #'scaleup', 
+    #'scaledown'
 ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
-channel = 'comb'
+channel = 'mu'
 
 ## # pt bins
 nptbin = '1'
 
 ## for output file/plot names
-binname = ""
+binname = ''
 if nptbin != '1':
-    binname = "_"+nptbin+"bin"
+    binname = '_'+nptbin+'bin'
+
+fittype = ''
+
+fitname = ''
+if fittype != '':
+    fitname = '_'+fittype
 
 elflag = False
 muflag = False
@@ -362,12 +574,14 @@ ivar = -1
 for idir in dirs :
     ivar += 1
 
-    args = {'type': 'ttbar_xs_'+channel+binname,
+    args = {'type': 'ttbar_xs_'+channel+binname+fitname,
             'mcstat': False,
             'infilter': infilter,
             'indir': idir,
             'elflag': elflag,
             'muflag': muflag}
+    
+    print "Building for ttbar_xs_"+channel+binname+fitname
     
     model = build_model(**args)
         
@@ -399,19 +613,19 @@ for idir in dirs :
 
         pdbs = plotdata()
         pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/beta_signal_' + idir + '_' + channel + extName + binname + '.pdf')
+        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/beta_signal_' + idir + '_' + channel + extName + binname + fitname + '.pdf')
         
         pdd = plotdata()
         pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/delta_beta_signal_' + idir + '_' + channel + extName + binname + '.pdf')
+        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/delta_beta_signal_' + idir + '_' + channel + extName + binname + fitname + '.pdf')
         
         pdp = plotdata()
         pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pull_' + idir + '_' + channel + extName + binname + '.pdf')
+        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pull_' + idir + '_' + channel + extName + binname + fitname + '.pdf')
         
 
         # to write it to a root file:
-        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_mle_' + idir + '_' + channel + extName + binname + '.root')
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_mle_' + idir + '_' + channel + extName + binname + fitname + '.root')
 
 
         #results2 = mle(model, input='data', n=1, with_covariance = True)
@@ -515,7 +729,7 @@ for idir in dirs :
         for p in parameters :
             parameter_values[p] = results2['TTbar'][p][0][0]
         histos = evaluate_prediction(model, parameter_values, include_signal = True)
-        write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + channel + extName + binname + '.root')
+        write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + channel + extName + binname + fitname + '.root')
         
         ## option to print html output file
         #if idir == "CT10_nom" :
@@ -550,23 +764,23 @@ for idir in dirs :
             
         pdbs = plotdata()
         pdbs.histogram(bs, 0.0, 2.0, 100, include_uoflow = True)
-        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/pl_beta_signal_' + idir + '_' + channel + extName + binname + '.pdf')
+        plot(pdbs, 'bs', 'ntoys', 'ThetaPlots/pl_beta_signal_' + idir + '_' + channel + extName + binname + fitname + '.pdf')
 
         pdd = plotdata()
         pdd.histogram(delta_bs, 0.0, 1.0, 100, include_uoflow = True)
-        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/pl_delta_beta_signal_' + idir + '_' + channel + extName + binname + '.pdf')
+        plot(pdd, 'dbs', 'ntoys', 'ThetaPlots/pl_delta_beta_signal_' + idir + '_' + channel + extName + binname + fitname + '.pdf')
 
         pdp = plotdata()
         pdp.histogram(pulls, -5.0, 5.0, 100, include_uoflow = True)
-        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pl_pull_' + idir + '_' + channel + extName + binname + '.pdf')
+        plot(pdp, 'pull', 'ntoys', 'ThetaPlots/pl_pull_' + idir + '_' + channel + extName + binname + fitname + '.pdf')
 
 
         # to write the data to a file, use e.g.:
-        pdd.write_txt('ThetaPlots/pl_dbs_' + idir + '_' + channel + extName + binname + '.txt')
-        pdp.write_txt('ThetaPlots/pl_pull_' + idir + '_' + channel + extName + binname + '.txt')
+        pdd.write_txt('ThetaPlots/pl_dbs_' + idir + '_' + channel + extName + binname + fitname + '.txt')
+        pdp.write_txt('ThetaPlots/pl_pull_' + idir + '_' + channel + extName + binname + fitname + '.txt')
 
         # to write it to a root file:
-        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_pl_' + idir + '_' + channel + extName + binname + '.root')
+        write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_pl_' + idir + '_' + channel + extName + binname + fitname + '.root')
 
         
         results4 = pl_interval(model, input='data', n=1 , **args)
