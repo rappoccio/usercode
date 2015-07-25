@@ -388,7 +388,8 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             mcstat=mcstat,
             nptbin = '1',
             fittype = 'htLep6',
-            muflag = True    
+            muflag = True,
+            elflag = True
         )
 
     elif type == 'ttbar_xs_comb_htLep46' :
@@ -405,7 +406,8 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             mcstat=mcstat,
             nptbin = '1',
             fittype = 'htLep46',
-            muflag = True    
+            muflag = True,
+            elflag = True
         )
 
     elif type == 'ttbar_xs_comb_htLep467' :
@@ -422,7 +424,8 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             mcstat=mcstat,
             nptbin = '1',
             fittype = 'htLep467',
-            muflag = True    
+            muflag = True,
+            elflag = True
         )
 
     elif type == 'ttbar_xs_comb_2temp0t' :
@@ -441,7 +444,8 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             mcstat=mcstat,
             nptbin = '1',
             fittype = '2temp0t',
-            muflag = True    
+            muflag = True,
+            elflag = True
         )
 
     elif type == 'ttbar_xs_comb_2bin' :
@@ -540,7 +544,7 @@ dirs = [
 ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
-channel = 'mu'
+channel = 'comb'
 
 ## # pt bins
 nptbin = '1'
@@ -550,7 +554,7 @@ binname = ''
 if nptbin != '1':
     binname = '_'+nptbin+'bin'
 
-fittype = ''
+fittype = '2temp0t'
 
 fitname = ''
 if fittype != '':
