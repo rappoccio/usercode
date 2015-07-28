@@ -190,7 +190,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     else newtitle = "Muons / 0.2";
   }
   else if (var.Contains("etaAbsLep")){
-    rebin = rebinEta;
+    rebin = 2;
     if (doElectron) newtitle = "Electrons / 0.1";
     else newtitle = "Muons / 0.1";
   }
@@ -240,7 +240,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     newtitle = "Events / 20 GeV";
   }
   else if (hist.Contains("vtxMass")) {
-    rebin = rebinSVM;
+    rebin = 2;
     newtitle = "Events / 0.2 GeV";
   }
   else if (var.Contains("wboson_")) {
@@ -248,7 +248,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     newtitle = "Events / 30 GeV";
   }
   else if (var.Contains("htLep")){
-    rebin = rebinHTlep;
+    rebin = 8;
     newtitle = "Events / 40 GeV";
   }
 
@@ -394,7 +394,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 
   if (postfit) {
 
-    TString namecomb = "";
+    TString namecomb = "";		
     if (combined) namecomb = "_combined";
 
     if (cut==6 && cut2==0){
@@ -619,9 +619,9 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
     h_data->Add(h_data2,-1);
   }
 
-  if (what.Contains("etaAbsLep")) h_data->Rebin(rebinEta);
-  if (what.Contains("vtxMass")) h_data->Rebin(rebinSVM);
-  if (what.Contains("htLep")) h_data->Rebin(rebinHTlep);
+  if (what.Contains("etaAbsLep")) h_data->Rebin(getRebin("etaAbsLep"));
+  if (what.Contains("vtxMass")) h_data->Rebin(getRebin("vtxMass"));
+  if (what.Contains("htLep")) h_data->Rebin(getRebin("htLep"));
 
   // -------------------------------------------------------------------------------------
   // various hist plotting edits
@@ -760,13 +760,13 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false) {
 
   TString what[3] = {"etaAbsLep4","etaAbsLep6","vtxMass7"};
-  if (useHTlep == "6" || useHTlep == "46" || useHTlep == "467") {
+  if (fittype == "htlep6" || fittype == "htlep46" || fittype == "htlep467" || fittype == "2temp0t") {
     what[1] = "htLep6";
   }
-  if (useHTlep == "46" || useHTlep == "467"){
+  if (fittype == "htlep46" || fittype == "htlep467"){
     what[0] = "htLep4";
   }
-  if (useHTlep == "467") what[2] = "htLep7";
+  if (fittype == "htlep467") what[2] = "htLep7";
   if (do_htlep150qcd) what[0] = "etaAbsLep5";
 
   TString mydir = pdfdir;
@@ -804,7 +804,8 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   // -------------------------------------------------------------------------------------
 
   float fiterrors_mu_extLumi_extBtag[11][5] = {
-    {0.13623799557, 0.588013259541, 0.0896067390956, 0.190280435213, 0}, // bkg error for CT10_nom
+    //{0.13623799557, 0.588013259541, 0.0896067390956, 0.190280435213, 0}, // bkg error for CT10_nom
+    {0.0849186169086, 0.479511247586, 0.0859954208879, 0.116649491322, 0}, // bkg error for CT10_nom (2temp0t)
     {0.141047195591, 0.584563234787, 0.0970293967236, 0.172037540546, 0}, // bkg error for CT10_pdfup
     {0.13201839681, 0.592757087347, 0.0846483545142, 0.209374249831, 0}, // bkg error for CT10_pdfdown
     {0.136654966326, 0.589173345724, 0.0880843814416, 0.188347196546, 0}, // bkg error for MSTW_nom
@@ -817,7 +818,8 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.132321463273, 0.58477773733, 0.102224845937, 0.156264820702, 0}, // bkg error for scaledown
   };
   float fiterrors_el_extLumi_extBtag[11][5] = {
-    {0.104168517361, 0.488891930375, 0.088292381878, 0, 0.185694929179}, // bkg error for CT10_nom
+    //{0.104168517361, 0.488891930375, 0.088292381878, 0, 0.185694929179}, // bkg error for CT10_nom
+    {0.0997720511417, 0.446088129682, 0.0419740898106, 0, 0.191691617142}, // bkg error for CT10_nom (2temp0t)
     {0.111230824282, 0.462081793096, 0.0975843837009, 0, 0.198637175933}, // bkg error for CT10_pdfup
     {0.0995412715042, 0.506136119673, 0.0833208500129, 0, 0.174993040682}, // bkg error for CT10_pdfdown
     {0.104896323332, 0.487690699466, 0.0866648199766, 0, 0.189066564151}, // bkg error for MSTW_nom
@@ -830,7 +832,8 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.108398956294, 0.532045553364, 0.0700946366173, 0, 0.160976337304}, // bkg error for scaledown
   };
   float fiterrors_comb_extLumi_extBtag[11][5] = {
-    {0.0739013415172, 0.465465869686, 0.078490070614, 0.432458085567, 0.0621258763276}, // bkg error for CT10_nom
+    //{0.0739013415172, 0.465465869686, 0.078490070614, 0.432458085567, 0.0621258763276}, // bkg error for CT10_nom
+    {0.069766876149, 0.339272734277, 0.0485490110471, 0.217961414064, 0.0801378744912}, // bkg error for CT10_nom (2temp0t)
     {0.0796353685898, 0.428566892826, 0.090950911035, 0.435103553405, 0.0629574417432}, // bkg error for CT10_pdfup
     {0.0701039019112, 0.488312009939, 0.0708568064238, 0.43711151761, 0.0609922366663}, // bkg error for CT10_pdfdown
     {0.0745127436608, 0.460054651877, 0.0764168758694, 0.435410180448, 0.0618880632933}, // bkg error for MSTW_nom
@@ -1120,25 +1123,72 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   TFile* fDATA[3];
   
   if (doElectron) {
-    fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
-    fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
-    fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
-
-    if (useHTlep == "467" || useHTlep == "46" || useHTlep == "6") fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
-    if (useHTlep == "467" || useHTlep == "46") fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep6"+ptbin+"_subtracted_from_htLep4"+ptbin+append+".root");
-    if (useHTlep == "467") fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+append+".root");
-    if (do_htlep150qcd) fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+append+".root");
+    if (do_htlep150qcd) {
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
+    }
+    else if (fittype == "" || fittype == "2temp46"){
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
+    }
+    else if (fittype == "htlep6"){
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
+    }
+    else if (fittype == "htlep46"){
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep6"+ptbin+"_subtracted_from_htLep4"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
+    }
+    else if (fittype == "htlep467"){
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep6"+ptbin+"_subtracted_from_htLep4"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+append+".root");
+    }
+    else if (fittype == "2temp0t"){
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
+    }
   }
   
   else {
-    fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
-    fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
-    fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
 
-    if (useHTlep == "6" || useHTlep == "46" || useHTlep == "467") fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
-    if (useHTlep == "46" || useHTlep == "467") fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep6"+ptbin+"_subtracted_from_htLep4"+ptbin+append+".root");
-    if (useHTlep == "467") fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+append+".root");
-    if (do_htlep150qcd) fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+append+".root");
+    if (do_htlep150qcd) {
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
+    }
+    else if (fittype == "" || fittype == "2temp46"){
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
+    }
+    else if (fittype == "htlep6"){
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
+    }
+    else if (fittype == "htlep46"){
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep6"+ptbin+"_subtracted_from_htLep4"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
+    }
+    else if (fittype == "htlep467"){
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep6"+ptbin+"_subtracted_from_htLep4"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+append+".root");
+    }
+    else if (fittype == "2temp0t"){
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
+    }
+
+
   }
 
   for (int ii = 0; ii < 3; ii++){
@@ -1397,16 +1447,16 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
     ttbar[is]->SetName(tempname);
 
     // Do rebinning
-    wjets[is]->hist()->Rebin(rebinAll[2]);
-    singletop[is]->hist()->Rebin(rebinAll[2]);
-    ttbar_semiLep[is]->hist()->Rebin(rebinAll[2]);
-    ttbar_nonSemiLep[is]->hist()->Rebin(rebinAll[2]);
-    ttbar[is]->Rebin(rebinAll[2]);  
+    wjets[is]->hist()->Rebin(getRebin(var));
+    singletop[is]->hist()->Rebin(getRebin(var));
+    ttbar_semiLep[is]->hist()->Rebin(getRebin(var));
+    ttbar_nonSemiLep[is]->hist()->Rebin(getRebin(var));
+    ttbar[is]->Rebin(getRebin(var));  
   }
 
   // QCD
   SummedHist* qcd = getQCD( hist, doElectron, ptbin );
-  qcd->hist()->Rebin(rebinAll[2]);    
+  qcd->hist()->Rebin(getRebin(var));    
 
   // data
   TString filepath;
@@ -1430,7 +1480,7 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
   TFile* dataFile = TFile::Open(filepath);
   TH1F* data = (TH1F*) dataFile->Get( hist );
   data->SetName(channel + hist + "__DATA");
-  data->Rebin(rebinAll[2]);  
+  data->Rebin(getRebin(var));  
 
   // write the histograms to a file
   TString outname;
@@ -1526,11 +1576,11 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
       ttbar[is][ih]->SetName(tempname);
 
       // Do rebinning
-      wjets[is][ih]->hist()->Rebin(rebinAll[ih]);
-      singletop[is][ih]->hist()->Rebin(rebinAll[ih]);
-      ttbar_semiLep[is][ih]->hist()->Rebin(rebinAll[ih]);
-      ttbar_nonSemiLep[is][ih]->hist()->Rebin(rebinAll[ih]);
-      ttbar[is][ih]->Rebin(rebinAll[ih]); 
+      wjets[is][ih]->hist()->Rebin(getRebin(var));
+      singletop[is][ih]->hist()->Rebin(getRebin(var));
+      ttbar_semiLep[is][ih]->hist()->Rebin(getRebin(var));
+      ttbar_nonSemiLep[is][ih]->hist()->Rebin(getRebin(var));
+      ttbar[is][ih]->Rebin(getRebin(var)); 
     }
   }
 
@@ -1538,8 +1588,8 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   SummedHist* qcd[2];
   qcd[0] = getQCD( hist[0], doElectron, ptbin );
   qcd[1] = getQCD( hist[1], doElectron, ptbin );
-  qcd[0]->hist()->Rebin(rebinAll[0]);
-  qcd[1]->hist()->Rebin(rebinAll[1]);
+  qcd[0]->hist()->Rebin(getRebin(var));
+  qcd[1]->hist()->Rebin(getRebin(var));
 
   // data
   TString filepath;
@@ -1565,10 +1615,10 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   TH1F* data[2];
   data[0] = (TH1F*) dataFile->Get( hist[0] );
   data[0]->SetName(channel + hist[0] + "__DATA");
-  data[0]->Rebin(rebinAll[0]);
+  data[0]->Rebin(getRebin(var));
   data[1] = (TH1F*) dataFile->Get( hist[1] );
   data[1]->SetName(channel + hist[1] + "__DATA_2");
-  data[1]->Rebin(rebinAll[1]);
+  data[1]->Rebin(getRebin(var));
   
   // do the subtraction
   for (int is=0; is<nSYST; is++) {

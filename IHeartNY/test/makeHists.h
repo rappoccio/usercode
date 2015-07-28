@@ -28,18 +28,18 @@ bool extBtag = true;
 bool extJet = false;
 bool extToptag = false;
 
-//TString useHTlep = "467";
-TString useHTlep = "";
+TString fittype = "2temp0t";
 
 // END USER SETTINGS
 
-int rebinSVM = 2;
-int rebinEta = 2;
-int rebinHTlep = 8;
-int rebinAll[3] = {rebinEta, rebinEta, rebinSVM};
-//if (useHTlep == "6" || useHTlep == "46" || useHTlep == "467") rebinAll[1] = rebinHTlep;
-//if (useHTlep == "46" || useHTlep == "467") rebinAll[0] = rebinHTlep;
-//if (useHTlep == "467") rebinAll[2] = rebinHTlep;
+int getRebin(TString var){
+  int rebin = 1;
+  if (var=="etaAbsLep") rebin = 2;
+  else if (var=="vtxMass") rebin = 2;
+  else if (var=="htLep") rebin = 8;
+
+  return rebin;
+}
 
 TString extName = "";
 
@@ -48,10 +48,10 @@ void setExtName () {
   if (extLumi) extName += "_nolumi";
   if (extJet) extName += "_nojet";
   if (extToptag) extName += "_notoptag";
-  if (useHTlep == "6") extName += "_htLep6";
-  if (useHTlep == "46") extName += "_htLep46";
-  if (useHTlep == "467") extName += "_htLep467";
+  if (fittype != "") extName += "_"+fittype;
 }
+
+
 
 // -------------------------------------------------------------------------------------
 // helper class for summed, weighted histograms (e.g. single top)
