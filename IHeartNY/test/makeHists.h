@@ -28,17 +28,18 @@ bool extBtag = true;
 bool extJet = false;
 bool extToptag = false;
 
-TString useHTlep = "467";
+//TString useHTlep = "467";
+TString useHTlep = "";
 
 // END USER SETTINGS
 
 int rebinSVM = 2;
 int rebinEta = 2;
 int rebinHTlep = 8;
-int rebin[3] = {rebinEta, rebinEta, rebinSVM};
-if (useHTlep == "6" || useHTlep == "46" || useHTlep == "467") rebin[1] = rebinHTlep;
-if (useHTlep == "46" || useHTlep == "467") rebin[0] = rebinHTlep;
-if (useHTlep == "467") rebin[2] = rebinHTlep;
+int rebinAll[3] = {rebinEta, rebinEta, rebinSVM};
+//if (useHTlep == "6" || useHTlep == "46" || useHTlep == "467") rebinAll[1] = rebinHTlep;
+//if (useHTlep == "46" || useHTlep == "467") rebinAll[0] = rebinHTlep;
+//if (useHTlep == "467") rebinAll[2] = rebinHTlep;
 
 TString extName = "";
 

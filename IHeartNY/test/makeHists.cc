@@ -393,13 +393,17 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   else outname = "Plots/mu_relIso_"+mydir+extName+"_";
 
   if (postfit) {
+
+    TString namecomb = "";
+    if (combined) namecomb = "_combined";
+
     if (cut==6 && cut2==0){
-      c->SaveAs(outname+hist+"_inc_postfit.png");
-      c->SaveAs(outname+hist+"_inc_postfit.pdf");
+      c->SaveAs(outname+hist+"_inc"+namecomb+"_postfit.png");
+      c->SaveAs(outname+hist+"_inc"+namecomb+"_postfit.pdf");
     }
     else {
-      c->SaveAs(outname+hist+"_postfit.png");
-      c->SaveAs(outname+hist+"_postfit.pdf");
+      c->SaveAs(outname+hist+namecomb+"_postfit.png");
+      c->SaveAs(outname+hist+namecomb+"_postfit.pdf");
     }
   }
   else {
@@ -1393,16 +1397,16 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
     ttbar[is]->SetName(tempname);
 
     // Do rebinning
-    wjets[is]->hist()->Rebin(rebin[2]);
-    singletop[is]->hist()->Rebin(rebin[2]);
-    ttbar_semiLep[is]->hist()->Rebin(rebin[2]);
-    ttbar_nonSemiLep[is]->hist()->Rebin(rebin[2]);
-    ttbar[is]->Rebin(rebin[2]);  
+    wjets[is]->hist()->Rebin(rebinAll[2]);
+    singletop[is]->hist()->Rebin(rebinAll[2]);
+    ttbar_semiLep[is]->hist()->Rebin(rebinAll[2]);
+    ttbar_nonSemiLep[is]->hist()->Rebin(rebinAll[2]);
+    ttbar[is]->Rebin(rebinAll[2]);  
   }
 
   // QCD
   SummedHist* qcd = getQCD( hist, doElectron, ptbin );
-  qcd->hist()->Rebin(rebin[2]);    
+  qcd->hist()->Rebin(rebinAll[2]);    
 
   // data
   TString filepath;
@@ -1426,7 +1430,7 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
   TFile* dataFile = TFile::Open(filepath);
   TH1F* data = (TH1F*) dataFile->Get( hist );
   data->SetName(channel + hist + "__DATA");
-  data->Rebin(rebin[2]);  
+  data->Rebin(rebinAll[2]);  
 
   // write the histograms to a file
   TString outname;
@@ -1522,11 +1526,11 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
       ttbar[is][ih]->SetName(tempname);
 
       // Do rebinning
-      wjets[is][ih]->hist()->Rebin(rebin[ih]);
-      singletop[is][ih]->hist()->Rebin(rebin[ih]);
-      ttbar_semiLep[is][ih]->hist()->Rebin(rebin[ih]);
-      ttbar_nonSemiLep[is][ih]->hist()->Rebin(rebin[ih]);
-      ttbar[is][ih]->Rebin(rebin[ih]); 
+      wjets[is][ih]->hist()->Rebin(rebinAll[ih]);
+      singletop[is][ih]->hist()->Rebin(rebinAll[ih]);
+      ttbar_semiLep[is][ih]->hist()->Rebin(rebinAll[ih]);
+      ttbar_nonSemiLep[is][ih]->hist()->Rebin(rebinAll[ih]);
+      ttbar[is][ih]->Rebin(rebinAll[ih]); 
     }
   }
 
@@ -1534,8 +1538,8 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   SummedHist* qcd[2];
   qcd[0] = getQCD( hist[0], doElectron, ptbin );
   qcd[1] = getQCD( hist[1], doElectron, ptbin );
-  qcd[0]->hist()->Rebin(rebin[0]);
-  qcd[1]->hist()->Rebin(rebin[1]);
+  qcd[0]->hist()->Rebin(rebinAll[0]);
+  qcd[1]->hist()->Rebin(rebinAll[1]);
 
   // data
   TString filepath;
@@ -1561,10 +1565,10 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   TH1F* data[2];
   data[0] = (TH1F*) dataFile->Get( hist[0] );
   data[0]->SetName(channel + hist[0] + "__DATA");
-  data[0]->Rebin(rebin[0]);
+  data[0]->Rebin(rebinAll[0]);
   data[1] = (TH1F*) dataFile->Get( hist[1] );
   data[1]->SetName(channel + hist[1] + "__DATA_2");
-  data[1]->Rebin(rebin[1]);
+  data[1]->Rebin(rebinAll[1]);
   
   // do the subtraction
   for (int is=0; is<nSYST; is++) {
