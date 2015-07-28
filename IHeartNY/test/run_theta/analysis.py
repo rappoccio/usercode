@@ -64,15 +64,15 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, fittype='', elflag=Fals
     if muflag:
         print "DEBUG: muon+jets channel considered"
         if nptbin == '1' :
-            if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' :
+            if fittype == '' or fittype == 'htLep6' or fittype == '2temp4' or fittype == '2temp46' :
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_etaAbsLep4')
-            if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' :
+            if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp4' or fittype == '2temp46':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_htLep4')
-            if fittype == '' :
+            if fittype == '' or fittype == '2temp46':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_etaAbsLep6')
-            if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' :
+            if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp4' or fittype == '2temp46':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_htLep6')
-            if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' :
+            if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp4' or fittype == '2temp46':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_vtxMass7')
             if fittype == 'htLep467' :
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD', 'mu_htLep7')
@@ -91,15 +91,15 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, fittype='', elflag=Fals
     if elflag:
         print "DEBUG: electron+jets channel considered"
         if nptbin == '1' :
-            if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' :
+            if fittype == '' or fittype == 'htLep6' or fittype == '2temp4' or fittype == '2temp46':
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_etaAbsLep4')
-            if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' :
+            if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp4' or fittype == '2temp46':
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_htLep4')
-            if fittype == '' :
+            if fittype == '' or fittype == '2temp46':
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_etaAbsLep6')
-            if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' :
+            if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp4' or fittype == '2temp46':
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_htLep6')
-            if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' :
+            if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp4' or fittype == '2temp46':
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_vtxMass7')
             if fittype == 'htLep467' :
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD', 'el_htLep7')
@@ -184,7 +184,7 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             muflag = True    
         )
 
-    elif type == 'ttbar_xs_mu_2temp0t' :
+    elif type == 'ttbar_xs_mu_2temp4' :
         
         model = lepplusjets(
             files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
@@ -195,7 +195,23 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             signal='TTbar',
             mcstat=mcstat,
             nptbin = '1',
-            fittype = '2temp0t',
+            fittype = '2temp4',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_mu_2temp46' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = '2temp46',
             muflag = True    
         )
 
@@ -299,7 +315,7 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             elflag = True    
         )
 
-    elif type == 'ttbar_xs_el_2temp0t' :
+    elif type == 'ttbar_xs_el_2temp4' :
         
         model = lepplusjets(
             files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
@@ -310,7 +326,23 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             signal='TTbar',
             mcstat=mcstat,
             nptbin = '1',
-            fittype = '2temp0t',
+            fittype = '2temp4',
+            elflag = True    
+        )
+
+    elif type == 'ttbar_xs_el_2temp46' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = '2temp46',
             elflag = True    
         )
 
@@ -428,7 +460,7 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             elflag = True
         )
 
-    elif type == 'ttbar_xs_comb_2temp0t' :
+    elif type == 'ttbar_xs_comb_2temp4' :
         
         model = lepplusjets(
             files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
@@ -443,11 +475,33 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             signal='TTbar',
             mcstat=mcstat,
             nptbin = '1',
-            fittype = '2temp0t',
+            fittype = '2temp4',
             muflag = True,
             elflag = True
         )
 
+    elif type == 'ttbar_xs_comb_2temp46' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = '2temp46',
+            muflag = True,
+            elflag = True
+        )
+        
     elif type == 'ttbar_xs_comb_2bin' :
 
         model = lepplusjets(
@@ -554,7 +608,7 @@ binname = ''
 if nptbin != '1':
     binname = '_'+nptbin+'bin'
 
-fittype = '2temp0t'
+fittype = '2temp46'
 
 fitname = ''
 if fittype != '':
