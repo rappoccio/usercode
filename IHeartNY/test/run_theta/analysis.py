@@ -64,17 +64,17 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, fittype='', elflag=Fals
     if muflag:
         print "DEBUG: muon+jets channel considered"
         if nptbin == '1' :
-            if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' or fittype == '2temp46' :
+            if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'etaAbsLep4only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_etaAbsLep4')
-            if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46':
+            if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep4only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_htLep4')
-            if fittype == '' or fittype == '2temp46':
+            if fittype == '' or fittype == '2temp46' or fittype == 'etaAbsLep6only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_etaAbsLep6')
-            if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46':
+            if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep6only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_htLep6')
-            if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' or fittype == '2temp46':
+            if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'vtxMass7only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_vtxMass7')
-            if fittype == 'htLep467' :
+            if fittype == 'htLep467' or fittype == 'htLep7only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD', 'mu_htLep7')
         if nptbin == '2' :
             for obs in ['mu_vtxMass7Low', 'mu_htLep6Low', 'mu_etaAbsLep4Low',
@@ -91,17 +91,17 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, fittype='', elflag=Fals
     if elflag:
         print "DEBUG: electron+jets channel considered"
         if nptbin == '1' :
-            if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' or fittype == '2temp46':
+            if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'etaAbsLep4only':
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_etaAbsLep4')
-            if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46':
+            if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep4only':
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_htLep4')
-            if fittype == '' or fittype == '2temp46':
+            if fittype == '' or fittype == '2temp46' or fittype == 'etaAbsLep6only':
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_etaAbsLep6')
-            if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46':
+            if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep6only':
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_htLep6')
-            if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' or fittype == '2temp46':
+            if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'vtxMass7only':
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_vtxMass7')
-            if fittype == 'htLep467' :
+            if fittype == 'htLep467' or fittype == 'htLep7only':
                 model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD', 'el_htLep7')
         if nptbin == '2' :
             for obs in ['el_vtxMass7Low', 'el_htLep6Low', 'el_etaAbsLep4Low',
@@ -212,6 +212,66 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             mcstat=mcstat,
             nptbin = '1',
             fittype = '2temp46',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_mu_etaAbsLep4only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'etaAbsLep4only',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_mu_htLep4only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_htLep6_subtracted_from_htLep4.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep4only',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_mu_etaAbsLep6only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'etaAbsLep6only',
+            muflag = True    
+        )
+
+    elif type == 'ttbar_xs_mu_htLep6only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_htLep7_subtracted_from_htLep6.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep6only',
+            muflag = True    
+        )
+        
+    elif type == 'ttbar_xs_mu_vtxMass7only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'vtxMass7only',
             muflag = True    
         )
 
@@ -343,6 +403,66 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             mcstat=mcstat,
             nptbin = '1',
             fittype = '2temp46',
+            elflag = True    
+        )
+
+    elif type == 'ttbar_xs_el_etaAbsLep4only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'etaAbsLep4only',
+            elflag = True    
+        )
+
+    elif type == 'ttbar_xs_el_htLep4only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_htLep6_subtracted_from_htLep4.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep4only',
+            elflag = True    
+        )
+
+    elif type == 'ttbar_xs_el_etaAbsLep6only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'etaAbsLep6only',
+            elflag = True    
+        )
+
+    elif type == 'ttbar_xs_el_htLep6only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_htLep7_subtracted_from_htLep6.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep6only',
+            elflag = True    
+        )
+        
+    elif type == 'ttbar_xs_el_vtxMass7only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'vtxMass7only',
             elflag = True    
         )
 
@@ -501,6 +621,76 @@ def build_model(type, indir='', mcstat = True, infilter = None, elflag=False, mu
             muflag = True,
             elflag = True
         )
+
+    elif type == 'ttbar_xs_comb_etaAbsLep4only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep6_subtracted_from_etaAbsLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep6_subtracted_from_etaAbsLep4.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'etaAbsLep4only',
+            muflag = True,
+            elflag = True
+        )
+
+    elif type == 'ttbar_xs_comb_htLep4only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_htLep6_subtracted_from_htLep4.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep6_subtracted_from_htLep4.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep4only',
+            muflag = True,
+            elflag = True
+        )
+
+    elif type == 'ttbar_xs_comb_etaAbsLep6only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_etaAbsLep7_subtracted_from_etaAbsLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_etaAbsLep7_subtracted_from_etaAbsLep6.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'etaAbsLep6only',
+            muflag = True,
+            elflag = True
+        )
+
+    elif type == 'ttbar_xs_comb_htLep6only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_htLep7_subtracted_from_htLep6.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_htLep7_subtracted_from_htLep6.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'htLep6only',
+            muflag = True,
+            elflag = True
+        )
+        
+    elif type == 'ttbar_xs_comb_vtxMass7only' :
+        
+        model = lepplusjets(
+            files=['NormalizedHists_' + indir + '/normalized2d_mujets_vtxMass7.root',
+                   'NormalizedHists_' + indir + '/normalized2d_eljets_vtxMass7.root'],
+            infilter=infilter,
+            signal='TTbar',
+            mcstat=mcstat,
+            nptbin = '1',
+            fittype = 'vtxMass7only',
+            muflag = True,
+            elflag = True
+        )
         
     elif type == 'ttbar_xs_comb_2bin' :
 
@@ -585,8 +775,8 @@ infilter = histfilter
 
 dirs = [
     'CT10_nom',
-    'CT10_pdfup', 
-    'CT10_pdfdown',
+    #'CT10_pdfup', 
+    #'CT10_pdfdown',
     #'MSTW_nom', 
     #'MSTW_pdfup', 
     #'MSTW_pdfdown',
@@ -608,7 +798,7 @@ binname = ''
 if nptbin != '1':
     binname = '_'+nptbin+'bin'
 
-fittype = '2temp46'
+fittype = 'vtxMass7only'
 
 fitname = ''
 if fittype != '':
@@ -656,7 +846,7 @@ for idir in dirs :
     
     if useMLE == True :        
 
-        print '------------- MLE RESULTS ' + idir + ' ' + channel + ' channel ' + nptbin + 'bin ---------------'
+        print '------------- MLE RESULTS ' + idir + ' ' + channel + ' channel ' + nptbin + 'bin ' + fittype + ' ---------------'
 
         results1 = mle(model, input='toys:1.', n=1000)
 
@@ -800,7 +990,7 @@ for idir in dirs :
 
     if usePL == True :
 
-        print '------------- PL RESULTS ' + idir + ' ' + channel + ' channel ' + nptbin + 'bin ---------------'
+        print '------------- PL RESULTS ' + idir + ' ' + channel + ' channel ' + nptbin + 'bin ' + fittype + ' ---------------'
 
         args = {}
 
