@@ -774,7 +774,7 @@ usePL = False
 infilter = histfilter
 
 dirs = [
-    'CT10_nom',
+    'CT10_nom'#,
     #'CT10_pdfup', 
     #'CT10_pdfdown',
     #'MSTW_nom', 
@@ -783,8 +783,8 @@ dirs = [
     #'NNPDF_nom', 
     #'NNPDF_pdfup', 
     #'NNPDF_pdfdown',
-    'scaleup', 
-    'scaledown'
+    #'scaleup', 
+    #'scaledown'
 ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
@@ -798,7 +798,7 @@ binname = ''
 if nptbin != '1':
     binname = '_'+nptbin+'bin'
 
-fittype = 'vtxMass7only'
+fittype = ''
 
 fitname = ''
 if fittype != '':
