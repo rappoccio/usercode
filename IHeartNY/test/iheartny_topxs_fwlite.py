@@ -347,7 +347,8 @@ def getElectronSF(elEta, elPt, DIR) :
 
 # -------------------------------------------------------------------------------------
 # Top-tagging SF
-def getToptagSF(jetEta, pdfSet, pdfSys, isElec) :
+#def getToptagSF(jetEta, pdfSet, pdfSys, isElec) :
+def getToptagSF(jetEta, option, isElec) :
 
     toptagSF = 1.0
     if abs(jetEta) < 1.0 :
@@ -375,19 +376,48 @@ def getToptagSF(jetEta, pdfSet, pdfSys, isElec) :
     #if (pdfSet==1 and pdfSys==-1 and isElec):
     #    toptag_post = 1.11804095015        
 
+    ## muon-only
+    if (option==1 and isElec==False):
+        toptag_post = 1.16069439813
+    ## electron-only fit
+    if (option==1 and isElec):
+        toptag_post = 0.960683105758
+    ## combined fit
+    if (option==2):
+        toptag_post = 0.91513570006
+        
     toptagSF = toptagSF * toptag_post
     
     return float(toptagSF)
 
 
 # Top-tagging SF error
-def getToptagSFerror(jetEta, pdfSet, pdfSys, isElec) :
+#def getToptagSFerror(jetEta, pdfSet, pdfSys, isElec) :
+def getToptagSFerror(jetEta, jetPt, option, isElec) :
 
     toptagSFerr = 0.0
     if abs(jetEta) < 1.1 :
         toptagSFerr = 0.092
     else :
         toptagSFerr = 0.110
+
+        
+    highPtErr = 0.0
+    if jetPt > 600.:
+        highPtErr = 0.17
+	
+    ## muon-only
+    if (option==1 and isElec==False):
+        relErr = 0.43*0.25
+        toptagSFerr = math.sqrt(relErr*relErr + highPtErr*highPtErr)
+    ## electron-only fit
+    if (option==1 and isElec):
+        relErr = 0.29*0.25
+        toptagSFerr = math.sqrt(relErr*relErr + highPtErr*highPtErr)
+    ## combined fit
+    if (option==2):
+        relErr = 0.20*0.25
+        toptagSFerr = math.sqrt(relErr*relErr + highPtErr*highPtErr)
 
     return float(toptagSFerr)
 # -------------------------------------------------------------------------------------
@@ -422,7 +452,6 @@ def getJER(jetEta, jerType) :
 
     return float(jerSF)
 # -------------------------------------------------------------------------------------
-
 
 
 # -------------------------------------------------------------------------------------
@@ -722,6 +751,11 @@ PilePlot = PileFile.Get("pweight" + options.pileup)
 
 f.cd()
 
+h_true_dR_zoom = ROOT.TH1F("true_dR_zoom",";dR(lepton, closest AK5 gen jet);", 100, 0.0, 0.4)
+h_true_dR = ROOT.TH1F("true_dR",";dR(lepton, closest AK5 gen jet);", 100, 0.0, 5.0)
+h_true_ptrel = ROOT.TH1F("true_ptrel", ";p_{T}^{rel}(lepton, closest jet) [GeV];", 100, 0., 100.)
+h_true_dR_ptrel = ROOT.TH2F("true_dR_ptrel", ";dR(lepton, closest jet); p_{T}^{rel}(lepton, closest jet) [GeV]", 100, 0., 1.5, 100, 0., 100.)
+    
 h_nvtx_pre   = ROOT.TH1F("nvtx_pre",   ";Number of PV (pre reweighting);Events / 1",  50,-0.5,49.5)
 h_nvtx_post  = ROOT.TH1F("nvtx_post",  ";Number of PV (post reweighting);Events / 1", 50,-0.5,49.5)
 h_nvtx0_pre  = ROOT.TH1F("nvtx0_pre",  ";Number of PV (pre reweighting);Events / 1",  50,-0.5,49.5)
@@ -762,6 +796,18 @@ h_nLepJets3  = ROOT.TH1F("nLepJets3",  "Number of jets, p_{T} > 30 GeV;N_{lep.si
 h_nLepJets4  = ROOT.TH1F("nLepJets4",  "Number of jets, p_{T} > 30 GeV;N_{lep.side jets};Number / event",   10, -0.5, 9.5)
 h_nLepJets5  = ROOT.TH1F("nLepJets5",  "Number of jets, p_{T} > 30 GeV;N_{lep.side jets};Number / event",   10, -0.5, 9.5)
 h_nLepJets6  = ROOT.TH1F("nLepJets6",  "Number of jets, p_{T} > 30 GeV;N_{lep.side jets};Number / event",   10, -0.5, 9.5)
+h_nLepJets7  = ROOT.TH1F("nLepJets7",  "Number of jets, p_{T} > 30 GeV;N_{lep.side jets};Number / event",   10, -0.5, 9.5)
+
+h_nHadJets4  = ROOT.TH1F("nHadJets4",  "Number of CA8 jets, p_{T} > 400 GeV;N_{had.side jets};Number / event",   10, -0.5, 9.5)
+h_nHadJets5  = ROOT.TH1F("nHadJets5",  "Number of CA8 jets, p_{T} > 400 GeV;N_{had.side jets};Number / event",   10, -0.5, 9.5)
+h_nHadJets6  = ROOT.TH1F("nHadJets6",  "Number of CA8 jets, p_{T} > 400 GeV;N_{had.side jets};Number / event",   10, -0.5, 9.5)
+h_nHadJets7  = ROOT.TH1F("nHadJets7",  "Number of CA8 jets, p_{T} > 400 GeV;N_{had.side jets};Number / event",   10, -0.5, 9.5)
+
+h_nHad200Jets3  = ROOT.TH1F("nHad200Jets3",  "Number of CA8 jets, p_{T} > 200 GeV;N_{had.side jets};Number / event",   10, -0.5, 9.5)
+h_nHad200Jets4  = ROOT.TH1F("nHad200Jets4",  "Number of CA8 jets, p_{T} > 200 GeV;N_{had.side jets};Number / event",   10, -0.5, 9.5)
+h_nHad200Jets5  = ROOT.TH1F("nHad200Jets5",  "Number of CA8 jets, p_{T} > 200 GeV;N_{had.side jets};Number / event",   10, -0.5, 9.5)
+h_nHad200Jets6  = ROOT.TH1F("nHad200Jets6",  "Number of CA8 jets, p_{T} > 200 GeV;N_{had.side jets};Number / event",   10, -0.5, 9.5)
+h_nHad200Jets7  = ROOT.TH1F("nHad200Jets7",  "Number of CA8 jets, p_{T} > 200 GeV;N_{had.side jets};Number / event",   10, -0.5, 9.5)
 
 # lepton properties
 if options.lepType == "muon":
@@ -793,13 +839,19 @@ if options.lepType == "muon":
     h_etaAbsLep4 = ROOT.TH1F("etaAbsLep4", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep4_low  = ROOT.TH1F("etaAbsLep4Low",  ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep4_high = ROOT.TH1F("etaAbsLep4High", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4_loweta  = ROOT.TH1F("etaAbsLep4LowEta",  ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4_higheta = ROOT.TH1F("etaAbsLep4HighEta", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep6_low  = ROOT.TH1F("etaAbsLep6Low",  ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep6_high = ROOT.TH1F("etaAbsLep6High", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep6_loweta  = ROOT.TH1F("etaAbsLep6LowEta",  ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep6_higheta = ROOT.TH1F("etaAbsLep6HighEta", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7_low  = ROOT.TH1F("etaAbsLep7Low",  ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7_high = ROOT.TH1F("etaAbsLep7High", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7_loweta  = ROOT.TH1F("etaAbsLep7LowEta",  ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7_higheta = ROOT.TH1F("etaAbsLep7HighEta", ";Muon |#eta|; Muons / 0.05", 50, 0, 2.5)
 
     h_dRvspTPre  = ROOT.TH2F("dRvspTPre",  ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
     h_dRvspT0    = ROOT.TH2F("dRvspT0",    ";dR(muon, closest jet); p_{T}^{rel}(muon, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
@@ -845,13 +897,19 @@ else:
     h_etaAbsLep4 = ROOT.TH1F("etaAbsLep4", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep4_low  = ROOT.TH1F("etaAbsLep4Low",  ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep4_high = ROOT.TH1F("etaAbsLep4High", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4_loweta  = ROOT.TH1F("etaAbsLep4LowEta",  ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep4_higheta = ROOT.TH1F("etaAbsLep4HighEta", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep5 = ROOT.TH1F("etaAbsLep5", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep6 = ROOT.TH1F("etaAbsLep6", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep6_low  = ROOT.TH1F("etaAbsLep6Low",  ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep6_high = ROOT.TH1F("etaAbsLep6High", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep6_loweta  = ROOT.TH1F("etaAbsLep6LowEta",  ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep6_higheta = ROOT.TH1F("etaAbsLep6HighEta", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7 = ROOT.TH1F("etaAbsLep7", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7_low  = ROOT.TH1F("etaAbsLep7Low",  ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
     h_etaAbsLep7_high = ROOT.TH1F("etaAbsLep7High", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7_loweta  = ROOT.TH1F("etaAbsLep7LowEta",  ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
+    h_etaAbsLep7_higheta = ROOT.TH1F("etaAbsLep7HighEta", ";Electron |#eta|; Electrons / 0.05", 50, 0, 2.5)
 
     h_dRvspTPre  = ROOT.TH2F("dRvspTPre",  ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
     h_dRvspT0    = ROOT.TH2F("dRvspT0",    ";dR(ele, closest jet); p_{T}^{rel}(ele, closest jet) [GeV]", 60, 0., 1.5, 50, 0., 100.)
@@ -1002,6 +1060,8 @@ h_vtxMass6 = ROOT.TH1F("vtxMass6", ";Leptonic-side secondary vertex mass [GeV]; 
 h_vtxMass7 = ROOT.TH1F("vtxMass7", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass7_low  = ROOT.TH1F("vtxMass7Low",  ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 h_vtxMass7_high = ROOT.TH1F("vtxMass7High", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+h_vtxMass7_loweta  = ROOT.TH1F("vtxMass7LowEta",  ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
+h_vtxMass7_higheta = ROOT.TH1F("vtxMass7HighEta", ";Leptonic-side secondary vertex mass [GeV]; Events / 0.1 GeV", 70, 0., 7.)
 
 
 # event-level quantities
@@ -1028,9 +1088,21 @@ h_htLep1 = ROOT.TH1F("htLep1", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 10
 h_htLep2 = ROOT.TH1F("htLep2", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
 h_htLep3 = ROOT.TH1F("htLep3", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
 h_htLep4 = ROOT.TH1F("htLep4", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep4_low = ROOT.TH1F("htLep4Low", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep4_high = ROOT.TH1F("htLep4High", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep4_loweta = ROOT.TH1F("htLep4LowEta", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep4_higheta = ROOT.TH1F("htLep4HighEta", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
 h_htLep5 = ROOT.TH1F("htLep5", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
 h_htLep6 = ROOT.TH1F("htLep6", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep6_low = ROOT.TH1F("htLep6Low", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep6_high = ROOT.TH1F("htLep6High", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep6_loweta = ROOT.TH1F("htLep6LowEta", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep6_higheta = ROOT.TH1F("htLep6HighEta", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
 h_htLep7 = ROOT.TH1F("htLep7", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep7_low = ROOT.TH1F("htLep7Low", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep7_high = ROOT.TH1F("htLep7High", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep7_loweta = ROOT.TH1F("htLep7LowEta", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
+h_htLep7_higheta = ROOT.TH1F("htLep7HighEta", ";H_{T}^{lep} [GeV]; Events / 5 GeV", 200, 0., 1000.)
 
 h_ht0 = ROOT.TH1F("ht0", ";H_{T} [GeV]; Events / 10 GeV", 300, 0., 3000.)
 h_ht1 = ROOT.TH1F("ht1", ";H_{T} [GeV]; Events / 10 GeV", 300, 0., 3000.)
@@ -1065,15 +1137,21 @@ h_lepVShad_pt3 = ROOT.TH2F("lepVShad_pt3", ";p_{T}(hadronic top) [GeV]; p_{T}(le
 # hadronic top variables
 h_hadtop_pt3 = ROOT.TH1F("hadtop_pt3", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 h_hadtop_pt4 = ROOT.TH1F("hadtop_pt4", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
+h_hadtop_pt4_loweta = ROOT.TH1F("hadtop_pt4LowEta", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
+h_hadtop_pt4_higheta = ROOT.TH1F("hadtop_pt4HighEta", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 h_hadtop_pt5 = ROOT.TH1F("hadtop_pt5", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 
 h_hadtop_pt_pt      = ROOT.TH1F("hadtop_pt_pt",      ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # pass pt > 200 GeV
 h_hadtop_pt_nsub    = ROOT.TH1F("hadtop_pt_nsub",    ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass nsub >= 3
 h_hadtop_pt_minmass = ROOT.TH1F("hadtop_pt_minmass", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass minmass > 50 GeV
 h_hadtop_pt6        = ROOT.TH1F("hadtop_pt6",        ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass 140 < mass < 250 GeV *** FINAL SELECTION ***
+h_hadtop_pt6_loweta = ROOT.TH1F("hadtop_pt6LowEta",  ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
+h_hadtop_pt6_higheta= ROOT.TH1F("hadtop_pt6HighEta", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 #h_hadtop_pt_tau32   = ROOT.TH1F("hadtop_pt_tau32",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass tau32 cut (beyond current selection!)
 #h_hadtop_pt_csv     = ROOT.TH1F("hadtop_pt_csv",     ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass subjet b-tag cut (beyond current selection!)
 h_hadtop_pt7        = ROOT.TH1F("hadtop_pt7",        ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass pt > 400 GeV
+h_hadtop_pt7_loweta = ROOT.TH1F("hadtop_pt7LowEta",  ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
+h_hadtop_pt7_higheta= ROOT.TH1F("hadtop_pt7HighEta",  ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 
 h_hadtop_mass3 = ROOT.TH1F("hadtop_mass3", ";m(hadronic top) [GeV]; Events / 5 GeV", 100, 0., 500.)
 h_hadtop_mass4 = ROOT.TH1F("hadtop_mass4", ";m(hadronic top) [GeV]; Events / 5 GeV", 100, 0., 500.)
@@ -1913,20 +1991,51 @@ for event in events :
         genLepton = ROOT.TLorentzVector()
         genTops = []
 
-        if (options.lepType == "muon") :
+        trueJetsFor2D = []
+        for iak5Gen in ak5GenJets:
+            if iak5Gen.Perp() > 25. :
+                trueJetsFor2D.append(iak5Gen)
+
+        if (options.lepType == "muon") :            
             for iMuon in genMuons:
+
+                ## emulate 2D cut at particle-level 
+                muPass2D = False
+                if len(trueJetsFor2D) > 0:
+                    muTrueJet = findClosestInList( iMuon, trueJetsFor2D )
+                    h_true_dR.Fill(iMuon.DeltaR(muTrueJet))
+                    h_true_dR_zoom.Fill(iMuon.DeltaR(muTrueJet))
+                    h_true_ptrel.Fill(iMuon.Perp(muTrueJet.Vect()))
+                    h_true_dR_ptrel.Fill(iMuon.DeltaR(muTrueJet), iMuon.Perp(muTrueJet.Vect()))
+                    if (iMuon.DeltaR(muTrueJet) > 0.5 or iMuon.Perp(muTrueJet.Vect()) > 25) :
+                        muPass2D = True
+
+                #if iMuon.Perp() > MIN_MU_PT and abs(iMuon.Eta()) < MAX_MU_ETA and muPass2D:  ## pt>45, |eta|<2.1, pass 2D cut
                 if iMuon.Perp() > MIN_MU_PT and abs(iMuon.Eta()) < MAX_MU_ETA:  ## pt>45, |eta|<2.1
                     nGenLeptons += 1
                     genLepton = iMuon
         else :
             for iEle in genElectrons:
+
+                ## emulate 2D cut at particle-level 
+                elPass2D = False
+                if len(trueJetsFor2D) > 0:
+                    elTrueJet = findClosestInList( iEle, trueJetsFor2D )
+                    h_true_dR.Fill(iEle.DeltaR(elTrueJet))
+                    h_true_dR_zoom.Fill(iEle.DeltaR(elTrueJet))
+                    h_true_ptrel.Fill(iEle.Perp(elTrueJet.Vect()))
+                    h_true_dR_ptrel.Fill(iEle.DeltaR(elTrueJet), iEle.Perp(elTrueJet.Vect()))
+                    if (iEle.DeltaR(elTrueJet) > 0.5 or iEle.Perp(elTrueJet.Vect()) > 25) :
+                        elPass2D = True
+                        
+                #if iEle.Perp() > MIN_MU_PT and abs(iEle.Eta()) < MAX_MU_ETA and elPass2D:  ## pt>45, |eta|<2.1, pass 2D cut  (same selection as for muons here!)
                 if iEle.Perp() > MIN_MU_PT and abs(iEle.Eta()) < MAX_MU_ETA:  ## pt>45, |eta|<2.1  (same selection as for muons here!)
                     nGenLeptons += 1
                     genLepton = iEle
 
         if nGenLeptons == 1:
             for iak5Gen in ak5GenJets:
-                if iak5Gen.DeltaR(genLepton) < ROOT.TMath.Pi() / 2.0 and iak5Gen.Perp() > MIN_JET_PT and abs(iak5Gen.Eta()) < MAX_JET_ETA:
+                if iak5Gen.DeltaR(genLepton) < ROOT.TMath.Pi() / 2.0 and iak5Gen.DeltaR(genLepton) > 0.1 and iak5Gen.Perp() > MIN_JET_PT and abs(iak5Gen.Eta()) < MAX_JET_ETA:
                     nGenBJets += 1
 
             for ica8Gen in ca8GenJets:
@@ -2570,6 +2679,10 @@ for event in events :
     topTagJetArea = topTagJetAreaHandle.product()
 
 
+    # -------------------------------------------------------------------------------------
+    # loop over CA8 jets
+    # -------------------------------------------------------------------------------------
+
     ca8Jets = []  #list of smeared & corrected CA8 jets
     
     if options.debug :
@@ -2605,15 +2718,31 @@ for event in events :
         thisJet = thisJet * corr
                 
         # next smear the jets (for CA8 jets, used the flat JER of 0.10, or 0.0/0.2 for down/up)
+        #if options.jerSys != None :
+        #    genJet = findClosestInList( thisJet, ca8GenJets )
+        #    scale = options.jerSys
+        #    recopt = thisJet.Perp()
+        #    genpt = genJet.Perp()
+        #    deltapt = (recopt-genpt)*scale
+        #    ptscale = max(0.0, (recopt+deltapt)/recopt)
+        #    jetScale *= ptscale
+		
+		# JER -- TRY INSTEAD TO USE AK5 SMEARING ALSO FOR THE CA8 JETS !!
         if options.jerSys != None :
             genJet = findClosestInList( thisJet, ca8GenJets )
-            scale = options.jerSys
+            my_jerSys = 0
+            if options.jerSys == 0.2 :
+                my_jerSys = 1
+            elif options.jerSys == 0.0 :
+                my_jerSys = -1
+            scale = getJER(thisJet.Eta(), my_jerSys) #JER nominal=0, up=+1, down=-1
             recopt = thisJet.Perp()
             genpt = genJet.Perp()
-            deltapt = (recopt-genpt)*scale
+            deltapt = (recopt-genpt)*(scale-1.0)
             ptscale = max(0.0, (recopt+deltapt)/recopt)
             jetScale *= ptscale
 
+        
         # then do the jet corrections
         if options.jecSys != None :
             jecUncAK7.setJetEta( thisJet.Eta() )
@@ -2643,6 +2772,7 @@ for event in events :
     # define hadronic (CA8) / leptonic (AK5) side jet, apply b-tagging, etc. 
     # -------------------------------------------------------------------------------------
 
+    hadJets400 = []   # CA8 jets with dR(jet,lepton) > pi/2 AND pt > 400 GeV
     hadJets = []      # CA8 jets with dR(jet,lepton) > pi/2
     hadJetsIndex = [] # identifier in full CA8 jet collection for CA8 jets with dR(jet,lepton) > pi/2
     lepJets = []      # AK5 jets with dR(jet,lepton) < pi/2
@@ -2711,6 +2841,9 @@ for event in events :
                 hadJets.append( jet )
                 hadJetsIndex.append( ijet )
 
+                if jet.Perp() > 400.:
+                    hadJets400.append(jet)
+
 
     h_nLepJets2.Fill(len(lepJets), weight)
 
@@ -2757,6 +2890,7 @@ for event in events :
     #h_nJets3.Fill(nJets, weight)
     #h_nBJets3.Fill(nBJets, weight)
     h_nLepJets3.Fill(len(lepJets), weight)
+    h_nHad200Jets3.Fill(len(hadJets), weight)
 
     #if len(lepJets) > 0:
     #    h_pt1LepJet3.Fill(lepJets[0].Perp(), weight)
@@ -2829,12 +2963,25 @@ for event in events :
     h_etaAbsLep4.Fill(abs(lepton.p4().Eta()), weight)
     if (hadJets[0].Perp() < 600.) :
         h_etaAbsLep4_low.Fill(abs(lepton.p4().Eta()), weight)
-    if (hadJets[0].Perp() > 600.) :
+        h_htLep4_low.Fill(htLep, weight)
+    else :
         h_etaAbsLep4_high.Fill(abs(lepton.p4().Eta()), weight)
+        h_htLep4_high.Fill(htLep, weight)
+    if (abs(hadJets[0].Eta()) < 1.0) :
+        h_etaAbsLep4_loweta.Fill(abs(lepton.p4().Eta()), weight)
+        h_htLep4_loweta.Fill(htLep, weight)
+        h_hadtop_pt4_loweta.Fill(hadJets[0].Perp(), top_weight)        
+    else :
+        h_etaAbsLep4_higheta.Fill(abs(lepton.p4().Eta()), weight)
+        h_htLep4_higheta.Fill(htLep, weight)
+        h_hadtop_pt4_higheta.Fill(hadJets[0].Perp(), top_weight)        
     #h_nJets4.Fill(nJets, weight)
     #h_nBJets4.Fill(nBJets, weight)
     h_nLepJets4.Fill(len(lepJets), weight)
     h_dRvspT4.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
+
+    h_nHadJets4.Fill(len(hadJets400), weight)
+    h_nHad200Jets3.Fill(len(hadJets), weight)
 
     #if len(lepJets) > 0:
     #    h_pt1LepJet4.Fill(lepJets[0].Perp(), weight)
@@ -3043,7 +3190,10 @@ for event in events :
         #h_nBJets5.Fill(nBJets, weight*btagSF)
         h_nLepJets5.Fill(len(lepJets), weight*btagSF)
         h_dRvspT5.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight*btagSF)
-        
+
+        h_nHadJets5.Fill(len(hadJets400), weight)
+        h_nHad200Jets5.Fill(len(hadJets), weight)
+
         #if len(lepJets) > 0:
         #    h_pt1LepJet5.Fill(lepJets[0].Perp(), weight*btagSF)
         #    h_eta1LepJet5.Fill(lepJets[0].Eta(), weight*btagSF)
@@ -3204,6 +3354,7 @@ for event in events :
     itop_minmass = -1  #          .....                    passing minmass cut
     itop_mass = -1     #          .....                    passing mass cut, i.e. final selection
     
+    toptagJets = []    # top-tagged jets with dR(jet,lepton) > pi/2
     
     for ijet in range(0,len(hadJets)) :
         topjet = hadJets[ijet]
@@ -3233,6 +3384,8 @@ for event in events :
         if itop_mass < 0: 
             itop_mass = ijet
 
+        toptagJets.append( topjet )
+    
     
     # now we have identified top jets passing the different selection criteria, fill histograms! 
     passSelection = False
@@ -3283,7 +3436,8 @@ for event in events :
         isElec = True
         if options.lepType == "muon":
             isElec = False
-        toptagSF = getToptagSF(topEta, options.pdfSet, options.pdfSys, isElec)
+        #toptagSF = getToptagSF(topEta, options.pdfSet, options.pdfSys, isElec)
+        toptagSF = getToptagSF(topEta, 0, isElec)
         if options.toptagSys != None :
             ### HACK! posterior top-tagging SF
             if options.toptagSys > 99: ##scaled up
@@ -3297,10 +3451,22 @@ for event in events :
                     toptagSF *= (1.0 - 0.05)
                 else :
                     toptagSF *= (1.0 - 0.18)
+            ### HACK! CT10 SF
+            elif options.toptagSys == 10: ## central value, e/mu only fit
+                toptagSF = getToptagSF(topEta, 1, isElec)
+            elif options.toptagSys == 20: ## central value, combined fit
+                toptagSF = getToptagSF(topEta, 2, isElec)
+            elif abs(options.toptagSys) == 1 or abs(options.toptagSys) == 2: ## scale up/down, e/mu or combined fit
+                toptagSF_central = getToptagSF(topEta, abs(options.toptagSys), isElec)
+                toptagSF_err = getToptagSFerror(topEta, topPt, abs(options.toptagSys), isElec)
+                if options.toptagSys > 0:  ## scale up
+                    toptagSF = toptagSF_central*(1.0 + toptagSF_err)
+                else:  ## scale down
+                    toptagSF = toptagSF_central*(1.0 - toptagSF_err)
             ### PRIOR TOP-TAGGING SF, scale up/down by +/- 25%
             else:
                 toptagSF *= (1.0 + options.toptagSys)
-		
+                
         #if options.toptagSys != None :
         #toptagSFerr = getToptagSFerror(topEta)
         #if options.toptagSys > 0 :
@@ -3327,13 +3493,26 @@ for event in events :
     h_etaAbsLep6.Fill(abs(lepton.p4().Eta()), weight)
     if (goodtop.Perp() < 600.) :
         h_etaAbsLep6_low.Fill(abs(lepton.p4().Eta()), weight)
-    if (goodtop.Perp() > 600.) :
+        h_htLep6_low.Fill(htLep, weight)
+    else :
         h_etaAbsLep6_high.Fill(abs(lepton.p4().Eta()), weight)
+        h_htLep6_high.Fill(htLep, weight)
+    if (abs(hadJets[0].Eta()) < 1.0) :
+        h_etaAbsLep6_loweta.Fill(abs(lepton.p4().Eta()), weight)
+        h_htLep6_loweta.Fill(htLep, weight)
+        h_hadtop_pt6_loweta.Fill(goodtop.Perp(), top_weight)
+    else :
+        h_etaAbsLep6_higheta.Fill(abs(lepton.p4().Eta()), weight)
+        h_htLep6_higheta.Fill(htLep, weight)
+        h_hadtop_pt6_higheta.Fill(goodtop.Perp(), top_weight)
     #h_nJets6.Fill(nJets, weight)
     #h_nBJets6.Fill(nBJets, weight)
     h_nLepJets6.Fill(len(lepJets), weight)
     h_dRvspT6.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
-    
+
+    h_nHadJets6.Fill(len(toptagJets), weight)
+    h_nHad200Jets6.Fill(len(hadJets), weight)
+
     #if len(lepJets) > 0:
     #    h_pt1LepJet6.Fill(lepJets[0].Perp(), weight)
     #    h_eta1LepJet6.Fill(lepJets[0].Eta(), weight)
@@ -3469,8 +3648,12 @@ for event in events :
     h_etaAbsLep7.Fill(abs(lepton.p4().Eta()), weight)
     if (goodtop.Perp() < 600.) :
         h_etaAbsLep7_low.Fill(abs(lepton.p4().Eta()), weight)
-    if (goodtop.Perp() > 600.) :
+    else :
         h_etaAbsLep7_high.Fill(abs(lepton.p4().Eta()), weight)
+    if (abs(goodtop.Eta()) < 1.0) :
+        h_etaAbsLep7_loweta.Fill(abs(lepton.p4().Eta()), weight)
+    else :
+        h_etaAbsLep7_higheta.Fill(abs(lepton.p4().Eta()), weight)
 
     h_dRvspT7.Fill(lepton.p4().DeltaR(closestFor2D), lepton.p4().Perp(closestFor2D.Vect()), weight)
     
@@ -3480,13 +3663,27 @@ for event in events :
     #    h_csv2LepJet7.Fill(lepcsvs[1], weight)
     #    h_vtxMass2LepJet7.Fill(lepVtxMass[1], weight)
         
+    h_nLepJets7.Fill(len(lepJets), weight)
+    h_nHadJets7.Fill(len(toptagJets), weight)
+    h_nHad200Jets7.Fill(len(hadJets), weight)
+
     h_ptBJet7.Fill(bjet_pt, weight)
     h_etaBJet7.Fill(bjet_eta, weight)
     h_vtxMass7.Fill(bjet_vtxmass, weight)
     if (goodtop.Perp() < 600.) :
         h_vtxMass7_low.Fill(bjet_vtxmass, weight)
-    if (goodtop.Perp() > 600.) :
+        h_htLep7_low.Fill(htLep, weight)
+    else :
         h_vtxMass7_high.Fill(bjet_vtxmass, weight)
+        h_htLep7_high.Fill(htLep, weight)
+    if (abs(goodtop.Eta()) < 1.0) :
+        h_vtxMass7_loweta.Fill(bjet_vtxmass, weight)
+        h_htLep7_loweta.Fill(htLep, weight)
+        h_hadtop_pt7_loweta.Fill(goodtop.Perp(), top_weight)
+    else :
+        h_vtxMass7_higheta.Fill(bjet_vtxmass, weight)
+        h_htLep7_higheta.Fill(htLep, weight)
+        h_hadtop_pt7_higheta.Fill(goodtop.Perp(), top_weight)
     h_flavorBJet7.Fill(bjet_flavor, weight)
                 
     h_ht7.Fill(ht, weight)
