@@ -28,7 +28,7 @@ bool extBtag = true;
 bool extJet = false;
 bool extToptag = false;
 
-TString fittype = "2temp0t";
+TString fittype = "";
 
 // END USER SETTINGS
 
@@ -278,78 +278,121 @@ SummedHist * getSingleTop( TString name, TString histname, bool doElectron, TStr
 
 SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron, TString ptbin = "", TString pdfdir = "CT10_nom" ) {
 
-  const int nttbar = 3;
-  const int nq2 = 3;
+  if (pdfdir=="MG") {
 
-  TString DIR = "histfiles_" + pdfdir + "/";
-  if (do_qcd && doElectron) DIR += "qcd_el/";
-  else if (use2D && doElectron) DIR += "2Dhists_el/";
-  else if (use2D) DIR += "2Dhists/";
-
-  if (do_htlep150qcd) {
-    DIR = "histfiles_htlep150/";
-    if (doElectron) DIR = "histfiles_htlep150qcd/";
+    TString DIR = "histfiles_MG/";
+    
+    TString muOrEl = "mu";
+    if (doElectron) muOrEl = "el";
+    
+    TString ttbar_name1 = "TTJets_HadronicMGDecays_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_";
+    TString ttbar_name2 = "TTJets_FullLeptMGDecays_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_";
+    
+    double ttbar_norm1 = 245.8*1000.0*19.7/10537444.*4./9.;
+    double ttbar_norm2 = 245.8*1000.0*19.7/12119013.*1./9.;
+    
+    TString thetaChannel = "mu_";
+    if (doElectron) thetaChannel = "el_";
+    
+    TString thetaname = thetaChannel + histname + "__TTbar_nonSemiLep";
+    adjustThetaName( thetaname, name, ptbin );
+    
+    SummedHist* ttbar = new SummedHist( thetaname, kRed-7);
+    
+    TString name2d = "";
+    if (use2D) name2d = "2Dcut_";
+    
+    TString iname1 = DIR + ttbar_name1 + name2d + name + TString(".root");
+    TString iname2 = DIR + ttbar_name2 + name2d + name + TString(".root");
+    TFile* infile1 = TFile::Open( iname1 );
+    TFile* infile2 = TFile::Open( iname2 );
+    TH1F* hist1 = (TH1F*) infile1->Get(histname);
+    TH1F* hist2 = (TH1F*) infile2->Get(histname);
+    hist1->Sumw2();
+    hist2->Sumw2();
+    ttbar->push_back( hist1, ttbar_norm1 );
+    ttbar->push_back( hist2, ttbar_norm2 );
+    delete infile1;
+    delete infile2;
+    
+    return ttbar;
+    
   }
-  else if (do_met50qcd) {
-    DIR = "histfiles_met50qcd/";
+  else { 
+    
+    const int nttbar = 3;
+    const int nq2 = 3;
+    
+    TString DIR = "histfiles_" + pdfdir + "/";
+    if (do_qcd && doElectron) DIR += "qcd_el/";
+    else if (use2D && doElectron) DIR += "2Dhists_el/";
+    else if (use2D) DIR += "2Dhists/";
+    
+    if (do_htlep150qcd) {
+      DIR = "histfiles_htlep150/";
+      if (doElectron) DIR = "histfiles_htlep150qcd/";
+    }
+    else if (do_met50qcd) {
+      DIR = "histfiles_met50qcd/";
+    }
+    
+    TString muOrEl = "mu";
+    if (doElectron) muOrEl = "el";
+    
+    TString ttbar_names[nttbar] = {
+      "TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+      "TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+      "TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"
+    };
+    double ttbar_xs[nq2] = {
+      245.8 * 1000. * LUM,  // nominal
+      252.0 * 1000. * LUM,  // q2 up
+      237.4 * 1000. * LUM   // q2 down
+    };
+    double ttbar_nevents[nq2][nttbar] = {
+      {21675970., 3082812., 1249111.},  // nominal
+      {14983686., 2243672., 1241650.},  // q2 up
+      {14545715*89./102., 2170074., 1308090.}   // q2 down
+    };
+    double ttbar_eff[nq2][nttbar] = {
+      {1.0, 0.074, 0.015},  // nominal
+      {1.0, 0.074, 0.014},  // q2 up
+      {1.0, 0.081, 0.016}   // q2 down
+    };
+    
+    unsigned int iq2 = 0;
+    if ( pdfdir.Contains("scaleup") ) iq2 = 1;
+    if ( pdfdir.Contains("scaledown") ) iq2 = 2;
+    
+    double ttbar_norms[nttbar] = {
+      ttbar_xs[iq2] * ttbar_eff[iq2][0] / ttbar_nevents[iq2][0],
+      ttbar_xs[iq2] * ttbar_eff[iq2][1] / ttbar_nevents[iq2][1],
+      ttbar_xs[iq2] * ttbar_eff[iq2][2] / ttbar_nevents[iq2][2]
+    };
+    
+    TString thetaChannel = "mu_";
+    if (doElectron) thetaChannel = "el_";
+    
+    TString thetaname = thetaChannel + histname + "__TTbar_nonSemiLep";
+    adjustThetaName( thetaname, name, ptbin );
+    
+    SummedHist* ttbar = new SummedHist( thetaname, kRed-7);
+    
+    TString name2d = "";
+    if (use2D) name2d = "2Dcut_";
+    
+    for (int i=0; i<nttbar; i++) {
+      TString iname = DIR + ttbar_names[i] + pdfdir + "_" + name2d + name + ".root";
+      TFile* infile = TFile::Open( iname );
+      TH1F* hist = (TH1F*) infile->Get(histname);
+      hist->Sumw2();
+      ttbar->push_back( hist, ttbar_norms[i] );
+      delete infile;
+    }
+    
+    return ttbar;
+    
   }
-
-  TString muOrEl = "mu";
-  if (doElectron) muOrEl = "el";
-
-  TString ttbar_names[nttbar] = {
-    "TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
-    "TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
-    "TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"
-  };
-  double ttbar_xs[nq2] = {
-    245.8 * 1000. * LUM,  // nominal
-    252.0 * 1000. * LUM,  // q2 up
-    237.4 * 1000. * LUM   // q2 down
-  };
-  double ttbar_nevents[nq2][nttbar] = {
-    {21675970., 3082812., 1249111.},  // nominal
-    {14983686., 2243672., 1241650.},  // q2 up
-    {14545715*89./102., 2170074., 1308090.}   // q2 down
-  };
-  double ttbar_eff[nq2][nttbar] = {
-    {1.0, 0.074, 0.015},  // nominal
-    {1.0, 0.074, 0.014},  // q2 up
-    {1.0, 0.081, 0.016}   // q2 down
-  };
-
-  unsigned int iq2 = 0;
-  if ( pdfdir.Contains("scaleup") ) iq2 = 1;
-  if ( pdfdir.Contains("scaledown") ) iq2 = 2;
-
-  double ttbar_norms[nttbar] = {
-    ttbar_xs[iq2] * ttbar_eff[iq2][0] / ttbar_nevents[iq2][0],
-    ttbar_xs[iq2] * ttbar_eff[iq2][1] / ttbar_nevents[iq2][1],
-    ttbar_xs[iq2] * ttbar_eff[iq2][2] / ttbar_nevents[iq2][2]
-  };
-  
-  TString thetaChannel = "mu_";
-  if (doElectron) thetaChannel = "el_";
-
-  TString thetaname = thetaChannel + histname + "__TTbar_nonSemiLep";
-  adjustThetaName( thetaname, name, ptbin );
-
-  SummedHist* ttbar = new SummedHist( thetaname, kRed-7);
-
-  TString name2d = "";
-  if (use2D) name2d = "2Dcut_";
-
-  for (int i=0; i<nttbar; i++) {
-    TString iname = DIR + ttbar_names[i] + pdfdir + "_" + name2d + name + ".root";
-    TFile* infile = TFile::Open( iname );
-    TH1F* hist = (TH1F*) infile->Get(histname);
-    hist->Sumw2();
-    ttbar->push_back( hist, ttbar_norms[i] );
-    delete infile;
-  }
-
-  return ttbar;
-
 }
 
 
@@ -359,78 +402,112 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
 
 SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString ptbin = "", TString pdfdir = "CT10_nom" ) {
 
-  const int nttbar = 3;
-  const int nq2 = 3;
+  if (pdfdir=="MG") {
 
-  TString DIR = "histfiles_" + pdfdir + "/";
-  if (do_qcd && doElectron) DIR += "qcd_el/";
-  else if (use2D && doElectron) DIR += "2Dhists_el/";
-  else if (use2D) DIR += "2Dhists/";
+    TString DIR = "histfiles_MG/";
 
-  if (do_htlep150qcd) {
-    DIR = "histfiles_htlep150/";
-    if (doElectron) DIR = "histfiles_htlep150qcd/";
-  }
-  else if (do_met50qcd) {
-    DIR = "histfiles_met50qcd/";
-  }
-
-  TString muOrEl = "mu";
-  if (doElectron) muOrEl = "el";
-
-
-  TString ttbar_names[nttbar] = {
-    "TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
-    "TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
-    "TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"
-  };
-  double ttbar_xs[nttbar] = {
-    245.8 * 1000. * LUM,  // nominal
-    252.0 * 1000. * LUM,  // q2 up
-    237.4 * 1000. * LUM   // q2 down
-  };
-  double ttbar_nevents[nq2][nttbar] = {
-    {21675970.,3082812.,1249111.},  // nominal
-    {14983686.,2243672.,1241650.},  // q2 up
-    {14545715*89./102.,2170074.,1308090.}   // q2 down
-  };
-  double ttbar_eff[nq2][nttbar] = {
-    {1.0, 0.074, 0.015},  // nominal
-    {1.0, 0.074, 0.014},  // q2 up
-    {1.0, 0.081, 0.016}   // q2 down
-  };
-
-  unsigned int iq2 = 0;
-  if ( pdfdir.Contains("scaleup") ) iq2 = 1;
-  if ( pdfdir.Contains("scaledown") )iq2 = 2;
-
-  double ttbar_norms[nttbar] = {    
-    ttbar_xs[iq2] * ttbar_eff[iq2][0] / ttbar_nevents[iq2][0],
-    ttbar_xs[iq2] * ttbar_eff[iq2][1] / ttbar_nevents[iq2][1],
-    ttbar_xs[iq2] * ttbar_eff[iq2][2] / ttbar_nevents[iq2][2],
-  };
-
-  TString thetaChannel = "mu_";
-  if (doElectron) thetaChannel = "el_";
-
-  TString thetaname = thetaChannel + histname + "__TTbar_semiLep";
-  adjustThetaName( thetaname, name, ptbin );
-  
-  SummedHist* ttbar = new SummedHist( thetaname, kRed +1);
-	
-  TString name2d = "";
-  if (use2D) name2d = "2Dcut_";
-
-  for (int i=0; i<nttbar; i++) {
-    TString iname = DIR + ttbar_names[i] + pdfdir + "_" + name2d + name + TString(".root");
+    TString muOrEl = "mu";
+    if (doElectron) muOrEl = "el";
+    
+    TString ttbar_name = "TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_";
+    
+    double ttbar_norm = 245.8*1000.0*19.7/25424818.*4./9.;
+    
+    TString thetaChannel = "mu_";
+    if (doElectron) thetaChannel = "el_";
+    
+    TString thetaname = thetaChannel + histname + "__TTbar_semiLep";
+    adjustThetaName( thetaname, name, ptbin );
+    
+    SummedHist* ttbar = new SummedHist( thetaname, kRed +1);
+    
+    TString name2d = "";
+    if (use2D) name2d = "2Dcut_";
+    
+    TString iname = DIR + ttbar_name + name2d + name + TString(".root");
     TFile* infile = TFile::Open( iname );
     TH1F* hist = (TH1F*) infile->Get(histname);
     hist->Sumw2();
-    ttbar->push_back( hist, ttbar_norms[i] );
+    ttbar->push_back( hist, ttbar_norm );
     delete infile;
-  }
 
-  return ttbar;
+    return ttbar;
+  }
+  else {
+
+    const int nttbar = 3;
+    const int nq2 = 3;
+    
+    TString DIR = "histfiles_" + pdfdir + "/";
+    if (do_qcd && doElectron) DIR += "qcd_el/";
+    else if (use2D && doElectron) DIR += "2Dhists_el/";
+    else if (use2D) DIR += "2Dhists/";
+    
+    if (do_htlep150qcd) {
+      DIR = "histfiles_htlep150/";
+      if (doElectron) DIR = "histfiles_htlep150qcd/";
+    }
+    else if (do_met50qcd) {
+      DIR = "histfiles_met50qcd/";
+    }
+    
+    TString muOrEl = "mu";
+    if (doElectron) muOrEl = "el";
+    
+    
+    TString ttbar_names[nttbar] = {
+      "TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+      "TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_",
+      "TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"
+    };
+    double ttbar_xs[nttbar] = {
+      245.8 * 1000. * LUM,  // nominal
+      252.0 * 1000. * LUM,  // q2 up
+      237.4 * 1000. * LUM   // q2 down
+    };
+    double ttbar_nevents[nq2][nttbar] = {
+      {21675970.,3082812.,1249111.},  // nominal
+      {14983686.,2243672.,1241650.},  // q2 up
+      {14545715*89./102.,2170074.,1308090.}   // q2 down
+    };
+    double ttbar_eff[nq2][nttbar] = {
+      {1.0, 0.074, 0.015},  // nominal
+      {1.0, 0.074, 0.014},  // q2 up
+      {1.0, 0.081, 0.016}   // q2 down
+    };
+    
+    unsigned int iq2 = 0;
+    if ( pdfdir.Contains("scaleup") ) iq2 = 1;
+    if ( pdfdir.Contains("scaledown") )iq2 = 2;
+    
+    double ttbar_norms[nttbar] = {    
+      ttbar_xs[iq2] * ttbar_eff[iq2][0] / ttbar_nevents[iq2][0],
+      ttbar_xs[iq2] * ttbar_eff[iq2][1] / ttbar_nevents[iq2][1],
+      ttbar_xs[iq2] * ttbar_eff[iq2][2] / ttbar_nevents[iq2][2],
+    };
+    
+    TString thetaChannel = "mu_";
+    if (doElectron) thetaChannel = "el_";
+    
+    TString thetaname = thetaChannel + histname + "__TTbar_semiLep";
+    adjustThetaName( thetaname, name, ptbin );
+    
+    SummedHist* ttbar = new SummedHist( thetaname, kRed +1);
+    
+    TString name2d = "";
+    if (use2D) name2d = "2Dcut_";
+    
+    for (int i=0; i<nttbar; i++) {
+      TString iname = DIR + ttbar_names[i] + pdfdir + "_" + name2d + name + TString(".root");
+      TFile* infile = TFile::Open( iname );
+      TH1F* hist = (TH1F*) infile->Get(histname);
+      hist->Sumw2();
+      ttbar->push_back( hist, ttbar_norms[i] );
+      delete infile;
+    }
+    
+    return ttbar;
+  }
 
 }
 
