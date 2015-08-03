@@ -26,18 +26,20 @@ void SetPlotStyle();
 void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize,char *text); 
 void plot(TString channel, bool wobtag, bool do2step);
 
-void plotUnfold(TString channel) {
+void plotUnfoldNEW(TString channel) {
 
-  bool doNormalized=true;
+  bool doNormalized = true;   // normalized differential?
+  bool doLogscale   = true;   // plot distributions on log scale?
+  bool doAverageErr = true;   // average up/down systematic uncertainties? 
 
-  plot(channel,true,true, doNormalized);
-  plot(channel,true,false, doNormalized);
-  plot(channel,false,true, doNormalized);
-  plot(channel,false,false, doNormalized);
+  plot(channel,true,true, doNormalized,doLogscale,doAverageErr);
+  plot(channel,true,false, doNormalized,doLogscale,doAverageErr);
+  plot(channel,false,true, doNormalized,doLogscale,doAverageErr);
+  plot(channel,false,false, doNormalized,doLogscale,doAverageErr);
 
 }
 
-void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
+void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool doLogscale, bool doAverageErr) {
   
   SetPlotStyle();
   
@@ -54,9 +56,6 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
   
   TString muOrEl = "";
   if (channel == "el") muOrEl = "_el";
-
-  TString unfoldType = "";
-  if (channel == "mu") unfoldType = "_full2";
 
 
   // ---------------------------------------------------------------------------------------------------------------
@@ -217,7 +216,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     float snmu = 0;
     float sncomb = 0;
 
-    for (int ib=0; ib<nBIN+1; ib++) {
+    for (int ib=0; ib<nBIN; ib++) {
     
       // h_true
       nel = h_true_tmp[0]->GetBinContent(ib+1);
@@ -299,6 +298,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
   }//end do combination
 
 
+
   TH1F* h_dummy = (TH1F*) h_unfolded[0]->Clone("dummy");
   h_dummy->Reset();
   
@@ -311,6 +311,19 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
   TH1F* h_dummy_r_part = (TH1F*) h_unfolded[0]->Clone("dummy_r_part");
   h_dummy_r_part->Reset();
     
+  if (doNormalized) {
+    h_dummy->GetYaxis()->SetTitle("1/#sigma d#sigma/dp_{T} [1/GeV]");
+    h_dummy->SetAxisRange(0,0.008,"Y");
+    h_dummy_part->GetYaxis()->SetTitle("1/#sigma d#sigma/dp_{T} [1/GeV]");
+    h_dummy_part->SetAxisRange(0,0.008,"Y");
+  }
+  else {
+    h_dummy->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
+    h_dummy->SetAxisRange(0,12,"Y");
+    h_dummy_part->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
+    h_dummy_part->SetAxisRange(0,10,"Y");
+  }
+
 
   // ----------------------------------------------------------------------------------------------------------------
   // colors and stuff
@@ -335,7 +348,13 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
   
   // ----------------------------------------------------------------------------------------------------------------
   // systematics for ratio plot
-  
+  // ----------------------------------------------------------------------------------------------------------------
+
+  TH1F* h_stat_up = (TH1F*) h_true->Clone("stat");
+  TH1F* h_stat_dn = (TH1F*) h_true->Clone("stat");
+  h_stat_up->Reset();
+  h_stat_dn->Reset();
+
   TH1F* h_systEXP_up = (TH1F*) h_true->Clone("syst_up_exp");
   TH1F* h_systEXP_dn = (TH1F*) h_true->Clone("syst_dn_exp");
   h_systEXP_up->Reset();
@@ -345,6 +364,11 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
   TH1F* h_systTH_dn = (TH1F*) h_true->Clone("syst_dn_th");
   h_systTH_up->Reset();
   h_systTH_dn->Reset();
+
+  TH1F* h_systTOT_up = (TH1F*) h_true->Clone("syst_up_tot");
+  TH1F* h_systTOT_dn = (TH1F*) h_true->Clone("syst_dn_tot");
+  h_systTOT_up->Reset();
+  h_systTOT_dn->Reset();
 
   // experimental  
   TH1F* h_syst_jec    = (TH1F*) h_true->Clone("syst_jec");
@@ -373,27 +397,28 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
   
   float count[nSYST] = {0};
   float sig[nSYST] = {0};
-  
+
+
+  // ----------------------------------------------------------------------------------------------------------------
+  // loop over bins
+  // ----------------------------------------------------------------------------------------------------------------
 
   cout << endl << "*** unfolding result (parton-level) for " << channel << " channel ***" << endl;
 
-  for (int i=0; i<h_unfolded[0]->GetNbinsX()+1; i++) {
+  for (int i=0; i<h_unfolded[0]->GetNbinsX(); i++) {
     
     for (int is=0; is<nSYST; is++) {
-      count[is] = 0;
-      sig[is] = 0;
-      
       count[is] = h_unfolded[is]->GetBinContent(i+1);
       sig[is]   = h_unfolded[is]->GetBinError(i+1);
     }
     
+    // experimental
     float this_systEXP_up = 0;
     this_systEXP_up += (count[1]-count[0])*(count[1]-count[0]); //jec
     this_systEXP_up += (count[3]-count[0])*(count[3]-count[0]); //jer
     this_systEXP_up += (count[5]-count[0])*(count[5]-count[0]); //btag
     this_systEXP_up += (count[7]-count[0])*(count[7]-count[0]); //toptag
     this_systEXP_up += (count[9]-count[0])*(count[9]-count[0]); //background normalizations
-    this_systEXP_up += sig[0]*sig[0];                           //stastistics
     this_systEXP_up = sqrt(this_systEXP_up);
     
     float this_systEXP_dn = 0;
@@ -402,9 +427,9 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     this_systEXP_dn += (count[6]-count[0])*(count[6]-count[0]);
     this_systEXP_dn += (count[8]-count[0])*(count[8]-count[0]);
     this_systEXP_dn += (count[10]-count[0])*(count[10]-count[0]);
-    this_systEXP_dn += sig[0]*sig[0];
     this_systEXP_dn = sqrt(this_systEXP_dn);
     
+    // theory
     float this_systTH_up = 0;
     this_systTH_up += (count[11]-count[0])*(count[11]-count[0]); //pdf
     if (doQ2) this_systTH_up += (count[13]-count[0])*(count[13]-count[0]); //q2
@@ -414,82 +439,82 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     this_systTH_dn += (count[12]-count[0])*(count[12]-count[0]);
     if (doQ2) this_systTH_dn += (count[14]-count[0])*(count[14]-count[0]);
     this_systTH_dn = sqrt(this_systTH_dn);
-    
-    float upEXP = count[0] + this_systEXP_up;
-    float dnEXP = count[0] - this_systEXP_dn;
-    
-    h_systEXP_up->SetBinContent(i+1,upEXP);
-    h_systEXP_dn->SetBinContent(i+1,dnEXP);  
-    
-    float upTH = count[0] + this_systTH_up;
-    float dnTH = count[0] - this_systTH_dn;
-    
-    h_systTH_up->SetBinContent(i+1,upTH);
-    h_systTH_dn->SetBinContent(i+1,dnTH);  
-    
-    int ibin1 = h_systEXP_up->GetBin(i+1);
-    int ibin2 = h_systEXP_up->GetBin(i+2);
-    int lowedge = h_systEXP_up->GetBinLowEdge(ibin1);
-    int highedge = h_systEXP_up->GetBinLowEdge(ibin2);
-    if (lowedge > 300 && highedge < 1300) {
-      cout << (float)lowedge << "--" << (float)highedge << " & $" << count[0] << "~^{+" << this_systEXP_up << "}_{-" << this_systEXP_dn << "}{~(\\rm ex)~}^{+" 
-	   << this_systTH_up << "}_{-" << this_systTH_dn << "}{~(\\rm th)}$ & " << h_true->GetBinContent(i+1) << endl;
 
+    // theory + experimental + statistical
+    float this_systTOT_up = this_systEXP_up*this_systEXP_up + this_systTH_up*this_systTH_up + sig[0]*sig[0];
+    this_systTOT_up = sqrt(this_systTOT_up);
+    
+    float this_systTOT_dn = this_systEXP_dn*this_systEXP_dn + this_systTH_dn*this_systTH_dn + sig[0]*sig[0];
+    this_systTOT_dn = sqrt(this_systTOT_dn);
+    
+
+    // fill histograms for ratio plot
+    h_stat_up->SetBinContent(i+1,count[0]+sig[0]);
+    h_stat_dn->SetBinContent(i+1,count[0]-sig[0]);
+    
+    if (doAverageErr) {
+      h_systEXP_up->SetBinContent(i+1,count[0]+(this_systEXP_up+this_systEXP_dn)/2);
+      h_systEXP_dn->SetBinContent(i+1,count[0]-(this_systEXP_up+this_systEXP_dn)/2);   
+      h_systTH_up->SetBinContent(i+1,count[0]+(this_systTH_up+this_systTH_dn)/2);
+      h_systTH_dn->SetBinContent(i+1,count[0]-(this_systTH_up+this_systTH_dn)/2);  
+      h_systTOT_up->SetBinContent(i+1,count[0]+(this_systTOT_up+this_systTOT_dn)/2);
+      h_systTOT_dn->SetBinContent(i+1,count[0]-(this_systTOT_up+this_systTOT_dn)/2);  
     }
-  }
-  cout << endl;
-  
-  if (doNormalized) {
-    h_dummy->GetYaxis()->SetTitle("1/#sigma d#sigma/dp_{T} [1/GeV]");
-    h_dummy->SetAxisRange(0,0.008,"Y");
-  }
-  else {
-    h_dummy->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
-    h_dummy->SetAxisRange(0,12,"Y");
-  }
-
-  // getting the relative systematics
-
-  //cout << "*** systematic uncertainties for each bin (parton-level) for " << channel << " channel ***" << endl;
-
-  float count_r[nSYST] = {0};
-  float err_r[nSYST] = {0};
-  float err_stat = 0;
-  for (int i=0; i<h_unfolded[0]->GetNbinsX()+1; i++) {
-
-    err_stat = h_unfolded[0]->GetBinError(i+1);
-    
-    for (int is=0; is<nSYST; is++) {
-      count_r[is] = 0;
-      count_r[is] = h_unfolded[is]->GetBinContent(i+1);
-      err_r[is] = h_unfolded[is]->GetBinError(i+1);
+    else {
+      h_systEXP_up->SetBinContent(i+1,count[0]+this_systEXP_up);
+      h_systEXP_dn->SetBinContent(i+1,count[0]-this_systEXP_dn);   
+      h_systTH_up->SetBinContent(i+1,count[0]+this_systTH_up);
+      h_systTH_dn->SetBinContent(i+1,count[0]-this_systTH_dn);  
+      h_systTOT_up->SetBinContent(i+1,count[0]+this_systTOT_up);
+      h_systTOT_dn->SetBinContent(i+1,count[0]-this_systTOT_dn);  
     }
 
+    // histograms for uncertainty plots
     // experimental
-    double syst_jecup   = fabs((count_r[1]-count_r[0])/count_r[0])*100;
-    double syst_jecdn   = fabs((count_r[2]-count_r[0])/count_r[0])*100;
-    double max_syst_jec = max(syst_jecup,syst_jecdn);
-    double syst_jerup   = fabs((count_r[3]-count_r[0])/count_r[0])*100;
-    double syst_jerdn   = fabs((count_r[4]-count_r[0])/count_r[0])*100;
-    double max_syst_jer = max(syst_jerup,syst_jerdn);
-    double syst_btagup   = fabs((count_r[5]-count_r[0])/count_r[0])*100;
-    double syst_btagdn   = fabs((count_r[6]-count_r[0])/count_r[0])*100;
-    double max_syst_btag = max(syst_btagup,syst_btagdn);
-    double syst_toptagup   = fabs((count_r[7]-count_r[0])/count_r[0])*100;
-    double syst_toptagdn   = fabs((count_r[8]-count_r[0])/count_r[0])*100;
-    double max_syst_toptag = max(syst_toptagup,syst_toptagdn);
-    double syst_bkgup   = fabs((count_r[9]-count_r[0])/count_r[0])*100;
-    double syst_bkgdn   = fabs((count_r[10]-count_r[0])/count_r[0])*100;
-    double max_syst_bkg = max(syst_bkgup,syst_bkgdn);
+    double syst_jecup   = fabs((count[1]-count[0])/count[0])*100;
+    double syst_jecdn   = fabs((count[2]-count[0])/count[0])*100;
+    double syst_jerup   = fabs((count[3]-count[0])/count[0])*100;
+    double syst_jerdn   = fabs((count[4]-count[0])/count[0])*100;
+    double syst_btagup   = fabs((count[5]-count[0])/count[0])*100;
+    double syst_btagdn   = fabs((count[6]-count[0])/count[0])*100;
+    double syst_toptagup   = fabs((count[7]-count[0])/count[0])*100;
+    double syst_toptagdn   = fabs((count[8]-count[0])/count[0])*100;
+    double syst_bkgup   = fabs((count[9]-count[0])/count[0])*100;
+    double syst_bkgdn   = fabs((count[10]-count[0])/count[0])*100;
     // statistics    
-    double syst_stat   = err_stat/count_r[0]*100;
+    double syst_stat   = sig[0]/count[0]*100;
     // theoretical
-    double syst_pdfup   = fabs((count_r[11]-count_r[0])/count_r[0])*100;
-    double syst_pdfdn   = fabs((count_r[12]-count_r[0])/count_r[0])*100;
-    double max_syst_pdf = max(syst_pdfup,syst_pdfdn);
-    double syst_scaleup = fabs((count_r[13]-count_r[0])/count_r[0])*100;
-    double syst_scaledn = fabs((count_r[14]-count_r[0])/count_r[0])*100;
-    double max_syst_Q2  = max(syst_scaleup,syst_scaledn);
+    double syst_pdfup   = fabs((count[11]-count[0])/count[0])*100;
+    double syst_pdfdn   = fabs((count[12]-count[0])/count[0])*100;
+    double syst_scaleup = fabs((count[13]-count[0])/count[0])*100;
+    double syst_scaledn = fabs((count[14]-count[0])/count[0])*100;
+
+    double max_syst_jec = 0;
+    double max_syst_jer = 0;
+    double max_syst_btag = 0;
+    double max_syst_toptag = 0;
+    double max_syst_bkg = 0;
+    double max_syst_pdf = 0;
+    double max_syst_Q2  = 0;
+
+    if (doAverageErr) {
+      max_syst_jec = (syst_jecup+syst_jecdn)/2;
+      max_syst_jer = (syst_jerup+syst_jerdn)/2;
+      max_syst_btag = (syst_btagup+syst_btagdn)/2;
+      max_syst_toptag = (syst_toptagup+syst_toptagdn)/2;
+      max_syst_bkg = (syst_bkgup+syst_bkgdn)/2;
+      max_syst_pdf = (syst_pdfup+syst_pdfdn)/2;
+      max_syst_Q2  = (syst_scaleup+syst_scaledn)/2;
+    }
+    else {
+      max_syst_jec = max(syst_jecup,syst_jecdn);
+      max_syst_jer = max(syst_jerup,syst_jerdn);
+      max_syst_btag = max(syst_btagup,syst_btagdn);
+      max_syst_toptag = max(syst_toptagup,syst_toptagdn);
+      max_syst_bkg = max(syst_bkgup,syst_bkgdn);
+      max_syst_pdf = max(syst_pdfup,syst_pdfdn);
+      max_syst_Q2  = max(syst_scaleup,syst_scaledn);
+    }
 
     if (!doQ2) {
       syst_scaleup = 0;
@@ -497,38 +522,34 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
       max_syst_Q2 = 0;
     }
 
-    double syst_total_up = sqrt(syst_jecup*syst_jecup + syst_jerup*syst_jerup + syst_btagup*syst_btagup + syst_toptagup*syst_toptagup + syst_bkgup*syst_bkgup + 
-				syst_scaleup*syst_scaleup + syst_pdfup*syst_pdfup);
-    double syst_total_dn = sqrt(syst_jecdn*syst_jecdn + syst_jerdn*syst_jerdn + syst_btagdn*syst_btagdn + syst_toptagdn*syst_toptagdn + syst_bkgdn*syst_bkgdn + 
-				syst_scaledn*syst_scaledn + syst_pdfdn*syst_pdfdn);
-    double max_syst_total = max(syst_total_up,syst_total_dn);
+    double syst_totalEXP_up = sqrt(syst_jecup*syst_jecup + syst_jerup*syst_jerup + syst_btagup*syst_btagup + syst_toptagup*syst_toptagup + syst_bkgup*syst_bkgup);
+    double syst_totalEXP_dn = sqrt(syst_jecdn*syst_jecdn + syst_jerdn*syst_jerdn + syst_btagdn*syst_btagdn + syst_toptagdn*syst_toptagdn + syst_bkgdn*syst_bkgdn);
+    double syst_totalTH_up = sqrt(syst_scaleup*syst_scaleup + syst_pdfup*syst_pdfup);
+    double syst_totalTH_dn = sqrt(syst_scaledn*syst_scaledn + syst_pdfdn*syst_pdfdn);
+    double syst_total_up = sqrt(syst_totalEXP_up*syst_totalEXP_up + syst_totalTH_up*syst_totalTH_up);
+    double syst_total_dn = sqrt(syst_totalEXP_dn*syst_totalEXP_dn + syst_totalTH_up*syst_totalTH_dn);
 
-    /*
-    cout << endl;
-    cout << "statistical error for bin "<<i<<": "<<syst_stat<<endl;
-    cout << "relative syst scaleup for bin "<<i<<": "<<syst_scaleup<<endl;
-    cout << "relative syst scaledown for bin "<<i<<": "<<syst_scaledn<<endl;
-    cout << "max(syst_scaleup,syst_scaledown) for bin"<<i<<": "<<max_syst_Q2<<endl;
-    cout << "relative syst pdfup for bin "<<i<<": "<<syst_pdfup<<endl;
-    cout << "relative syst pdfdn for bin "<<i<<": "<<syst_pdfdn<<endl;
-    cout << "max(syst_pdfup,syst_pdfdown) for bin"<<i<<": "<<max_syst_pdf<<endl;
-    cout << "relative syst jecup for bin "<<i<<": "<<syst_jecup<<endl;
-    cout << "relative syst jecdn for bin "<<i<<": "<<syst_jecdn<<endl;
-    cout << "max(syst_jecup,syst_jecdn) for bin"<<i<<": "<<max_syst_jec<<endl;
-    cout << "relative syst jerup for bin "<<i<<": "<<syst_jerup<<endl;
-    cout << "relative syst jerdn for bin "<<i<<": "<<syst_jerdn<<endl;
-    cout << "max(syst_jerup,syst_jerdn) for bin"<<i<<": "<<max_syst_jer<<endl;
-    cout << "relative syst btagup for bin "<<i<<": "<<syst_btagup<<endl;
-    cout << "relative syst btagdn for bin "<<i<<": "<<syst_btagdn<<endl;
-    cout << "max(syst_btagup,syst_btagdn) for bin"<<i<<": "<<max_syst_btag<<endl;
-    cout << "relative syst toptagup for bin "<<i<<": "<<syst_toptagup<<endl;
-    cout << "relative syst toptagdn for bin "<<i<<": "<<syst_toptagdn<<endl;
-    cout << "max(syst_toptagup,syst_toptagdn) for bin"<<i<<": "<<max_syst_toptag<<endl;
-    cout << "relative syst bkgup for bin "<<i<<": "<<syst_bkgup<<endl;
-    cout << "relative syst bkgdn for bin "<<i<<": "<<syst_bkgdn<<endl;
-    cout << "max(syst_bkgup,syst_bkgdn) for bin"<<i<<": "<<max_syst_bkg<<endl;
-    */
-    
+    double syst_totaltotal_up = sqrt(syst_total_up*syst_total_up + syst_stat*syst_stat);
+    double syst_totaltotal_dn = sqrt(syst_total_dn*syst_total_dn + syst_stat*syst_stat);
+
+    double max_syst_totalEXP = 0;
+    double max_syst_totalTH = 0;
+    double max_syst_total = 0;
+    double max_syst_totaltotal = 0;
+
+    if (doAverageErr) {
+      max_syst_totalEXP = (syst_totalEXP_up+syst_totalEXP_dn)/2;
+      max_syst_totalTH = (syst_totalTH_up+syst_totalTH_dn)/2;
+      max_syst_total = (syst_total_up+syst_total_dn)/2;
+      max_syst_totaltotal = (syst_totaltotal_up+syst_totaltotal_dn)/2;
+    }
+    else {
+      max_syst_totalEXP = max(syst_totalEXP_up,syst_totalEXP_dn);
+      max_syst_totalTH = max(syst_totalTH_up,syst_totalTH_dn);
+      max_syst_total = max(syst_total_up,syst_total_dn);
+      max_syst_totaltotal = max(syst_totaltotal_up,syst_totaltotal_dn);
+    }
+
     h_syst_jec->SetBinContent(i+1,max_syst_jec);    
     h_syst_jer->SetBinContent(i+1,max_syst_jer);    
     h_syst_btag->SetBinContent(i+1,max_syst_btag);   
@@ -548,7 +569,23 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     h_syst_pdf->SetBinError(i+1,0.001);
     h_syst_Q2->SetBinError(i+1,0.001);  
     h_syst_tot->SetBinError(i+1,0.001);
-    
+
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // print outs for cross-section table
+    // ----------------------------------------------------------------------------------------------------------------
+
+    int ibin1 = h_systEXP_up->GetBin(i+1);
+    int ibin2 = h_systEXP_up->GetBin(i+2);
+    int lowedge = h_systEXP_up->GetBinLowEdge(ibin1);
+    int highedge = h_systEXP_up->GetBinLowEdge(ibin2);
+
+    if (lowedge > 300 && highedge < 1300) {
+      cout << (float)lowedge << "--" << (float)highedge << " & " << count[0] << " & " << syst_stat << " & " 
+	   << max_syst_totalEXP << " & " << max_syst_totalTH << " & " << max_syst_totaltotal << " & " 
+	   << h_true->GetBinContent(i+1) << endl;
+    }
+
   }
    
 
@@ -587,90 +624,70 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     
   p1->cd();
 
-  h_dummy->GetYaxis()->SetTitleSize(0.065);    
-  h_dummy->GetYaxis()->SetTitleOffset(1.1);
-  h_dummy->GetYaxis()->SetLabelSize(0.054);
+  if (doLogscale) {
+    h_dummy->SetAxisRange(0.000015,0.015,"Y");
+    h_true->SetAxisRange(0.000015,0.015,"Y");
+    h_unfolded[0]->SetAxisRange(0.000015,0.015,"Y");
+    gPad->SetLogy();
+  }
 
+  h_dummy->GetYaxis()->SetTitleSize(0.065);    
+  if (doLogscale) h_dummy->GetYaxis()->SetTitleOffset(0.8);
+  else h_dummy->GetYaxis()->SetTitleOffset(1.1);
+  h_dummy->GetYaxis()->SetLabelSize(0.054);
   h_dummy->GetXaxis()->SetTitleSize(0);
   h_dummy->GetXaxis()->SetLabelSize(0);
-
-  
-  /*
-  // asymmetric errors for data
-  TGraphAsymmErrors* gr = new TGraphAsymmErrors(h_count);
-  for (int i=0; i<h_count->GetNbinsX(); i++) {
-    gr->SetPointEYhigh(i, 0.5 + sqrt(h_count->GetBinContent(i+1) + 0.25) );
-    gr->SetPointEYlow (i,-0.5 + sqrt(h_count->GetBinContent(i+1) + 0.25) );
-    if (h_count->GetBinContent(i+1) == 0) gr->SetPoint(i,h_count->GetBinCenter(i+1),-1);
-  }
-  gr->SetMarkerStyle(8);
-  */
-
-  /*
-  h_dummy->SetAxisRange(0.00001,0.1,"Y");
-  h_true->SetAxisRange(0.00001,0.1,"Y");
-  h_unfolded[0]->SetAxisRange(0.00001,0.1,"Y");
-  gPad->SetLogy();
-  */
 
   h_dummy->Draw("hist");
   h_true->Draw("hist,same");
   h_unfolded[0]->Draw("hist,ep,same");
-  //gr->Draw("ep,same");
   h_dummy->Draw("hist,axis,same"); 
 
   
   // ----------------------------------------------------------------------------------------------------------------
   // making ratio part of plot
+  // ----------------------------------------------------------------------------------------------------------------
   
   TString baselab = h_unfolded[0]->GetName();
-  TH1F* h_ratio       = (TH1F*) h_unfolded[0]->Clone(baselab+"_ratio");
+  TH1F* h_ratio = (TH1F*) h_unfolded[0]->Clone(baselab+"_ratio");
+
+  TH1F* h_ratioSTAT_up = (TH1F*) h_stat_up->Clone(baselab+"_ratioSTAT_up");
+  TH1F* h_ratioSTAT_dn = (TH1F*) h_stat_dn->Clone(baselab+"_ratioSTAT_dn");
+
   TH1F* h_ratioEXP_up = (TH1F*) h_systEXP_up->Clone(baselab+"_ratioEXP_up");
   TH1F* h_ratioEXP_dn = (TH1F*) h_systEXP_dn->Clone(baselab+"_ratioEXP_dn");
   
+  TH1F* h_ratioTOT_up = (TH1F*) h_systTOT_up->Clone(baselab+"_ratioTOT_up");
+  TH1F* h_ratioTOT_dn = (TH1F*) h_systTOT_dn->Clone(baselab+"_ratioTOT_dn");
+
   TH1F* h_ratioTH_up = (TH1F*) h_systTH_up->Clone(baselab+"_ratioTH_up");
   TH1F* h_ratioTH_dn = (TH1F*) h_systTH_dn->Clone(baselab+"_ratioTH_dn");
-  
-  h_ratio->Divide(h_true);
-  h_ratioEXP_up->Divide(h_true);
-  h_ratioEXP_dn->Divide(h_true);
-  h_ratioTH_up->Divide(h_true);
-  h_ratioTH_dn->Divide(h_true);
-  
-  /*
-  // asymmetric errors for data
-  TGraphAsymmErrors* grr = new TGraphAsymmErrors(h_ratio);
-  float valup = 0;
-  float valdn = 0;
-  float sigup_high = 0;
-  float sigup_low  = 0;
-  float sigdn = 0;
-  float err_high = 0;
-  float err_low  = 0;
-  for (int i=0; i<h_count->GetNbinsX(); i++) {
-    valup = h_count->GetBinContent(i+1);
-    valdn = h_bkg->GetBinContent(i+1);
-    sigup_high =  0.5 + sqrt(h_count->GetBinContent(i+1) + 0.25);
-    sigup_low  = -0.5 + sqrt(h_count->GetBinContent(i+1) + 0.25);
-    sigdn = h_bkg->GetBinError(i+1);
-    if (valup==0 || valdn==0) {
-      err_high = 0;
-      err_low  = 0;
-    }
-    else {
-      err_high = valup/valdn*sqrt(sigup_high*sigup_high/valup/valup + sigdn*sigdn/valdn/valdn);
-      err_low  = valup/valdn*sqrt(sigup_low*sigup_low/valup/valup + sigdn*sigdn/valdn/valdn);
-    }
-    grr->SetPointEYhigh(i, err_high);
-    grr->SetPointEYlow(i, err_low);    
-    if (h_count->GetBinContent(i+1) == 0) grr->SetPoint(i,h_count->GetBinCenter(i+1),-1);
-    if (h_ratio->GetBinContent(i+1) > 2.5) h_ratio->SetBinContent(i+1,0);
-  }
-  grr->SetMarkerStyle(8);
-  */
-  
+
+  TH1F* h_ratioGEN = (TH1F*) h_true->Clone(baselab+"_ratioGEN");
+
+  h_ratio->Divide(h_unfolded[0]);
+  h_ratioSTAT_up->Divide(h_unfolded[0]);
+  h_ratioSTAT_dn->Divide(h_unfolded[0]);
+  h_ratioEXP_up->Divide(h_unfolded[0]);
+  h_ratioEXP_dn->Divide(h_unfolded[0]);
+  h_ratioTH_up->Divide(h_unfolded[0]);
+  h_ratioTH_dn->Divide(h_unfolded[0]);
+  h_ratioTOT_up->Divide(h_unfolded[0]);
+  h_ratioTOT_dn->Divide(h_unfolded[0]);
+  h_ratioGEN->Divide(h_unfolded[0]);
+
   
   // ----------------------------------------------------------------------------------------------------------------
+  TH1F* blaSTAT = (TH1F*) h_ratioSTAT_up->Clone("blaSTAT");
+  blaSTAT->Reset();
+  for (int i=0; i<blaSTAT->GetNbinsX(); i++) {
+    float up = h_ratioSTAT_up->GetBinContent(i+1);
+    float dn = h_ratioSTAT_dn->GetBinContent(i+1);
+    
+    blaSTAT->SetBinContent(i+1,(up-dn)/2+dn);
+    blaSTAT->SetBinError(i+1,(up-dn)/2);
+  }
+  
   TH1F* blaEXP = (TH1F*) h_ratioEXP_up->Clone("blaEXP");
   blaEXP->Reset();
   for (int i=0; i<blaEXP->GetNbinsX(); i++) {
@@ -681,7 +698,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     blaEXP->SetBinError(i+1,(up-dn)/2);
   }
   
-  TH1F* blaTH = (TH1F*) h_ratioTH_up->Clone("blaTH");
+  TH1F* blaTH = (TH1F*) h_ratioTH_up->Clone("blaTOT");
   blaTH->Reset();
   for (int i=0; i<blaTH->GetNbinsX(); i++) {
     float up = h_ratioTH_up->GetBinContent(i+1);
@@ -690,24 +707,43 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     blaTH->SetBinContent(i+1,(up-dn)/2+dn);
     blaTH->SetBinError(i+1,(up-dn)/2);
   }
+
+  TH1F* blaTOT = (TH1F*) h_ratioTOT_up->Clone("blaTOT");
+  blaTOT->Reset();
+  for (int i=0; i<blaTOT->GetNbinsX(); i++) {
+    float up = h_ratioTOT_up->GetBinContent(i+1);
+    float dn = h_ratioTOT_dn->GetBinContent(i+1);
+    
+    blaTOT->SetBinContent(i+1,(up-dn)/2+dn);
+    blaTOT->SetBinError(i+1,(up-dn)/2);
+  }
   
+  blaSTAT->SetLineColor(1);
+
   blaEXP->SetMarkerSize(0);
   blaEXP->SetLineColor(0);
-  blaEXP->SetFillColor(18);
+  blaEXP->SetFillColor(kAzure-9);
   blaEXP->SetFillStyle(1001);
-  
+
   blaTH->SetMarkerSize(0);
   blaTH->SetLineColor(0);
-  blaTH->SetFillColor(2);
-  blaTH->SetFillStyle(3353);
+  blaTH->SetFillColor(kBlue);
+  blaTH->SetFillStyle(3453);
+
+  blaTOT->SetMarkerSize(0);
+  blaTOT->SetLineColor(0);
+  blaTOT->SetFillColor(18);
+  blaTOT->SetFillStyle(1001);
   
 
   // ----------------------------------------------------------------------------------------------------------------
-  TLegend* leg = new TLegend(0.45,0.45,0.9,0.75);  
-  leg->AddEntry(h_true,"POWHEG t#bar{t} MC (CT10)","l");
-  leg->AddEntry(h_unfolded[0],"Unfolded data","pel");
-  leg->AddEntry(blaEXP,"Experimental uncertainties","f");
-  leg->AddEntry(blaTH,"Theory uncertainties","f");
+  //TLegend* leg = new TLegend(0.37,0.45,0.7,0.75);  
+  TLegend* leg = new TLegend(0.52,0.45,0.85,0.78);  
+  leg->AddEntry(h_unfolded[0],"Data","pel");
+  leg->AddEntry(h_true,"POWHEG t#bar{t} (CT10)","l");
+  leg->AddEntry(blaEXP,"Experimental uncertainty","f");
+  leg->AddEntry(blaTH,"Theory uncertainty","f");
+  leg->AddEntry(blaTOT,"Stat. #oplus exp. #oplus theory","f");
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);
   leg->SetTextSize(0.05);
@@ -719,19 +755,13 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
 
   // ----------------------------------------------------------------------------------------------------------------
 
-  TH1F* line = new TH1F("line",";;",1,400,1300);
-  line->SetBinContent(1,1.0);
-  line->SetLineColor(1);
-  line->SetLineStyle(2);
-  line->SetLineWidth(0.5);  
-
   p2->cd();
-  //p2->SetGridy();
+  p2->SetGridy();
 
   h_ratio->GetXaxis()->SetTitleSize(0.12);
   h_ratio->GetXaxis()->SetLabelSize(0.12);
   h_ratio->GetYaxis()->SetLabelSize(0.1);
-  h_ratio->GetYaxis()->SetTitle("Data/MC");
+  h_ratio->GetYaxis()->SetTitle("Theory/Data");
   h_ratio->GetXaxis()->SetTitle("Top quark p_{T} [GeV]");
   h_ratio->GetYaxis()->SetTitleSize(0.12);
   h_ratio->GetYaxis()->SetTitleOffset(0.7);
@@ -741,19 +771,20 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
   h_ratio->GetXaxis()->SetTitleOffset(1.2);
   
   h_ratio->SetAxisRange(0.6,1.4,"Y");
-  h_ratio->Draw("ep,hist");
-  //grr->Draw("p,same");
-  //grr->Draw("p,same");
+  h_ratio->Draw("hist");
+  blaTOT->Draw("same,e2");
   blaEXP->Draw("same,e2");
   blaTH->Draw("same,e2");
-  h_ratio->Draw("pe,same,hist");
-  //grr->Draw("p,same");
+  blaSTAT->Draw("same,ep");
+  h_ratioGEN->SetAxisRange(0.6,1.4,"Y");
+  h_ratioGEN->Draw("same,hist");
+  h_ratio->Draw("same,hist");
   h_ratio->Draw("same,axis");
-  line->Draw("same"); 
   
   c->SaveAs("UnfoldingPlots/unfoldWithError_"+channel+twoStep+nobtag+".png");
   c->SaveAs("UnfoldingPlots/unfoldWithError_"+channel+twoStep+nobtag+".eps");
   c->SaveAs("UnfoldingPlots/unfoldWithError_"+channel+twoStep+nobtag+".pdf");
+
 
   
   TCanvas *c1 = new TCanvas("c1", "", 800, 600);
@@ -771,7 +802,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
   else h_dummy_r->SetAxisRange(0,25,"Y");
   
   h_dummy_r->GetYaxis()->SetTitleSize(0.055);    
-  h_dummy_r->GetYaxis()->SetTitleOffset(1.0);
+  h_dummy_r->GetYaxis()->SetTitleOffset(1.1);
   h_dummy_r->GetYaxis()->SetLabelSize(0.045);
   
   h_dummy_r->GetXaxis()->SetTitleSize(0.05);
@@ -806,9 +837,9 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
   h_syst_toptag->SetMarkerColor(2);
   h_syst_toptag->SetMarkerStyle(23);
 
-  h_syst_btag->SetLineColor(kAzure+10);
+  h_syst_btag->SetLineColor(1);
   h_syst_btag->SetLineWidth(2);
-  h_syst_btag->SetMarkerColor(kAzure+10);
+  h_syst_btag->SetMarkerColor(1);
   h_syst_btag->SetMarkerStyle(24);  
 
   h_syst_bkg->SetLineColor(kOrange+1);
@@ -841,7 +872,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
   leg2->SetTextSize(0.032);
   leg2->SetTextFont(42);
 
-  	
+  
   h_dummy_r->Draw("hist");
   h_syst_tot->Draw("hist,same");
   h_syst_stat->Draw("ep,same");
@@ -872,6 +903,11 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     // ----------------------------------------------------------------------------------------------------------------
     // systematics for ratio plot
     
+    TH1F* h_stat_up_part = (TH1F*) h_true->Clone("stat_part");
+    TH1F* h_stat_dn_part = (TH1F*) h_true->Clone("stat_part");
+    h_stat_up_part->Reset();
+    h_stat_dn_part->Reset();
+    
     TH1F* h_systEXP_up_part = (TH1F*) h_true->Clone("syst_up_exp_part");
     TH1F* h_systEXP_dn_part = (TH1F*) h_true->Clone("syst_dn_exp_part");
     h_systEXP_up_part->Reset();
@@ -882,6 +918,12 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     h_systTH_up_part->Reset();
     h_systTH_dn_part->Reset();
     
+    TH1F* h_systTOT_up_part = (TH1F*) h_true->Clone("syst_up_tot_part");
+    TH1F* h_systTOT_dn_part = (TH1F*) h_true->Clone("syst_dn_tot_part");
+    h_systTOT_up_part->Reset();
+    h_systTOT_dn_part->Reset();
+
+    
     TH1F* h_syst_jec_part    = (TH1F*) h_true->Clone("syst_jec_part");
     TH1F* h_syst_jer_part    = (TH1F*) h_true->Clone("syst_jer_part");
     TH1F* h_syst_btag_part   = (TH1F*) h_true->Clone("syst_btag_part");
@@ -890,7 +932,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     TH1F* h_syst_stat_part   = (TH1F*) h_true->Clone("syst_stat_part");
     TH1F* h_syst_pdf_part    = (TH1F*) h_true->Clone("syst_pdf_part");
     TH1F* h_syst_Q2_part     = (TH1F*) h_true->Clone("syst_Q2_part");
-    TH1F* h_syst_tot_part    = (TH1F*) h_true->Clone("syst_stat_tot");
+    TH1F* h_syst_tot_part    = (TH1F*) h_true->Clone("syst_tot_part");
     
     h_syst_jec_part->Reset();   
     h_syst_jer_part->Reset(); 
@@ -905,26 +947,27 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     
     float count_part[nSYST] = {0};
     float sig_part[nSYST] = {0};
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // loop over bins
+    // ----------------------------------------------------------------------------------------------------------------
     
     cout << endl << "*** unfolding result (particle-level) for " << channel << " channel ***" << endl;
 
-    for (int i=0; i<h_unfolded_part[0]->GetNbinsX()+1; i++) {
+    for (int i=0; i<h_unfolded_part[0]->GetNbinsX(); i++) {
       
       for (int is=0; is<nSYST; is++) {
-	count_part[is] = 0;
-	sig_part[is] = 0;
-	
 	count_part[is] = h_unfolded_part[is]->GetBinContent(i+1);
 	sig_part[is]   = h_unfolded_part[is]->GetBinError(i+1);
       }
       
+      // experimental
       float this_systEXP_up_part = 0;
       this_systEXP_up_part += (count_part[1]-count_part[0])*(count_part[1]-count_part[0]); //jec
       this_systEXP_up_part += (count_part[3]-count_part[0])*(count_part[3]-count_part[0]); //jer
       this_systEXP_up_part += (count_part[5]-count_part[0])*(count_part[5]-count_part[0]); //btag
       this_systEXP_up_part += (count_part[7]-count_part[0])*(count_part[7]-count_part[0]); //toptag
       this_systEXP_up_part += (count_part[9]-count_part[0])*(count_part[9]-count_part[0]); //background normalization
-      this_systEXP_up_part += sig_part[0]*sig_part[0];                                     //statistics
       this_systEXP_up_part = sqrt(this_systEXP_up_part);
       
       float this_systEXP_dn_part = 0;
@@ -933,9 +976,9 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
       this_systEXP_dn_part += (count_part[6]-count_part[0])*(count_part[6]-count_part[0]);
       this_systEXP_dn_part += (count_part[8]-count_part[0])*(count_part[8]-count_part[0]);
       this_systEXP_dn_part += (count_part[10]-count_part[0])*(count_part[10]-count_part[0]);
-      this_systEXP_dn_part += sig_part[0]*sig_part[0];
       this_systEXP_dn_part = sqrt(this_systEXP_dn_part);
       
+      // theory
       float this_systTH_up_part = 0;
       this_systTH_up_part += (count_part[11]-count_part[0])*(count_part[11]-count_part[0]);
       if (doQ2) this_systTH_up_part += (count_part[13]-count_part[0])*(count_part[13]-count_part[0]);
@@ -946,79 +989,80 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
       if (doQ2) this_systTH_dn_part += (count_part[14]-count_part[0])*(count_part[14]-count_part[0]);
       this_systTH_dn_part = sqrt(this_systTH_dn_part);
       
-      float upEXP_part = count_part[0] + this_systEXP_up_part;
-      float dnEXP_part = count_part[0] - this_systEXP_dn_part;
+      // theory + experimental + statistical
+      float this_systTOT_up_part = this_systEXP_up_part*this_systEXP_up_part + this_systTH_up_part*this_systTH_up_part + sig_part[0]*sig_part[0];
+      this_systTOT_up_part = sqrt(this_systTOT_up_part);
       
-      h_systEXP_up_part->SetBinContent(i+1,upEXP_part);
-      h_systEXP_dn_part->SetBinContent(i+1,dnEXP_part);  
+      float this_systTOT_dn_part = this_systEXP_dn_part*this_systEXP_dn_part + this_systTH_dn_part*this_systTH_dn_part + sig_part[0]*sig_part[0];
+      this_systTOT_dn_part = sqrt(this_systTOT_dn_part);
+          
       
-      float upTH_part = count_part[0] + this_systTH_up_part;
-      float dnTH_part = count_part[0] - this_systTH_dn_part;
+      h_stat_up_part->SetBinContent(i+1,count_part[0]+sig_part[0]);
+      h_stat_dn_part->SetBinContent(i+1,count_part[0]-sig_part[0]);  
       
-      h_systTH_up_part->SetBinContent(i+1,upTH_part);
-      h_systTH_dn_part->SetBinContent(i+1,dnTH_part);  
-      
-      int ibin1_p = h_systEXP_up_part->GetBin(i+1);
-      int ibin2_p = h_systEXP_up_part->GetBin(i+2);
-      int lowedge_p = h_systEXP_up_part->GetBinLowEdge(ibin1_p);
-      int highedge_p = h_systEXP_up_part->GetBinLowEdge(ibin2_p);
-      if (lowedge_p > 300 && highedge_p < 1300) {
-	cout << lowedge_p << "--" << highedge_p << " & $" << count_part[0] << "~^{+" << this_systEXP_up_part << "}_{-" << this_systEXP_dn_part << "}{~(\\rm ex)~}^{+" 
-	     << this_systTH_up_part << "}_{-" << this_systTH_dn_part << "}{~(\\rm th)}$ & " << h_part->GetBinContent(i+1) << endl;
-
+      if (doAverageErr) {
+	h_systEXP_up_part->SetBinContent(i+1,count_part[0]+(this_systEXP_up_part+this_systEXP_dn_part)/2);
+	h_systEXP_dn_part->SetBinContent(i+1,count_part[0]-(this_systEXP_up_part+this_systEXP_dn_part)/2);  
+	h_systTH_up_part->SetBinContent(i+1,count_part[0]+(this_systTH_up_part+this_systTH_dn_part)/2);
+	h_systTH_dn_part->SetBinContent(i+1,count_part[0]-(this_systTH_up_part+this_systTH_dn_part)/2);  
+	h_systTOT_up_part->SetBinContent(i+1,count_part[0]+(this_systTOT_up_part+this_systTOT_dn_part)/2);
+	h_systTOT_dn_part->SetBinContent(i+1,count_part[0]-(this_systTOT_up_part+this_systTOT_dn_part)/2);  
       }
-    }
-    cout << endl;
-  
-    if (doNormalized) {
-      h_dummy_part->GetYaxis()->SetTitle("1/#sigma d#sigma/dp_{T} [1/GeV]");
-      h_dummy_part->SetAxisRange(0,0.008,"Y");
-    }
-    else {
-      h_dummy_part->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
-      h_dummy_part->SetAxisRange(0,10,"Y");
-    }
+      else {
+	h_systEXP_up_part->SetBinContent(i+1,count_part[0]+this_systEXP_up_part);
+	h_systEXP_dn_part->SetBinContent(i+1,count_part[0]-this_systEXP_dn_part);  
+	h_systTH_up_part->SetBinContent(i+1,count_part[0]+this_systTH_up_part);
+	h_systTH_dn_part->SetBinContent(i+1,count_part[0]-this_systTH_dn_part);  
+	h_systTOT_up_part->SetBinContent(i+1,count_part[0]+this_systTOT_up_part);
+	h_systTOT_dn_part->SetBinContent(i+1,count_part[0]-this_systTOT_dn_part);  
+      }
     
-    // getting the relative systematics
+      // experimental
+      double syst_jecup_part   = fabs((count_part[1]-count_part[0])/count_part[0])*100;
+      double syst_jecdn_part   = fabs((count_part[2]-count_part[0])/count_part[0])*100;
+      double syst_jerup_part   = fabs((count_part[3]-count_part[0])/count_part[0])*100;
+      double syst_jerdn_part   = fabs((count_part[4]-count_part[0])/count_part[0])*100;
+      double syst_btagup_part   = fabs((count_part[5]-count_part[0])/count_part[0])*100;
+      double syst_btagdn_part   = fabs((count_part[6]-count_part[0])/count_part[0])*100;
+      double syst_toptagup_part   = fabs((count_part[7]-count_part[0])/count_part[0])*100;
+      double syst_toptagdn_part   = fabs((count_part[8]-count_part[0])/count_part[0])*100;
+      double syst_bkgup_part   = fabs((count_part[9]-count_part[0])/count_part[0])*100;
+      double syst_bkgdn_part   = fabs((count_part[10]-count_part[0])/count_part[0])*100;
+      // statistics
+      double syst_stat_part   = sig_part[0]/count_part[0]*100;
+      // theoretical
+      double syst_pdfup_part   = fabs((count_part[11]-count_part[0])/count_part[0])*100;
+      double syst_pdfdn_part   = fabs((count_part[12]-count_part[0])/count_part[0])*100;
+      double syst_scaleup_part = fabs((count_part[13]-count_part[0])/count_part[0])*100;
+      double syst_scaledn_part = fabs((count_part[14]-count_part[0])/count_part[0])*100;
 
-    //cout << endl << "*** systematic uncertainties for each bin (particle-level) for " << channel << " channel ***" << endl;
-
-    float count_r_part[nSYST] = {0};
-    float err_stat_part = 0;
-    for (int i=0; i<h_unfolded_part[0]->GetNbinsX()+1; i++) {
+      double max_syst_jec_part = 0;
+      double max_syst_jer_part = 0;
+      double max_syst_btag_part = 0;
+      double max_syst_toptag_part = 0;
+      double max_syst_bkg_part = 0;
+      double max_syst_pdf_part = 0;
+      double max_syst_Q2_part  = 0;
       
-      err_stat_part = h_unfolded_part[0]->GetBinError(i+1);
-      
-      for (int is=0; is<nSYST; is++) {
-	count_r_part[is] = 0;
-	count_r_part[is] = h_unfolded_part[is]->GetBinContent(i+1);
+      if (doAverageErr) {
+	max_syst_jec_part = (syst_jecup_part+syst_jecdn_part)/2;
+	max_syst_jer_part = (syst_jerup_part+syst_jerdn_part)/2;
+	max_syst_btag_part = (syst_btagup_part+syst_btagdn_part)/2;
+	max_syst_toptag_part = (syst_toptagup_part+syst_toptagdn_part)/2;
+	max_syst_bkg_part = (syst_bkgup_part+syst_bkgdn_part)/2;
+	max_syst_pdf_part = (syst_pdfup_part+syst_pdfdn_part)/2;
+	max_syst_Q2_part  = (syst_scaleup_part+syst_scaledn_part)/2;
+      }
+      else {
+	max_syst_jec_part = max(syst_jecup_part,syst_jecdn_part);
+	max_syst_jer_part = max(syst_jerup_part,syst_jerdn_part);
+	max_syst_btag_part = max(syst_btagup_part,syst_btagdn_part);
+	max_syst_toptag_part = max(syst_toptagup_part,syst_toptagdn_part);
+	max_syst_bkg_part = max(syst_bkgup_part,syst_bkgdn_part);
+	max_syst_pdf_part = max(syst_pdfup_part,syst_pdfdn_part);
+	max_syst_Q2_part  = max(syst_scaleup_part,syst_scaledn_part);
       }
 
-      // experimental
-      double syst_jecup_part   = fabs((count_r_part[1]-count_r_part[0])/count_r_part[0])*100;
-      double syst_jecdn_part   = fabs((count_r_part[2]-count_r_part[0])/count_r_part[0])*100;
-      double max_syst_jec_part = max(syst_jecup_part,syst_jecdn_part);
-      double syst_jerup_part   = fabs((count_r_part[3]-count_r_part[0])/count_r_part[0])*100;
-      double syst_jerdn_part   = fabs((count_r_part[4]-count_r_part[0])/count_r_part[0])*100;
-      double max_syst_jer_part = max(syst_jerup_part,syst_jerdn_part);
-      double syst_btagup_part   = fabs((count_r_part[5]-count_r_part[0])/count_r_part[0])*100;
-      double syst_btagdn_part   = fabs((count_r_part[6]-count_r_part[0])/count_r_part[0])*100;
-      double max_syst_btag_part = max(syst_btagup_part,syst_btagdn_part);
-      double syst_toptagup_part   = fabs((count_r_part[7]-count_r_part[0])/count_r_part[0])*100;
-      double syst_toptagdn_part   = fabs((count_r_part[8]-count_r_part[0])/count_r_part[0])*100;
-      double max_syst_toptag_part = max(syst_toptagup_part,syst_toptagdn_part);
-      double syst_bkgup_part   = fabs((count_r_part[9]-count_r_part[0])/count_r_part[0])*100;
-      double syst_bkgdn_part   = fabs((count_r_part[10]-count_r_part[0])/count_r_part[0])*100;
-      double max_syst_bkg_part = max(syst_bkgup_part,syst_bkgdn_part);
-      // statistics
-      double syst_stat_part   = err_stat_part/count_r_part[0]*100;
-      // theoretical
-      double syst_pdfup_part   = fabs((count_r_part[11]-count_r_part[0])/count_r_part[0])*100;
-      double syst_pdfdn_part   = fabs((count_r_part[12]-count_r_part[0])/count_r_part[0])*100;
-      double max_syst_pdf_part = max(syst_pdfup_part,syst_pdfdn_part);
-      double syst_scaleup_part = fabs((count_r_part[13]-count_r_part[0])/count_r_part[0])*100;
-      double syst_scaledn_part = fabs((count_r_part[14]-count_r_part[0])/count_r_part[0])*100;
-      double max_syst_Q2_part = max(syst_scaleup_part,syst_scaledn_part);
 
       if (!doQ2) {
 	syst_scaleup_part = 0;
@@ -1026,39 +1070,37 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
 	max_syst_Q2_part = 0;
       }
 
-      double syst_total_up_part = sqrt(syst_jecup_part*syst_jecup_part + syst_jerup_part*syst_jerup_part + 
-				       syst_btagup_part*syst_btagup_part + syst_toptagup_part*syst_toptagup_part + syst_bkgup_part*syst_bkgup_part +
-				       syst_scaleup_part*syst_scaleup_part + syst_pdfup_part*syst_pdfup_part);
-      double syst_total_dn_part = sqrt(syst_jecdn_part*syst_jecdn_part + syst_jerdn_part*syst_jerdn_part + 
-				       syst_btagdn_part*syst_btagdn_part + syst_toptagdn_part*syst_toptagdn_part + syst_bkgdn_part*syst_bkgdn_part +
-				       syst_scaledn_part*syst_scaledn_part + syst_pdfdn_part*syst_pdfdn_part );
-      double max_syst_total_part = max(syst_total_up_part,syst_total_dn_part);
+      double syst_totalEXP_up_part = sqrt(syst_jecup_part*syst_jecup_part + syst_jerup_part*syst_jerup_part + 
+					  syst_btagup_part*syst_btagup_part + syst_toptagup_part*syst_toptagup_part + syst_bkgup_part*syst_bkgup_part);
+      double syst_totalEXP_dn_part = sqrt(syst_jecdn_part*syst_jecdn_part + syst_jerdn_part*syst_jerdn_part + 
+					  syst_btagdn_part*syst_btagdn_part + syst_toptagdn_part*syst_toptagdn_part + syst_bkgdn_part*syst_bkgdn_part);
+      double syst_totalTH_up_part = sqrt(syst_scaleup_part*syst_scaleup_part + syst_pdfup_part*syst_pdfup_part);
+      double syst_totalTH_dn_part = sqrt(syst_scaledn_part*syst_scaledn_part + syst_pdfdn_part*syst_pdfdn_part );
 
-      /*
-      cout << "max(syst_jecup,syst_jecdn) for bin"<<i<<": "<<max_syst_jec_part<<endl;
-      cout << "relative syst jerup for bin "<<i<<": "<<syst_jerup_part<<endl;
-      cout << "relative syst jerdn for bin "<<i<<": "<<syst_jerdn_part<<endl;
-      cout << "max(syst_jerup,syst_jerdn) for bin"<<i<<": "<<max_syst_jer_part<<endl;
-      cout << "relative syst btagup for bin "<<i<<": "<<syst_btagup_part<<endl;
-      cout << "relative syst btagdn for bin "<<i<<": "<<syst_btagdn_part<<endl;
-      cout << "max(syst_btagup,syst_btagdn) for bin"<<i<<": "<<max_syst_btag_part<<endl;
-      cout << "relative syst toptagup for bin "<<i<<": "<<syst_toptagup_part<<endl;
-      cout << "relative syst toptagdn for bin "<<i<<": "<<syst_toptagdn_part<<endl;
-      cout << "max(syst_toptagup,syst_toptagdn) for bin"<<i<<": "<<max_syst_toptag_part<<endl;
-      cout << "relative syst bkgup for bin "<<i<<": "<<syst_bkgup_part<<endl;
-      cout << "relative syst bkgdn for bin "<<i<<": "<<syst_bkgdn_part<<endl;
-      cout << "max(syst_bkgdn,syst_bkgdn) for bin"<<i<<": "<<max_syst_bkg_part<<endl;
-      cout << "statistical error for bin "<<i<<": "<<syst_stat_part<<endl;
-      cout << "relative syst scaleup for bin "<<i<<": "<<syst_scaleup_part<<endl;
-      cout << "relative syst scaledown for bin "<<i<<": "<<syst_scaledown_part<<endl;
-      cout << "max(syst_pdfup,syst_pdfdown) for bin"<<i<<": "<<max_syst_pdf_part<<endl;
-      cout << "relative syst jecup for bin "<<i<<": "<<syst_jecup_part<<endl;
-      cout << "relative syst jecdn for bin "<<i<<": "<<syst_jecdn_part<<endl;
-      cout << "max(syst_scaleup_part,syst_scaledown_part) for bin"<<i<<": "<<max_syst_Q2_part<<endl;
-      cout << "relative syst pdfup for bin "<<i<<": "<<syst_pdfup_part<<endl;
-      cout << "relative syst pdfdown for bin "<<i<<": "<<syst_pdfdown_part<<endl;
-      */
+      double syst_total_up_part = sqrt(syst_totalEXP_up_part*syst_totalEXP_up_part + syst_totalTH_up_part*syst_totalTH_up_part);
+      double syst_total_dn_part = sqrt(syst_totalEXP_dn_part*syst_totalEXP_dn_part + syst_totalTH_up_part*syst_totalTH_dn_part);
       
+      double syst_totaltotal_up_part = sqrt(syst_total_up_part*syst_total_up_part + syst_stat_part*syst_stat_part);
+      double syst_totaltotal_dn_part = sqrt(syst_total_dn_part*syst_total_dn_part + syst_stat_part*syst_stat_part);
+      
+      double max_syst_totalEXP_part = 0;
+      double max_syst_totalTH_part = 0;
+      double max_syst_total_part = 0;
+      double max_syst_totaltotal_part = 0;
+      
+      if (doAverageErr) {
+	max_syst_totalEXP_part = (syst_totalEXP_up_part+syst_totalEXP_dn_part)/2;
+	max_syst_totalTH_part = (syst_totalTH_up_part+syst_totalTH_dn_part)/2;
+	max_syst_total_part = (syst_total_up_part+syst_total_dn_part)/2;
+	max_syst_totaltotal_part = (syst_totaltotal_up_part+syst_totaltotal_dn_part)/2;
+      }
+      else {
+	max_syst_totalEXP_part = max(syst_totalEXP_up_part,syst_totalEXP_dn_part);
+	max_syst_totalTH_part = max(syst_totalTH_up_part,syst_totalTH_dn_part);
+	max_syst_total_part = max(syst_total_up_part,syst_total_dn_part);
+	max_syst_totaltotal_part = max(syst_totaltotal_up_part,syst_totaltotal_dn_part);
+      }
+
       h_syst_jec_part->SetBinContent(i+1,max_syst_jec_part);    
       h_syst_jer_part->SetBinContent(i+1,max_syst_jer_part);    
       h_syst_btag_part->SetBinContent(i+1,max_syst_btag_part);   
@@ -1067,7 +1109,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
       h_syst_stat_part->SetBinContent(i+1,syst_stat_part);  
       h_syst_pdf_part->SetBinContent(i+1,max_syst_pdf_part);
       h_syst_Q2_part->SetBinContent(i+1,max_syst_Q2_part);  
-      h_syst_tot_part->SetBinContent(i+1,max_syst_total_part);  
+      h_syst_tot_part->SetBinContent(i+1,max_syst_total_part);
       
       h_syst_jec_part->SetBinError(i+1,0.001);
       h_syst_jer_part->SetBinError(i+1,0.001);
@@ -1078,7 +1120,23 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
       h_syst_tot_part->SetBinError(i+1,0.001);
       h_syst_pdf_part->SetBinError(i+1,0.001);
       h_syst_Q2_part->SetBinError(i+1,0.001);  
+     
       
+      // ----------------------------------------------------------------------------------------------------------------
+      // print outs for cross-section table
+      // ----------------------------------------------------------------------------------------------------------------
+      
+      int ibin1 = h_systEXP_up_part->GetBin(i+1);
+      int ibin2 = h_systEXP_up_part->GetBin(i+2);
+      int lowedge = h_systEXP_up_part->GetBinLowEdge(ibin1);
+      int highedge = h_systEXP_up_part->GetBinLowEdge(ibin2);
+      
+      if (lowedge > 300 && highedge < 1300) {
+	cout << (float)lowedge << "--" << (float)highedge << " & " << count_part[0] << " & " << syst_stat_part << " & " 
+	     << max_syst_totalEXP_part << " & " << max_syst_totalTH_part << " & " << max_syst_totaltotal_part << " & " 
+	     << h_part->GetBinContent(i+1) << endl;
+      }
+ 
     }
     
     
@@ -1112,7 +1170,8 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     p4->Draw();
     
     h_dummy_part->GetYaxis()->SetTitleSize(0.065);    
-    h_dummy_part->GetYaxis()->SetTitleOffset(1.1);
+    if (doLogscale) h_dummy_part->GetYaxis()->SetTitleOffset(0.8);
+    else h_dummy_part->GetYaxis()->SetTitleOffset(1.1);
     h_dummy_part->GetYaxis()->SetLabelSize(0.054);
     
     h_dummy_part->GetXaxis()->SetTitleSize(0);
@@ -1120,33 +1179,64 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     
     p3->cd();
     
+    if (doLogscale) {
+      h_dummy_part->SetAxisRange(0.00003,0.015,"Y");
+      h_part->SetAxisRange(0.00003,0.015,"Y");
+      h_unfolded_part[0]->SetAxisRange(0.00003,0.015,"Y");
+      gPad->SetLogy();
+    }
+
     h_dummy_part->Draw("hist");
     h_part->Draw("hist,same");
     h_unfolded_part[0]->Draw("hist,ep,same");
-    //gr->Draw("ep,same");
     h_dummy_part->Draw("hist,axis,same"); 
     
     
     
     // ----------------------------------------------------------------------------------------------------------------
     // making ratio part of plot
+    // ----------------------------------------------------------------------------------------------------------------
     
-    TString baselab2 = h_unfolded_part[0]->GetName();
-    TH1F* h_ratio_part    = (TH1F*) h_unfolded_part[0]->Clone(baselab2+"_ratio");
-    TH1F* h_ratioEXP_up_part = (TH1F*) h_systEXP_up_part->Clone(baselab2+"_ratioEXP_up");
-    TH1F* h_ratioEXP_dn_part = (TH1F*) h_systEXP_dn_part->Clone(baselab2+"_ratioEXP_dn");
+    TString baselab = h_unfolded_part[0]->GetName();
+    TH1F* h_ratio_part = (TH1F*) h_unfolded_part[0]->Clone(baselab+"_ratio_part");
     
-    TH1F* h_ratioTH_up_part = (TH1F*) h_systTH_up_part->Clone(baselab2+"_ratioTH_up");
-    TH1F* h_ratioTH_dn_part = (TH1F*) h_systTH_dn_part->Clone(baselab2+"_ratioTH_dn");
+    TH1F* h_ratioSTAT_up_part = (TH1F*) h_stat_up_part->Clone(baselab+"_ratioSTAT_up_part");
+    TH1F* h_ratioSTAT_dn_part = (TH1F*) h_stat_dn_part->Clone(baselab+"_ratioSTAT_dn_part");
     
-    h_ratio_part->Divide(h_part);
-    h_ratioEXP_up_part->Divide(h_part);
-    h_ratioEXP_dn_part->Divide(h_part);
-    h_ratioTH_up_part->Divide(h_part);
-    h_ratioTH_dn_part->Divide(h_part);
+    TH1F* h_ratioEXP_up_part = (TH1F*) h_systEXP_up_part->Clone(baselab+"_ratioEXP_up_part");
+    TH1F* h_ratioEXP_dn_part = (TH1F*) h_systEXP_dn_part->Clone(baselab+"_ratioEXP_dn_part");
+    
+    TH1F* h_ratioTOT_up_part = (TH1F*) h_systTOT_up_part->Clone(baselab+"_ratioTOT_up_part");
+    TH1F* h_ratioTOT_dn_part = (TH1F*) h_systTOT_dn_part->Clone(baselab+"_ratioTOT_dn_part");
+    
+    TH1F* h_ratioTH_up_part = (TH1F*) h_systTH_up_part->Clone(baselab+"_ratioTH_up_part");
+    TH1F* h_ratioTH_dn_part = (TH1F*) h_systTH_dn_part->Clone(baselab+"_ratioTH_dn_part");
+    
+    TH1F* h_ratioGEN_part = (TH1F*) h_part->Clone(baselab+"_ratioGEN_part");
+    
+    h_ratio_part->Divide(h_unfolded_part[0]);
+    h_ratioSTAT_up_part->Divide(h_unfolded_part[0]);
+    h_ratioSTAT_dn_part->Divide(h_unfolded_part[0]);
+    h_ratioEXP_up_part->Divide(h_unfolded_part[0]);
+    h_ratioEXP_dn_part->Divide(h_unfolded_part[0]);
+    h_ratioTH_up_part->Divide(h_unfolded_part[0]);
+    h_ratioTH_dn_part->Divide(h_unfolded_part[0]);
+    h_ratioTOT_up_part->Divide(h_unfolded_part[0]);
+    h_ratioTOT_dn_part->Divide(h_unfolded_part[0]);
+    h_ratioGEN_part->Divide(h_unfolded_part[0]);
     
     
     // ----------------------------------------------------------------------------------------------------------------
+    TH1F* blaSTAT_part = (TH1F*) h_ratioSTAT_up_part->Clone("blaSTAT_part");
+    blaSTAT_part->Reset();
+    for (int i=0; i<blaSTAT_part->GetNbinsX(); i++) {
+      float up = h_ratioSTAT_up_part->GetBinContent(i+1);
+      float dn = h_ratioSTAT_dn_part->GetBinContent(i+1);
+      
+      blaSTAT_part->SetBinContent(i+1,(up-dn)/2+dn);
+      blaSTAT_part->SetBinError(i+1,(up-dn)/2);
+    }
+    
     TH1F* blaEXP_part = (TH1F*) h_ratioEXP_up_part->Clone("blaEXP_part");
     blaEXP_part->Reset();
     for (int i=0; i<blaEXP_part->GetNbinsX(); i++) {
@@ -1167,41 +1257,59 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
       blaTH_part->SetBinError(i+1,(up-dn)/2);
     }
     
+    TH1F* blaTOT_part = (TH1F*) h_ratioTOT_up_part->Clone("blaTOT_part");
+    blaTOT_part->Reset();
+    for (int i=0; i<blaTOT_part->GetNbinsX(); i++) {
+      float up = h_ratioTOT_up_part->GetBinContent(i+1);
+      float dn = h_ratioTOT_dn_part->GetBinContent(i+1);
+      
+      blaTOT_part->SetBinContent(i+1,(up-dn)/2+dn);
+      blaTOT_part->SetBinError(i+1,(up-dn)/2);
+    }
+    
+    blaSTAT_part->SetLineColor(1);
+    
     blaEXP_part->SetMarkerSize(0);
     blaEXP_part->SetLineColor(0);
-    blaEXP_part->SetFillColor(18);
+    blaEXP_part->SetFillColor(kAzure-9);
     blaEXP_part->SetFillStyle(1001);
     
     blaTH_part->SetMarkerSize(0);
     blaTH_part->SetLineColor(0);
-    blaTH_part->SetFillColor(2);
-    blaTH_part->SetFillStyle(3353);
+    blaTH_part->SetFillColor(kBlue);
+    blaTH_part->SetFillStyle(3453);
+    
+    blaTOT_part->SetMarkerSize(0);
+    blaTOT_part->SetLineColor(0);
+    blaTOT_part->SetFillColor(18);
+    blaTOT_part->SetFillStyle(1001);
     
     
     // ----------------------------------------------------------------------------------------------------------------
-    TLegend* leg3 = new TLegend(0.45,0.45,0.9,0.75);  
-    leg3->AddEntry(h_part,"POWHEG t#bar{t} MC (CT10)","l");
-    leg3->AddEntry(h_unfolded_part[0],"Unfolded data","pel");
-    leg3->AddEntry(blaEXP_part,"Experimental uncertainties","f");
-    leg3->AddEntry(blaTH_part,"Theory uncertainties","f");
-    leg3->SetFillStyle(0);
-    leg3->SetBorderSize(0);
-    leg3->SetTextSize(0.05);
-    leg3->SetTextFont(42);
-    leg3->Draw();
-    
-    mySmallText(0.38,0.82,1,0.05,"CMS Preliminary, L = 19.7 fb^{-1}, #sqrt{s} = 8 TeV");
+    //TLegend* leg = new TLegend(0.37,0.45,0.7,0.75);  
+    TLegend* leg = new TLegend(0.52,0.45,0.85,0.78);  
+    leg->AddEntry(h_unfolded_part[0],"Data","pel");
+    leg->AddEntry(h_part,"POWHEG t#bar{t} (CT10)","l");
+    leg->AddEntry(blaEXP_part,"Experimental uncertainty","f");
+    leg->AddEntry(blaTH_part,"Theory uncertainty","f");
+    leg->AddEntry(blaTOT_part,"Stat. #oplus exp. #oplus theory","f");
+    leg->SetFillStyle(0);
+    leg->SetBorderSize(0);
+    leg->SetTextSize(0.05);
+    leg->SetTextFont(42);
+    leg->Draw();
 
+    mySmallText(0.38,0.82,1,0.05,"CMS Preliminary, L = 19.7 fb^{-1}, #sqrt{s} = 8 TeV");
 
     // ----------------------------------------------------------------------------------------------------------------
         
     p4->cd();
-    //p4->SetGridy();
+    p4->SetGridy();
     
     h_ratio_part->GetXaxis()->SetTitleSize(0.12);
     h_ratio_part->GetXaxis()->SetLabelSize(0.12);
     h_ratio_part->GetYaxis()->SetLabelSize(0.1);
-    h_ratio_part->GetYaxis()->SetTitle("Data/MC");
+    h_ratio_part->GetYaxis()->SetTitle("Theory/Data");
     h_ratio_part->GetXaxis()->SetTitle("Particle-level top p_{T} [GeV]");
     h_ratio_part->GetYaxis()->SetTitleSize(0.12);
     h_ratio_part->GetYaxis()->SetTitleOffset(0.7);
@@ -1210,15 +1318,17 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     h_ratio_part->GetXaxis()->SetTitleOffset(1.2);
     
     h_ratio_part->SetAxisRange(0.6,1.4,"Y");
-    h_ratio_part->Draw("ep,hist");
+    h_ratio_part->Draw("hist");
+    blaTOT_part->Draw("same,e2");
     blaEXP_part->Draw("same,e2");
     blaTH_part->Draw("same,e2");
-    h_ratio_part->Draw("pe,same,hist");
+    blaSTAT_part->Draw("same,ep");
+    h_ratioGEN_part->SetAxisRange(0.6,1.4,"Y");
+    h_ratioGEN_part->Draw("same,hist");
+    h_ratio_part->Draw("same,hist");
     h_ratio_part->Draw("same,axis");
-    line->Draw("same");
     
     p3->cd();
-    
     
     c2->SaveAs("UnfoldingPlots/unfoldWithError_part_"+channel+twoStep+nobtag+".png");
     c2->SaveAs("UnfoldingPlots/unfoldWithError_part_"+channel+twoStep+nobtag+".eps");
@@ -1240,7 +1350,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     else h_dummy_r_part->SetAxisRange(0,25,"Y");
     
     h_dummy_r_part->GetYaxis()->SetTitleSize(0.055);    
-    h_dummy_r_part->GetYaxis()->SetTitleOffset(1.0);
+    h_dummy_r_part->GetYaxis()->SetTitleOffset(1.1);
     h_dummy_r_part->GetYaxis()->SetLabelSize(0.045);
     
     h_dummy_r_part->GetXaxis()->SetTitleSize(0.05);
@@ -1249,7 +1359,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     
     c3->cd();
     
-
+    h_syst_tot_part->SetAxisRange(0,40,"Y");
     h_syst_tot_part->SetFillColor(17);
     h_syst_tot_part->SetFillStyle(3344);
     h_syst_tot_part->SetLineColor(16);
@@ -1275,9 +1385,9 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     h_syst_toptag_part->SetMarkerColor(2);
     h_syst_toptag_part->SetMarkerStyle(23);
     
-    h_syst_btag_part->SetLineColor(kAzure+10);
+    h_syst_btag_part->SetLineColor(1);
     h_syst_btag_part->SetLineWidth(2);
-    h_syst_btag_part->SetMarkerColor(kAzure+10);
+    h_syst_btag_part->SetMarkerColor(1);
     h_syst_btag_part->SetMarkerStyle(24);  
 
     h_syst_bkg_part->SetLineColor(kOrange+1);
@@ -1309,7 +1419,6 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized) {
     leg4->SetBorderSize(0);
     leg4->SetTextSize(0.032);
     leg4->SetTextFont(42);
-    
     
     h_dummy_r_part->Draw("hist");
     h_syst_tot_part->Draw("hist,same");

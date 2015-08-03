@@ -170,7 +170,7 @@ if options.closureTest == True:
 # *** these are using the combined fit result ***
 # -------------------------------------------------------------------------------------
 
-### background counts: 1toptag+1btag (nom, up, dn), 1toptag+>=0btag (nom, up, dn))
+## background counts: 1toptag+1btag (nom, up, dn), 1toptag+>=0btag (nom, up, dn))
 i_bkgnorm = 0
 if nobtag == "" and options.bkgSyst == "bkgup": 
     i_bkgnorm = 1
@@ -186,122 +186,22 @@ else:
     i_bkgnorm = 3
     
     
-### muon channel
-if options.pdf == "CT10_nom" and options.lepType == "muon" :   #unfold
+## muon channel
+if options.lepType == "muon" :   #unfold
     n_ttbarnonsemilep = [29.5454, 31.7288, 27.362, 74.3116, 79.8033, 68.8199]   #unfold
     n_wjets           = [3.84511, 4.14691, 3.5433, 155.559, 167.769, 143.349]   #unfold
     n_singletop       = [4.1156, 6.03127, 2.19993, 18.5079, 27.1227, 9.8931]   #unfold
     n_qcd             = [3.24901, 4.65408, 1.84395, 18.1419, 25.9874, 10.2963]   #unfold
-if options.pdf == "CT10_pdfup" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [29.6872, 32.0514, 27.3231, 74.8188, 80.777, 68.8606]   #unfold
-    n_wjets           = [3.48582, 3.80286, 3.16878, 141.044, 153.872, 128.216]   #unfold
-    n_singletop       = [4.26181, 6.08828, 2.43534, 19.1602, 27.3717, 10.9488]   #unfold
-    n_qcd             = [3.22307, 4.62543, 1.8207, 17.997, 25.8275, 10.1664]   #unfold
-if options.pdf == "CT10_pdfdown" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [29.2976, 31.3514, 27.2437, 73.745, 78.9148, 68.5752]   #unfold
-    n_wjets           = [4.12607, 4.41843, 3.83371, 166.834, 178.655, 155.012]   #unfold
-    n_singletop       = [4.06546, 6.05067, 2.08025, 18.2779, 27.2032, 9.35258]   #unfold
-    n_qcd             = [3.21379, 4.61857, 1.809, 17.9452, 25.7892, 10.1011]   #unfold
-if options.pdf == "MSTW_nom" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [30.0253, 32.2625, 27.788, 75.6538, 81.291, 70.0167]   #unfold
-    n_wjets           = [4.51859, 4.86389, 4.17329, 181.614, 195.492, 167.735]   #unfold
-    n_singletop       = [3.10571, 4.53451, 1.67692, 13.7171, 20.0276, 7.40646]   #unfold
-    n_qcd             = [1.4205, 2.039, 0.802001, 8.91098, 12.7909, 5.03105]   #unfold
-if options.pdf == "MSTW_pdfup" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [29.6667, 31.9876, 27.3457, 74.7976, 80.6493, 68.9459]   #unfold
-    n_wjets           = [3.77654, 4.07085, 3.48222, 152.73, 164.632, 140.827]   #unfold
-    n_singletop       = [4.36679, 6.2535, 2.48008, 19.6357, 28.1195, 11.1519]   #unfold
-    n_qcd             = [3.19734, 4.59454, 1.80014, 17.8533, 25.655, 10.0516]   #unfold
-if options.pdf == "MSTW_pdfdown" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [29.6932, 31.8374, 27.549, 74.5324, 79.9145, 69.1504]   #unfold
-    n_wjets           = [4.08374, 4.35902, 3.80846, 164.957, 176.076, 153.837]   #unfold
-    n_singletop       = [4.10387, 6.04757, 2.16016, 18.4372, 27.1696, 9.70485]   #unfold
-    n_qcd             = [3.12785, 4.52659, 1.72911, 17.4653, 25.2756, 9.65504]   #unfold
-if options.pdf == "NNPDF_nom" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [29.2599, 31.4221, 27.0978, 73.5471, 78.9818, 68.1124]   #unfold
-    n_wjets           = [4.01603, 4.3159, 3.71617, 162.739, 174.89, 150.587]   #unfold
-    n_singletop       = [4.26249, 6.19837, 2.32661, 19.2003, 27.9204, 10.4802]   #unfold
-    n_qcd             = [3.59548, 5.00361, 2.18736, 20.0765, 27.9392, 12.2138]   #unfold
-if options.pdf == "NNPDF_pdfup" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [29.9064, 32.298, 27.5147, 73.9191, 79.8304, 68.0077]   #unfold
-    n_wjets           = [3.71731, 4.03376, 3.40086, 150.297, 163.091, 137.502]   #unfold
-    n_singletop       = [4.59115, 6.46155, 2.72074, 20.6152, 29.0137, 12.2167]   #unfold
-    n_qcd             = [3.35005, 4.75569, 1.94441, 18.706, 26.5548, 10.8572]   #unfold
-if options.pdf == "NNPDF_pdfdown" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [28.4181, 30.4602, 26.376, 74.0566, 79.3782, 68.7349]   #unfold
-    n_wjets           = [4.28231, 4.5759, 3.98873, 173.532, 185.429, 161.635]   #unfold
-    n_singletop       = [4.55516, 6.54825, 2.56207, 20.5461, 29.5359, 11.5562]   #unfold
-    n_qcd             = [3.63054, 5.04976, 2.21133, 20.2722, 28.1969, 12.3476]   #unfold
-if options.pdf == "scaleup" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [29.1199, 31.2431, 26.9967, 73.1421, 78.4751, 67.8092]   #unfold
-    n_wjets           = [4.17536, 4.45188, 3.89884, 167.269, 178.347, 156.191]   #unfold
-    n_singletop       = [4.3735, 6.35102, 2.39599, 19.4241, 28.2069, 10.6414]   #unfold
-    n_qcd             = [3.20629, 4.5915, 1.82107, 17.9033, 25.638, 10.1685]   #unfold
-if options.pdf == "scaledown" and options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [27.2267, 29.352, 25.1014, 77.0442, 83.0582, 71.0303]   #unfold
-    n_wjets           = [4.47126, 4.77589, 4.16663, 166.264, 177.592, 154.937]   #unfold
-    n_singletop       = [4.55842, 6.46376, 2.65309, 20.5063, 29.0776, 11.9351]   #unfold
-    n_qcd             = [2.93531, 4.30665, 1.56396, 16.3902, 24.0475, 8.73285]   #unfold
     
-### electron channel
-if options.pdf == "CT10_nom" and options.lepType == "ele" :   #unfold
+## electron channel
+if options.lepType == "ele" :   #unfold
     n_ttbarnonsemilep = [30.4236, 32.672, 28.1753, 70.4531, 75.6596, 65.2465]   #unfold
     n_wjets           = [2.69465, 2.90616, 2.48315, 130.705, 140.964, 120.446]   #unfold
     n_singletop       = [3.23182, 4.73612, 1.72752, 15.1449, 22.1944, 8.09549]   #unfold
     n_qcd             = [10.4881, 11.1397, 9.8365, 78.1238, 82.9773, 73.2703]   #unfold
-if options.pdf == "CT10_pdfup" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [31.0298, 33.5009, 28.5587, 71.7269, 77.4389, 66.0149]   #unfold
-    n_wjets           = [2.44589, 2.66835, 2.22343, 118.454, 129.228, 107.681]   #unfold
-    n_singletop       = [3.33209, 4.76012, 1.90407, 15.663, 22.3757, 8.95036]   #unfold
-    n_qcd             = [10.4024, 11.0573, 9.74747, 77.4854, 82.3637, 72.6071]   #unfold
-if options.pdf == "CT10_pdfdown" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [29.8529, 31.9457, 27.7601, 69.4357, 74.3034, 64.568]   #unfold
-    n_wjets           = [2.89077, 3.0956, 2.68594, 140.116, 150.045, 130.188]   #unfold
-    n_singletop       = [3.17698, 4.72834, 1.62562, 14.9404, 22.2359, 7.64481]   #unfold
-    n_qcd             = [10.597, 11.2433, 9.95063, 78.9348, 83.7492, 74.1204]   #unfold
-if options.pdf == "MSTW_nom" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [32.5295, 34.9534, 30.1056, 77.6335, 83.4182, 71.8488]   #unfold
-    n_wjets           = [5.33551, 5.74324, 4.92779, 202.842, 218.342, 187.341]   #unfold
-    n_singletop       = [3.09066, 4.51253, 1.66879, 14.1608, 20.6756, 7.64606]   #unfold
-    n_qcd             = [15.1826, 16.1222, 14.2429, 205.423, 218.136, 192.709]   #unfold
-if options.pdf == "MSTW_pdfup" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [30.2959, 32.6661, 27.9257, 69.133, 74.5416, 63.7244]   #unfold
-    n_wjets           = [2.65105, 2.85765, 2.44444, 128.026, 138.004, 118.049]   #unfold
-    n_singletop       = [3.374, 4.83177, 1.91623, 15.9862, 22.8932, 9.07924]   #unfold
-    n_qcd             = [10.4802, 11.1303, 9.83011, 78.0649, 82.9072, 73.2227]   #unfold
-if options.pdf == "MSTW_pdfdown" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [29.4834, 31.6124, 27.3544, 68.3667, 73.3035, 63.4299]   #unfold
-    n_wjets           = [2.86815, 3.06149, 2.67481, 138.079, 147.386, 128.771]   #unfold
-    n_singletop       = [3.1211, 4.59934, 1.64286, 14.9587, 22.0436, 7.87385]   #unfold
-    n_qcd             = [10.5141, 11.1634, 9.86484, 78.3175, 83.1537, 73.4813]   #unfold
-if options.pdf == "NNPDF_nom" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [29.9561, 32.1696, 27.7425, 68.9934, 74.0916, 63.8952]   #unfold
-    n_wjets           = [2.81272, 3.02274, 2.6027, 136.948, 147.174, 126.723]   #unfold
-    n_singletop       = [3.41655, 4.96823, 1.86487, 15.7704, 22.9328, 8.60801]   #unfold
-    n_qcd             = [10.5615, 11.2205, 9.90251, 78.6707, 83.5796, 73.7619]   #unfold
-if options.pdf == "NNPDF_pdfup" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [30.0837, 32.4895, 27.6779, 69.5541, 75.1164, 63.9917]   #unfold
-    n_wjets           = [2.60593, 2.82776, 2.38409, 126.424, 137.186, 115.662]   #unfold
-    n_singletop       = [3.59811, 5.06395, 2.13226, 16.9029, 23.789, 10.0168]   #unfold
-    n_qcd             = [10.54, 11.1946, 9.88535, 78.5103, 83.3866, 73.6341]   #unfold
-if options.pdf == "NNPDF_pdfdown" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [30.1898, 32.3592, 28.0204, 70.061, 75.0955, 65.0265]   #unfold
-    n_wjets           = [2.99923, 3.20485, 2.79361, 145.669, 155.656, 135.683]   #unfold
-    n_singletop       = [3.62101, 5.20537, 2.03665, 16.7915, 24.1385, 9.44444]   #unfold
-    n_qcd             = [10.4654, 11.1311, 9.79968, 77.9548, 82.9136, 72.996]   #unfold
-if options.pdf == "scaleup" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [30.5948, 32.8256, 28.3641, 67.7576, 72.698, 62.8173]   #unfold
-    n_wjets           = [2.9727, 3.16958, 2.77583, 138.739, 147.928, 129.551]   #unfold
-    n_singletop       = [2.87133, 4.16962, 1.57303, 15.3831, 22.3388, 8.42754]   #unfold
-    n_qcd             = [11.644, 12.2664, 11.0217, 86.7342, 91.3703, 82.0982]   #unfold
-if options.pdf == "scaledown" and options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [31.4704, 33.9269, 29.0139, 65.4972, 70.6098, 60.3845]   #unfold
-    n_wjets           = [2.63983, 2.81968, 2.45998, 136.729, 146.044, 127.413]   #unfold
-    n_singletop       = [2.82311, 4.00312, 1.64311, 15.8357, 22.4547, 9.21667]   #unfold
-    n_qcd             = [12.1023, 12.712, 11.4926, 90.1481, 94.6896, 85.6065]   #unfold
 
 
-### finally extract relevant background normalizations
+## extract relevant background normalizations
 fitted_qcd = n_qcd[i_bkgnorm]
 fitted_singletop = n_singletop[i_bkgnorm]
 fitted_wjets = n_wjets[i_bkgnorm]
@@ -329,7 +229,6 @@ else:
     print "UNFOLDING FOR MUON CHANNEL !!!" 
     print ""
     
-
 if options.lepType=="ele":
     f_data = TFile("histfiles/"+dataDIR+"/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root")
     f_QCD  = TFile("histfiles/"+dataDIR+"/SingleEl_iheartNY_V1_el_Run2012_2Dcut_qcd.root")
@@ -337,7 +236,7 @@ else:
     f_data = TFile("histfiles/"+dataDIR+"/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root")
     f_QCD  = TFile("histfiles/"+dataDIR+"/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root")
 
-    
+
 if options.closureTest == True : 
     f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
     f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
@@ -736,39 +635,39 @@ if options.closureTest and options.troubleshoot and options.twoStep :
 # do the actual unfolding
 # -------------------------------------------------------------------------------------
 
-
 # -------------------------------------------------------------------------------------
 # one-step unfolding
 if options.twoStep == False:                
     
     print "------------ UNFOLDING (set: " + options.pdf + ", syst: " + options.syst + ") ------------"
-    #unfold = RooUnfoldBayes(response, hMeas, 10);
+    #unfold = RooUnfoldBayes(response, hMeas, 4);
     unfold = RooUnfoldSvd(response, hMeas, 2);
     #unfold = RooUnfoldTUnfold(response, hMeas);
-
+    
     # get the unfolded distribution
     hReco = unfold.Hreco()
+
 
 # -------------------------------------------------------------------------------------
 # two-step unfolding
 else :    
     
     print "------------ UNFOLD TO PARTICLE-LEVEL (set: " + options.pdf + ", syst: " + options.syst + ") ------------"
-    #unfold_rp = RooUnfoldBayes(response_rp, hMeas, 10);
+    #unfold_rp = RooUnfoldBayes(response_rp, hMeas, 4);
     unfold_rp = RooUnfoldSvd(response_rp, hMeas, 2);
     #unfold_rp = RooUnfoldTUnfold(response_rp, hMeas);
 
     # get the distribution unfolded to particle-level
     hReco_rp = unfold_rp.Hreco()
-
+        
     print "------------ UNFOLD TO PARTON-LEVEL (set: " + options.pdf + ", syst: " + options.syst + ") ------------"
-    #unfold = RooUnfoldBayes(response_pp, hReco_rp, 10);
+    #unfold = RooUnfoldBayes(response_pp, hReco_rp, 4);
     unfold = RooUnfoldSvd(response_pp, hReco_rp, 2);
     #unfold = RooUnfoldTUnfold(response_pp, hReco_rp);
 
     # get the distribution unfolded to parton-level
     hReco = unfold.Hreco()
-    
+
 
 # -------------------------------------------------------------------------------------
 # Translate to cross section (not events) in bins of pt N/L/BR)
@@ -936,7 +835,6 @@ hMeas.Write()
 text1 = TLatex()
 text1.SetNDC()
 text1.SetTextFont(42)
-#text1.DrawLatex(0.20,0.87, "#scale[1.0]{CMS Preliminary, L = 19.7 fb^{-1} at  #sqrt{s} = 8 TeV}")
 text1.DrawLatex(0.5,0.8, "#scale[1.0]{L = 19.7 fb^{-1} at #sqrt{s} = 8 TeV}")
 
 
@@ -1151,7 +1049,6 @@ if options.twoStep:
         hEmpty2D_rp_even.GetYaxis().SetTitle("Particle-level top p_{T} [GeV]")
         hEmpty2D_rp_even.GetXaxis().SetLabelSize(0.045)
         hEmpty2D_rp_even.GetYaxis().SetLabelSize(0.045)
-        #hEmpty2D_rp_even.Draw()
         hResponse2D_rp_even = response_rp_even.Hresponse().Clone()
         hResponse2D_rp_even.SetName("plottedResponse_rp_even")
 
@@ -1216,7 +1113,6 @@ if options.twoStep:
     hEmpty2D_pp.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
     hEmpty2D_pp.GetXaxis().SetLabelSize(0.045)
     hEmpty2D_pp.GetYaxis().SetLabelSize(0.045)
-    #hEmpty2D_pp.SetAxisRange(0,1100,"X")
     hEmpty2D_pp.Draw()
     hResponse2D_pp = response_pp.Hresponse().Clone()
     hResponse2D_pp.SetName("plottedResponse_pp")
@@ -1229,7 +1125,6 @@ if options.twoStep:
         hEmpty2D_pp_even.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
         hEmpty2D_pp_even.GetXaxis().SetLabelSize(0.045)
         hEmpty2D_pp_even.GetYaxis().SetLabelSize(0.045)
-        #hEmpty2D_pp_even.Draw()
         hResponse2D_pp_even = response_pp_even.Hresponse().Clone()
         hResponse2D_pp_even.SetName("plottedResponse_pp_even")
 
