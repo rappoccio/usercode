@@ -3,7 +3,6 @@ void calcOne(TString which, bool parton, bool doel);
 
 void calcXS() {
   
-  /*
   calcOne("CT10_nom",false,false);
   calcOne("CT10_nom",false,true);
   calcOne("CT10_nom",true,false);
@@ -28,7 +27,6 @@ void calcXS() {
   calcOne("scaledown",false,true);
   calcOne("scaledown",true,false);
   calcOne("scaledown",true,true);
-  */
 
   calcOne("MG",false,false);
   calcOne("MG",false,true);
