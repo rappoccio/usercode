@@ -26,31 +26,47 @@ void calcFinal() {
 
   std::cout.precision(3);
 
+
   for (int i=0; i<3; i++) {
+
     if (i==0) cout << "muon, particle level" << endl;
     if (i==1) cout << "electron, particle level" << endl;
     if (i==2) cout << "combined, particle level" << endl;
-    cout << particle_nom[i]*data[i] << " +/- " << err_data[i]*particle_nom[i] << " (stat) "
+
+    float stat = err_data[i]*particle_nom[i];
+    float pdf = ((particle_pdfup[i]-particle_nom[i])*data[i] + (particle_nom[i]-particle_pdfdown[i])*data[i])/2;
+    float q2 = ((particle_scaleup[i]-particle_nom[i])*data[i] + (particle_nom[i]-particle_scaledown[i])*data[i])/2;
+    float lum = particle_nom[i]*data[i]*lumi;
+
+    cout << particle_nom[i]*data[i] << " +/- " << stat << " (stat) "
 	 << "+" << (particle_pdfup[i]-particle_nom[i])*data[i] << "" 
 	 << "/-" << (particle_nom[i]-particle_pdfdown[i])*data[i] << " (PDF) " 
-	 << " +/- " << ((particle_pdfup[i]-particle_nom[i])*data[i] + (particle_nom[i]-particle_pdfdown[i])*data[i])/2 << " (av. PDF) " 
+	 << " +/- " << pdf << " (av. PDF) " 
 	 << "+" << (particle_scaleup[i]-particle_nom[i])*data[i] << "" 
 	 << "/-" << (particle_nom[i]-particle_scaledown[i])*data[i] << " (Q2) " 
-	 << " +/- " << ((particle_scaleup[i]-particle_nom[i])*data[i] + (particle_nom[i]-particle_scaledown[i])*data[i])/2 << " (av. Q2) " 
-	 << "+/- " << particle_nom[i]*data[i]*lumi << " (lumi) "
+	 << " +/- " << q2 << " (av. Q2) " 
+	 << "+/- " << lum << " (lumi) "
+	 << " TOTAL uncertainty = " << sqrt(stat*stat + pdf*pdf + q2*q2 + lum*lum) 
 	 << endl;
 
     if (i==0) cout << "muon, parton level" << endl;
     if (i==1) cout << "electron, parton level" << endl;
     if (i==2) cout << "combined, parton level" << endl;
-    cout << parton_nom[i]*data[i] << " +/- " << err_data[i]*parton_nom[i] << " (stat) "
+
+    stat = err_data[i]*parton_nom[i];
+    pdf = ((parton_pdfup[i]-parton_nom[i])*data[i] + (parton_nom[i]-parton_pdfdown[i])*data[i])/2;
+    q2 = ((parton_scaleup[i]-parton_nom[i])*data[i] + (parton_nom[i]-parton_scaledown[i])*data[i])/2;
+    lum = parton_nom[i]*data[i]*lumi;
+
+    cout << parton_nom[i]*data[i] << " +/- " << stat << " (stat) "
 	 << "+" << (parton_pdfup[i]-parton_nom[i])*data[i] << "" 
 	 << "/-" << (parton_nom[i]-parton_pdfdown[i])*data[i] << " (PDF) " 
-	 << " +/- " << ((parton_pdfup[i]-parton_nom[i])*data[i] + (parton_nom[i]-parton_pdfdown[i])*data[i])/2 << " (av. PDF) " 
+	 << " +/- " << pdf << " (av. PDF) " 
 	 << "+" << (parton_scaleup[i]-parton_nom[i])*data[i] << "" 
 	 << "/-" << (parton_nom[i]-parton_scaledown[i])*data[i] << " (Q2) " 
-	 << " +/- " << ((parton_scaleup[i]-parton_nom[i])*data[i] + (parton_nom[i]-parton_scaledown[i])*data[i])/2 << " (av. Q2) " 
-	 << "+/- " << parton_nom[i]*data[i]*lumi << " (lumi) "
+	 << " +/- " << q2 << " (av. Q2) " 
+	 << "+/- " << lum << " (lumi) "
+	 << " TOTAL uncertainty = " << sqrt(stat*stat + pdf*pdf + q2*q2 + lum*lum) 
 	 << endl;
   }
 
