@@ -26,7 +26,7 @@ void SetPlotStyle();
 void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize,char *text); 
 void plot(TString channel, bool wobtag, bool do2step);
 
-void plotUnfoldNEW(TString channel) {
+void plotUnfold(TString channel) {
 
   bool doNormalized = true;   // normalized differential?
   bool doLogscale   = true;   // plot distributions on log scale?
@@ -45,8 +45,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   
   bool doQ2 = true;
   
-  if (doQ2) cout << endl << "Running WITH Q2 uncertainty" << endl << endl;
-  else cout << endl << "Running WITHOUT Q2 uncertainty" << endl << endl;
+  if (!doQ2) cout << endl << "WARNING! Running WITHOUT Q2 uncertainty" << endl << endl;
 
   TString nobtag = "_nobtag";
   if (!wobtag) nobtag = "";
