@@ -776,7 +776,7 @@ usePL = False
 infilter = histfilter
 
 dirs = [
-    #'CT10_nom',
+    'CT10_nom'#,
     #'CT10_pdfup', 
     #'CT10_pdfdown',
     #'MSTW_nom', 
@@ -787,7 +787,7 @@ dirs = [
     #'NNPDF_pdfdown',
     #'scaleup', 
     #'scaledown'
-    'MG'
+    #'MG'
 ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
