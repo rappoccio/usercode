@@ -18,6 +18,8 @@ if extJet:
 if extTopTag:
     extName += "_notoptag"
 
+qcdUnc = 10000.0
+
 ####################################################################################
 # We have to externalize the PDF and Q2 uncertainties.
 # This is done by skipping them in the nominal variations,
@@ -65,54 +67,54 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, fittype='', elflag=Fals
         print "DEBUG: muon+jets channel considered"
         if nptbin == '1' :
             if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'etaAbsLep4only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_etaAbsLep4')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , 'mu_etaAbsLep4')
             if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep4only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_htLep4')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , 'mu_htLep4')
             if fittype == '' or fittype == '2temp46' or fittype == 'etaAbsLep6only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_etaAbsLep6')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , 'mu_etaAbsLep6')
             if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep6only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_htLep6')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , 'mu_htLep6')
             if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'vtxMass7only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , 'mu_vtxMass7')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , 'mu_vtxMass7')
             if fittype == 'htLep467' or fittype == 'htLep7only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD', 'mu_htLep7')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD', 'mu_htLep7')
         if nptbin == '2' :
             for obs in ['mu_vtxMass7Low', 'mu_htLep6Low', 'mu_etaAbsLep4Low',
                         'mu_vtxMass7High', 'mu_htLep6High', 'mu_etaAbsLep4High']:
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , obs)
         if nptbin == 'Low' :
             for obs in ['mu_vtxMass7Low', 'mu_htLep6Low', 'mu_etaAbsLep4Low']:
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , obs)
         if nptbin == 'High' :
             for obs in ['mu_vtxMass7High', 'mu_htLep6High', 'mu_etaAbsLep4High']:
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(2.0), 'QCD' , obs)
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , obs)
 
     ## electron+jets channel 
     if elflag:
         print "DEBUG: electron+jets channel considered"
         if nptbin == '1' :
             if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'etaAbsLep4only':
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_etaAbsLep4')
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , 'el_etaAbsLep4')
             if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep4only':
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_htLep4')
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , 'el_htLep4')
             if fittype == '' or fittype == '2temp46' or fittype == 'etaAbsLep6only':
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_etaAbsLep6')
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , 'el_etaAbsLep6')
             if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep6only':
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_htLep6')
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , 'el_htLep6')
             if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'vtxMass7only':
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , 'el_vtxMass7')
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , 'el_vtxMass7')
             if fittype == 'htLep467' or fittype == 'htLep7only':
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD', 'el_htLep7')
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD', 'el_htLep7')
         if nptbin == '2' :
             for obs in ['el_vtxMass7Low', 'el_htLep6Low', 'el_etaAbsLep4Low',
                         'el_vtxMass7High', 'el_htLep6High', 'el_etaAbsLep4High']:
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , obs)
         if nptbin == 'Low' :
             for obs in ['el_vtxMass7Low', 'el_htLep6Low', 'el_etaAbsLep4Low']:
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , obs)
         if nptbin == 'High' :
             for obs in ['el_vtxMass7High', 'el_htLep6High', 'el_etaAbsLep4High']:
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(2.0), 'QCD' , obs)
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , obs)
     
     return model
 
@@ -774,7 +776,7 @@ usePL = False
 infilter = histfilter
 
 dirs = [
-    #'CT10_nom',
+    'CT10_nom'#,
     #'CT10_pdfup', 
     #'CT10_pdfdown',
     #'MSTW_nom', 
@@ -785,7 +787,7 @@ dirs = [
     #'NNPDF_pdfdown',
     #'scaleup', 
     #'scaledown'
-    'MG'
+    #'MG'
 ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
