@@ -288,8 +288,8 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
     TString ttbar_name1 = "TTJets_HadronicMGDecays_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_";
     TString ttbar_name2 = "TTJets_FullLeptMGDecays_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_";
     
-    double ttbar_norm1 = 245.8*1000.0*19.7/10537444.*4./9.;
-    double ttbar_norm2 = 245.8*1000.0*19.7/12119013.*1./9.;
+    double ttbar_norm1 = 245.8*1000.0*19.7/10537444.*0.457;
+    double ttbar_norm2 = 245.8*1000.0*19.7/12119013.*0.105;
     
     TString thetaChannel = "mu_";
     if (doElectron) thetaChannel = "el_";
@@ -411,7 +411,7 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
     
     TString ttbar_name = "TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_";
     
-    double ttbar_norm = 245.8*1000.0*19.7/25424818.*4./9.;
+    double ttbar_norm = 245.8*1000.0*19.7/25424818.*0.438;
     
     TString thetaChannel = "mu_";
     if (doElectron) thetaChannel = "el_";
