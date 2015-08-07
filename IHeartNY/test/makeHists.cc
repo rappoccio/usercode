@@ -183,85 +183,101 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 
   // rebinning
   float rebin = 1;
-  TString newtitle;
+  float binwidth = 0;
+  TString elmu = "Muons";
+  if (doElectron) elmu = "Electrons";
+  char tmptxt[500];
+
   if (var=="etaLep"){
     rebin = 2;
-    if (doElectron) newtitle = "Electrons / 0.2";
-    else newtitle = "Muons / 0.2";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,elmu+" / %.1f",binwidth);
   }
   else if (var.Contains("etaAbsLep")){
     rebin = 2;
-    if (doElectron) newtitle = "Electrons / 0.1";
-    else newtitle = "Muons / 0.1";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,elmu+" / %.1f",binwidth);
   }
   else if (var.Contains("hadtop_eta")){
     rebin = 2;
-    newtitle = "Events / 0.2";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.1f",binwidth);
   }  
   else if (hist=="hadtop_mass6" || hist=="hadtop_mass7" || hist=="leptop_mass4") {
     rebin = 2;
-    newtitle = "Events / 10 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (hist=="leptop_mass6" || hist=="leptop_mass7") {
     rebin = 4;
-    newtitle = "Events / 20 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (hist=="hadtop_pt4") {
     rebin = 2;
-    newtitle = "Events / 10 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (hist=="hadtop_pt6" || hist=="hadtop_pt7" || var=="leptop_pt") {
     rebin = 5;
-    newtitle = "Events / 25 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (hist=="hadtop_y6" || hist=="hadtop_y7" || hist=="leptop_y6" || hist=="leptop_y7") {
     rebin = 2;
-    newtitle = "Events / 0.2";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.1f",binwidth);
   }
   else if (var=="ht") {
     rebin = 5;
-    newtitle = "Events / 50 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (var=="lepMET") {
     rebin = 10;
-    newtitle = "Events / 40 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (var=="ptLep") {
     rebin = 2;
-    if (doElectron) newtitle = "Electrons / 10 GeV";
-    else newtitle = "Muons / 10 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,elmu+" / %.0f GeV",binwidth);
   }
   else if (hist=="ptMET4") {
     rebin = 5;
-    newtitle = "Events / 10 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (hist=="ptMET6" || hist=="ptMET7") {
     rebin = 10;
-    newtitle = "Events / 20 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (hist.Contains("vtxMass")) {
     rebin = 2;
-    newtitle = "Events / 0.2 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.1f GeV",binwidth);
   }
   else if (var.Contains("wboson_")) {
     rebin = 3;
-    newtitle = "Events / 30 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (var.Contains("htLep")){
     rebin = 8;
-    newtitle = "Events / 40 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
 
   if (rebin > 0) {
     h_data->Rebin(rebin);
-    h_data->GetYaxis()->SetTitle(newtitle);
+    h_data->GetYaxis()->SetTitle(tmptxt);
     h_qcd->Rebin(rebin);
     h_ttbar->Rebin(rebin);
     h_ttbar_nonSemiLep->Rebin(rebin);
     h_singletop->Rebin(rebin);
     h_wjets->Rebin(rebin);
   }
-
 
   h_data->SetLineWidth(1);
   h_data->SetMarkerStyle(20);
@@ -279,8 +295,6 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (hist=="ptLep0" || hist=="ptLep1" || hist=="ptLep2") h_data->SetAxisRange(0,200,"X");
   if (hist=="ptMET0" || hist=="ptMET1" || hist=="ptMET2") h_data->SetAxisRange(0,200,"X");
 
-  if (var=="etaAbsLep" && doElectron) h_data->GetXaxis()->SetTitle("Electron |#eta|");
-  else if (var=="etaAbsLep") h_data->GetXaxis()->SetTitle("Muon |#eta|");
 
   // legend
   TLegend* leg;
@@ -348,6 +362,16 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   p1->Draw();
   p1->cd();
 
+  if (hist=="vtxMass6") {
+    h_data->SetMaximum(h_data->GetMaximum()*1.5); 
+    h_data->SetMinimum(0.1); 
+    gPad->SetLogy();
+  }
+  if (hist=="vtxMass4") {
+    h_data->SetMaximum(h_data->GetMaximum()*1.5); 
+    h_data->SetMinimum(0.5); 
+    gPad->SetLogy();
+  }
 
   h_data->UseCurrentStyle();
   h_data->GetXaxis()->SetLabelSize(24);
@@ -398,12 +422,12 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     if (combined) namecomb = "_combined";
 
     if (cut==6 && cut2==0){
-      c->SaveAs(outname+hist+"_inc"+namecomb+"_postfit.png");
-      c->SaveAs(outname+hist+"_inc"+namecomb+"_postfit.pdf");
+      c->SaveAs(outname+hist+"_inc"+namecomb+"_postfitnorm.png");
+      c->SaveAs(outname+hist+"_inc"+namecomb+"_postfitnorm.pdf");
     }
     else {
-      c->SaveAs(outname+hist+namecomb+"_postfit.png");
-      c->SaveAs(outname+hist+namecomb+"_postfit.pdf");
+      c->SaveAs(outname+hist+namecomb+"_postfitnorm.png");
+      c->SaveAs(outname+hist+namecomb+"_postfitnorm.pdf");
     }
   }
   else {
@@ -619,9 +643,22 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
     h_data->Add(h_data2,-1);
   }
 
-  if (what.Contains("etaAbsLep")) h_data->Rebin(getRebin("etaAbsLep"));
-  if (what.Contains("vtxMass")) h_data->Rebin(getRebin("vtxMass"));
-  if (what.Contains("htLep")) h_data->Rebin(getRebin("htLep"));
+  float rebin = 0;
+  if (what.Contains("etaAbsLep")) rebin = getRebin("etaAbsLep");
+  else if (what.Contains("vtxMass")) rebin = getRebin("vtxMass");
+  else if (what.Contains("htLep")) rebin = getRebin("htLep");
+
+  h_data->Rebin(rebin);
+  float binwidth = h_data->GetBinWidth(2);
+  char tmptxt[500];
+  
+  if (what.Contains("etaAbsLep") && doElectron) sprintf(tmptxt,"Electrons / %.1f",binwidth);
+  else if (what.Contains("etaAbsLep")) sprintf(tmptxt,"Muons / %.1f",binwidth);
+  else if (what.Contains("vtxMass")) sprintf(tmptxt,"Events / %.1f",binwidth);
+  else if (what.Contains("htLep")) sprintf(tmptxt,"Events / %.0f",binwidth);
+
+  h_data->GetYaxis()->SetTitle(tmptxt);
+
 
   // -------------------------------------------------------------------------------------
   // various hist plotting edits
@@ -683,7 +720,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   if ( (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin())) > max)
     max = (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin()));
   if (what.Contains("etaAbs") && doElectron) max = max*1.4;
-  if (what.Contains("etaAbs")) max = max*1.2;
+  else if (what.Contains("etaAbs")) max = max*1.2;
   h_data->SetAxisRange(0,max*1.05,"Y");
 
 
