@@ -132,7 +132,7 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
     cout << "Make various post-fit histograms..." << endl;
 
     setExtName();
-
+    /*
     const int nREGION = 4;
     const int nHIST = 11;
     int region[nREGION] = {4,6,6,7};
@@ -147,7 +147,21 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
 	makePlots(hist[ih], region[ir], region2[ir], doElectron, "", "CT10_nom", true, combine);
       }
     }  
+
     makePlots("vtxMass", 7, 0, doElectron, "", "CT10_nom", true, combine);
+    */
+
+    makePlots("etaAbsLep", 4, 6, doElectron, "", "CT10_nom", true, combine);
+    makePlots("etaAbsLep", 6, 7, doElectron, "", "CT10_nom", true, combine);
+    makePlots("etaAbsLep", 7, 0, doElectron, "", "CT10_nom", true, combine);
+
+    makePlots("vtxMass", 4, 6, doElectron, "", "CT10_nom", true, combine);
+    makePlots("vtxMass", 6, 7, doElectron, "", "CT10_nom", true, combine);
+    makePlots("vtxMass", 7, 0, doElectron, "", "CT10_nom", true, combine);
+
+    makePlots("hadtop_pt", 4, 6, doElectron, "", "CT10_nom", true, combine);
+    makePlots("hadtop_pt", 6, 7, doElectron, "", "CT10_nom", true, combine);
+    makePlots("hadtop_pt", 7, 0, doElectron, "", "CT10_nom", true, combine);
 
   }
 
@@ -174,17 +188,21 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
 
   // debug thing
   else if (option=="plotmini") {
+    /*    
     makePlots("hadtop_pt",7,0, doElectron);
     makePlots("hadtop_pt",6,7, doElectron);
     makePlots("hadtop_pt",4,6, doElectron);
-
+    */
+    
     makePlots("vtxMass",7,0, doElectron,"",pdfdir);
     makePlots("etaAbsLep",6,7, doElectron,"",pdfdir);
     makePlots("etaAbsLep",4,6, doElectron,"",pdfdir);
-
+    
+    /*
     makePlots("htLep",7,0, doElectron);
     makePlots("htLep",6,7, doElectron);
     makePlots("htLep",4,6, doElectron);
+    */
   }
 
   else if (option=="allpre") {
