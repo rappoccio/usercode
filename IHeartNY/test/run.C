@@ -251,6 +251,10 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
     makePlots("etaAbsLep",6,7,doElectron,ptbin,"scaledown");
     makePlots("etaAbsLep",4,6,doElectron,ptbin,"scaledown");
 
+    makePlots("vtxMass",7,0,doElectron,ptbin,"MG");
+    makePlots("etaAbsLep",6,7,doElectron,ptbin,"MG");
+    makePlots("etaAbsLep",4,6,doElectron,ptbin,"MG");
+
   }
 
   else if (option=="table") {
@@ -263,12 +267,7 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
 
     setExtName();
 
-    if (fittype == ""){
-      makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine, false, false);
-      makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine, false, false);
-      makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, false);
-    }
-    else if (fittype == "htlep6"){
+    if (fittype == "htlep6" || fittype == "flatQCD"){
       makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine, false, false);
       makePosteriorPlots("htLep6", doElectron, ptbin, "CT10_nom", combine, false, false);
       makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, false);
@@ -294,6 +293,11 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
       makePosteriorPlots("htLep4", doElectron, ptbin, "CT10_nom", combine, false, false);
       makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine, false, false);
       makePosteriorPlots("htLep6", doElectron, ptbin, "CT10_nom", combine, false, false);
+      makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, false);
+    }
+    else {
+      makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine, false, false);
+      makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine, false, false);
       makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, false);
     }
     
@@ -361,6 +365,10 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
     makePosteriorPlots("vtxMass7", doElectron, ptbin, "scaledown", combine);
     makeTable(doElectron, ptbin, "scaledown", combine);
 
+    makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "MG", combine);
+    makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "MG", combine);
+    makePosteriorPlots("vtxMass7", doElectron, ptbin, "MG", combine);
+    makeTable(doElectron, ptbin, "MG", combine);
   }
 
   cout << "... DONE! " << endl;

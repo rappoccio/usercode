@@ -28,7 +28,7 @@ bool extBtag = true;
 bool extJet = false;
 bool extToptag = false;
 
-TString fittype = "";
+TString fittype = "flatQCD";
 
 // END USER SETTINGS
 
