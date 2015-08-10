@@ -219,7 +219,7 @@ SummedHist * getBSM(TString histname, bool doElectron) {
 
   TString BSMfile = "histfiles_BSM/TT_M-1000_Tune4C_8TeV-pythia8_mu_iheartNY_"+muOrEl+"_2Dcut.root";
 
-  double BSMnorm = 0.1 * 1000. * LUM / 1000000.;
+  double BSMnorm = 0.1 * 1000. * LUM / 100000.;
 
   TString thetaChannel = "mu_";
   if (doElectron) thetaChannel = "el_";
