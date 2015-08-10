@@ -794,7 +794,7 @@ dirs = [
 ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
-channel = 'comb'
+channel = 'el'
 
 ## # pt bins
 nptbin = '1'
@@ -932,14 +932,14 @@ for idir in dirs :
                     centralValue = (1.0+stUnc*ival[0][0])
                 else:
                     centralValue = 1.0 / (1.0-stUnc*ival[0][0])
-                if (ival[0][1] + ival[0][0]) > 0:
-                    fitup = (1.0+stUnc*(ival[0][1]+ival[0][0]))
+                if (ival[0][0] + ival[0][1]) > 0:
+                    fitup = (1.0+stUnc*(ival[0][0]+ival[0][1]))
                 else : 
-                    fitup = 1.0 / (1.0-stUnc*(ival[0][1]+ival[0][0]))
-                if (ival[0][1] - ival[0][0]) > 0:
-                    fitdn = (1.0+stUnc*(ival[0][1]-ival[0][0]))
+                    fitup = 1.0 / (1.0-stUnc*(ival[0][0]+ival[0][1]))
+                if (ival[0][0] - ival[0][1]) > 0:
+                    fitdn = (1.0+stUnc*(ival[0][0]-ival[0][1]))
                 else : 
-                    fitdn = 1.0 / (1.0-stUnc*(ival[0][1]-ival[0][0]))
+                    fitdn = 1.0 / (1.0-stUnc*(ival[0][0]-ival[0][1]))
                 my_st_err_up = (fitup-centralValue) / centralValue
                 my_st_err_dn = (centralValue-fitdn) / centralValue
             elif ikey == "rate_vjets":
@@ -950,14 +950,14 @@ for idir in dirs :
                     centralValue = (1.0+vjetsUnc*ival[0][0])
                 else:
                     centralValue = 1.0 / (1.0-vjetsUnc*ival[0][0])
-                if (ival[0][1] + ival[0][0]) > 0:
-                    fitup = (1.0+vjetsUnc*(ival[0][1]+ival[0][0]))
+                if (ival[0][0] + ival[0][1]) > 0:
+                    fitup = (1.0+vjetsUnc*(ival[0][0]+ival[0][1]))
                 else : 
-                    fitup = 1.0 / (1.0-vjetsUnc*(ival[0][1]+ival[0][0]))
-                if (ival[0][1] - ival[0][0]) > 0:
-                    fitdn = (1.0+vjetsUnc*(ival[0][1]-ival[0][0]))
+                    fitup = 1.0 / (1.0-vjetsUnc*(ival[0][0]+ival[0][1]))
+                if (ival[0][0] - ival[0][1]) > 0:
+                    fitdn = (1.0+vjetsUnc*(ival[0][0]-ival[0][1]))
                 else : 
-                    fitdn = 1.0 / (1.0-vjetsUnc*(ival[0][1]-ival[0][0]))
+                    fitdn = 1.0 / (1.0-vjetsUnc*(ival[0][0]-ival[0][1]))
                 my_wj_err_up = (fitup-centralValue) / centralValue
                 my_wj_err_dn = (centralValue-fitdn) / centralValue
             elif ikey == "rate_mu_qcd":
@@ -968,14 +968,14 @@ for idir in dirs :
                     centralValue = (1.0+qcdUnc*ival[0][0])
                 else:
                     centralValue = 1.0 / (1.0-qcdUnc*ival[0][0])
-                if (ival[0][1] + ival[0][0]) > 0:
-                    fitup = (1.0+qcdUnc*(ival[0][1]+ival[0][0]))
+                if (ival[0][0] + ival[0][1]) > 0:
+                    fitup = (1.0+qcdUnc*(ival[0][0]+ival[0][1]))
                 else : 
-                    fitup = 1.0 / (1.0-qcdUnc*(ival[0][1]+ival[0][0]))
-                if (ival[0][1] - ival[0][0]) > 0:
-                    fitdn = (1.0+qcdUnc*(ival[0][1]-ival[0][0]))
+                    fitup = 1.0 / (1.0-qcdUnc*(ival[0][0]+ival[0][1]))
+                if (ival[0][0] - ival[0][1]) > 0:
+                    fitdn = (1.0+qcdUnc*(ival[0][0]-ival[0][1]))
                 else : 
-                    fitdn = 1.0 / (1.0-qcdUnc*(ival[0][1]-ival[0][0]))
+                    fitdn = 1.0 / (1.0-qcdUnc*(ival[0][0]-ival[0][1]))
                 my_muqcd_err_up = (fitup-centralValue) / centralValue
                 my_muqcd_err_dn = (centralValue-fitdn) / centralValue
             elif ikey == "rate_el_qcd":
@@ -986,14 +986,14 @@ for idir in dirs :
                     centralValue = (1.0+qcdUnc*ival[0][0])
                 else:
                     centralValue = 1.0 / (1.0-qcdUnc*ival[0][0])
-                if (ival[0][1] + ival[0][0]) > 0:
-                    fitup = (1.0+qcdUnc*(ival[0][1]+ival[0][0]))
+                if (ival[0][0] + ival[0][1]) > 0:
+                    fitup = (1.0+qcdUnc*(ival[0][0]+ival[0][1]))
                 else : 
-                    fitup = 1.0 / (1.0-qcdUnc*(ival[0][1]+ival[0][0]))
-                if (ival[0][1] - ival[0][0]) > 0:
-                    fitdn = (1.0+qcdUnc*(ival[0][1]-ival[0][0]))
+                    fitup = 1.0 / (1.0-qcdUnc*(ival[0][0]+ival[0][1]))
+                if (ival[0][0] - ival[0][1]) > 0:
+                    fitdn = (1.0+qcdUnc*(ival[0][0]-ival[0][1]))
                 else : 
-                    fitdn = 1.0 / (1.0-qcdUnc*(ival[0][1]-ival[0][0]))
+                    fitdn = 1.0 / (1.0-qcdUnc*(ival[0][0]-ival[0][1]))
                 my_eqcd_err_up = (fitup-centralValue) / centralValue
                 my_eqcd_err_dn = (centralValue-fitdn) / centralValue
                         
@@ -1008,7 +1008,10 @@ for idir in dirs :
         my_muqcd_err = (my_muqcd_err_up+my_muqcd_err_dn)/2
         my_eqcd_err = (my_eqcd_err_up+my_eqcd_err_dn)/2
         
-        print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err)+", "+str(my_eqcd_err)+"}, // bkg error for "+idir
+        print "    {"+str(my_tt_err)+", "+str(my_st_err_up)+", "+str(my_wj_err_up)+", "+str(my_muqcd_err_up)+", "+str(my_eqcd_err_up)+"}, // bkg error UP for "+idir
+        print "    {"+str(my_tt_err)+", "+str(my_st_err_dn)+", "+str(my_wj_err_dn)+", "+str(my_muqcd_err_dn)+", "+str(my_eqcd_err_dn)+"}, // bkg error DN for "+idir
+        print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err)+", "+str(my_eqcd_err)+"}, // bkg error AVERAGED for "+idir
+        
         toptag_post = (1.0 + 0.25*my_toptag) 
         toptagLow_post = (1.0 + 0.25*my_toptagLow) 
         toptagHigh_post = (1.0 + 0.25*my_toptagHigh) 
