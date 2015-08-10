@@ -70,15 +70,18 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, fittype='', elflag=Fals
         print "DEBUG: muon+jets channel considered"
         if nptbin == '1' :
             if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'etaAbsLep4only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep4')
+                #model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep4')
+                model.add_asymmetric_lognormal_uncertainty('rate_mu_qcd', math.log(1. + qcdUnc / 4), math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep4')
             if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep4only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_htLep4')
             if fittype == '' or fittype == '2temp46' or fittype == 'etaAbsLep6only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep6')
+                #model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep6')
+                model.add_asymmetric_lognormal_uncertainty('rate_mu_qcd', math.log(1. + qcdUnc / 4), math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep6')
             if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep6only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_htLep6')
             if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'vtxMass7only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_vtxMass7')
+                model.add_asymmetric_lognormal_uncertainty('rate_mu_qcd', math.log(1. + qcdUnc / 4), math.log(1+qcdUnc), 'QCD' , 'mu_vtxMass7')
             if fittype == 'htLep467' or fittype == 'htLep7only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD', 'mu_htLep7')
         if nptbin == '2' :
@@ -794,7 +797,7 @@ dirs = [
 ]
 
 ## muon channel ('mu') / electron channel ('el') / combined ('comb')
-channel = 'el'
+channel = 'comb'
 
 ## # pt bins
 nptbin = '1'
@@ -890,13 +893,10 @@ for idir in dirs :
 
         my_tt_err = 0
         
-        my_wj_err_up = 0
-        my_st_err_up = 0
-        my_eqcd_err_up = 0
+        my_wj_err = 0
+        my_st_err = 0
+        my_eqcd_err = 0
         my_muqcd_err_up = 0
-        my_wj_err_dn = 0
-        my_st_err_dn = 0
-        my_eqcd_err_dn = 0
         my_muqcd_err_dn = 0
 
         my_toptag = 0
@@ -925,91 +925,62 @@ for idir in dirs :
                 my_toptagHigh = ival[0][0]
                 my_toptagHigh_err = ival[0][1]
             elif ikey == "rate_st":
-                centralValue = 0
-                fitup = 0
-                fitdn = 0
-                if (ival[0][0] > 0): 
-                    centralValue = (1.0+stUnc*ival[0][0])
-                else:
-                    centralValue = 1.0 / (1.0-stUnc*ival[0][0])
-                if (ival[0][0] + ival[0][1]) > 0:
-                    fitup = (1.0+stUnc*(ival[0][0]+ival[0][1]))
-                else : 
-                    fitup = 1.0 / (1.0-stUnc*(ival[0][0]+ival[0][1]))
-                if (ival[0][0] - ival[0][1]) > 0:
-                    fitdn = (1.0+stUnc*(ival[0][0]-ival[0][1]))
-                else : 
-                    fitdn = 1.0 / (1.0-stUnc*(ival[0][0]-ival[0][1]))
-                my_st_err_up = (fitup-centralValue) / centralValue
-                my_st_err_dn = (centralValue-fitdn) / centralValue
+                my_st_err = ival[0][1]*stUnc/(1+ival[0][0]*stUnc)
             elif ikey == "rate_vjets":
-                centralValue = 0
-                fitup = 0
-                fitdn = 0
-                if (ival[0][0] > 0): 
-                    centralValue = (1.0+vjetsUnc*ival[0][0])
-                else:
-                    centralValue = 1.0 / (1.0-vjetsUnc*ival[0][0])
-                if (ival[0][0] + ival[0][1]) > 0:
-                    fitup = (1.0+vjetsUnc*(ival[0][0]+ival[0][1]))
-                else : 
-                    fitup = 1.0 / (1.0-vjetsUnc*(ival[0][0]+ival[0][1]))
-                if (ival[0][0] - ival[0][1]) > 0:
-                    fitdn = (1.0+vjetsUnc*(ival[0][0]-ival[0][1]))
-                else : 
-                    fitdn = 1.0 / (1.0-vjetsUnc*(ival[0][0]-ival[0][1]))
-                my_wj_err_up = (fitup-centralValue) / centralValue
-                my_wj_err_dn = (centralValue-fitdn) / centralValue
+                my_wj_err = ival[0][1]*vjetsUnc/(1+ival[0][0]*vjetsUnc)
             elif ikey == "rate_mu_qcd":
-                centralValue = 0
-                fitup = 0
-                fitdn = 0
-                if (ival[0][0] > 0): 
-                    centralValue = (1.0+qcdUnc*ival[0][0])
-                else:
-                    centralValue = 1.0 / (1.0-qcdUnc*ival[0][0])
-                if (ival[0][0] + ival[0][1]) > 0:
-                    fitup = (1.0+qcdUnc*(ival[0][0]+ival[0][1]))
-                else : 
-                    fitup = 1.0 / (1.0-qcdUnc*(ival[0][0]+ival[0][1]))
-                if (ival[0][0] - ival[0][1]) > 0:
-                    fitdn = (1.0+qcdUnc*(ival[0][0]-ival[0][1]))
-                else : 
-                    fitdn = 1.0 / (1.0-qcdUnc*(ival[0][0]-ival[0][1]))
-                my_muqcd_err_up = (fitup-centralValue) / centralValue
-                my_muqcd_err_dn = (centralValue-fitdn) / centralValue
+                my_muqcd_err_dn = ival[0][1]*qcdUnc/4/(1+ival[0][0]*qcdUnc/4)
+                my_muqcd_err_up = ival[0][1]*qcdUnc/(1+ival[0][0]*qcdUnc)
             elif ikey == "rate_el_qcd":
-                centralValue = 0
-                fitup = 0
-                fitdn = 0
-                if (ival[0][0] > 0): 
-                    centralValue = (1.0+qcdUnc*ival[0][0])
-                else:
-                    centralValue = 1.0 / (1.0-qcdUnc*ival[0][0])
-                if (ival[0][0] + ival[0][1]) > 0:
-                    fitup = (1.0+qcdUnc*(ival[0][0]+ival[0][1]))
-                else : 
-                    fitup = 1.0 / (1.0-qcdUnc*(ival[0][0]+ival[0][1]))
-                if (ival[0][0] - ival[0][1]) > 0:
-                    fitdn = (1.0+qcdUnc*(ival[0][0]-ival[0][1]))
-                else : 
-                    fitdn = 1.0 / (1.0-qcdUnc*(ival[0][0]-ival[0][1]))
-                my_eqcd_err_up = (fitup-centralValue) / centralValue
-                my_eqcd_err_dn = (centralValue-fitdn) / centralValue
-                        
+                my_elqcd_err = ival[0][1]*qcdUnc/(1+ival[0][0]*qcdUnc)
+           # elif ikey == "rate_mu_qcd":
+           #     centralValue = 0
+           #     fitup = 0
+           #     fitdn = 0
+           #     if (ival[0][0] > 0): 
+           #         centralValue = (1.0+qcdUnc*ival[0][0])
+           #     else:
+           #         centralValue = 1.0 / (1.0-qcdUnc*ival[0][0])
+           #     if (ival[0][0] + ival[0][1]) > 0:
+           #         fitup = (1.0+qcdUnc*(ival[0][0]+ival[0][1]))
+           #     else : 
+           #         fitup = 1.0 / (1.0-qcdUnc*(ival[0][0]+ival[0][1]))
+           #     if (ival[0][0] - ival[0][1]) > 0:
+           #         fitdn = (1.0+qcdUnc*(ival[0][0]-ival[0][1]))
+           #     else : 
+           #         fitdn = 1.0 / (1.0-qcdUnc*(ival[0][0]-ival[0][1]))
+           #     my_muqcd_err_up = (fitup-centralValue) / centralValue
+           #     my_muqcd_err_dn = (centralValue-fitdn) / centralValue
+           # elif ikey == "rate_el_qcd":
+           #     centralValue = 0
+           #     fitup = 0
+           #     fitdn = 0
+           #     if (ival[0][0] > 0): 
+           #         centralValue = (1.0+qcdUnc*ival[0][0])
+           #     else:
+           #         centralValue = 1.0 / (1.0-qcdUnc*ival[0][0])
+           #     if (ival[0][0] + ival[0][1]) > 0:
+           #         fitup = (1.0+qcdUnc*(ival[0][0]+ival[0][1]))
+           #     else : 
+           #         fitup = 1.0 / (1.0-qcdUnc*(ival[0][0]+ival[0][1]))
+           #     if (ival[0][0] - ival[0][1]) > 0:
+           #         fitdn = (1.0+qcdUnc*(ival[0][0]-ival[0][1]))
+           #     else : 
+           #         fitdn = 1.0 / (1.0-qcdUnc*(ival[0][0]-ival[0][1]))
+           #     my_eqcd_err_up = (fitup-centralValue) / centralValue
+           #     my_eqcd_err_dn = (centralValue-fitdn) / centralValue
 
-        print "single top error, up = "+str(my_st_err_up)+" dn = "+str(my_st_err_dn)
-        print "W+jets error, up = "+str(my_wj_err_up)+" dn = "+str(my_wj_err_dn)
+             
+
+        print "single top error = "+str(my_st_err)
+        print "W+jets error, up = "+str(my_wj_err)
         print "muon QCD error, up = "+str(my_muqcd_err_up)+" dn = "+str(my_muqcd_err_dn)
-        print "electron QCD error, up = "+str(my_eqcd_err_up)+" dn = "+str(my_eqcd_err_dn)
+        print "electron QCD error = "+str(my_eqcd_err)
                 
-        my_st_err = (my_st_err_up+my_st_err_dn)/2
-        my_wj_err = (my_wj_err_up+my_wj_err_dn)/2
         my_muqcd_err = (my_muqcd_err_up+my_muqcd_err_dn)/2
-        my_eqcd_err = (my_eqcd_err_up+my_eqcd_err_dn)/2
         
-        print "    {"+str(my_tt_err)+", "+str(my_st_err_up)+", "+str(my_wj_err_up)+", "+str(my_muqcd_err_up)+", "+str(my_eqcd_err_up)+"}, // bkg error UP for "+idir
-        print "    {"+str(my_tt_err)+", "+str(my_st_err_dn)+", "+str(my_wj_err_dn)+", "+str(my_muqcd_err_dn)+", "+str(my_eqcd_err_dn)+"}, // bkg error DN for "+idir
+        print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err_up)+", "+str(my_eqcd_err)+"}, // bkg error UP for "+idir
+        print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err_dn)+", "+str(my_eqcd_err)+"}, // bkg error DN for "+idir
         print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err)+", "+str(my_eqcd_err)+"}, // bkg error AVERAGED for "+idir
         
         toptag_post = (1.0 + 0.25*my_toptag) 
