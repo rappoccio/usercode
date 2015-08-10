@@ -93,11 +93,11 @@ void calcOne(TString which, bool parton, bool doel) {
   else if (which=="scaledown") iwhich = 4;
   
   double ttbar_xs[5] = {
-    245.8,  // nominal
-    245.8,  // CT10 up
-    245.8,  // CT10 down
-    252.0,  // q2 up
-    237.4   // q2 down
+    252.89,  // nominal
+    252.89,  // CT10 up
+    252.89,  // CT10 down
+    (252.89+6.39),  // q2 up
+    (252.89-8.64)   // q2 down
   };
   double ttbar_nevents[5][3] = {
     {21675970.,3082812.,1249111.},  // nominal
@@ -116,7 +116,7 @@ void calcOne(TString which, bool parton, bool doel) {
   
   
   if (which=="MG") {
-    double ttbar_norm = 245.8/25424818.*0.308;
+    double ttbar_norm = 252.89/25424818.*0.438;
     h1->Scale(ttbar_norm);
     h11->Scale(ttbar_norm);
   }
@@ -179,7 +179,6 @@ void calcOne(TString which, bool parton, bool doel) {
   
   
   float total_xsec = ttbar_xs[iwhich];
-  if (which=="MG") total_xsec = total_xsec*0.308/(1./3.);
 
   cout << "Inclusive cross section at " << level << " level for " << which << " = " << total_xsec*h11->GetSum()/h1->GetSum() << " pb (" << lepton << ")" << endl;  
 

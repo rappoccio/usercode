@@ -1,37 +1,38 @@
 
 void calcFinal() {
 
-  float particle_nom[3] = {1.46056, 1.44206, 0.};
-  float parton_nom[3]   = {1.62736, 1.61629, 0.};
+  float particle_nom[3] = {1.50269, 1.48366, 0.};
+  float parton_nom[3]   = {1.6743, 1.66291, 0.};
   particle_nom[2] = (particle_nom[0]+particle_nom[1])/2.;
   parton_nom[2] = (parton_nom[0]+parton_nom[1])/2.;
 
-  float particle_pdfup[3] = {1.60231, 1.57759, 0.};
-  float parton_pdfup[3]   = {1.79039, 1.77282, 0.};
+  float particle_pdfup[3] = {1.64853, 1.6231, 0.};
+  float parton_pdfup[3]   = {1.84204, 1.82396, 0.};
   particle_pdfup[2] = (particle_pdfup[0]+particle_pdfup[1])/2.;
   parton_pdfup[2] = (parton_pdfup[0]+parton_pdfup[1])/2.;
-  float particle_pdfdown[3] = {1.36372, 1.34908, 0.};
-  float parton_pdfdown[3]   = {1.50358, 1.49607, 0.};
+  float particle_pdfdown[3] = {1.40305, 1.38799, 0.};
+  float parton_pdfdown[3]   = {1.54695, 1.53923, 0.};
   particle_pdfdown[2] = (particle_pdfdown[0]+particle_pdfdown[1])/2.;
   parton_pdfdown[2] = (parton_pdfdown[0]+parton_pdfdown[1])/2.;
-  float particle_scaleup[3] = {1.55751, 1.53262, 0.};
-  float parton_scaleup[3]   = {1.76479, 1.73796, 0.};
+  float particle_scaleup[3] = {1.60251, 1.5769, 0.};
+  float parton_scaleup[3]   = {1.81578, 1.78817, 0.};
   particle_scaleup[2] = (particle_scaleup[0]+particle_scaleup[1])/2.;
   parton_scaleup[2] = (parton_scaleup[0]+parton_scaleup[1])/2.;
-  float particle_scaledown[3] = {1.3693, 1.31044, 0.};
-  float parton_scaledown[3]   = {1.4213, 1.40934, 0.};
+  float particle_scaledown[3] = {1.40881, 1.34825, 0.};
+  float parton_scaledown[3]   = {1.46231, 1.45, 0.};
   particle_scaledown[2] = (particle_scaledown[0]+particle_scaledown[1])/2.;
   parton_scaledown[2] = (parton_scaledown[0]+parton_scaledown[1])/2.;
 
-  float particle_MG[3] = {1.35881, 1.33966, 0.};
-  float parton_MG[3]   = {1.65839, 1.65651, 0.};
+  float particle_MG[3] = {1.513, 1.49167, 0.};
+  float parton_MG[3]   = {1.84656, 1.84447, 0.};
   particle_MG[2] = (particle_MG[0]+particle_MG[1])/2.;
   parton_MG[2] = (parton_MG[0]+parton_MG[1])/2.;
 
   // beta_signal's from theta fit
-  float data[3] = {0.65, 0.82, 0.88};
+  float data[3] = {0.63, 0.80, 0.87};
   float err_data[3] = {0.09, 0.09, 0.06};
-  float data_MG[3] = {0.64, 0.84, 0.87};
+  //  float data_MG[3] = {0.64, 0.84, 0.87};
+  float data_MG[3] = {0.62, 0.82, 0.85};  /// temporary hack -- need to fix if showing MadGraph in public (rerun theta with updated top xs)
   float err_data_MG[3] = {0.09, 0.09, 0.06};
 
   // additional luminosity uncertainty
