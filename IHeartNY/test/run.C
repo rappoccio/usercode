@@ -58,13 +58,13 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
 
     setExtName();
 
-    makePlots("etaAbsLep", 4, 6, doElectron, "", "CT10_nom", true, combine);
-    makePlots("etaAbsLep", 6, 7, doElectron, "", "CT10_nom", true, combine);
+    //makePlots("etaAbsLep", 4, 6, doElectron, "", "CT10_nom", true, combine);
+    //makePlots("etaAbsLep", 6, 7, doElectron, "", "CT10_nom", true, combine);
     makePlots("etaAbsLep", 7, 0, doElectron, "", "CT10_nom", true, combine);
 
-    makePlots("vtxMass", 4, 6, doElectron, "", "CT10_nom", true, combine);
-    makePlots("vtxMass", 6, 7, doElectron, "", "CT10_nom", true, combine);
-    makePlots("vtxMass", 7, 0, doElectron, "", "CT10_nom", true, combine);
+    //makePlots("vtxMass", 4, 6, doElectron, "", "CT10_nom", true, combine);
+    //makePlots("vtxMass", 6, 7, doElectron, "", "CT10_nom", true, combine);
+    //makePlots("vtxMass", 7, 0, doElectron, "", "CT10_nom", true, combine);
 
     makePlots("hadtop_pt", 4, 6, doElectron, "", "CT10_nom", true, combine);
     makePlots("hadtop_pt", 6, 7, doElectron, "", "CT10_nom", true, combine);
