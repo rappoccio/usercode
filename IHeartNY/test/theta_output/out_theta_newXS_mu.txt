@@ -1,0 +1,40 @@
+Total number of likelihood evaluations: 787208
+Total number of likelihood evaluations: 564
+[INFO]  executing script analysis.py
+Building for ttbar_xs_mu
+DEBUG: muon+jets channel considered
+------------- MLE RESULTS CT10_nom mu channel 1bin  ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-e10cf24d67.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-a3e689097e.cfg --nowarn'
+{'TTbar': {'jer': [(-0.77931890856180608, 0.81379560066648449)], 'toptag': [(0.6586858782193673, 0.42264512674567578)], 'beta_signal': [(0.630509396567833, 0.08514554491771853)], 'jec': [(0.44891077651424083, 0.69065833212011452)], 'rate_vjets': [(-0.18463233344196356, 0.1584170171215516)], '__nll': [-41062.79374363408], '__cov': [array([[  7.26173597e-03,  -8.17942964e-03,  -1.81491378e-03,
+         -1.99551022e-02,  -3.40003322e-04,  -2.03303814e-03,
+         -3.33854017e-02],
+       [ -8.17942964e-03,   4.77008932e-01,   4.73645065e-02,
+          1.11888447e-02,  -1.91191681e-02,  -6.96937506e-02,
+          2.50413227e-02],
+       [ -1.81491378e-03,   4.73645065e-02,   6.62263280e-01,
+          2.73651446e-02,   1.61268913e-02,  -2.41555108e-02,
+          3.40399211e-03],
+       [ -1.99551022e-02,   1.11888447e-02,   2.73651446e-02,
+          1.17545329e-01,  -5.90937919e-02,  -1.72527682e-02,
+          9.49058091e-02],
+       [ -3.40003322e-04,  -1.91191681e-02,   1.61268913e-02,
+         -5.90937919e-02,   7.65312900e-01,  -6.19170544e-03,
+         -1.16518527e-02],
+       [ -2.03303814e-03,  -6.96937506e-02,  -2.41555108e-02,
+         -1.72527682e-02,  -6.19170544e-03,   2.50959513e-02,
+          1.21556171e-02],
+       [ -3.33854017e-02,   2.50413227e-02,   3.40399211e-03,
+          9.49058091e-02,  -1.16518527e-02,   1.21556171e-02,
+          1.78628903e-01]])], 'rate_mu_qcd': [(-0.22277428912753183, 0.34284884262195719)], 'rate_st': [(-0.70576430421703817, 0.87482163919247879)]}}
+jer                  :  -0.78 +-   0.81
+toptag               :   0.66 +-   0.42
+beta_signal          :   0.63 +-   0.09
+jec                  :   0.45 +-   0.69
+rate_vjets           :  -0.18 +-   0.16
+rate_mu_qcd          :  -0.22 +-   0.34
+rate_st              :  -0.71 +-   0.87
+    {0.135042467854, 0.591765290971, 0.0865207344428, 0.419226749815, 0}, // bkg error for CT10_nom
+if options.pdf == "CT10_nom" and options.lepType == "muon" : toptag_post = 1.16467146955
+['beta_signal', 'jec', 'jer', 'rate_mu_qcd', 'rate_st', 'rate_vjets', 'toptag']
+[INFO]  workdir is /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis

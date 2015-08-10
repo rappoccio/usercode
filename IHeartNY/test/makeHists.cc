@@ -183,85 +183,101 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 
   // rebinning
   float rebin = 1;
-  TString newtitle;
+  float binwidth = 0;
+  TString elmu = "Muons";
+  if (doElectron) elmu = "Electrons";
+  char tmptxt[500];
+
   if (var=="etaLep"){
     rebin = 2;
-    if (doElectron) newtitle = "Electrons / 0.2";
-    else newtitle = "Muons / 0.2";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,elmu+" / %.1f",binwidth);
   }
   else if (var.Contains("etaAbsLep")){
     rebin = 2;
-    if (doElectron) newtitle = "Electrons / 0.1";
-    else newtitle = "Muons / 0.1";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,elmu+" / %.1f",binwidth);
   }
   else if (var.Contains("hadtop_eta")){
     rebin = 2;
-    newtitle = "Events / 0.2";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.1f",binwidth);
   }  
   else if (hist=="hadtop_mass6" || hist=="hadtop_mass7" || hist=="leptop_mass4") {
     rebin = 2;
-    newtitle = "Events / 10 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (hist=="leptop_mass6" || hist=="leptop_mass7") {
     rebin = 4;
-    newtitle = "Events / 20 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (hist=="hadtop_pt4") {
     rebin = 2;
-    newtitle = "Events / 10 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (hist=="hadtop_pt6" || hist=="hadtop_pt7" || var=="leptop_pt") {
     rebin = 5;
-    newtitle = "Events / 25 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (hist=="hadtop_y6" || hist=="hadtop_y7" || hist=="leptop_y6" || hist=="leptop_y7") {
     rebin = 2;
-    newtitle = "Events / 0.2";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.1f",binwidth);
   }
   else if (var=="ht") {
     rebin = 5;
-    newtitle = "Events / 50 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (var=="lepMET") {
     rebin = 10;
-    newtitle = "Events / 40 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (var=="ptLep") {
     rebin = 2;
-    if (doElectron) newtitle = "Electrons / 10 GeV";
-    else newtitle = "Muons / 10 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,elmu+" / %.0f GeV",binwidth);
   }
   else if (hist=="ptMET4") {
     rebin = 5;
-    newtitle = "Events / 10 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (hist=="ptMET6" || hist=="ptMET7") {
     rebin = 10;
-    newtitle = "Events / 20 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (hist.Contains("vtxMass")) {
     rebin = 2;
-    newtitle = "Events / 0.2 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.1f GeV",binwidth);
   }
   else if (var.Contains("wboson_")) {
     rebin = 3;
-    newtitle = "Events / 30 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (var.Contains("htLep")){
     rebin = 8;
-    newtitle = "Events / 40 GeV";
+    binwidth = h_data->GetBinWidth(2) * rebin;
+    sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
 
   if (rebin > 0) {
     h_data->Rebin(rebin);
-    h_data->GetYaxis()->SetTitle(newtitle);
+    h_data->GetYaxis()->SetTitle(tmptxt);
     h_qcd->Rebin(rebin);
     h_ttbar->Rebin(rebin);
     h_ttbar_nonSemiLep->Rebin(rebin);
     h_singletop->Rebin(rebin);
     h_wjets->Rebin(rebin);
   }
-
 
   h_data->SetLineWidth(1);
   h_data->SetMarkerStyle(20);
@@ -279,8 +295,6 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (hist=="ptLep0" || hist=="ptLep1" || hist=="ptLep2") h_data->SetAxisRange(0,200,"X");
   if (hist=="ptMET0" || hist=="ptMET1" || hist=="ptMET2") h_data->SetAxisRange(0,200,"X");
 
-  if (var=="etaAbsLep" && doElectron) h_data->GetXaxis()->SetTitle("Electron |#eta|");
-  else if (var=="etaAbsLep") h_data->GetXaxis()->SetTitle("Muon |#eta|");
 
   // legend
   TLegend* leg;
@@ -348,6 +362,16 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   p1->Draw();
   p1->cd();
 
+  if (hist=="vtxMass6") {
+    h_data->SetMaximum(h_data->GetMaximum()*1.5); 
+    h_data->SetMinimum(0.1); 
+    gPad->SetLogy();
+  }
+  if (hist=="vtxMass4") {
+    h_data->SetMaximum(h_data->GetMaximum()*1.5); 
+    h_data->SetMinimum(0.5); 
+    gPad->SetLogy();
+  }
 
   h_data->UseCurrentStyle();
   h_data->GetXaxis()->SetLabelSize(24);
@@ -398,12 +422,12 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     if (combined) namecomb = "_combined";
 
     if (cut==6 && cut2==0){
-      c->SaveAs(outname+hist+"_inc"+namecomb+"_postfit.png");
-      c->SaveAs(outname+hist+"_inc"+namecomb+"_postfit.pdf");
+      c->SaveAs(outname+hist+"_inc"+namecomb+"_postfitnorm.png");
+      c->SaveAs(outname+hist+"_inc"+namecomb+"_postfitnorm.pdf");
     }
     else {
-      c->SaveAs(outname+hist+namecomb+"_postfit.png");
-      c->SaveAs(outname+hist+namecomb+"_postfit.pdf");
+      c->SaveAs(outname+hist+namecomb+"_postfitnorm.png");
+      c->SaveAs(outname+hist+namecomb+"_postfitnorm.pdf");
     }
   }
   else {
@@ -619,9 +643,22 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
     h_data->Add(h_data2,-1);
   }
 
-  if (what.Contains("etaAbsLep")) h_data->Rebin(getRebin("etaAbsLep"));
-  if (what.Contains("vtxMass")) h_data->Rebin(getRebin("vtxMass"));
-  if (what.Contains("htLep")) h_data->Rebin(getRebin("htLep"));
+  float rebin = 0;
+  if (what.Contains("etaAbsLep")) rebin = getRebin("etaAbsLep");
+  else if (what.Contains("vtxMass")) rebin = getRebin("vtxMass");
+  else if (what.Contains("htLep")) rebin = getRebin("htLep");
+
+  h_data->Rebin(rebin);
+  float binwidth = h_data->GetBinWidth(2);
+  char tmptxt[500];
+  
+  if (what.Contains("etaAbsLep") && doElectron) sprintf(tmptxt,"Electrons / %.1f",binwidth);
+  else if (what.Contains("etaAbsLep")) sprintf(tmptxt,"Muons / %.1f",binwidth);
+  else if (what.Contains("vtxMass")) sprintf(tmptxt,"Events / %.1f",binwidth);
+  else if (what.Contains("htLep")) sprintf(tmptxt,"Events / %.0f",binwidth);
+
+  h_data->GetYaxis()->SetTitle(tmptxt);
+
 
   // -------------------------------------------------------------------------------------
   // various hist plotting edits
@@ -683,7 +720,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   if ( (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin())) > max)
     max = (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin()));
   if (what.Contains("etaAbs") && doElectron) max = max*1.4;
-  if (what.Contains("etaAbs")) max = max*1.2;
+  else if (what.Contains("etaAbs")) max = max*1.2;
   h_data->SetAxisRange(0,max*1.05,"Y");
 
 
@@ -760,7 +797,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false) {
 
   TString what[3] = {"etaAbsLep4","etaAbsLep6","vtxMass7"};
-  if (fittype == "htlep6" || fittype == "htlep46" || fittype == "htlep467" || fittype == "2temp0t") {
+  if (fittype == "htlep6" || fittype == "htlep46" || fittype == "htlep467" || fittype == "2temp0t" || fittype == "flatQCD") {
     what[1] = "htLep6";
   }
   if (fittype == "htlep46" || fittype == "htlep467"){
@@ -803,9 +840,10 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   // these are the current default version! 
   // -------------------------------------------------------------------------------------
 
-  float fiterrors_mu_extLumi_extBtag[11][5] = {
-    //{0.13623799557, 0.588013259541, 0.0896067390956, 0.190280435213, 0}, // bkg error for CT10_nom
-    {0.0849186169086, 0.479511247586, 0.0859954208879, 0.116649491322, 0}, // bkg error for CT10_nom (2temp0t)
+  float fiterrors_mu_extLumi_extBtag[12][5] = {
+    //{0.135132081051, 0.592864270042, 0.0865722920178, 0.417039824299, 0}, // bkg error for CT10_nom 
+    //{0.0849186169086, 0.479511247586, 0.0859954208879, 0.116649491322, 0}, // bkg error for CT10_nom (2temp0t)
+    {0.128438848781, 0.585592024004, 0.0969591956193, 1.45116905634, 0}, // bkg error for CT10_nom (flat QCD)
     {0.141047195591, 0.584563234787, 0.0970293967236, 0.172037540546, 0}, // bkg error for CT10_pdfup
     {0.13201839681, 0.592757087347, 0.0846483545142, 0.209374249831, 0}, // bkg error for CT10_pdfdown
     {0.136654966326, 0.589173345724, 0.0880843814416, 0.188347196546, 0}, // bkg error for MSTW_nom
@@ -816,10 +854,12 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.124032832097, 0.574155316422, 0.083228620927, 0.156804230287, 0}, // bkg error for NNPDF_pdfdown
     {0.136621242877, 0.585878298604, 0.0813713702842, 0.228854103339, 0}, // bkg error for scaleup
     {0.132321463273, 0.58477773733, 0.102224845937, 0.156264820702, 0}, // bkg error for scaledown
+    {0.132393858081, 0.601442306113, 0.0720573525466, 0.207712268448, 0}, // bkg error for MG
   };
-  float fiterrors_el_extLumi_extBtag[11][5] = {
-    //{0.104168517361, 0.488891930375, 0.088292381878, 0, 0.185694929179}, // bkg error for CT10_nom
-    {0.0997720511417, 0.446088129682, 0.0419740898106, 0, 0.191691617142}, // bkg error for CT10_nom (2temp0t)
+  float fiterrors_el_extLumi_extBtag[12][5] = {
+    //{0.105955487711, 0.472815289875, 0.0879845167103, 0, 0.291905355502}, // bkg error for CT10_nom
+    //{0.0997720511417, 0.446088129682, 0.0419740898106, 0, 0.191691617142}, // bkg error for CT10_nom (2temp0t)
+    {0.110661247942, 0.507596238499, 0.0838193634334, 0, 1.61308220344}, // bkg error for CT10_nom (flat QCD)
     {0.111230824282, 0.462081793096, 0.0975843837009, 0, 0.198637175933}, // bkg error for CT10_pdfup
     {0.0995412715042, 0.506136119673, 0.0833208500129, 0, 0.174993040682}, // bkg error for CT10_pdfdown
     {0.104896323332, 0.487690699466, 0.0866648199766, 0, 0.189066564151}, // bkg error for MSTW_nom
@@ -830,10 +870,12 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.0988421728534, 0.510857094608, 0.0822526946667, 0, 0.176028402388}, // bkg error for NNPDF_pdfdown
     {0.0979624945502, 0.515321474438, 0.073779724345, 0, 0.167480450102}, // bkg error for scaleup
     {0.108398956294, 0.532045553364, 0.0700946366173, 0, 0.160976337304}, // bkg error for scaledown
+    {0.0994881298212, 0.514981177639, 0.0768513374474, 0, 0.141037932666}, // bkg error for MG
   };
-  float fiterrors_comb_extLumi_extBtag[11][5] = {
-    //{0.0739013415172, 0.465465869686, 0.078490070614, 0.432458085567, 0.0621258763276}, // bkg error for CT10_nom
-    {0.069766876149, 0.339272734277, 0.0485490110471, 0.217961414064, 0.0801378744912}, // bkg error for CT10_nom (2temp0t)
+  float fiterrors_comb_extLumi_extBtag[12][5] = {
+    //{0.0741772098545, 0.474378711021, 0.0747761422176, 1.42301397566, 0.0961985385624}, // bkg error for CT10_nom
+    //{0.069766876149, 0.339272734277, 0.0485490110471, 0.217961414064, 0.0801378744912}, // bkg error for CT10_nom (2temp0t)
+    {0.0722604340607, 0.476531723807, 0.0806416545293, 14.6632847165, 0.187128411298}, // bkg error for CT10_nom (flat QCD)
     {0.0796353685898, 0.428566892826, 0.090950911035, 0.435103553405, 0.0629574417432}, // bkg error for CT10_pdfup
     {0.0701039019112, 0.488312009939, 0.0708568064238, 0.43711151761, 0.0609922366663}, // bkg error for CT10_pdfdown
     {0.0745127436608, 0.460054651877, 0.0764168758694, 0.435410180448, 0.0618880632933}, // bkg error for MSTW_nom
@@ -844,6 +886,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.0718589728601, 0.43754562125, 0.0685572372873, 0.390909528978, 0.0636112129686}, // bkg error for NNPDF_pdfdown
     {0.072912219575, 0.452157721558, 0.0662276523962, 0.432030158382, 0.0534507144485}, // bkg error for scaleup
     {0.07805843213, 0.417980831055, 0.0681304415129, 0.467189896857, 0.0503790440233}, // bkg error for scaledown
+    {0.0690936590669, 0.521837369086, 0.0568658046077, 0.476230689922, 0.0569713068206}, // bkg error for MG
   };
 
 
@@ -925,12 +968,12 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
 
   cout << "PDF = " << mydir << endl;
 
-  TString pdfs[11] = {"CT10_nom","CT10_pdfup","CT10_pdfdown",
+  TString pdfs[12] = {"CT10_nom","CT10_pdfup","CT10_pdfdown",
 		      "MSTW_nom","MSTW_pdfup","MSTW_pdfdown",
 		      "NNPDF_nom","NNPDF_pdfup","NNPDF_pdfdown",
-		      "scaleup","scaledown"};
+		      "scaleup","scaledown","MG"};
   int thispdf = -1;
-  for (int ipdf=0; ipdf<11; ipdf++) {
+  for (int ipdf=0; ipdf<12; ipdf++) {
     if (mydir == pdfs[ipdf]) {
       thispdf = ipdf;
       break;
@@ -1128,12 +1171,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
       fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
     }
-    else if (fittype == "" || fittype == "2temp46"){
-      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
-      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
-      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
-    }
-    else if (fittype == "htlep6"){
+    else if (fittype == "htlep6" || fittype == "flatQCD"){
       fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
       fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
       fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
@@ -1153,6 +1191,11 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
       fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
     }
+    else {
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
+    }
   }
   
   else {
@@ -1162,12 +1205,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
       fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
       fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
     }
-    else if (fittype == "" || fittype == "2temp46"){
-      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
-      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
-      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
-    }
-    else if (fittype == "htlep6"){
+    else if (fittype == "htlep6" || fittype == "flatQCD"){
       fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
       fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
       fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
@@ -1185,6 +1223,11 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     else if (fittype == "2temp0t"){
       fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
       fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
+      fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
+    }
+    else {
+      fDATA[0] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
+      fDATA[1] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
       fDATA[2] = new TFile("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
     }
 

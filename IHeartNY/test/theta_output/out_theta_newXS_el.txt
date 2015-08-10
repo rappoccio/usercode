@@ -1,0 +1,33 @@
+Total number of likelihood evaluations: 856847
+Total number of likelihood evaluations: 393
+[INFO]  executing script analysis.py
+Building for ttbar_xs_el
+DEBUG: electron+jets channel considered
+------------- MLE RESULTS CT10_nom el channel 1bin  ---------------
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-toys:1.-TTbar-5599e33c01.cfg --nowarn'
+[INFO]  Running '/uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Stats/theta/bin/theta /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis/mle-data-TTbar-55eab2f56b.cfg --nowarn'
+{'TTbar': {'rate_el_qcd': [(0.15306695019446323, 0.33966491614145411)], 'jer': [(-0.51376501102572847, 0.75526244620785532)], 'toptag': [(-0.22781280603180115, 0.29187707455261386)], 'beta_signal': [(0.80157092866860924, 0.084991846467460164)], 'jec': [(0.53515872408527554, 0.49815591863927)], 'rate_vjets': [(0.21755889743461135, 0.19477485749322437)], '__nll': [-34838.766117821717], '__cov': [array([[ 0.0072308 , -0.01015937, -0.00910761,  0.00817062, -0.02284004,
+        -0.00955794, -0.02131413],
+       [-0.01015937,  0.24815932,  0.0825822 ,  0.02030345,  0.02387121,
+        -0.04298847,  0.01160481],
+       [-0.00910761,  0.0825822 ,  0.57042136,  0.01339384,  0.06426294,
+        -0.02175608,  0.01881723],
+       [ 0.00817062,  0.02030345,  0.01339384,  0.11537226,  0.02090396,
+        -0.04353637, -0.03751366],
+       [-0.02284004,  0.02387121,  0.06426294,  0.02090396,  0.86537826,
+        -0.02706541,  0.05736799],
+       [-0.00955794, -0.04298847, -0.02175608, -0.04353637, -0.02706541,
+         0.03793725,  0.03705956],
+       [-0.02131413,  0.01160481,  0.01881723, -0.03751366,  0.05736799,
+         0.03705956,  0.08519223]])], 'rate_st': [(-0.027741507842472882, 0.93025709323689132)]}}
+rate_el_qcd          :   0.15 +-   0.34
+jer                  :  -0.51 +-   0.76
+toptag               :  -0.23 +-   0.29
+beta_signal          :   0.80 +-   0.08
+jec                  :   0.54 +-   0.50
+rate_vjets           :   0.22 +-   0.19
+rate_st              :  -0.03 +-   0.93
+    {0.106031597988, 0.47158023023, 0.0878330030912, 0, 0.294575190178}, // bkg error for CT10_nom
+if options.pdf == "CT10_nom" and options.lepType == "ele" : toptag_post = 0.943046798492
+['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
+[INFO]  workdir is /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis

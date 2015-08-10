@@ -32,7 +32,7 @@ void plotToys(TString channel, TString syst="CT10_nom") {
   TString ext = "_nobtag_nolumi";
 
   TFile* f = new TFile("run_theta/ThetaPlots/pulldists_mle_"+syst+"_"+channel+ext+".root"); 
-
+  
   TH1F* h_pull = (TH1F*) f->Get("pull");
   TH1F* h_dbs  = (TH1F*) f->Get("delta_bs");
 
@@ -50,6 +50,13 @@ void plotToys(TString channel, TString syst="CT10_nom") {
   h_pull->GetXaxis()->SetTitle("Pull");
   h_pull->Draw();
 
+  TF1* fit = new TF1("fit", "gaus", -4,4);
+  h_pull->Fit("fit","R");
+  float fitmean  = fit->GetParameter(1);
+  float efitmean = fit->GetParError(1);
+  float sigma  = fit->GetParameter(2);
+  float esigma = fit->GetParError(2);
+
   mySmallText(0.22,0.84,1,"Pull = (1 - #beta_{signal})/#sigma(#beta_{signal})");
   mySmallText(0.22,0.74,1,"Extracted from 1000");
   mySmallText(0.22,0.69,1,"pseudo experiments.");
@@ -62,6 +69,13 @@ void plotToys(TString channel, TString syst="CT10_nom") {
   mySmallText(0.22,0.59,1,ctxt);
   sprintf(ctxt,"RMS = %.2f",rms);
   mySmallText(0.22,0.54,1,ctxt);
+
+  sprintf(ctxt,"Gaussian fit:");
+  mySmallText(0.66,0.84,2,ctxt);
+  sprintf(ctxt,"mean = %.2f #pm %.2f",fitmean, efitmean);
+  mySmallText(0.66,0.79,2,ctxt);
+  sprintf(ctxt,"sigma = %.2f #pm %.2f",sigma, esigma);
+  mySmallText(0.66,0.74,2,ctxt);
 
   c.SaveAs("pull_"+syst+"_"+channel+ext+".png");
   c.SaveAs("pull_"+syst+"_"+channel+ext+".pdf");
@@ -80,7 +94,7 @@ void plotToys(TString channel, TString syst="CT10_nom") {
   h_dbs->Draw();
 
   mySmallText(0.5,0.82,1,"A priori measurement uncertainty");
-  mySmallText(0.5,0.77,1,"from 1000 pseudo experiments.");
+  mySmallText(0.5,0.77,1,"from 10000 pseudo experiments.");
 
   float mean = h_dbs->GetMean();
   float rms = h_dbs->GetRMS();
