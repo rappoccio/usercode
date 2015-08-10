@@ -500,7 +500,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 // make post-fit plots
 // -------------------------------------------------------------------------------------
 
-void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false) {
+void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false, bool addBSM = false) {
 
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -544,6 +544,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 
   TString append = "";
   if (half) {append = "_half";}
+  if (addBSM) {append += "_withBSM";}
 
   if (what == "etaAbsLep4") {
     if (doElectron) fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep4"+ptbin+append+".root");
@@ -794,7 +795,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 // -------------------------------------------------------------------------------------
 // print post-fit latex table
 // -------------------------------------------------------------------------------------
-void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false) {
+void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false, bool addBSM = false) {
 
   TString what[3] = {"etaAbsLep4","etaAbsLep6","vtxMass7"};
   if (fittype == "htlep6" || fittype == "htlep46" || fittype == "htlep467" || fittype == "2temp0t" || fittype == "flatQCD") {
@@ -1434,7 +1435,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
 // make theta histograms without subtracting
 // -------------------------------------------------------------------------------------
 
-void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false, TString pdfdir="CT10_nom", bool half = false) {
+void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false, TString pdfdir="CT10_nom", bool half = false, bool addBSM = false) {
   
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -1470,10 +1471,13 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
   SummedHist* singletop[nSYST];
   SummedHist* ttbar_semiLep[nSYST];
   SummedHist* ttbar_nonSemiLep[nSYST];
+  SummedHist* bsm;
   TH1F* ttbar[nSYST];
 
   TString channel = "mu_";
   if (doElectron) channel = "el_";
+
+  if (addBSM) bsm = getBSM(hist, doElectron);
 
   for (int is=0; is<nSYST; is++) {
     wjets[is]     = getWJets( name_syst[is], hist, doElectron, ptbin );
@@ -1484,6 +1488,7 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
     // do the ttbar combination
     ttbar[is] = (TH1F*) ttbar_semiLep[is]->hist()->Clone();
     ttbar[is]->Add(ttbar_nonSemiLep[is]->hist());
+    if (addBSM) ttbar[is]->Add(bsm->hist());
 
     TString tempname = channel + hist + "__TTbar";
     adjustThetaName( tempname, name_syst[is], ptbin );
@@ -1496,6 +1501,7 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
     ttbar_nonSemiLep[is]->hist()->Rebin(getRebin(var));
     ttbar[is]->Rebin(getRebin(var));  
   }
+  bsm->hist()->Rebin(getRebin(var));
 
   // QCD
   SummedHist* qcd = getQCD( hist, doElectron, ptbin );
@@ -1529,6 +1535,7 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
   TString outname;
   TString append = "";
   if (half) {append = "_half";}
+  if (addBSM) append += "_withBSM";
 
   if (use2D && doElectron) outname = "NormalizedHists_" + mydir + "/normalized2d_eljets_"+hist+append+".root";
   else if (use2D) outname = "NormalizedHists_" + mydir + "/normalized2d_mujets_"+hist+append+".root";
@@ -1550,6 +1557,7 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
   TH1F* h_qcd = qcd->hist();
   h_qcd->Scale(nqcd / h_qcd->GetSum());
   h_qcd->Write();
+  bsm->hist()->Write();
   data->Write();
 
   fout->Close();
@@ -1561,7 +1569,7 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
 // make histograms, subtract one from another
 // -------------------------------------------------------------------------------------
 
-void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doElectron=false, TString pdfdir="_CT10_nom", bool half = false) {
+void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doElectron=false, TString pdfdir="_CT10_nom", bool half = false, bool addBSM = false) {
 
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -1600,12 +1608,14 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   SummedHist* singletop[nSYST][2];
   SummedHist* ttbar_semiLep[nSYST][2];
   SummedHist* ttbar_nonSemiLep[nSYST][2];
+  SummedHist* bsm[2];
   TH1F* ttbar[nSYST][2];
 
   TString channel = "mu_";
   if (doElectron) channel = "el_";
 
   for (int ih=0; ih<2; ih++) {
+    bsm[ih] = getBSM(hist[ih], doElectron);
     for (int is=0; is<nSYST; is++) {
       wjets[is][ih]     = getWJets( name_syst[is], hist[ih], doElectron, ptbin );
       singletop[is][ih] = getSingleTop( name_syst[is], hist[ih], doElectron, ptbin );
@@ -1614,6 +1624,8 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
 
       ttbar[is][ih] = (TH1F*) ttbar_semiLep[is][ih]->hist()->Clone();
       ttbar[is][ih]->Add(ttbar_nonSemiLep[is][ih]->hist());
+      if (addBSM) ttbar[is][ih]->Add(bsm[ih]->hist());
+
       TString tempname = channel + hist[ih] + "__TTbar";
       adjustThetaName( tempname, name_syst[is], ptbin );
       ttbar[is][ih]->SetName(tempname);
@@ -1625,6 +1637,7 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
       ttbar_nonSemiLep[is][ih]->hist()->Rebin(getRebin(var));
       ttbar[is][ih]->Rebin(getRebin(var)); 
     }
+    bsm[ih]->hist()->Rebin(getRebin(var));
   }
 
   // QCD
@@ -1675,12 +1688,14 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
   qcd[0]->hist() ->Add(qcd[1]->hist(), -1);
   qcd[0]->hist()->Scale(nqcd / qcd[0]->hist()->GetSum());
   data[0]->Add(data[1], -1);
+  bsm[0]->hist()->Add(bsm[1]->hist(), -1);
 
 
   // write the histograms to a file
   TString outname;
   TString append = "";
   if (half) {append = "_half";}
+  if (addBSM) append += "_withBSM";
 
   if (use2D && doElectron) outname = "NormalizedHists_" + mydir + "/normalized2d_eljets_"+hist[1]+"_subtracted_from_"+hist[0]+append+".root";
   else if (use2D) outname = "NormalizedHists_" + mydir + "/normalized2d_mujets_"+hist[1]+"_subtracted_from_"+hist[0]+append+".root";
@@ -1698,7 +1713,7 @@ void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doE
     ttbar_nonSemiLep[is][0]->hist()->Write();
     ttbar[is][0]->Write();
   }
-
+  bsm[0]->hist()->Write();
   qcd[0]->hist()->Write();
   data[0]->Write();
 

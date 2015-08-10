@@ -28,6 +28,8 @@ bool extBtag = true;
 bool extJet = false;
 bool extToptag = false;
 
+bool addBSM = true;
+
 TString fittype = "";
 
 // END USER SETTINGS
@@ -49,6 +51,7 @@ void setExtName () {
   if (extJet) extName += "_nojet";
   if (extToptag) extName += "_notoptag";
   if (fittype != "") extName += "_"+fittype;
+  if (addBSM) extName += "_withBSM";
 }
 
 
@@ -205,6 +208,36 @@ SummedHist * getWJets( TString name, TString histname, bool doElectron, TString 
 
 }
 
+//--------------------------------------------------------------------------------------
+// BSM
+// -------------------------------------------------------------------------------------
+
+SummedHist * getBSM(TString histname, bool doElectron) {
+
+  TString muOrEl = "mu";
+  if (doElectron) muOrEl = "el";
+
+  TString BSMfile = "histfiles_BSM/TT_M-1000_Tune4C_8TeV-pythia8_mu_iheartNY_"+muOrEl+"_2Dcut.root";
+
+  double BSMnorm = 0.1 * 1000. * LUM / 1000000.;
+
+  TString thetaChannel = "mu_";
+  if (doElectron) thetaChannel = "el_";
+
+  TString thetaname = thetaChannel + histname + "__BSM";
+  adjustThetaName( thetaname, "nom", "" );
+  
+  SummedHist* bsm = new SummedHist( thetaname, kRed+1 );
+  
+  TFile* infile = TFile::Open( BSMfile );
+  TH1F* hist = (TH1F*) infile->Get(histname)->Clone();
+  hist->Sumw2();
+  bsm->push_back( hist, BSMnorm );
+  delete infile;
+  
+  return bsm;
+
+}
 
 // -------------------------------------------------------------------------------------
 // single top
