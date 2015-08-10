@@ -18,7 +18,8 @@ if extJet:
 if extTopTag:
     extName += "_notoptag"
 
-qcdUnc = 10.0
+#qcdUnc = 10.0
+qcdUnc = 1.0
 stUnc = 0.5
 vjetsUnc = 0.5
 
@@ -803,7 +804,7 @@ binname = ''
 if nptbin != '1':
     binname = '_'+nptbin+'bin'
 
-fittype = 'htLep6'
+fittype = ''
 
 fitname = ''
 if fittype != '':
@@ -853,7 +854,7 @@ for idir in dirs :
 
         print '------------- MLE RESULTS ' + idir + ' ' + channel + ' channel ' + nptbin + 'bin ' + fittype + ' ---------------'
 
-        results1 = mle(model, input='toys:1.', n=1000)
+        results1 = mle(model, input='toys:1.', n=10000)
 
         bs = []
         delta_bs = []
@@ -986,7 +987,7 @@ for idir in dirs :
         
         ## option to print html output file
         #if idir == "CT10_nom" :
-        report.write_html('htmlout_'+channel)
+        #report.write_html('htmlout_'+channel)
 
             
     ###########################################################################
