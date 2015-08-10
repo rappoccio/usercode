@@ -18,7 +18,9 @@ if extJet:
 if extTopTag:
     extName += "_notoptag"
 
-qcdUnc = 10000.0
+qcdUnc = 10.0
+stUnc = 0.5
+vjetsUnc = 0.5
 
 ####################################################################################
 # We have to externalize the PDF and Q2 uncertainties.
@@ -59,62 +61,62 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, fittype='', elflag=Fals
                 continue
             model.add_lognormal_uncertainty('lumi', math.log(1.026), p)
         
-    model.add_lognormal_uncertainty('rate_st', math.log(1.5), 'SingleTop')
-    model.add_lognormal_uncertainty('rate_vjets', math.log(1.5), 'WJets')
+    model.add_lognormal_uncertainty('rate_st', math.log(1+stUnc), 'SingleTop')
+    model.add_lognormal_uncertainty('rate_vjets', math.log(1+vjetsUnc), 'WJets')
 
     ## muon+jets channel
     if muflag:
         print "DEBUG: muon+jets channel considered"
         if nptbin == '1' :
             if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'etaAbsLep4only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , 'mu_etaAbsLep4')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep4')
             if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep4only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , 'mu_htLep4')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_htLep4')
             if fittype == '' or fittype == '2temp46' or fittype == 'etaAbsLep6only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , 'mu_etaAbsLep6')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep6')
             if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep6only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , 'mu_htLep6')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_htLep6')
             if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'vtxMass7only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , 'mu_vtxMass7')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_vtxMass7')
             if fittype == 'htLep467' or fittype == 'htLep7only':
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD', 'mu_htLep7')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD', 'mu_htLep7')
         if nptbin == '2' :
             for obs in ['mu_vtxMass7Low', 'mu_htLep6Low', 'mu_etaAbsLep4Low',
                         'mu_vtxMass7High', 'mu_htLep6High', 'mu_etaAbsLep4High']:
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , obs)
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , obs)
         if nptbin == 'Low' :
             for obs in ['mu_vtxMass7Low', 'mu_htLep6Low', 'mu_etaAbsLep4Low']:
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , obs)
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , obs)
         if nptbin == 'High' :
             for obs in ['mu_vtxMass7High', 'mu_htLep6High', 'mu_etaAbsLep4High']:
-                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(qcdUnc), 'QCD' , obs)
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , obs)
 
     ## electron+jets channel 
     if elflag:
         print "DEBUG: electron+jets channel considered"
         if nptbin == '1' :
             if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'etaAbsLep4only':
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , 'el_etaAbsLep4')
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(1+qcdUnc), 'QCD' , 'el_etaAbsLep4')
             if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep4only':
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , 'el_htLep4')
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(1+qcdUnc), 'QCD' , 'el_htLep4')
             if fittype == '' or fittype == '2temp46' or fittype == 'etaAbsLep6only':
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , 'el_etaAbsLep6')
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(1+qcdUnc), 'QCD' , 'el_etaAbsLep6')
             if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep6only':
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , 'el_htLep6')
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(1+qcdUnc), 'QCD' , 'el_htLep6')
             if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'vtxMass7only':
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , 'el_vtxMass7')
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(1+qcdUnc), 'QCD' , 'el_vtxMass7')
             if fittype == 'htLep467' or fittype == 'htLep7only':
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD', 'el_htLep7')
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(1+qcdUnc), 'QCD', 'el_htLep7')
         if nptbin == '2' :
             for obs in ['el_vtxMass7Low', 'el_htLep6Low', 'el_etaAbsLep4Low',
                         'el_vtxMass7High', 'el_htLep6High', 'el_etaAbsLep4High']:
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , obs)
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(1+qcdUnc), 'QCD' , obs)
         if nptbin == 'Low' :
             for obs in ['el_vtxMass7Low', 'el_htLep6Low', 'el_etaAbsLep4Low']:
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , obs)
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(1+qcdUnc), 'QCD' , obs)
         if nptbin == 'High' :
             for obs in ['el_vtxMass7High', 'el_htLep6High', 'el_etaAbsLep4High']:
-                model.add_lognormal_uncertainty('rate_el_qcd', math.log(qcdUnc), 'QCD' , obs)
+                model.add_lognormal_uncertainty('rate_el_qcd', math.log(1+qcdUnc), 'QCD' , obs)
     
     return model
 
@@ -801,7 +803,7 @@ binname = ''
 if nptbin != '1':
     binname = '_'+nptbin+'bin'
 
-fittype = ''
+fittype = 'htLep6'
 
 fitname = ''
 if fittype != '':
@@ -917,24 +919,24 @@ for idir in dirs :
                 my_toptagHigh_err = ival[0][1]
             elif ikey == "rate_st":
                 if (ival[0][0] > 0): 
-                    my_st_err = 0.5*ival[0][1] / (1.0+0.5*ival[0][0])
+                    my_st_err = stUnc*ival[0][1] / (1.0+stUnc*ival[0][0])
                 else:
-                    my_st_err = 0.5*ival[0][1] * (1.0-0.5*ival[0][0])
+                    my_st_err = stUnc*ival[0][1] * (1.0-stUnc*ival[0][0])
             elif ikey == "rate_vjets":
                 if (ival[0][0] > 0): 
-                    my_wj_err = 0.5*ival[0][1] / (1.0+0.5*ival[0][0])
+                    my_wj_err = vjetsUnc*ival[0][1] / (1.0+vjetsUnc*ival[0][0])
                 else:
-                    my_wj_err = 0.5*ival[0][1] * (1.0-0.5*ival[0][0])
+                    my_wj_err = vjetsUnc*ival[0][1] * (1.0-vjetsUnc*ival[0][0])
             elif ikey == "rate_mu_qcd":
                 if (ival[0][0] > 0): 
-                    my_muqcd_err = 0.5*ival[0][1] / (1.0+0.5*ival[0][0])
+                    my_muqcd_err = qcdUnc*ival[0][1] / (1.0+qcdUnc*ival[0][0])
                 else:
-                    my_muqcd_err = 0.5*ival[0][1] * (1.0-0.5*ival[0][0])
+                    my_muqcd_err = qcdUnc*ival[0][1] * (1.0-qcdUnc*ival[0][0])
             elif ikey == "rate_el_qcd":
                 if (ival[0][0] > 0): 
-                    my_eqcd_err = 0.5*ival[0][1] / (1.0+0.5*ival[0][0])
+                    my_eqcd_err = qcdUnc*ival[0][1] / (1.0+qcdUnc*ival[0][0])
                 else:
-                    my_eqcd_err = 0.5*ival[0][1] * (1.0-0.5*ival[0][0])
+                    my_eqcd_err = qcdUnc*ival[0][1] * (1.0-qcdUnc*ival[0][0])
                         
                     
         print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err)+", "+str(my_eqcd_err)+"}, // bkg error for "+idir
@@ -984,7 +986,7 @@ for idir in dirs :
         
         ## option to print html output file
         #if idir == "CT10_nom" :
-        #    report.write_html('htmlout_'+channel)
+        report.write_html('htmlout_'+channel)
 
             
     ###########################################################################

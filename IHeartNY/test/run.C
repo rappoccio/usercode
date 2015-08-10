@@ -114,12 +114,7 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
 
     setExtName();
 
-    if (fittype == ""){
-      makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine, false, false);
-      makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine, false, false);
-      makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, false);
-    }
-    else if (fittype == "htlep6"){
+    if (fittype == "htlep6" || fittype == "flatQCD"){
       makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine, false, false);
       makePosteriorPlots("htLep6", doElectron, ptbin, "CT10_nom", combine, false, false);
       makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, false);
@@ -147,8 +142,14 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
       makePosteriorPlots("htLep6", doElectron, ptbin, "CT10_nom", combine, false, false);
       makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, false);
     }
+    else {
+      makePosteriorPlots("etaAbsLep4", doElectron, ptbin, "CT10_nom", combine, false, false);
+      makePosteriorPlots("etaAbsLep6", doElectron, ptbin, "CT10_nom", combine, false, false);
+      makePosteriorPlots("vtxMass7", doElectron, ptbin, "CT10_nom", combine, false, false);
+    }
     
     makeTable(doElectron, ptbin, "CT10_nom", combine, false, false);
+
   }
 
   cout << "... DONE! " << endl;
