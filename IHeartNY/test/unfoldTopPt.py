@@ -109,9 +109,9 @@ lum = 19.7 #fb-1
 
 # cross sections
 sigma_ttbar = [ 
-    [245.8*1000., 245.8*1000., 245.8*1000.],  # nominal (m<700, 700-1000, 1000-inf)
-    [252.0*1000., 252.0*1000., 252.0*1000.],  # Q2 up
-    [237.4*1000., 237.4*1000., 237.4*1000.]   # Q2 down
+    [252.89*1000., 252.89*1000., 252.89*1000.],  # nominal (m<700, 700-1000, 1000-inf)
+    [(252.89+6.39)*1000., (252.89+6.39)*1000., (252.89+6.39)*1000.],  # Q2 up
+    [(252.89-8.64)*1000., (252.89-8.64)*1000., (252.89-8.64)*1000.]   # Q2 down
     ]
 eff_ttbar = [ 
     [1.0, 0.074, 0.015],  # nominal
@@ -161,7 +161,7 @@ Nmc_WJets_4jet = 13382803
 
 ## hack to account for that when doing closure test, the ttbar sample is split in two 
 eff_closure = 1.0
-if options.closureTest == True:
+if options.closureTest == True && options.pdf != "MG":
     eff_closure = 2.0
 
 
@@ -237,21 +237,34 @@ else:
     f_QCD  = TFile("histfiles/"+dataDIR+"/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root")
 
 
-if options.closureTest == True : 
+## unfold MadGraph ttbar sample using Powheg response matrix as closure test
+if options.pdf == "MG" and options.closureTest == True :
+    f_ttbar_max700    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+    f_ttbar_700to1000 = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+    f_ttbar_1000toInf = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+    f_ttbar_max700_odd = TFile("histfiles_MG/TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root")
+## regular closure test, unfolding 1/2 sample using other 1/2
+elif options.closureTest == True : 
     f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
     f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
     f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
     f_ttbar_max700_odd    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
     f_ttbar_700to1000_odd = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
     f_ttbar_1000toInf_odd = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_odd.root")
+## unfold data using some ttbar variation
 else :
     f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
     f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
     f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
 
-f_ttbar_nonsemilep_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
-f_ttbar_nonsemilep_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
-f_ttbar_nonsemilep_1000toInf = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+if options.pdf == "MG":
+    f_ttbar_nonsemilep_max700    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+    f_ttbar_nonsemilep_700to1000 = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+    f_ttbar_nonsemilep_1000toInf = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+else:
+    f_ttbar_nonsemilep_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+    f_ttbar_nonsemilep_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
+    f_ttbar_nonsemilep_1000toInf = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
 
 f_T_t     = TFile("histfiles/"+dataDIR+"/T_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
 f_Tbar_t  = TFile("histfiles/"+dataDIR+"/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
@@ -268,29 +281,56 @@ f_WJets_4jet   = TFile("histfiles/"+dataDIR+"/W4JetsToLNu_TuneZ2Star_8TeV-madgra
 
 
 # the response matrices are simply added here, but have been filled with the full event weights (taking sample size, efficiency, etx. into account)
-if options.closureTest == True : 
+if options.pdf == "MG" and options.closureTest == True :
+    response_ttbar_max700    = f_ttbar_max700_odd.Get("response_pt"+nobtag)
+    response = response_ttbar_max700.Clone()
+    response.SetName("response_pt_"+options.syst)
+elif options.closureTest == True : 
     response_ttbar_max700    = f_ttbar_max700_odd.Get("response_pt"+nobtag)
     response_ttbar_700to1000 = f_ttbar_700to1000_odd.Get("response_pt"+nobtag)
     response_ttbar_1000toInf = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag)
+    response = response_ttbar_max700.Clone()
+    response.SetName("response_pt_"+options.syst)
+    response.Add(response_ttbar_700to1000)
+    response.Add(response_ttbar_1000toInf)
 else :
     response_ttbar_max700    = f_ttbar_max700.Get("response_pt"+nobtag)
     response_ttbar_700to1000 = f_ttbar_700to1000.Get("response_pt"+nobtag)
     response_ttbar_1000toInf = f_ttbar_1000toInf.Get("response_pt"+nobtag)
+    response = response_ttbar_max700.Clone()
+    response.SetName("response_pt_"+options.syst)
+    response.Add(response_ttbar_700to1000)
+    response.Add(response_ttbar_1000toInf)
 
-response = response_ttbar_max700.Clone()
-response.SetName("response_pt_"+options.syst)
-response.Add(response_ttbar_700to1000)
-response.Add(response_ttbar_1000toInf)
 
 ## response matrices for two-step unfolding
 if options.twoStep == True :
-    if options.closureTest == True : 
+    if options.pdf == "MG" and options.closureTest == True :
+        response_ttbar_max700_rp = f_ttbar_max700_odd.Get("response_pt"+nobtag+"_rp")
+        response_ttbar_max700_pp = f_ttbar_max700_odd.Get("response_pt_pp")
+        
+        response_rp = response_ttbar_max700_rp.Clone()
+        response_rp.SetName("response_pt_"+options.syst+"_rp")
+        response_pp = response_ttbar_max700_pp.Clone()
+        response_pp.SetName("response_pt_"+options.syst+"_pp")
+    
+    elif options.closureTest == True : 
         response_ttbar_max700_rp    = f_ttbar_max700_odd.Get("response_pt"+nobtag+"_rp")
         response_ttbar_700to1000_rp = f_ttbar_700to1000_odd.Get("response_pt"+nobtag+"_rp")
         response_ttbar_1000toInf_rp = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag+"_rp")
         response_ttbar_max700_pp    = f_ttbar_max700_odd.Get("response_pt_pp")
         response_ttbar_700to1000_pp = f_ttbar_700to1000_odd.Get("response_pt_pp")
         response_ttbar_1000toInf_pp = f_ttbar_1000toInf_odd.Get("response_pt_pp")
+
+        response_rp = response_ttbar_max700_rp.Clone()
+        response_rp.SetName("response_pt_"+options.syst+"_rp")
+        response_rp.Add(response_ttbar_700to1000_rp)
+        response_rp.Add(response_ttbar_1000toInf_rp)
+        response_pp = response_ttbar_max700_pp.Clone()
+        response_pp.SetName("response_pt_"+options.syst+"_pp")
+        response_pp.Add(response_ttbar_700to1000_pp)
+        response_pp.Add(response_ttbar_1000toInf_pp)
+
         if options.troubleshoot == True:
             response_ttbar_max700_rp_even    = f_ttbar_max700.Get("response_pt"+nobtag+"_rp")
             response_ttbar_700to1000_rp_even = f_ttbar_700to1000.Get("response_pt"+nobtag+"_rp")
@@ -306,15 +346,14 @@ if options.twoStep == True :
         response_ttbar_700to1000_pp = f_ttbar_700to1000.Get("response_pt_pp")
         response_ttbar_1000toInf_pp = f_ttbar_1000toInf.Get("response_pt_pp")
 
-    response_rp = response_ttbar_max700_rp.Clone()
-    response_rp.SetName("response_pt_"+options.syst+"_rp")
-    response_rp.Add(response_ttbar_700to1000_rp)
-    response_rp.Add(response_ttbar_1000toInf_rp)
-    
-    response_pp = response_ttbar_max700_pp.Clone()
-    response_pp.SetName("response_pt_"+options.syst+"_pp")
-    response_pp.Add(response_ttbar_700to1000_pp)
-    response_pp.Add(response_ttbar_1000toInf_pp)
+        response_rp = response_ttbar_max700_rp.Clone()
+        response_rp.SetName("response_pt_"+options.syst+"_rp")
+        response_rp.Add(response_ttbar_700to1000_rp)
+        response_rp.Add(response_ttbar_1000toInf_rp)
+        response_pp = response_ttbar_max700_pp.Clone()
+        response_pp.SetName("response_pt_"+options.syst+"_pp")
+        response_pp.Add(response_ttbar_700to1000_pp)
+        response_pp.Add(response_ttbar_1000toInf_pp)
 
     if options.troubleshoot :
         response_rp_even = response_ttbar_max700_rp_even.Clone()
@@ -347,7 +386,12 @@ else :
 # read actual histograms
 # -------------------------------------------------------------------------------------
 
-if options.closureTest == True : 
+if options.pdf == "MG" and options.closureTest == True :
+    hTrue_max700    = f_ttbar_max700_odd.Get("ptGenTop")
+  
+    if options.twoStep :
+        hPart_max700    = f_ttbar_max700_odd.Get("ptPartTop")
+elif options.closureTest == True : 
     hTrue_max700    = f_ttbar_max700_odd.Get("ptGenTop")
     hTrue_700to1000 = f_ttbar_700to1000_odd.Get("ptGenTop")
     hTrue_1000toInf = f_ttbar_1000toInf_odd.Get("ptGenTop")
@@ -375,21 +419,25 @@ else :
         hPart_1000toInf = f_ttbar_1000toInf.Get("ptPartTop")
 
 hTrue_max700.Sumw2()
-hTrue_700to1000.Sumw2()
-hTrue_1000toInf.Sumw2()
-
 if options.twoStep:
     hPart_max700.Sumw2()
-    hPart_700to1000.Sumw2()
-    hPart_1000toInf.Sumw2()
+
+if options.pdf != "MG" :
+    hTrue_700to1000.Sumw2()
+    hTrue_1000toInf.Sumw2()
+
+    if options.twoStep:
+        hPart_max700.Sumw2()
+        hPart_700to1000.Sumw2()
+        hPart_1000toInf.Sumw2()
     
-    if options.troubleshoot:
-        hTrue_max700_even.Sumw2()
-        hTrue_700to1000_even.Sumw2()
-        hTrue_1000toInf_even.Sumw2()
-        hPart_max700_even.Sumw2()
-        hPart_700to1000_even.Sumw2()
-        hPart_1000toInf_even.Sumw2()
+        if options.troubleshoot:
+            hTrue_max700_even.Sumw2()
+            hTrue_700to1000_even.Sumw2()
+            hTrue_1000toInf_even.Sumw2()
+            hPart_max700_even.Sumw2()
+            hPart_700to1000_even.Sumw2()
+            hPart_1000toInf_even.Sumw2()
 
 isTwoStep = ""
 if options.twoStep:
@@ -475,13 +523,18 @@ if options.closureTest == True :
         hMeas_odd.Add(hMeas_700to1000_odd)
         hMeas_odd.Add(hMeas_1000toInf_odd)    
 
-hTrue_max700.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
-hTrue_700to1000.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
-hTrue_1000toInf.Scale( eff_closure * sigma_ttbar[ipdf][2] * eff_ttbar[ipdf][2] * lum / float(Nmc_ttbar[ipdf][2]))
-hTrue = hTrue_max700.Clone()
-hTrue.SetName("pt_genTop")
-hTrue.Add(hTrue_700to1000)
-hTrue.Add(hTrue_1000toInf)
+if options.pdf == "MG" and options.closureTest == True : 
+    hTrue_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
+    hTrue = hTrue_max700.Clone()
+    hTrue.SetName("pt_genTop")
+else :
+    hTrue_max700.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
+    hTrue_700to1000.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
+    hTrue_1000toInf.Scale( eff_closure * sigma_ttbar[ipdf][2] * eff_ttbar[ipdf][2] * lum / float(Nmc_ttbar[ipdf][2]))
+    hTrue = hTrue_max700.Clone()
+    hTrue.SetName("pt_genTop")
+    hTrue.Add(hTrue_700to1000)
+    hTrue.Add(hTrue_1000toInf)
 
 if options.troubleshoot and options.twoStep :
     hTrue_max700_even.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
@@ -493,13 +546,18 @@ if options.troubleshoot and options.twoStep :
     hTrue_even.Add(hTrue_1000toInf_even)
 
 if options.twoStep :
-    hPart_max700.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
-    hPart_700to1000.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
-    hPart_1000toInf.Scale( eff_closure * sigma_ttbar[ipdf][2] * eff_ttbar[ipdf][2] * lum / float(Nmc_ttbar[ipdf][2]))
-    hPart = hPart_max700.Clone()
-    hPart.SetName("pt_partTop")
-    hPart.Add(hPart_700to1000)
-    hPart.Add(hPart_1000toInf)
+    if options.pdf == "MG" and options.closureTest == True : 
+        hPart_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
+        hPart = hPart_max700.Clone()
+        hPart.SetName("pt_partTop")
+    else :
+        hPart_max700.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
+        hPart_700to1000.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
+        hPart_1000toInf.Scale( eff_closure * sigma_ttbar[ipdf][2] * eff_ttbar[ipdf][2] * lum / float(Nmc_ttbar[ipdf][2]))
+        hPart = hPart_max700.Clone()
+        hPart.SetName("pt_partTop")
+        hPart.Add(hPart_700to1000)
+        hPart.Add(hPart_1000toInf)
 
     if options.troubleshoot :
         hPart_max700_even.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
@@ -864,7 +922,7 @@ if options.twoStep :
 if options.closureTest :
     append += "_closure"
 
-if options.pdf == "CT10_nom" or options.troubleshoot:
+if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
     c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".pdf", "pdf")
     c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".png", "png")
     c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".eps", "eps")
@@ -952,7 +1010,7 @@ if options.twoStep:
     if options.closureTest :
         append += "_closure"
         
-    if options.pdf == "CT10_nom" or options.troubleshoot:
+    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
         c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".pdf", "pdf")
         c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".png", "png")
         c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".eps", "eps")
@@ -1001,7 +1059,7 @@ if options.twoStep == False:
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D.Draw("colz,same,text")
     hEmpty2D.Draw("axis,same")
-    if options.pdf == "CT10_nom" or options.troubleshoot:
+    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".pdf")
@@ -1013,7 +1071,7 @@ if options.twoStep == False:
     hEmpty2D.Draw()
     hResponse2D.Draw("colz,same,text")
     hEmpty2D.Draw("axis,same")
-    if options.pdf == "CT10_nom" or options.troubleshoot:
+    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
@@ -1082,7 +1140,7 @@ if options.twoStep:
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
-    if options.pdf == "CT10_nom" or options.troubleshoot:
+    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".pdf")
@@ -1094,7 +1152,7 @@ if options.twoStep:
     hEmpty2D_rp.Draw()
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
-    if options.pdf == "CT10_nom" or options.troubleshoot:
+    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
@@ -1157,7 +1215,7 @@ if options.twoStep:
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D_pp.Draw("colz,same,text")
     hEmpty2D_pp.Draw("axis,same")
-    if options.pdf == "CT10_nom" or options.troubleshoot:
+    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".pdf")

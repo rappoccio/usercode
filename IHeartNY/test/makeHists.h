@@ -288,8 +288,8 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
     TString ttbar_name1 = "TTJets_HadronicMGDecays_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_";
     TString ttbar_name2 = "TTJets_FullLeptMGDecays_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_";
     
-    double ttbar_norm1 = 245.8*1000.0*19.7/10537444.*0.457;
-    double ttbar_norm2 = 245.8*1000.0*19.7/12119013.*0.105;
+    double ttbar_norm1 = 252.89*1000.0*19.7/10537444.*0.457;
+    double ttbar_norm2 = 252.89*1000.0*19.7/12119013.*0.105;
     
     TString thetaChannel = "mu_";
     if (doElectron) thetaChannel = "el_";
@@ -345,9 +345,9 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
       "TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"
     };
     double ttbar_xs[nq2] = {
-      245.8 * 1000. * LUM,  // nominal
-      252.0 * 1000. * LUM,  // q2 up
-      237.4 * 1000. * LUM   // q2 down
+      252.89 * 1000. * LUM,  // nominal
+      (252.89+6.39) * 1000. * LUM,  // q2 up
+      (252.89-8.64) * 1000. * LUM   // q2 down
     };
     double ttbar_nevents[nq2][nttbar] = {
       {21675970., 3082812., 1249111.},  // nominal
@@ -411,7 +411,7 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
     
     TString ttbar_name = "TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_";
     
-    double ttbar_norm = 245.8*1000.0*19.7/25424818.*0.438;
+    double ttbar_norm = 252.89*1000.0*19.7/25424818.*0.438;
     
     TString thetaChannel = "mu_";
     if (doElectron) thetaChannel = "el_";
@@ -461,9 +461,12 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
       "TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"
     };
     double ttbar_xs[nttbar] = {
-      245.8 * 1000. * LUM,  // nominal
-      252.0 * 1000. * LUM,  // q2 up
-      237.4 * 1000. * LUM   // q2 down
+      //245.8 * 1000. * LUM,  // nominal
+      //252.0 * 1000. * LUM,  // q2 up
+      //237.4 * 1000. * LUM   // q2 down
+      252.89 * 1000. * LUM,  // nominal
+      (252.89+6.39) * 1000. * LUM,  // q2 up
+      (252.89-8.64) * 1000. * LUM   // q2 down
     };
     double ttbar_nevents[nq2][nttbar] = {
       {21675970.,3082812.,1249111.},  // nominal
