@@ -58,7 +58,7 @@ void plotToys(TString channel, TString syst="CT10_nom") {
   float esigma = fit->GetParError(2);
 
   mySmallText(0.22,0.84,1,"Pull = (1 - #beta_{signal})/#sigma(#beta_{signal})");
-  mySmallText(0.22,0.74,1,"Extracted from 1000");
+  mySmallText(0.22,0.74,1,"Extracted from 10000");
   mySmallText(0.22,0.69,1,"pseudo experiments.");
   
   float mean = h_pull->GetMean();
