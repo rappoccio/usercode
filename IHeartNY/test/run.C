@@ -17,9 +17,9 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
 
     cout << "make theta histograms..." << endl;
 
-    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,pdfdir,false,addBSM);
-    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,pdfdir,false,addBSM);
-    makeTheta_single("vtxMass",7,ptbin,doElectron,pdfdir,false,addBSM);
+    makeTheta_subtract("etaAbsLep",4,6,ptbin,doElectron,pdfdir,false);
+    makeTheta_subtract("etaAbsLep",6,7,ptbin,doElectron,pdfdir,false);
+    makeTheta_single("vtxMass",7,ptbin,doElectron,pdfdir,false);
 
   } 
   else if (option=="thetaHalf") {

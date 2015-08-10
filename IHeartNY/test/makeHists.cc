@@ -500,7 +500,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 // make post-fit plots
 // -------------------------------------------------------------------------------------
 
-void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false, bool addBSM = false) {
+void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false) {
 
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -800,7 +800,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 // -------------------------------------------------------------------------------------
 // print post-fit latex table
 // -------------------------------------------------------------------------------------
-void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false, bool addBSM = false) {
+void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool combined=false, bool half = false, bool separate = false) {
 
   TString what[3] = {"etaAbsLep4","etaAbsLep6","vtxMass7"};
   if (fittype == "htlep6" || fittype == "htlep46" || fittype == "htlep467" || fittype == "2temp0t" || fittype == "flatQCD") {
@@ -849,7 +849,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
 
   float fiterrors_mu_extLumi_extBtag[12][5] = {
     // updated version with latest top XS
-    {0.135042467854, 0.591765290971, 0.0865207344428, 0.419226749815, 0}, // bkg error for CT10_nom
+    {0.135042467854, 0.355781537645, 0.0728975879853, 0.294291957967, 0}, // bkg error AVERAGED for CT10_nom
     //{0.135132081051, 0.592864270042, 0.0865722920178, 0.417039824299, 0}, // bkg error for CT10_nom 
     //{0.0849186169086, 0.479511247586, 0.0859954208879, 0.116649491322, 0}, // bkg error for CT10_nom (2temp0t)
     //{0.128438848781, 0.585592024004, 0.0969591956193, 1.45116905634, 0}, // bkg error for CT10_nom (flat QCD)
@@ -867,7 +867,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   };
   float fiterrors_el_extLumi_extBtag[12][5] = {
     // updated version with latest top XS
-    {0.106031597988, 0.47158023023, 0.0878330030912, 0, 0.294575190178}, // bkg error for CT10_nom
+    {0.106031597988, 0.392938259207, 0.0878330030912, 0, 0.281851130684}, // bkg error AVERAGED for CT10_nom
     //{0.105955487711, 0.472815289875, 0.0879845167103, 0, 0.291905355502}, // bkg error for CT10_nom
     //{0.0997720511417, 0.446088129682, 0.0419740898106, 0, 0.191691617142}, // bkg error for CT10_nom (2temp0t)
     //{0.110661247942, 0.507596238499, 0.0838193634334, 0, 1.61308220344}, // bkg error for CT10_nom (flat QCD)
@@ -885,7 +885,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   };
   float fiterrors_comb_extLumi_extBtag[12][5] = {
     // updated version with latest top XS
-    {0.074378575148, 0.474869956588, 0.0750287374318, 1.42507210261, 0.0965834851908}, // bkg error for CT10_nom
+    {0.074378575148, 0.389460592529, 0.0625475129624, 0.158198634079, 0.0965834851908}, // bkg error AVERAGED for CT10_nom
     //{0.0741772098545, 0.474378711021, 0.0747761422176, 1.42301397566, 0.0961985385624}, // bkg error for CT10_nom
     //{0.069766876149, 0.339272734277, 0.0485490110471, 0.217961414064, 0.0801378744912}, // bkg error for CT10_nom (2temp0t)
     //{0.0722604340607, 0.476531723807, 0.0806416545293, 14.6632847165, 0.187128411298}, // bkg error for CT10_nom (flat QCD)
@@ -1447,7 +1447,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
 // make theta histograms without subtracting
 // -------------------------------------------------------------------------------------
 
-void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false, TString pdfdir="CT10_nom", bool half = false, bool addBSM = false) {
+void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false, TString pdfdir="CT10_nom", bool half = false) {
   
   TH1::AddDirectory(kFALSE); 
   setStyle();
@@ -1581,7 +1581,7 @@ void makeTheta_single(TString var, int cut, TString ptbin, bool doElectron=false
 // make histograms, subtract one from another
 // -------------------------------------------------------------------------------------
 
-void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doElectron=false, TString pdfdir="_CT10_nom", bool half = false, bool addBSM = false) {
+void makeTheta_subtract(TString var, int cut1, int cut2, TString ptbin, bool doElectron=false, TString pdfdir="_CT10_nom", bool half = false) {
 
   TH1::AddDirectory(kFALSE); 
   setStyle();

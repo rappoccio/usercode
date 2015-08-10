@@ -28,7 +28,7 @@ bool extBtag = true;
 bool extJet = false;
 bool extToptag = false;
 
-bool addBSM = true;
+bool addBSM = false;
 
 TString fittype = "";
 
