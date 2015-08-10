@@ -510,6 +510,8 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   else if (do_met50qcd) mydir = "met50qcd";
   //else if (do_qcd) mydir += "_qcd"; // --> this is now the default!
 
+
+  // -------------------------------------------------------------------------------------
   // read MC histograms
   TFile* fMC;
   if (combined) {
@@ -551,47 +553,45 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
     h_pre_ttbar = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar");
     h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar_nonSemiLep");
   }
-
-  if (what == "etaAbsLep5") {
+  else if (what == "etaAbsLep5") {
     if (doElectron) fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+append+".root");
     else fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep6"+ptbin+"_subtracted_from_etaAbsLep5"+ptbin+append+".root");
     h_pre_ttbar = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar");
     h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar_nonSemiLep");
   }
-
-  if (what == "etaAbsLep6") {
+  else if (what == "etaAbsLep6") {
     if (doElectron) fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_eljets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
     else fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_mujets_etaAbsLep7"+ptbin+"_subtracted_from_etaAbsLep6"+ptbin+append+".root");
     h_pre_ttbar = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar");
     h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar_nonSemiLep");
   }
-
-  if (what == "vtxMass7") {
+  else if (what == "vtxMass7") {
     if (doElectron) fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_eljets_vtxMass7"+ptbin+append+".root");
     else fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_mujets_vtxMass7"+ptbin+append+".root");
     h_pre_ttbar = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar");
     h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar_nonSemiLep");
   }
-
-  if (what == "htLep4") {
+  else if (what == "htLep4") {
     if (doElectron) fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep6"+ptbin+"_subtracted_from_htLep4"+ptbin+append+".root");
     else fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep6"+ptbin+"_subtracted_from_htLep4"+ptbin+append+".root");
     h_pre_ttbar = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar");
     h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar_nonSemiLep");
   }
-
-  if (what == "htLep6") {
+  else if (what == "htLep6") {
     if (doElectron) fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
     else fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+"_subtracted_from_htLep6"+ptbin+append+".root");
     h_pre_ttbar = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar");
     h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar_nonSemiLep");
   }
-
-  if (what == "htLep7") {
+  else if (what == "htLep7") {
     if (doElectron) fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_eljets_htLep7"+ptbin+append+".root");
     else fPre = TFile::Open("NormalizedHists_"+mydir+"/normalized2d_mujets_htLep7"+ptbin+append+".root");
     h_pre_ttbar = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar");
     h_pre_ttbar_nonSemiLep = (TH1F*) fPre->Get(channel+what+ptbin+"__TTbar_nonSemiLep");
+  }
+  else {
+    cout << "invalid option " << what << ", exiting" << endl;
+    return;
   }
 
   float postPreRatio = h_ttbar->Integral() / h_pre_ttbar->Integral();
@@ -602,13 +602,18 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   TH1F* h_ttbar_semiLep = (TH1F*) h_ttbar->Clone();
   h_ttbar_semiLep->Add(h_ttbar_nonSemiLep, -1);
 
+
+  // -------------------------------------------------------------------------------------
   // read data histogram 
   TString filepath;
-  if (use2D && doElectron) filepath = "histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
-  else if (use2D) filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
-  else filepath = "histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root";
 
-  if (do_htlep150qcd) {
+  // default
+  if (do_qcd) {
+    if (doElectron) filepath = "histfiles/qcd_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+  }
+  // other options
+  else if (do_htlep150qcd) {
     if (doElectron) filepath = "histfiles_htlep150qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
     else filepath = "histfiles_htlep150/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
@@ -616,9 +621,10 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
     if (doElectron) filepath = "histfiles_met50qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
-  else if (do_qcd) {
-    if (doElectron) filepath = "histfiles/qcd_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
-    else filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+  else {
+    if (use2D && doElectron) filepath = "histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else if (use2D) filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root";
   }
 
   TFile* dataFile = TFile::Open(filepath);
@@ -633,7 +639,6 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
     TH1F* h_data2 = (TH1F*) dataFile->Get("etaAbsLep7"+ptbin);
     h_data->Add(h_data2,-1);
   }
-
   else if (what=="htLep4") {
     TH1F* h_data2 = (TH1F*) dataFile->Get("htLep6"+ptbin);
     h_data->Add(h_data2,-1);
@@ -833,6 +838,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   TString channel = "mu_";
   if (doElectron) channel = "el_";
 
+
   // -------------------------------------------------------------------------------------
   // post-fit relative errors
 
@@ -841,9 +847,11 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   // -------------------------------------------------------------------------------------
 
   float fiterrors_mu_extLumi_extBtag[12][5] = {
+    // updated version with latest top XS
+    {0.135042467854, 0.591765290971, 0.0865207344428, 0.419226749815, 0}, // bkg error for CT10_nom
     //{0.135132081051, 0.592864270042, 0.0865722920178, 0.417039824299, 0}, // bkg error for CT10_nom 
     //{0.0849186169086, 0.479511247586, 0.0859954208879, 0.116649491322, 0}, // bkg error for CT10_nom (2temp0t)
-    {0.128438848781, 0.585592024004, 0.0969591956193, 1.45116905634, 0}, // bkg error for CT10_nom (flat QCD)
+    //{0.128438848781, 0.585592024004, 0.0969591956193, 1.45116905634, 0}, // bkg error for CT10_nom (flat QCD)
     {0.141047195591, 0.584563234787, 0.0970293967236, 0.172037540546, 0}, // bkg error for CT10_pdfup
     {0.13201839681, 0.592757087347, 0.0846483545142, 0.209374249831, 0}, // bkg error for CT10_pdfdown
     {0.136654966326, 0.589173345724, 0.0880843814416, 0.188347196546, 0}, // bkg error for MSTW_nom
@@ -857,9 +865,11 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.132393858081, 0.601442306113, 0.0720573525466, 0.207712268448, 0}, // bkg error for MG
   };
   float fiterrors_el_extLumi_extBtag[12][5] = {
+    // updated version with latest top XS
+    {0.106031597988, 0.47158023023, 0.0878330030912, 0, 0.294575190178}, // bkg error for CT10_nom
     //{0.105955487711, 0.472815289875, 0.0879845167103, 0, 0.291905355502}, // bkg error for CT10_nom
     //{0.0997720511417, 0.446088129682, 0.0419740898106, 0, 0.191691617142}, // bkg error for CT10_nom (2temp0t)
-    {0.110661247942, 0.507596238499, 0.0838193634334, 0, 1.61308220344}, // bkg error for CT10_nom (flat QCD)
+    //{0.110661247942, 0.507596238499, 0.0838193634334, 0, 1.61308220344}, // bkg error for CT10_nom (flat QCD)
     {0.111230824282, 0.462081793096, 0.0975843837009, 0, 0.198637175933}, // bkg error for CT10_pdfup
     {0.0995412715042, 0.506136119673, 0.0833208500129, 0, 0.174993040682}, // bkg error for CT10_pdfdown
     {0.104896323332, 0.487690699466, 0.0866648199766, 0, 0.189066564151}, // bkg error for MSTW_nom
@@ -873,9 +883,11 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
     {0.0994881298212, 0.514981177639, 0.0768513374474, 0, 0.141037932666}, // bkg error for MG
   };
   float fiterrors_comb_extLumi_extBtag[12][5] = {
+    // updated version with latest top XS
+    {0.074378575148, 0.474869956588, 0.0750287374318, 1.42507210261, 0.0965834851908}, // bkg error for CT10_nom
     //{0.0741772098545, 0.474378711021, 0.0747761422176, 1.42301397566, 0.0961985385624}, // bkg error for CT10_nom
     //{0.069766876149, 0.339272734277, 0.0485490110471, 0.217961414064, 0.0801378744912}, // bkg error for CT10_nom (2temp0t)
-    {0.0722604340607, 0.476531723807, 0.0806416545293, 14.6632847165, 0.187128411298}, // bkg error for CT10_nom (flat QCD)
+    //{0.0722604340607, 0.476531723807, 0.0806416545293, 14.6632847165, 0.187128411298}, // bkg error for CT10_nom (flat QCD)
     {0.0796353685898, 0.428566892826, 0.090950911035, 0.435103553405, 0.0629574417432}, // bkg error for CT10_pdfup
     {0.0701039019112, 0.488312009939, 0.0708568064238, 0.43711151761, 0.0609922366663}, // bkg error for CT10_pdfdown
     {0.0745127436608, 0.460054651877, 0.0764168758694, 0.435410180448, 0.0618880632933}, // bkg error for MSTW_nom
