@@ -60,10 +60,10 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   TH1::AddDirectory(kFALSE); 
   setStyle();
 
-  if ( !((cut==4 && cut2==6) || (cut==5 && cut2==6) || (cut==6 && cut2==7) || (cut==7 && cut2==0) || (cut==6 && cut2==0))) { 
+  if ( !((cut==4 && cut2==6) || (cut==5 && cut2==7) || (cut==5 && cut2==6) || (cut==6 && cut2==7) || (cut==7 && cut2==0) || (cut==6 && cut2==0))) { 
     std::cout << "Not a valid option! Syntax is: " << std::endl
 	      << "> makePlots(TString var, int cut, int cut2)" << std::endl
-	      << "where (cut, cut2) = (4,6) or (5,6) or (6,7) or (7,0) or (6,0). Exiting..." << std::endl;
+	      << "where (cut, cut2) = (4,6) or (5,6) or (5,7) or (6,7) or (7,0) or (6,0). Exiting..." << std::endl;
     return;
   }
 
@@ -203,12 +203,12 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     binwidth = h_data->GetBinWidth(2) * rebin;
     sprintf(tmptxt,"Events / %.1f",binwidth);
   }  
-  else if (hist=="hadtop_mass6" || hist=="hadtop_mass7" || hist=="leptop_mass4") {
+  else if (hist=="hadtop_mass5" || hist=="hadtop_mass6" || hist=="hadtop_mass7" || hist=="leptop_mass4") {
     rebin = 2;
     binwidth = h_data->GetBinWidth(2) * rebin;
     sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
-  else if (hist=="leptop_mass6" || hist=="leptop_mass7") {
+  else if (hist=="leptop_mass5" || hist=="leptop_mass6" || hist=="leptop_mass7") {
     rebin = 4;
     binwidth = h_data->GetBinWidth(2) * rebin;
     sprintf(tmptxt,"Events / %.0f GeV",binwidth);
@@ -218,12 +218,12 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     binwidth = h_data->GetBinWidth(2) * rebin;
     sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
-  else if (hist=="hadtop_pt6" || hist=="hadtop_pt7" || var=="leptop_pt") {
+  else if (hist=="hadtop_pt6" || hist=="hadtop_pt5" || hist=="hadtop_pt7" || var=="leptop_pt") {
     rebin = 5;
     binwidth = h_data->GetBinWidth(2) * rebin;
     sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
-  else if (hist=="hadtop_y6" || hist=="hadtop_y7" || hist=="leptop_y6" || hist=="leptop_y7") {
+  else if (hist=="hadtop_y5" || hist=="hadtop_y6" || hist=="hadtop_y7" || hist=="leptop_y5" || hist=="leptop_y6" || hist=="leptop_y7") {
     rebin = 2;
     binwidth = h_data->GetBinWidth(2) * rebin;
     sprintf(tmptxt,"Events / %.1f",binwidth);
@@ -243,7 +243,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     binwidth = h_data->GetBinWidth(2) * rebin;
     sprintf(tmptxt,elmu+" / %.0f GeV",binwidth);
   }
-  else if (hist=="ptMET4") {
+  else if (hist=="ptMET5" || hist=="ptMET4") {
     rebin = 5;
     binwidth = h_data->GetBinWidth(2) * rebin;
     sprintf(tmptxt,"Events / %.0f GeV",binwidth);
@@ -286,7 +286,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (var=="csv1LepJet" || var=="csv2LepJet") h_data->SetAxisRange(0,1.05,"X");
   if (hist=="hadtop_mass3" || hist=="hadtop_mass4") h_data->SetAxisRange(0,250,"X");
   if (hist=="hadtop_pt3") h_data->SetAxisRange(150,700,"X");
-  if (hist=="hadtop_pt4") h_data->SetAxisRange(350,900,"X");
+  if (hist=="hadtop_pt4" || hist=="hadtop_pt5") h_data->SetAxisRange(350,900,"X");
   if (hist=="hadtop_pt6" || hist=="hadtop_pt7") h_data->SetAxisRange(350,1200,"X");
   if (var=="hadtop_y" || var=="leptop_y") h_data->SetAxisRange(-3,3,"X");
   if (hist=="ht3" || hist=="htLep3") h_data->SetAxisRange(0,1400,"X");
@@ -849,7 +849,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
 
   float fiterrors_mu_extLumi_extBtag[12][5] = {
     // updated version with latest top XS
-    {0.135042467854, 0.355781537645, 0.0728975879853, 0.294291957967, 0}, // bkg error AVERAGED for CT10_nom
+    {0.131299085588, 0.438720042519, 0.0784405503215, 0.331622178975, 0}, // bkg error for CT10_nom
     //{0.135132081051, 0.592864270042, 0.0865722920178, 0.417039824299, 0}, // bkg error for CT10_nom 
     //{0.0849186169086, 0.479511247586, 0.0859954208879, 0.116649491322, 0}, // bkg error for CT10_nom (2temp0t)
     //{0.128438848781, 0.585592024004, 0.0969591956193, 1.45116905634, 0}, // bkg error for CT10_nom (flat QCD)
@@ -867,7 +867,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   };
   float fiterrors_el_extLumi_extBtag[12][5] = {
     // updated version with latest top XS
-    {0.106031597988, 0.392938259207, 0.0878330030912, 0, 0.281851130684}, // bkg error AVERAGED for CT10_nom
+    {0.106031597988, 0.465128546618, 0.0973874287466, 0, 0.339664916141}, // bkg error for CT10_nom
     //{0.105955487711, 0.472815289875, 0.0879845167103, 0, 0.291905355502}, // bkg error for CT10_nom
     //{0.0997720511417, 0.446088129682, 0.0419740898106, 0, 0.191691617142}, // bkg error for CT10_nom (2temp0t)
     //{0.110661247942, 0.507596238499, 0.0838193634334, 0, 1.61308220344}, // bkg error for CT10_nom (flat QCD)
@@ -885,7 +885,7 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
   };
   float fiterrors_comb_extLumi_extBtag[12][5] = {
     // updated version with latest top XS
-    {0.074378575148, 0.389460592529, 0.0625475129624, 0.158198634079, 0.0965834851908}, // bkg error AVERAGED for CT10_nom
+    {0.0751201956401, 0.458898619138, 0.0682981707067, 0.470614878417, 0.169389663609}, // bkg error for CT10_nom
     //{0.0741772098545, 0.474378711021, 0.0747761422176, 1.42301397566, 0.0961985385624}, // bkg error for CT10_nom
     //{0.069766876149, 0.339272734277, 0.0485490110471, 0.217961414064, 0.0801378744912}, // bkg error for CT10_nom (2temp0t)
     //{0.0722604340607, 0.476531723807, 0.0806416545293, 14.6632847165, 0.187128411298}, // bkg error for CT10_nom (flat QCD)
