@@ -23,13 +23,11 @@ beta_signal          :   0.80 +-   0.08
 jec                  :   0.54 +-   0.50
 rate_vjets           :   0.22 +-   0.19
 rate_st              :  -0.03 +-   0.93
-single top error, up = 0.471387832416 dn = 0.314488685998
-W+jets error, up = 0.0878330030912 dn = 0.0878330030912
-muon QCD error, up = 0 dn = 0
-electron QCD error, up = 0.294575190178 dn = 0.26912707119
-    {0.106031597988, 0.471387832416, 0.0878330030912, 0, 0.294575190178}, // bkg error UP for CT10_nom
-    {0.106031597988, 0.314488685998, 0.0878330030912, 0, 0.26912707119}, // bkg error DN for CT10_nom
-    {0.106031597988, 0.392938259207, 0.0878330030912, 0, 0.281851130684}, // bkg error AVERAGED for CT10_nom
+single top error = 0.465128546618
+W+jets error, up = 0.0973874287466
+muon QCD error = 0
+electron QCD error = 0.339664916141
+    {0.106031597988, 0.465128546618, 0.0973874287466, 0, 0.339664916141}, // bkg error for CT10_nom
 if options.pdf == "CT10_nom" and options.lepType == "ele" : toptag_post = 0.943046798492
 ['beta_signal', 'jec', 'jer', 'rate_el_qcd', 'rate_st', 'rate_vjets', 'toptag']
 [INFO]  workdir is /uscms_data/d3/skinnari/TopXS_theta/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/run_theta/analysis

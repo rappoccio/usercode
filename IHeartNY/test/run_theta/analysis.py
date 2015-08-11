@@ -935,8 +935,8 @@ for idir in dirs :
                 #my_muqcd_err_up = ival[0][1]*qcdUnc/(1+ival[0][0]*qcdUnc)
                 my_muqcd_err = ival[0][1]*qcdUnc
             elif ikey == "rate_el_qcd":
-                #my_elqcd_err = ival[0][1]*qcdUnc/(1+ival[0][0]*qcdUnc)
-                my_elqcd_err = ival[0][1]*qcdUnc
+                #my_eqcd_err = ival[0][1]*qcdUnc/(1+ival[0][0]*qcdUnc)
+                my_eqcd_err = ival[0][1]*qcdUnc
            # elif ikey == "rate_mu_qcd":
            #     centralValue = 0
            #     fitup = 0
