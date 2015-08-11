@@ -29,7 +29,7 @@ void calcFinal() {
   parton_MG[2] = (parton_MG[0]+parton_MG[1])/2.;
 
   // beta_signal's from theta fit
-  float data[3] = {0.63, 0.80, 0.87};
+  float data[3] = {0.63, 0.80, 0.86};
   float err_data[3] = {0.09, 0.09, 0.06};
   //  float data_MG[3] = {0.64, 0.84, 0.87};
   float data_MG[3] = {0.62, 0.82, 0.85};  /// temporary hack -- need to fix if showing MadGraph in public (rerun theta with updated top xs)
