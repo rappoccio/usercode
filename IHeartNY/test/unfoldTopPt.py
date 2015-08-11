@@ -161,7 +161,7 @@ Nmc_WJets_4jet = 13382803
 
 ## hack to account for that when doing closure test, the ttbar sample is split in two 
 eff_closure = 1.0
-if options.closureTest == True && options.pdf != "MG":
+if options.closureTest == True and options.pdf != "MG":
     eff_closure = 2.0
 
 
@@ -187,18 +187,28 @@ else:
     
     
 ## muon channel
+#if options.lepType == "muon" :   #unfold
+#    n_ttbarnonsemilep = [29.5454, 31.7288, 27.362, 74.3116, 79.8033, 68.8199]   #unfold
+#    n_wjets           = [3.84511, 4.14691, 3.5433, 155.559, 167.769, 143.349]   #unfold
+#    n_singletop       = [4.1156, 6.03127, 2.19993, 18.5079, 27.1227, 9.8931]   #unfold
+#    n_qcd             = [3.24901, 4.65408, 1.84395, 18.1419, 25.9874, 10.2963]   #unfold
 if options.lepType == "muon" :   #unfold
-    n_ttbarnonsemilep = [29.5454, 31.7288, 27.362, 74.3116, 79.8033, 68.8199]   #unfold
-    n_wjets           = [3.84511, 4.14691, 3.5433, 155.559, 167.769, 143.349]   #unfold
-    n_singletop       = [4.1156, 6.03127, 2.19993, 18.5079, 27.1227, 9.8931]   #unfold
-    n_qcd             = [3.24901, 4.65408, 1.84395, 18.1419, 25.9874, 10.2963]   #unfold
+    n_ttbarnonsemilep = [29.7176, 31.95, 27.4852, 74.4024, 79.9916, 68.8133]   #unfold
+    n_wjets           = [3.90922, 4.17621, 3.64223, 157.76, 168.534, 146.985]   #unfold
+    n_singletop       = [4.07011, 5.93787, 2.20234, 18.502, 26.9925, 10.0115]   #unfold
+    n_qcd             = [7.61582, 11.1999, 4.0317, 21.0118, 30.9003, 11.1233]   #unfold
     
 ## electron channel
+#if options.lepType == "ele" :   #unfold
+#    n_ttbarnonsemilep = [30.4236, 32.672, 28.1753, 70.4531, 75.6596, 65.2465]   #unfold
+#    n_wjets           = [2.69465, 2.90616, 2.48315, 130.705, 140.964, 120.446]   #unfold
+#    n_singletop       = [3.23182, 4.73612, 1.72752, 15.1449, 22.1944, 8.09549]   #unfold
+#    n_qcd             = [10.4881, 11.1397, 9.8365, 78.1238, 82.9773, 73.2703]   #unfold
 if options.lepType == "ele" :   #unfold
-    n_ttbarnonsemilep = [30.4236, 32.672, 28.1753, 70.4531, 75.6596, 65.2465]   #unfold
-    n_wjets           = [2.69465, 2.90616, 2.48315, 130.705, 140.964, 120.446]   #unfold
-    n_singletop       = [3.23182, 4.73612, 1.72752, 15.1449, 22.1944, 8.09549]   #unfold
-    n_qcd             = [10.4881, 11.1397, 9.8365, 78.1238, 82.9773, 73.2703]   #unfold
+    n_ttbarnonsemilep = [30.1172, 32.3796, 27.8548, 69.9322, 75.1855, 64.6789]   #unfold
+    n_wjets           = [2.74315, 2.9305, 2.5558, 132.34, 141.378, 123.301]   #unfold
+    n_singletop       = [3.16264, 4.61396, 1.71131, 14.7989, 21.5902, 8.00773]   #unfold
+    n_qcd             = [10.4814, 12.2568, 8.70593, 78.0737, 91.2986, 64.8488]   #unfold
 
 
 ## extract relevant background normalizations
