@@ -18,7 +18,6 @@ if extJet:
 if extTopTag:
     extName += "_notoptag"
 
-#qcdUnc = 10.0
 qcdUnc = 1.0
 stUnc = 0.5
 vjetsUnc = 0.5
@@ -70,13 +69,13 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, fittype='', elflag=Fals
         print "DEBUG: muon+jets channel considered"
         if nptbin == '1' :
             if fittype == '' or fittype == 'htLep6' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'etaAbsLep4only':
-                #model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep4')
-                model.add_asymmetric_lognormal_uncertainty('rate_mu_qcd', math.log(1. + qcdUnc / 4), math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep4')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep4')
+                #model.add_asymmetric_lognormal_uncertainty('rate_mu_qcd', math.log(1. + qcdUnc / 4), math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep4')
             if fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep4only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_htLep4')
             if fittype == '' or fittype == '2temp46' or fittype == 'etaAbsLep6only':
-                #model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep6')
-                model.add_asymmetric_lognormal_uncertainty('rate_mu_qcd', math.log(1. + qcdUnc / 4), math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep6')
+                model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep6')
+                #model.add_asymmetric_lognormal_uncertainty('rate_mu_qcd', math.log(1. + qcdUnc / 4), math.log(1+qcdUnc), 'QCD' , 'mu_etaAbsLep6')
             if fittype == 'htLep6' or fittype == 'htLep46' or fittype == 'htLep467' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'htLep6only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_htLep6')
             if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'vtxMass7only':
@@ -896,8 +895,9 @@ for idir in dirs :
         my_wj_err = 0
         my_st_err = 0
         my_eqcd_err = 0
-        my_muqcd_err_up = 0
-        my_muqcd_err_dn = 0
+        my_muqcd_err = 0
+        #my_muqcd_err_up = 0
+        #my_muqcd_err_dn = 0
 
         my_toptag = 0
         my_toptag_err = 0
@@ -925,14 +925,18 @@ for idir in dirs :
                 my_toptagHigh = ival[0][0]
                 my_toptagHigh_err = ival[0][1]
             elif ikey == "rate_st":
-                my_st_err = ival[0][1]*stUnc/(1+ival[0][0]*stUnc)
+                #my_st_err = ival[0][1]*stUnc/(1+ival[0][0]*stUnc)
+                my_st_err = ival[0][1]*stUnc
             elif ikey == "rate_vjets":
-                my_wj_err = ival[0][1]*vjetsUnc/(1+ival[0][0]*vjetsUnc)
+                #my_wj_err = ival[0][1]*vjetsUnc/(1+ival[0][0]*vjetsUnc)
+                my_wj_err = ival[0][1]*vjetsUnc
             elif ikey == "rate_mu_qcd":
-                my_muqcd_err_dn = ival[0][1]*qcdUnc/4/(1+ival[0][0]*qcdUnc/4)
-                my_muqcd_err_up = ival[0][1]*qcdUnc/(1+ival[0][0]*qcdUnc)
+                #my_muqcd_err_dn = ival[0][1]*qcdUnc/4/(1+ival[0][0]*qcdUnc/4)
+                #my_muqcd_err_up = ival[0][1]*qcdUnc/(1+ival[0][0]*qcdUnc)
+                my_muqcd_err = ival[0][1]*qcdUnc
             elif ikey == "rate_el_qcd":
-                my_elqcd_err = ival[0][1]*qcdUnc/(1+ival[0][0]*qcdUnc)
+                #my_elqcd_err = ival[0][1]*qcdUnc/(1+ival[0][0]*qcdUnc)
+                my_elqcd_err = ival[0][1]*qcdUnc
            # elif ikey == "rate_mu_qcd":
            #     centralValue = 0
            #     fitup = 0
@@ -974,14 +978,13 @@ for idir in dirs :
 
         print "single top error = "+str(my_st_err)
         print "W+jets error, up = "+str(my_wj_err)
-        print "muon QCD error, up = "+str(my_muqcd_err_up)+" dn = "+str(my_muqcd_err_dn)
+        #print "muon QCD error, up = "+str(my_muqcd_err_up)+" dn = "+str(my_muqcd_err_dn)
+        print "muon QCD error = "+str(my_muqcd_err)
         print "electron QCD error = "+str(my_eqcd_err)
                 
-        my_muqcd_err = (my_muqcd_err_up+my_muqcd_err_dn)/2
+        #my_muqcd_err = (my_muqcd_err_up+my_muqcd_err_dn)/2
         
-        print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err_up)+", "+str(my_eqcd_err)+"}, // bkg error UP for "+idir
-        print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err_dn)+", "+str(my_eqcd_err)+"}, // bkg error DN for "+idir
-        print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err)+", "+str(my_eqcd_err)+"}, // bkg error AVERAGED for "+idir
+        print "    {"+str(my_tt_err)+", "+str(my_st_err)+", "+str(my_wj_err)+", "+str(my_muqcd_err)+", "+str(my_eqcd_err)+"}, // bkg error for "+idir
         
         toptag_post = (1.0 + 0.25*my_toptag) 
         toptagLow_post = (1.0 + 0.25*my_toptagLow) 
