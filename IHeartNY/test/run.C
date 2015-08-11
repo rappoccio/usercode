@@ -71,6 +71,14 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
     makePlots("hadtop_pt", 6, 7, doElectron, "", "CT10_nom", true, combine);
     makePlots("hadtop_pt", 7, 0, doElectron, "", "CT10_nom", true, combine);
 
+    makePlots("ptLep", 4, 6, doElectron, "", "CT10_nom", true, combine);
+    makePlots("ptLep", 6, 7, doElectron, "", "CT10_nom", true, combine);
+    makePlots("ptLep", 7, 0, doElectron, "", "CT10_nom", true, combine);
+
+    makePlots("ptMET", 4, 6, doElectron, "", "CT10_nom", true, combine);
+    makePlots("ptMET", 6, 7, doElectron, "", "CT10_nom", true, combine);
+    makePlots("ptMET", 7, 0, doElectron, "", "CT10_nom", true, combine);
+
   }
   // various plots for kinematic checks
   else if (option=="plotex") {
@@ -103,6 +111,14 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
     makePlots("vtxMass",7,0, doElectron,"",pdfdir);
     makePlots("etaAbsLep",6,7, doElectron,"",pdfdir);
     makePlots("etaAbsLep",4,6, doElectron,"",pdfdir);
+  }
+  // debug thing
+  else if (option=="debug") {
+    makePlots("ptLep",5,7, doElectron,"",pdfdir);
+    makePlots("ptMET",5,7, doElectron,"",pdfdir);
+    makePlots("hadtop_pt",5,7, doElectron,"",pdfdir);
+    makePlots("etaAbsLep",5,7, doElectron,"",pdfdir);
+    makePlots("vtxMass",5,7, doElectron,"",pdfdir);
   }
 
   else if (option=="table") {
