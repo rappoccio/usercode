@@ -809,14 +809,14 @@ if options.normalize:
 ## ratio of unfolded data to generator-level 
 hFrac = hReco.Clone()
 hFrac.SetName("hFrac")
-hFrac.SetTitle(";Top quark p_{T} [GeV];Data/MC")
+hFrac.SetTitle(";Top quark p_{T} (GeV);Data/MC")
 hFrac.Divide(hTrue)
 
 ## ratio of unfolded data to particle-level 
 if options.twoStep:
     hFrac_rp = hReco_rp.Clone()
     hFrac_rp.SetName("hFrac_rp")
-    hFrac_rp.SetTitle(";Particle-level top p_{T} [GeV];Data/MC")
+    hFrac_rp.SetTitle(";Particle-level top p_{T} (GeV);Data/MC")
     hFrac_rp.Divide(hPart)
 
 print ''
@@ -1044,8 +1044,8 @@ if options.twoStep == False:
     hEmpty2D = response.Hresponse().Clone()
     hEmpty2D.SetName("empty2D")
     hEmpty2D.Reset()
-    hEmpty2D.GetXaxis().SetTitle("Top-tagged jet p_{T} [GeV]")
-    hEmpty2D.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
+    hEmpty2D.GetXaxis().SetTitle("Reconstructed top-jet p_{T} (GeV)")
+    hEmpty2D.GetYaxis().SetTitle("Top quark p_{T} (GeV)")
     hEmpty2D.GetXaxis().SetLabelSize(0.045)
     hEmpty2D.GetYaxis().SetLabelSize(0.045)
     hEmpty2D.Draw()
@@ -1081,6 +1081,7 @@ if options.twoStep == False:
     hEmpty2D.Draw()
     hResponse2D.Draw("colz,same,text")
     hEmpty2D.Draw("axis,same")
+
     if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
@@ -1096,15 +1097,20 @@ if options.twoStep == False:
 
 if options.twoStep:
 
+    cr.SetTopMargin(0.08)
+
+
     # -------------------------------------------------------------------------------------
     ### reco to particle level
     hEmpty2D_rp = response_rp.Hresponse().Clone()
     hEmpty2D_rp.SetName("empty2D_rp")
     hEmpty2D_rp.Reset()
-    hEmpty2D_rp.GetXaxis().SetTitle("Top-tagged jet p_{T} [GeV]")
-    hEmpty2D_rp.GetYaxis().SetTitle("Particle-level top p_{T} [GeV]")
-    hEmpty2D_rp.GetXaxis().SetLabelSize(0.045)
-    hEmpty2D_rp.GetYaxis().SetLabelSize(0.045)
+    hEmpty2D_rp.GetXaxis().SetTitle("Reconstructed top-jet p_{T} (GeV)")
+    hEmpty2D_rp.GetYaxis().SetTitle("Particle-level top p_{T} (GeV)")
+    hEmpty2D_rp.GetXaxis().SetLabelSize(0.05)
+    hEmpty2D_rp.GetYaxis().SetLabelSize(0.05)
+    hEmpty2D_rp.GetXaxis().SetTitleOffset(1.2)
+    hEmpty2D_rp.GetYaxis().SetTitleOffset(1.2)
     hEmpty2D_rp.Draw()
     hResponse2D_rp = response_rp.Hresponse().Clone()
     hResponse2D_rp.SetName("plottedResponse_rp")
@@ -1113,8 +1119,8 @@ if options.twoStep:
         hEmpty2D_rp_even = response_rp_even.Hresponse().Clone()
         hEmpty2D_rp_even.SetName("empty2D_rp_even")
         hEmpty2D_rp_even.Reset()
-        hEmpty2D_rp_even.GetXaxis().SetTitle("Top-tagged jet p_{T} [GeV]")
-        hEmpty2D_rp_even.GetYaxis().SetTitle("Particle-level top p_{T} [GeV]")
+        hEmpty2D_rp_even.GetXaxis().SetTitle("Reconstructed top-jet p_{T} (GeV)")
+        hEmpty2D_rp_even.GetYaxis().SetTitle("Particle-level top p_{T} (GeV)")
         hEmpty2D_rp_even.GetXaxis().SetLabelSize(0.045)
         hEmpty2D_rp_even.GetYaxis().SetLabelSize(0.045)
         hResponse2D_rp_even = response_rp_even.Hresponse().Clone()
@@ -1148,6 +1154,7 @@ if options.twoStep:
 
     hEmpty2D_rp.Draw()
     gStyle.SetPaintTextFormat(".1f")
+    hResponse2D_rp.SetMarkerSize(1.2)
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
     if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
@@ -1162,6 +1169,37 @@ if options.twoStep:
     hEmpty2D_rp.Draw()
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
+
+    cmsTextSize = 0.06
+    extraOverCmsTextSize = 0.76
+    extraTextSize = extraOverCmsTextSize*cmsTextSize
+
+    t1 = TLatex()
+    t1.SetNDC()
+    t1.SetTextFont(61)
+    t1.SetTextAngle(0)
+    t1.SetTextColor(1)
+    t1.SetTextSize(cmsTextSize)
+    t1.DrawLatex(0.19,0.94, "CMS")
+    
+    t2 = TLatex()
+    t2.SetNDC()
+    t2.SetTextFont(52)
+    t2.SetTextColor(1)
+    t2.SetTextSize(extraTextSize)
+    t2.DrawLatex(0.29,0.94, "Preliminary")
+    
+    t3 = TLatex()
+    t3.SetNDC()
+    t3.SetTextFont(42)
+    t3.SetTextColor(1)
+    t3.SetTextSize(extraTextSize)
+    if (options.lepType == "ele"):
+        t3.DrawLatex(0.49,0.94, "(e+Jets)")
+    else:
+        t3.DrawLatex(0.49,0.94, "(#mu+Jets)")
+    t3.DrawLatex(0.66,0.94, "19.7 fb^{-1} (8 TeV)")    
+
     if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
@@ -1177,10 +1215,12 @@ if options.twoStep:
     hEmpty2D_pp = response_pp.Hresponse().Clone()
     hEmpty2D_pp.SetName("empty2D_pp")
     hEmpty2D_pp.Reset()
-    hEmpty2D_pp.GetXaxis().SetTitle("Particle-level top p_{T} [GeV]")
-    hEmpty2D_pp.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
-    hEmpty2D_pp.GetXaxis().SetLabelSize(0.045)
-    hEmpty2D_pp.GetYaxis().SetLabelSize(0.045)
+    hEmpty2D_pp.GetXaxis().SetTitle("Particle-level top p_{T} (GeV)")
+    hEmpty2D_pp.GetYaxis().SetTitle("Top quark p_{T} (GeV)")
+    hEmpty2D_pp.GetXaxis().SetLabelSize(0.05)
+    hEmpty2D_pp.GetYaxis().SetLabelSize(0.05)
+    hEmpty2D_pp.GetXaxis().SetTitleOffset(1.2)
+    hEmpty2D_pp.GetYaxis().SetTitleOffset(1.2)
     hEmpty2D_pp.Draw()
     hResponse2D_pp = response_pp.Hresponse().Clone()
     hResponse2D_pp.SetName("plottedResponse_pp")
@@ -1189,8 +1229,8 @@ if options.twoStep:
         hEmpty2D_pp_even = response_pp_even.Hresponse().Clone()
         hEmpty2D_pp_even.SetName("empty2D_pp_even")
         hEmpty2D_pp_even.Reset()
-        hEmpty2D_pp_even.GetXaxis().SetTitle("Particle-level top p_{T} [GeV]")
-        hEmpty2D_pp_even.GetYaxis().SetTitle("Top quark p_{T} [GeV]")
+        hEmpty2D_pp_even.GetXaxis().SetTitle("Particle-level top p_{T} (GeV)")
+        hEmpty2D_pp_even.GetYaxis().SetTitle("Top quark p_{T} (GeV)")
         hEmpty2D_pp_even.GetXaxis().SetLabelSize(0.045)
         hEmpty2D_pp_even.GetYaxis().SetLabelSize(0.045)
         hResponse2D_pp_even = response_pp_even.Hresponse().Clone()
@@ -1223,6 +1263,7 @@ if options.twoStep:
             hResponse2D_pp.SetBinContent(ibx,iby,newContent)
 
     gStyle.SetPaintTextFormat(".1f")
+    hResponse2D_pp.SetMarkerSize(1.2)
     hResponse2D_pp.Draw("colz,same,text")
     hEmpty2D_pp.Draw("axis,same")
     if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
@@ -1237,6 +1278,37 @@ if options.twoStep:
     hEmpty2D_pp.Draw()
     hResponse2D_pp.Draw("colz,same,text")
     hEmpty2D_pp.Draw("axis,same")
+
+    cmsTextSize = 0.06
+    extraOverCmsTextSize = 0.76
+    extraTextSize = extraOverCmsTextSize*cmsTextSize
+
+    t1 = TLatex()
+    t1.SetNDC()
+    t1.SetTextFont(61)
+    t1.SetTextAngle(0)
+    t1.SetTextColor(1)
+    t1.SetTextSize(cmsTextSize)
+    t1.DrawLatex(0.19,0.94, "CMS")
+    
+    t2 = TLatex()
+    t2.SetNDC()
+    t2.SetTextFont(52)
+    t2.SetTextColor(1)
+    t2.SetTextSize(extraTextSize)
+    t2.DrawLatex(0.29,0.94, "Preliminary")
+
+    t3 = TLatex()
+    t3.SetNDC()
+    t3.SetTextFont(42)
+    t3.SetTextColor(1)
+    t3.SetTextSize(extraTextSize)
+    if (options.lepType == "ele"):
+        t3.DrawLatex(0.49,0.94, "(e+Jets)")
+    else:
+        t3.DrawLatex(0.49,0.94, "(#mu+Jets)")
+    t3.DrawLatex(0.66,0.94, "19.7 fb^{-1} (8 TeV)")    
+    
     if options.pdf == "CT10_nom" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")

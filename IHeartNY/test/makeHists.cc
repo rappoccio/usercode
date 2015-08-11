@@ -18,18 +18,48 @@ void setStyle() {
   
   gStyle->SetTitleFont(43);
   gStyle->SetTitleFont(43, "XYZ");
-  gStyle->SetTitleSize(30, "XYZ");
+  gStyle->SetTitleSize(32, "XYZ");
   gStyle->SetTitleOffset(2.0, "X");
   gStyle->SetTitleOffset(1.25, "Y");
   gStyle->SetLabelFont(43, "XYZ");
   gStyle->SetLabelSize(20, "XYZ");
 
+  // use plain black on white colors
+  gStyle->SetFrameBorderMode(0);
+  gStyle->SetFrameFillColor(0);
+  gStyle->SetCanvasBorderMode(0);
+  gStyle->SetCanvasColor(0);
+  gStyle->SetPadBorderMode(0);
+  gStyle->SetPadColor(0);
+  gStyle->SetStatColor(0);
+  gStyle->SetHistLineColor(1);
+  gStyle->SetPalette(1);
+  
+  // set the paper & margin sizes
+  gStyle->SetPaperSize(20,26);
+  
 }
 
+void myLargeText(Double_t x,Double_t y,Color_t color,char const *text) {
+  TLatex l;
+  l.SetTextSize(0.054); 
+  l.SetTextFont(42); 
+  l.SetNDC();
+  l.SetTextColor(color);
+  l.DrawLatex(x,y,text);
+}
 void myText(Double_t x,Double_t y,Color_t color,char const *text) {
   TLatex l;
   l.SetTextSize(0.05); 
   l.SetTextFont(42); 
+  l.SetNDC();
+  l.SetTextColor(color);
+  l.DrawLatex(x,y,text);
+}
+void myItalicText(Double_t x,Double_t y,Color_t color,char const *text) {
+  TLatex l;
+  l.SetTextSize(0.04); 
+  l.SetTextFont(52); 
   l.SetNDC();
   l.SetTextColor(color);
   l.DrawLatex(x,y,text);
@@ -41,6 +71,40 @@ void mySmallText(Double_t x,Double_t y,Color_t color,char const *text) {
   l.SetNDC();
   l.SetTextColor(color);
   l.DrawLatex(x,y,text);
+}
+
+void drawCMS(Double_t x,Double_t y, bool prel) {
+
+  float cmsTextSize = 0.07;
+  float extraOverCmsTextSize = 0.76;
+  float extraTextSize = extraOverCmsTextSize*cmsTextSize;
+
+  TLatex l;
+  l.SetTextSize(cmsTextSize); 
+  l.SetTextFont(61); 
+  l.SetTextAngle(0);
+  l.SetNDC();
+  l.SetTextColor(1);
+  l.DrawLatex(x,y,"CMS");
+
+  if (prel) {
+    TLatex lp;
+    lp.SetTextSize(extraTextSize); 
+    lp.SetTextFont(52); 
+    lp.SetNDC();
+    lp.SetTextColor(1);
+    float offset = 0.09;
+    lp.DrawLatex(x+offset,y,"Preliminary");
+  }
+
+  TLatex ll;
+  ll.SetTextSize(extraTextSize); 
+  ll.SetTextFont(42); 
+  ll.SetTextAngle(0);
+  ll.SetNDC();
+  ll.SetTextColor(1);
+  ll.DrawLatex(0.69,0.94,"19.7 fb^{-1} (8 TeV)");
+
 }
 
 
@@ -278,6 +342,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     h_singletop->Rebin(rebin);
     h_wjets->Rebin(rebin);
   }
+  if (var.Contains("vtxMass")) h_data->GetXaxis()->SetTitle("Leptonic-side secondary vertex mass (GeV)");
+
 
   h_data->SetLineWidth(1);
   h_data->SetMarkerStyle(20);
@@ -296,22 +362,6 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (hist=="ptMET0" || hist=="ptMET1" || hist=="ptMET2") h_data->SetAxisRange(0,200,"X");
 
 
-  // legend
-  TLegend* leg;
-  if (var.Contains("csv")) leg = new TLegend(0.59,0.56,0.84,0.9);
-  else leg = new TLegend(0.67,0.56,0.92,0.9);
-  leg->SetBorderSize(0);
-  leg->SetFillStyle(0);
-  leg->SetTextFont(42);
-  leg->SetTextSize(0.05);
-  leg->AddEntry(h_data, "Data", "pel");
-  leg->AddEntry(h_ttbar, "t#bar{t} Signal", "f");
-  leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} Other", "f");
-  leg->AddEntry(h_singletop, "Single Top", "f");
-  leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
-  leg->AddEntry(h_qcd, "QCD" , "f");
-
-
   // create stack & summed histogram for ratio plot
   THStack* h_stack = new THStack();    
   h_stack->Add(h_qcd);
@@ -326,9 +376,89 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   h_totalbkg->Add(h_wjets);
   h_totalbkg->Add(h_singletop);
 
+  // legend
+  TLegend* leg;
+  if (postfit && combined) leg = new TLegend(0.62,0.4,0.87,0.78);
+  else if (var.Contains("csv")) leg = new TLegend(0.59,0.56,0.84,0.9);
+  else leg = new TLegend(0.65,0.5,0.87,0.88);
+  leg->SetBorderSize(0);
+  leg->SetFillStyle(0);
+  leg->SetTextFont(42);
+  leg->SetTextSize(0.055);
+  leg->AddEntry(h_data, "Data", "pel");
+  leg->AddEntry(h_ttbar, "t#bar{t} Signal", "f");
+  leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} Other", "f");
+  leg->AddEntry(h_singletop, "Single Top", "f");
+  leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
+  leg->AddEntry(h_qcd, "QCD" , "f");
+  if (postfit && combined) leg->AddEntry(h_totalbkg, "Uncertainty", "f");
+
+  // uncertainty bands
+  float myerr_tt = 0.0;
+  float myerr_st = 0.0;
+  float myerr_wj = 0.0;
+  float myerr_qcd = 0.0;
+  if (doElectron) {
+    myerr_tt = 117.336/1561.97;
+    myerr_st = 119.726/260.899;
+    myerr_wj = 250.45/3667;
+    myerr_qcd = 128.224/756.974;
+  }
+  else { 
+    myerr_tt = 144.425/1922.58;
+    myerr_st = 134.715/293.561;
+    myerr_wj = 326.887/4786.17;
+    myerr_qcd = 168.613/358.282;
+  }
+
+
+  for (int ib=0; ib<h_totalbkg->GetNbinsX(); ib++) {
+    float count_tt = h_ttbar->GetBinContent(ib+1);
+    float count_tt_non = h_ttbar_nonSemiLep->GetBinContent(ib+1);
+    float count_st = h_singletop->GetBinContent(ib+1);
+    float count_wj = h_wjets->GetBinContent(ib+1);
+    float count_qcd = h_qcd->GetBinContent(ib+1);
+
+    float binbkg = sqrt( count_tt*myerr_tt*count_tt*myerr_tt + 
+			 count_tt_non*myerr_tt*count_tt_non*myerr_tt + 
+			 count_st*myerr_st*count_st*myerr_st + 
+			 count_wj*myerr_wj*count_wj*myerr_wj + 
+			 count_qcd*myerr_qcd*count_qcd*myerr_qcd );
+    
+    if (ib==0) cout << "binbkg = " << binbkg << " content = " << h_totalbkg->GetBinContent(ib+1) << endl;
+    h_totalbkg->SetBinError(ib+1, binbkg);
+  }
+
+  float count_tt = h_ttbar->Integral();
+  float count_tt_non = h_ttbar_nonSemiLep->Integral();
+  float count_st = h_singletop->Integral();
+  float count_wj = h_wjets->Integral();
+  float count_qcd = h_qcd->Integral();
+  float binbkg = sqrt( count_tt*myerr_tt*count_tt*myerr_tt + 
+		       count_tt_non*myerr_tt*count_tt_non*myerr_tt + 
+		       count_st*myerr_st*count_st*myerr_st + 
+		       count_wj*myerr_wj*count_wj*myerr_wj + 
+		       count_qcd*myerr_qcd*count_qcd*myerr_qcd );
+  cout << "combined background err = " << binbkg << " combined bkg = " << h_totalbkg->Integral() << endl;
+
+
   TH1F* h_ratio = (TH1F*) h_data->Clone("ratio_"+hist);
   h_ratio->Sumw2();
   h_ratio->Divide(h_totalbkg);
+
+  TH1F* h_ratio2 = (TH1F*) h_totalbkg->Clone("ratio2_"+hist);
+  h_ratio2->Sumw2();
+  for (int ib=0; ib<h_totalbkg->GetNbinsX(); ib++) {
+    h_ratio2->SetBinContent(ib+1, 1.0);
+    float tmperr = h_totalbkg->GetBinError(ib+1);
+    float tmpcount = h_totalbkg->GetBinContent(ib+1);
+
+    if (tmpcount==0) continue;
+    if (ib==0) cout << "tmperr = " << tmperr << " tmpcount = " << tmpcount << endl;
+    h_ratio2->SetBinError(ib+1,tmperr/tmpcount);
+  }
+
+
 
   // automatically set y-range
   float max = h_totalbkg->GetMaximum();
@@ -345,21 +475,23 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   h_data->SetAxisRange(0,max*1.05,"Y");
 
 
+
   // -------------------------------------------------------------------------------------
   // plotting!
 
-  TCanvas* c = new TCanvas("c_"+hist,"c_"+hist,200,10,900,800);
-  TPad* p1 = new TPad("datamcp1_"+hist,"datamcp1_"+hist,0.0,0.3,1.0,0.97);
-  p1->SetTopMargin(0.05);
+  TCanvas* c = new TCanvas("c_"+hist,"c_"+hist,900,800);
+  TPad* p1 = new TPad("datamcp1_"+hist,"datamcp1_"+hist,0,0.3,1,1);
+  p1->SetTopMargin(0.08);
   p1->SetBottomMargin(0.05);
   p1->SetNumber(1);
-  TPad* p2 = new TPad("datamcp2_"+hist,"datamcp2_"+hist,0.0,0.00,1.0,0.3);
+  TPad* p2 = new TPad("datamcp2_"+hist,"datamcp2_"+hist,0,0,1,0.3);
   p2->SetNumber(2);
   p2->SetTopMargin(0.05);
-  p2->SetBottomMargin(0.40);
+  p2->SetBottomMargin(0.35);
 
-  c->cd();
   p1->Draw();
+  p2->Draw();
+
   p1->cd();
 
   if (hist=="vtxMass6") {
@@ -373,41 +505,84 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     gPad->SetLogy();
   }
 
+  h_totalbkg->SetMarkerSize(0);
+  h_totalbkg->SetLineColor(0);
+  h_totalbkg->SetFillColor(1);
+  h_totalbkg->SetFillStyle(3253);
+
+  h_ratio2->SetMarkerSize(0);
+  h_ratio2->SetLineColor(0);
+  h_ratio2->SetFillColor(1);
+  h_ratio2->SetFillStyle(3253);
+
   h_data->UseCurrentStyle();
-  h_data->GetXaxis()->SetLabelSize(24);
-  h_data->GetYaxis()->SetLabelSize(24);
+  h_data->GetXaxis()->SetLabelSize(26);
+  h_data->GetYaxis()->SetLabelSize(26);
+  h_data->GetYaxis()->SetTitleSize(36);
+  h_data->GetYaxis()->SetTitleOffset(1.0);
   h_data->Draw("lep");
   h_stack->Draw("hist,same");
   h_data->Draw("lep,same");
+  if (postfit && combined) h_totalbkg->SetMinimum(0);
+  if (postfit && combined) h_totalbkg->Draw("e2,same");
   h_data->Draw("lep,same,axis");
 
   leg->Draw();
 
-  if (var.Contains("csv")) {
+  if (postfit && combined) {
+
+    drawCMS(0.62,0.83,true);
+    
+    if (hist.Contains("vtxMass") || hist.Contains("hadtop_pt")) {
+      if (hist.Contains("7")) myText(0.62,0.32,1,"1 t-tag + 1 b-tag");
+      else if (hist.Contains("6")) myText(0.62,0.32,1,"1 t-tag + 0 b-tag");
+      else if (hist.Contains("4")) myText(0.62,0.32,1,"0 t-tag + #geq 0 b-tag");
+      if (doElectron) myText(0.62,0.26,1,"e+Jets");
+      else myText(0.62,0.26,1,"#mu+Jets");
+      myItalicText(0.62,0.20,1,"Post-fit yields");
+    }
+    else {
+      if (doElectron) {
+	if (hist.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  e+Jets");
+	else if (hist.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  e+Jets");
+	else if (hist.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  e+Jets");
+      }
+      else {
+	if (hist.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  #mu+Jets");
+	else if (hist.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  #mu+Jets");
+	else if (hist.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  #mu+Jets");
+      }
+      myItalicText(0.18,0.77,1,"Post-fit yields");
+    }
+  }
+  else if (var.Contains("csv")) {
     myText(0.40,0.81,1,"#intLdt = 19.7 fb^{-1}");
     myText(0.40,0.72,1,"#sqrt{s} = 8 TeV");
   }
   else {
-    myText(0.48,0.81,1,"#intLdt = 19.7 fb^{-1}");
-    myText(0.48,0.72,1,"#sqrt{s} = 8 TeV");
+    myText(0.45,0.81,1,"#intLdt = 19.7 fb^{-1}");
+    myText(0.45,0.72,1,"#sqrt{s} = 8 TeV");
   }
 
-
   // plot ratio part
-  c->cd();
-  p2->Draw();
   p2->cd();
   p2->SetGridy();
   h_ratio->UseCurrentStyle();
   h_ratio->Draw("lep");
+  if (postfit && combined) h_ratio2->Draw("e2,same");
+  if (postfit && combined) h_ratio->Draw("lep,same");
   h_ratio->SetMaximum(2.0);
   h_ratio->SetMinimum(0.0);
   h_ratio->GetYaxis()->SetNdivisions(2,4,0,false);
   h_ratio->GetYaxis()->SetTitle("Data/MC");
   h_ratio->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
   h_ratio->GetXaxis()->SetTitleOffset( 4.0 );
-  h_ratio->GetXaxis()->SetLabelSize(24);
-  h_ratio->GetYaxis()->SetLabelSize(24);
+  h_ratio->GetXaxis()->SetLabelSize(26);
+  h_ratio->GetYaxis()->SetLabelSize(26);
+  h_ratio->GetXaxis()->SetTitleOffset(2.8);
+  h_ratio->GetYaxis()->SetTitleOffset(1.0);
+  h_ratio->GetXaxis()->SetTitleSize(36);
+  h_ratio->GetYaxis()->SetTitleSize(36);
 
   // save output
   TString outname;
@@ -603,7 +778,6 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   TH1F* h_ttbar_semiLep = (TH1F*) h_ttbar->Clone();
   h_ttbar_semiLep->Add(h_ttbar_nonSemiLep, -1);
 
-
   // -------------------------------------------------------------------------------------
   // read data histogram 
   TString filepath;
@@ -654,6 +828,8 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   else if (what.Contains("vtxMass")) rebin = getRebin("vtxMass");
   else if (what.Contains("htLep")) rebin = getRebin("htLep");
 
+  if (what.Contains("vtxMass")) h_data->GetXaxis()->SetTitle("Leptonic-side secondary vertex mass (GeV)");
+
   h_data->Rebin(rebin);
   float binwidth = h_data->GetBinWidth(2);
   char tmptxt[500];
@@ -688,19 +864,6 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   if (what.Contains("etaAbsLep") && doElectron) h_data->GetXaxis()->SetTitle("Electron |#eta|");
   else if (what.Contains("etaAbsLep")) h_data->GetXaxis()->SetTitle("Muon |#eta|");
 
-  // legend
-  TLegend* leg = new TLegend(0.67,0.56,0.92,0.9);
-  leg->SetBorderSize(0);
-  leg->SetFillStyle(0);
-  leg->SetTextFont(42);
-  leg->SetTextSize(0.05);
-  leg->AddEntry(h_data, "Data", "pel");
-  leg->AddEntry(h_ttbar_semiLep, "t#bar{t} Signal", "f");
-  leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} Other", "f");
-  leg->AddEntry(h_singletop, "Single Top", "f");
-  leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
-  leg->AddEntry(h_qcd, "QCD" , "f");
-
   // create stack & summed histogram for ratio plot
   THStack* h_stack = new THStack();    
   h_stack->Add(h_qcd);
@@ -715,11 +878,87 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   h_totalbkg->Add(h_wjets);
   h_totalbkg->Add(h_singletop);
 
+
+  // legend
+  TLegend* leg = new TLegend(0.62,0.4,0.87,0.78);
+  leg->SetBorderSize(0);
+  leg->SetFillStyle(0);
+  leg->SetTextFont(42);
+  leg->SetTextSize(0.055);
+  leg->AddEntry(h_data, "Data", "pel");
+  leg->AddEntry(h_ttbar_semiLep, "t#bar{t} Signal", "f");
+  leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} Other", "f");
+  leg->AddEntry(h_singletop, "Single Top", "f");
+  leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
+  leg->AddEntry(h_qcd, "QCD" , "f");
+  leg->AddEntry(h_totalbkg, "Uncertainty", "f");
+
+
+  // uncertainty bands
+  float err_tt = 0.0;
+  float err_st = 0.0;
+  float err_wj = 0.0;
+  float err_qcd = 0.0;
+  if (doElectron) {
+    err_tt = 117.336/1561.97;
+    err_st = 119.726/260.899;
+    err_wj = 250.45/3667;
+    err_qcd = 128.224/756.974;
+  }
+  else { 
+    err_tt = 144.425/1922.58;
+    err_st = 134.715/293.561;
+    err_wj = 326.887/4786.17;
+    err_qcd = 168.613/358.282;
+  }
+
+
+  for (int ib=0; ib<h_totalbkg->GetNbinsX(); ib++) {
+    float count_tt = h_ttbar_semiLep->GetBinContent(ib+1);
+    float count_tt_non = h_ttbar_nonSemiLep->GetBinContent(ib+1);
+    float count_st = h_singletop->GetBinContent(ib+1);
+    float count_wj = h_wjets->GetBinContent(ib+1);
+    float count_qcd = h_qcd->GetBinContent(ib+1);
+
+    float binbkg = sqrt( count_tt*err_tt*count_tt*err_tt + 
+			 count_tt_non*err_tt*count_tt_non*err_tt + 
+			 count_st*err_st*count_st*err_st + 
+			 count_wj*err_wj*count_wj*err_wj + 
+			 count_qcd*err_qcd*count_qcd*err_qcd );
+    
+    if (ib==0) cout << "binbkg = " << binbkg << " content = " << h_totalbkg->GetBinContent(ib+1) << endl;
+    h_totalbkg->SetBinError(ib+1, binbkg);
+  }
+
+  float count_tt = h_ttbar_semiLep->Integral();
+  float count_tt_non = h_ttbar_nonSemiLep->Integral();
+  float count_st = h_singletop->Integral();
+  float count_wj = h_wjets->Integral();
+  float count_qcd = h_qcd->Integral();
+  float binbkg = sqrt( count_tt*err_tt*count_tt*err_tt + 
+		       count_tt_non*err_tt*count_tt_non*err_tt + 
+		       count_st*err_st*count_st*err_st + 
+		       count_wj*err_wj*count_wj*err_wj + 
+		       count_qcd*err_qcd*count_qcd*err_qcd );
+  cout << "combined background err = " << binbkg << " combined bkg = " << h_totalbkg->Integral() << endl;
+
+
   TH1F* h_ratio = (TH1F*) h_data->Clone("ratio_"+what);
   h_ratio->Sumw2();
   cout << "Number of bins in data hist: " << h_ratio->GetNbinsX() << endl;
   cout << "Number of bins in bkg hist:  " << h_totalbkg->GetNbinsX() << endl;
   h_ratio->Divide(h_totalbkg);
+
+  TH1F* h_ratio2 = (TH1F*) h_totalbkg->Clone("ratio2_"+what);
+  h_ratio2->Sumw2();
+  for (int ib=0; ib<h_totalbkg->GetNbinsX(); ib++) {
+    h_ratio2->SetBinContent(ib+1, 1.0);
+    float tmperr = h_totalbkg->GetBinError(ib+1);
+    float tmpcount = h_totalbkg->GetBinContent(ib+1);
+    if (ib==0) cout << "tmperr = " << tmperr << " tmpcount = " << tmpcount << endl;
+    h_ratio2->SetBinError(ib+1,tmperr/tmpcount);
+  }
+
 
   // automatically set y-range
   float max = h_totalbkg->GetMaximum();
@@ -733,50 +972,88 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   // -------------------------------------------------------------------------------------
   // plotting!
 
-  TCanvas* c = new TCanvas("c_"+what,"c_"+what,200,10,900,800);
-  TPad* p1 = new TPad("datamcp1_"+what,"datamcp1_"+what,0.0,0.3,1.0,0.97);
-  p1->SetTopMargin(0.05);
+  TCanvas* c = new TCanvas("c_"+what,"c_"+what,900,800);
+  TPad* p1 = new TPad("datamcp1_"+what,"datamcp1_"+what,0,0.3,1,1);
+  p1->SetTopMargin(0.08);
   p1->SetBottomMargin(0.05);
   p1->SetNumber(1);
-  TPad* p2 = new TPad("datamcp2_"+what,"datamcp2_"+what,0.0,0.00,1.0,0.3);
+  TPad* p2 = new TPad("datamcp2_"+what,"datamcp2_"+what,0,0,1,0.3);
   p2->SetNumber(2);
   p2->SetTopMargin(0.05);
-  p2->SetBottomMargin(0.40);
+  p2->SetBottomMargin(0.35);
 
-  c->cd();
   p1->Draw();
+  p2->Draw();
+
   p1->cd();
 
+  h_totalbkg->SetMarkerSize(0);
+  h_totalbkg->SetLineColor(0);
+  h_totalbkg->SetFillColor(1);
+  h_totalbkg->SetFillStyle(3253);
+
+  h_ratio2->SetMarkerSize(0);
+  h_ratio2->SetLineColor(0);
+  h_ratio2->SetFillColor(1);
+  h_ratio2->SetFillStyle(3253);
 
   h_data->UseCurrentStyle();
-  h_data->GetXaxis()->SetLabelSize(24);
-  h_data->GetYaxis()->SetLabelSize(24);
+  h_data->GetXaxis()->SetLabelSize(26);
+  h_data->GetYaxis()->SetLabelSize(26);
+  h_data->GetYaxis()->SetTitleSize(36);
+  h_data->GetYaxis()->SetTitleOffset(1.0);
   h_data->Draw("lep");
   h_stack->Draw("hist,same");
   h_data->Draw("lep,same");
+  h_totalbkg->SetMinimum(0);
+  h_totalbkg->Draw("e2,same");
   h_data->Draw("lep,same,axis");
 
   leg->Draw();
 
-  myText(0.45,0.86,1,"CMS Preliminary");
-  myText(0.45,0.75,1,"#intLdt = 19.7 fb^{-1}");
-  myText(0.45,0.66,1,"#sqrt{s} = 8 TeV");
+  drawCMS(0.62,0.83,true);
+
+  if (what.Contains("vtxMass")) {
+    if (what.Contains("7")) myText(0.62,0.32,1,"1 t-tag + 1 b-tag");
+    else if (what.Contains("6")) myText(0.62,0.32,1,"1 t-tag + 0 b-tag");
+    else if (what.Contains("4")) myText(0.62,0.32,1,"0 t-tag + #geq 0 b-tag");
+    if (doElectron) myText(0.62,0.26,1,"e+Jets");
+    else myText(0.62,0.26,1,"#mu+Jets");
+    myItalicText(0.62,0.20,1,"Post-fit yields");
+  }
+  else {
+    if (doElectron) {
+      if (what.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  e+Jets");
+      else if (what.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  e+Jets");
+      else if (what.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  e+Jets");
+    }
+    else {
+      if (what.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  #mu+Jets");
+      else if (what.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  #mu+Jets");
+      else if (what.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  #mu+Jets");
+    }
+    myItalicText(0.18,0.77,1,"Post-fit yields");
+  }
 
   // plot ratio part
-  c->cd();
-  p2->Draw();
   p2->cd();
   p2->SetGridy();
   h_ratio->UseCurrentStyle();
   h_ratio->Draw("lep");
+  h_ratio2->Draw("e2,same");
+  h_ratio->Draw("lep,same");
   h_ratio->SetMaximum(2.0);
   h_ratio->SetMinimum(0.0);
   h_ratio->GetYaxis()->SetNdivisions(2,4,0,false);
   h_ratio->GetYaxis()->SetTitle("Data/MC");
   h_ratio->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
   h_ratio->GetXaxis()->SetTitleOffset( 4.0 );
-  h_ratio->GetXaxis()->SetLabelSize(24);
-  h_ratio->GetYaxis()->SetLabelSize(24);
+  h_ratio->GetXaxis()->SetLabelSize(26);
+  h_ratio->GetYaxis()->SetLabelSize(26);
+  h_ratio->GetXaxis()->SetTitleOffset(2.8);
+  h_ratio->GetYaxis()->SetTitleOffset(1.0);
+  h_ratio->GetXaxis()->SetTitleSize(36);
+  h_ratio->GetYaxis()->SetTitleSize(36);
 
   // save output
   TString outname;

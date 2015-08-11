@@ -35,9 +35,9 @@ void plotUnfold(TString channel) {
   bool doAverageErr = true;   // average up/down systematic uncertainties? 
 
   plot(channel,true,true, doNormalized,doLogscale,doAverageErr);
-  plot(channel,true,false, doNormalized,doLogscale,doAverageErr);
-  plot(channel,false,true, doNormalized,doLogscale,doAverageErr);
-  plot(channel,false,false, doNormalized,doLogscale,doAverageErr);
+  //plot(channel,true,false, doNormalized,doLogscale,doAverageErr);
+  //plot(channel,false,true, doNormalized,doLogscale,doAverageErr);
+  //plot(channel,false,false, doNormalized,doLogscale,doAverageErr);
 
 }
 
@@ -413,15 +413,15 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   h_dummy_r_part->Reset();
     
   if (doNormalized) {
-    h_dummy->GetYaxis()->SetTitle("1/#sigma d#sigma/dp_{T} [1/GeV]");
+    h_dummy->GetYaxis()->SetTitle("1/#sigma d#sigma/dp_{T} (1/GeV)");
     h_dummy->SetAxisRange(0,0.008,"Y");
-    h_dummy_part->GetYaxis()->SetTitle("1/#sigma d#sigma/dp_{T} [1/GeV]");
+    h_dummy_part->GetYaxis()->SetTitle("1/#sigma d#sigma/dp_{T} (1/GeV)");
     h_dummy_part->SetAxisRange(0,0.008,"Y");
   }
   else {
-    h_dummy->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
+    h_dummy->GetYaxis()->SetTitle("d#sigma/dp_{T} (fb/GeV)");
     h_dummy->SetAxisRange(0,12,"Y");
-    h_dummy_part->GetYaxis()->SetTitle("d#sigma/dp_{T} [fb/GeV]");
+    h_dummy_part->GetYaxis()->SetTitle("d#sigma/dp_{T} (fb/GeV)");
     h_dummy_part->SetAxisRange(0,10,"Y");
   }
 
@@ -432,22 +432,25 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   
   h_true->SetLineColor(2);
   h_true->SetLineWidth(2);
-  h_trueMG->SetLineColor(kMagenta+2);
+  h_trueMG->SetLineColor(4);
   h_trueMG->SetLineWidth(2);
-  h_trueMG->SetLineStyle(2);
+  h_trueMG->SetLineStyle(7);
 
   h_unfolded[0]->SetLineColor(1);
+  h_unfolded[0]->SetLineWidth(2);
   h_unfolded[0]->SetMarkerColor(1);
   h_unfolded[0]->SetMarkerStyle(8);
   
+
   if (twoStep == "_2step") {
     h_part->SetLineColor(2);
     h_part->SetLineWidth(2);
-    h_partMG->SetLineColor(kMagenta+2);
+    h_partMG->SetLineColor(4);
     h_partMG->SetLineWidth(2);
-    h_partMG->SetLineStyle(2);
+    h_partMG->SetLineStyle(7);
     
     h_unfolded_part[0]->SetLineColor(1);
+    h_unfolded_part[0]->SetLineWidth(2);
     h_unfolded_part[0]->SetMarkerColor(1);
     h_unfolded_part[0]->SetMarkerStyle(8);
   }
@@ -712,7 +715,19 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   gStyle->SetLabelSize(f_textSize,"y");
   gStyle->SetTitleSize(f_textSize,"y");
   gStyle->SetOptStat(0);
-  
+ 
+
+  TH1F* h_fullunc = (TH1F*) h_unfolded[0]->Clone("fullunc");
+
+  for (int ib=0; ib<h_fullunc->GetNbinsX(); ib++) {
+    if (h_fullunc->GetBinContent(ib+1) > 0) {
+      float up = h_systTOT_up->GetBinContent(ib+1);
+      float dn = h_systTOT_dn->GetBinContent(ib+1);
+      h_fullunc->SetBinError(ib+1,(up-dn)/2);
+    }
+  }
+
+  gStyle->SetEndErrorSize(5);
 
   TCanvas *c = new TCanvas("c", "", 700, 625);
   
@@ -740,10 +755,11 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_true->SetAxisRange(0.000015,0.015,"Y");
     h_trueMG->SetAxisRange(0.000015,0.015,"Y");
     h_unfolded[0]->SetAxisRange(0.000015,0.015,"Y");
+    h_fullunc->SetAxisRange(0.000015,0.015,"Y");
     gPad->SetLogy();
   }
 
-  h_dummy->GetYaxis()->SetTitleSize(0.07);    
+  h_dummy->GetYaxis()->SetTitleSize(0.075);    
   if (doLogscale) h_dummy->GetYaxis()->SetTitleOffset(0.8);
   else h_dummy->GetYaxis()->SetTitleOffset(1.1);
   h_dummy->GetYaxis()->SetLabelSize(0.065);
@@ -752,8 +768,13 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
 
   h_dummy->Draw("hist");
   h_true->Draw("hist,same");
-  h_trueMG->Draw("hist,same");
-  h_unfolded[0]->Draw("hist,ep,same");
+  h_trueMG->Draw("hist,same");  
+  TExec *setex1 = new TExec("setex1","gStyle->SetErrorX(0)");
+  setex1->Draw();
+  h_fullunc->Draw("hist,ep,same");
+  h_unfolded[0]->Draw("hist,E1p,same");
+  TExec *setex2 = new TExec("setex2","gStyle->SetErrorX(0.5)");
+  setex2->Draw();
   h_dummy->Draw("hist,axis,same"); 
 
   
@@ -833,8 +854,13 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     blaTOT->SetBinError(i+1,(up-dn)/2);
   }
   
-  blaSTAT->SetLineColor(1);
-  blaSTAT->SetLineWidth(1);
+  //blaSTAT->SetLineColor(1);
+  //blaSTAT->SetLineWidth(1);
+  blaSTAT->SetMarkerSize(0);
+  blaSTAT->SetLineColor(0);
+  blaSTAT->SetLineWidth(0);
+  blaSTAT->SetFillColor(18);
+  blaSTAT->SetFillStyle(1001);
 
   blaEXP->SetMarkerSize(0);
   blaEXP->SetLineColor(0);
@@ -848,21 +874,24 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
 
   blaTOT->SetMarkerSize(0);
   blaTOT->SetLineColor(0);
-  blaTOT->SetFillColor(18);
+  blaTOT->SetFillColor(kAzure-9);
   blaTOT->SetFillStyle(1001);
   
 
   // ----------------------------------------------------------------------------------------------------------------
+  //TLegend* leg = new TLegend(0.52,0.4,0.85,0.75);  
   TLegend* leg = new TLegend(0.52,0.4,0.85,0.75);  
-  leg->AddEntry(h_unfolded[0],"Data","pel");
+  leg->AddEntry(h_unfolded[0],"Data","pe1");
   leg->AddEntry(h_true,"Powheg+Pythia6 t#bar{t}","l");
   leg->AddEntry(h_trueMG,"MadGraph+Pythia6 t#bar{t}","l");
-  leg->AddEntry(blaEXP,"Experimental uncertainty","f");
-  leg->AddEntry(blaTH,"Theory uncertainty","f");
-  leg->AddEntry(blaTOT,"Stat. #oplus exp. #oplus theory","f");
+  //leg->AddEntry(blaEXP,"Experimental uncertainty","f");
+  //leg->AddEntry(blaTH,"Theory uncertainty","f");
+  //leg->AddEntry(blaTOT,"Stat. #oplus exp. #oplus theory","f");
+  leg->AddEntry(blaSTAT,"Stat. Uncertainty","f");
+  leg->AddEntry(blaTOT,"Stat. #oplus Syst.","f");
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);
-  leg->SetTextSize(0.05);
+  leg->SetTextSize(0.055);
   leg->SetTextFont(42);
   leg->Draw();
 
@@ -890,14 +919,15 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   h_ratio->SetAxisRange(0.6,1.4,"Y");
   h_ratio->Draw("hist");
   blaTOT->Draw("same,e2");
-  blaEXP->Draw("same,e2");
-  blaTH->Draw("same,e2");
-  blaSTAT->Draw("same,ep");
+  //blaEXP->Draw("same,e2");
+  //blaTH->Draw("same,e2");
+  //blaSTAT->Draw("same,ep");
+  blaSTAT->Draw("same,e2");
   h_ratioGEN->SetAxisRange(0.6,1.4,"Y");
   h_ratioGEN->Draw("same,hist");
   h_ratioMG->SetAxisRange(0.6,1.4,"Y");
   h_ratioMG->Draw("same,hist");
-  blaSTAT->Draw("same,ep");
+  //blaSTAT->Draw("same,ep");
   h_ratio->Draw("same,hist");
   h_ratio->Draw("same,axis");
   
@@ -921,9 +951,9 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   else if (doQ2) h_dummy_r->SetAxisRange(0,70,"Y");
   else h_dummy_r->SetAxisRange(0,25,"Y");
   
-  h_dummy_r->GetYaxis()->SetTitleSize(0.055);    
+  h_dummy_r->GetYaxis()->SetTitleSize(0.075);    
   h_dummy_r->GetYaxis()->SetTitleOffset(1.1);
-  h_dummy_r->GetYaxis()->SetLabelSize(0.045);
+  h_dummy_r->GetYaxis()->SetLabelSize(0.055);
   
   h_dummy_r->GetXaxis()->SetTitleSize(0.05);
   h_dummy_r->GetXaxis()->SetTitleOffset(1.2);
@@ -1273,6 +1303,19 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     gStyle->SetTitleSize(f_textSize,"y");
     gStyle->SetOptStat(0);
     
+    TH1F* h_fullunc_part = (TH1F*) h_unfolded_part[0]->Clone("fullunc_part");
+    
+    for (int ib=0; ib<h_fullunc_part->GetNbinsX(); ib++) {
+      if (h_fullunc_part->GetBinContent(ib+1) > 0) {
+	float up = h_systTOT_up_part->GetBinContent(ib+1);
+	float dn = h_systTOT_dn_part->GetBinContent(ib+1);
+	h_fullunc_part->SetBinError(ib+1,(up-dn)/2);
+      }
+    }
+    
+    gStyle->SetEndErrorSize(5);
+
+
     TCanvas *c2 = new TCanvas("c2", "", 700, 625);
     
     TPad* p3 = new TPad("p3","p3",0,ratio_size+0.0,1,1);
@@ -1290,7 +1333,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     p3->Draw();
     p4->Draw();
     
-    h_dummy_part->GetYaxis()->SetTitleSize(0.07);    
+    h_dummy_part->GetYaxis()->SetTitleSize(0.075);    
     if (doLogscale) h_dummy_part->GetYaxis()->SetTitleOffset(0.8);
     else h_dummy_part->GetYaxis()->SetTitleOffset(1.1);
     h_dummy_part->GetYaxis()->SetLabelSize(0.065);
@@ -1304,13 +1347,19 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       h_part->SetAxisRange(0.00003,0.015,"Y");
       h_partMG->SetAxisRange(0.00003,0.015,"Y");
       h_unfolded_part[0]->SetAxisRange(0.00003,0.015,"Y");
+      h_fullunc_part->SetAxisRange(0.000015,0.015,"Y");
       gPad->SetLogy();
     }
 
     h_dummy_part->Draw("hist");
     h_part->Draw("hist,same");
     h_partMG->Draw("hist,same");
-    h_unfolded_part[0]->Draw("hist,ep,same");
+    TExec *setex1p = new TExec("setex1p","gStyle->SetErrorX(0)");
+    setex1p->Draw();
+    h_fullunc_part->Draw("hist,ep,same");
+    h_unfolded_part[0]->Draw("hist,E1p,same");
+    TExec *setex2p = new TExec("setex2p","gStyle->SetErrorX(0.5)");
+    setex2p->Draw();
     h_dummy_part->Draw("hist,axis,same"); 
     
     
@@ -1391,9 +1440,14 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       blaTOT_part->SetBinError(i+1,(up-dn)/2);
     }
     
-    blaSTAT_part->SetLineColor(1);
-    blaSTAT_part->SetLineWidth(1);
-    
+    //blaSTAT_part->SetLineColor(1);
+    //blaSTAT_part->SetLineWidth(1);
+    blaSTAT_part->SetMarkerSize(0);
+    blaSTAT_part->SetLineColor(0);
+    blaSTAT_part->SetLineWidth(0);
+    blaSTAT_part->SetFillColor(18);
+    blaSTAT_part->SetFillStyle(1001);
+
     blaEXP_part->SetMarkerSize(0);
     blaEXP_part->SetLineColor(0);
     blaEXP_part->SetFillColor(kAzure-9);
@@ -1406,21 +1460,22 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     
     blaTOT_part->SetMarkerSize(0);
     blaTOT_part->SetLineColor(0);
-    blaTOT_part->SetFillColor(18);
+    blaTOT_part->SetFillColor(kAzure-9);
     blaTOT_part->SetFillStyle(1001);
     
     
     // ----------------------------------------------------------------------------------------------------------------
-    TLegend* leg = new TLegend(0.52,0.40,0.85,0.75);  
-    leg->AddEntry(h_unfolded_part[0],"Data","pel");
+    TLegend* leg = new TLegend(0.52,0.40,0.85,0.75); 
+    leg->AddEntry(h_unfolded_part[0],"Data","pe1");
     leg->AddEntry(h_part,"Powheg+Pythia6 t#bar{t}","l");
     leg->AddEntry(h_partMG,"MadGraph+Pythia6 t#bar{t}","l");
-    leg->AddEntry(blaEXP_part,"Experimental uncertainty","f");
-    leg->AddEntry(blaTH_part,"Theory uncertainty","f");
-    leg->AddEntry(blaTOT_part,"Stat. #oplus exp. #oplus theory","f");
+    //leg->AddEntry(blaEXP_part,"Experimental uncertainty","f");
+    //leg->AddEntry(blaTH_part,"Theory uncertainty","f");
+    leg->AddEntry(blaSTAT_part,"Stat. Uncertainty","f");
+    leg->AddEntry(blaTOT_part,"Stat. #oplus Syst.","f");
     leg->SetFillStyle(0);
     leg->SetBorderSize(0);
-    leg->SetTextSize(0.05);
+    leg->SetTextSize(0.055);
     leg->SetTextFont(42);
     leg->Draw();
 
@@ -1445,14 +1500,15 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_ratio_part->SetAxisRange(0.6,1.4,"Y");
     h_ratio_part->Draw("hist");
     blaTOT_part->Draw("same,e2");
-    blaEXP_part->Draw("same,e2");
-    blaTH_part->Draw("same,e2");
-    blaSTAT_part->Draw("same,ep");
+    //blaEXP_part->Draw("same,e2");
+    //blaTH_part->Draw("same,e2");
+    //blaSTAT_part->Draw("same,ep");
+    blaSTAT_part->Draw("same,e2");
     h_ratioGEN_part->SetAxisRange(0.6,1.4,"Y");
     h_ratioGEN_part->Draw("same,hist");
     h_ratioMG_part->SetAxisRange(0.6,1.4,"Y");
     h_ratioMG_part->Draw("same,hist");
-    blaSTAT_part->Draw("same,ep");
+    //blaSTAT_part->Draw("same,ep");
     h_ratio_part->Draw("same,hist");
     h_ratio_part->Draw("same,axis");
     

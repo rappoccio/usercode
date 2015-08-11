@@ -8,6 +8,9 @@ gStyle.SetPadTickY(1);
 
 pdfnames = ["CT10_nom"]
 channels = ["mu", "el", "comb"]
+#channels = ["comb"]
+
+doPublicPlot = False
 
 ### THESE BELOW ARE FOR EXTERNALIZE LUMINOSITY & B-TAGGING !!! ###
 
@@ -56,7 +59,7 @@ for pdfname in pdfnames :
         c1.Draw()
         c1.SetLeftMargin(0.25)
         c1.SetRightMargin(0.10)
-        c1.SetTopMargin(0.05)
+        c1.SetTopMargin(0.08)
         c1.SetBottomMargin(0.13)
 
         gr2sig.SetLineWidth(0)
@@ -115,6 +118,36 @@ for pdfname in pdfnames :
         nuisances.Draw("P same")
 
         dummy.Draw("same,axis")
+
+        cmsTextSize = 0.054
+        extraOverCmsTextSize = 0.76
+        extraTextSize = extraOverCmsTextSize*cmsTextSize
+
+        t1 = TLatex()
+        t1.SetNDC()
+        t1.SetTextFont(61)
+        t1.SetTextAngle(0)
+        t1.SetTextColor(1)
+        t1.SetTextSize(cmsTextSize)
+        if (doPublicPlot):
+            t1.DrawLatex(0.25,0.94, "CMS")
+
+        t2 = TLatex()
+        t2.SetNDC()
+        t2.SetTextFont(52)
+        t2.SetTextColor(1)
+        t2.SetTextSize(extraTextSize)
+        if (doPublicPlot):
+            t2.DrawLatex(0.38,0.94, "Preliminary")
+
+        t3 = TLatex()
+        t3.SetNDC()
+        t3.SetTextFont(42)
+        t3.SetTextColor(1)
+        t3.SetTextSize(extraTextSize)
+        if (doPublicPlot):
+            t3.DrawLatex(0.64,0.94, "19.7 fb^{-1} (8 TeV)")
+
 
         c1.Print("nuisances_"+pdfname+"_"+ich+"_extlumibtag.pdf")
         c1.Print("nuisances_"+pdfname+"_"+ich+"_extlumibtag.png")

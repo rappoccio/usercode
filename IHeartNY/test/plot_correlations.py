@@ -2,15 +2,18 @@ from ROOT import *
 
 gStyle.SetOptStat(000000)
 gStyle.SetPaintTextFormat( '.2f' )
+gStyle.SetTitleFont(42);
+gStyle.SetTitleFont(42, "XYZ");
 
 gStyle.SetPadRightMargin(0.12);
 gStyle.SetPadLeftMargin(0.15);
-gStyle.SetPadTopMargin(0.05);
+gStyle.SetPadTopMargin(0.15);
 gStyle.SetPadBottomMargin(0.15);
 
 
 pdfnames = ["CT10_nom"]
 channels = ["mu", "el", "comb"]
+#channels = ["comb"]
 
 ### THESE BELOW ARE FOR EXTERNALIZE LUMINOSITY & B-TAGGING !!! ###
 
@@ -98,9 +101,9 @@ for pdfname in pdfnames :
         corhist = TH2F('corhist', '', nvars, 0, nvars, nvars, 0, nvars )
 
         for x in xrange(nvars) :
-            corhist.GetXaxis().SetLabelSize(0.05)
+            corhist.GetXaxis().SetLabelSize(0.055)
             corhist.GetXaxis().SetLabelOffset(0.01)
-            corhist.GetYaxis().SetLabelSize(0.05)
+            corhist.GetYaxis().SetLabelSize(0.055)
             corhist.GetXaxis().SetBinLabel( x+1, labels[x] )
             corhist.GetYaxis().SetBinLabel( x+1, labels[x] )
     
@@ -111,14 +114,44 @@ for pdfname in pdfnames :
 
         c = TCanvas('c', 'c', 700, 600)
         c.SetLeftMargin(0.18)
-        c.SetRightMargin(0.13)
-        c.SetTopMargin(0.05)
-        c.SetBottomMargin(0.13)
+        c.SetRightMargin(0.14)
+        c.SetTopMargin(0.09)
+        c.SetBottomMargin(0.14)
 
+        corhist.GetZaxis().SetLabelSize(0.045)
         corhist.SetMaximum(1.0)
         corhist.SetMinimum(-1.0)
+        corhist.SetMarkerSize(1.4)
         corhist.Draw('colz text')
-    
+
+        cmsTextSize = 0.054;
+        extraOverCmsTextSize = 0.76
+        extraTextSize = extraOverCmsTextSize*cmsTextSize
+
+        t1 = TLatex()
+        t1.SetNDC()
+        t1.SetTextFont(61)
+        t1.SetTextAngle(0)
+        t1.SetTextColor(1)
+        t1.SetTextSize(cmsTextSize)
+        if (ich=="comb"): 
+            t1.DrawLatex(0.18,0.93, "CMS")
+
+        t2 = TLatex()
+        t2.SetNDC()
+        t2.SetTextFont(52)
+        t2.SetTextColor(1)
+        t2.SetTextSize(extraTextSize)
+        if (ich=="comb"): 
+            t2.DrawLatex(0.28,0.93, "Preliminary")
+
+        t3 = TLatex()
+        t3.SetNDC()
+        t3.SetTextFont(42)
+        t3.SetTextColor(1)
+        t3.SetTextSize(extraTextSize)
+        if (ich=="comb"): 
+            t3.DrawLatex(0.64,0.93, "19.7 fb^{-1} (8 TeV)")
 
         c.Print("correlations_"+pdfname+"_"+ich+"_extlumibtag.pdf")
         c.Print("correlations_"+pdfname+"_"+ich+"_extlumibtag.png")
