@@ -836,8 +836,8 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   
   if (what.Contains("etaAbsLep") && doElectron) sprintf(tmptxt,"Electrons / %.1f",binwidth);
   else if (what.Contains("etaAbsLep")) sprintf(tmptxt,"Muons / %.1f",binwidth);
-  else if (what.Contains("vtxMass")) sprintf(tmptxt,"Events / %.1f",binwidth);
-  else if (what.Contains("htLep")) sprintf(tmptxt,"Events / %.0f",binwidth);
+  else if (what.Contains("vtxMass")) sprintf(tmptxt,"Events / %.1f GeV",binwidth);
+  else if (what.Contains("htLep")) sprintf(tmptxt,"Events / %.0f GeV",binwidth);
 
   h_data->GetYaxis()->SetTitle(tmptxt);
 
