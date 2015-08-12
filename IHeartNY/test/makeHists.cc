@@ -352,14 +352,15 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (var=="csv1LepJet" || var=="csv2LepJet") h_data->SetAxisRange(0,1.05,"X");
   if (hist=="hadtop_mass3" || hist=="hadtop_mass4") h_data->SetAxisRange(0,250,"X");
   if (hist=="hadtop_pt3") h_data->SetAxisRange(150,700,"X");
-  if (hist=="hadtop_pt4" || hist=="hadtop_pt5") h_data->SetAxisRange(350,900,"X");
-  if (hist=="hadtop_pt6" || hist=="hadtop_pt7") h_data->SetAxisRange(350,1200,"X");
+  if (hist=="hadtop_pt4" || hist=="hadtop_pt5") h_data->SetAxisRange(370,900,"X");
+  if (hist=="hadtop_pt6" || hist=="hadtop_pt7") h_data->SetAxisRange(350,1190,"X");
   if (var=="hadtop_y" || var=="leptop_y") h_data->SetAxisRange(-3,3,"X");
   if (hist=="ht3" || hist=="htLep3") h_data->SetAxisRange(0,1400,"X");
   if ( (var=="ht" || var=="htLep") && (cut==4||cut==6||cut==7) ) h_data->SetAxisRange(0,2500,"X");
   if (hist=="pt1LepJet2") h_data->SetAxisRange(0,250,"X");
   if (hist=="ptLep0" || hist=="ptLep1" || hist=="ptLep2") h_data->SetAxisRange(0,200,"X");
   if (hist=="ptMET0" || hist=="ptMET1" || hist=="ptMET2") h_data->SetAxisRange(0,200,"X");
+  if (hist.Contains("etaAbsLep") && !doElectron) h_data->SetAxisRange(0,2.05,"X");
 
 
   // create stack & summed histogram for ratio plot
@@ -419,13 +420,23 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     float count_wj = h_wjets->GetBinContent(ib+1);
     float count_qcd = h_qcd->GetBinContent(ib+1);
 
+    float stat_tt = h_ttbar->GetBinError(ib+1);
+    float stat_tt_non = h_ttbar_nonSemiLep->GetBinError(ib+1);
+    float stat_st = h_singletop->GetBinError(ib+1);
+    float stat_wj = h_wjets->GetBinError(ib+1);
+    float stat_qcd = h_qcd->GetBinError(ib+1);
+
     float binbkg = sqrt( count_tt*myerr_tt*count_tt*myerr_tt + 
 			 count_tt_non*myerr_tt*count_tt_non*myerr_tt + 
 			 count_st*myerr_st*count_st*myerr_st + 
 			 count_wj*myerr_wj*count_wj*myerr_wj + 
-			 count_qcd*myerr_qcd*count_qcd*myerr_qcd );
-    
-    if (ib==0) cout << "binbkg = " << binbkg << " content = " << h_totalbkg->GetBinContent(ib+1) << endl;
+			 count_qcd*myerr_qcd*count_qcd*myerr_qcd + 
+			 stat_tt*stat_tt + 
+			 stat_tt_non*stat_tt_non + 
+			 stat_st*stat_st + 
+			 stat_wj*stat_wj + 
+			 stat_qcd*stat_qcd 
+			 );
     h_totalbkg->SetBinError(ib+1, binbkg);
   }
 
@@ -465,13 +476,14 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if ( (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin())) > max)
     max = (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin()));
   if (var.Contains("etaAbs") && doElectron) 
-    max = max*1.4;
+    max = max*1.2;
   else if (var.Contains("etaAbs") || var=="lepMET" || var=="leptop_mass") 
     max = max*1.2;
   else if (var.Contains("eta") && doElectron)
     max = max*1.8;
   else if (var.Contains("eta") || var.Contains("_y") || var.Contains("wboson_"))
     max = max*1.4;
+  
   h_data->SetAxisRange(0,max*1.05,"Y");
 
 
@@ -840,6 +852,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   else if (what.Contains("htLep")) sprintf(tmptxt,"Events / %.0f GeV",binwidth);
 
   h_data->GetYaxis()->SetTitle(tmptxt);
+  if (what.Contains("etaAbsLep") && !doElectron) h_data->SetAxisRange(0,2.05,"X");
 
 
   // -------------------------------------------------------------------------------------
@@ -920,11 +933,23 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
     float count_wj = h_wjets->GetBinContent(ib+1);
     float count_qcd = h_qcd->GetBinContent(ib+1);
 
+    float stat_tt = h_ttbar->GetBinError(ib+1);
+    float stat_tt_non = h_ttbar_nonSemiLep->GetBinError(ib+1);
+    float stat_st = h_singletop->GetBinError(ib+1);
+    float stat_wj = h_wjets->GetBinError(ib+1);
+    float stat_qcd = h_qcd->GetBinError(ib+1);
+
     float binbkg = sqrt( count_tt*err_tt*count_tt*err_tt + 
 			 count_tt_non*err_tt*count_tt_non*err_tt + 
 			 count_st*err_st*count_st*err_st + 
 			 count_wj*err_wj*count_wj*err_wj + 
-			 count_qcd*err_qcd*count_qcd*err_qcd );
+			 count_qcd*err_qcd*count_qcd*err_qcd + 
+			 stat_tt*stat_tt + 
+			 stat_tt_non*stat_tt_non + 
+			 stat_st*stat_st + 
+			 stat_wj*stat_wj + 
+			 stat_qcd*stat_qcd 
+			 );
     
     if (ib==0) cout << "binbkg = " << binbkg << " content = " << h_totalbkg->GetBinContent(ib+1) << endl;
     h_totalbkg->SetBinError(ib+1, binbkg);
@@ -964,8 +989,8 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   float max = h_totalbkg->GetMaximum();
   if ( (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin())) > max)
     max = (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin()));
-  if (what.Contains("etaAbs") && doElectron) max = max*1.4;
-  else if (what.Contains("etaAbs")) max = max*1.2;
+  if (what.Contains("etaAbs") && doElectron) max = max*1.3;
+  else if (what.Contains("etaAbs")) max = max*1.3;
   h_data->SetAxisRange(0,max*1.05,"Y");
 
 
