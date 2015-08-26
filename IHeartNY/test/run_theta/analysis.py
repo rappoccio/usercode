@@ -774,8 +774,8 @@ opts.set('minimizer', 'strategy', 'robust')
 # Here is the "main" part of the script. 
 ####################################################################################
 
-useMLE = True
-usePL = False
+useMLE = False
+usePL = True
 
 # Building the statistical model :
 infilter = histfilter
@@ -1086,6 +1086,18 @@ for idir in dirs :
 
         print results4
 
+        scan = nll_scan(model, input='data', n=1, range=[0.0,2.0])
+
+        f = open('nll_out.txt', 'w')
+        nll_vals = str(scan['TTbar'][0])
+        nll_vals = os.linesep.join([s for s in nll_vals.splitlines() if s])
+        print >> f, nll_vals
+        f.close()
+
+        pnll = plotdata()
+        pnll.read_txt('nll_out.txt')
+        plot(pnll, 'beta_signal', 'nll', 'ThetaPlots/pl_nll_scan_' + idir + '_' + channel + extName + binname + fitname + '.pdf')
+
         ## option to print html output file
-        #if idir == "CT10_nom" : 
-        #    report.write_html('htmlout_'+channel)
+        if idir == "CT10_nom" : 
+            report.write_html('pl_htmlout_'+channel)
