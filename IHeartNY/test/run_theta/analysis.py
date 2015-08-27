@@ -1045,7 +1045,7 @@ for idir in dirs :
 
         args = {}
 
-        results3 = pl_interval(model, input='toys:1.', n=1000 ,  **args)
+        results3 = pl_interval(model, input='toys:1.', n=10000 ,  **args)
 
         bs = []
         delta_bs = []
