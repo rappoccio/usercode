@@ -856,7 +856,7 @@ for idir in dirs :
 
         print '------------- MLE RESULTS ' + idir + ' ' + channel + ' channel ' + nptbin + 'bin ' + fittype + ' ---------------'
 
-        results1 = mle(model, input='toys:1.', n=10000)
+        results1 = mle(model, input='toys:1.', n=1000)
 
         bs = []
         delta_bs = []
@@ -1026,9 +1026,30 @@ for idir in dirs :
 
         parameter_values = {}
         for p in parameters :
+            print 'value for p is ',
+            print p
             parameter_values[p] = results2['TTbar'][p][0][0]
         histos = evaluate_prediction(model, parameter_values, include_signal = True)
         write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + channel + extName + binname + fitname + '.root')
+
+
+        f_2d = ROOT.TFile("nll_2d_mle.root", "RECREATE")
+        hist_2d = ROOT.TH2F('nll_2d', 'nll_2d', 10, -2., 2., 10, 0., 2.)
+        toptagval = -2.0
+        for itoptagval in xrange( 0, 10 ) :
+            betaval = 0.
+            for ibetaval in xrange(0, 10) : 
+                toptagbetaConstraint = get_fixed_dist_at_values({'toptag':toptagval, 'beta_signal':betaval})
+                results_i = mle(model, input='data', n=1, with_covariance = False, options=opts, nuisance_constraint = toptagbetaConstraint)
+                values_constrained = results_i['TTbar']
+                nll_constrained = values_constrained['__nll']
+                print nll_constrained[0]
+                hist_2d.Fill( itoptagval, ibetaval, -1 * nll_constrained[0] )
+                betaval += 2. / 10.
+            toptagval += 4. / 10.
+
+        hist_2d.Write()
+        f_2d.Close()
         
         ## option to print html output file
         #if idir == "CT10_nom" :
@@ -1050,6 +1071,7 @@ for idir in dirs :
         bs = []
         delta_bs = []
         pulls = []
+
 
         for ival in results3['TTbar'][0.0] :
             bs.append( ival )
@@ -1078,8 +1100,11 @@ for idir in dirs :
         pdd.write_txt('ThetaPlots/pl_dbs_' + idir + '_' + channel + extName + binname + fitname + '.txt')
         pdp.write_txt('ThetaPlots/pl_pull_' + idir + '_' + channel + extName + binname + fitname + '.txt')
 
+        
         # to write it to a root file:
         write_histograms_to_rootfile({'pull': pdp.histo(), 'bs': pdbs.histo(), 'delta_bs': pdd.histo()}, 'ThetaPlots/pulldists_pl_' + idir + '_' + channel + extName + binname + fitname + '.root')
+
+
 
         
         results4 = pl_interval(model, input='data', n=1 , **args)
@@ -1087,6 +1112,8 @@ for idir in dirs :
         print results4
 
         scan = nll_scan(model, input='data', n=1, range=[0.0,2.0])
+        print 'Scan : '
+        print scan
 
         f = open('nll_out.txt', 'w')
         nll_vals = str(scan['TTbar'][0])
@@ -1097,6 +1124,47 @@ for idir in dirs :
         pnll = plotdata()
         pnll.read_txt('nll_out.txt')
         plot(pnll, 'beta_signal', 'nll', 'ThetaPlots/pl_nll_scan_' + idir + '_' + channel + extName + binname + fitname + '.pdf')
+
+
+        f_2d = ROOT.TFile("nll_2d.root", "RECREATE")
+        npoints = 50
+        toptagMin = 0.7
+        toptagMax = 1.0
+        betaMin = 0.6
+        betaMax = 0.9
+        hist_2d_beta_signal = ROOT.TH2F('nll_2d_beta_signal', 'nll_2d_beta_signal;Beta;TopTag', npoints, toptagMin, toptagMax, npoints, betaMin, betaMax)
+        hist_2d_toptag = ROOT.TH2F('nll_2d_toptag', 'nll_2d_toptag;Beta;TopTag', npoints, toptagMin, toptagMax, npoints, betaMin, betaMax)
+        
+        toptagval = 0.0
+        for itoptagval in xrange( 0, npoints ) :
+            #f = open('nll_out_2d_' + str(itoptagval) + '.txt', 'w')
+            toptagConstraint = get_fixed_dist_at_values({'toptag':toptagval})
+            # For some agitating reason, this gives no option to avoid zero-suppressing the likelihood! AARRGH!
+            scan = nll_scan(model, input='data', n=1, range=[betaMin, betaMax], nuisance_constraint = toptagConstraint, npoints=npoints )
+            #print >> f, '---- ' + str(toptagval)
+            vals = scan['TTbar'][0]
+            xvals = vals.x
+            yvals = vals.y
+            #print >> f,  valstr
+            for index in xrange(0,len(xvals)) : 
+                hist_2d_beta_signal.SetBinContent( itoptagval, index, yvals[index] )
+            toptagval += (toptagMax - toptagMin) / npoints
+
+        betaval = betaMin
+        for ibetaval in xrange(0,npoints) :
+            betaConstraint = get_fixed_dist_at_values({'beta_signal':betaval})
+            scan = nll_scan(model, input='data', n=1, range=[toptagMin, toptagMax], nuisance_constraint = betaConstraint, npoints=npoints )
+            vals = scan['TTbar'][0]
+            xvals = vals.x
+            yvals = vals.y
+            #print >> f,  valstr
+            for index in xrange(0,len(xvals)) : 
+                hist_2d_toptag.SetBinContent( index, ibetaval, yvals[index] )
+            betaval += (betaMax - betaMin) / npoints            
+
+        hist_2d_beta_signal.Write()
+        hist_2d_toptag.Write()
+        f_2d.Close()
 
         ## option to print html output file
         if idir == "CT10_nom" : 
