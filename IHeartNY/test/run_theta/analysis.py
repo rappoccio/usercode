@@ -80,7 +80,7 @@ def lepplusjets(files, infilter, signal, mcstat, nptbin, fittype='', elflag=Fals
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_htLep6')
             if fittype == '' or fittype == 'htLep6' or fittype == 'htLep46' or fittype == '2temp0t' or fittype == '2temp46' or fittype == 'vtxMass7only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD' , 'mu_vtxMass7')
-                model.add_asymmetric_lognormal_uncertainty('rate_mu_qcd', math.log(1. + qcdUnc / 4), math.log(1+qcdUnc), 'QCD' , 'mu_vtxMass7')
+                #model.add_asymmetric_lognormal_uncertainty('rate_mu_qcd', math.log(1. + qcdUnc / 4), math.log(1+qcdUnc), 'QCD' , 'mu_vtxMass7')
             if fittype == 'htLep467' or fittype == 'htLep7only':
                 model.add_lognormal_uncertainty('rate_mu_qcd', math.log(1+qcdUnc), 'QCD', 'mu_htLep7')
         if nptbin == '2' :
@@ -774,8 +774,8 @@ opts.set('minimizer', 'strategy', 'robust')
 # Here is the "main" part of the script. 
 ####################################################################################
 
-useMLE = False
-usePL = True
+useMLE = True
+usePL = False
 
 # Building the statistical model :
 infilter = histfilter
@@ -847,6 +847,15 @@ for idir in dirs :
     if ivar == 0 :
         model_summary(model)
 
+    #####
+    # Parameters for 2D ellipse
+    ####
+
+    npoints = 50
+    toptagMin = -2.0
+    toptagMax = 2.0
+    betaMin = 0.0
+    betaMax = 2.0
     
     ###########################################################################
     ## Maximum likelihood estimate technique
@@ -1033,20 +1042,25 @@ for idir in dirs :
         write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + channel + extName + binname + fitname + '.root')
 
 
-        f_2d = ROOT.TFile("nll_2d_mle.root", "RECREATE")
-        hist_2d = ROOT.TH2F('nll_2d', 'nll_2d', 10, -2., 2., 10, 0., 2.)
+        f_2d = ROOT.TFile("nll_2d_mle_"+channel+".root", "RECREATE")
+        hist_2d = ROOT.TH2F('nll_2d', 'nll_2d', npoints, toptagMin, toptagMax, npoints, betaMin, betaMax)
         toptagval = -2.0
-        for itoptagval in xrange( 0, 10 ) :
-            betaval = 0.
-            for ibetaval in xrange(0, 10) : 
-                toptagbetaConstraint = get_fixed_dist_at_values({'toptag':toptagval, 'beta_signal':betaval})
-                results_i = mle(model, input='data', n=1, with_covariance = False, options=opts, nuisance_constraint = toptagbetaConstraint)
+        for itoptagval in xrange( 0, npoints ) :
+            betaval = betaMin
+            histname = 'nll_scan_'+str(itoptagval)
+            hist_nll_temp = ROOT.TH1F(histname,histname,npoints, betaMin, betaMax)
+            for ibetaval in xrange(0, npoints) : 
+                toptagConstraint = get_fixed_dist_at_values({'toptag':toptagval})
+                sprior_string = 'fix:'+str(betaval)
+                results_i = mle(model, input='data', n=1, with_covariance = False, options=opts, nuisance_constraint = toptagConstraint, signal_prior = sprior_string)
                 values_constrained = results_i['TTbar']
                 nll_constrained = values_constrained['__nll']
-                print nll_constrained[0]
-                hist_2d.Fill( itoptagval, ibetaval, -1 * nll_constrained[0] )
-                betaval += 2. / 10.
-            toptagval += 4. / 10.
+                print 'NLL at (' + str(toptagval) + ',' + str(betaval) + ') is ' + str(nll_constrained[0])
+                hist_2d.SetBinContent( itoptagval+1, ibetaval+1, -1 * nll_constrained[0] )
+                hist_nll_temp.SetBinContent(ibetaval+1, -1 * nll_constrained[0])
+                betaval += (betaMax - betaMin) / npoints
+            hist_nll_temp.Write()
+            toptagval += (toptagMax - toptagMin) / npoints
 
         hist_2d.Write()
         f_2d.Close()
@@ -1066,7 +1080,7 @@ for idir in dirs :
 
         args = {}
 
-        results3 = pl_interval(model, input='toys:1.', n=10000 ,  **args)
+        results3 = pl_interval(model, input='toys:1.', n=1000 ,  **args)
 
         bs = []
         delta_bs = []
@@ -1115,27 +1129,23 @@ for idir in dirs :
         print 'Scan : '
         print scan
 
-        f = open('nll_out.txt', 'w')
+        f = open('nll_out_'+channel+'.txt', 'w')
         nll_vals = str(scan['TTbar'][0])
         nll_vals = os.linesep.join([s for s in nll_vals.splitlines() if s])
         print >> f, nll_vals
         f.close()
 
         pnll = plotdata()
-        pnll.read_txt('nll_out.txt')
+        pnll.read_txt('nll_out_'+channel+'.txt')
         plot(pnll, 'beta_signal', 'nll', 'ThetaPlots/pl_nll_scan_' + idir + '_' + channel + extName + binname + fitname + '.pdf')
 
 
-        f_2d = ROOT.TFile("nll_2d.root", "RECREATE")
-        npoints = 50
-        toptagMin = 0.7
-        toptagMax = 1.0
-        betaMin = 0.6
-        betaMax = 0.9
+        f_2d = ROOT.TFile("nll_2d_"+channel+".root", "RECREATE")
         hist_2d_beta_signal = ROOT.TH2F('nll_2d_beta_signal', 'nll_2d_beta_signal;Beta;TopTag', npoints, toptagMin, toptagMax, npoints, betaMin, betaMax)
         hist_2d_toptag = ROOT.TH2F('nll_2d_toptag', 'nll_2d_toptag;Beta;TopTag', npoints, toptagMin, toptagMax, npoints, betaMin, betaMax)
         
-        toptagval = 0.0
+        toptagval = toptagMin
+        print 'Constructing beta_signal ellipse...'
         for itoptagval in xrange( 0, npoints ) :
             #f = open('nll_out_2d_' + str(itoptagval) + '.txt', 'w')
             toptagConstraint = get_fixed_dist_at_values({'toptag':toptagval})
@@ -1145,21 +1155,29 @@ for idir in dirs :
             vals = scan['TTbar'][0]
             xvals = vals.x
             yvals = vals.y
+            histname2 = 'nll_scan_'+str(itoptagval)
+            hist_nll_scan = ROOT.TH1F(histname2, histname2, npoints, betaMin, betaMax)
             #print >> f,  valstr
-            for index in xrange(0,len(xvals)) : 
-                hist_2d_beta_signal.SetBinContent( itoptagval, index, yvals[index] )
+            for index in xrange(0,len(xvals)-1) :
+                if index % 10 == 0 and itoptagval % 10 == 0 : print 'Point ('+str(itoptagval)+','+str(index)+') = '+str(yvals[index])
+                hist_2d_beta_signal.SetBinContent( itoptagval+1, index+1, yvals[index] )
+                hist_nll_scan.SetBinContent(index+1,yvals[index])
+            hist_nll_scan.Write()
             toptagval += (toptagMax - toptagMin) / npoints
 
+        print 'Constructing toptag ellipse...'
         betaval = betaMin
         for ibetaval in xrange(0,npoints) :
-            betaConstraint = get_fixed_dist_at_values({'beta_signal':betaval})
-            scan = nll_scan(model, input='data', n=1, range=[toptagMin, toptagMax], nuisance_constraint = betaConstraint, npoints=npoints )
+            #betaConstraint = get_fixed_dist_at_values({'beta_signal':betaval})
+            sprior_string = 'fix:'+str(betaval)
+            scan = nll_scan(model, input='data', n=1, range=[toptagMin, toptagMax], parameter='toptag', npoints=npoints, signal_prior = sprior_string )
             vals = scan['TTbar'][0]
             xvals = vals.x
             yvals = vals.y
             #print >> f,  valstr
-            for index in xrange(0,len(xvals)) : 
-                hist_2d_toptag.SetBinContent( index, ibetaval, yvals[index] )
+            for index in xrange(0,len(xvals)-1) :
+                if index % 10 == 0 and ibetaval % 10 == 0 : print 'Point ('+str(index)+','+str(ibetaval)+') = '+str(yvals[index])
+                hist_2d_toptag.SetBinContent( index+1, ibetaval+1, yvals[index] )
             betaval += (betaMax - betaMin) / npoints            
 
         hist_2d_beta_signal.Write()
