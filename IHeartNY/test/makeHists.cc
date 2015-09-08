@@ -413,7 +413,21 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   }
 
 
+  float n_tt_total = 0;
+  float stat_tt_total = 0;
+  float syst_tt_total = 0;
+
+  /*cout << "err_tt = " << myerr_tt << endl;
+  cout << "err_st = " << myerr_st << endl;
+  cout << "err_wj = " << myerr_wj << endl;
+  cout << "err_qcd = " << myerr_qcd << endl;*/
+
   for (int ib=0; ib<h_totalbkg->GetNbinsX(); ib++) {
+
+    n_tt_total += h_ttbar->GetBinContent(ib+1);
+    stat_tt_total += h_ttbar->GetBinError(ib+1)*h_ttbar->GetBinError(ib+1);
+    syst_tt_total += h_ttbar->GetBinContent(ib+1)*myerr_tt;
+
     float count_tt = h_ttbar->GetBinContent(ib+1);
     float count_tt_non = h_ttbar_nonSemiLep->GetBinContent(ib+1);
     float count_st = h_singletop->GetBinContent(ib+1);
@@ -439,19 +453,6 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 			 );
     h_totalbkg->SetBinError(ib+1, binbkg);
   }
-
-  float count_tt = h_ttbar->Integral();
-  float count_tt_non = h_ttbar_nonSemiLep->Integral();
-  float count_st = h_singletop->Integral();
-  float count_wj = h_wjets->Integral();
-  float count_qcd = h_qcd->Integral();
-  float binbkg = sqrt( count_tt*myerr_tt*count_tt*myerr_tt + 
-		       count_tt_non*myerr_tt*count_tt_non*myerr_tt + 
-		       count_st*myerr_st*count_st*myerr_st + 
-		       count_wj*myerr_wj*count_wj*myerr_wj + 
-		       count_qcd*myerr_qcd*count_qcd*myerr_qcd );
-  cout << "combined background err = " << binbkg << " combined bkg = " << h_totalbkg->Integral() << endl;
-
 
   TH1F* h_ratio = (TH1F*) h_data->Clone("ratio_"+hist);
   h_ratio->Sumw2();
@@ -926,47 +927,48 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   }
 
 
+  float n_tt_total = 0;
+  float err_tt_total = 0;
+
   for (int ib=0; ib<h_totalbkg->GetNbinsX(); ib++) {
+
+    n_tt_total += h_ttbar_semiLep->GetBinContent(ib+1);
+    err_tt_total += h_ttbar_semiLep->GetBinError(ib+1)*h_ttbar_semiLep->GetBinError(ib+1);
+
+    /*
     float count_tt = h_ttbar_semiLep->GetBinContent(ib+1);
     float count_tt_non = h_ttbar_nonSemiLep->GetBinContent(ib+1);
     float count_st = h_singletop->GetBinContent(ib+1);
     float count_wj = h_wjets->GetBinContent(ib+1);
     float count_qcd = h_qcd->GetBinContent(ib+1);
+    */
 
-    float stat_tt = h_ttbar->GetBinError(ib+1);
+    float stat_tt = h_ttbar_semiLep->GetBinError(ib+1);
     float stat_tt_non = h_ttbar_nonSemiLep->GetBinError(ib+1);
     float stat_st = h_singletop->GetBinError(ib+1);
     float stat_wj = h_wjets->GetBinError(ib+1);
     float stat_qcd = h_qcd->GetBinError(ib+1);
 
-    float binbkg = sqrt( count_tt*err_tt*count_tt*err_tt + 
+    float binbkg = sqrt( /*count_tt*err_tt*count_tt*err_tt + 
 			 count_tt_non*err_tt*count_tt_non*err_tt + 
 			 count_st*err_st*count_st*err_st + 
 			 count_wj*err_wj*count_wj*err_wj + 
-			 count_qcd*err_qcd*count_qcd*err_qcd + 
+			 count_qcd*err_qcd*count_qcd*err_qcd + */
 			 stat_tt*stat_tt + 
 			 stat_tt_non*stat_tt_non + 
 			 stat_st*stat_st + 
 			 stat_wj*stat_wj + 
-			 stat_qcd*stat_qcd 
+			 stat_qcd*stat_qcd
 			 );
-    
-    if (ib==0) cout << "binbkg = " << binbkg << " content = " << h_totalbkg->GetBinContent(ib+1) << endl;
+
     h_totalbkg->SetBinError(ib+1, binbkg);
   }
 
-  float count_tt = h_ttbar_semiLep->Integral();
-  float count_tt_non = h_ttbar_nonSemiLep->Integral();
-  float count_st = h_singletop->Integral();
-  float count_wj = h_wjets->Integral();
-  float count_qcd = h_qcd->Integral();
-  float binbkg = sqrt( count_tt*err_tt*count_tt*err_tt + 
-		       count_tt_non*err_tt*count_tt_non*err_tt + 
-		       count_st*err_st*count_st*err_st + 
-		       count_wj*err_wj*count_wj*err_wj + 
-		       count_qcd*err_qcd*count_qcd*err_qcd );
-  cout << "combined background err = " << binbkg << " combined bkg = " << h_totalbkg->Integral() << endl;
-
+  /*
+  cout << endl;
+  cout << "POSTERIOR VERSION, n_tt = " << n_tt_total << " err = " << sqrt(err_tt_total) << " rel = " << sqrt(err_tt_total)/n_tt_total << endl;
+  cout << endl;
+  */
 
   TH1F* h_ratio = (TH1F*) h_data->Clone("ratio_"+what);
   h_ratio->Sumw2();
