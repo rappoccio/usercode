@@ -774,8 +774,8 @@ opts.set('minimizer', 'strategy', 'robust')
 # Here is the "main" part of the script. 
 ####################################################################################
 
-useMLE = True
-usePL = False
+useMLE = False
+usePL = True
 
 # Building the statistical model :
 infilter = histfilter
@@ -800,6 +800,48 @@ channel = 'comb'
 
 ## # pt bins
 nptbin = '1'
+
+#####
+# Parameters for 2D ellipse
+####
+
+zoom = True
+
+zoomstring = ""
+if zoom :
+    zoomstring = "_zoom"
+
+#full
+npoints_tt = 100
+toptagMin = -2.0
+toptagMax = 2.0
+npoints_bs = 100
+betaMin = 0.0
+betaMax = 2.0
+
+if (channel == "mu" and zoom) :
+    npoints_tt = 100
+    toptagMin = -0.1
+    toptagMax = 1.9
+    npoints_bs = 50
+    betaMin = 0.4
+    betaMax = 0.9
+
+if (channel == "el" and zoom) :
+    npoints_tt = 75
+    toptagMin = -1.0
+    toptagMax = 0.5
+    npoints_bs = 40
+    betaMin = 0.6
+    betaMax = 1.0
+
+if (channel == "comb" and zoom):
+    npoints_tt = 50
+    toptagMin = -0.8
+    toptagMax = 0.2
+    npoints_bs = 40
+    betaMin = 0.7
+    betaMax = 1.1
 
 ## for output file/plot names
 binname = ''
@@ -846,16 +888,6 @@ for idir in dirs :
 
     if ivar == 0 :
         model_summary(model)
-
-    #####
-    # Parameters for 2D ellipse
-    ####
-
-    npoints = 50
-    toptagMin = -2.0
-    toptagMax = 2.0
-    betaMin = 0.0
-    betaMax = 2.0
     
     ###########################################################################
     ## Maximum likelihood estimate technique
@@ -1042,14 +1074,14 @@ for idir in dirs :
         write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + channel + extName + binname + fitname + '.root')
 
 
-        f_2d = ROOT.TFile("nll_2d_mle_"+channel+".root", "RECREATE")
-        hist_2d = ROOT.TH2F('nll_2d', 'nll_2d', npoints, toptagMin, toptagMax, npoints, betaMin, betaMax)
-        toptagval = -2.0
-        for itoptagval in xrange( 0, npoints ) :
+        f_2d = ROOT.TFile("nll_2d_mle_"+channel+zoomstring+".root", "RECREATE")
+        hist_2d = ROOT.TH2F('nll_2d', 'nll_2d', npoints_tt, toptagMin, toptagMax, npoints_bs, betaMin, betaMax)
+        toptagval = toptagMin
+        for itoptagval in xrange( 0, npoints_tt ) :
             betaval = betaMin
             histname = 'nll_scan_'+str(itoptagval)
-            hist_nll_temp = ROOT.TH1F(histname,histname,npoints, betaMin, betaMax)
-            for ibetaval in xrange(0, npoints) : 
+            hist_nll_temp = ROOT.TH1F(histname,histname,npoints_bs, betaMin, betaMax)
+            for ibetaval in xrange(0, npoints_bs) : 
                 toptagConstraint = get_fixed_dist_at_values({'toptag':toptagval})
                 sprior_string = 'fix:'+str(betaval)
                 results_i = mle(model, input='data', n=1, with_covariance = False, options=opts, nuisance_constraint = toptagConstraint, signal_prior = sprior_string)
@@ -1058,9 +1090,9 @@ for idir in dirs :
                 print 'NLL at (' + str(toptagval) + ',' + str(betaval) + ') is ' + str(nll_constrained[0])
                 hist_2d.SetBinContent( itoptagval+1, ibetaval+1, -1 * nll_constrained[0] )
                 hist_nll_temp.SetBinContent(ibetaval+1, -1 * nll_constrained[0])
-                betaval += (betaMax - betaMin) / npoints
+                betaval += (betaMax - betaMin) / npoints_bs
             hist_nll_temp.Write()
-            toptagval += (toptagMax - toptagMin) / npoints
+            toptagval += (toptagMax - toptagMin) / npoints_tt
 
         hist_2d.Write()
         f_2d.Close()
@@ -1140,37 +1172,37 @@ for idir in dirs :
         plot(pnll, 'beta_signal', 'nll', 'ThetaPlots/pl_nll_scan_' + idir + '_' + channel + extName + binname + fitname + '.pdf')
 
 
-        f_2d = ROOT.TFile("nll_2d_"+channel+".root", "RECREATE")
-        hist_2d_beta_signal = ROOT.TH2F('nll_2d_beta_signal', 'nll_2d_beta_signal;Beta;TopTag', npoints, toptagMin, toptagMax, npoints, betaMin, betaMax)
-        hist_2d_toptag = ROOT.TH2F('nll_2d_toptag', 'nll_2d_toptag;Beta;TopTag', npoints, toptagMin, toptagMax, npoints, betaMin, betaMax)
+        f_2d = ROOT.TFile("nll_2d_"+channel+zoomstring+".root", "RECREATE")
+        hist_2d_beta_signal = ROOT.TH2F('nll_2d_beta_signal', 'nll_2d_beta_signal;Beta;TopTag', npoints_tt, toptagMin, toptagMax, npoints_bs, betaMin, betaMax)
+        hist_2d_toptag = ROOT.TH2F('nll_2d_toptag', 'nll_2d_toptag;Beta;TopTag', npoints_tt, toptagMin, toptagMax, npoints_bs, betaMin, betaMax)
         
         toptagval = toptagMin
         print 'Constructing beta_signal ellipse...'
-        for itoptagval in xrange( 0, npoints ) :
+        for itoptagval in xrange( 0, npoints_tt ) :
             #f = open('nll_out_2d_' + str(itoptagval) + '.txt', 'w')
             toptagConstraint = get_fixed_dist_at_values({'toptag':toptagval})
             # For some agitating reason, this gives no option to avoid zero-suppressing the likelihood! AARRGH!
-            scan = nll_scan(model, input='data', n=1, range=[betaMin, betaMax], nuisance_constraint = toptagConstraint, npoints=npoints )
+            scan = nll_scan(model, input='data', n=1, range=[betaMin, betaMax], nuisance_constraint = toptagConstraint, npoints=npoints_bs )
             #print >> f, '---- ' + str(toptagval)
             vals = scan['TTbar'][0]
             xvals = vals.x
             yvals = vals.y
             histname2 = 'nll_scan_'+str(itoptagval)
-            hist_nll_scan = ROOT.TH1F(histname2, histname2, npoints, betaMin, betaMax)
+            hist_nll_scan = ROOT.TH1F(histname2, histname2, npoints_bs, betaMin, betaMax)
             #print >> f,  valstr
             for index in xrange(0,len(xvals)-1) :
                 if index % 10 == 0 and itoptagval % 10 == 0 : print 'Point ('+str(itoptagval)+','+str(index)+') = '+str(yvals[index])
                 hist_2d_beta_signal.SetBinContent( itoptagval+1, index+1, yvals[index] )
                 hist_nll_scan.SetBinContent(index+1,yvals[index])
             hist_nll_scan.Write()
-            toptagval += (toptagMax - toptagMin) / npoints
+            toptagval += (toptagMax - toptagMin) / npoints_tt
 
         print 'Constructing toptag ellipse...'
         betaval = betaMin
-        for ibetaval in xrange(0,npoints) :
+        for ibetaval in xrange(0,npoints_bs) :
             #betaConstraint = get_fixed_dist_at_values({'beta_signal':betaval})
             sprior_string = 'fix:'+str(betaval)
-            scan = nll_scan(model, input='data', n=1, range=[toptagMin, toptagMax], parameter='toptag', npoints=npoints, signal_prior = sprior_string )
+            scan = nll_scan(model, input='data', n=1, range=[toptagMin, toptagMax], parameter='toptag', npoints=npoints_tt, signal_prior = sprior_string )
             vals = scan['TTbar'][0]
             xvals = vals.x
             yvals = vals.y
@@ -1178,7 +1210,7 @@ for idir in dirs :
             for index in xrange(0,len(xvals)-1) :
                 if index % 10 == 0 and ibetaval % 10 == 0 : print 'Point ('+str(index)+','+str(ibetaval)+') = '+str(yvals[index])
                 hist_2d_toptag.SetBinContent( index+1, ibetaval+1, yvals[index] )
-            betaval += (betaMax - betaMin) / npoints            
+            betaval += (betaMax - betaMin) / npoints_bs            
 
         hist_2d_beta_signal.Write()
         hist_2d_toptag.Write()
