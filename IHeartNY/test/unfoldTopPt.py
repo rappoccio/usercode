@@ -19,6 +19,11 @@ parser.add_option('--closureTest', metavar='F', action='store_true',
                   dest='closureTest',
                   help='Run closure test')
 
+parser.add_option('--whatClosure', metavar='F', type='string', action='store',
+                  default='nom',
+                  dest='whatClosure',
+                  help='What type of closure test?')
+
 parser.add_option('--normalize', metavar='F', action='store_true',
                   default=True,
                   dest='normalize',
@@ -159,9 +164,9 @@ Nmc_WJets_3jet = 15539503
 Nmc_WJets_4jet = 13382803
 
 
-## hack to account for that when doing closure test, the ttbar sample is split in two 
+## hack to account for that when doing closure test (unfold 1/2 sample with other 1/2), the ttbar sample is split in two 
 eff_closure = 1.0
-if options.closureTest == True and options.pdf != "MG":
+if options.closureTest == True and options.whatClosure == "nom" and options.pdf != "MG":
     eff_closure = 2.0
 
 
@@ -254,7 +259,7 @@ if options.pdf == "MG" and options.closureTest == True :
     f_ttbar_1000toInf = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
     f_ttbar_max700_odd = TFile("histfiles_MG/TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root")
 ## regular closure test, unfolding 1/2 sample using other 1/2
-elif options.closureTest == True : 
+elif options.closureTest == True and options.whatClosure == "nom" : 
     f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
     f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
     f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
@@ -295,7 +300,7 @@ if options.pdf == "MG" and options.closureTest == True :
     response_ttbar_max700    = f_ttbar_max700_odd.Get("response_pt"+nobtag)
     response = response_ttbar_max700.Clone()
     response.SetName("response_pt_"+options.syst)
-elif options.closureTest == True : 
+elif options.closureTest == True and options.whatClosure=="nom": 
     response_ttbar_max700    = f_ttbar_max700_odd.Get("response_pt"+nobtag)
     response_ttbar_700to1000 = f_ttbar_700to1000_odd.Get("response_pt"+nobtag)
     response_ttbar_1000toInf = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag)
@@ -324,7 +329,7 @@ if options.twoStep == True :
         response_pp = response_ttbar_max700_pp.Clone()
         response_pp.SetName("response_pt_"+options.syst+"_pp")
     
-    elif options.closureTest == True : 
+    elif options.closureTest == True  and options.whatClosure=="nom": 
         response_ttbar_max700_rp    = f_ttbar_max700_odd.Get("response_pt"+nobtag+"_rp")
         response_ttbar_700to1000_rp = f_ttbar_700to1000_odd.Get("response_pt"+nobtag+"_rp")
         response_ttbar_1000toInf_rp = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag+"_rp")
@@ -401,7 +406,7 @@ if options.pdf == "MG" and options.closureTest == True :
   
     if options.twoStep :
         hPart_max700    = f_ttbar_max700_odd.Get("ptPartTop")
-elif options.closureTest == True : 
+elif options.closureTest == True and options.whatClosure=="nom": 
     hTrue_max700    = f_ttbar_max700_odd.Get("ptGenTop")
     hTrue_700to1000 = f_ttbar_700to1000_odd.Get("ptGenTop")
     hTrue_1000toInf = f_ttbar_1000toInf_odd.Get("ptGenTop")
@@ -462,8 +467,18 @@ hRecoQCD.SetName("hRecoQCD")
 hRecoQCD.Sumw2()
 hRecoQCD.SetFillColor(TColor.kYellow)
 
-if options.closureTest == False : 
+if options.closureTest == False: 
     hMeas = f_data.Get("ptRecoTop"+isTwoStep+nobtag)
+elif options.whatClosure == "data": 
+    # data distribution
+    hMeas = f_data.Get("ptRecoTop"+isTwoStep+nobtag)
+    # ttbar prediction to scale data
+    hMeas_max700    = f_ttbar_max700.Get("ptRecoTop"+isTwoStep+nobtag)
+    hMeas_700to1000 = f_ttbar_700to1000.Get("ptRecoTop"+isTwoStep+nobtag)
+    hMeas_1000toInf = f_ttbar_1000toInf.Get("ptRecoTop"+isTwoStep+nobtag)
+    hMeas_max700.Sumw2()
+    hMeas_700to1000.Sumw2()
+    hMeas_1000toInf.Sumw2()
 else :
     hMeas_max700    = f_ttbar_max700.Get("ptRecoTop"+isTwoStep+nobtag)
     hMeas_700to1000 = f_ttbar_700to1000.Get("ptRecoTop"+isTwoStep+nobtag)
@@ -515,7 +530,7 @@ hMeas_tt1000_nonsemi.Sumw2()
 # -------------------------------------------------------------------------------------
 
 # if doing closure test, use ttbar nominal as the "measured" distribution
-if options.closureTest == True : 
+if options.closureTest == True and options.whatClosure != "data": 
     hMeas_max700.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
     hMeas_700to1000.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
     hMeas_1000toInf.Scale( eff_closure * sigma_ttbar[ipdf][2] * eff_ttbar[ipdf][2] * lum / float(Nmc_ttbar[ipdf][2]))
@@ -532,7 +547,17 @@ if options.closureTest == True :
         hMeas_odd.SetName("ptRecoTop_measured_odd")
         hMeas_odd.Add(hMeas_700to1000_odd)
         hMeas_odd.Add(hMeas_1000toInf_odd)    
-
+        
+elif options.closureTest == True and options.whatClosure == "data": 
+    hMeas_max700.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
+    hMeas_700to1000.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
+    hMeas_1000toInf.Scale( eff_closure * sigma_ttbar[ipdf][2] * eff_ttbar[ipdf][2] * lum / float(Nmc_ttbar[ipdf][2]))
+    hMeasTT = hMeas_max700.Clone()
+    hMeasTT.SetName("ptRecoTop_TT")
+    hMeasTT.Add(hMeas_700to1000)
+    hMeasTT.Add(hMeas_1000toInf)
+        
+    
 if options.pdf == "MG" and options.closureTest == True : 
     hTrue_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
     hTrue = hTrue_max700.Clone()
@@ -626,13 +651,29 @@ hMeas_TTNonSemi.Scale( fitted_ttbarnonsemilep / hMeas_TTNonSemi.Integral() )
 # subtract backgrounds from the data distribution, but not for closure test!!! 
 # -------------------------------------------------------------------------------------
 
-if options.closureTest == False : 
+if options.closureTest == False or options.whatClosure == "data": 
     for hist in [hMeas_SingleTop, hMeas_WJets, hRecoQCD, hMeas_TTNonSemi] :
         hMeas.Add(hist, -1.)
 
     for ibin in xrange( hMeas.GetNbinsX() ) :
         if ( hMeas.GetBinContent( ibin ) < 0.0 ) :
             hMeas.SetBinContent( ibin, 0.0 )
+
+    if options.whatClosure == "data": 
+        for ibin in range(1, hMeas.GetXaxis().GetNbins()+1) :
+        
+            bin_data = hMeas.GetBinContent(ibin)
+            bin_TT = hMeasTT.GetBinContent(ibin)
+            ebin_data = hMeas.GetBinError(ibin)
+            
+            if (bin_data > 0):
+                scale = bin_TT/bin_data
+            else:
+                scale = 0.0
+
+            hMeas.SetBinContent(ibin, hMeas.GetBinContent(ibin)*scale)
+            hMeas.SetBinError(ibin, hMeas.GetBinError(ibin)*scale)
+        
 
 
 # -------------------------------------------------------------------------------------
