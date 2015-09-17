@@ -22,6 +22,8 @@ qcdUnc = 1.0
 stUnc = 0.5
 vjetsUnc = 0.5
 
+doScanNLL = False
+
 ####################################################################################
 # We have to externalize the PDF and Q2 uncertainties.
 # This is done by skipping them in the nominal variations,
@@ -774,8 +776,8 @@ opts.set('minimizer', 'strategy', 'robust')
 # Here is the "main" part of the script. 
 ####################################################################################
 
-useMLE = False
-usePL = True
+useMLE = True
+usePL = False
 
 # Building the statistical model :
 infilter = histfilter
@@ -1065,37 +1067,45 @@ for idir in dirs :
         parameters = model.get_parameters(['TTbar'])
         print parameters
 
-        parameter_values = {}
-        for p in parameters :
-            print 'value for p is ',
-            print p
-            parameter_values[p] = results2['TTbar'][p][0][0]
-        histos = evaluate_prediction(model, parameter_values, include_signal = True)
-        write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + channel + extName + binname + fitname + '.root')
 
+        ###########################################################################
+        # do scan ?? 
+        ###########################################################################
 
-        f_2d = ROOT.TFile("nll_2d_mle_"+channel+zoomstring+".root", "RECREATE")
-        hist_2d = ROOT.TH2F('nll_2d', 'nll_2d', npoints_tt, toptagMin, toptagMax, npoints_bs, betaMin, betaMax)
-        toptagval = toptagMin
-        for itoptagval in xrange( 0, npoints_tt ) :
-            betaval = betaMin
-            histname = 'nll_scan_'+str(itoptagval)
-            hist_nll_temp = ROOT.TH1F(histname,histname,npoints_bs, betaMin, betaMax)
-            for ibetaval in xrange(0, npoints_bs) : 
-                toptagConstraint = get_fixed_dist_at_values({'toptag':toptagval})
-                sprior_string = 'fix:'+str(betaval)
-                results_i = mle(model, input='data', n=1, with_covariance = False, options=opts, nuisance_constraint = toptagConstraint, signal_prior = sprior_string)
-                values_constrained = results_i['TTbar']
-                nll_constrained = values_constrained['__nll']
-                print 'NLL at (' + str(toptagval) + ',' + str(betaval) + ') is ' + str(nll_constrained[0])
-                hist_2d.SetBinContent( itoptagval+1, ibetaval+1, -1 * nll_constrained[0] )
-                hist_nll_temp.SetBinContent(ibetaval+1, -1 * nll_constrained[0])
-                betaval += (betaMax - betaMin) / npoints_bs
-            hist_nll_temp.Write()
-            toptagval += (toptagMax - toptagMin) / npoints_tt
+        if doScanNLL: 
+            parameter_values = {}
+            for p in parameters :
+                print 'value for p is ',
+                print p
+                parameter_values[p] = results2['TTbar'][p][0][0]
+            histos = evaluate_prediction(model, parameter_values, include_signal = True)
+            write_histograms_to_rootfile(histos, 'histos-mle-2d-' + idir + '_' + channel + extName + binname + fitname + '.root')
 
-        hist_2d.Write()
-        f_2d.Close()
+            f_2d = ROOT.TFile("nll_2d_mle_"+channel+zoomstring+".root", "RECREATE")
+            hist_2d = ROOT.TH2F('nll_2d', 'nll_2d', npoints_tt, toptagMin, toptagMax, npoints_bs, betaMin, betaMax)
+            toptagval = toptagMin
+            for itoptagval in xrange( 0, npoints_tt ) :
+                betaval = betaMin
+                histname = 'nll_scan_'+str(itoptagval)
+                hist_nll_temp = ROOT.TH1F(histname,histname,npoints_bs, betaMin, betaMax)
+                for ibetaval in xrange(0, npoints_bs) : 
+                    toptagConstraint = get_fixed_dist_at_values({'toptag':toptagval})
+                    sprior_string = 'fix:'+str(betaval)
+                    results_i = mle(model, input='data', n=1, with_covariance = False, options=opts, nuisance_constraint = toptagConstraint, signal_prior = sprior_string)
+                    values_constrained = results_i['TTbar']
+                    nll_constrained = values_constrained['__nll']
+                    print 'NLL at (' + str(toptagval) + ',' + str(betaval) + ') is ' + str(nll_constrained[0])
+                    hist_2d.SetBinContent( itoptagval+1, ibetaval+1, -1 * nll_constrained[0] )
+                    hist_nll_temp.SetBinContent(ibetaval+1, -1 * nll_constrained[0])
+                    betaval += (betaMax - betaMin) / npoints_bs
+                hist_nll_temp.Write()
+                toptagval += (toptagMax - toptagMin) / npoints_tt
+
+            hist_2d.Write()
+            f_2d.Close()
+
+        #end doScanNLL
+        ###########################################################################
         
         ## option to print html output file
         #if idir == "CT10_nom" :
