@@ -347,34 +347,25 @@ def getElectronSF(elEta, elPt, DIR) :
 
 # -------------------------------------------------------------------------------------
 # Top-tagging SF
-#def getToptagSF(jetEta, pdfSet, pdfSys, isElec) :
 def getToptagSF(jetEta, option, isElec) :
 
     toptagSF = 1.0
     if abs(jetEta) < 1.0 :
         if "madgraph" in options.outname and "TTJet" in options.outname:
             toptagSF = 0.985
+        elif "mcatnlo" in options.outname and "TT_" in options.outname:
+            toptagSF = 1.033
         else:
             toptagSF = 1.173
     else :
         if "madgraph" in options.outname and "TTJet" in options.outname:
             toptagSF = 0.644
+        elif "mcatnlo" in options.outname and "TT_" in options.outname:
+            toptagSF = 0.768
         else:
             toptagSF = 0.704
 
     toptag_post = 1.0
-    #if (pdfSet==1 and pdfSys==0 and isElec==False):
-    #    toptag_post = 1.10649440886
-    #if (pdfSet==1 and pdfSys==1 and isElec==False):
-    #    toptag_post = 1.06707266216
-    #if (pdfSet==1 and pdfSys==-1 and isElec==False):
-    #    toptag_post = 1.13966730776
-    #if (pdfSet==1 and pdfSys==0 and isElec):
-    #    toptag_post = 1.09579275566
-    #if (pdfSet==1 and pdfSys==1 and isElec):
-    #    toptag_post = 1.07216881228
-    #if (pdfSet==1 and pdfSys==-1 and isElec):
-    #    toptag_post = 1.11804095015        
 
     ## muon-only
     if (option==1 and isElec==False):
@@ -392,7 +383,6 @@ def getToptagSF(jetEta, option, isElec) :
 
 
 # Top-tagging SF error
-#def getToptagSFerror(jetEta, pdfSet, pdfSys, isElec) :
 def getToptagSFerror(jetEta, jetPt, option, isElec) :
 
     toptagSFerr = 0.0
@@ -3436,23 +3426,13 @@ for event in events :
         isElec = True
         if options.lepType == "muon":
             isElec = False
-        #toptagSF = getToptagSF(topEta, options.pdfSet, options.pdfSys, isElec)
+
+        # nominal value for top-tagging SF (different for powheg / madgraph / mcatnlo, bkgs use powheg value)
         toptagSF = getToptagSF(topEta, 0, isElec)
+
         if options.toptagSys != None :
-            ### HACK! posterior top-tagging SF
-            if options.toptagSys > 99: ##scaled up
-                if (topPt < 600.0):
-                    toptagSF *= (1.0 + 0.05)
-                else :
-                    toptagSF *= (1.0 + 0.18)
-            ### HACK! posterior top-tagging SF
-            elif options.toptagSys < -99: ##scaled down
-                if (topPt < 600.0):
-                    toptagSF *= (1.0 - 0.05)
-                else :
-                    toptagSF *= (1.0 - 0.18)
-            ### HACK! CT10 SF
-            elif options.toptagSys == 10: ## central value, e/mu only fit
+            ### HACK! posterior CT10 toptag SF
+            if options.toptagSys == 10: ## central value, e/mu only fit
                 toptagSF = getToptagSF(topEta, 1, isElec)
             elif options.toptagSys == 20: ## central value, combined fit
                 toptagSF = getToptagSF(topEta, 2, isElec)
@@ -3463,16 +3443,14 @@ for event in events :
                     toptagSF = toptagSF_central*(1.0 + toptagSF_err)
                 else:  ## scale down
                     toptagSF = toptagSF_central*(1.0 - toptagSF_err)
+            ### additional high-pt SF uncertainty, apply only for pt>600 GeV
+            elif "toptagHIGHPT" in options.outname:
+                if (topPt > 600.0):
+                    toptagSF *= (1.0 + options.toptagSys)
             ### PRIOR TOP-TAGGING SF, scale up/down by +/- 25%
-            else:
+            else: 
                 toptagSF *= (1.0 + options.toptagSys)
                 
-        #if options.toptagSys != None :
-        #toptagSFerr = getToptagSFerror(topEta)
-        #if options.toptagSys > 0 :
-        #toptagSF += toptagSFerr
-        #else :
-        #toptagSF -= toptagSFerr
         weight *= toptagSF
         top_weight *= toptagSF
 
