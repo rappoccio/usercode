@@ -804,14 +804,14 @@ if options.lepType == "muon":
 
     print "running on muons!"
     
-    h_ptLep0  = ROOT.TH1F("ptLep0",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
-    h_ptLep1  = ROOT.TH1F("ptLep1",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
-    h_ptLep2  = ROOT.TH1F("ptLep2",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
-    h_ptLep3  = ROOT.TH1F("ptLep3",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
-    h_ptLep4  = ROOT.TH1F("ptLep4",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
-    h_ptLep5  = ROOT.TH1F("ptLep5",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
-    h_ptLep6  = ROOT.TH1F("ptLep6",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
-    h_ptLep7  = ROOT.TH1F("ptLep7",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 60, 0., 300.)
+    h_ptLep0  = ROOT.TH1F("ptLep0",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 100, 0., 500.)
+    h_ptLep1  = ROOT.TH1F("ptLep1",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 100, 0., 500.)
+    h_ptLep2  = ROOT.TH1F("ptLep2",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 100, 0., 500.)
+    h_ptLep3  = ROOT.TH1F("ptLep3",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 100, 0., 500.)
+    h_ptLep4  = ROOT.TH1F("ptLep4",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 100, 0., 500.)
+    h_ptLep5  = ROOT.TH1F("ptLep5",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 100, 0., 500.)
+    h_ptLep6  = ROOT.TH1F("ptLep6",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 100, 0., 500.)
+    h_ptLep7  = ROOT.TH1F("ptLep7",  ";Muon p_{T} [GeV]; Muons / 5 GeV", 100, 0., 500.)
 
     h_etaLep0 = ROOT.TH1F("etaLep0", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
     h_etaLep1 = ROOT.TH1F("etaLep1", ";Muon #eta; Muons / 0.1", 50, -2.5, 2.5)
@@ -862,14 +862,14 @@ else:
 
     print "running on electrons!"
     
-    h_ptLep0  = ROOT.TH1F("ptLep0",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
-    h_ptLep1  = ROOT.TH1F("ptLep1",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
-    h_ptLep2  = ROOT.TH1F("ptLep2",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
-    h_ptLep3  = ROOT.TH1F("ptLep3",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
-    h_ptLep4  = ROOT.TH1F("ptLep4",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
-    h_ptLep5  = ROOT.TH1F("ptLep5",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
-    h_ptLep6  = ROOT.TH1F("ptLep6",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
-    h_ptLep7  = ROOT.TH1F("ptLep7",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 60, 0., 300.)
+    h_ptLep0  = ROOT.TH1F("ptLep0",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 100, 0., 500.)
+    h_ptLep1  = ROOT.TH1F("ptLep1",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 100, 0., 500.)
+    h_ptLep2  = ROOT.TH1F("ptLep2",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 100, 0., 500.)
+    h_ptLep3  = ROOT.TH1F("ptLep3",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 100, 0., 500.)
+    h_ptLep4  = ROOT.TH1F("ptLep4",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 100, 0., 500.)
+    h_ptLep5  = ROOT.TH1F("ptLep5",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 100, 0., 500.)
+    h_ptLep6  = ROOT.TH1F("ptLep6",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 100, 0., 500.)
+    h_ptLep7  = ROOT.TH1F("ptLep7",  ";Electron p_{T} [GeV]; Electrons / 5 GeV", 100, 0., 500.)
 
     h_etaLep0 = ROOT.TH1F("etaLep0", ";Electron #eta; Electrons / 0.1", 50, -2.5, 2.5)
     h_etaLep1 = ROOT.TH1F("etaLep1", ";Electron #eta; Electrons / 0.1", 50, -2.5, 2.5)
