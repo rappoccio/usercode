@@ -25,7 +25,7 @@ parser.add_option('--whatClosure', metavar='F', type='string', action='store',
                   help='What type of closure test?')
 
 parser.add_option('--normalize', metavar='F', action='store_true',
-                  default=True,
+                  default=False,
                   dest='normalize',
                   help='Do normalized differential cross section')
 
@@ -166,7 +166,7 @@ Nmc_WJets_4jet = 13382803
 
 ## hack to account for that when doing closure test (unfold 1/2 sample with other 1/2), the ttbar sample is split in two 
 eff_closure = 1.0
-if options.closureTest == True and options.whatClosure == "nom" and options.pdf != "MG":
+if options.closureTest == True and options.whatClosure == "nom" and options.pdf != "MG" and options.pdf != "mcnlo":
     eff_closure = 2.0
 
 
@@ -252,13 +252,33 @@ else:
     f_QCD  = TFile("histfiles/"+dataDIR+"/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_qcd.root")
 
 
-## unfold MadGraph ttbar sample using Powheg response matrix as closure test
-if options.pdf == "MG" and options.closureTest == True :
+# in the below, file named f_..._odd will be the one from which response matrix is extracted from (if closureTest == True) 
+
+## reverse:  unfold Powheg ttbar sample using MadGraph response matrix as closure test
+if options.pdf == "MG" and options.closureTest == True and options.whatClosure == "reverse":
     f_ttbar_max700    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
     f_ttbar_700to1000 = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
     f_ttbar_1000toInf = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
-    f_ttbar_max700_odd = TFile("histfiles_MG/TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root")
-## regular closure test, unfolding 1/2 sample using other 1/2
+    f_ttbar_max700_odd = TFile("histfiles_MG/TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+## unfold MadGraph ttbar sample using Powheg response matrix as closure test
+elif options.pdf == "MG" and options.closureTest == True :
+    f_ttbar_max700 = TFile("histfiles_MG/TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+    f_ttbar_max700_odd    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+    f_ttbar_700to1000_odd = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+    f_ttbar_1000toInf_odd = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+## reverse:  unfold Powheg ttbar sample using MC@NLO response matrix
+elif options.pdf == "mcnlo" and options.closureTest == True and options.whatClosure == "reverse":
+    f_ttbar_max700    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+    f_ttbar_700to1000 = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+    f_ttbar_1000toInf = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+    f_ttbar_max700_odd = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+## unfold MC@NLO ttbar sample using Powheg response matrix
+elif options.pdf == "mcnlo" and options.closureTest == True :
+    f_ttbar_max700 = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
+    f_ttbar_max700_odd    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+    f_ttbar_700to1000_odd = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+    f_ttbar_1000toInf_odd = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+## regular closure test, unfolding 1/2 sample (even) using other 1/2 (odd)
 elif options.closureTest == True and options.whatClosure == "nom" : 
     f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
     f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
@@ -272,7 +292,7 @@ else :
     f_ttbar_700to1000 = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
     f_ttbar_1000toInf = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+".root")
 
-if options.pdf == "MG":
+if options.pdf == "MG" or options.pdf == "mcnlo":
     f_ttbar_nonsemilep_max700    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
     f_ttbar_nonsemilep_700to1000 = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
     f_ttbar_nonsemilep_1000toInf = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
@@ -296,11 +316,13 @@ f_WJets_4jet   = TFile("histfiles/"+dataDIR+"/W4JetsToLNu_TuneZ2Star_8TeV-madgra
 
 
 # the response matrices are simply added here, but have been filled with the full event weights (taking sample size, efficiency, etx. into account)
-if options.pdf == "MG" and options.closureTest == True :
+if (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == True and options.whatClosure=="reverse": 
+    ## reverse = unfold Powheg using MC@NLO/MadGraph response matrix
     response_ttbar_max700    = f_ttbar_max700_odd.Get("response_pt"+nobtag)
     response = response_ttbar_max700.Clone()
     response.SetName("response_pt_"+options.syst)
-elif options.closureTest == True and options.whatClosure=="nom": 
+elif options.closureTest == True and options.whatClosure=="nom":
+    ## regular closure test, unfolding some distribution using Powheg as response mastrix 
     response_ttbar_max700    = f_ttbar_max700_odd.Get("response_pt"+nobtag)
     response_ttbar_700to1000 = f_ttbar_700to1000_odd.Get("response_pt"+nobtag)
     response_ttbar_1000toInf = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag)
@@ -320,7 +342,7 @@ else :
 
 ## response matrices for two-step unfolding
 if options.twoStep == True :
-    if options.pdf == "MG" and options.closureTest == True :
+    if (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == True and options.whatClosure=="reverse":
         response_ttbar_max700_rp = f_ttbar_max700_odd.Get("response_pt"+nobtag+"_rp")
         response_ttbar_max700_pp = f_ttbar_max700_odd.Get("response_pt_pp")
         
@@ -329,7 +351,7 @@ if options.twoStep == True :
         response_pp = response_ttbar_max700_pp.Clone()
         response_pp.SetName("response_pt_"+options.syst+"_pp")
     
-    elif options.closureTest == True  and options.whatClosure=="nom": 
+    elif options.closureTest == True and options.whatClosure=="nom": 
         response_ttbar_max700_rp    = f_ttbar_max700_odd.Get("response_pt"+nobtag+"_rp")
         response_ttbar_700to1000_rp = f_ttbar_700to1000_odd.Get("response_pt"+nobtag+"_rp")
         response_ttbar_1000toInf_rp = f_ttbar_1000toInf_odd.Get("response_pt"+nobtag+"_rp")
@@ -370,7 +392,7 @@ if options.twoStep == True :
         response_pp.Add(response_ttbar_700to1000_pp)
         response_pp.Add(response_ttbar_1000toInf_pp)
 
-    if options.troubleshoot :
+    if options.troubleshoot and options.closureTest == True and options.whatClosure=="nom":
         response_rp_even = response_ttbar_max700_rp_even.Clone()
         response_rp_even.SetName("response_pt_"+options.syst+"_rp_even")
         response_rp_even.Add(response_ttbar_700to1000_rp_even)
@@ -401,52 +423,36 @@ else :
 # read actual histograms
 # -------------------------------------------------------------------------------------
 
-if options.pdf == "MG" and options.closureTest == True :
-    hTrue_max700    = f_ttbar_max700_odd.Get("ptGenTop")
-  
+if (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == True and options.whatClosure=="nom":
+    # use truth-level distributions (and reco-level) from MC@NLO/MadGraph
+    hTrue_max700    = f_ttbar_max700.Get("ptGenTop")  
+    hTrue_max700.Sumw2()
     if options.twoStep :
-        hPart_max700    = f_ttbar_max700_odd.Get("ptPartTop")
-elif options.closureTest == True and options.whatClosure=="nom": 
-    hTrue_max700    = f_ttbar_max700_odd.Get("ptGenTop")
-    hTrue_700to1000 = f_ttbar_700to1000_odd.Get("ptGenTop")
-    hTrue_1000toInf = f_ttbar_1000toInf_odd.Get("ptGenTop")
-
-    if options.twoStep :
-        hPart_max700    = f_ttbar_max700_odd.Get("ptPartTop")
-        hPart_700to1000 = f_ttbar_700to1000_odd.Get("ptPartTop")
-        hPart_1000toInf = f_ttbar_1000toInf_odd.Get("ptPartTop")
-
-        if options.troubleshoot :
-            hTrue_max700_even    = f_ttbar_max700.Get("ptGenTop")
-            hTrue_700to1000_even = f_ttbar_700to1000.Get("ptGenTop")
-            hTrue_1000toInf_even = f_ttbar_1000toInf.Get("ptGenTop")
-            hPart_max700_even    = f_ttbar_max700.Get("ptPartTop")
-            hPart_700to1000_even = f_ttbar_700to1000.Get("ptPartTop")
-            hPart_1000toInf_even = f_ttbar_1000toInf.Get("ptPartTop")
+        hPart_max700    = f_ttbar_max700.Get("ptPartTop")
+        hPart_max700.Sumw2()
 else :
     hTrue_max700    = f_ttbar_max700.Get("ptGenTop")
     hTrue_700to1000 = f_ttbar_700to1000.Get("ptGenTop")
     hTrue_1000toInf = f_ttbar_1000toInf.Get("ptGenTop")
+    hTrue_max700.Sumw2()
+    hTrue_700to1000.Sumw2()
+    hTrue_1000toInf.Sumw2()
 
     if options.twoStep :
         hPart_max700    = f_ttbar_max700.Get("ptPartTop")
         hPart_700to1000 = f_ttbar_700to1000.Get("ptPartTop")
         hPart_1000toInf = f_ttbar_1000toInf.Get("ptPartTop")
-
-hTrue_max700.Sumw2()
-if options.twoStep:
-    hPart_max700.Sumw2()
-
-if options.pdf != "MG" :
-    hTrue_700to1000.Sumw2()
-    hTrue_1000toInf.Sumw2()
-
-    if options.twoStep:
         hPart_max700.Sumw2()
         hPart_700to1000.Sumw2()
         hPart_1000toInf.Sumw2()
-    
-        if options.troubleshoot:
+
+        if options.troubleshoot and  options.closureTest == True and options.whatClosure=="nom":
+            hTrue_max700_even    = f_ttbar_max700_odd.Get("ptGenTop")
+            hTrue_700to1000_even = f_ttbar_700to1000_odd.Get("ptGenTop")
+            hTrue_1000toInf_even = f_ttbar_1000toInf_odd.Get("ptGenTop")
+            hPart_max700_even    = f_ttbar_max700_odd.Get("ptPartTop")
+            hPart_700to1000_even = f_ttbar_700to1000_odd.Get("ptPartTop")
+            hPart_1000toInf_even = f_ttbar_1000toInf_odd.Get("ptPartTop")
             hTrue_max700_even.Sumw2()
             hTrue_700to1000_even.Sumw2()
             hTrue_1000toInf_even.Sumw2()
@@ -469,7 +475,7 @@ hRecoQCD.SetFillColor(TColor.kYellow)
 
 if options.closureTest == False: 
     hMeas = f_data.Get("ptRecoTop"+isTwoStep+nobtag)
-elif options.whatClosure == "data": 
+elif options.closureTest == True and options.whatClosure == "data": 
     # data distribution
     hMeas = f_data.Get("ptRecoTop"+isTwoStep+nobtag)
     # ttbar prediction to scale data
@@ -479,6 +485,10 @@ elif options.whatClosure == "data":
     hMeas_max700.Sumw2()
     hMeas_700to1000.Sumw2()
     hMeas_1000toInf.Sumw2()
+elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == True and options.whatClosure=="nom":
+    # use truth-level distributions (and reco-level) from MC@NLO/MadGraph
+    hMeas_max700    = f_ttbar_max700.Get("ptRecoTop"+isTwoStep+nobtag)
+    hMeas_max700.Sumw2()
 else :
     hMeas_max700    = f_ttbar_max700.Get("ptRecoTop"+isTwoStep+nobtag)
     hMeas_700to1000 = f_ttbar_700to1000.Get("ptRecoTop"+isTwoStep+nobtag)
@@ -529,8 +539,18 @@ hMeas_tt1000_nonsemi.Sumw2()
 # Normalize histograms
 # -------------------------------------------------------------------------------------
 
-# if doing closure test, use ttbar nominal as the "measured" distribution
-if options.closureTest == True and options.whatClosure != "data": 
+### normalize measured "data" for closure tests
+# MC@NLO/MadGraph
+if options.pdf == "MG" and options.closureTest == True and options.whatClosure=="nom":
+    hMeas_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
+    hMeas = hMeas_max700.Clone()
+    hMeas.SetName("ptRecoTop_measured")
+elif options.pdf == "mcnlo" and options.closureTest == True and options.whatClosure=="nom":
+    hMeas_max700.Scale(252.89*1000.0*19.7/32852589)
+    hMeas = hMeas_max700.Clone()
+    hMeas.SetName("ptRecoTop_measured")
+# ttbar nominal as "measured" distribution
+elif options.closureTest == True and options.whatClosure != "data": 
     hMeas_max700.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
     hMeas_700to1000.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
     hMeas_1000toInf.Scale( eff_closure * sigma_ttbar[ipdf][2] * eff_ttbar[ipdf][2] * lum / float(Nmc_ttbar[ipdf][2]))
@@ -547,7 +567,7 @@ if options.closureTest == True and options.whatClosure != "data":
         hMeas_odd.SetName("ptRecoTop_measured_odd")
         hMeas_odd.Add(hMeas_700to1000_odd)
         hMeas_odd.Add(hMeas_1000toInf_odd)    
-        
+# for closure test of data, need ttbar
 elif options.closureTest == True and options.whatClosure == "data": 
     hMeas_max700.Scale( eff_closure * sigma_ttbar[ipdf][0] * eff_ttbar[ipdf][0] * lum / float(Nmc_ttbar[ipdf][0]))
     hMeas_700to1000.Scale( eff_closure * sigma_ttbar[ipdf][1] * eff_ttbar[ipdf][1] * lum / float(Nmc_ttbar[ipdf][1]))
@@ -558,8 +578,12 @@ elif options.closureTest == True and options.whatClosure == "data":
     hMeasTT.Add(hMeas_1000toInf)
         
     
-if options.pdf == "MG" and options.closureTest == True : 
+if options.pdf == "MG" and options.closureTest == True and options.whatClosure=="nom": 
     hTrue_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
+    hTrue = hTrue_max700.Clone()
+    hTrue.SetName("pt_genTop")
+elif options.pdf == "mcnlo" and options.closureTest == True and options.whatClosure=="nom": 
+    hTrue_max700.Scale(252.89*1000.0*19.7/32852589)
     hTrue = hTrue_max700.Clone()
     hTrue.SetName("pt_genTop")
 else :
@@ -581,8 +605,12 @@ if options.troubleshoot and options.twoStep :
     hTrue_even.Add(hTrue_1000toInf_even)
 
 if options.twoStep :
-    if options.pdf == "MG" and options.closureTest == True : 
+    if options.pdf == "MG" and options.closureTest == True and options.whatClosure=="nom":
         hPart_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
+        hPart = hPart_max700.Clone()
+        hPart.SetName("pt_partTop")
+    elif options.pdf == "mcnlo" and options.closureTest == True and options.whatClosure=="nom": 
+        hPart_max700.Scale(252.89*1000.0*19.7/32852589)
         hPart = hPart_max700.Clone()
         hPart.SetName("pt_partTop")
     else :
@@ -972,8 +1000,10 @@ if options.twoStep :
     append += "_2step"
 if options.closureTest :
     append += "_closure"
-
-if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
+if options.whatClosure == "reverse" :
+    append += "_reverse"
+    
+if options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot:
     c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".pdf", "pdf")
     c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".png", "png")
     c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".eps", "eps")
@@ -1060,8 +1090,10 @@ if options.twoStep:
     append = ""
     if options.closureTest :
         append += "_closure"
-        
-    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
+    if options.whatClosure == "reverse" :
+        append += "_reverse"
+    
+    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot:
         c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".pdf", "pdf")
         c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".png", "png")
         c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".eps", "eps")
@@ -1110,7 +1142,7 @@ if options.twoStep == False:
     gStyle.SetPaintTextFormat(".1f")
     hResponse2D.Draw("colz,same,text")
     hEmpty2D.Draw("axis,same")
-    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
+    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".pdf")
@@ -1123,7 +1155,7 @@ if options.twoStep == False:
     hResponse2D.Draw("colz,same,text")
     hEmpty2D.Draw("axis,same")
 
-    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
+    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
@@ -1198,7 +1230,7 @@ if options.twoStep:
     hResponse2D_rp.SetMarkerSize(1.2)
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
-    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
+    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".pdf")
@@ -1241,7 +1273,7 @@ if options.twoStep:
         t3.DrawLatex(0.49,0.94, "(#mu+Jets)")
     t3.DrawLatex(0.66,0.94, "19.7 fb^{-1} (8 TeV)")    
 
-    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
+    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
@@ -1307,7 +1339,7 @@ if options.twoStep:
     hResponse2D_pp.SetMarkerSize(1.2)
     hResponse2D_pp.Draw("colz,same,text")
     hEmpty2D_pp.Draw("axis,same")
-    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.troubleshoot:
+    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".pdf")

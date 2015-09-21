@@ -38,6 +38,12 @@ void calcXS() {
   calcOne("MG",false,true);
   calcOne("MG",true,false);
   calcOne("MG",true,true);
+
+  cout << endl;
+  calcOne("mcnlo",false,false);
+  calcOne("mcnlo",false,true);
+  calcOne("mcnlo",true,false);
+  calcOne("mcnlo",true,true);
   cout << endl;
 
 }
@@ -47,6 +53,10 @@ void calcOne(TString which, bool parton, bool doel) {
   if (which=="MG") {  
     if (doel) TFile* f1 = new TFile("histfiles_MG/TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_el_2Dcut_nom.root");
     else TFile* f1 = new TFile("histfiles_MG/TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root");
+  }
+  else if (which=="mcnlo") {  
+    if (doel) TFile* f1 = new TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_el_2Dcut_nom.root");
+    else TFile* f1 = new TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_mu_2Dcut_nom.root");
   }
   else if (doel) {
     TFile* f1 = new TFile("histfiles_"+which+"/qcd_el/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_el_"+which+"_2Dcut_nom.root");
@@ -71,7 +81,7 @@ void calcOne(TString which, bool parton, bool doel) {
   TString whatNUM = "ptGenTop_passParton";
   if (!parton) whatNUM = "ptPartTop_passParticle";
 
-  if (which=="MG") {
+  if (which=="MG" || which=="mcnlo") {
     TH1F* h1 = (TH1F*) f1->Get(whatDEN);
     TH1F* h11 = (TH1F*) f1->Get(whatNUM);
   }
@@ -117,6 +127,11 @@ void calcOne(TString which, bool parton, bool doel) {
   
   if (which=="MG") {
     double ttbar_norm = 252.89/25424818.*0.438;
+    h1->Scale(ttbar_norm);
+    h11->Scale(ttbar_norm);
+  }
+  else if (which=="mcnlo") {
+    double ttbar_norm = 252.89/32852589;
     h1->Scale(ttbar_norm);
     h11->Scale(ttbar_norm);
   }

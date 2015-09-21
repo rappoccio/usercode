@@ -351,6 +351,38 @@ SummedHist * getTTbarNonSemiLep( TString name, TString histname, bool doElectron
     return ttbar;
     
   }
+  else if (pdfdir=="mcnlo") {
+
+    TString DIR = "histfiles_mcnlo/";
+    
+    TString muOrEl = "mu";
+    if (doElectron) muOrEl = "el";
+    
+    TString ttbar_name = "TT_nonSemiLep_mcatnlo_iheartNY_V1_"+muOrEl+"_";
+    
+    double ttbar_norm = 252.89*1000.0*19.7/32852589;
+    
+    TString thetaChannel = "mu_";
+    if (doElectron) thetaChannel = "el_";
+    
+    TString thetaname = thetaChannel + histname + "__TTbar_nonSemiLep";
+    adjustThetaName( thetaname, name, ptbin );
+    
+    SummedHist* ttbar = new SummedHist( thetaname, kRed-7);
+    
+    TString name2d = "";
+    if (use2D) name2d = "2Dcut_";
+    
+    TString iname = DIR + ttbar_name + name2d + name + TString(".root");
+    TFile* infile = TFile::Open( iname );
+    TH1F* hist = (TH1F*) infile->Get(histname);
+    hist->Sumw2();
+    ttbar->push_back( hist, ttbar_norm );
+    delete infile;
+    
+    return ttbar;
+    
+  }
   else { 
     
     const int nttbar = 3;
@@ -452,7 +484,7 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
     TString thetaname = thetaChannel + histname + "__TTbar_semiLep";
     adjustThetaName( thetaname, name, ptbin );
     
-    SummedHist* ttbar = new SummedHist( thetaname, kRed +1);
+    SummedHist* ttbar = new SummedHist( thetaname, kRed+1);
     
     TString name2d = "";
     if (use2D) name2d = "2Dcut_";
@@ -465,6 +497,38 @@ SummedHist * getTTbar( TString name, TString histname, bool doElectron, TString 
     delete infile;
 
     return ttbar;
+  }
+  else if (pdfdir=="mcnlo") {
+
+    TString DIR = "histfiles_mcnlo/";
+    
+    TString muOrEl = "mu";
+    if (doElectron) muOrEl = "el";
+    
+    TString ttbar_name = "TT_mcatnlo_iheartNY_V1_"+muOrEl+"_";
+    
+    double ttbar_norm = 252.89*1000.0*19.7/32852589;
+    
+    TString thetaChannel = "mu_";
+    if (doElectron) thetaChannel = "el_";
+    
+    TString thetaname = thetaChannel + histname + "__TTbar_semiLep";
+    adjustThetaName( thetaname, name, ptbin );
+    
+    SummedHist* ttbar = new SummedHist( thetaname, kRed+1);
+    
+    TString name2d = "";
+    if (use2D) name2d = "2Dcut_";
+    
+    TString iname = DIR + ttbar_name + name2d + name + TString(".root");
+    TFile* infile = TFile::Open( iname );
+    TH1F* hist = (TH1F*) infile->Get(histname);
+    hist->Sumw2();
+    ttbar->push_back( hist, ttbar_norm );
+    delete infile;
+    
+    return ttbar;
+    
   }
   else {
 

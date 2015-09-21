@@ -621,10 +621,12 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   else {
     if (cut2==0) {
       c->SaveAs(outname+hist+"_prefit.png");
+      c->SaveAs(outname+hist+"_prefit.eps");
       c->SaveAs(outname+hist+"_prefit.pdf");
     }
     else {
       c->SaveAs(outname+hist2+"_subtracted_from_"+hist+"_prefit.png");
+      c->SaveAs(outname+hist2+"_subtracted_from_"+hist+"_prefit.eps");
       c->SaveAs(outname+hist2+"_subtracted_from_"+hist+"_prefit.pdf");
     }
   }
