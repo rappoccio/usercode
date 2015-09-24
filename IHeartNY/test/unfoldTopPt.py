@@ -25,7 +25,7 @@ parser.add_option('--whatClosure', metavar='F', type='string', action='store',
                   help='What type of closure test?')
 
 parser.add_option('--normalize', metavar='F', action='store_true',
-                  default=False,
+                  default=True,
                   dest='normalize',
                   help='Do normalized differential cross section')
 
@@ -266,6 +266,9 @@ elif options.pdf == "MG" and options.closureTest == True :
     f_ttbar_max700_odd    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
     f_ttbar_700to1000_odd = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
     f_ttbar_1000toInf_odd = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+## MadGraph
+elif options.pdf == "MG":
+    f_ttbar_max700 = TFile("histfiles_MG/TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
 ## reverse:  unfold Powheg ttbar sample using MC@NLO response matrix
 elif options.pdf == "mcnlo" and options.closureTest == True and options.whatClosure == "reverse":
     f_ttbar_max700    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
@@ -278,6 +281,9 @@ elif options.pdf == "mcnlo" and options.closureTest == True :
     f_ttbar_max700_odd    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
     f_ttbar_700to1000_odd = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
     f_ttbar_1000toInf_odd = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+options.syst+".root")
+## MC@NLO
+elif options.pdf == "mcnlo":
+    f_ttbar_max700 = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_nom.root")
 ## regular closure test, unfolding 1/2 sample (even) using other 1/2 (odd)
 elif options.closureTest == True and options.whatClosure == "nom" : 
     f_ttbar_max700    = TFile("histfiles_"+options.pdf+"/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_"+options.pdf+"_2Dcut_"+options.syst+"_even.root")
@@ -330,6 +336,10 @@ elif options.closureTest == True and options.whatClosure=="nom":
     response.SetName("response_pt_"+options.syst)
     response.Add(response_ttbar_700to1000)
     response.Add(response_ttbar_1000toInf)
+elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == False: 
+    response_ttbar_max700 = f_ttbar_max700.Get("response_pt"+nobtag)
+    response = response_ttbar_max700.Clone()
+    response.SetName("response_pt_"+options.syst)
 else :
     response_ttbar_max700    = f_ttbar_max700.Get("response_pt"+nobtag)
     response_ttbar_700to1000 = f_ttbar_700to1000.Get("response_pt"+nobtag)
@@ -375,6 +385,16 @@ if options.twoStep == True :
             response_ttbar_max700_pp_even    = f_ttbar_max700.Get("response_pt_pp")
             response_ttbar_700to1000_pp_even = f_ttbar_700to1000.Get("response_pt_pp")
             response_ttbar_1000toInf_pp_even = f_ttbar_1000toInf.Get("response_pt_pp")
+    
+    elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == False:
+        response_ttbar_max700_rp = f_ttbar_max700.Get("response_pt"+nobtag+"_rp")
+        response_ttbar_max700_pp = f_ttbar_max700.Get("response_pt_pp")
+        
+        response_rp = response_ttbar_max700_rp.Clone()
+        response_rp.SetName("response_pt_"+options.syst+"_rp")
+        response_pp = response_ttbar_max700_pp.Clone()
+        response_pp.SetName("response_pt_"+options.syst+"_pp")
+    
     else:
         response_ttbar_max700_rp    = f_ttbar_max700.Get("response_pt"+nobtag+"_rp")
         response_ttbar_700to1000_rp = f_ttbar_700to1000.Get("response_pt"+nobtag+"_rp")
@@ -425,6 +445,12 @@ else :
 
 if (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == True and options.whatClosure=="nom":
     # use truth-level distributions (and reco-level) from MC@NLO/MadGraph
+    hTrue_max700    = f_ttbar_max700.Get("ptGenTop")  
+    hTrue_max700.Sumw2()
+    if options.twoStep :
+        hPart_max700    = f_ttbar_max700.Get("ptPartTop")
+        hPart_max700.Sumw2()
+elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == False:
     hTrue_max700    = f_ttbar_max700.Get("ptGenTop")  
     hTrue_max700.Sumw2()
     if options.twoStep :
@@ -582,7 +608,15 @@ if options.pdf == "MG" and options.closureTest == True and options.whatClosure==
     hTrue_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
     hTrue = hTrue_max700.Clone()
     hTrue.SetName("pt_genTop")
+elif options.pdf == "MG" and options.closureTest == False: 
+    hTrue_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
+    hTrue = hTrue_max700.Clone()
+    hTrue.SetName("pt_genTop")
 elif options.pdf == "mcnlo" and options.closureTest == True and options.whatClosure=="nom": 
+    hTrue_max700.Scale(252.89*1000.0*19.7/32852589)
+    hTrue = hTrue_max700.Clone()
+    hTrue.SetName("pt_genTop")
+elif options.pdf == "mcnlo" and options.closureTest == False: 
     hTrue_max700.Scale(252.89*1000.0*19.7/32852589)
     hTrue = hTrue_max700.Clone()
     hTrue.SetName("pt_genTop")
@@ -609,7 +643,15 @@ if options.twoStep :
         hPart_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
         hPart = hPart_max700.Clone()
         hPart.SetName("pt_partTop")
+    elif options.pdf == "MG" and options.closureTest == False:
+        hPart_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
+        hPart = hPart_max700.Clone()
+        hPart.SetName("pt_partTop")
     elif options.pdf == "mcnlo" and options.closureTest == True and options.whatClosure=="nom": 
+        hPart_max700.Scale(252.89*1000.0*19.7/32852589)
+        hPart = hPart_max700.Clone()
+        hPart.SetName("pt_partTop")
+    elif options.pdf == "mcnlo" and options.closureTest == False: 
         hPart_max700.Scale(252.89*1000.0*19.7/32852589)
         hPart = hPart_max700.Clone()
         hPart.SetName("pt_partTop")

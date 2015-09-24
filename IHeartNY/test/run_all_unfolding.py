@@ -26,7 +26,8 @@ argv = []
 if ((options.pdf == 'CT10_nom' or options.pdf == 'CT10_pdfup' or options.pdf == 'CT10_pdfdown' or 
     options.pdf == 'MSTW_nom' or options.pdf == 'MSTW_pdfup' or options.pdf == 'MSTW_pdfdown' or 
     options.pdf == 'NNPDF_nom' or options.pdf == 'NNPDF_pdfup' or options.pdf == 'NNPDF_pdfdown' or 
-    options.pdf == 'scaleup' or options.pdf == 'scaledown' ) == False):
+    options.pdf == 'scaleup' or options.pdf == 'scaledown' or
+    options.pdf == 'MG' or options.pdf == 'mcnlo') == False):
     print "Invalid option for --ttbarPDF! exiting..."
     sys.exit()
 
