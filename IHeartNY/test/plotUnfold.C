@@ -1227,7 +1227,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       double syst_totalTH_dn_part = sqrt(syst_scaledn_part*syst_scaledn_part + syst_pdfdn_part*syst_pdfdn_part );
 
       double syst_total_up_part = sqrt(syst_totalEXP_up_part*syst_totalEXP_up_part + syst_totalTH_up_part*syst_totalTH_up_part);
-      double syst_total_dn_part = sqrt(syst_totalEXP_dn_part*syst_totalEXP_dn_part + syst_totalTH_up_part*syst_totalTH_dn_part);
+      double syst_total_dn_part = sqrt(syst_totalEXP_dn_part*syst_totalEXP_dn_part + syst_totalTH_dn_part*syst_totalTH_dn_part);
       
       double syst_totaltotal_up_part = sqrt(syst_total_up_part*syst_total_up_part + syst_stat_part*syst_stat_part);
       double syst_totaltotal_dn_part = sqrt(syst_total_dn_part*syst_total_dn_part + syst_stat_part*syst_stat_part);
