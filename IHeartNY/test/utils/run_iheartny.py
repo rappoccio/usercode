@@ -65,8 +65,13 @@ class Sample :
         toptagsysts = [
             SystVar(name='_toptagup', flags=['--toptagSys=0.25']+self.flags + self.jerflag),
             SystVar(name='_toptagdn', flags=['--toptagSys=-0.25']+self.flags + self.jerflag),
-            SystVar(name='_toptagFITup', flags=['--toptagSys=0.098']+self.flags + self.jerflag),
-            SystVar(name='_toptagFITdn', flags=['--toptagSys=-0.098']+self.flags + self.jerflag)
+            SystVar(name='_toptagFITcentral', flags=['--toptagSys=20']+self.flags + self.jerflag),
+            SystVar(name='_toptagFITup', flags=['--toptagSys=2']+self.flags + self.jerflag),
+            SystVar(name='_toptagFITdn', flags=['--toptagSys=-2']+self.flags + self.jerflag),
+            SystVar(name='_toptagHIGHPTup', flags=['--toptagSys=0.17']+self.flags + self.jerflag),
+            SystVar(name='_toptagHIGHPTdn', flags=['--toptagSys=-0.17']+self.flags + self.jerflag),
+            SystVar(name='_toptagHIGHPTupFITcentral', flags=['--toptagSys=0.17']+self.flags + self.jerflag),
+            SystVar(name='_toptagHIGHPTdnFITcentral', flags=['--toptagSys=-0.17']+self.flags + self.jerflag)
             ]
 
         self.systs = []

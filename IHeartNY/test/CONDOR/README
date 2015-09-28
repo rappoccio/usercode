@@ -1,0 +1,16 @@
+*** instructions for running batch jobs on condor *** 
+
+If you have an updated version of the iheartNY script, you need to:
+(1) copy it to the tardir/ folder
+(2) go to tardir/ folder and recreate the tarball (tar czvf tarball.tgz *), and copy that to the CONDOR/ directory
+
+The various files "listofjobs_..." have been generated from executing:  python run_pdfs_...py > listofjobs_...
+
+To actually submit jobs, first create these "commands_..." files which has the right format of what's to be submitted, do e.g.: 
+
+./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_CT10_mu commands_CT10_mu
+
+Then submit as e.g.: 
+
+./runManySections.py --submitCondor commands_CT10_mu
+

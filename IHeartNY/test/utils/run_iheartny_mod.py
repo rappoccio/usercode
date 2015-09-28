@@ -38,6 +38,10 @@ class Sample :
             SystVar(name='_nom', flags=self.flags + self.jerflag)
             ]
         qcds = [
+            #SystVar(name='_qcd0', flags=['--doQCD','--which2D=0'] + self.flags + self.jerflag),
+            #SystVar(name='_qcd1', flags=['--doQCD','--which2D=1'] + self.flags + self.jerflag),
+            #SystVar(name='_qcd2', flags=['--doQCD','--which2D=2'] + self.flags + self.jerflag),
+            #SystVar(name='_qcd3', flags=['--doQCD','--which2D=3'] + self.flags + self.jerflag)
             SystVar(name='_qcd', flags=['--doQCD'] + self.flags + self.jerflag)
             ]
         jersysts = [
