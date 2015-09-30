@@ -566,6 +566,11 @@ parser.add_option('--toptagSys', metavar='J', type='float', action='store',
                   dest='toptagSys',
                   help='Systematic variation on top-tagging efficiency. Default is None.')
 
+parser.add_option('--toptagCentral', metavar='J', type='float', action='store',
+                  default=None,
+                  dest='toptagCentral',
+                  help='Use a different central value for top-tagging SF (i.e. use postfit value?)')
+
 parser.add_option('--jecSys', metavar='J', type='float', action='store',
                   default=None,
                   dest='jecSys',
@@ -3436,31 +3441,28 @@ for event in events :
         # nominal value for top-tagging SF (different for powheg / madgraph / mcatnlo, bkgs use powheg value)
         toptagSF = getToptagSF(topEta, 0, isElec)
 
-        if options.toptagSys != None :
-            ### HACK! posterior CT10 toptag SF
-            if options.toptagSys == 10: ## central value, e/mu only fit
+        # use posterior top-tagging SF?
+        if options.toptagCentral != None:
+            if options.toptagCentral == 1: ## central value, e/mu only fit
                 toptagSF = getToptagSF(topEta, 1, isElec)
-            elif options.toptagSys == 20: ## central value, combined fit
+            elif options.toptagSys == 2: ## central value, combined fit
                 toptagSF = getToptagSF(topEta, 2, isElec)
-            elif abs(options.toptagSys) == 1 or abs(options.toptagSys) == 2: ## scale up/down, e/mu or combined fit
-                toptagSF_central = getToptagSF(topEta, abs(options.toptagSys), isElec)
-                toptagSF_err = getToptagSFerror(topEta, topPt, abs(options.toptagSys), isElec)
-                if options.toptagSys > 0:  ## scale up
-                    toptagSF = toptagSF_central*(1.0 + toptagSF_err)
-                else:  ## scale down
-                    toptagSF = toptagSF_central*(1.0 - toptagSF_err)
-            ### additional high-pt SF uncertainty, apply only for pt>600 GeV, HERE FOR RESCALING TO NEW CENTRAL VALUE
-            elif "toptagHIGHPT" in options.outname and "FITcentral" in options.outname:
-                toptagSF_central = getToptagSF(topEta, 20, isElec)
-                if (topPt > 600.0):
-                    toptagSF = toptagSF_central*(1.0 + options.toptagSys)
-                else :
-                    toptagSF = toptagSF_central
-            ### additional high-pt SF uncertainty, apply only for pt>600 GeV
-            elif "toptagHIGHPT" in options.outname:
+            else :
+                print "WARNING! invalid option for toptagCentral value (can be None, 1, 2)"
+
+        if options.toptagSys != None :
+            # additional high-pt SF uncertainty, apply only for pt>600 GeV
+            if "toptagHIGHPT" in options.outname:
                 if (topPt > 600.0):
                     toptagSF *= (1.0 + options.toptagSys)
-            ### PRIOR TOP-TAGGING SF, scale up/down by +/- 25%
+            # scale top-tagging SF up/down by posterior uncertainty (from e/mu only or combined fit)
+            elif options.toptagCentral != None: 
+                toptagSF_err = getToptagSFerror(topEta, topPt, options.toptagCentral, isElec)
+                if options.toptagSys > 0:
+                    toptagSF *= (1.0 + toptagSF_err)
+                else:
+                    toptagSF *= (1.0 - toptagSF_err)
+            # prior top-tagging SF, scale up/down by +/- 25%
             else: 
                 toptagSF *= (1.0 + options.toptagSys)
                 

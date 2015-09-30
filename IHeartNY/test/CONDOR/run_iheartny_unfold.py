@@ -11,14 +11,18 @@ class SystVar :
         self.flags = flags
 
 class Sample :
-    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, btagsys=False, toptagsys=False, qcd=False, pu='ttbar', newiso=True, flags='' ) :
+    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, btagsys=False, toptagsys=False, qcd=False, pu='ttbar', newiso=True,  postfit=True, flags='' ) :
         self.directory=directory
 
         if newiso :
             self.title=title+'_2Dcut'
         else : 
             self.title=title
-		
+
+        if postfit : 
+            #self.title = self.title + '_postfitEMU'
+            self.title = self.title + '_postfit'
+        
         if flags != '' : 
             self.flags=flags.split(' ')
         else :
@@ -28,6 +32,9 @@ class Sample :
             self.flags.append('--pileup=' + pu )
         if newiso :
             self.flags.append('--use2Dcut')
+        if postfit : 
+            #self.flags.append('--toptagCentral=1')
+            self.flags.append('--toptagCentral=2')
         
         if jersys is not None :
             self.jerflag = ['--jerSys=0.1']
@@ -65,13 +72,8 @@ class Sample :
         toptagsysts = [
             SystVar(name='_toptagup', flags=['--toptagSys=0.25']+self.flags + self.jerflag),
             SystVar(name='_toptagdn', flags=['--toptagSys=-0.25']+self.flags + self.jerflag),
-            SystVar(name='_toptagFITcentral', flags=['--toptagSys=20']+self.flags + self.jerflag),
-            SystVar(name='_toptagFITup', flags=['--toptagSys=2']+self.flags + self.jerflag),
-            SystVar(name='_toptagFITdn', flags=['--toptagSys=-2']+self.flags + self.jerflag),
             SystVar(name='_toptagHIGHPTup', flags=['--toptagSys=0.17']+self.flags + self.jerflag),
-            SystVar(name='_toptagHIGHPTdn', flags=['--toptagSys=-0.17']+self.flags + self.jerflag),
-            SystVar(name='_toptagHIGHPTupFITcentral', flags=['--toptagSys=0.17']+self.flags + self.jerflag),
-            SystVar(name='_toptagHIGHPTdnFITcentral', flags=['--toptagSys=-0.17']+self.flags + self.jerflag)
+            SystVar(name='_toptagHIGHPTdn', flags=['--toptagSys=-0.17']+self.flags + self.jerflag)
             ]
 
         self.systs = []

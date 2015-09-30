@@ -14,3 +14,6 @@ Then submit as e.g.:
 
 ./runManySections.py --submitCondor commands_CT10_mu
 
+*** histogram files for theta vs postfit ones for unfolding? *** 
+
+In run_iheartny.py (for non-ttbar MC) / run_iheartny_unfold.py (for ttbar MC), there is an option to set postfit=True / False. 
