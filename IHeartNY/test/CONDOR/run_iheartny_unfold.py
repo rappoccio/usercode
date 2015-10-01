@@ -11,7 +11,7 @@ class SystVar :
         self.flags = flags
 
 class Sample :
-    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, btagsys=False, toptagsys=False, qcd=False, pu='ttbar', newiso=True,  postfit=True, flags='' ) :
+    def __init__(self, directory, title, noms=True, jersys=True, jecsys=True, pdfsys=True, btagsys=False, toptagsys=False, qcd=False, pu='ttbar', newiso=True,  postfit='', flags='' ) :
         self.directory=directory
 
         if newiso :
@@ -19,9 +19,10 @@ class Sample :
         else : 
             self.title=title
 
-        if postfit : 
-            #self.title = self.title + '_postfitEMU'
+        if postfit == 'comb': 
             self.title = self.title + '_postfit'
+        elif postfit == 'emu': 
+            self.title = self.title + '_postfitEMU'
         
         if flags != '' : 
             self.flags=flags.split(' ')
@@ -32,10 +33,13 @@ class Sample :
             self.flags.append('--pileup=' + pu )
         if newiso :
             self.flags.append('--use2Dcut')
-        if postfit : 
-            #self.flags.append('--toptagCentral=1')
+
+        if postfit == 'comb': 
             self.flags.append('--toptagCentral=2')
+        elif postfit == 'emu': 
+            self.flags.append('--toptagCentral=1')
         
+
         if jersys is not None :
             self.jerflag = ['--jerSys=0.1']
         else :

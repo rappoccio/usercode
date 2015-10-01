@@ -3445,7 +3445,7 @@ for event in events :
         if options.toptagCentral != None:
             if options.toptagCentral == 1: ## central value, e/mu only fit
                 toptagSF = getToptagSF(topEta, 1, isElec)
-            elif options.toptagSys == 2: ## central value, combined fit
+            elif options.toptagCentral == 2: ## central value, combined fit
                 toptagSF = getToptagSF(topEta, 2, isElec)
             else :
                 print "WARNING! invalid option for toptagCentral value (can be None, 1, 2)"
