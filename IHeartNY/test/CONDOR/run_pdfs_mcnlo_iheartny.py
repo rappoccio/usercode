@@ -49,7 +49,7 @@ samplesMini = [
     Sample(directory='/eos/uscms/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_el',
            title='TT_mcatnlo_iheartNY_V1_el',
            flags='--makeResponse --semilep=1.0 --lepType=ele',
-           pdfsys=False, noms=True, jersys=False, jecsys=False, btagsys=False, toptagsys=False, qcd=True, postfit=options.postfit
+           pdfsys=False, noms=True, jersys=False, jecsys=False, btagsys=False, toptagsys=False, qcd=False, postfit=options.postfit
     ),
     
 ]

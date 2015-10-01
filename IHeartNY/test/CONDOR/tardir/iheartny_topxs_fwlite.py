@@ -348,19 +348,19 @@ def getElectronSF(elEta, elPt, DIR) :
 # -------------------------------------------------------------------------------------
 # Top-tagging SF
 def getToptagSF(jetEta, option, isElec) :
-
+    
     toptagSF = 1.0
     if abs(jetEta) < 1.0 :
-        if "madgraph" in options.outname and "TTJet" in options.outname:
+        if "madgraph" in options.outname and "TTJet" in options.outname and options.toptagCentral!=1 and options.toptagCentral!=2:
             toptagSF = 0.985
-        elif "mcatnlo" in options.outname and "TT_" in options.outname:
+        elif "mcatnlo" in options.outname and "TT_" in options.outname and options.toptagCentral!=1 and options.toptagCentral!=2:
             toptagSF = 1.033
         else:
             toptagSF = 1.173
     else :
-        if "madgraph" in options.outname and "TTJet" in options.outname:
+        if "madgraph" in options.outname and "TTJet" in options.outname and options.toptagCentral!=1 and options.toptagCentral!=2:
             toptagSF = 0.644
-        elif "mcatnlo" in options.outname and "TT_" in options.outname:
+        elif "mcatnlo" in options.outname and "TT_" in options.outname and options.toptagCentral!=1 and options.toptagCentral!=2:
             toptagSF = 0.768
         else:
             toptagSF = 0.704
@@ -3441,6 +3441,8 @@ for event in events :
         # nominal value for top-tagging SF (different for powheg / madgraph / mcatnlo, bkgs use powheg value)
         toptagSF = getToptagSF(topEta, 0, isElec)
 
+        print "toptag SF = " + str(toptagSF)
+        
         # use posterior top-tagging SF?
         if options.toptagCentral != None:
             if options.toptagCentral == 1: ## central value, e/mu only fit
