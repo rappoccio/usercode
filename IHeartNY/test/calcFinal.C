@@ -28,6 +28,11 @@ void calcFinal() {
   particle_MG[2] = (particle_MG[0]+particle_MG[1])/2.;
   parton_MG[2] = (parton_MG[0]+parton_MG[1])/2.;
 
+  float particle_mcnlo[3] = {1.19522, 1.18857, 0.};
+  float parton_mcnlo[3]   = {1.39571, 1.4023, 0.};
+  particle_mcnlo[2] = (particle_mcnlo[0]+particle_mcnlo[1])/2.;
+  parton_mcnlo[2] = (parton_mcnlo[0]+parton_mcnlo[1])/2.;
+
   // beta_signal's from theta fit
   float data[3] = {0.63, 0.80, 0.86};
   float err_data[3] = {0.09, 0.09, 0.06};
@@ -40,13 +45,14 @@ void calcFinal() {
 
   std::cout.precision(4);
 
-  cout << endl << "*** MC cross sections***" << endl << endl;
+  cout << endl << "*** MC cross sections ***" << endl << endl;
   cout << "CT10 nominal & " << parton_nom[2] << " & " << particle_nom[0] << " & " << particle_nom[1] << " & " << particle_nom[2] << " \\\\" << endl;
   cout << "PDF up & " << parton_pdfup[2] << " & " << particle_pdfup[0] << " & " << particle_pdfup[1] << " & " << particle_pdfup[2] << " \\\\" << endl;
   cout << "PDF down & " << parton_pdfdown[2] << " & " << particle_pdfdown[0] << " & " << particle_pdfdown[1] << " & " << particle_pdfdown[2] << " \\\\" << endl;
   cout << "$Q^2$ up & " << parton_scaleup[2] << " & " << particle_scaleup[0] << " & " << particle_scaleup[1] << " & " << particle_scaleup[2] << " \\\\" << endl;
   cout << "$Q^2$ down & " << parton_scaledown[2] << " & " << particle_scaledown[0] << " & " << particle_scaledown[1] << " & " << particle_scaledown[2] << " \\\\" << endl;
   cout << "MadGraph & " << parton_MG[2] << " & " << particle_MG[0] << " & " << particle_MG[1] << " & " << particle_MG[2] << " \\\\" << endl;
+  cout << "MC@NLO & " << parton_mcnlo[2] << " & " << particle_mcnlo[0] << " & " << particle_mcnlo[1] << " & " << particle_mcnlo[2] << " \\\\" << endl;
   cout << endl;
 
   std::cout.precision(3);
@@ -62,17 +68,17 @@ void calcFinal() {
     float stat = err_data[i]*particle_nom[i];
     float pdf = ((particle_pdfup[i]-particle_nom[i])*data[i] + (particle_nom[i]-particle_pdfdown[i])*data[i])/2;
     float q2 = ((particle_scaleup[i]-particle_nom[i])*data[i] + (particle_nom[i]-particle_scaledown[i])*data[i])/2;
+    float ps = fabs(particle_mcnlo[i]-particle_nom[i])*data[i];
+    float theory = sqrt(pdf*pdf+q2*q2+ps*ps);
     float lum = particle_nom[i]*data[i]*lumi;
 
     cout << particle_nom[i]*data[i] << " +/- " << stat << " (stat) "
-      // << "+" << (particle_pdfup[i]-particle_nom[i])*data[i] << "" 
-      // << "/-" << (particle_nom[i]-particle_pdfdown[i])*data[i] << " (PDF) " 
-	 << " +/- " << pdf << " (av. PDF) " 
-      // << "+" << (particle_scaleup[i]-particle_nom[i])*data[i] << "" 
-      // << "/-" << (particle_nom[i]-particle_scaledown[i])*data[i] << " (Q2) " 
-	 << " +/- " << q2 << " (av. Q2) " 
+	 << "+/- " << pdf << " (av. PDF) " 
+	 << "+/- " << q2 << " (av. Q2) " 
+	 << "+/- " << ps << " (av. PS) " 
 	 << "+/- " << lum << " (lumi) "
-	 << " TOTAL uncertainty = " << sqrt(stat*stat + pdf*pdf + q2*q2 + lum*lum) 
+	 << "+/- " << theory << " (total theory) "
+	 << " TOTAL uncertainty = " << sqrt(stat*stat + pdf*pdf + q2*q2 + ps*ps + lum*lum) 
 	 << endl;
 
     if (i==0) cout << "muon, parton level" << endl;
@@ -82,17 +88,17 @@ void calcFinal() {
     stat = err_data[i]*parton_nom[i];
     pdf = ((parton_pdfup[i]-parton_nom[i])*data[i] + (parton_nom[i]-parton_pdfdown[i])*data[i])/2;
     q2 = ((parton_scaleup[i]-parton_nom[i])*data[i] + (parton_nom[i]-parton_scaledown[i])*data[i])/2;
+    ps = fabs(parton_mcnlo[i]-parton_nom[i])*data[i];
+    theory = sqrt(pdf*pdf+q2*q2+ps*ps);
     lum = parton_nom[i]*data[i]*lumi;
 
     cout << parton_nom[i]*data[i] << " +/- " << stat << " (stat) "
-      // << "+" << (parton_pdfup[i]-parton_nom[i])*data[i] << "" 
-      // << "/-" << (parton_nom[i]-parton_pdfdown[i])*data[i] << " (PDF) " 
-	 << " +/- " << pdf << " (av. PDF) " 
-      // << "+" << (parton_scaleup[i]-parton_nom[i])*data[i] << "" 
-      // << "/-" << (parton_nom[i]-parton_scaledown[i])*data[i] << " (Q2) " 
-	 << " +/- " << q2 << " (av. Q2) " 
+	 << "+/- " << pdf << " (av. PDF) " 
+	 << "+/- " << q2 << " (av. Q2) " 
+	 << "+/- " << ps << " (av. PS) " 
 	 << "+/- " << lum << " (lumi) "
-	 << " TOTAL uncertainty = " << sqrt(stat*stat + pdf*pdf + q2*q2 + lum*lum) 
+	 << "+/- " << theory << " (total theory) "
+	 << " TOTAL uncertainty = " << sqrt(stat*stat + pdf*pdf + q2*q2 + ps*ps + lum*lum) 
 	 << endl;
   }
 
