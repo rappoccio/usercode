@@ -24,20 +24,20 @@ using namespace std;
 
 void SetPlotStyle();
 void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize,char *text); 
-void drawCMS(Double_t x,Double_t y, bool pad, bool prel);
+void drawCMS(Double_t x,Double_t y, bool pad, bool prel, bool forPublic);
 
 void plot(TString channel, bool wobtag, bool do2step);
 
 void plotUnfold(TString channel) {
 
-  bool doNormalized = true;   // normalized differential?
+  bool doNormalized = false;   // normalized differential?
   bool doLogscale   = true;   // plot distributions on log scale?
   bool doAverageErr = true;   // average up/down systematic uncertainties? 
 
   plot(channel,true,true, doNormalized,doLogscale,doAverageErr);
-  //plot(channel,true,false, doNormalized,doLogscale,doAverageErr);
-  //plot(channel,false,true, doNormalized,doLogscale,doAverageErr);
-  //plot(channel,false,false, doNormalized,doLogscale,doAverageErr);
+  plot(channel,true,false, doNormalized,doLogscale,doAverageErr);
+  plot(channel,false,true, doNormalized,doLogscale,doAverageErr);
+  plot(channel,false,false, doNormalized,doLogscale,doAverageErr);
 
 }
 
@@ -58,6 +58,9 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   TString muOrEl = "";
   if (channel == "el") muOrEl = "_el";
 
+  bool forpub = false; // plot for public?
+  if (wobtag && do2step && channel == "comb") forpub=true; 
+
 
   // ---------------------------------------------------------------------------------------------------------------
   // get files & histograms
@@ -65,7 +68,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   
   cout << endl << "Getting files and hists..." << endl;
 
-  const int nSYST = 1+10+4; //nominal+expSyst+thSyst
+  const int nSYST = 1+10+4+2+1; //nominal+expSyst+thSyst
   TString name_syst[nSYST] = {"_CT10_nom_nom",
 			      "_CT10_nom_jecup",
 			      "_CT10_nom_jecdn",
@@ -73,14 +76,17 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
 			      "_CT10_nom_jerdn",			      
 			      "_CT10_nom_btagup",
 			      "_CT10_nom_btagdn",
-			      "_CT10_nom_toptagFITup",
-			      "_CT10_nom_toptagFITdn",
+			      "_CT10_nom_toptagup",
+			      "_CT10_nom_toptagdn",
 			      "_CT10_nom_nom_bkgup",
 			      "_CT10_nom_nom_bkgdn",
 			      "_CT10_pdfup_nom",
 			      "_CT10_pdfdown_nom",
 			      "_scaleup_nom",
-			      "_scaledown_nom"
+			      "_scaledown_nom",
+			      "_CT10_nom_toptagHIGHPTup",
+			      "_CT10_nom_toptagHIGHPTdn",
+			      "_PS"
   };
   
   if (channel == "comb") const int nCHANNEL = 2;
@@ -106,7 +112,13 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   TH1F* h_trueMG_tmp[nCHANNEL];
   TH1F* h_partMG_tmp[nCHANNEL];
 
+  TFile* fMCNLO[nCHANNEL];
+  TH1F* h_trueMCNLO_tmp[nCHANNEL];
+  TH1F* h_partMCNLO_tmp[nCHANNEL];
+
   if (channel == "comb") {
+
+    //MadGraph
     fMG[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_MG_nom_nobtag.root");
     fMG[1] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_MG_nom_nobtag.root");
 
@@ -117,6 +129,18 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_trueMG_tmp[1] = (TH1F*) fMG[1]->Get("pt_genTop")->Clone();
     h_trueMG_tmp[1]->SetName("pt_genTop_MG_mu");
     h_trueMG_tmp[1]->SetAxisRange(400,1150,"X");    
+
+    //MC@NLO
+    fMCNLO[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_mcnlo_nom_nobtag.root");
+    fMCNLO[1] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_mcnlo_nom_nobtag.root");
+
+    h_trueMCNLO_tmp[0] = (TH1F*) fMCNLO[0]->Get("pt_genTop")->Clone();
+    h_trueMCNLO_tmp[0]->SetName("pt_genTop_MCNLO_el");
+    h_trueMCNLO_tmp[0]->SetAxisRange(400,1150,"X");
+
+    h_trueMCNLO_tmp[1] = (TH1F*) fMCNLO[1]->Get("pt_genTop")->Clone();
+    h_trueMCNLO_tmp[1]->SetName("pt_genTop_MCNLO_mu");
+    h_trueMCNLO_tmp[1]->SetAxisRange(400,1150,"X");    
         
     if (twoStep == "_2step") {
       h_partMG_tmp[0] = (TH1F*) fMG[0]->Get("pt_partTop")->Clone();
@@ -125,9 +149,17 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       h_partMG_tmp[1] = (TH1F*) fMG[1]->Get("pt_partTop")->Clone();
       h_partMG_tmp[1]->SetName("pt_partTop_MG_mu");
       h_partMG_tmp[1]->SetAxisRange(400,1150,"X");
+
+      h_partMCNLO_tmp[0] = (TH1F*) fMCNLO[0]->Get("pt_partTop")->Clone();
+      h_partMCNLO_tmp[0]->SetName("pt_partTop_MCNLO_el");
+      h_partMCNLO_tmp[0]->SetAxisRange(400,1150,"X");
+      h_partMCNLO_tmp[1] = (TH1F*) fMCNLO[1]->Get("pt_partTop")->Clone();
+      h_partMCNLO_tmp[1]->SetName("pt_partTop_MCNLO_mu");
+      h_partMCNLO_tmp[1]->SetAxisRange(400,1150,"X");
     }
   }
   else if (channel == "el") {
+    //MadGraph
     fMG[0] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_MG_nom_nobtag.root");
     h_trueMG_tmp[0] = (TH1F*) fMG[0]->Get("pt_genTop")->Clone();
     h_trueMG_tmp[0]->SetName("pt_genTop_el");
@@ -137,8 +169,20 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       h_partMG_tmp[0]->SetName("pt_partTop_el");
       h_partMG_tmp[0]->SetAxisRange(400,1150,"X");
     }
+
+    //MC@NLO
+    fMCNLO[0] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_mcnlo_nom_nobtag.root");
+    h_trueMCNLO_tmp[0] = (TH1F*) fMCNLO[0]->Get("pt_genTop")->Clone();
+    h_trueMCNLO_tmp[0]->SetName("pt_genTop_el");
+    h_trueMCNLO_tmp[0]->SetAxisRange(400,1150,"X");
+    if (twoStep == "_2step") {
+      h_partMCNLO_tmp[0] = (TH1F*) fMCNLO[0]->Get("pt_partTop")->Clone();
+      h_partMCNLO_tmp[0]->SetName("pt_partTop_el");
+      h_partMCNLO_tmp[0]->SetAxisRange(400,1150,"X");
+    }
   }
   else if (channel == "mu") {
+    //MadGraph
     fMG[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_MG_nom_nobtag.root");
     h_trueMG_tmp[0] = (TH1F*) fMG[0]->Get("pt_genTop")->Clone();
     h_trueMG_tmp[0]->SetName("pt_genTop_mu");
@@ -148,21 +192,68 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       h_partMG_tmp[0]->SetName("pt_partTop_mu");
       h_partMG_tmp[0]->SetAxisRange(400,1150,"X");
     }
+
+    //MC@NLO
+    fMCNLO[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_mcnlo_nom_nobtag.root");
+    h_trueMCNLO_tmp[0] = (TH1F*) fMCNLO[0]->Get("pt_genTop")->Clone();
+    h_trueMCNLO_tmp[0]->SetName("pt_genTop_mu");
+    h_trueMCNLO_tmp[0]->SetAxisRange(400,1150,"X");
+    if (twoStep == "_2step") {
+      h_partMCNLO_tmp[0] = (TH1F*) fMCNLO[0]->Get("pt_partTop")->Clone();
+      h_partMCNLO_tmp[0]->SetName("pt_partTop_mu");
+      h_partMCNLO_tmp[0]->SetAxisRange(400,1150,"X");
+    }
   }
+
 
   for (int ic=0; ic<nCHANNEL; ic++) {
     for (int is=0; is<nSYST; is++) {
       
-      if (channel == "comb") {
-	if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+twoStep+name_syst[is]+nobtag+".root");
-	else if (ic==1) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold_el"+twoStep+name_syst[is]+nobtag+".root");
-	else return; //shouldn't happen
+      if (name_syst[is]=="_PS") {
+	if (channel == "comb") {
+	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+twoStep+"_mcnlo_nom_nobtag_closure_reverse.root");
+	  else if (ic==1) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_mcnlo_nom_nobtag_closure_reverse.root");
+	  else return; //shouldn't happen
+	}
+	else {
+	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_mcnlo_nom_nobtag_closure_reverse.root");
+	  else return; //shouldn't happen
+	}
+
+	h_unfolded_tmp[ic][is] = (TH1F*) f_syst[ic][is]->Get("UnfoldedMC")->Clone();
+	h_unfolded_tmp[ic][is]->SetName("UnfoldedMC"+name_syst[is]+"_"+channel_name[ic]);
+	h_unfolded_tmp[ic][is]->SetAxisRange(400,1150,"X");
+	
+	if (twoStep == "_2step") {
+	  h_unfolded_part_tmp[ic][is] = (TH1F*) f_syst[ic][is]->Get("UnfoldedMC_rp")->Clone();
+	  h_unfolded_part_tmp[ic][is]->SetName("UnfoldedMC_part"+name_syst[is]+"_"+channel_name[ic]);
+	  h_unfolded_part_tmp[ic][is]->SetAxisRange(400,1150,"X");
+	}
+
       }
       else {
-	if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+name_syst[is]+nobtag+".root");
-	else return; //shouldn't happen
+	if (channel == "comb") {
+	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+twoStep+name_syst[is]+nobtag+".root");
+	  else if (ic==1) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold_el"+twoStep+name_syst[is]+nobtag+".root");
+	  else return; //shouldn't happen
+	}
+	else {
+	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+name_syst[is]+nobtag+".root");
+	  else return; //shouldn't happen
+	}
+
+	h_unfolded_tmp[ic][is] = (TH1F*) f_syst[ic][is]->Get("UnfoldedData")->Clone();
+	h_unfolded_tmp[ic][is]->SetName("UnfoldedData"+name_syst[is]+"_"+channel_name[ic]);
+	h_unfolded_tmp[ic][is]->SetAxisRange(400,1150,"X");
+	
+	if (twoStep == "_2step") {
+	  h_unfolded_part_tmp[ic][is] = (TH1F*) f_syst[ic][is]->Get("UnfoldedData_rp")->Clone();
+	  h_unfolded_part_tmp[ic][is]->SetName("UnfoldedData_part"+name_syst[is]+"_"+channel_name[ic]);
+	  h_unfolded_part_tmp[ic][is]->SetAxisRange(400,1150,"X");
+	}
+
       }
-            
+   
       if (is==0) {
 	h_true_tmp[ic] = (TH1F*) f_syst[ic][is]->Get("pt_genTop")->Clone();
 	h_true_tmp[ic]->SetName("pt_genTop_"+channel_name[ic]);
@@ -174,17 +265,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
 	  h_part_tmp[ic]->SetAxisRange(400,1150,"X");
 	}
       }
-      
-      h_unfolded_tmp[ic][is] = (TH1F*) f_syst[ic][is]->Get("UnfoldedData")->Clone();
-      h_unfolded_tmp[ic][is]->SetName("UnfoldedData"+name_syst[is]+"_"+channel_name[ic]);
-      h_unfolded_tmp[ic][is]->SetAxisRange(400,1150,"X");
-
-      if (twoStep == "_2step") {
-	h_unfolded_part_tmp[ic][is] = (TH1F*) f_syst[ic][is]->Get("UnfoldedData_rp")->Clone();
-	h_unfolded_part_tmp[ic][is]->SetName("UnfoldedData_part"+name_syst[is]+"_"+channel_name[ic]);
-	h_unfolded_part_tmp[ic][is]->SetAxisRange(400,1150,"X");
-      }
-    
+          
     }//end systematic loop
   }//end channel loop
 
@@ -207,7 +288,9 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   TH1F* h_unfolded_part[nSYST];
 
   TH1F* h_trueMG;
+  TH1F* h_trueMCNLO;
   TH1F* h_partMG;
+  TH1F* h_partMCNLO;
 
 
   // ----------------------------------------------------------------------------------------------------------------
@@ -223,9 +306,13 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
 
     h_trueMG = (TH1F*) h_trueMG_tmp[0]->Clone();
     h_trueMG->SetName("pt_genTop_MG");
+    h_trueMCNLO = (TH1F*) h_trueMCNLO_tmp[0]->Clone();
+    h_trueMCNLO->SetName("pt_genTop_MCNLO");
     if (twoStep == "_2step") {
       h_partMG = (TH1F*) h_partMG_tmp[0]->Clone();
       h_partMG->SetName("pt_partTop_MG");
+      h_partMCNLO = (TH1F*) h_partMCNLO_tmp[0]->Clone();
+      h_partMCNLO->SetName("pt_partTop_MCNLO");
     }
 
     for (int is=0; is<nSYST; is++) {
@@ -257,10 +344,16 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_trueMG = (TH1F*) h_trueMG_tmp[0]->Clone();
     h_trueMG->SetName("pt_genTop_MG");
     h_trueMG->Reset();
+    h_trueMCNLO = (TH1F*) h_trueMCNLO_tmp[0]->Clone();
+    h_trueMCNLO->SetName("pt_genTop_MCNLO");
+    h_trueMCNLO->Reset();
     if (twoStep == "_2step") {
       h_partMG = (TH1F*) h_partMG_tmp[0]->Clone();
       h_partMG->SetName("pt_partTop_MG");
       h_partMG->Reset();
+      h_partMCNLO = (TH1F*) h_partMCNLO_tmp[0]->Clone();
+      h_partMCNLO->SetName("pt_partTop_MCNLO");
+      h_partMCNLO->Reset();
     }
 
     for (int is=0; is<nSYST; is++) {
@@ -319,6 +412,23 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       h_trueMG->SetBinContent(ib+1,ncomb);
       h_trueMG->SetBinError(ib+1,sncomb);
 
+      // h_trueMCNLO
+      nel = h_trueMCNLO_tmp[0]->GetBinContent(ib+1);
+      nmu = h_trueMCNLO_tmp[1]->GetBinContent(ib+1);
+      snel = h_trueMCNLO_tmp[0]->GetBinError(ib+1);
+      snmu = h_trueMCNLO_tmp[1]->GetBinError(ib+1);
+      if (snel==0 || snmu==0) {
+	ncomb = 0;
+	sncomb = 0;
+      }
+      else {
+	ncomb = (nel/(snel*snel) + nmu/(snmu*snmu)) / (1.0/(snel*snel) + 1.0/(snmu*snmu));
+	sncomb = 1.0 / (1.0/(snel*snel) + 1.0/(snmu*snmu));
+	sncomb = sqrt(sncomb);
+      }
+      h_trueMCNLO->SetBinContent(ib+1,ncomb);
+      h_trueMCNLO->SetBinError(ib+1,sncomb);
+
       // h_part
       if (twoStep == "_2step") {
 	nel = h_part_tmp[0]->GetBinContent(ib+1);
@@ -353,6 +463,23 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
 	}
 	h_partMG->SetBinContent(ib+1,ncomb);
 	h_partMG->SetBinError(ib+1,sncomb);
+
+	// MC@NLO
+	nel = h_partMCNLO_tmp[0]->GetBinContent(ib+1);
+	nmu = h_partMCNLO_tmp[1]->GetBinContent(ib+1);
+	snel = h_partMCNLO_tmp[0]->GetBinError(ib+1);
+	snmu = h_partMCNLO_tmp[1]->GetBinError(ib+1);
+	if (snel==0 || snmu==0) {
+	  ncomb = 0;
+	  sncomb = 0;
+	}
+	else {
+	  ncomb = (nel/(snel*snel) + nmu/(snmu*snmu)) / (1.0/(snel*snel) + 1.0/(snmu*snmu));
+	  sncomb = 1.0 / (1.0/(snel*snel) + 1.0/(snmu*snmu));
+	  sncomb = sqrt(sncomb);
+	}
+	h_partMCNLO->SetBinContent(ib+1,ncomb);
+	h_partMCNLO->SetBinError(ib+1,sncomb);
       }
 
 
@@ -435,6 +562,9 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   h_trueMG->SetLineColor(4);
   h_trueMG->SetLineWidth(2);
   h_trueMG->SetLineStyle(7);
+  h_trueMCNLO->SetLineColor(kOrange+1);
+  h_trueMCNLO->SetLineWidth(2);
+  h_trueMCNLO->SetLineStyle(9);
 
   h_unfolded[0]->SetLineColor(1);
   h_unfolded[0]->SetLineWidth(2);
@@ -448,6 +578,9 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_partMG->SetLineColor(4);
     h_partMG->SetLineWidth(2);
     h_partMG->SetLineStyle(7);
+    h_partMCNLO->SetLineColor(kOrange+1);
+    h_partMCNLO->SetLineWidth(2);
+    h_partMCNLO->SetLineStyle(9);
     
     h_unfolded_part[0]->SetLineColor(1);
     h_unfolded_part[0]->SetLineWidth(2);
@@ -487,12 +620,14 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   TH1F* h_syst_jer    = (TH1F*) h_true->Clone("syst_jer");
   TH1F* h_syst_btag   = (TH1F*) h_true->Clone("syst_btag");
   TH1F* h_syst_toptag = (TH1F*) h_true->Clone("syst_toptag");
+  TH1F* h_syst_toptagHIGHPT = (TH1F*) h_true->Clone("syst_toptagHIGHPT");
   TH1F* h_syst_bkg    = (TH1F*) h_true->Clone("syst_bkg");
   // statistics
   TH1F* h_syst_stat   = (TH1F*) h_true->Clone("syst_stat");
   // theory
   TH1F* h_syst_pdf    = (TH1F*) h_true->Clone("syst_pdf");
   TH1F* h_syst_Q2     = (TH1F*) h_true->Clone("syst_Q2");
+  TH1F* h_syst_PS     = (TH1F*) h_true->Clone("syst_PS");
 
   TH1F* h_syst_tot = (TH1F*) h_true->Clone("syst_tot");
   
@@ -500,15 +635,20 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   h_syst_jer->Reset(); 
   h_syst_btag->Reset();   
   h_syst_toptag->Reset(); 
+  h_syst_toptagHIGHPT->Reset(); 
   h_syst_bkg->Reset(); 
   h_syst_stat->Reset(); 
   h_syst_tot->Reset(); 
   h_syst_pdf->Reset();
   h_syst_Q2->Reset(); 
+  h_syst_PS->Reset(); 
   
   
   float count[nSYST] = {0};
   float sig[nSYST] = {0};
+
+  float xsec_meas = 0;
+  float xsec_true = 0;
 
 
   // ----------------------------------------------------------------------------------------------------------------
@@ -523,6 +663,8 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       count[is] = h_unfolded[is]->GetBinContent(i+1);
       sig[is]   = h_unfolded[is]->GetBinError(i+1);
     }
+    float truth = h_true->GetBinContent(i+1);
+    float this_syst_PS = fabs(count[17]-truth)/truth*count[0];
     
     // experimental
     float this_systEXP_up = 0;
@@ -531,6 +673,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     this_systEXP_up += (count[5]-count[0])*(count[5]-count[0]); //btag
     this_systEXP_up += (count[7]-count[0])*(count[7]-count[0]); //toptag
     this_systEXP_up += (count[9]-count[0])*(count[9]-count[0]); //background normalizations
+    this_systEXP_up += (count[15]-count[0])*(count[15]-count[0]); //toptag highpt
     this_systEXP_up = sqrt(this_systEXP_up);
     
     float this_systEXP_dn = 0;
@@ -539,17 +682,20 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     this_systEXP_dn += (count[6]-count[0])*(count[6]-count[0]);
     this_systEXP_dn += (count[8]-count[0])*(count[8]-count[0]);
     this_systEXP_dn += (count[10]-count[0])*(count[10]-count[0]);
+    this_systEXP_dn += (count[16]-count[0])*(count[16]-count[0]);
     this_systEXP_dn = sqrt(this_systEXP_dn);
     
     // theory
     float this_systTH_up = 0;
     this_systTH_up += (count[11]-count[0])*(count[11]-count[0]); //pdf
     if (doQ2) this_systTH_up += (count[13]-count[0])*(count[13]-count[0]); //q2
+    this_systTH_up += this_syst_PS*this_syst_PS; //PS
     this_systTH_up = sqrt(this_systTH_up);
     
     float this_systTH_dn = 0;
     this_systTH_dn += (count[12]-count[0])*(count[12]-count[0]);
     if (doQ2) this_systTH_dn += (count[14]-count[0])*(count[14]-count[0]);
+    this_systTH_dn += this_syst_PS*this_syst_PS; //PS
     this_systTH_dn = sqrt(this_systTH_dn);
 
     // theory + experimental + statistical
@@ -589,8 +735,10 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     double syst_jerdn   = fabs((count[4]-count[0])/count[0])*100;
     double syst_btagup   = fabs((count[5]-count[0])/count[0])*100;
     double syst_btagdn   = fabs((count[6]-count[0])/count[0])*100;
-    double syst_toptagup   = fabs((count[7]-count[0])/count[0])*100;
-    double syst_toptagdn   = fabs((count[8]-count[0])/count[0])*100;
+    double syst_toptagup = fabs((count[7]-count[0])/count[0])*100;
+    double syst_toptagdn = fabs((count[8]-count[0])/count[0])*100;
+    double syst_toptagHIGHPTup = fabs((count[15]-count[0])/count[0])*100;
+    double syst_toptagHIGHPTdn = fabs((count[16]-count[0])/count[0])*100;
     double syst_bkgup   = fabs((count[9]-count[0])/count[0])*100;
     double syst_bkgdn   = fabs((count[10]-count[0])/count[0])*100;
     // statistics    
@@ -600,11 +748,15 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     double syst_pdfdn   = fabs((count[12]-count[0])/count[0])*100;
     double syst_scaleup = fabs((count[13]-count[0])/count[0])*100;
     double syst_scaledn = fabs((count[14]-count[0])/count[0])*100;
+    // parton shower
+    double syst_PS = this_syst_PS/count[0]*100;
 
     double max_syst_jec = 0;
     double max_syst_jer = 0;
     double max_syst_btag = 0;
     double max_syst_toptag = 0;
+    double max_syst_toptagNOM = 0;
+    double max_syst_toptagHIGHPT = 0;
     double max_syst_bkg = 0;
     double max_syst_pdf = 0;
     double max_syst_Q2  = 0;
@@ -613,7 +765,8 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       max_syst_jec = (syst_jecup+syst_jecdn)/2;
       max_syst_jer = (syst_jerup+syst_jerdn)/2;
       max_syst_btag = (syst_btagup+syst_btagdn)/2;
-      max_syst_toptag = (syst_toptagup+syst_toptagdn)/2;
+      max_syst_toptagNOM = (syst_toptagup+syst_toptagdn)/2;
+      max_syst_toptagHIGHPT = (syst_toptagHIGHPTup+syst_toptagHIGHPTdn)/2;
       max_syst_bkg = (syst_bkgup+syst_bkgdn)/2;
       max_syst_pdf = (syst_pdfup+syst_pdfdn)/2;
       max_syst_Q2  = (syst_scaleup+syst_scaledn)/2;
@@ -623,10 +776,13 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       max_syst_jer = max(syst_jerup,syst_jerdn);
       max_syst_btag = max(syst_btagup,syst_btagdn);
       max_syst_toptag = max(syst_toptagup,syst_toptagdn);
+      max_syst_toptagHIGHPT = max(syst_toptagHIGHPTup,syst_toptagHIGHPTdn);
       max_syst_bkg = max(syst_bkgup,syst_bkgdn);
       max_syst_pdf = max(syst_pdfup,syst_pdfdn);
       max_syst_Q2  = max(syst_scaleup,syst_scaledn);
     }
+
+    max_syst_toptag = sqrt(max_syst_toptagNOM*max_syst_toptagNOM + max_syst_toptagHIGHPT*max_syst_toptagHIGHPT);
 
     if (!doQ2) {
       syst_scaleup = 0;
@@ -634,12 +790,14 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       max_syst_Q2 = 0;
     }
 
-    double syst_totalEXP_up = sqrt(syst_jecup*syst_jecup + syst_jerup*syst_jerup + syst_btagup*syst_btagup + syst_toptagup*syst_toptagup + syst_bkgup*syst_bkgup);
-    double syst_totalEXP_dn = sqrt(syst_jecdn*syst_jecdn + syst_jerdn*syst_jerdn + syst_btagdn*syst_btagdn + syst_toptagdn*syst_toptagdn + syst_bkgdn*syst_bkgdn);
-    double syst_totalTH_up = sqrt(syst_scaleup*syst_scaleup + syst_pdfup*syst_pdfup);
-    double syst_totalTH_dn = sqrt(syst_scaledn*syst_scaledn + syst_pdfdn*syst_pdfdn);
+    double syst_totalEXP_up = sqrt(syst_jecup*syst_jecup + syst_jerup*syst_jerup + syst_btagup*syst_btagup + 
+				   syst_toptagup*syst_toptagup + syst_toptagHIGHPTup*syst_toptagHIGHPTup + syst_bkgup*syst_bkgup);
+    double syst_totalEXP_dn = sqrt(syst_jecdn*syst_jecdn + syst_jerdn*syst_jerdn + syst_btagdn*syst_btagdn + 
+				   syst_toptagdn*syst_toptagdn + syst_toptagHIGHPTdn*syst_toptagHIGHPTdn + syst_bkgdn*syst_bkgdn);
+    double syst_totalTH_up = sqrt(syst_scaleup*syst_scaleup + syst_pdfup*syst_pdfup + syst_PS*syst_PS);
+    double syst_totalTH_dn = sqrt(syst_scaledn*syst_scaledn + syst_pdfdn*syst_pdfdn + syst_PS*syst_PS);
     double syst_total_up = sqrt(syst_totalEXP_up*syst_totalEXP_up + syst_totalTH_up*syst_totalTH_up);
-    double syst_total_dn = sqrt(syst_totalEXP_dn*syst_totalEXP_dn + syst_totalTH_up*syst_totalTH_dn);
+    double syst_total_dn = sqrt(syst_totalEXP_dn*syst_totalEXP_dn + syst_totalTH_dn*syst_totalTH_dn);
 
     double syst_totaltotal_up = sqrt(syst_total_up*syst_total_up + syst_stat*syst_stat);
     double syst_totaltotal_dn = sqrt(syst_total_dn*syst_total_dn + syst_stat*syst_stat);
@@ -670,6 +828,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_syst_stat->SetBinContent(i+1,syst_stat);  
     h_syst_pdf->SetBinContent(i+1,max_syst_pdf);
     h_syst_Q2->SetBinContent(i+1,max_syst_Q2);  
+    h_syst_PS->SetBinContent(i+1,syst_PS);  
     h_syst_tot->SetBinContent(i+1,max_syst_total);  
     
     h_syst_jec->SetBinError(i+1,0.001);
@@ -680,6 +839,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_syst_stat->SetBinError(i+1,0.001);
     h_syst_pdf->SetBinError(i+1,0.001);
     h_syst_Q2->SetBinError(i+1,0.001);  
+    h_syst_PS->SetBinError(i+1,0.001);  
     h_syst_tot->SetBinError(i+1,0.001);
 
 
@@ -696,11 +856,19 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       cout << (float)lowedge << "--" << (float)highedge << " & " << count[0] << " & " << syst_stat << " & " 
 	   << max_syst_totalEXP << " & " << max_syst_totalTH << " & " << max_syst_totaltotal << " & " 
 	   << h_true->GetBinContent(i+1) << " & " 
-	   << h_trueMG->GetBinContent(i+1) << endl;
+	   << h_trueMG->GetBinContent(i+1) << " & " 
+	   << h_trueMCNLO->GetBinContent(i+1) << endl;
+    }
+
+    if (lowedge > 300.) {
+      xsec_meas += count[0]*h_true->GetBinWidth(i+1);
+      xsec_true += h_true->GetBinContent(i+1)*h_true->GetBinWidth(i+1);
     }
 
   }
    
+  cout << "TOTAL cross section (parton level), measured = " << xsec_meas << " true = " << xsec_true << endl;
+
 
   // ----------------------------------------------------------------------------------------------------------------
   // RATIO PLOTS !!!!!!!
@@ -750,12 +918,22 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     
   p1->cd();
 
-  if (doLogscale) {
+  if (doLogscale && doNormalized) {
     h_dummy->SetAxisRange(0.000015,0.015,"Y");
     h_true->SetAxisRange(0.000015,0.015,"Y");
     h_trueMG->SetAxisRange(0.000015,0.015,"Y");
+    h_trueMCNLO->SetAxisRange(0.000015,0.015,"Y");
     h_unfolded[0]->SetAxisRange(0.000015,0.015,"Y");
     h_fullunc->SetAxisRange(0.000015,0.015,"Y");
+    gPad->SetLogy();
+  }
+  else if (doLogscale) {
+    h_dummy->SetAxisRange(0.015,30,"Y");
+    h_true->SetAxisRange(0.015,30,"Y");
+    h_trueMG->SetAxisRange(0.015,30,"Y");
+    h_trueMCNLO->SetAxisRange(0.015,30,"Y");
+    h_unfolded[0]->SetAxisRange(0.015,30,"Y");
+    h_fullunc->SetAxisRange(0.015,30,"Y");
     gPad->SetLogy();
   }
 
@@ -769,6 +947,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   h_dummy->Draw("hist");
   h_true->Draw("hist,same");
   h_trueMG->Draw("hist,same");  
+  h_trueMCNLO->Draw("hist,same");  
   TExec *setex1 = new TExec("setex1","gStyle->SetErrorX(0)");
   setex1->Draw();
   h_fullunc->Draw("hist,ep,same");
@@ -799,6 +978,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
 
   TH1F* h_ratioGEN = (TH1F*) h_true->Clone(baselab+"_ratioGEN");
   TH1F* h_ratioMG = (TH1F*) h_trueMG->Clone(baselab+"_ratioMG");
+  TH1F* h_ratioMCNLO = (TH1F*) h_trueMCNLO->Clone(baselab+"_ratioMCNLO");
 
   h_ratio->Divide(h_unfolded[0]);
   h_ratioSTAT_up->Divide(h_unfolded[0]);
@@ -811,6 +991,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   h_ratioTOT_dn->Divide(h_unfolded[0]);
   h_ratioGEN->Divide(h_unfolded[0]);
   h_ratioMG->Divide(h_unfolded[0]);
+  h_ratioMCNLO->Divide(h_unfolded[0]);
 
   
   // ----------------------------------------------------------------------------------------------------------------
@@ -884,6 +1065,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   leg->AddEntry(h_unfolded[0],"Data","pe1");
   leg->AddEntry(h_true,"Powheg+Pythia6 t#bar{t}","l");
   leg->AddEntry(h_trueMG,"MadGraph+Pythia6 t#bar{t}","l");
+  leg->AddEntry(h_trueMCNLO,"MC@NLO+Herwig6 t#bar{t}","l");
   //leg->AddEntry(blaEXP,"Experimental uncertainty","f");
   //leg->AddEntry(blaTH,"Theory uncertainty","f");
   //leg->AddEntry(blaTOT,"Stat. #oplus exp. #oplus theory","f");
@@ -895,7 +1077,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   leg->SetTextFont(42);
   leg->Draw();
 
-  drawCMS(0.53,0.8,true,true);
+  drawCMS(0.53,0.8,true,true,forpub);
 
 
   // ----------------------------------------------------------------------------------------------------------------
@@ -916,17 +1098,27 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   h_ratio->GetYaxis()->SetTitleOffset(0.38);
   h_ratio->GetXaxis()->SetTitleOffset(1.0);
   
-  h_ratio->SetAxisRange(0.6,1.4,"Y");
+  if (doNormalized) {
+    h_ratio->SetAxisRange(0.6,1.4,"Y");
+    h_ratioGEN->SetAxisRange(0.6,1.4,"Y");
+    h_ratioMG->SetAxisRange(0.6,1.4,"Y");
+    h_ratioMCNLO->SetAxisRange(0.6,1.4,"Y");
+  }
+  else {
+    h_ratio->SetAxisRange(0.3,1.7,"Y");
+    h_ratioGEN->SetAxisRange(0.3,1.7,"Y");
+    h_ratioMG->SetAxisRange(0.3,1.7,"Y");
+    h_ratioMCNLO->SetAxisRange(0.3,1.7,"Y");
+  }
   h_ratio->Draw("hist");
   blaTOT->Draw("same,e2");
   //blaEXP->Draw("same,e2");
   //blaTH->Draw("same,e2");
   //blaSTAT->Draw("same,ep");
   blaSTAT->Draw("same,e2");
-  h_ratioGEN->SetAxisRange(0.6,1.4,"Y");
   h_ratioGEN->Draw("same,hist");
-  h_ratioMG->SetAxisRange(0.6,1.4,"Y");
   h_ratioMG->Draw("same,hist");
+  h_ratioMCNLO->Draw("same,hist");
   //blaSTAT->Draw("same,ep");
   h_ratio->Draw("same,hist");
   h_ratio->Draw("same,axis");
@@ -947,13 +1139,13 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   h_dummy_r->GetXaxis()->SetTitle("Top quark p_{T} (GeV)");
   h_dummy_r->GetYaxis()->SetTitle("Uncertainty [%]");
   h_dummy_r->SetAxisRange(400,1150,"X");
-  if (doQ2 && channel == "comb") h_dummy_r->SetAxisRange(0,40,"Y");
+  if (doQ2 && channel == "comb" && doNormalized) h_dummy_r->SetAxisRange(0,40,"Y");
   else if (doQ2) h_dummy_r->SetAxisRange(0,70,"Y");
   else h_dummy_r->SetAxisRange(0,25,"Y");
   
-  h_dummy_r->GetYaxis()->SetTitleSize(0.075);    
+  h_dummy_r->GetYaxis()->SetTitleSize(0.055);    
   h_dummy_r->GetYaxis()->SetTitleOffset(1.1);
-  h_dummy_r->GetYaxis()->SetLabelSize(0.055);
+  h_dummy_r->GetYaxis()->SetLabelSize(0.045);
   
   h_dummy_r->GetXaxis()->SetTitleSize(0.05);
   h_dummy_r->GetXaxis()->SetTitleOffset(1.2);
@@ -1007,6 +1199,12 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   h_syst_Q2->SetMarkerColor(kAzure+10);
   h_syst_Q2->SetMarkerStyle(24);
   
+  h_syst_PS->SetLineColor(12);
+  h_syst_PS->SetLineStyle(7);
+  h_syst_PS->SetLineWidth(2);
+  h_syst_PS->SetMarkerColor(12);
+  h_syst_PS->SetMarkerStyle(32);
+  
   TLegend* leg2 = new TLegend(0.6,0.54,0.85,0.88);  
   leg2->AddEntry(h_syst_tot,"Total syst. uncertainty","f");
   leg2->AddEntry(h_syst_stat,"Statistical uncertainty","lp");
@@ -1017,6 +1215,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   leg2->AddEntry(h_syst_bkg,"Background normalization","lp");
   leg2->AddEntry(h_syst_pdf,"PDF uncertainty","lp");
   if (doQ2) leg2->AddEntry(h_syst_Q2,"Q^{2} scale","lp");
+  leg2->AddEntry(h_syst_PS,"Generator+PS","lp");
   leg2->SetFillStyle(0);
   leg2->SetBorderSize(0);
   leg2->SetTextSize(0.032);
@@ -1033,10 +1232,11 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
   h_syst_bkg->Draw("ep,same");
   if (doQ2) h_syst_Q2->Draw("ep,same");
   h_syst_pdf->Draw("ep,same");
+  h_syst_PS->Draw("ep,same");
   h_dummy_r->Draw("hist,axis,same");
   leg2->Draw(); 
 
-  drawCMS(0.2,0.84,false,true);
+  drawCMS(0.2,0.84,false,true,forpub);
 
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+channel+twoStep+nobtag+".png");
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+channel+twoStep+nobtag+".pdf");
@@ -1081,6 +1281,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     TH1F* h_syst_stat_part   = (TH1F*) h_true->Clone("syst_stat_part");
     TH1F* h_syst_pdf_part    = (TH1F*) h_true->Clone("syst_pdf_part");
     TH1F* h_syst_Q2_part     = (TH1F*) h_true->Clone("syst_Q2_part");
+    TH1F* h_syst_PS_part     = (TH1F*) h_true->Clone("syst_Q2_part");
     TH1F* h_syst_tot_part    = (TH1F*) h_true->Clone("syst_tot_part");
     
     h_syst_jec_part->Reset();   
@@ -1091,11 +1292,15 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_syst_stat_part->Reset(); 
     h_syst_pdf_part->Reset();
     h_syst_Q2_part->Reset(); 
+    h_syst_PS_part->Reset(); 
     h_syst_tot_part->Reset(); 
     
     
     float count_part[nSYST] = {0};
     float sig_part[nSYST] = {0};
+
+    float xsec_meas = 0;
+    float xsec_true = 0;
 
     // ----------------------------------------------------------------------------------------------------------------
     // loop over bins
@@ -1109,6 +1314,8 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
 	count_part[is] = h_unfolded_part[is]->GetBinContent(i+1);
 	sig_part[is]   = h_unfolded_part[is]->GetBinError(i+1);
       }
+      float truth = h_part->GetBinContent(i+1);
+      float this_syst_PS = fabs(count_part[17]-truth)/truth*count_part[0];
       
       // experimental
       float this_systEXP_up_part = 0;
@@ -1117,6 +1324,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       this_systEXP_up_part += (count_part[5]-count_part[0])*(count_part[5]-count_part[0]); //btag
       this_systEXP_up_part += (count_part[7]-count_part[0])*(count_part[7]-count_part[0]); //toptag
       this_systEXP_up_part += (count_part[9]-count_part[0])*(count_part[9]-count_part[0]); //background normalization
+      this_systEXP_up_part += (count_part[15]-count_part[0])*(count_part[15]-count_part[0]); //toptag highpt
       this_systEXP_up_part = sqrt(this_systEXP_up_part);
       
       float this_systEXP_dn_part = 0;
@@ -1125,17 +1333,20 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       this_systEXP_dn_part += (count_part[6]-count_part[0])*(count_part[6]-count_part[0]);
       this_systEXP_dn_part += (count_part[8]-count_part[0])*(count_part[8]-count_part[0]);
       this_systEXP_dn_part += (count_part[10]-count_part[0])*(count_part[10]-count_part[0]);
+      this_systEXP_dn_part += (count_part[16]-count_part[0])*(count_part[16]-count_part[0]);
       this_systEXP_dn_part = sqrt(this_systEXP_dn_part);
       
       // theory
       float this_systTH_up_part = 0;
       this_systTH_up_part += (count_part[11]-count_part[0])*(count_part[11]-count_part[0]);
       if (doQ2) this_systTH_up_part += (count_part[13]-count_part[0])*(count_part[13]-count_part[0]);
+      this_systTH_up_part += this_syst_PS*this_syst_PS;
       this_systTH_up_part = sqrt(this_systTH_up_part);
       
       float this_systTH_dn_part = 0;
       this_systTH_dn_part += (count_part[12]-count_part[0])*(count_part[12]-count_part[0]);
       if (doQ2) this_systTH_dn_part += (count_part[14]-count_part[0])*(count_part[14]-count_part[0]);
+      this_systTH_dn_part += this_syst_PS*this_syst_PS;
       this_systTH_dn_part = sqrt(this_systTH_dn_part);
       
       // theory + experimental + statistical
@@ -1173,8 +1384,10 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       double syst_jerdn_part   = fabs((count_part[4]-count_part[0])/count_part[0])*100;
       double syst_btagup_part   = fabs((count_part[5]-count_part[0])/count_part[0])*100;
       double syst_btagdn_part   = fabs((count_part[6]-count_part[0])/count_part[0])*100;
-      double syst_toptagup_part   = fabs((count_part[7]-count_part[0])/count_part[0])*100;
-      double syst_toptagdn_part   = fabs((count_part[8]-count_part[0])/count_part[0])*100;
+      double syst_toptagup_part = fabs((count_part[7]-count_part[0])/count_part[0])*100;
+      double syst_toptagdn_part = fabs((count_part[8]-count_part[0])/count_part[0])*100;
+      double syst_toptagHIGHPTup_part = fabs((count_part[15]-count_part[0])/count_part[0])*100;
+      double syst_toptagHIGHPTdn_part = fabs((count_part[16]-count_part[0])/count_part[0])*100;
       double syst_bkgup_part   = fabs((count_part[9]-count_part[0])/count_part[0])*100;
       double syst_bkgdn_part   = fabs((count_part[10]-count_part[0])/count_part[0])*100;
       // statistics
@@ -1184,11 +1397,15 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       double syst_pdfdn_part   = fabs((count_part[12]-count_part[0])/count_part[0])*100;
       double syst_scaleup_part = fabs((count_part[13]-count_part[0])/count_part[0])*100;
       double syst_scaledn_part = fabs((count_part[14]-count_part[0])/count_part[0])*100;
+      // parton shower
+      double syst_PS_part = this_syst_PS/count_part[0]*100;
 
       double max_syst_jec_part = 0;
       double max_syst_jer_part = 0;
       double max_syst_btag_part = 0;
       double max_syst_toptag_part = 0;
+      double max_syst_toptagNOM_part = 0;
+      double max_syst_toptagHIGHPT_part = 0;
       double max_syst_bkg_part = 0;
       double max_syst_pdf_part = 0;
       double max_syst_Q2_part  = 0;
@@ -1197,7 +1414,8 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
 	max_syst_jec_part = (syst_jecup_part+syst_jecdn_part)/2;
 	max_syst_jer_part = (syst_jerup_part+syst_jerdn_part)/2;
 	max_syst_btag_part = (syst_btagup_part+syst_btagdn_part)/2;
-	max_syst_toptag_part = (syst_toptagup_part+syst_toptagdn_part)/2;
+	max_syst_toptagNOM_part = (syst_toptagup_part+syst_toptagdn_part)/2;
+	max_syst_toptagHIGHPT_part = (syst_toptagHIGHPTup_part+syst_toptagHIGHPTdn_part)/2;
 	max_syst_bkg_part = (syst_bkgup_part+syst_bkgdn_part)/2;
 	max_syst_pdf_part = (syst_pdfup_part+syst_pdfdn_part)/2;
 	max_syst_Q2_part  = (syst_scaleup_part+syst_scaledn_part)/2;
@@ -1206,12 +1424,14 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
 	max_syst_jec_part = max(syst_jecup_part,syst_jecdn_part);
 	max_syst_jer_part = max(syst_jerup_part,syst_jerdn_part);
 	max_syst_btag_part = max(syst_btagup_part,syst_btagdn_part);
-	max_syst_toptag_part = max(syst_toptagup_part,syst_toptagdn_part);
+	max_syst_toptagNOM_part = max(syst_toptagup_part,syst_toptagdn_part);
+	max_syst_toptagHIGHPT_part = max(syst_toptagHIGHPTup_part,syst_toptagHIGHPTdn_part);
 	max_syst_bkg_part = max(syst_bkgup_part,syst_bkgdn_part);
 	max_syst_pdf_part = max(syst_pdfup_part,syst_pdfdn_part);
 	max_syst_Q2_part  = max(syst_scaleup_part,syst_scaledn_part);
       }
 
+      max_syst_toptag_part = sqrt(max_syst_toptagNOM_part*max_syst_toptagNOM_part + max_syst_toptagHIGHPT_part*max_syst_toptagHIGHPT_part);
 
       if (!doQ2) {
 	syst_scaleup_part = 0;
@@ -1220,11 +1440,13 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       }
 
       double syst_totalEXP_up_part = sqrt(syst_jecup_part*syst_jecup_part + syst_jerup_part*syst_jerup_part + 
-					  syst_btagup_part*syst_btagup_part + syst_toptagup_part*syst_toptagup_part + syst_bkgup_part*syst_bkgup_part);
+					  syst_btagup_part*syst_btagup_part + syst_toptagup_part*syst_toptagup_part + 
+					  syst_toptagHIGHPTup_part*syst_toptagHIGHPTup_part + syst_bkgup_part*syst_bkgup_part);
       double syst_totalEXP_dn_part = sqrt(syst_jecdn_part*syst_jecdn_part + syst_jerdn_part*syst_jerdn_part + 
-					  syst_btagdn_part*syst_btagdn_part + syst_toptagdn_part*syst_toptagdn_part + syst_bkgdn_part*syst_bkgdn_part);
-      double syst_totalTH_up_part = sqrt(syst_scaleup_part*syst_scaleup_part + syst_pdfup_part*syst_pdfup_part);
-      double syst_totalTH_dn_part = sqrt(syst_scaledn_part*syst_scaledn_part + syst_pdfdn_part*syst_pdfdn_part );
+					  syst_btagdn_part*syst_btagdn_part + syst_toptagdn_part*syst_toptagdn_part + 
+					  syst_toptagHIGHPTdn_part*syst_toptagHIGHPTdn_part + syst_bkgdn_part*syst_bkgdn_part);
+      double syst_totalTH_up_part = sqrt(syst_scaleup_part*syst_scaleup_part + syst_pdfup_part*syst_pdfup_part + syst_PS_part*syst_PS_part);
+      double syst_totalTH_dn_part = sqrt(syst_scaledn_part*syst_scaledn_part + syst_pdfdn_part*syst_pdfdn_part + syst_PS_part*syst_PS_part);
 
       double syst_total_up_part = sqrt(syst_totalEXP_up_part*syst_totalEXP_up_part + syst_totalTH_up_part*syst_totalTH_up_part);
       double syst_total_dn_part = sqrt(syst_totalEXP_dn_part*syst_totalEXP_dn_part + syst_totalTH_dn_part*syst_totalTH_dn_part);
@@ -1258,6 +1480,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       h_syst_stat_part->SetBinContent(i+1,syst_stat_part);  
       h_syst_pdf_part->SetBinContent(i+1,max_syst_pdf_part);
       h_syst_Q2_part->SetBinContent(i+1,max_syst_Q2_part);  
+      h_syst_PS_part->SetBinContent(i+1,syst_PS_part);  
       h_syst_tot_part->SetBinContent(i+1,max_syst_total_part);
       
       h_syst_jec_part->SetBinError(i+1,0.001);
@@ -1269,6 +1492,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       h_syst_tot_part->SetBinError(i+1,0.001);
       h_syst_pdf_part->SetBinError(i+1,0.001);
       h_syst_Q2_part->SetBinError(i+1,0.001);  
+      h_syst_PS_part->SetBinError(i+1,0.001);  
      
       
       // ----------------------------------------------------------------------------------------------------------------
@@ -1284,11 +1508,19 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
 	cout << (float)lowedge << "--" << (float)highedge << " & " << count_part[0] << " & " << syst_stat_part << " & " 
 	     << max_syst_totalEXP_part << " & " << max_syst_totalTH_part << " & " << max_syst_totaltotal_part << " & " 
 	     << h_part->GetBinContent(i+1) << " & " 
-	     << h_partMG->GetBinContent(i+1) << endl;
+	     << h_partMG->GetBinContent(i+1) << " & " 
+	     << h_partMCNLO->GetBinContent(i+1) << endl;
       }
- 
+
+      if (lowedge > 300.) {
+	xsec_meas += count_part[0]*h_part->GetBinWidth(i+1);
+	xsec_true += h_part->GetBinContent(i+1)*h_part->GetBinWidth(i+1);
+      }
+
     }
     
+    cout << "TOTAL cross section (particle level), measured = " << xsec_meas << " true = " << xsec_true << endl;
+
     
     // ----------------------------------------------------------------------------------------------------------------
     // RATIO PLOTS !!!!!!!
@@ -1342,18 +1574,29 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     
     p3->cd();
     
-    if (doLogscale) {
+    if (doLogscale && doNormalized) {
       h_dummy_part->SetAxisRange(0.00003,0.015,"Y");
       h_part->SetAxisRange(0.00003,0.015,"Y");
       h_partMG->SetAxisRange(0.00003,0.015,"Y");
+      h_partMCNLO->SetAxisRange(0.00003,0.015,"Y");
       h_unfolded_part[0]->SetAxisRange(0.00003,0.015,"Y");
       h_fullunc_part->SetAxisRange(0.000015,0.015,"Y");
+      gPad->SetLogy();
+    }
+    else if (doLogscale) {
+      h_dummy_part->SetAxisRange(0.03,30,"Y");
+      h_part->SetAxisRange(0.03,30,"Y");
+      h_partMG->SetAxisRange(0.03,30,"Y");
+      h_partMCNLO->SetAxisRange(0.03,30,"Y");
+      h_unfolded_part[0]->SetAxisRange(0.03,30,"Y");
+      h_fullunc_part->SetAxisRange(0.03,30,"Y");
       gPad->SetLogy();
     }
 
     h_dummy_part->Draw("hist");
     h_part->Draw("hist,same");
     h_partMG->Draw("hist,same");
+    h_partMCNLO->Draw("hist,same");
     TExec *setex1p = new TExec("setex1p","gStyle->SetErrorX(0)");
     setex1p->Draw();
     h_fullunc_part->Draw("hist,ep,same");
@@ -1384,7 +1627,8 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     TH1F* h_ratioTH_dn_part = (TH1F*) h_systTH_dn_part->Clone(baselab+"_ratioTH_dn_part");
     
     TH1F* h_ratioGEN_part = (TH1F*) h_part->Clone(baselab+"_ratioGEN_part");
-    TH1F* h_ratioMG_part = (TH1F*) h_partMG->Clone(baselab+"_ratioGEN_part");
+    TH1F* h_ratioMG_part = (TH1F*) h_partMG->Clone(baselab+"_ratioMG_part");
+    TH1F* h_ratioMCNLO_part = (TH1F*) h_partMCNLO->Clone(baselab+"_ratioMCNLO_part");
     
     h_ratio_part->Divide(h_unfolded_part[0]);
     h_ratioSTAT_up_part->Divide(h_unfolded_part[0]);
@@ -1397,6 +1641,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_ratioTOT_dn_part->Divide(h_unfolded_part[0]);
     h_ratioGEN_part->Divide(h_unfolded_part[0]);
     h_ratioMG_part->Divide(h_unfolded_part[0]);
+    h_ratioMCNLO_part->Divide(h_unfolded_part[0]);
     
     
     // ----------------------------------------------------------------------------------------------------------------
@@ -1469,6 +1714,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     leg->AddEntry(h_unfolded_part[0],"Data","pe1");
     leg->AddEntry(h_part,"Powheg+Pythia6 t#bar{t}","l");
     leg->AddEntry(h_partMG,"MadGraph+Pythia6 t#bar{t}","l");
+    leg->AddEntry(h_partMCNLO,"MC@NLO+Herwig6 t#bar{t}","l");
     //leg->AddEntry(blaEXP_part,"Experimental uncertainty","f");
     //leg->AddEntry(blaTH_part,"Theory uncertainty","f");
     leg->AddEntry(blaSTAT_part,"Stat. Uncertainty","f");
@@ -1479,7 +1725,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     leg->SetTextFont(42);
     leg->Draw();
 
-    drawCMS(0.53,0.8,true,true);
+    drawCMS(0.53,0.8,true,true,forpub);
 
     // ----------------------------------------------------------------------------------------------------------------
         
@@ -1497,17 +1743,27 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_ratio_part->GetYaxis()->SetTitleOffset(0.38);
     h_ratio_part->GetXaxis()->SetTitleOffset(1.0);
     
-    h_ratio_part->SetAxisRange(0.6,1.4,"Y");
+    if (doNormalized) {
+      h_ratio_part->SetAxisRange(0.6,1.4,"Y");
+      h_ratioGEN_part->SetAxisRange(0.6,1.4,"Y");
+      h_ratioMG_part->SetAxisRange(0.6,1.4,"Y");
+      h_ratioMCNLO_part->SetAxisRange(0.6,1.4,"Y");
+    }
+    else {
+      h_ratio_part->SetAxisRange(0.3,1.7,"Y");
+      h_ratioGEN_part->SetAxisRange(0.3,1.7,"Y");
+      h_ratioMG_part->SetAxisRange(0.3,1.7,"Y");
+      h_ratioMCNLO_part->SetAxisRange(0.3,1.7,"Y");
+    }
     h_ratio_part->Draw("hist");
     blaTOT_part->Draw("same,e2");
     //blaEXP_part->Draw("same,e2");
     //blaTH_part->Draw("same,e2");
     //blaSTAT_part->Draw("same,ep");
     blaSTAT_part->Draw("same,e2");
-    h_ratioGEN_part->SetAxisRange(0.6,1.4,"Y");
     h_ratioGEN_part->Draw("same,hist");
-    h_ratioMG_part->SetAxisRange(0.6,1.4,"Y");
     h_ratioMG_part->Draw("same,hist");
+    h_ratioMCNLO_part->Draw("same,hist");
     //blaSTAT_part->Draw("same,ep");
     h_ratio_part->Draw("same,hist");
     h_ratio_part->Draw("same,axis");
@@ -1529,7 +1785,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_dummy_r_part->GetXaxis()->SetTitle("Particle-level top p_{T} (GeV)");
     h_dummy_r_part->GetYaxis()->SetTitle("Uncertainty [%]");
     h_dummy_r_part->SetAxisRange(400,1150,"X");
-    if (doQ2 && channel == "comb") h_dummy_r_part->SetAxisRange(0,40,"Y");
+    if (doQ2 && channel == "comb" && doNormalized) h_dummy_r_part->SetAxisRange(0,40,"Y");
     else if (doQ2) h_dummy_r_part->SetAxisRange(0,70,"Y");
     else h_dummy_r_part->SetAxisRange(0,25,"Y");
     
@@ -1589,6 +1845,12 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_syst_Q2_part->SetMarkerColor(kAzure+10);
     h_syst_Q2_part->SetMarkerStyle(24);
     
+    h_syst_PS_part->SetLineColor(12);
+    h_syst_PS_part->SetLineStyle(7);
+    h_syst_PS_part->SetLineWidth(2);
+    h_syst_PS_part->SetMarkerColor(12);
+    h_syst_PS_part->SetMarkerStyle(32);
+    
     TLegend* leg4 = new TLegend(0.6,0.54,0.85,0.88);  
     leg4->AddEntry(h_syst_tot_part,"Total syst. uncertainty","f");
     leg4->AddEntry(h_syst_stat_part,"Statistical uncertainty","lp");
@@ -1599,6 +1861,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     leg4->AddEntry(h_syst_bkg_part,"Background normalization","lp");
     leg4->AddEntry(h_syst_pdf_part,"PDF uncertainty","lp");
     if (doQ2) leg4->AddEntry(h_syst_Q2_part,"Q^{2} scale","lp");
+    leg4->AddEntry(h_syst_PS_part,"Generator+PS","lp");
     leg4->SetFillStyle(0);
     leg4->SetBorderSize(0);
     leg4->SetTextSize(0.032);
@@ -1614,10 +1877,11 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
     h_syst_bkg_part->Draw("ep,same");
     if (doQ2) h_syst_Q2_part->Draw("ep,same");
     h_syst_pdf_part->Draw("ep,same");
+    h_syst_PS_part->Draw("ep,same");
     h_dummy_r_part->Draw("hist,axis,same");
     leg4->Draw(); 
     
-    drawCMS(0.2,0.84,false,true);
+    drawCMS(0.2,0.84,false,true,forpub);
     
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+channel+twoStep+nobtag+".png");
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+channel+twoStep+nobtag+".pdf");
@@ -1707,7 +1971,7 @@ void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize, char *text)
   l.DrawLatex(x,y,text);
 }
 
-void drawCMS(Double_t x,Double_t y, bool pad, bool prel) {
+void drawCMS(Double_t x,Double_t y, bool pad, bool prel, bool forPublic) {
 
   float cmsTextSize = 0.08;
   if (!pad) cmsTextSize = 0.058;
@@ -1721,16 +1985,16 @@ void drawCMS(Double_t x,Double_t y, bool pad, bool prel) {
   l.SetTextAngle(0);
   l.SetNDC();
   l.SetTextColor(1);
-  l.DrawLatex(x,y,"CMS");
+  if (forPublic) l.DrawLatex(x,y,"CMS");
 
-  if (prel) {
+  if (prel && forPublic) {
     TLatex lp;
     lp.SetTextSize(extraTextSize); 
     lp.SetTextFont(52); 
     lp.SetNDC();
     lp.SetTextColor(1);
-    float offset = 0.10;
-    if (!pad) offset = 0.12;
+    float offset = 0.11;
+    if (!pad) offset = 0.10;
     lp.DrawLatex(x+offset,y,"Preliminary");
   }
 
