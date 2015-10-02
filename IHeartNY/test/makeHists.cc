@@ -303,7 +303,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
   else if (var=="ptLep") {
-    rebin = 2;
+    rebin = 5;
     binwidth = h_data->GetBinWidth(2) * rebin;
     sprintf(tmptxt,elmu+" / %.0f GeV",binwidth);
   }
@@ -484,6 +484,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     max = max*1.8;
   else if (var.Contains("eta") || var.Contains("_y") || var.Contains("wboson_"))
     max = max*1.4;
+  else if (var.Contains("ptLep"))
+    max = max*1.3;
   
   h_data->SetAxisRange(0,max*1.05,"Y");
 
