@@ -775,7 +775,7 @@ void plot(TString channel, bool wobtag, bool do2step, bool doNormalized, bool do
       max_syst_jec = max(syst_jecup,syst_jecdn);
       max_syst_jer = max(syst_jerup,syst_jerdn);
       max_syst_btag = max(syst_btagup,syst_btagdn);
-      max_syst_toptag = max(syst_toptagup,syst_toptagdn);
+      max_syst_toptagNOM = max(syst_toptagup,syst_toptagdn);
       max_syst_toptagHIGHPT = max(syst_toptagHIGHPTup,syst_toptagHIGHPTdn);
       max_syst_bkg = max(syst_bkgup,syst_bkgdn);
       max_syst_pdf = max(syst_pdfup,syst_pdfdn);
