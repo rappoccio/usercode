@@ -39,7 +39,6 @@ rm commands_nontop_mu
 ./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_nontop_mu commands_nontop_mu
 rm commands_nontop_el
 ./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_nontop_el commands_nontop_el
-
 rm commands_CT10_mu
 ./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_CT10_mu commands_CT10_mu
 rm commands_CT10_el
@@ -58,3 +57,7 @@ rm commands_q2_NS_mu
 rm commands_q2_NS_el
 ./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_q2_NS_el commands_q2_NS_el
 
+rm commands_MG
+./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_MG commands_MG
+rm commands_mcnlo
+./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_mcatnlo commands_mcnlo
