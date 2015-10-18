@@ -1283,7 +1283,6 @@ if options.makeResponse == True :
     h_ptPartTop_passRecoParticleParton       = ROOT.TH1F("ptPartTop_passRecoParticleParton",       ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
     h_ptPartTop_passRecoNoBtagParticleParton = ROOT.TH1F("ptPartTop_passRecoNoBtagParticleParton", ";p_{T}(particle-level top) [GeV]; Events / 10 GeV", len(ptbins)-1,  ptbins)
     
-    h_yPartTop_passParticle           = ROOT.TH1F("yPartTop_passParticle",           ";particle-level top rapidity; Events / 0.1", len(ybins)-1, ybins)
     h_yPartTop_passRecoParticle       = ROOT.TH1F("yPartTop_passRecoParticle",       ";particle-level top rapidity; Events / 0.1", len(ybins)-1, ybins)
     h_yPartTop_passRecoNoBtagParticle = ROOT.TH1F("yPartTop_passRecoNoBtagParticle", ";particle-level top rapidity; Events / 0.1", len(ybins)-1, ybins)
     h_yPartTop_passParticleParton     = ROOT.TH1F("yPartTop_passParticleParton",     ";particle-level top rapidity; Events / 0.1", len(ybins)-1, ybins)
@@ -1295,7 +1294,6 @@ if options.makeResponse == True :
     h_ptGenTop_passRecoNoBtagParton = ROOT.TH1F("ptGenTop_passRecoNoBtagParton", ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
     h_ptGenTop_passParticleParton   = ROOT.TH1F("ptGenTop_passParticleParton",   ";p_{T}(generated top) [GeV]; Events / 10 GeV", len(ptbins)-1, ptbins)
 
-    h_yGenTop_passParton           = ROOT.TH1F("yGenTop_passParton",           ";generated top rapidity; Events / 0.1", len(ybins)-1, ybins)
     h_yGenTop_passRecoParton       = ROOT.TH1F("yGenTop_passRecoParton",       ";generated top rapidity; Events / 0.1", len(ybins)-1, ybins)
     h_yGenTop_passRecoNoBtagParton = ROOT.TH1F("yGenTop_passRecoNoBtagParton", ";generated top rapidity; Events / 0.1", len(ybins)-1, ybins)
     h_yGenTop_passParticleParton   = ROOT.TH1F("yGenTop_passParticleParton",   ";generated top rapidity; Events / 0.1", len(ybins)-1, ybins)
@@ -1882,13 +1880,12 @@ for event in events :
             h_ptGenTop.Fill( hadTop.p4.Perp(), weight )
             h_ptGenTop_noweight.Fill( hadTop.p4.Perp() )
             
-            h_yGenTop.Fill( hadTop.p4.Rapidity(), weight )
-            h_yGenTop_noweight.Fill( hadTop.p4.Rapidity() )
-
             if hadTop.p4.Perp() > 400.0:
                 passParton = True
                 h_ptGenTop_passParton.Fill(hadTop.p4.Perp(), weight)
-                h_yGenTop_passParton.Fill(hadTop.p4.Rapidity(), weight)
+                h_yGenTop.Fill( hadTop.p4.Rapidity(), weight )
+                h_yGenTop_noweight.Fill( hadTop.p4.Rapidity() )
+
                                 
         # endif (making response matrix)
 
@@ -1971,9 +1968,10 @@ for event in events :
                 response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
 
-                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-                response_y_nobtag.Miss(hadTop.p4.Rapidity(), weight*weight_response )
-                response_y_pp.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                if passParton:
+                    response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                    response_y_nobtag.Miss(hadTop.p4.Rapidity(), weight*weight_response )
+                    response_y_pp.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             continue
         event.getByLabel( ak5GenJetEtaLabel, ak5GenJetEtaHandle )
         event.getByLabel( ak5GenJetPhiLabel, ak5GenJetPhiHandle )
@@ -1989,10 +1987,11 @@ for event in events :
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                
-                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-                response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-                response_y_pp.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+
+                if passParton:
+                    response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                    response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                    response_y_pp.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             continue
 
         # loop over AK5 gen jets
@@ -2009,10 +2008,11 @@ for event in events :
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                
-                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-                response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-                response_y_pp.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+
+                if passParton:
+                    response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                    response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                    response_y_pp.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             continue
         event.getByLabel( ca8GenJetEtaLabel, ca8GenJetEtaHandle )
         event.getByLabel( ca8GenJetPhiLabel, ca8GenJetPhiHandle )
@@ -2028,10 +2028,11 @@ for event in events :
                 response.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
                 response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-                
-                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-                response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-                response_y_pp.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+
+                if passParton:
+                    response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                    response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                    response_y_pp.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             continue
 
         # loop over CA8 gen jets
@@ -2116,27 +2117,32 @@ for event in events :
         ## loose particle-level selection w/o 400 cut
         if passParticleLoose == False:
             response_pp.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_y_pp.Miss( hadTop.p4.Rapidity(), weight*weight_response )
         else:           
             h_ptPartTop.Fill( genTops[0].Perp(), weight )
             h_ptPartTop_noweight.Fill( genTops[0].Perp() )
             response_pp.Fill(genTops[0].Perp(), hadTop.p4.Perp(), weight*weight_response)
 
+        if passParticle == False:
+            if passParton == True:
+                response_y_pp.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+        else:
             h_yPartTop.Fill( genTops[0].Rapidity(), weight )
             h_yPartTop_noweight.Fill( genTops[0].Rapidity() )
-            response_y_pp.Fill(genTops[0].Rapidity(), hadTop.p4.Rapidity(), weight*weight_response)
+
+            if passParton == True:
+                h_yGenTop_passParticleParton.Fill(hadTop.p4.Rapidity(), weight)
+                response_y_pp.Fill(genTops[0].Rapidity(), hadTop.p4.Rapidity(), weight*weight_response)
+            elif passParton == False:
+                response_y_pp.Fake(genTops[0].Rapidity(), weight*weight_response)
+            
 
         ## particle-level selection *with* 400 cut
         if passParticle:
             h_ptPartTop_passParticle.Fill(genTops[0].Perp(), weight) 
-            h_yPartTop_passParticle.Fill(genTops[0].Rapidity(), weight) 
             if passParton: 
                 h_ptPartTop_passParticleParton.Fill(genTops[0].Perp(), weight) 
                 h_ptGenTop_passParticleParton.Fill(hadTop.p4.Perp(), weight)
-                
-                h_yPartTop_passParticleParton.Fill(genTops[0].Rapidity(), weight) 
-                h_yGenTop_passParticleParton.Fill(hadTop.p4.Rapidity(), weight)
-        
+                        
     else :
         passParticleLoose = True
         passParticle = True
@@ -2152,11 +2158,13 @@ for event in events :
         if options.makeResponse == True:
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-            response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+            if passParton:
+                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            if passParticle:
                 response_y_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
                 response_y_nobtag_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
         continue
@@ -2401,11 +2409,13 @@ for event in events :
         if options.makeResponse == True:
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-            response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+            if passParton:
+                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            if passParticle:
                 response_y_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
                 response_y_nobtag_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
         continue
@@ -2556,11 +2566,13 @@ for event in events :
         if options.makeResponse == True:
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-            response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+            if passParton:
+                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            if passParticle:
                 response_y_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
                 response_y_nobtag_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
         continue
@@ -2655,11 +2667,13 @@ for event in events :
         if options.makeResponse == True:
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-            response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+            if passParton:
+                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            if passParticle:
                 response_y_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
                 response_y_nobtag_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
         continue
@@ -2717,11 +2731,13 @@ for event in events :
         if options.makeResponse == True:
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-            response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+            if passParton:
+                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            if passParticle:
                 response_y_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
                 response_y_nobtag_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
         continue
@@ -2960,11 +2976,13 @@ for event in events :
         if options.makeResponse == True:
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-            response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+            if passParton:
+                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            if passParticle:
                 response_y_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
                 response_y_nobtag_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
         continue
@@ -3040,11 +3058,13 @@ for event in events :
         if options.makeResponse == True:
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-            response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+            if passParton:
+                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            if passParticle:
                 response_y_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
                 response_y_nobtag_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
         continue
@@ -3518,11 +3538,13 @@ for event in events :
         if options.makeResponse == True:
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
             response_nobtag.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
-            response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+            if passParton:
+                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+                response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
                 response_nobtag_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            if passParticle:
                 response_y_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
                 response_y_nobtag_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
         continue
@@ -3642,21 +3664,22 @@ for event in events :
 
     h_ptRecoTop_nobtag.Fill( goodtop.Perp(), top_weight )
     h_ptRecoTop_2step_nobtag.Fill( goodtop.Perp(), top_weight )
+
     h_yRecoTop_nobtag.Fill( goodtop.Rapidity(), top_weight )
     h_yRecoTop_2step_nobtag.Fill( goodtop.Rapidity(), top_weight )
-    
-    if options.makeResponse == True :		
+
+    if options.makeResponse == True :
         h_ptRecoTop_passRecoNoBtag.Fill( goodtop.Perp(), top_weight )
         h_yRecoTop_passRecoNoBtag.Fill( goodtop.Rapidity(), top_weight )
-
-        if passParticleLoose:
-            h_ptRecoTop_passRecoNoBtagParticleLoose.Fill( goodtop.Perp(), top_weight )
-            h_yRecoTop_passRecoNoBtagParticleLoose.Fill( goodtop.Rapidity(), top_weight )
+        
         if passParton:
             h_ptRecoTop_passRecoNoBtagParton.Fill( goodtop.Perp(), top_weight )
             h_ptGenTop_passRecoNoBtagParton.Fill(hadTop.p4.Perp(), top_weight)
             h_yRecoTop_passRecoNoBtagParton.Fill( goodtop.Rapidity(), top_weight )
             h_yGenTop_passRecoNoBtagParton.Fill(hadTop.p4.Rapidity(), top_weight)
+        if passParticleLoose:
+            h_ptRecoTop_passRecoNoBtagParticleLoose.Fill( goodtop.Perp(), top_weight )
+            h_yRecoTop_passRecoNoBtagParticleLoose.Fill( goodtop.Rapidity(), top_weight )
         if passParticle:
             h_ptRecoTop_passRecoNoBtagParticle.Fill(goodtop.Perp(), top_weight)
             h_ptPartTop_passRecoNoBtagParticle.Fill(genTops[0].Perp(), top_weight)
@@ -3669,12 +3692,17 @@ for event in events :
             h_yPartTop_passRecoNoBtagParticleParton.Fill(genTops[0].Rapidity(), top_weight)
             
         response_nobtag.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
-        response_y_nobtag.Fill(hadJets[itop_mass].Rapidity(), hadTop.p4.Rapidity(), top_weight*weight_response)
+        if passParton:
+            response_y_nobtag.Fill(hadJets[itop_mass].Rapidity(), hadTop.p4.Rapidity(), top_weight*weight_response)
+        else:
+            response_y_nobtag.Fake(hadJets[itop_mass].Rapidity(), top_weight*weight_response)            
         if passParticleLoose:
             response_nobtag_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
-            response_y_nobtag_rp.Fill(hadJets[itop_mass].Rapidity(), genTops[0].Rapidity(), top_weight*weight_response)
         else:
             response_nobtag_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
+        if passParticle:
+            response_y_nobtag_rp.Fill(hadJets[itop_mass].Rapidity(), genTops[0].Rapidity(), top_weight*weight_response)
+        else:
             response_y_nobtag_rp.Fake(hadJets[itop_mass].Rapidity(), top_weight*weight_response)
     ### ------------------------------------------------------------------------------------------------
 
@@ -3732,9 +3760,11 @@ for event in events :
     if passBtag == False:
         if options.makeResponse == True:
             response.Miss( hadTop.p4.Perp(), weight*weight_response )
-            response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
+            if passParton:
+                response_y.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             if passParticleLoose:
                 response_rp.Miss( genTops[0].Perp(), weight*weight_response )
+            if passParticle:
                 response_y_rp.Miss( genTops[0].Rapidity(), weight*weight_response )
         continue
 
@@ -3860,12 +3890,17 @@ for event in events :
             h_yPartTop_passRecoParticleParton.Fill(genTops[0].Rapidity(), top_weight)
         
         response.Fill(hadJets[itop_mass].Perp(), hadTop.p4.Perp(), top_weight*weight_response)
-        response_y.Fill(hadJets[itop_mass].Rapidity(), hadTop.p4.Rapidity(), top_weight*weight_response)
+        if passParton:
+            response_y.Fill(hadJets[itop_mass].Rapidity(), hadTop.p4.Rapidity(), top_weight*weight_response)
+        else:
+            response_y.Fake(hadJets[itop_mass].Rapidity(), top_weight*weight_response)            
         if passParticleLoose:
             response_rp.Fill(hadJets[itop_mass].Perp(), genTops[0].Perp(), top_weight*weight_response)
+        else:
+            response_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)
+        if passParticle:
             response_y_rp.Fill(hadJets[itop_mass].Rapidity(), genTops[0].Rapidity(), top_weight*weight_response)
         else:
-            response_rp.Fake(hadJets[itop_mass].Perp(), top_weight*weight_response)    
             response_y_rp.Fake(hadJets[itop_mass].Rapidity(), top_weight*weight_response)    
 
 
