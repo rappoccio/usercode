@@ -282,7 +282,7 @@ else:
 
 
 ### use histograms which have the posterior top-tagging SF applied! 
-usePost = False
+usePost = True
 postname = ""
 if options.closureTest == True: 
     usePost = False
@@ -1185,7 +1185,7 @@ if options.closureTest :
 if options.whatClosure == "reverse" :
     append += "_reverse"
     
-if options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot:
+if options.pdf == "CT10_nom" or options.pdf == "scaleup" or options.pdf == "scaledown" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot:
     c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".pdf", "pdf")
     c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".png", "png")
     c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".eps", "eps")
@@ -1308,7 +1308,7 @@ if options.twoStep:
     if options.whatClosure == "reverse" :
         append += "_reverse"
     
-    if options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot:
+    if options.pdf == "CT10_nom" or options.pdf == "scaleup" or options.pdf == "scaledown" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot:
         c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".pdf", "pdf")
         c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".png", "png")
         c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_2step_particle"+append+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+".eps", "eps")
@@ -1343,6 +1343,15 @@ if options.twoStep == False:
     hEmpty2D.Draw()
     hResponse2D = response.Hresponse().Clone()
     hResponse2D.SetName("plottedResponse")
+
+    gStyle.SetPaintTextFormat(".1f")
+    hResponse2D.Draw("colz,same,text")
+    hEmpty2D.Draw("axis,same")
+    if (options.pdf == "CT10_nom" or options.pdf == "scaleup" or options.pdf == "scaledown" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_full_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".png")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_full_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".eps")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_full_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".pdf")
+
     
     # normalize so that for each bin of true top quark pt(eta), the bins in measured top pt(eta) add up to 100%
     nbinsX = hResponse2D.GetNbinsX()
@@ -1358,10 +1367,10 @@ if options.twoStep == False:
             #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
             hResponse2D.SetBinContent(ibx,iby,newContent)
 
-    gStyle.SetPaintTextFormat(".1f")
+    hEmpty2D.Draw()
     hResponse2D.Draw("colz,same,text")
     hEmpty2D.Draw("axis,same")
-    if (options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
+    if (options.pdf == "CT10_nom" or options.pdf == "scaleup" or options.pdf == "scaledown" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".pdf")
@@ -1375,7 +1384,7 @@ if options.twoStep == False:
         hResponse2D.Draw("colz,same,text")
         hEmpty2D.Draw("axis,same")
 
-        if (options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
+        if (options.pdf == "CT10_nom" or options.pdf == "scaleup" or options.pdf == "scaledown" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
             cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".png")
             cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".eps")
             cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_responseMatrix_zoom_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".pdf")
@@ -1431,13 +1440,23 @@ if options.twoStep:
         gStyle.SetPaintTextFormat(".1f")
         hResponse2D_rp.Draw("colz,same,text")
         hEmpty2D_rp.Draw("axis,same")
-        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_rp_odd_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".png")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_rp_odd_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".pdf")
 
         hEmpty2D_rp_even.Draw()
         gStyle.SetPaintTextFormat(".1f")
         hResponse2D_rp_even.Draw("colz,same,text")
         hEmpty2D_rp_even.Draw("axis,same")
-        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_rp_even_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".png")
+        cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_rp_even_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".pdf")
+
+    hEmpty2D_rp.Draw()
+    gStyle.SetPaintTextFormat(".1f")
+    hResponse2D_rp.SetMarkerSize(1.2)
+    hResponse2D_rp.Draw("colz,same,text")
+    hEmpty2D_rp.Draw("axis,same")
+    if (options.pdf == "CT10_nom" or options.pdf == "scaleup" or options.pdf == "scaledown" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_full_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".png")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_full_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".eps")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_full_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".pdf")
     
     # normalize so that for each bin of particle-level top pt(eta), the bins in measured top pt(eta) add up to 100%
     nbinsX = hResponse2D_rp.GetNbinsX()
@@ -1454,11 +1473,9 @@ if options.twoStep:
             hResponse2D_rp.SetBinContent(ibx,iby,newContent)
 
     hEmpty2D_rp.Draw()
-    gStyle.SetPaintTextFormat(".1f")
-    hResponse2D_rp.SetMarkerSize(1.2)
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
-    if (options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
+    if (options.pdf == "CT10_nom" or options.pdf == "scaleup" or options.pdf == "scaledown" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".pdf")
@@ -1502,7 +1519,7 @@ if options.twoStep:
             t3.DrawLatex(0.49,0.94, "(#mu+Jets)")
         t3.DrawLatex(0.66,0.94, "19.7 fb^{-1} (8 TeV)")    
 
-        if (options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
+        if (options.pdf == "CT10_nom" or options.pdf == "scaleup" or options.pdf == "scaledown" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
             cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".png")
             cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".eps")
             cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_rp_zoom_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".pdf")
@@ -1557,7 +1574,16 @@ if options.twoStep:
         hResponse2D_pp_even.Draw("colz,same,text")
         hEmpty2D_pp_even.Draw("axis,same")
         cr.SaveAs("UnfoldingPlots/troubleshoot"+DIR+"_responseMatrix_pp_even_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".png")
-    
+
+    gStyle.SetPaintTextFormat(".1f")
+    hResponse2D_pp.SetMarkerSize(1.2)
+    hResponse2D_pp.Draw("colz,same,text")
+    hEmpty2D_pp.Draw("axis,same")
+    if (options.pdf == "CT10_nom" or options.pdf == "scaleup" or options.pdf == "scaledown" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_full_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".png")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_full_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".eps")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_full_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".pdf")
+
     # normalize so that for each bin of particle-level top pt(eta), the bins in measured top pt(eta) add up to 100%
     nbinsX = hResponse2D_pp.GetNbinsX()
     nbinsY = hResponse2D_pp.GetNbinsY()
@@ -1572,11 +1598,9 @@ if options.twoStep:
             #print "bin content x-bin " + str(ibx) + " y-bin " + str(iby) + " binContent " + str(binContent) + " newContent " + str(newContent)
             hResponse2D_pp.SetBinContent(ibx,iby,newContent)
 
-    gStyle.SetPaintTextFormat(".1f")
-    hResponse2D_pp.SetMarkerSize(1.2)
     hResponse2D_pp.Draw("colz,same,text")
     hEmpty2D_pp.Draw("axis,same")
-    if (options.pdf == "CT10_nom" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
+    if (options.pdf == "CT10_nom" or options.pdf == "scaleup" or options.pdf == "scaledown" or options.pdf == "MG" or options.pdf == "mcnlo" or options.troubleshoot) and options.closureTest == False:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".eps")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".pdf")
@@ -1620,7 +1644,7 @@ if options.twoStep:
             t3.DrawLatex(0.49,0.94, "(#mu+Jets)")
         t3.DrawLatex(0.66,0.94, "19.7 fb^{-1} (8 TeV)")    
     
-        if (options.pdf == "CT10_nom" or options.troubleshoot) and options.closureTest == False:
+        if (options.pdf == "CT10_nom" or options.pdf == "scaleup" or options.pdf == "scaledown" or options.troubleshoot) and options.closureTest == False:
             cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".png")
             cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".eps")
             cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_2step"+append+"_responseMatrix_pp_zoom_"+options.toUnfold+"_"+options.pdf+"_"+options.syst+nobtag+norm_flag+".pdf")
