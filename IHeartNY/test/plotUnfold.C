@@ -562,9 +562,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     }
     else if (toUnfold == "y"){
       h_dummy->GetYaxis()->SetTitle("d#sigma/dy (fb)");
-      h_dummy->SetAxisRange(0,40000,"Y");
+      h_dummy->SetAxisRange(0,3000,"Y");
       h_dummy_part->GetYaxis()->SetTitle("d#sigma/dy (fb)");
-      h_dummy_part->SetAxisRange(0,10000,"Y");
+      h_dummy_part->SetAxisRange(0,3000,"Y");
     }
   }
 
@@ -962,12 +962,12 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   }
   else if (doLogscale) {
     if (toUnfold == "y") {
-      h_dummy->SetAxisRange(500,50000,"Y");
-      h_true->SetAxisRange(500,50000,"Y");
-      h_trueMG->SetAxisRange(500,50000,"Y");
-      h_trueMCNLO->SetAxisRange(500,50000,"Y");
-      h_unfolded[0]->SetAxisRange(500,50000,"Y");
-      h_fullunc->SetAxisRange(500,50000,"Y");
+      h_dummy->SetAxisRange(1,3000,"Y");
+      h_true->SetAxisRange(1,3000,"Y");
+      h_trueMG->SetAxisRange(1,3000,"Y");
+      h_trueMCNLO->SetAxisRange(1,3000,"Y");
+      h_unfolded[0]->SetAxisRange(1,3000,"Y");
+      h_fullunc->SetAxisRange(1,3000,"Y");
       gPad->SetLogy();
     }
     else {
@@ -1663,12 +1663,12 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     }
     else if (doLogscale) {
       if (toUnfold == "y"){
-	h_dummy_part->SetAxisRange(300,30000,"Y");
-	h_part->SetAxisRange(300,30000,"Y");
-	h_partMG->SetAxisRange(300,30000,"Y");
-	h_partMCNLO->SetAxisRange(300,30000,"Y");
-	h_unfolded_part[0]->SetAxisRange(300,30000,"Y");
-	h_fullunc_part->SetAxisRange(300,30000,"Y");
+	h_dummy_part->SetAxisRange(1,3000,"Y");
+	h_part->SetAxisRange(1,3000,"Y");
+	h_partMG->SetAxisRange(1,3000,"Y");
+	h_partMCNLO->SetAxisRange(1,3000,"Y");
+	h_unfolded_part[0]->SetAxisRange(1,3000,"Y");
+	h_fullunc_part->SetAxisRange(1,3000,"Y");
 	gPad->SetLogy();
       }
       else {
