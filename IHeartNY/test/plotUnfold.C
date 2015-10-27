@@ -30,18 +30,19 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
 void plotUnfold(TString channel, TString toUnfold="pt") {
 
-  bool doNormalized = false;   // normalized differential?
+  bool doNormalized = false;  // normalized differential?
   bool doLogscale   = true;   // plot distributions on log scale?
   bool doAverageErr = true;   // average up/down systematic uncertainties? 
+  bool doScale      = true;   // scale central value to match integrated result from theta?
 
-  plot(channel,toUnfold,true,true, doNormalized,doLogscale,doAverageErr);
-  plot(channel,toUnfold,true,false, doNormalized,doLogscale,doAverageErr);
-  plot(channel,toUnfold,false,true, doNormalized,doLogscale,doAverageErr);
-  plot(channel,toUnfold,false,false, doNormalized,doLogscale,doAverageErr);
+  plot(channel,toUnfold,true,true, doNormalized,doLogscale,doAverageErr,doScale);
+  //plot(channel,toUnfold,true,false, doNormalized,doLogscale,doAverageErr,doScale);
+  //plot(channel,toUnfold,false,true, doNormalized,doLogscale,doAverageErr,doScale);
+  //plot(channel,toUnfold,false,false, doNormalized,doLogscale,doAverageErr,doScale);
 
 }
 
-void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doNormalized, bool doLogscale, bool doAverageErr) {
+void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doNormalized, bool doLogscale, bool doAverageErr, bool doScale) {
   
   SetPlotStyle();
     
@@ -60,6 +61,20 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
   bool forpub = false; // plot for public?
   if (wobtag && do2step && channel == "comb") forpub=true; 
+
+  // ---------------------------------------------------------------------------------------------------------------
+  // cross-section values for scaling to theta integrated result
+  // ---------------------------------------------------------------------------------------------------------------
+
+  float xs_parton[2]   = {1674.3, 1662.91}; //mu,el
+  float xs_particle[2] = {1502.36, 1483.66};
+  float xs_parton_MG[2]   = {1846.56, 1844.47};
+  float xs_particle_MG[2] = {1513.0, 1491.67};
+  float xs_parton_mcnlo[2]   = {1395.71, 1402.3};
+  float xs_particle_mcnlo[2] = {1195.22, 1188.57};
+  float data_xs_parton[2]   = {1674.3*0.86, 1662.91*0.86};
+  float data_xs_particle[2] = {1502.36*0.86, 1483.66*0.86};
+
 
 
   // ---------------------------------------------------------------------------------------------------------------
@@ -95,8 +110,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   TString channel_name[nCHANNEL];
   if (nCHANNEL == 1) channel_name[0] = channel;
   else if (nCHANNEL == 2) {
-    channel_name[0] = "el";
-    channel_name[1] = "mu";
+    channel_name[0] = "mu";
+    channel_name[1] = "el";
   }
   else return; //shouldn't happen
 
@@ -123,11 +138,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     fMG[1] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_MG_nom_nobtag.root");
 
     h_trueMG_tmp[0] = (TH1F*) fMG[0]->Get(toUnfold+"_genTop")->Clone();
-    h_trueMG_tmp[0]->SetName(toUnfold+"_genTop_MG_el");
+    h_trueMG_tmp[0]->SetName(toUnfold+"_genTop_MG_mu");
     if (toUnfold == "pt") h_trueMG_tmp[0]->SetAxisRange(400,1150,"X");
 
     h_trueMG_tmp[1] = (TH1F*) fMG[1]->Get(toUnfold+"_genTop")->Clone();
-    h_trueMG_tmp[1]->SetName(toUnfold+"_genTop_MG_mu");
+    h_trueMG_tmp[1]->SetName(toUnfold+"_genTop_MG_el");
     if (toUnfold == "pt") h_trueMG_tmp[1]->SetAxisRange(400,1150,"X");    
 
     //MC@NLO
@@ -135,26 +150,26 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     fMCNLO[1] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_mcnlo_nom_nobtag.root");
 
     h_trueMCNLO_tmp[0] = (TH1F*) fMCNLO[0]->Get(toUnfold+"_genTop")->Clone();
-    h_trueMCNLO_tmp[0]->SetName(toUnfold+"_genTop_MCNLO_el");
+    h_trueMCNLO_tmp[0]->SetName(toUnfold+"_genTop_MCNLO_mu");
     if (toUnfold == "pt") h_trueMCNLO_tmp[0]->SetAxisRange(400,1150,"X");
 
     h_trueMCNLO_tmp[1] = (TH1F*) fMCNLO[1]->Get(toUnfold+"_genTop")->Clone();
-    h_trueMCNLO_tmp[1]->SetName(toUnfold+"_genTop_MCNLO_mu");
+    h_trueMCNLO_tmp[1]->SetName(toUnfold+"_genTop_MCNLO_el");
     if (toUnfold == "pt") h_trueMCNLO_tmp[1]->SetAxisRange(400,1150,"X");    
         
     if (twoStep == "_2step") {
       h_partMG_tmp[0] = (TH1F*) fMG[0]->Get(toUnfold+"_partTop")->Clone();
-      h_partMG_tmp[0]->SetName(toUnfold+"_partTop_MG_el");
+      h_partMG_tmp[0]->SetName(toUnfold+"_partTop_MG_mu");
       if (toUnfold == "pt") h_partMG_tmp[0]->SetAxisRange(400,1150,"X");
       h_partMG_tmp[1] = (TH1F*) fMG[1]->Get(toUnfold+"_partTop")->Clone();
-      h_partMG_tmp[1]->SetName(toUnfold+"_partTop_MG_mu");
+      h_partMG_tmp[1]->SetName(toUnfold+"_partTop_MG_el");
       if (toUnfold == "pt") h_partMG_tmp[1]->SetAxisRange(400,1150,"X");
 
       h_partMCNLO_tmp[0] = (TH1F*) fMCNLO[0]->Get(toUnfold+"_partTop")->Clone();
-      h_partMCNLO_tmp[0]->SetName(toUnfold+"_partTop_MCNLO_el");
+      h_partMCNLO_tmp[0]->SetName(toUnfold+"_partTop_MCNLO_mu");
       if (toUnfold == "pt") h_partMCNLO_tmp[0]->SetAxisRange(400,1150,"X");
       h_partMCNLO_tmp[1] = (TH1F*) fMCNLO[1]->Get(toUnfold+"_partTop")->Clone();
-      h_partMCNLO_tmp[1]->SetName(toUnfold+"_partTop_MCNLO_mu");
+      h_partMCNLO_tmp[1]->SetName(toUnfold+"_partTop_MCNLO_el");
       if (toUnfold == "pt") h_partMCNLO_tmp[1]->SetAxisRange(400,1150,"X");
     }
   }
@@ -270,6 +285,97 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   }//end channel loop
 
 
+  // ---------------------------------------------------------------------------------------------
+  // do scaling to integrated values?? 
+  // ---------------------------------------------------------------------------------------------
+  
+  if (doScale && toUnfold == "pt") {
+    
+    float sum = 0;
+
+    for (int ic=0;ic<2;ic++) {
+
+      int whichXS = ic;
+      if (channel != "comb" && ic>0) continue;
+      if (channel == "mu") whichXS = 0;
+      else if (channel == "el") whichXS = 1;
+
+      sum = 
+	h_true_tmp[ic]->GetBinContent(3)*100.0+
+	h_true_tmp[ic]->GetBinContent(4)*100.0+
+	h_true_tmp[ic]->GetBinContent(5)*100.0+
+	h_true_tmp[ic]->GetBinContent(6)*100.0+
+	h_true_tmp[ic]->GetBinContent(7)*400.0;
+      h_true_tmp[ic]->Scale(xs_parton[whichXS]/sum);
+      
+      sum = 
+	h_trueMG_tmp[ic]->GetBinContent(3)*100.0+
+	h_trueMG_tmp[ic]->GetBinContent(4)*100.0+
+	h_trueMG_tmp[ic]->GetBinContent(5)*100.0+
+	h_trueMG_tmp[ic]->GetBinContent(6)*100.0+
+	h_trueMG_tmp[ic]->GetBinContent(7)*400.0;
+      h_trueMG_tmp[ic]->Scale(xs_parton_MG[whichXS]/sum);
+      
+      sum = 
+	h_trueMCNLO_tmp[ic]->GetBinContent(3)*100.0+
+	h_trueMCNLO_tmp[ic]->GetBinContent(4)*100.0+
+	h_trueMCNLO_tmp[ic]->GetBinContent(5)*100.0+
+	h_trueMCNLO_tmp[ic]->GetBinContent(6)*100.0+
+	h_trueMCNLO_tmp[ic]->GetBinContent(7)*400.0;
+      h_trueMCNLO_tmp[ic]->Scale(xs_parton_mcnlo[whichXS]/sum);
+      
+      sum = 
+	h_unfolded_tmp[ic][0]->GetBinContent(3)*100.0+
+	h_unfolded_tmp[ic][0]->GetBinContent(4)*100.0+
+	h_unfolded_tmp[ic][0]->GetBinContent(5)*100.0+
+	h_unfolded_tmp[ic][0]->GetBinContent(6)*100.0+
+	h_unfolded_tmp[ic][0]->GetBinContent(7)*400.0;
+
+      for (int is=0; is<nSYST; is++) {
+	h_unfolded_tmp[ic][is]->Scale(data_xs_parton[whichXS]/sum);
+      }
+
+      if (twoStep == "_2step") {
+	sum = 
+	  h_part_tmp[ic]->GetBinContent(3)*100.0+
+	  h_part_tmp[ic]->GetBinContent(4)*100.0+
+	  h_part_tmp[ic]->GetBinContent(5)*100.0+
+	  h_part_tmp[ic]->GetBinContent(6)*100.0+
+	  h_part_tmp[ic]->GetBinContent(7)*400.0;
+	h_part_tmp[ic]->Scale(xs_particle[whichXS]/sum);
+	
+	sum = 
+	  h_partMG_tmp[ic]->GetBinContent(3)*100.0+
+	  h_partMG_tmp[ic]->GetBinContent(4)*100.0+
+	  h_partMG_tmp[ic]->GetBinContent(5)*100.0+
+	  h_partMG_tmp[ic]->GetBinContent(6)*100.0+
+	  h_partMG_tmp[ic]->GetBinContent(7)*400.0;
+	h_partMG_tmp[ic]->Scale(xs_particle_MG[whichXS]/sum);
+	
+	sum = 
+	  h_partMCNLO_tmp[ic]->GetBinContent(3)*100.0+
+	  h_partMCNLO_tmp[ic]->GetBinContent(4)*100.0+
+	  h_partMCNLO_tmp[ic]->GetBinContent(5)*100.0+
+	  h_partMCNLO_tmp[ic]->GetBinContent(6)*100.0+
+	  h_partMCNLO_tmp[ic]->GetBinContent(7)*400.0;
+	h_partMCNLO_tmp[ic]->Scale(xs_particle_mcnlo[whichXS]/sum);
+
+	sum = 
+	  h_unfolded_part_tmp[ic][0]->GetBinContent(3)*100.0+
+	  h_unfolded_part_tmp[ic][0]->GetBinContent(4)*100.0+
+	  h_unfolded_part_tmp[ic][0]->GetBinContent(5)*100.0+
+	  h_unfolded_part_tmp[ic][0]->GetBinContent(6)*100.0+
+	  h_unfolded_part_tmp[ic][0]->GetBinContent(7)*400.0;
+	
+	for (int is=0; is<nSYST; is++) {
+	  h_unfolded_part_tmp[ic][is]->Scale(data_xs_particle[whichXS]/sum);
+	}
+
+      }
+    }
+  }
+  // ---------------------------------------------------------------------------------------------
+
 
   // ----------------------------------------------------------------------------------------------------------------
   // possibly perform combination of electron+muon channels
@@ -379,10 +485,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     for (int ib=0; ib<nBIN; ib++) {
     
       // h_true
-      nel = h_true_tmp[0]->GetBinContent(ib+1);
-      nmu = h_true_tmp[1]->GetBinContent(ib+1);
-      snel = h_true_tmp[0]->GetBinError(ib+1);
-      snmu = h_true_tmp[1]->GetBinError(ib+1);
+      nmu = h_true_tmp[0]->GetBinContent(ib+1);
+      nel = h_true_tmp[1]->GetBinContent(ib+1);
+      snmu = h_true_tmp[0]->GetBinError(ib+1);
+      snel = h_true_tmp[1]->GetBinError(ib+1);
       if (snel==0 || snmu==0) {
 	ncomb = 0;
 	sncomb = 0;
@@ -396,10 +502,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       h_true->SetBinError(ib+1,sncomb);
 
       // h_trueMG
-      nel = h_trueMG_tmp[0]->GetBinContent(ib+1);
-      nmu = h_trueMG_tmp[1]->GetBinContent(ib+1);
-      snel = h_trueMG_tmp[0]->GetBinError(ib+1);
-      snmu = h_trueMG_tmp[1]->GetBinError(ib+1);
+      nmu = h_trueMG_tmp[0]->GetBinContent(ib+1);
+      nel = h_trueMG_tmp[1]->GetBinContent(ib+1);
+      snmu = h_trueMG_tmp[0]->GetBinError(ib+1);
+      snel = h_trueMG_tmp[1]->GetBinError(ib+1);
       if (snel==0 || snmu==0) {
 	ncomb = 0;
 	sncomb = 0;
@@ -413,10 +519,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       h_trueMG->SetBinError(ib+1,sncomb);
 
       // h_trueMCNLO
-      nel = h_trueMCNLO_tmp[0]->GetBinContent(ib+1);
-      nmu = h_trueMCNLO_tmp[1]->GetBinContent(ib+1);
-      snel = h_trueMCNLO_tmp[0]->GetBinError(ib+1);
-      snmu = h_trueMCNLO_tmp[1]->GetBinError(ib+1);
+      nmu = h_trueMCNLO_tmp[0]->GetBinContent(ib+1);
+      nel = h_trueMCNLO_tmp[1]->GetBinContent(ib+1);
+      snmu = h_trueMCNLO_tmp[0]->GetBinError(ib+1);
+      snel = h_trueMCNLO_tmp[1]->GetBinError(ib+1);
       if (snel==0 || snmu==0) {
 	ncomb = 0;
 	sncomb = 0;
@@ -431,10 +537,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
       // h_part
       if (twoStep == "_2step") {
-	nel = h_part_tmp[0]->GetBinContent(ib+1);
-	nmu = h_part_tmp[1]->GetBinContent(ib+1);
-	snel = h_part_tmp[0]->GetBinError(ib+1);
-	snmu = h_part_tmp[1]->GetBinError(ib+1);
+	nmu = h_part_tmp[0]->GetBinContent(ib+1);
+	nel = h_part_tmp[1]->GetBinContent(ib+1);
+	snmu = h_part_tmp[0]->GetBinError(ib+1);
+	snel = h_part_tmp[1]->GetBinError(ib+1);
 	if (snel==0 || snmu==0) {
 	  ncomb = 0;
 	  sncomb = 0;
@@ -448,10 +554,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	h_part->SetBinError(ib+1,sncomb);
 
 	// MG
-	nel = h_partMG_tmp[0]->GetBinContent(ib+1);
-	nmu = h_partMG_tmp[1]->GetBinContent(ib+1);
-	snel = h_partMG_tmp[0]->GetBinError(ib+1);
-	snmu = h_partMG_tmp[1]->GetBinError(ib+1);
+	nmu = h_partMG_tmp[0]->GetBinContent(ib+1);
+	nel = h_partMG_tmp[1]->GetBinContent(ib+1);
+	snmu = h_partMG_tmp[0]->GetBinError(ib+1);
+	snel = h_partMG_tmp[1]->GetBinError(ib+1);
 	if (snel==0 || snmu==0) {
 	  ncomb = 0;
 	  sncomb = 0;
@@ -465,10 +571,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	h_partMG->SetBinError(ib+1,sncomb);
 
 	// MC@NLO
-	nel = h_partMCNLO_tmp[0]->GetBinContent(ib+1);
-	nmu = h_partMCNLO_tmp[1]->GetBinContent(ib+1);
-	snel = h_partMCNLO_tmp[0]->GetBinError(ib+1);
-	snmu = h_partMCNLO_tmp[1]->GetBinError(ib+1);
+	nmu = h_partMCNLO_tmp[0]->GetBinContent(ib+1);
+	nel = h_partMCNLO_tmp[1]->GetBinContent(ib+1);
+	snmu = h_partMCNLO_tmp[0]->GetBinError(ib+1);
+	snel = h_partMCNLO_tmp[1]->GetBinError(ib+1);
 	if (snel==0 || snmu==0) {
 	  ncomb = 0;
 	  sncomb = 0;
@@ -485,10 +591,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
       for (int is=0; is<nSYST; is++) {
 	// h_unfolded
-	nel = h_unfolded_tmp[0][is]->GetBinContent(ib+1);
-	nmu = h_unfolded_tmp[1][is]->GetBinContent(ib+1);
-	snel = h_unfolded_tmp[0][is]->GetBinError(ib+1);
-	snmu = h_unfolded_tmp[1][is]->GetBinError(ib+1);
+	nmu = h_unfolded_tmp[0][is]->GetBinContent(ib+1);
+	nel = h_unfolded_tmp[1][is]->GetBinContent(ib+1);
+	snmu = h_unfolded_tmp[0][is]->GetBinError(ib+1);
+	snel = h_unfolded_tmp[1][is]->GetBinError(ib+1);
 	if (snel==0 || snmu==0) {
 	  ncomb = 0;
 	  sncomb = 0;
@@ -503,10 +609,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
 	// h_unfolded_part
 	if (twoStep == "_2step") {
-	  nel = h_unfolded_part_tmp[0][is]->GetBinContent(ib+1);
-	  nmu = h_unfolded_part_tmp[1][is]->GetBinContent(ib+1);
-	  snel = h_unfolded_part_tmp[0][is]->GetBinError(ib+1);
-	  snmu = h_unfolded_part_tmp[1][is]->GetBinError(ib+1);
+	  nmu = h_unfolded_part_tmp[0][is]->GetBinContent(ib+1);
+	  nel = h_unfolded_part_tmp[1][is]->GetBinContent(ib+1);
+	  snmu = h_unfolded_part_tmp[0][is]->GetBinError(ib+1);
+	  snel = h_unfolded_part_tmp[1][is]->GetBinError(ib+1);
 	  if (snel==0 || snmu==0) {
 	    ncomb = 0;
 	    sncomb = 0;
@@ -668,6 +774,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
   float xsec_meas = 0;
   float xsec_true = 0;
+  float xsec_true_MG = 0;
+  float xsec_true_mcnlo = 0;
 
 
   // ----------------------------------------------------------------------------------------------------------------
@@ -732,8 +840,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_stat_up->SetBinContent(i+1,count[0]+sig[0]);
     h_stat_dn->SetBinContent(i+1,count[0]-sig[0]);
     
-    cout << "DEBUG: central value in bin " << i << " is " << count[0] << endl;
-    cout << "DEBUG: stat error in bin " << i << " is " << sig[0] << endl;
+    //cout << "DEBUG: central value in bin " << i << " is " << count[0] << endl;
+    //cout << "DEBUG: stat error in bin " << i << " is " << sig[0] << endl;
     
     if (doAverageErr) {
       h_systEXP_up->SetBinContent(i+1,count[0]+(this_systEXP_up+this_systEXP_dn)/2);
@@ -896,10 +1004,16 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       if (lowedge > 300.) {
 	xsec_meas += count[0]*h_true->GetBinWidth(i+1);
 	xsec_true += h_true->GetBinContent(i+1)*h_true->GetBinWidth(i+1);
+	xsec_true_MG += h_trueMG->GetBinContent(i+1)*h_trueMG->GetBinWidth(i+1);
+	xsec_true_mcnlo += h_trueMCNLO->GetBinContent(i+1)*h_trueMCNLO->GetBinWidth(i+1);
       }
    
-      cout << "TOTAL cross section (parton level), measured = " << xsec_meas << " true = " << xsec_true << endl;
     }
+  }
+    
+  if (toUnfold == "pt") {
+    cout << "TOTAL cross section (parton level), measured = " << xsec_meas << " true = " << xsec_true 
+	 << " true(MG) = " << xsec_true_MG << " true(MC@NLO) = " << xsec_true_mcnlo << endl;
   }
 
 
@@ -1371,6 +1485,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
     float xsec_meas = 0;
     float xsec_true = 0;
+    float xsec_true_MG = 0;
+    float xsec_true_mcnlo = 0;
 
     // ----------------------------------------------------------------------------------------------------------------
     // loop over bins
@@ -1594,9 +1710,16 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	if (lowedge > 300.) {
 	  xsec_meas += count_part[0]*h_part->GetBinWidth(i+1);
 	  xsec_true += h_part->GetBinContent(i+1)*h_part->GetBinWidth(i+1);
+	  xsec_true_MG += h_partMG->GetBinContent(i+1)*h_partMG->GetBinWidth(i+1);
+	  xsec_true_mcnlo += h_partMCNLO->GetBinContent(i+1)*h_partMCNLO->GetBinWidth(i+1);
 	}
-	cout << "TOTAL cross section (particle level), measured = " << xsec_meas << " true = " << xsec_true << endl;
+
       }
+    }
+
+    if (toUnfold == "pt") {
+      cout << "TOTAL cross section (particle level), measured = " << xsec_meas << " true = " << xsec_true 
+	   << " true(MG) = " << xsec_true_MG << " true(MC@NLO) = " << xsec_true_mcnlo << endl;
     }
 
     

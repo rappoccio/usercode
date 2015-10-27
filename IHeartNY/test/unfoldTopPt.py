@@ -29,11 +29,6 @@ parser.add_option('--normalize', metavar='F', action='store_true',
                   dest='normalize',
                   help='Do normalized differential cross section')
 
-parser.add_option('--scale', metavar='F', action='store_true',
-                  default=False,
-                  dest='scale',
-                  help='Scale total cross section to value from theta / MC ???')
-
 parser.add_option('--twoStep', metavar='F', action='store_true',
                   default=False,
                   dest='twoStep',
@@ -113,35 +108,6 @@ from ROOT import RooUnfoldResponse
 from ROOT import RooUnfold
 from ROOT import RooUnfoldBayes
 from ROOT import RooUnfoldSvd
-
-
-# -------------------------------------------------------------------------------------
-# scale unfolded cross section to value from theta / MC ??? 
-# -------------------------------------------------------------------------------------
-
-if options.pdf=="MG" and options.whatClosure != "reverse":
-    tmp_xs_parton   =  [1844.47, 1846.56]
-    tmp_xs_particle = [1491.67, 1513.0]
-elif options.pdf=="mcnlo" and options.whatClosure != "reverse":
-    tmp_xs_parton   = [1402.3, 1395.71]
-    tmp_xs_particle = [1188.57, 1195.22]
-else:
-    tmp_xs_parton   = [1662.91, 1674.3]
-    tmp_xs_particle = [1483.66, 1502.36]
-
-tmp_xs_theta_parton   = [1662.91*0.86, 1674.3*0.86]
-tmp_xs_theta_particle = [1483.66*0.86, 1502.36*0.86]
-
-if options.lepType=="muon":
-    xs_parton = tmp_xs_parton[0]    
-    xs_particle = tmp_xs_particle[0]    
-    xs_theta_parton = tmp_xs_theta_parton[0]    
-    xs_theta_particle = tmp_xs_theta_particle[0]    
-else :
-    xs_parton = tmp_xs_parton[1]
-    xs_particle = tmp_xs_particle[1]    
-    xs_theta_parton = tmp_xs_theta_parton[1]    
-    xs_theta_particle = tmp_xs_theta_particle[1] 
 
   
 # -------------------------------------------------------------------------------------
@@ -904,7 +870,8 @@ hReco.Scale(1.0/(lum*0.438/3.)) # unfolded to parton level
 if options.twoStep:
     hPart.Scale(1.0/(lum*0.438/3.))    # true @ parton level
     hReco_rp.Scale(1.0/(lum*0.438/3.)) # unfolded to particle level
-    
+
+
 # -------------------------------------------------------------------------------------
 # Adjust for bin width
 # -------------------------------------------------------------------------------------
@@ -965,24 +932,6 @@ if options.normalize:
     if options.twoStep:
         hReco_rp.Scale(1.0/sumReco_rp)
         hPart.Scale(1.0/sumPart)
-
-
-# -------------------------------------------------------------------------------------
-# SCALE to total cross section from theta / MC ???
-# -------------------------------------------------------------------------------------
-
-if options.scale and options.closureTest == False: 
-    hTrue.Scale(xs_parton/sumTrue)
-    hReco.Scale(xs_theta_parton/sumReco)
-    if options.twoStep:
-        hReco_rp.Scale(xs_theta_particle/sumReco_rp)
-        hPart.Scale(xs_particle/sumPart)
-elif options.closureTest == True and not options.toUnfold == "y": 
-    hTrue.Scale(xs_parton/sumTrue)
-    hReco.Scale(xs_parton/sumTrue)
-    if options.twoStep:
-        hReco_rp.Scale(xs_particle/sumPart)
-        hPart.Scale(xs_particle/sumPart)
     
         
 # -------------------------------------------------------------------------------------
