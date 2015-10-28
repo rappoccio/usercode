@@ -36,9 +36,9 @@ void plotUnfold(TString channel, TString toUnfold="pt") {
   bool doScale      = true;   // scale central value to match integrated result from theta?
 
   plot(channel,toUnfold,true,true, doNormalized,doLogscale,doAverageErr,doScale);
-  //plot(channel,toUnfold,true,false, doNormalized,doLogscale,doAverageErr,doScale);
-  //plot(channel,toUnfold,false,true, doNormalized,doLogscale,doAverageErr,doScale);
-  //plot(channel,toUnfold,false,false, doNormalized,doLogscale,doAverageErr,doScale);
+  plot(channel,toUnfold,true,false, doNormalized,doLogscale,doAverageErr,doScale);
+  plot(channel,toUnfold,false,true, doNormalized,doLogscale,doAverageErr,doScale);
+  plot(channel,toUnfold,false,false, doNormalized,doLogscale,doAverageErr,doScale);
 
 }
 
@@ -308,6 +308,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	h_true_tmp[ic]->GetBinContent(7)*400.0;
       h_true_tmp[ic]->Scale(xs_parton[whichXS]/sum);
       
+      //PS uncertainty needs to be scaled to truth (since that's what it's compared to)
+      for (int is=0; is<nSYST; is++) {
+	if (name_syst[is]=="_PS") h_unfolded_tmp[ic][is]->Scale(xs_parton[whichXS]/sum);
+      }
+
       sum = 
 	h_trueMG_tmp[ic]->GetBinContent(3)*100.0+
 	h_trueMG_tmp[ic]->GetBinContent(4)*100.0+
@@ -331,8 +336,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	h_unfolded_tmp[ic][0]->GetBinContent(6)*100.0+
 	h_unfolded_tmp[ic][0]->GetBinContent(7)*400.0;
 
+      // non-PS uncertainties scaled to nominal data
       for (int is=0; is<nSYST; is++) {
-	h_unfolded_tmp[ic][is]->Scale(data_xs_parton[whichXS]/sum);
+	if (name_syst[is]!="_PS") h_unfolded_tmp[ic][is]->Scale(data_xs_parton[whichXS]/sum);
       }
 
       if (twoStep == "_2step") {
