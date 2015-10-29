@@ -29,6 +29,11 @@ parser.add_option('--toUnfold', metavar='F', type='string', action='store',
                   dest='toUnfold',
                   help='Distribution to unfold (pt or y)')
 
+parser.add_option('--troubleshoot', metavar='F', action='store_true',
+                  default=False,
+                  dest='troubleshoot',
+                  help='Do troubleshooting closure tests')
+
 
 (options, args) = parser.parse_args()
 argv = []
@@ -51,6 +56,22 @@ if options.closureTests:
         "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --toUnfold="+options.toUnfold,
         "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --lepType=ele --toUnfold="+options.toUnfold,
     ]
+elif options.troubleshoot:
+    path = [
+        ## do troubleshooting
+        "python unfoldTopPt.py --closureTest --addNoBtag --toUnfold="+options.toUnfold+" --troubleshoot",
+        "python unfoldTopPt.py --closureTest --addNoBtag --lepType=ele --toUnfold="+options.toUnfold+" --troubleshoot",
+        "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --toUnfold="+options.toUnfold+" --troubleshoot",
+        "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --lepType=ele --toUnfold="+options.toUnfold+" --troubleshoot",
+        "python unfoldTopPt.py --closureTest --whatClosure=data --addNoBtag --toUnfold="+options.toUnfold+" --troubleshoot",
+        "python unfoldTopPt.py --closureTest --whatClosure=data --addNoBtag --lepType=ele --toUnfold="+options.toUnfold+" --troubleshoot",
+        "python unfoldTopPt.py --closureTest --whatClosure=data --addNoBtag --twoStep --toUnfold="+options.toUnfold+" --troubleshoot",
+        "python unfoldTopPt.py --closureTest --whatClosure=data --addNoBtag --twoStep --lepType=ele --toUnfold="+options.toUnfold+" --troubleshoot",
+        "python unfoldTopPt.py --addNoBtag --toUnfold="+options.toUnfold+" --troubleshoot",
+        "python unfoldTopPt.py --addNoBtag --lepType=ele --toUnfold="+options.toUnfold+" --troubleshoot",
+        "python unfoldTopPt.py --addNoBtag --twoStep --toUnfold="+options.toUnfold+" --troubleshoot",
+        "python unfoldTopPt.py --addNoBtag --twoStep --lepType=ele --toUnfold="+options.toUnfold+" --troubleshoot",
+    ]
 elif options.genCheck:
     path = [
         ## checks using different MC generators
@@ -60,6 +81,10 @@ elif options.genCheck:
         "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --lepType=ele --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
         "python unfoldTopPt.py --closureTest --addNoBtag --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
         "python unfoldTopPt.py --closureTest --addNoBtag --lepType=ele --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --twoStep --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --twoStep --lepType=ele --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --lepType=ele --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
     ]
 elif options.pdf == "CT10_nom" and not options.oneRegion: #run all alternatives for CT10 nominal
     path = [

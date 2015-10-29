@@ -32,6 +32,7 @@ void plotUnfold(TString channel, TString toUnfold="pt") {
 
   bool doNormalized = false;  // normalized differential?
   bool doLogscale   = true;   // plot distributions on log scale?
+  if (toUnfold == "y") doLogscale = false;
   bool doAverageErr = true;   // average up/down systematic uncertainties? 
   bool doScale      = true;   // scale central value to match integrated result from theta?
 
@@ -226,12 +227,12 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       
       if (name_syst[is]=="_PS") {
 	if (channel == "comb") {
-	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_mcnlo_nom_nobtag_closure_reverse.root");
-	  else if (ic==1) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_mcnlo_nom_nobtag_closure_reverse.root");
+	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_mcnlo_nom"+nobtag+"_closure_reverse.root");
+	  else if (ic==1) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_mcnlo_nom"+nobtag+"_closure_reverse.root");
 	  else return; //shouldn't happen
 	}
 	else {
-	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_"+toUnfold+"_mcnlo_nom_nobtag_closure_reverse.root");
+	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_"+toUnfold+"_mcnlo_nom"+nobtag+"_closure_reverse.root");
 	  else return; //shouldn't happen
 	}
 
@@ -349,6 +350,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	  h_part_tmp[ic]->GetBinContent(6)*100.0+
 	  h_part_tmp[ic]->GetBinContent(7)*400.0;
 	h_part_tmp[ic]->Scale(xs_particle[whichXS]/sum);
+
+	//PS uncertainty needs to be scaled to truth (since that's what it's compared to)
+	for (int is=0; is<nSYST; is++) {
+	  if (name_syst[is]=="_PS") h_unfolded_part_tmp[ic][is]->Scale(xs_particle[whichXS]/sum);
+	}
 	
 	sum = 
 	  h_partMG_tmp[ic]->GetBinContent(3)*100.0+
@@ -372,14 +378,121 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	  h_unfolded_part_tmp[ic][0]->GetBinContent(5)*100.0+
 	  h_unfolded_part_tmp[ic][0]->GetBinContent(6)*100.0+
 	  h_unfolded_part_tmp[ic][0]->GetBinContent(7)*400.0;
-	
+
+	// non-PS uncertainties scaled to nominal data	
 	for (int is=0; is<nSYST; is++) {
-	  h_unfolded_part_tmp[ic][is]->Scale(data_xs_particle[whichXS]/sum);
+	  if (name_syst[is]!="_PS") h_unfolded_part_tmp[ic][is]->Scale(data_xs_particle[whichXS]/sum);
 	}
 
       }
     }
   }
+
+  else if (doScale && toUnfold == "y") {
+    
+    float sum = 0;
+
+    for (int ic=0;ic<2;ic++) {
+
+      int whichXS = ic;
+      if (channel != "comb" && ic>0) continue;
+      if (channel == "mu") whichXS = 0;
+      else if (channel == "el") whichXS = 1;
+
+      sum = 
+	h_true_tmp[ic]->GetBinContent(1)*1.2+
+	h_true_tmp[ic]->GetBinContent(2)*0.6+
+	h_true_tmp[ic]->GetBinContent(3)*0.6+
+	h_true_tmp[ic]->GetBinContent(4)*0.6+
+	h_true_tmp[ic]->GetBinContent(5)*0.6+
+	h_true_tmp[ic]->GetBinContent(6)*1.2;
+      h_true_tmp[ic]->Scale(xs_parton[whichXS]/sum);
+
+      //PS uncertainty needs to be scaled to truth (since that's what it's compared to)
+      for (int is=0; is<nSYST; is++) {
+	if (name_syst[is]=="_PS") h_unfolded_tmp[ic][is]->Scale(xs_parton[whichXS]/sum);
+      }
+      
+      sum = 
+	h_trueMG_tmp[ic]->GetBinContent(1)*1.2+
+	h_trueMG_tmp[ic]->GetBinContent(2)*0.6+
+	h_trueMG_tmp[ic]->GetBinContent(3)*0.6+
+	h_trueMG_tmp[ic]->GetBinContent(4)*0.6+
+	h_trueMG_tmp[ic]->GetBinContent(5)*0.6+
+	h_trueMG_tmp[ic]->GetBinContent(6)*1.2;
+      h_trueMG_tmp[ic]->Scale(xs_parton_MG[whichXS]/sum);
+  
+      sum = 
+	h_trueMCNLO_tmp[ic]->GetBinContent(1)*1.2+
+	h_trueMCNLO_tmp[ic]->GetBinContent(2)*0.6+
+	h_trueMCNLO_tmp[ic]->GetBinContent(3)*0.6+
+	h_trueMCNLO_tmp[ic]->GetBinContent(4)*0.6+
+	h_trueMCNLO_tmp[ic]->GetBinContent(5)*0.6+
+	h_trueMCNLO_tmp[ic]->GetBinContent(6)*1.2;
+      h_trueMCNLO_tmp[ic]->Scale(xs_parton_mcnlo[whichXS]/sum);
+      
+      sum = 
+	h_unfolded_tmp[ic][0]->GetBinContent(1)*1.2+
+	h_unfolded_tmp[ic][0]->GetBinContent(2)*0.6+
+	h_unfolded_tmp[ic][0]->GetBinContent(3)*0.6+
+	h_unfolded_tmp[ic][0]->GetBinContent(4)*0.6+
+	h_unfolded_tmp[ic][0]->GetBinContent(5)*0.6+
+	h_unfolded_tmp[ic][0]->GetBinContent(6)*1.2;
+
+      // non-PS uncertainties scaled to nominal data
+      for (int is=0; is<nSYST; is++) {
+	if (name_syst[is]!="_PS") h_unfolded_tmp[ic][is]->Scale(data_xs_parton[whichXS]/sum);
+      }
+
+      if (twoStep == "_2step") {
+	sum = 
+	  h_part_tmp[ic]->GetBinContent(1)*1.2+
+	  h_part_tmp[ic]->GetBinContent(2)*0.6+
+	  h_part_tmp[ic]->GetBinContent(3)*0.6+
+	  h_part_tmp[ic]->GetBinContent(4)*0.6+
+	  h_part_tmp[ic]->GetBinContent(5)*0.6+
+	  h_part_tmp[ic]->GetBinContent(6)*1.2;
+	h_part_tmp[ic]->Scale(xs_particle[whichXS]/sum);
+	
+	//PS uncertainty needs to be scaled to truth (since that's what it's compared to)
+	for (int is=0; is<nSYST; is++) {
+	  if (name_syst[is]=="_PS") h_unfolded_part_tmp[ic][is]->Scale(xs_particle[whichXS]/sum);
+	}
+
+	sum = 
+	  h_partMG_tmp[ic]->GetBinContent(1)*1.2+
+	  h_partMG_tmp[ic]->GetBinContent(2)*0.6+
+	  h_partMG_tmp[ic]->GetBinContent(3)*0.6+
+	  h_partMG_tmp[ic]->GetBinContent(4)*0.6+
+	  h_partMG_tmp[ic]->GetBinContent(5)*0.6+
+	  h_partMG_tmp[ic]->GetBinContent(6)*1.2;
+	h_partMG_tmp[ic]->Scale(xs_particle_MG[whichXS]/sum);
+	
+	sum = 
+	  h_partMCNLO_tmp[ic]->GetBinContent(1)*1.2+
+	  h_partMCNLO_tmp[ic]->GetBinContent(2)*0.6+
+	  h_partMCNLO_tmp[ic]->GetBinContent(3)*0.6+
+	  h_partMCNLO_tmp[ic]->GetBinContent(4)*0.6+
+	  h_partMCNLO_tmp[ic]->GetBinContent(5)*0.6+
+	  h_partMCNLO_tmp[ic]->GetBinContent(6)*1.2;
+	h_partMCNLO_tmp[ic]->Scale(xs_particle_mcnlo[whichXS]/sum);
+
+	sum = 
+	  h_unfolded_part_tmp[ic][0]->GetBinContent(1)*1.2+
+	  h_unfolded_part_tmp[ic][0]->GetBinContent(2)*0.6+
+	  h_unfolded_part_tmp[ic][0]->GetBinContent(3)*0.6+
+	  h_unfolded_part_tmp[ic][0]->GetBinContent(4)*0.6+
+	  h_unfolded_part_tmp[ic][0]->GetBinContent(5)*0.6+
+	  h_unfolded_part_tmp[ic][0]->GetBinContent(6)*1.2;
+	
+	for (int is=0; is<nSYST; is++) {
+	  if (name_syst[is]!="_PS") h_unfolded_part_tmp[ic][is]->Scale(data_xs_particle[whichXS]/sum);
+	}
+
+      }//end twoStep
+    }// end channel loop
+  }// end doScale && toUnfold == "y"
+
   // ---------------------------------------------------------------------------------------------
 
 
@@ -674,9 +787,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     }
     else if (toUnfold == "y"){
       h_dummy->GetYaxis()->SetTitle("d#sigma/dy (fb)");
-      h_dummy->SetAxisRange(0,3000,"Y");
+      h_dummy->SetAxisRange(0.05,900,"Y");
       h_dummy_part->GetYaxis()->SetTitle("d#sigma/dy (fb)");
-      h_dummy_part->SetAxisRange(0,3000,"Y");
+      h_dummy_part->SetAxisRange(0.05,700,"Y");
     }
   }
 
@@ -994,8 +1107,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
     int ibin1 = h_systEXP_up->GetBin(i+1);
     int ibin2 = h_systEXP_up->GetBin(i+2);
-    int lowedge = h_systEXP_up->GetBinLowEdge(ibin1);
-    int highedge = h_systEXP_up->GetBinLowEdge(ibin2);
+    float lowedge = h_systEXP_up->GetBinLowEdge(ibin1);
+    float highedge = h_systEXP_up->GetBinLowEdge(ibin2);
 
     if (toUnfold == "pt"){
 
@@ -1015,12 +1128,24 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       }
    
     }
+
+    else if (toUnfold == "y"){
+      cout << (float)lowedge << "--" << (float)highedge << " & " << count[0] << " & " << syst_stat << " & " 
+	   << max_syst_totalEXP << " & " << max_syst_totalTH << " & " << max_syst_totaltotal << " & " 
+	   << h_true->GetBinContent(i+1) << " & " 
+	   << h_trueMG->GetBinContent(i+1) << " & " 
+	   << h_trueMCNLO->GetBinContent(i+1) << endl;
+      
+      
+      xsec_meas += count[0]*h_true->GetBinWidth(i+1);
+      xsec_true += h_true->GetBinContent(i+1)*h_true->GetBinWidth(i+1);
+      xsec_true_MG += h_trueMG->GetBinContent(i+1)*h_trueMG->GetBinWidth(i+1);
+      xsec_true_mcnlo += h_trueMCNLO->GetBinContent(i+1)*h_trueMCNLO->GetBinWidth(i+1);   
+    }
   }
     
-  if (toUnfold == "pt") {
-    cout << "TOTAL cross section (parton level), measured = " << xsec_meas << " true = " << xsec_true 
-	 << " true(MG) = " << xsec_true_MG << " true(MC@NLO) = " << xsec_true_mcnlo << endl;
-  }
+  cout << "TOTAL cross section (parton level), measured = " << xsec_meas << " true = " << xsec_true 
+       << " true(MG) = " << xsec_true_MG << " true(MC@NLO) = " << xsec_true_mcnlo << endl;
 
 
   // ----------------------------------------------------------------------------------------------------------------
@@ -1224,14 +1349,18 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   
 
   // ----------------------------------------------------------------------------------------------------------------
-  double legx = 0.52;
-  double legy = 0.4;
+  double legxlow = 0.52;
+  double legylow = 0.4;
+  double legxhigh = 0.85;
+  double legyhigh = 0.75;
   if (toUnfold == "y"){
-    legx = 0.35;
-    legy = 0.08;
+    legxlow = 0.37;
+    legylow = 0.05;
+    legxhigh = 0.70;
+    legyhigh = 0.38;
   }
   
-  TLegend* leg = new TLegend(legx,legy,legx+0.33,legy+0.35);  
+  TLegend* leg = new TLegend(legxlow,legylow,legxhigh,legyhigh);  
   leg->AddEntry(h_unfolded[0],"Data","pe1");
   leg->AddEntry(h_true,"Powheg+Pythia6 t#bar{t}","l");
   leg->AddEntry(h_trueMG,"MadGraph+Pythia6 t#bar{t}","l");
@@ -1244,7 +1373,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   else leg->AddEntry(blaTOT,"Stat. #oplus Syst. #oplus Lumi","f");
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);
-  leg->SetTextSize(0.055);
+  if (toUnfold == "pt") leg->SetTextSize(0.055);
+  else if (toUnfold == "y") leg->SetTextSize(0.05);
   leg->SetTextFont(42);
   leg->Draw();
 
@@ -1319,8 +1449,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   else if (toUnfold == "y") h_dummy_r->GetXaxis()->SetTitle("Top quark rapidity");
   h_dummy_r->GetYaxis()->SetTitle("Uncertainty [%]");
   if (toUnfold == "pt") h_dummy_r->SetAxisRange(400,1150,"X");
-  if (toUnfold == "y") h_dummy_r->SetAxisRange(0,100,"Y");
-  if (doQ2 && channel == "comb" && doNormalized) h_dummy_r->SetAxisRange(0,40,"Y");
+  if (toUnfold == "y") h_dummy_r->SetAxisRange(0,50,"Y");
+  else if (doQ2 && channel == "comb" && doNormalized) h_dummy_r->SetAxisRange(0,40,"Y");
   else if (doQ2) h_dummy_r->SetAxisRange(0,70,"Y");
   else h_dummy_r->SetAxisRange(0,25,"Y");
   
@@ -1700,14 +1830,14 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       
       int ibin1 = h_systEXP_up_part->GetBin(i+1);
       int ibin2 = h_systEXP_up_part->GetBin(i+2);
-      int lowedge = h_systEXP_up_part->GetBinLowEdge(ibin1);
-      int highedge = h_systEXP_up_part->GetBinLowEdge(ibin2);
+      float lowedge = h_systEXP_up_part->GetBinLowEdge(ibin1);
+      float highedge = h_systEXP_up_part->GetBinLowEdge(ibin2);
 
       if (toUnfold == "pt"){
       
 	if (lowedge > 300 && highedge < 1300) {
 	  cout << (float)lowedge << "--" << (float)highedge << " & " << count_part[0] << " & " << syst_stat_part << " & " 
-	       << max_syst_totalEXP_part << " & " << max_syst_totalTH_part << " & " << this_lumi_part << " & " << max_syst_totaltotal_part << " & " 
+	       << max_syst_totalEXP_part << " & " << max_syst_totalTH_part << " & " << " & " << max_syst_totaltotal_part << " & " 
 	       << h_part->GetBinContent(i+1) << " & " 
 	       << h_partMG->GetBinContent(i+1) << " & " 
 	       << h_partMCNLO->GetBinContent(i+1) << endl;
@@ -1721,12 +1851,23 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	}
 
       }
+
+      else if (toUnfold == "y"){
+	cout << (float)lowedge << "--" << (float)highedge << " & " << count_part[0] << " & " << syst_stat_part << " & " 
+	     << max_syst_totalEXP_part << " & " << max_syst_totalTH_part << " & " << " & " << max_syst_totaltotal_part << " & " 
+	     << h_part->GetBinContent(i+1) << " & " 
+	     << h_partMG->GetBinContent(i+1) << " & " 
+	     << h_partMCNLO->GetBinContent(i+1) << endl;
+	
+	xsec_meas += count_part[0]*h_part->GetBinWidth(i+1);
+	xsec_true += h_part->GetBinContent(i+1)*h_part->GetBinWidth(i+1);
+	xsec_true_MG += h_partMG->GetBinContent(i+1)*h_partMG->GetBinWidth(i+1);
+	xsec_true_mcnlo += h_partMCNLO->GetBinContent(i+1)*h_partMCNLO->GetBinWidth(i+1);
+      }
     }
 
-    if (toUnfold == "pt") {
-      cout << "TOTAL cross section (particle level), measured = " << xsec_meas << " true = " << xsec_true 
-	   << " true(MG) = " << xsec_true_MG << " true(MC@NLO) = " << xsec_true_mcnlo << endl;
-    }
+    cout << "TOTAL cross section (particle level), measured = " << xsec_meas << " true = " << xsec_true 
+	 << " true(MG) = " << xsec_true_MG << " true(MC@NLO) = " << xsec_true_mcnlo << endl;
 
     
     // ----------------------------------------------------------------------------------------------------------------
@@ -1928,7 +2069,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     
     
     // ----------------------------------------------------------------------------------------------------------------
-    TLegend* leg = new TLegend(legx,legy,legx+0.33,legy+0.35);  
+    TLegend* leg = new TLegend(legxlow,legylow,legxhigh,legyhigh);  
     leg->AddEntry(h_unfolded_part[0],"Data","pe1");
     leg->AddEntry(h_part,"Powheg+Pythia6 t#bar{t}","l");
     leg->AddEntry(h_partMG,"MadGraph+Pythia6 t#bar{t}","l");
@@ -1940,7 +2081,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     else leg->AddEntry(blaTOT_part,"Stat. #oplus Syst. #oplus Lumi","f");
     leg->SetFillStyle(0);
     leg->SetBorderSize(0);
-    leg->SetTextSize(0.055);
+    if (toUnfold == "pt") leg->SetTextSize(0.055);
+    else if (toUnfold == "y") leg->SetTextSize(0.05);
     leg->SetTextFont(42);
     leg->Draw();
 
@@ -2012,7 +2154,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     else if (toUnfold == "y") h_dummy_r_part->GetXaxis()->SetTitle("Particle-level top rapidity");
     h_dummy_r_part->GetYaxis()->SetTitle("Uncertainty [%]");
     if (toUnfold == "pt") h_dummy_r_part->SetAxisRange(400,1150,"X");
-    if (toUnfold == "y") h_dummy_r_part->SetAxisRange(0,100,"Y");
+    if (toUnfold == "y") h_dummy_r_part->SetAxisRange(0,50,"Y");
     else if (doQ2 && channel == "comb" && doNormalized) h_dummy_r_part->SetAxisRange(0,40,"Y");
     else if (doQ2) h_dummy_r_part->SetAxisRange(0,70,"Y");
     else h_dummy_r_part->SetAxisRange(0,25,"Y");
@@ -2028,7 +2170,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     c3->cd();
     
     if (toUnfold == "pt") h_syst_tot_part->SetAxisRange(0,40,"Y");
-    if (toUnfold == "y") h_syst_tot_part->SetAxisRange(0,100,"Y");
+    if (toUnfold == "y") h_syst_tot_part->SetAxisRange(0,50,"Y");
     h_syst_tot_part->SetFillColor(17);
     h_syst_tot_part->SetFillStyle(3344);
     h_syst_tot_part->SetLineColor(16);
