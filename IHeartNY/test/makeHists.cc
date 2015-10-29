@@ -390,7 +390,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   leg->AddEntry(h_ttbar, "t#bar{t} Signal", "f");
   leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} Other", "f");
   leg->AddEntry(h_singletop, "Single Top", "f");
-  leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
+  if (doElectron) leg->AddEntry(h_wjets, "W #rightarrow e#nu", "f");
+  else leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
   leg->AddEntry(h_qcd, "QCD" , "f");
   if (postfit && combined) leg->AddEntry(h_totalbkg, "Uncertainty", "f");
 
