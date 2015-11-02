@@ -75,9 +75,9 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
     makePlots("ptLep", 6, 7, doElectron, "", "CT10_nom", true, combine);
     makePlots("ptLep", 7, 0, doElectron, "", "CT10_nom", true, combine);
 
-    makePlots("ptMET", 4, 6, doElectron, "", "CT10_nom", true, combine);
-    makePlots("ptMET", 6, 7, doElectron, "", "CT10_nom", true, combine);
-    makePlots("ptMET", 7, 0, doElectron, "", "CT10_nom", true, combine);
+    //makePlots("ptMET", 4, 6, doElectron, "", "CT10_nom", true, combine);
+    //makePlots("ptMET", 6, 7, doElectron, "", "CT10_nom", true, combine);
+    //makePlots("ptMET", 7, 0, doElectron, "", "CT10_nom", true, combine);
 
   }
   // various plots for kinematic checks

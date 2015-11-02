@@ -102,7 +102,8 @@ gStyle.SetPadRightMargin(0.05);
 gStyle.SetPadBottomMargin(0.16);
 gStyle.SetPadLeftMargin(0.18);
   
-gSystem.Load("RooUnfold-1.1.1/libRooUnfold.so")
+#gSystem.Load("RooUnfold-1.1.1/libRooUnfold.so")
+gSystem.Load("RooUnfold/libRooUnfold.so")
 
 from ROOT import RooUnfoldResponse
 from ROOT import RooUnfold
@@ -1250,9 +1251,10 @@ hFrac.GetXaxis().SetRangeUser(400., 1200.)
 
 c1.Update()
 
-c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append1+closureout+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+norm_flag+".pdf", "pdf")
-c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append1+closureout+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+norm_flag+".png", "png")
-c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append1+closureout+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+norm_flag+".eps", "eps")
+if options.syst=="nom" and options.bkgSyst=="nom":
+    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append1+closureout+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+norm_flag+".pdf", "pdf")
+    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append1+closureout+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+norm_flag+".png", "png")
+    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+append1+closureout+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+norm_flag+".eps", "eps")
 
 if options.troubleshoot and options.closureTest and options.whatClosure == "nom":
     pad1.cd()
@@ -1444,9 +1446,10 @@ if options.twoStep:
 
     c1.Update()
 
-    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_"+options.toUnfold+"_2step_particle"+closureout+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+norm_flag+".pdf", "pdf")
-    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_"+options.toUnfold+"_2step_particle"+closureout+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+norm_flag+".png", "png")
-    c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_"+options.toUnfold+"_2step_particle"+closureout+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+norm_flag+".eps", "eps")
+    if options.syst=="nom" and options.bkgSyst=="nom":
+        c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_"+options.toUnfold+"_2step_particle"+closureout+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+norm_flag+".pdf", "pdf")
+        c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_"+options.toUnfold+"_2step_particle"+closureout+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+norm_flag+".png", "png")
+        c1.Print("UnfoldingPlots/unfolded_ttbar_xs"+DIR+"_"+options.toUnfold+"_2step_particle"+closureout+"_"+options.pdf+"_"+options.syst+bkgout+nobtag+norm_flag+".eps", "eps")
 
     if options.troubleshoot :
         pad1.cd()
@@ -1596,9 +1599,10 @@ if options.twoStep == False:
     hResponse2D.Draw("colz,same,text")
     hEmpty2D.Draw("axis,same")
 
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_full_"+options.pdf+"_"+options.syst+nobtag+".png")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_full_"+options.pdf+"_"+options.syst+nobtag+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_full_"+options.pdf+"_"+options.syst+nobtag+".pdf")
+    if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_full_"+options.pdf+"_"+options.syst+nobtag+".png")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_full_"+options.pdf+"_"+options.syst+nobtag+".eps")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_full_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
     if options.troubleshoot and options.closureTest and options.whatClosure == "nom":
         hEmpty2D.Draw()
@@ -1642,9 +1646,10 @@ if options.twoStep == False:
     hEmpty2D.Draw()
     hResponse2D.Draw("colz,same,text")
     hEmpty2D.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".png")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".pdf")
+    if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".png")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".eps")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
     if options.toUnfold == "pt":
         hEmpty2D.SetAxisRange(450,1150,"X")
@@ -1655,9 +1660,10 @@ if options.twoStep == False:
         hResponse2D.Draw("colz,same,text")
         hEmpty2D.Draw("axis,same")
 
-        cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
-        cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
-        cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
+        if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
+            cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
+            cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
+            cr.SaveAs("UnfoldingPlots/unfold"+DIR+append1+closureout+"_responseMatrix_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
         
     response.Hresponse().SetName("responseMatrix_"+options.syst)
     response.Hresponse().Write()
@@ -1695,9 +1701,10 @@ if options.twoStep:
     hResponse2D_rp.SetMarkerSize(1.2)
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_full_"+options.pdf+"_"+options.syst+nobtag+".png")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_full_"+options.pdf+"_"+options.syst+nobtag+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_full_"+options.pdf+"_"+options.syst+nobtag+".pdf")
+    if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_full_"+options.pdf+"_"+options.syst+nobtag+".png")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_full_"+options.pdf+"_"+options.syst+nobtag+".eps")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_full_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
     if options.troubleshoot and options.closureTest and options.whatClosure == "nom":
         hResponse2D_rp_even = response_rp_even.Hresponse().Clone()
@@ -1741,9 +1748,10 @@ if options.twoStep:
     hEmpty2D_rp.Draw()
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".png")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".pdf")
+    if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".png")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".eps")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
     if options.toUnfold == "pt":
         hEmpty2D_rp.SetAxisRange(450,1150,"X")
@@ -1784,9 +1792,10 @@ if options.twoStep:
             t3.DrawLatex(0.49,0.94, "(#mu+Jets)")
         t3.DrawLatex(0.66,0.94, "19.7 fb^{-1} (8 TeV)")    
 
-        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
-        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
-        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
+        if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
+            cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
+            cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
+            cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
 
     response_rp.Hresponse().SetName("responseMatrix_rp_"+options.syst)
@@ -1816,9 +1825,10 @@ if options.twoStep:
     hResponse2D_pp.SetMarkerSize(1.2)
     hResponse2D_pp.Draw("colz,same,text")
     hEmpty2D_pp.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_full_"+options.pdf+"_"+options.syst+nobtag+".png")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_full_"+options.pdf+"_"+options.syst+nobtag+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_full_"+options.pdf+"_"+options.syst+nobtag+".pdf")
+    if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_full_"+options.pdf+"_"+options.syst+nobtag+".png")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_full_"+options.pdf+"_"+options.syst+nobtag+".eps")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_full_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
     if options.troubleshoot and options.closureTest and options.whatClosure == "nom":
         hResponse2D_pp_even = response_pp_even.Hresponse().Clone()
@@ -1861,9 +1871,10 @@ if options.twoStep:
 
     hResponse2D_pp.Draw("colz,same,text")
     hEmpty2D_pp.Draw("axis,same")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".png")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".eps")
-    cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".pdf")
+    if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".png")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".eps")
+        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
     if options.toUnfold == "pt":
         hEmpty2D_pp.SetAxisRange(450,1150,"X")
@@ -1904,9 +1915,10 @@ if options.twoStep:
             t3.DrawLatex(0.49,0.94, "(#mu+Jets)")
         t3.DrawLatex(0.66,0.94, "19.7 fb^{-1} (8 TeV)")    
     
-        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
-        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
-        cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
+        if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
+            cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
+            cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+".eps")
+            cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+".pdf")
 
     response_pp.Hresponse().SetName("responseMatrix_pp_"+options.syst)
     response_pp.Hresponse().Write()

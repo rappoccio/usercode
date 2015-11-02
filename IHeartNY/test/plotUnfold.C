@@ -24,7 +24,7 @@ using namespace std;
 
 void SetPlotStyle();
 void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize,char *text); 
-void drawCMS(Double_t x,Double_t y, bool pad, bool prel, bool forPublic);
+void drawCMS(Double_t x1,Double_t y1, Double_t x2,Double_t y2, bool pad, bool prel, bool forPublic);
 
 void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doNormalized, bool doLogscale, bool doAverageErr);
 
@@ -787,9 +787,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     }
     else if (toUnfold == "y"){
       h_dummy->GetYaxis()->SetTitle("d#sigma/dy (fb)");
-      h_dummy->SetAxisRange(0.05,900,"Y");
+      h_dummy->SetAxisRange(0.0,900,"Y");
       h_dummy_part->GetYaxis()->SetTitle("d#sigma/dy (fb)");
-      h_dummy_part->SetAxisRange(0.05,700,"Y");
+      h_dummy_part->SetAxisRange(0.0,700,"Y");
     }
   }
 
@@ -1191,8 +1191,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   p2->SetLeftMargin(0.16);
   p2->SetRightMargin(0.075);
   
-  p1->Draw();
   p2->Draw();
+  p1->Draw();
     
   p1->cd();
 
@@ -1228,6 +1228,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
   h_dummy->GetYaxis()->SetTitleSize(0.075);    
   if (doLogscale) h_dummy->GetYaxis()->SetTitleOffset(0.8);
+  else if (toUnfold == "y") h_dummy->GetYaxis()->SetTitleOffset(0.9);
   else h_dummy->GetYaxis()->SetTitleOffset(1.1);
   h_dummy->GetYaxis()->SetLabelSize(0.065);
   h_dummy->GetXaxis()->SetTitleSize(0);
@@ -1355,9 +1356,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   double legyhigh = 0.75;
   if (toUnfold == "y"){
     legxlow = 0.37;
-    legylow = 0.05;
+    legylow = 0.04;
     legxhigh = 0.70;
-    legyhigh = 0.38;
+    legyhigh = 0.37;
   }
   
   TLegend* leg = new TLegend(legxlow,legylow,legxhigh,legyhigh);  
@@ -1370,7 +1371,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   //leg->AddEntry(blaTOT,"Stat. #oplus exp. #oplus theory","f");
   leg->AddEntry(blaSTAT,"Stat. Uncertainty","f");
   if (doNormalized) leg->AddEntry(blaTOT,"Stat. #oplus Syst.","f");
-  else leg->AddEntry(blaTOT,"Stat. #oplus Syst. #oplus Lumi","f");
+  else leg->AddEntry(blaTOT,"Stat. #oplus Syst.","f");
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);
   if (toUnfold == "pt") leg->SetTextSize(0.055);
@@ -1378,7 +1379,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   leg->SetTextFont(42);
   leg->Draw();
 
-  drawCMS(0.53,0.8,true,true,forpub);
+  if (toUnfold=="y") drawCMS(0.21,0.79,0.21,0.72,true,true,forpub);
+  else drawCMS(0.53,0.8,0.64,0.8,true,true,forpub);
 
 
   // ----------------------------------------------------------------------------------------------------------------
@@ -1401,10 +1403,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   h_ratio->GetXaxis()->SetTitleOffset(1.0);
 
   if (toUnfold == "y"){
-    h_ratio->SetAxisRange(0.3,1.7,"Y");
-    h_ratioGEN->SetAxisRange(0.3,1.7,"Y");
-    h_ratioMG->SetAxisRange(0.3,1.7,"Y");
-    h_ratioMCNLO->SetAxisRange(0.3,1.7,"Y");
+    h_ratio->SetAxisRange(0.5,1.5,"Y");
+    h_ratioGEN->SetAxisRange(0.5,1.5,"Y");
+    h_ratioMG->SetAxisRange(0.5,1.5,"Y");
+    h_ratioMCNLO->SetAxisRange(0.5,1.5,"Y");
   }  
   else if (doNormalized) {
     h_ratio->SetAxisRange(0.6,1.4,"Y");
@@ -1451,7 +1453,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   if (toUnfold == "pt") h_dummy_r->SetAxisRange(400,1150,"X");
   if (toUnfold == "y") h_dummy_r->SetAxisRange(0,50,"Y");
   else if (doQ2 && channel == "comb" && doNormalized) h_dummy_r->SetAxisRange(0,40,"Y");
-  else if (doQ2) h_dummy_r->SetAxisRange(0,70,"Y");
+  else if (doQ2) h_dummy_r->SetAxisRange(0,80,"Y");
   else h_dummy_r->SetAxisRange(0,25,"Y");
   
   h_dummy_r->GetYaxis()->SetTitleSize(0.055);    
@@ -1526,7 +1528,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   TLegend* leg2 = new TLegend(0.6,0.54,0.85,0.88);  
   leg2->AddEntry(h_syst_tot,"Total syst. uncertainty","f");
   leg2->AddEntry(h_syst_stat,"Statistical uncertainty","lp");
-  if (doNormalized == false) leg2->AddEntry(h_lumi,"Luminosity uncertainty","lp");
+  if (doNormalized == false) leg2->AddEntry(h_lumi,"Luminosity","lp");
   leg2->AddEntry(h_syst_jec,"Jet energy scale","lp");
   leg2->AddEntry(h_syst_jer,"Jet energy resolution","lp");
   leg2->AddEntry(h_syst_toptag,"Top-tagging efficiency","lp");
@@ -1556,7 +1558,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   h_dummy_r->Draw("hist,axis,same");
   leg2->Draw(); 
 
-  drawCMS(0.2,0.84,false,true,forpub);
+  drawCMS(0.2,0.84,0.3,0.84,false,true,forpub);
 
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+".png");
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+".pdf");
@@ -1910,11 +1912,12 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     p4->SetLeftMargin(0.16);
     p4->SetRightMargin(0.075);
 
-    p3->Draw();
     p4->Draw();
+    p3->Draw();
     
     h_dummy_part->GetYaxis()->SetTitleSize(0.075);    
     if (doLogscale) h_dummy_part->GetYaxis()->SetTitleOffset(0.8);
+    else if (toUnfold == "y") h_dummy_part->GetYaxis()->SetTitleOffset(0.9);
     else h_dummy_part->GetYaxis()->SetTitleOffset(1.1);
     h_dummy_part->GetYaxis()->SetLabelSize(0.065);
     h_dummy_part->GetXaxis()->SetTitleSize(0);
@@ -2078,7 +2081,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     //leg->AddEntry(blaTH_part,"Theory uncertainty","f");
     leg->AddEntry(blaSTAT_part,"Stat. Uncertainty","f");
     if (doNormalized) leg->AddEntry(blaTOT_part,"Stat. #oplus Syst.","f");
-    else leg->AddEntry(blaTOT_part,"Stat. #oplus Syst. #oplus Lumi","f");
+    else leg->AddEntry(blaTOT_part,"Stat. #oplus Syst.","f");
     leg->SetFillStyle(0);
     leg->SetBorderSize(0);
     if (toUnfold == "pt") leg->SetTextSize(0.055);
@@ -2086,8 +2089,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     leg->SetTextFont(42);
     leg->Draw();
 
-    drawCMS(0.53,0.8,true,true,forpub);
-
+    if (toUnfold=="y") drawCMS(0.21,0.79,0.21,0.72,true,true,forpub);
+    else drawCMS(0.53,0.8,0.64,0.8,true,true,forpub);
+    
     // ----------------------------------------------------------------------------------------------------------------
         
     p4->cd();
@@ -2106,10 +2110,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_ratio_part->GetXaxis()->SetTitleOffset(1.0);
     
     if (toUnfold == "y") {
-      h_ratio_part->SetAxisRange(0.3,1.7,"Y");
-      h_ratioGEN_part->SetAxisRange(0.3,1.7,"Y");
-      h_ratioMG_part->SetAxisRange(0.3,1.7,"Y");
-      h_ratioMCNLO_part->SetAxisRange(0.3,1.7,"Y");
+      h_ratio_part->SetAxisRange(0.5,1.5,"Y");
+      h_ratioGEN_part->SetAxisRange(0.5,1.5,"Y");
+      h_ratioMG_part->SetAxisRange(0.5,1.5,"Y");
+      h_ratioMCNLO_part->SetAxisRange(0.5,1.5,"Y");
     }
     else if (doNormalized) {
       h_ratio_part->SetAxisRange(0.6,1.4,"Y");
@@ -2156,7 +2160,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     if (toUnfold == "pt") h_dummy_r_part->SetAxisRange(400,1150,"X");
     if (toUnfold == "y") h_dummy_r_part->SetAxisRange(0,50,"Y");
     else if (doQ2 && channel == "comb" && doNormalized) h_dummy_r_part->SetAxisRange(0,40,"Y");
-    else if (doQ2) h_dummy_r_part->SetAxisRange(0,70,"Y");
+    else if (doQ2) h_dummy_r_part->SetAxisRange(0,80,"Y");
     else h_dummy_r_part->SetAxisRange(0,25,"Y");
     
     h_dummy_r_part->GetYaxis()->SetTitleSize(0.055);    
@@ -2225,7 +2229,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     TLegend* leg4 = new TLegend(0.6,0.54,0.85,0.88);  
     leg4->AddEntry(h_syst_tot_part,"Total syst. uncertainty","f");
     leg4->AddEntry(h_syst_stat_part,"Statistical uncertainty","lp");
-    if (doNormalized == false) leg4->AddEntry(h_lumi,"Lumi uncertainty","lp");
+    if (doNormalized == false) leg4->AddEntry(h_lumi,"Luminosity","lp");
     leg4->AddEntry(h_syst_jec_part,"Jet energy scale","lp");
     leg4->AddEntry(h_syst_jer_part,"Jet energy resolution","lp");
     leg4->AddEntry(h_syst_toptag_part,"Top-tagging efficiency","lp");
@@ -2254,7 +2258,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_dummy_r_part->Draw("hist,axis,same");
     leg4->Draw(); 
     
-    drawCMS(0.2,0.84,false,true,forpub);
+    drawCMS(0.2,0.84,0.3,0.84,false,true,forpub);
     
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+".png");
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+".pdf");
@@ -2344,7 +2348,7 @@ void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize, char *text)
   l.DrawLatex(x,y,text);
 }
 
-void drawCMS(Double_t x,Double_t y, bool pad, bool prel, bool forPublic) {
+void drawCMS(Double_t x1, Double_t y1, Double_t x2, Double_t y2, bool pad, bool prel, bool forPublic) {
 
   float cmsTextSize = 0.08;
   if (!pad) cmsTextSize = 0.058;
@@ -2358,7 +2362,7 @@ void drawCMS(Double_t x,Double_t y, bool pad, bool prel, bool forPublic) {
   l.SetTextAngle(0);
   l.SetNDC();
   l.SetTextColor(1);
-  if (forPublic) l.DrawLatex(x,y,"CMS");
+  if (forPublic) l.DrawLatex(x1,y1,"CMS");
 
   if (prel && forPublic) {
     TLatex lp;
@@ -2366,9 +2370,7 @@ void drawCMS(Double_t x,Double_t y, bool pad, bool prel, bool forPublic) {
     lp.SetTextFont(52); 
     lp.SetNDC();
     lp.SetTextColor(1);
-    float offset = 0.11;
-    if (!pad) offset = 0.10;
-    lp.DrawLatex(x+offset,y,"Preliminary");
+    lp.DrawLatex(x2,y2,"Preliminary");
   }
 
   TLatex ll;
