@@ -1839,7 +1839,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       
 	if (lowedge > 300 && highedge < 1300) {
 	  cout << (float)lowedge << "--" << (float)highedge << " & " << count_part[0] << " & " << syst_stat_part << " & " 
-	       << max_syst_totalEXP_part << " & " << max_syst_totalTH_part << " & " << " & " << max_syst_totaltotal_part << " & " 
+	       << max_syst_totalEXP_part << " & " << max_syst_totalTH_part << " & " << max_syst_totaltotal_part << " & " 
 	       << h_part->GetBinContent(i+1) << " & " 
 	       << h_partMG->GetBinContent(i+1) << " & " 
 	       << h_partMCNLO->GetBinContent(i+1) << endl;
@@ -1856,7 +1856,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
       else if (toUnfold == "y"){
 	cout << (float)lowedge << "--" << (float)highedge << " & " << count_part[0] << " & " << syst_stat_part << " & " 
-	     << max_syst_totalEXP_part << " & " << max_syst_totalTH_part << " & " << " & " << max_syst_totaltotal_part << " & " 
+	     << max_syst_totalEXP_part << " & " << max_syst_totalTH_part << " & " << max_syst_totaltotal_part << " & " 
 	     << h_part->GetBinContent(i+1) << " & " 
 	     << h_partMG->GetBinContent(i+1) << " & " 
 	     << h_partMCNLO->GetBinContent(i+1) << endl;
