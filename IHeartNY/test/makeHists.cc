@@ -287,7 +287,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     binwidth = h_data->GetBinWidth(2) * rebin;
     sprintf(tmptxt,"Events / %.0f GeV",binwidth);
   }
-  else if (hist=="hadtop_y5" || hist=="hadtop_y6" || hist=="hadtop_y7" || hist=="leptop_y5" || hist=="leptop_y6" || hist=="leptop_y7") {
+  else if (hist=="hadtop_y4" || hist=="hadtop_y6" || hist=="hadtop_y7" || hist=="leptop_y4" || hist=="leptop_y6" || hist=="leptop_y7") {
     rebin = 2;
     binwidth = h_data->GetBinWidth(2) * rebin;
     sprintf(tmptxt,"Events / %.1f",binwidth);
@@ -343,8 +343,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     h_wjets->Rebin(rebin);
   }
   if (var.Contains("vtxMass")) h_data->GetXaxis()->SetTitle("Leptonic-side secondary vertex mass (GeV)");
-
-
+  
   h_data->SetLineWidth(1);
   h_data->SetMarkerStyle(20);
 
@@ -379,7 +378,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 
   // legend
   TLegend* leg;
-  if (postfit && combined) leg = new TLegend(0.62,0.4,0.87,0.78);
+  if (postfit && combined && hist == "hadtop_y4") leg = new TLegend(0.62,0.5,0.87,0.88);
+  else if (postfit && combined) leg = new TLegend(0.62,0.4,0.87,0.78);
   else if (var.Contains("csv")) leg = new TLegend(0.59,0.56,0.84,0.9);
   else leg = new TLegend(0.65,0.5,0.87,0.88);
   leg->SetBorderSize(0);
@@ -535,7 +535,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   h_data->GetXaxis()->SetLabelSize(26);
   h_data->GetYaxis()->SetLabelSize(26);
   h_data->GetYaxis()->SetTitleSize(36);
-  h_data->GetYaxis()->SetTitleOffset(1.0);
+  if (hist == "hadtop_pt4" || hist == "hadtop_y4") h_data->GetYaxis()->SetTitleOffset(1.2);
+  else h_data->GetYaxis()->SetTitleOffset(1.0);
   h_data->Draw("lep");
   h_stack->Draw("hist,same");
   h_data->Draw("lep,same");
@@ -547,7 +548,10 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 
   if (postfit && combined) {
 
-    drawCMS(0.62,0.83,true);
+    if (hist == "hadtop_y4")
+      drawCMS(0.18,0.68,true);
+    else
+      drawCMS(0.62,0.83,true);      
     
     if (hist.Contains("vtxMass") || hist.Contains("hadtop_pt")) {
       if (hist.Contains("7")) myText(0.62,0.32,1,"1 t-tag + 1 b-tag");
@@ -557,6 +561,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
       else myText(0.62,0.26,1,"#mu+Jets");
       myItalicText(0.62,0.20,1,"Post-fit yields");
     }
+    
     else {
       if (doElectron) {
 	if (hist.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  e+Jets");
