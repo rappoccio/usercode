@@ -1146,6 +1146,7 @@ h_hadtop_pt_pt      = ROOT.TH1F("hadtop_pt_pt",      ";p_{T}(hadronic top) [GeV]
 h_hadtop_pt_nsub    = ROOT.TH1F("hadtop_pt_nsub",    ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass nsub >= 3
 h_hadtop_pt_minmass = ROOT.TH1F("hadtop_pt_minmass", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass minmass > 50 GeV
 h_hadtop_pt6        = ROOT.TH1F("hadtop_pt6",        ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass 140 < mass < 250 GeV *** FINAL SELECTION ***
+h_hadtop_pt_preTopTag = ROOT.TH1F("hadtop_pt_preTopTag", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # *** FINAL SELECTION *** but prior to top-tagging SF
 h_hadtop_pt6_loweta = ROOT.TH1F("hadtop_pt6LowEta",  ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 h_hadtop_pt6_higheta= ROOT.TH1F("hadtop_pt6HighEta", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 #h_hadtop_pt_tau32   = ROOT.TH1F("hadtop_pt_tau32",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass tau32 cut (beyond current selection!)
@@ -1194,7 +1195,6 @@ h_btagSF   = ROOT.TH1F("btagSF",   ";; Average b-tagging SF", 1,0.5,1.5)
 h_toptagSF = ROOT.TH1F("toptagSF", ";; Average top-tagging SF", 1,0.5,1.5)
 
 
-
 ############################################################################################################
 # UNFOLDING 
 ############################################################################################################
@@ -1224,6 +1224,7 @@ if options.makeResponse == True :
     response_y_nobtag.SetName('response_y_nobtag')
     h_yGenTop          = ROOT.TH1F("yGenTop",          ";generated top rapidity; Events / 0.1", len(ybins)-1, ybins)
     h_yGenTop_noweight = ROOT.TH1F("yGenTop_noweight", ";generated top rapidity; Events / 0.1", len(ybins)-1, ybins)
+    h_yGenTop_fine     = ROOT.TH1F("yGenTop_fine",     ";generated top rapidity; Events / 0.01", 500, -2.5, 2.5)
     
     ## --------------------------------------------------------------------------------------------------
     ## TWO-STEP UNFOLDING
@@ -1884,6 +1885,7 @@ for event in events :
                 passParton = True
                 h_ptGenTop_passParton.Fill(hadTop.p4.Perp(), weight)
                 h_yGenTop.Fill( hadTop.p4.Rapidity(), weight )
+                h_yGenTop_fine.Fill( hadTop.p4.Rapidity(), weight )
                 h_yGenTop_noweight.Fill( hadTop.p4.Rapidity() )
 
                                 
@@ -3555,6 +3557,9 @@ for event in events :
     goodtop = hadJets[itop_mass]
     igoodtop = hadJetsIndex[itop_mass]
 
+    if options.isData == False:
+        h_hadtop_pt_preTopTag.Fill(goodtop.Perp(), top_weight)
+
     ## apply top-tagging systematic variation up/down
     toptagSF = 1.0
     if options.isData == False :
@@ -3855,7 +3860,6 @@ for event in events :
         h_muonSF.Fill(1.0,muonSF*weight)
         h_btagSF.Fill(1.0,btagSF*weight)
         h_toptagSF.Fill(1.0,toptagSF*weight)
-
     
     # -------------------------------------------------------------------------------------
     # finally fill response matrix if doing unfolding

@@ -1194,7 +1194,6 @@ h_btagSF   = ROOT.TH1F("btagSF",   ";; Average b-tagging SF", 1,0.5,1.5)
 h_toptagSF = ROOT.TH1F("toptagSF", ";; Average top-tagging SF", 1,0.5,1.5)
 
 
-
 ############################################################################################################
 # UNFOLDING 
 ############################################################################################################
@@ -1308,6 +1307,9 @@ h_yRecoTop        = ROOT.TH1F("yRecoTop",        ";reconstructed top rapidity; E
 h_yRecoTop_nobtag = ROOT.TH1F("yRecoTop_nobtag", ";reconstructed top rapidity; Events / 0.1", len(ybins)-1, ybins)
 h_yRecoTop_2step        = ROOT.TH1F("yRecoTop_2step",        ";reconstructed top rapidity; Events / 0.1", len(ybins)-1, ybins)
 h_yRecoTop_2step_nobtag = ROOT.TH1F("yRecoTop_2step_nobtag", ";reconstructed top rapidity; Events / 0.1", len(ybins)-1, ybins)
+
+h_toptagSF_pt = ROOT.TH1F("toptagSF_pt", ";; Average top-tagging SF", len(ptbins)-1, ptbins)
+
 
 
 # -------------------------------------------------------------------------------------
@@ -3855,7 +3857,7 @@ for event in events :
         h_muonSF.Fill(1.0,muonSF*weight)
         h_btagSF.Fill(1.0,btagSF*weight)
         h_toptagSF.Fill(1.0,toptagSF*weight)
-
+        h_toptagSF_pt.Fill(goodtop.Perp(),toptagSF*top_weight)
     
     # -------------------------------------------------------------------------------------
     # finally fill response matrix if doing unfolding
