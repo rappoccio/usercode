@@ -750,6 +750,9 @@ else:
     PileFile = ROOT.TFile(DIR+"Pileup_plots.root")
 PilePlot = PileFile.Get("pweight" + options.pileup)
 
+WeightPS_File = ROOT.TFile(DIR+"PS_weights.root")
+WeightPS_Plot = WeightPS_File.Get("weight")
+
 f.cd()
 
 h_true_dR_zoom = ROOT.TH1F("true_dR_zoom",";dR(lepton, closest AK5 gen jet);", 100, 0.0, 0.4)
@@ -1224,7 +1227,8 @@ if options.makeResponse == True :
     response_y_nobtag.SetName('response_y_nobtag')
     h_yGenTop          = ROOT.TH1F("yGenTop",          ";generated top rapidity; Events / 0.1", len(ybins)-1, ybins)
     h_yGenTop_noweight = ROOT.TH1F("yGenTop_noweight", ";generated top rapidity; Events / 0.1", len(ybins)-1, ybins)
-    h_yGenTop_fine     = ROOT.TH1F("yGenTop_fine",     ";generated top rapidity; Events / 0.01", 500, -2.5, 2.5)
+
+    h_etaGenTop        = ROOT.TH1F("etaGenTop",        ";generated top eta; Events / 0.01", 500, -2.5, 2.5)
     
     ## --------------------------------------------------------------------------------------------------
     ## TWO-STEP UNFOLDING
@@ -1875,6 +1879,14 @@ for event in events :
             if mttbarGen > options.mttGenMax :
                 continue
 
+        # -------------------------------------------------------------------------------------
+        # reweight MC@NLO parton-level shape to match Powheg
+        # -------------------------------------------------------------------------------------
+        
+        #if "mcatnlo" in options.outname and "TT_" in options.outname:
+        #    wbin = WeightPS_Plot.FindBin(hadTop.p4.Eta()) 
+        #    weight *= WeightPS_Plot.GetBinContent(wbin)
+
         h_mttbarGen0.Fill(mttbarGen, weight)
 
         if options.makeResponse == True:
@@ -1885,7 +1897,7 @@ for event in events :
                 passParton = True
                 h_ptGenTop_passParton.Fill(hadTop.p4.Perp(), weight)
                 h_yGenTop.Fill( hadTop.p4.Rapidity(), weight )
-                h_yGenTop_fine.Fill( hadTop.p4.Rapidity(), weight )
+                h_etaGenTop.Fill( hadTop.p4.Eta(), weight )
                 h_yGenTop_noweight.Fill( hadTop.p4.Rapidity() )
 
                                 

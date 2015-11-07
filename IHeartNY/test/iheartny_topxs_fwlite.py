@@ -750,6 +750,9 @@ else:
     PileFile = ROOT.TFile(DIR+"Pileup_plots.root")
 PilePlot = PileFile.Get("pweight" + options.pileup)
 
+WeightPS_File = ROOT.TFile(DIR+"PS_weights.root")
+WeightPS_Plot = WeightPS_File.Get("weight")
+
 f.cd()
 
 h_true_dR_zoom = ROOT.TH1F("true_dR_zoom",";dR(lepton, closest AK5 gen jet);", 100, 0.0, 0.4)
@@ -1146,6 +1149,7 @@ h_hadtop_pt_pt      = ROOT.TH1F("hadtop_pt_pt",      ";p_{T}(hadronic top) [GeV]
 h_hadtop_pt_nsub    = ROOT.TH1F("hadtop_pt_nsub",    ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass nsub >= 3
 h_hadtop_pt_minmass = ROOT.TH1F("hadtop_pt_minmass", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass minmass > 50 GeV
 h_hadtop_pt6        = ROOT.TH1F("hadtop_pt6",        ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass 140 < mass < 250 GeV *** FINAL SELECTION ***
+h_hadtop_pt_preTopTag = ROOT.TH1F("hadtop_pt_preTopTag", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # *** FINAL SELECTION *** but prior to top-tagging SF
 h_hadtop_pt6_loweta = ROOT.TH1F("hadtop_pt6LowEta",  ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 h_hadtop_pt6_higheta= ROOT.TH1F("hadtop_pt6HighEta", ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)
 #h_hadtop_pt_tau32   = ROOT.TH1F("hadtop_pt_tau32",   ";p_{T}(hadronic top) [GeV]; Events / 5 GeV", 300, 0., 1500.)  # + pass tau32 cut (beyond current selection!)
@@ -1223,6 +1227,8 @@ if options.makeResponse == True :
     response_y_nobtag.SetName('response_y_nobtag')
     h_yGenTop          = ROOT.TH1F("yGenTop",          ";generated top rapidity; Events / 0.1", len(ybins)-1, ybins)
     h_yGenTop_noweight = ROOT.TH1F("yGenTop_noweight", ";generated top rapidity; Events / 0.1", len(ybins)-1, ybins)
+
+    h_etaGenTop        = ROOT.TH1F("etaGenTop",        ";generated top eta; Events / 0.01", 500, -2.5, 2.5)
     
     ## --------------------------------------------------------------------------------------------------
     ## TWO-STEP UNFOLDING
@@ -1307,9 +1313,6 @@ h_yRecoTop        = ROOT.TH1F("yRecoTop",        ";reconstructed top rapidity; E
 h_yRecoTop_nobtag = ROOT.TH1F("yRecoTop_nobtag", ";reconstructed top rapidity; Events / 0.1", len(ybins)-1, ybins)
 h_yRecoTop_2step        = ROOT.TH1F("yRecoTop_2step",        ";reconstructed top rapidity; Events / 0.1", len(ybins)-1, ybins)
 h_yRecoTop_2step_nobtag = ROOT.TH1F("yRecoTop_2step_nobtag", ";reconstructed top rapidity; Events / 0.1", len(ybins)-1, ybins)
-
-h_toptagSF_pt = ROOT.TH1F("toptagSF_pt", ";; Average top-tagging SF", len(ptbins)-1, ptbins)
-
 
 
 # -------------------------------------------------------------------------------------
@@ -1876,6 +1879,14 @@ for event in events :
             if mttbarGen > options.mttGenMax :
                 continue
 
+        # -------------------------------------------------------------------------------------
+        # reweight MC@NLO parton-level shape to match Powheg
+        # -------------------------------------------------------------------------------------
+        
+        #if "mcatnlo" in options.outname and "TT_" in options.outname:
+        #    wbin = WeightPS_Plot.FindBin(hadTop.p4.Eta()) 
+        #    weight *= WeightPS_Plot.GetBinContent(wbin)
+
         h_mttbarGen0.Fill(mttbarGen, weight)
 
         if options.makeResponse == True:
@@ -1886,6 +1897,7 @@ for event in events :
                 passParton = True
                 h_ptGenTop_passParton.Fill(hadTop.p4.Perp(), weight)
                 h_yGenTop.Fill( hadTop.p4.Rapidity(), weight )
+                h_etaGenTop.Fill( hadTop.p4.Eta(), weight )
                 h_yGenTop_noweight.Fill( hadTop.p4.Rapidity() )
 
                                 
@@ -3557,6 +3569,9 @@ for event in events :
     goodtop = hadJets[itop_mass]
     igoodtop = hadJetsIndex[itop_mass]
 
+    if options.isData == False:
+        h_hadtop_pt_preTopTag.Fill(goodtop.Perp(), top_weight)
+
     ## apply top-tagging systematic variation up/down
     toptagSF = 1.0
     if options.isData == False :
@@ -3857,7 +3872,6 @@ for event in events :
         h_muonSF.Fill(1.0,muonSF*weight)
         h_btagSF.Fill(1.0,btagSF*weight)
         h_toptagSF.Fill(1.0,toptagSF*weight)
-        h_toptagSF_pt.Fill(goodtop.Perp(),toptagSF*top_weight)
     
     # -------------------------------------------------------------------------------------
     # finally fill response matrix if doing unfolding
