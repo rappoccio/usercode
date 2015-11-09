@@ -546,6 +546,11 @@ parser.add_option('--makeResponse', metavar='M', action='store_true',
                   dest='makeResponse',
                   help='Make response matrix for top pt unfolding')
 
+parser.add_option('--useSubstructure', metavar='M', action='store_true',
+                  default=False,
+                  dest='useSubstructure',
+                  help='if makeResponse==True, and useSubstructure==True, add substructure variables in particle-level definition')
+
 parser.add_option('--semilep', metavar='J', type='float',action='store',
                   default=None,
                   dest='semilep',
@@ -774,6 +779,9 @@ h_mttbarGen5 = ROOT.TH1F("mttbarGen5", "; gen-level m(t#bar{t}) [GeV]; Events / 
 h_mttbarGen6 = ROOT.TH1F("mttbarGen6", "; gen-level m(t#bar{t}) [GeV]; Events / 10 GeV", 250, 0, 2500)
 h_mttbarGen7 = ROOT.TH1F("mttbarGen7", "; gen-level m(t#bar{t}) [GeV]; Events / 10 GeV", 250, 0, 2500)
 
+h_parttop_mass = ROOT.TH1F("parttop_mass", ";m(particle-level top jet) [GeV]; Events / 5 GeV", 100, 0., 500.)
+h_parttop_nsj = ROOT.TH1F("parttop_nsj", ";# subjets; ", 4, -0.5, 3.5)
+h_parttop_minmass = ROOT.TH1F("parttop_minmass", ";min subjet pairwise mass [GeV]; Events / 5 GeV", 50, 0., 250.)
 
 # numbers of different objects
 #h_nMuons     = ROOT.TH1F("nMuons",     "Number of muons, p_{T} > 45 GeV;N_{Muons};Number / event",         5, -0.5, 4.5)
@@ -1197,6 +1205,8 @@ h_muonSF   = ROOT.TH1F("muonSF",   ";; Average muon trigger+ID SF", 1,0.5,1.5)
 h_btagSF   = ROOT.TH1F("btagSF",   ";; Average b-tagging SF", 1,0.5,1.5)
 h_toptagSF = ROOT.TH1F("toptagSF", ";; Average top-tagging SF", 1,0.5,1.5)
 
+h_ptGenTop_fine = ROOT.TH1F("ptGenTop_fine", ";p_{T}(generated top) [GeV]; Events / 5 GeV",400,0,2000)
+
 
 ############################################################################################################
 # UNFOLDING 
@@ -1204,7 +1214,7 @@ h_toptagSF = ROOT.TH1F("toptagSF", ";; Average top-tagging SF", 1,0.5,1.5)
 
 # dummy histogram used only to specify dimensions for reponse matrix
 ptbins = array('d',[0.0,200.0,400.0,500.0,600.0,700.0,800.0,1200.0,2000.0])
-h_bins = ROOT.TH1F("bins",       ";;", len(ptbins)-1,       ptbins)
+h_bins = ROOT.TH1F("bins", ";;", len(ptbins)-1, ptbins)
 ybins = array('d',[-2.4,-1.2,-0.6,0.0,0.6,1.2,2.4])
 h_bins_y = ROOT.TH1F("bins_y",";;", len(ybins)-1, ybins)
 
@@ -1514,6 +1524,43 @@ if options.jerSys != None or options.makeResponse == True:
     ca8GenJetPhiLabel   = ("pfShyftTupleCA8GenJets", "phi")
     ca8GenJetMassHandle = Handle("std::vector<float>")
     ca8GenJetMassLabel  = ("pfShyftTupleCA8GenJets", "mass")
+
+    if options.makeResponse == True and options.useSubstructure == True:
+        ca8GenJet_sj0PtHandle   = Handle("std::vector<float>")
+        ca8GenJet_sj0PtLabel    = ("pfShyftTupleCA8GenJets", "sj0pt")
+        ca8GenJet_sj1PtHandle   = Handle("std::vector<float>")
+        ca8GenJet_sj1PtLabel    = ("pfShyftTupleCA8GenJets", "sj1pt")
+        ca8GenJet_sj2PtHandle   = Handle("std::vector<float>")
+        ca8GenJet_sj2PtLabel    = ("pfShyftTupleCA8GenJets", "sj2pt")
+        #ca8GenJet_sj3PtHandle   = Handle("std::vector<float>")
+        #ca8GenJet_sj3PtLabel    = ("pfShyftTupleCA8GenJets", "sj3pt")
+
+        ca8GenJet_sj0EtaHandle   = Handle("std::vector<float>")
+        ca8GenJet_sj0EtaLabel    = ("pfShyftTupleCA8GenJets", "sj0eta")
+        ca8GenJet_sj1EtaHandle   = Handle("std::vector<float>")
+        ca8GenJet_sj1EtaLabel    = ("pfShyftTupleCA8GenJets", "sj1eta")
+        ca8GenJet_sj2EtaHandle   = Handle("std::vector<float>")
+        ca8GenJet_sj2EtaLabel    = ("pfShyftTupleCA8GenJets", "sj2eta")
+        #ca8GenJet_sj3EtaHandle   = Handle("std::vector<float>")
+        #ca8GenJet_sj3EtaLabel    = ("pfShyftTupleCA8GenJets", "sj3eta")
+
+        ca8GenJet_sj0PhiHandle   = Handle("std::vector<float>")
+        ca8GenJet_sj0PhiLabel    = ("pfShyftTupleCA8GenJets", "sj0phi")
+        ca8GenJet_sj1PhiHandle   = Handle("std::vector<float>")
+        ca8GenJet_sj1PhiLabel    = ("pfShyftTupleCA8GenJets", "sj1phi")
+        ca8GenJet_sj2PhiHandle   = Handle("std::vector<float>")
+        ca8GenJet_sj2PhiLabel    = ("pfShyftTupleCA8GenJets", "sj2phi")
+        #ca8GenJet_sj3PhiHandle   = Handle("std::vector<float>")
+        #ca8GenJet_sj3PhiLabel    = ("pfShyftTupleCA8GenJets", "sj3phi")
+
+        ca8GenJet_sj0MassHandle   = Handle("std::vector<float>")
+        ca8GenJet_sj0MassLabel    = ("pfShyftTupleCA8GenJets", "sj0mass")
+        ca8GenJet_sj1MassHandle   = Handle("std::vector<float>")
+        ca8GenJet_sj1MassLabel    = ("pfShyftTupleCA8GenJets", "sj1mass")
+        ca8GenJet_sj2MassHandle   = Handle("std::vector<float>")
+        ca8GenJet_sj2MassLabel    = ("pfShyftTupleCA8GenJets", "sj2mass")
+        #ca8GenJet_sj3MassHandle   = Handle("std::vector<float>")
+        #ca8GenJet_sj3MassLabel    = ("pfShyftTupleCA8GenJets", "sj3mass")
 
 
 
@@ -1879,6 +1926,7 @@ for event in events :
             if mttbarGen > options.mttGenMax :
                 continue
 
+        
         # -------------------------------------------------------------------------------------
         # reweight MC@NLO parton-level shape to match Powheg
         # -------------------------------------------------------------------------------------
@@ -1892,6 +1940,7 @@ for event in events :
         if options.makeResponse == True:
             h_ptGenTop.Fill( hadTop.p4.Perp(), weight )
             h_ptGenTop_noweight.Fill( hadTop.p4.Perp() )
+            h_ptGenTop_fine.Fill( hadTop.p4.Perp(), weight )
             
             if hadTop.p4.Perp() > 400.0:
                 passParton = True
@@ -2069,6 +2118,8 @@ for event in events :
         nGenTops = 0
         genLepton = ROOT.TLorentzVector()
         genTops = []
+        genTopsPreMass = []
+        nGenTopsPreMass = 0
 
         trueJetsFor2D = []
         for iak5Gen in ak5GenJets:
@@ -2107,6 +2158,7 @@ for event in events :
                     if (iEle.DeltaR(elTrueJet) > 0.5 or iEle.Perp(elTrueJet.Vect()) > 25) :
                         elPass2D = True
                         
+                ## WARNING: 2D cut for electrons doesn't work at particle-level due to electrons not being cleaned from the gen jets
                 #if iEle.Perp() > MIN_MU_PT and abs(iEle.Eta()) < MAX_MU_ETA and elPass2D:  ## pt>45, |eta|<2.1, pass 2D cut  (same selection as for muons here!)
                 if iEle.Perp() > MIN_MU_PT and abs(iEle.Eta()) < MAX_MU_ETA:  ## pt>45, |eta|<2.1  (same selection as for muons here!)
                     nGenLeptons += 1
@@ -2118,15 +2170,85 @@ for event in events :
                     nGenBJets += 1
 
             for ica8Gen in ca8GenJets:
-                if ica8Gen.DeltaR(genLepton) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > MIN_JET_PT and abs(ica8Gen.Eta()) < MAX_JET_ETA:
+                if ica8Gen.DeltaR(genLepton) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > 400.0 and abs(ica8Gen.Eta()) < MAX_JET_ETA:
+                    genTopsPreMass.append(ica8Gen)
+                    nGenTopsPreMass += 1
+                if ica8Gen.DeltaR(genLepton) > ROOT.TMath.Pi() / 2.0 and ica8Gen.Perp() > MIN_JET_PT and abs(ica8Gen.Eta()) < MAX_JET_ETA and ica8Gen.M() > 140. and ica8Gen.M() < 250.:
                     genTops.append(ica8Gen)
                     nGenTops += 1
 
-        if nGenLeptons == 1 and nGenBJets > 0 and nGenTops > 0:
+
+        ############################################################################################
+        ## genjet subjets
+        ############################################################################################
+
+        nsubjets = 0
+        subjets = []
+        massPairs = []
+        minMass = 0
+
+        if  options.useSubstructure == True:
+            event.getByLabel( ca8GenJet_sj0PtLabel, ca8GenJet_sj0PtHandle )
+            event.getByLabel( ca8GenJet_sj1PtLabel, ca8GenJet_sj1PtHandle )
+            event.getByLabel( ca8GenJet_sj2PtLabel, ca8GenJet_sj2PtHandle )
+
+            if ca8GenJet_sj0PtHandle.isValid() :
+                event.getByLabel( ca8GenJet_sj0EtaLabel, ca8GenJet_sj0EtaHandle )
+                event.getByLabel( ca8GenJet_sj0PhiLabel, ca8GenJet_sj0PhiHandle )
+                event.getByLabel( ca8GenJet_sj0MassLabel, ca8GenJet_sj0MassHandle )
+                ca8GenJet_sj0Pt   = ca8GenJet_sj0PtHandle.product()
+                ca8GenJet_sj0Eta  = ca8GenJet_sj0EtaHandle.product()
+                ca8GenJet_sj0Phi  = ca8GenJet_sj0PhiHandle.product()
+                ca8GenJet_sj0Mass = ca8GenJet_sj0MassHandle.product()
+                if ca8GenJet_sj0Pt[0] > 0:
+                    nsubjets += 1
+                    subjet0 = ROOT.TLorentzVector()
+                    subjet0.SetPtEtaPhiM( ca8GenJet_sj0Pt[0], ca8GenJet_sj0Eta[0],ca8GenJet_sj0Phi[0], ca8GenJet_sj0Mass[0] )
+                    subjets.append(subjet0)
+            if ca8GenJet_sj1PtHandle.isValid() :
+                event.getByLabel( ca8GenJet_sj1EtaLabel, ca8GenJet_sj1EtaHandle )
+                event.getByLabel( ca8GenJet_sj1PhiLabel, ca8GenJet_sj1PhiHandle )
+                event.getByLabel( ca8GenJet_sj1MassLabel, ca8GenJet_sj1MassHandle )
+                ca8GenJet_sj1Pt   = ca8GenJet_sj1PtHandle.product()
+                ca8GenJet_sj1Eta  = ca8GenJet_sj1EtaHandle.product()
+                ca8GenJet_sj1Phi  = ca8GenJet_sj1PhiHandle.product()
+                ca8GenJet_sj1Mass = ca8GenJet_sj1MassHandle.product()
+                if ca8GenJet_sj1Pt[0] > 0:
+                    nsubjets += 1
+                    subjet1 = ROOT.TLorentzVector()
+                    subjet1.SetPtEtaPhiM( ca8GenJet_sj1Pt[0], ca8GenJet_sj1Eta[0],ca8GenJet_sj1Phi[0], ca8GenJet_sj1Mass[0] )
+                    subjets.append(subjet1)
+            if ca8GenJet_sj2PtHandle.isValid() :
+                event.getByLabel( ca8GenJet_sj2EtaLabel, ca8GenJet_sj2EtaHandle )
+                event.getByLabel( ca8GenJet_sj2PhiLabel, ca8GenJet_sj2PhiHandle )
+                event.getByLabel( ca8GenJet_sj2MassLabel, ca8GenJet_sj2MassHandle )
+                ca8GenJet_sj2Pt   = ca8GenJet_sj2PtHandle.product()
+                ca8GenJet_sj2Eta  = ca8GenJet_sj2EtaHandle.product()
+                ca8GenJet_sj2Phi  = ca8GenJet_sj2PhiHandle.product()
+                ca8GenJet_sj2Mass = ca8GenJet_sj2MassHandle.product()
+                if ca8GenJet_sj2Pt[0] > 0:
+                    nsubjets += 1
+                    subjet2 = ROOT.TLorentzVector()
+                    subjet2.SetPtEtaPhiM( ca8GenJet_sj2Pt[0], ca8GenJet_sj2Eta[0],ca8GenJet_sj2Phi[0], ca8GenJet_sj2Mass[0] )
+                    subjets.append(subjet2)
+
+            if nsubjets > 2:
+                for i in [0,1]: 
+                    for j in xrange(i+1,3):
+                        massPairs.append( (subjets[i] + subjets[j]).M() )
+                minMass = min( massPairs )
+            
+
+        if nGenLeptons == 1 and nGenBJets > 0 and nGenTops > 0 and ((minMass > 50. and nsubjets > 2) or options.useSubstructure==False):
             passParticleLoose = True
         if passParticleLoose and genTops[0].Perp() > 400.0 :
             passParticle = True
 
+
+        if nGenLeptons == 1 and nGenBJets > 0 and nGenTopsPreMass > 0: 
+            h_parttop_mass.Fill(genTopsPreMass[0].M(),weight)
+            h_parttop_nsj.Fill(nsubjets,weight)
+            h_parttop_minmass.Fill(minMass)
 
         ## loose particle-level selection w/o 400 cut
         if passParticleLoose == False:
@@ -3584,7 +3706,7 @@ for event in events :
         # nominal value for top-tagging SF (different for powheg / madgraph / mcatnlo, bkgs use powheg value)
         toptagSF = getToptagSF(topEta, 0, isElec)
 
-        print "toptag SF = " + str(toptagSF)
+        #print "toptag SF = " + str(toptagSF)
         
         # use posterior top-tagging SF?
         if options.toptagCentral != None:
