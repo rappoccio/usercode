@@ -68,13 +68,17 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   // ---------------------------------------------------------------------------------------------------------------
 
   float xs_parton[2]   = {1674.3, 1662.91}; //mu,el
-  float xs_particle[2] = {1502.36, 1483.66};
+  //float xs_particle[2] = {1502.36, 1483.66};
+  float xs_particle[2] = {583.181, 576.421};
   float xs_parton_MG[2]   = {1846.56, 1844.47};
-  float xs_particle_MG[2] = {1513.0, 1491.67};
+  //float xs_particle_MG[2] = {1513.0, 1491.67};
+  float xs_particle_MG[2] = {679.058, 670.627};
   float xs_parton_mcnlo[2]   = {1395.71, 1402.3};
-  float xs_particle_mcnlo[2] = {1195.22, 1188.57};
+  //float xs_particle_mcnlo[2] = {1195.22, 1188.57};
+  float xs_particle_mcnlo[2] = {516.523, 502.574};
   float data_xs_parton[2]   = {1674.3*0.86, 1662.91*0.86};
-  float data_xs_particle[2] = {1502.36*0.86, 1483.66*0.86};
+  //float data_xs_particle[2] = {1502.36*0.86, 1483.66*0.86};
+  float data_xs_particle[2] = {583.181*0.86, 576.421*0.86};
 
 
 
@@ -783,13 +787,13 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       h_dummy->GetYaxis()->SetTitle("d#sigma/dp_{T} (fb/GeV)");
       h_dummy->SetAxisRange(0,12,"Y");
       h_dummy_part->GetYaxis()->SetTitle("d#sigma/dp_{T} (fb/GeV)");
-      h_dummy_part->SetAxisRange(0,10,"Y");
+      h_dummy_part->SetAxisRange(0,5,"Y");
     }
     else if (toUnfold == "y"){
       h_dummy->GetYaxis()->SetTitle("d#sigma/dy (fb)");
       h_dummy->SetAxisRange(0.0,900,"Y");
       h_dummy_part->GetYaxis()->SetTitle("d#sigma/dy (fb)");
-      h_dummy_part->SetAxisRange(0.0,700,"Y");
+      h_dummy_part->SetAxisRange(0.0,300,"Y");
     }
   }
 
@@ -1945,12 +1949,12 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	gPad->SetLogy();
       }
       else {
-	h_dummy_part->SetAxisRange(0.03,30,"Y");
-	h_part->SetAxisRange(0.03,30,"Y");
-	h_partMG->SetAxisRange(0.03,30,"Y");
-	h_partMCNLO->SetAxisRange(0.03,30,"Y");
-	h_unfolded_part[0]->SetAxisRange(0.03,30,"Y");
-	h_fullunc_part->SetAxisRange(0.03,30,"Y");
+	h_dummy_part->SetAxisRange(0.015,10,"Y");
+	h_part->SetAxisRange(0.015,10,"Y");
+	h_partMG->SetAxisRange(0.015,10,"Y");
+	h_partMCNLO->SetAxisRange(0.015,10,"Y");
+	h_unfolded_part[0]->SetAxisRange(0.015,10,"Y");
+	h_fullunc_part->SetAxisRange(0.015,10,"Y");
 	gPad->SetLogy();
       }
     }
@@ -2110,10 +2114,16 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_ratio_part->GetXaxis()->SetTitleOffset(1.0);
     
     if (toUnfold == "y") {
+      /*
       h_ratio_part->SetAxisRange(0.5,1.5,"Y");
       h_ratioGEN_part->SetAxisRange(0.5,1.5,"Y");
       h_ratioMG_part->SetAxisRange(0.5,1.5,"Y");
       h_ratioMCNLO_part->SetAxisRange(0.5,1.5,"Y");
+      */
+      h_ratio_part->SetAxisRange(0.5,2.2,"Y");
+      h_ratioGEN_part->SetAxisRange(0.5,2.2,"Y");
+      h_ratioMG_part->SetAxisRange(0.5,2.2,"Y");
+      h_ratioMCNLO_part->SetAxisRange(0.5,2.2,"Y");
     }
     else if (doNormalized) {
       h_ratio_part->SetAxisRange(0.6,1.4,"Y");
