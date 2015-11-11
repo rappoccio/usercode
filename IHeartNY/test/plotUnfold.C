@@ -26,6 +26,8 @@ void SetPlotStyle();
 void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize,char *text); 
 void drawCMS(Double_t x1,Double_t y1, Double_t x2,Double_t y2, bool pad, bool prel, bool forPublic);
 
+void symmetrize(TH1F* h_input);
+
 void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doNormalized, bool doLogscale, bool doAverageErr);
 
 void plotUnfold(TString channel, TString toUnfold="pt") {
@@ -1151,6 +1153,20 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   cout << "TOTAL cross section (parton level), measured = " << xsec_meas << " true = " << xsec_true 
        << " true(MG) = " << xsec_true_MG << " true(MC@NLO) = " << xsec_true_mcnlo << endl;
 
+  // Symmetrize uncertainties for rapidity
+  if (toUnfold == "y"){
+    symmetrize(h_syst_jec);
+    symmetrize(h_syst_jer);
+    symmetrize(h_syst_btag);
+    symmetrize(h_syst_toptag);
+    symmetrize(h_syst_toptagHIGHPT);
+    symmetrize(h_syst_bkg);
+    symmetrize(h_syst_stat);
+    symmetrize(h_syst_pdf);
+    symmetrize(h_syst_Q2);
+    symmetrize(h_syst_PS);
+    symmetrize(h_syst_tot);
+  }
 
   // ----------------------------------------------------------------------------------------------------------------
   // RATIO PLOTS !!!!!!!
@@ -1309,7 +1325,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     blaEXP->SetBinError(i+1,(up-dn)/2);
   }
   
-  TH1F* blaTH = (TH1F*) h_ratioTH_up->Clone("blaTOT");
+  TH1F* blaTH = (TH1F*) h_ratioTH_up->Clone("blaTH");
   blaTH->Reset();
   for (int i=0; i<blaTH->GetNbinsX(); i++) {
     float up = h_ratioTH_up->GetBinContent(i+1);
@@ -1351,7 +1367,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   blaTOT->SetLineColor(0);
   blaTOT->SetFillColor(kAzure-9);
   blaTOT->SetFillStyle(1001);
-  
+
+  if (toUnfold == "y"){
+    symmetrize(blaTOT);
+    symmetrize(blaSTAT);
+  }
 
   // ----------------------------------------------------------------------------------------------------------------
   double legxlow = 0.52;
@@ -1875,6 +1895,21 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     cout << "TOTAL cross section (particle level), measured = " << xsec_meas << " true = " << xsec_true 
 	 << " true(MG) = " << xsec_true_MG << " true(MC@NLO) = " << xsec_true_mcnlo << endl;
 
+
+    // Symmetrize for rapidity uncertainties
+    if (toUnfold == "y"){
+      symmetrize(h_syst_jec_part);
+      symmetrize(h_syst_jer_part);
+      symmetrize(h_syst_btag_part);
+      symmetrize(h_syst_toptag_part);
+      symmetrize(h_syst_bkg_part);
+      symmetrize(h_syst_stat_part);
+      symmetrize(h_syst_pdf_part);
+      symmetrize(h_syst_Q2_part);
+      symmetrize(h_syst_PS_part);
+      symmetrize(h_syst_tot_part);
+    }
+
     
     // ----------------------------------------------------------------------------------------------------------------
     // RATIO PLOTS !!!!!!!
@@ -2073,7 +2108,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     blaTOT_part->SetLineColor(0);
     blaTOT_part->SetFillColor(kAzure-9);
     blaTOT_part->SetFillStyle(1001);
-    
+
+    if (toUnfold == "y"){
+      symmetrize(blaTOT_part);
+      symmetrize(blaSTAT_part);
+    }
     
     // ----------------------------------------------------------------------------------------------------------------
     TLegend* leg = new TLegend(legxlow,legylow,legxhigh,legyhigh);  
@@ -2279,6 +2318,29 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
 }
 
+void symmetrize(TH1F* h_input){
+  if (h_input->GetNbinsX() != 6) {
+    cout << "Error! Wrong histogram being symmetrized" << endl;
+    continue;
+  }
+  for (int ii = 0; ii < 3; ii++){
+    double temp1 = h_input->GetBinContent(ii+1);
+    double temp2 = h_input->GetBinContent(6-ii);
+    double average = (temp1 + temp2) / 2;
+    h_input->SetBinContent(ii+1,average);
+    h_input->SetBinContent(6-ii,average);
+  }
+
+  for (int ii = 0; ii < 3; ii++){
+    double temp1 = h_input->GetBinError(ii+1);
+    double temp2 = h_input->GetBinError(6-ii);
+    double average = (temp1 + temp2) / 2;
+    h_input->SetBinError(ii+1,average);
+    h_input->SetBinError(6-ii,average);
+  }
+  
+  return;
+}
 
 void SetPlotStyle() {
   
