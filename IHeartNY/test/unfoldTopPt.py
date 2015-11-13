@@ -1149,14 +1149,16 @@ hTrue.GetXaxis().SetLabelSize(0)
 
 if options.toUnfold == "pt":
     leg = TLegend(0.45, 0.55, 0.85, 0.75)
-if options.toUnfold == "y":
-    leg = TLegend(0.37, 0.25, 0.65, 0.45)
+elif options.toUnfold == "y" and (options.pdf == "MG" or options.pdf == "mcnlo"):
+    leg = TLegend(0.18, 0.6, 0.48, 0.8)
+elif options.toUnfold == "y":
+    leg = TLegend(0.18, 0.7, 0.48, 0.9)
 leg.SetFillStyle(0)
 leg.SetTextFont(42)
 if options.toUnfold == "pt":
     leg.SetTextSize(0.045)
 if options.toUnfold == "y":
-    leg.SetTextSize(0.04)
+    leg.SetTextSize(0.037)
 leg.SetBorderSize(0)
 
 tt = TLatex()
@@ -1202,7 +1204,7 @@ else :
     if options.toUnfold == "pt":
         tt.DrawLatex(0.5,0.45, "MC closure test")
     if options.toUnfold == "y":
-        tt.DrawLatex(0.45,0.48, "MC closure test")
+        tt.DrawLatex(0.2,0.65, "MC closure test")
     
 leg.Draw()
 
@@ -1358,14 +1360,16 @@ if options.twoStep:
         
     if options.toUnfold == "pt":
         leg2 = TLegend(0.45, 0.55, 0.85, 0.75)
-    if options.toUnfold == "y":
-        leg2 = TLegend(0.37, 0.25, 0.65, 0.45)
+    elif options.toUnfold == "y" and (options.pdf == "MG" or options.pdf == "mcnlo"):
+        leg2 = TLegend(0.18, 0.6, 0.48, 0.8)
+    elif options.toUnfold == "y":
+        leg2 = TLegend(0.18, 0.7, 0.48, 0.9)
     leg2.SetFillStyle(0)
     leg2.SetTextFont(42)
     if options.toUnfold == "pt":
         leg2.SetTextSize(0.045)
     if options.toUnfold == "y":
-        leg2.SetTextSize(0.04)
+        leg2.SetTextSize(0.037)
     leg2.SetBorderSize(0)
 
     if options.closureTest == False : 
@@ -1407,7 +1411,7 @@ if options.twoStep:
         if options.toUnfold == "pt":
             tt.DrawLatex(0.5,0.45, "MC closure test")
         if options.toUnfold == "y":
-            tt.DrawLatex(0.45,0.48, "MC closure test")
+            tt.DrawLatex(0.2,0.65, "MC closure test")
     
     leg2.Draw()
 

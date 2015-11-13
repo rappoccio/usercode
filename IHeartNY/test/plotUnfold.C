@@ -62,6 +62,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   TString muOrEl = "";
   if (channel == "el") muOrEl = "_el";
 
+  TString normflag = "";
+  if (doNormalized) normflag = "_norm";
+
   bool forpub = false; // plot for public?
   if (wobtag && do2step && channel == "comb") forpub=true; 
 
@@ -141,8 +144,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   if (channel == "comb") {
 
     //MadGraph
-    fMG[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_MG_nom_nobtag.root");
-    fMG[1] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_MG_nom_nobtag.root");
+    fMG[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_MG_nom_nobtag"+normflag+".root");
+    fMG[1] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_MG_nom_nobtag"+normflag+".root");
 
     h_trueMG_tmp[0] = (TH1F*) fMG[0]->Get(toUnfold+"_genTop")->Clone();
     h_trueMG_tmp[0]->SetName(toUnfold+"_genTop_MG_mu");
@@ -153,8 +156,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     if (toUnfold == "pt") h_trueMG_tmp[1]->SetAxisRange(400,1150,"X");    
 
     //MC@NLO
-    fMCNLO[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_mcnlo_nom_nobtag.root");
-    fMCNLO[1] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_mcnlo_nom_nobtag.root");
+    fMCNLO[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_mcnlo_nom_nobtag"+normflag+".root");
+    fMCNLO[1] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_mcnlo_nom_nobtag"+normflag+".root");
 
     h_trueMCNLO_tmp[0] = (TH1F*) fMCNLO[0]->Get(toUnfold+"_genTop")->Clone();
     h_trueMCNLO_tmp[0]->SetName(toUnfold+"_genTop_MCNLO_mu");
@@ -182,7 +185,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   }
   else if (channel == "el") {
     //MadGraph
-    fMG[0] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_MG_nom_nobtag.root");
+    fMG[0] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_MG_nom_nobtag"+normflag+".root");
     h_trueMG_tmp[0] = (TH1F*) fMG[0]->Get(toUnfold+"_genTop")->Clone();
     h_trueMG_tmp[0]->SetName(toUnfold+"_genTop_el");
     if (toUnfold == "pt") h_trueMG_tmp[0]->SetAxisRange(400,1150,"X");
@@ -193,7 +196,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     }
 
     //MC@NLO
-    fMCNLO[0] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_mcnlo_nom_nobtag.root");
+    fMCNLO[0] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_mcnlo_nom_nobtag"+normflag+".root");
     h_trueMCNLO_tmp[0] = (TH1F*) fMCNLO[0]->Get(toUnfold+"_genTop")->Clone();
     h_trueMCNLO_tmp[0]->SetName(toUnfold+"_genTop_el");
     if (toUnfold == "pt") h_trueMCNLO_tmp[0]->SetAxisRange(400,1150,"X");
@@ -205,7 +208,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   }
   else if (channel == "mu") {
     //MadGraph
-    fMG[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_MG_nom_nobtag.root");
+    fMG[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_MG_nom_nobtag"+normflag+".root");
     h_trueMG_tmp[0] = (TH1F*) fMG[0]->Get(toUnfold+"_genTop")->Clone();
     h_trueMG_tmp[0]->SetName(toUnfold+"_genTop_mu");
     if (toUnfold == "pt") h_trueMG_tmp[0]->SetAxisRange(400,1150,"X");
@@ -216,7 +219,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     }
 
     //MC@NLO
-    fMCNLO[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_mcnlo_nom_nobtag.root");
+    fMCNLO[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_mcnlo_nom_nobtag"+normflag+".root");
     h_trueMCNLO_tmp[0] = (TH1F*) fMCNLO[0]->Get(toUnfold+"_genTop")->Clone();
     h_trueMCNLO_tmp[0]->SetName(toUnfold+"_genTop_mu");
     if (toUnfold == "pt") h_trueMCNLO_tmp[0]->SetAxisRange(400,1150,"X");
@@ -233,12 +236,12 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       
       if (name_syst[is]=="_PS") {
 	if (channel == "comb") {
-	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_mcnlo_nom"+nobtag+"_closure_reverse.root");
-	  else if (ic==1) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_mcnlo_nom"+nobtag+"_closure_reverse.root");
+	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_mcnlo_nom"+nobtag+"_closure_reverse"+normflag+".root");
+	  else if (ic==1) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_mcnlo_nom"+nobtag+"_closure_reverse"+normflag+".root");
 	  else return; //shouldn't happen
 	}
 	else {
-	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_"+toUnfold+"_mcnlo_nom"+nobtag+"_closure_reverse.root");
+	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_"+toUnfold+"_mcnlo_nom"+nobtag+"_closure_reverse"+normflag+".root");
 	  else return; //shouldn't happen
 	}
 
@@ -255,12 +258,12 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       }
       else {
 	if (channel == "comb") {
-	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+name_syst[is]+nobtag+".root");
-	  else if (ic==1) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+name_syst[is]+nobtag+".root");
+	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+name_syst[is]+nobtag+normflag+".root");
+	  else if (ic==1) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+name_syst[is]+nobtag+normflag+".root");
 	  else return; //shouldn't happen
 	}
 	else {
-	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_"+toUnfold+name_syst[is]+nobtag+".root");
+	  if (ic==0) f_syst[ic][is] = new TFile("UnfoldingPlots/unfold"+muOrEl+twoStep+"_"+toUnfold+name_syst[is]+nobtag+normflag+".root");
 	  else return; //shouldn't happen
 	}
 
@@ -296,7 +299,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   // do scaling to integrated values?? 
   // ---------------------------------------------------------------------------------------------
   
-  if (doScale && toUnfold == "pt") {
+  if (doScale && toUnfold == "pt" && doNormalized == false) {
     
     float sum = 0;
 
@@ -389,12 +392,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	for (int is=0; is<nSYST; is++) {
 	  if (name_syst[is]!="_PS") h_unfolded_part_tmp[ic][is]->Scale(data_xs_particle[whichXS]/sum);
 	}
-
       }
     }
   }
 
-  else if (doScale && toUnfold == "y") {
+  else if (doScale && toUnfold == "y" && doNormalized == false) {
     
     float sum = 0;
 
@@ -494,7 +496,6 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	for (int is=0; is<nSYST; is++) {
 	  if (name_syst[is]!="_PS") h_unfolded_part_tmp[ic][is]->Scale(data_xs_particle[whichXS]/sum);
 	}
-
       }//end twoStep
     }// end channel loop
   }// end doScale && toUnfold == "y"
@@ -779,9 +780,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     }
     else if (toUnfold == "y"){
       h_dummy->GetYaxis()->SetTitle("1/#sigma d#sigma/dy");
-      h_dummy->SetAxisRange(0,1,"Y");
+      h_dummy->SetAxisRange(0,0.6,"Y");
       h_dummy_part->GetYaxis()->SetTitle("1/#sigma d#sigma/dy");
-      h_dummy_part->SetAxisRange(0,1,"Y");
+      h_dummy_part->SetAxisRange(0,0.6,"Y");
     }
   }
   else {
@@ -1458,9 +1459,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   h_ratio->Draw("same,hist");
   h_ratio->Draw("same,axis");
   
-  c->SaveAs("UnfoldingPlots/unfoldWithError_"+toUnfold+"_"+channel+twoStep+nobtag+".png");
-  c->SaveAs("UnfoldingPlots/unfoldWithError_"+toUnfold+"_"+channel+twoStep+nobtag+".eps");
-  c->SaveAs("UnfoldingPlots/unfoldWithError_"+toUnfold+"_"+channel+twoStep+nobtag+".pdf");
+  c->SaveAs("UnfoldingPlots/unfoldWithError_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
+  c->SaveAs("UnfoldingPlots/unfoldWithError_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".eps");
+  c->SaveAs("UnfoldingPlots/unfoldWithError_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
 
 
   
@@ -1549,7 +1550,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_lumi->SetMarkerStyle(20);
   }
   
-  TLegend* leg2 = new TLegend(0.6,0.54,0.85,0.88);  
+  TLegend* leg2;
+  if (toUnfold == "pt" && doNormalized) leg2 = new TLegend(0.2,0.46,0.45,0.8);
+  else leg2 = new TLegend(0.6,0.54,0.85,0.88);
   leg2->AddEntry(h_syst_tot,"Total syst. uncertainty","f");
   leg2->AddEntry(h_syst_stat,"Statistical uncertainty","lp");
   if (doNormalized == false) leg2->AddEntry(h_lumi,"Luminosity","lp");
@@ -1584,9 +1587,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
   drawCMS(0.2,0.84,0.3,0.84,false,true,forpub);
 
-  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+".png");
-  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+".pdf");
-  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+".eps");
+  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
+  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
+  c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".eps");
 
 
   // -----------------------------------------------------------
@@ -2191,9 +2194,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     
     p3->cd();
     
-    c2->SaveAs("UnfoldingPlots/unfoldWithError_part_"+toUnfold+"_"+channel+twoStep+nobtag+".png");
-    c2->SaveAs("UnfoldingPlots/unfoldWithError_part_"+toUnfold+"_"+channel+twoStep+nobtag+".eps");
-    c2->SaveAs("UnfoldingPlots/unfoldWithError_part_"+toUnfold+"_"+channel+twoStep+nobtag+".pdf");
+    c2->SaveAs("UnfoldingPlots/unfoldWithError_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
+    c2->SaveAs("UnfoldingPlots/unfoldWithError_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".eps");
+    c2->SaveAs("UnfoldingPlots/unfoldWithError_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
     
     
     TCanvas *c3 = new TCanvas("c3", "", 800, 600);
@@ -2275,7 +2278,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_syst_PS_part->SetMarkerColor(12);
     h_syst_PS_part->SetMarkerStyle(32);
     
-    TLegend* leg4 = new TLegend(0.6,0.54,0.85,0.88);  
+    TLegend* leg4;
+    if (toUnfold == "pt" && doNormalized) leg4 = new TLegend(0.2,0.46,0.45,0.8);
+    else leg4 = new TLegend(0.6,0.54,0.85,0.88);
     leg4->AddEntry(h_syst_tot_part,"Total syst. uncertainty","f");
     leg4->AddEntry(h_syst_stat_part,"Statistical uncertainty","lp");
     if (doNormalized == false) leg4->AddEntry(h_lumi,"Luminosity","lp");
@@ -2309,9 +2314,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     
     drawCMS(0.2,0.84,0.3,0.84,false,true,forpub);
     
-    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+".png");
-    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+".pdf");
-    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+".eps");
+    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
+    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
+    c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".eps");
   }
 
   return;
