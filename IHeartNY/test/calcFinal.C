@@ -1,34 +1,41 @@
 
 void calcFinal() {
 
-  float particle_nom[3] = {1.50269, 1.48366, 0.};
+  //float particle_nom[3] = {1.50269, 1.48366, 0.}; //this is w/o particle-level jet mass cut
+  float particle_nom[3] = {0.583181, 0.576421, 0.};
   float parton_nom[3]   = {1.6743, 1.66291, 0.};
   particle_nom[2] = (particle_nom[0]+particle_nom[1])/2.;
   parton_nom[2] = (parton_nom[0]+parton_nom[1])/2.;
 
-  float particle_pdfup[3] = {1.64853, 1.6231, 0.};
+  //float particle_pdfup[3] = {1.64853, 1.6231, 0.};
+  float particle_pdfup[3] = {0.643195, 0.636619, 0.};
   float parton_pdfup[3]   = {1.84204, 1.82396, 0.};
   particle_pdfup[2] = (particle_pdfup[0]+particle_pdfup[1])/2.;
   parton_pdfup[2] = (parton_pdfup[0]+parton_pdfup[1])/2.;
-  float particle_pdfdown[3] = {1.40305, 1.38799, 0.};
+  //float particle_pdfdown[3] = {1.40305, 1.38799, 0.};
+  float particle_pdfdown[3] = {0.536549, 0.530177, 0.};
   float parton_pdfdown[3]   = {1.54695, 1.53923, 0.};
   particle_pdfdown[2] = (particle_pdfdown[0]+particle_pdfdown[1])/2.;
   parton_pdfdown[2] = (parton_pdfdown[0]+parton_pdfdown[1])/2.;
-  float particle_scaleup[3] = {1.60251, 1.5769, 0.};
+  //float particle_scaleup[3] = {1.60251, 1.5769, 0.};
+  float particle_scaleup[3] = {0.620764, 0.610568, 0.};
   float parton_scaleup[3]   = {1.81578, 1.78817, 0.};
   particle_scaleup[2] = (particle_scaleup[0]+particle_scaleup[1])/2.;
   parton_scaleup[2] = (parton_scaleup[0]+parton_scaleup[1])/2.;
-  float particle_scaledown[3] = {1.40881, 1.34825, 0.};
+  //float particle_scaledown[3] = {1.40881, 1.34825, 0.};
+  float particle_scaledown[3] = {0.512045, 0.50752, 0.};
   float parton_scaledown[3]   = {1.46231, 1.45, 0.};
   particle_scaledown[2] = (particle_scaledown[0]+particle_scaledown[1])/2.;
   parton_scaledown[2] = (parton_scaledown[0]+parton_scaledown[1])/2.;
 
-  float particle_MG[3] = {1.513, 1.49167, 0.};
+  //float particle_MG[3] = {1.513, 1.49167, 0.};
+  float particle_MG[3] = {0.679058, 0.670627, 0.};
   float parton_MG[3]   = {1.84656, 1.84447, 0.};
   particle_MG[2] = (particle_MG[0]+particle_MG[1])/2.;
   parton_MG[2] = (parton_MG[0]+parton_MG[1])/2.;
 
-  float particle_mcnlo[3] = {1.19522, 1.18857, 0.};
+  //float particle_mcnlo[3] = {1.19522, 1.18857, 0.};
+  float particle_mcnlo[3] = {0.516523, 0.502574, 0.};
   float parton_mcnlo[3]   = {1.39571, 1.4023, 0.};
   particle_mcnlo[2] = (particle_mcnlo[0]+particle_mcnlo[1])/2.;
   parton_mcnlo[2] = (parton_mcnlo[0]+parton_mcnlo[1])/2.;

@@ -1138,6 +1138,8 @@ max2 = hReco.GetMaximum()
 if max2 > max:
 	max = max2
 hReco.SetAxisRange(0,max*1.15,"Y")
+if options.toUnfold == "y":
+    hReco.SetAxisRange(0,max*1.5,"Y")
 hReco.Draw()
 hTrue.Draw('hist same')
 hMeas.Draw('same')
@@ -1148,17 +1150,12 @@ hTrue.GetXaxis().SetLabelSize(0)
 
 
 if options.toUnfold == "pt":
-    leg = TLegend(0.45, 0.55, 0.85, 0.75)
-elif options.toUnfold == "y" and (options.pdf == "MG" or options.pdf == "mcnlo"):
-    leg = TLegend(0.18, 0.6, 0.48, 0.8)
+    leg = TLegend(0.5, 0.55, 0.9, 0.75)
 elif options.toUnfold == "y":
-    leg = TLegend(0.18, 0.7, 0.48, 0.9)
+    leg = TLegend(0.2, 0.7, 0.5, 0.9)
 leg.SetFillStyle(0)
 leg.SetTextFont(42)
-if options.toUnfold == "pt":
-    leg.SetTextSize(0.045)
-if options.toUnfold == "y":
-    leg.SetTextSize(0.037)
+leg.SetTextSize(0.045)
 leg.SetBorderSize(0)
 
 tt = TLatex()
@@ -1174,18 +1171,19 @@ elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == 
     leg.AddEntry( hTrue, 'Powheg (generated)', 'l')
     leg.AddEntry( hMeas, 'Powheg (reco-level)', 'p')
     if (options.toUnfold == "pt"):
-        tt.DrawLatex(0.5,0.45, "Closure test, response")
+        tt.DrawLatex(0.55,0.45, "Closure test, response")
         if options.pdf == "MG":
-            tt.DrawLatex(0.5,0.40, "matrix from MadGraph")
+            tt.DrawLatex(0.55,0.40, "matrix from MadGraph")
         else: 
-            tt.DrawLatex(0.5,0.40, "matrix from MC@NLO")
+            tt.DrawLatex(0.55,0.40, "matrix from MC@NLO")
     elif (options.toUnfold == "y"):
-        tt.SetTextSize(0.043)
-        tt.DrawLatex(0.2,0.87, "Closure test, response")
+        tt.SetTextSize(0.042)
+        tt.DrawLatex(0.22,0.62, "Closure test,")
+        tt.DrawLatex(0.22,0.57, "response matrix")
         if options.pdf == "MG":
-            tt.DrawLatex(0.2,0.82, "matrix from MadGraph")
+            tt.DrawLatex(0.22,0.52, "from MadGraph")
         else: 
-            tt.DrawLatex(0.2,0.82, "matrix from MC@NLO")
+            tt.DrawLatex(0.22,0.52, "from MC@NLO")
 elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == True:
     if options.pdf == "MG":
         leg.AddEntry( hReco, 'MadGraph (unfolded)', 'p')
@@ -1195,16 +1193,16 @@ elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == 
         leg.AddEntry( hReco, 'MC@NLO (unfolded)', 'p')
         leg.AddEntry( hTrue, 'MC@NLO (generated)', 'l')
         leg.AddEntry( hMeas, 'MC@NLO (reco-level)', 'p')
-    tt.DrawLatex(0.5,0.45, "Closure test, response")
-    tt.DrawLatex(0.5,0.40, "matrix from Powheg")
+    tt.DrawLatex(0.55,0.45, "Closure test, response")
+    tt.DrawLatex(0.55,0.40, "matrix from Powheg")
 else : 
     leg.AddEntry( hReco, 'Unfolded MC (Powheg)', 'p')
     leg.AddEntry( hTrue, 'Generated (Powheg)', 'l')
     leg.AddEntry( hMeas, 'Reco-level (Powheg)', 'p')
     if options.toUnfold == "pt":
-        tt.DrawLatex(0.5,0.45, "MC closure test")
+        tt.DrawLatex(0.55,0.45, "MC closure test")
     if options.toUnfold == "y":
-        tt.DrawLatex(0.2,0.65, "MC closure test")
+        tt.DrawLatex(0.22,0.62, "MC closure test")
     
 leg.Draw()
 
@@ -1224,9 +1222,10 @@ text1 = TLatex()
 text1.SetNDC()
 text1.SetTextFont(42)
 if options.toUnfold == "pt":
-    text1.DrawLatex(0.5,0.8, "#scale[1.0]{L = 19.7 fb^{-1} at #sqrt{s} = 8 TeV}")
+    text1.DrawLatex(0.55,0.8, "#scale[1.0]{L = 19.7 fb^{-1}, #sqrt{s} = 8 TeV}")
 if options.toUnfold == "y":    
-    text1.DrawLatex(0.55,0.85, "#scale[1.0]{L = 19.7 fb^{-1} at #sqrt{s} = 8 TeV}")
+    text1.DrawLatex(0.72,0.82, "#scale[1.0]{L = 19.7 fb^{-1}}")
+    text1.DrawLatex(0.72,0.75, "#scale[1.0]{#sqrt{s} = 8 TeV}")
 
 
 c1.cd();
@@ -1277,6 +1276,8 @@ if options.troubleshoot and options.closureTest and options.whatClosure == "nom"
     if max2 > max:
 	max = max2
     hReco_odd.SetAxisRange(0,max*1.15,"Y")
+    if options.toUnfold == "y":
+        hReco_odd.SetAxisRange(0,max*1.5,"Y")
     hReco_odd.Draw()
     hTrue_odd.Draw('hist same')
     hMeas_odd.Draw('same')
@@ -1287,10 +1288,9 @@ if options.troubleshoot and options.closureTest and options.whatClosure == "nom"
 
     if options.toUnfold == "pt":
         legA = TLegend(0.45, 0.55, 0.85, 0.75)
-        legA.SetTextSize(0.045)
     if options.toUnfold == "y":
         legA = TLegend(0.37, 0.25, 0.65, 0.45)
-        legA.SetTextSize(0.04)
+    legA.SetTextSize(0.045)
     legA.SetFillStyle(0)
     legA.SetTextFont(42)
     legA.SetBorderSize(0)
@@ -1301,7 +1301,7 @@ if options.troubleshoot and options.closureTest and options.whatClosure == "nom"
     if options.toUnfold == "pt":
         tt.DrawLatex(0.5,0.45, "MC closure test")
     if options.toUnfold == "y":
-        tt.DrawLatex(0.45,0.48, "MC closure test")
+        tt.DrawLatex(0.45,0.45, "MC closure test")
     
     legA.Draw()
 
@@ -1349,6 +1349,8 @@ if options.twoStep:
     if max2 > max:
         max = max2
     hReco_rp.SetAxisRange(0,max*1.15,"Y")
+    if options.toUnfold == "y":
+        hReco_rp.SetAxisRange(0,max*1.5,"Y")
     hReco_rp.Draw()
     hPart.Draw('hist same')
     hMeas.Draw('same')
@@ -1359,17 +1361,12 @@ if options.twoStep:
 
         
     if options.toUnfold == "pt":
-        leg2 = TLegend(0.45, 0.55, 0.85, 0.75)
-    elif options.toUnfold == "y" and (options.pdf == "MG" or options.pdf == "mcnlo"):
-        leg2 = TLegend(0.18, 0.6, 0.48, 0.8)
+        leg2 = TLegend(0.5, 0.55, 0.9, 0.75)
     elif options.toUnfold == "y":
-        leg2 = TLegend(0.18, 0.7, 0.48, 0.9)
+        leg2 = TLegend(0.2, 0.7, 0.5, 0.9)
     leg2.SetFillStyle(0)
     leg2.SetTextFont(42)
-    if options.toUnfold == "pt":
-        leg2.SetTextSize(0.045)
-    if options.toUnfold == "y":
-        leg2.SetTextSize(0.037)
+    leg2.SetTextSize(0.045)
     leg2.SetBorderSize(0)
 
     if options.closureTest == False : 
@@ -1381,18 +1378,19 @@ if options.twoStep:
         leg2.AddEntry( hTrue, 'Powheg (generated)', 'l')
         leg2.AddEntry( hMeas, 'Powheg (reco-level)', 'p')
         if options.toUnfold == "pt":
-            tt.DrawLatex(0.5,0.45, "Closure test, response")
+            tt.DrawLatex(0.55,0.45, "Closure test, response")
             if options.pdf == "MG":
-                tt.DrawLatex(0.5,0.40, "matrix from MadGraph")
+                tt.DrawLatex(0.55,0.40, "matrix from MadGraph")
             else: 
-                tt.DrawLatex(0.5,0.40, "matrix from MC@NLO")
+                tt.DrawLatex(0.55,0.40, "matrix from MC@NLO")
         elif options.toUnfold == "y":
-            tt.SetTextSize(0.043)
-            tt.DrawLatex(0.2,0.87, "Closure test, response")
+            tt.SetTextSize(0.042)
+            tt.DrawLatex(0.22,0.62, "Closure test,")
+            tt.DrawLatex(0.22,0.57, "response matrix")
             if options.pdf == "MG":
-                tt.DrawLatex(0.2,0.82, "matrix from MadGraph")
+                tt.DrawLatex(0.22,0.52, "from MadGraph")
             else: 
-                tt.DrawLatex(0.2,0.82, "matrix from MC@NLO")
+                tt.DrawLatex(0.22,0.52, "from MC@NLO")
     elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == True:
         if options.pdf == "MG":
             leg2.AddEntry( hReco, 'MadGraph (unfolded)', 'p')
@@ -1402,16 +1400,16 @@ if options.twoStep:
             leg2.AddEntry( hReco, 'MC@NLO (unfolded)', 'p')
             leg2.AddEntry( hTrue, 'MC@NLO (generated)', 'l')
             leg2.AddEntry( hMeas, 'MC@NLO (reco-level)', 'p')
-        tt.DrawLatex(0.5,0.45, "Closure test, response")
-        tt.DrawLatex(0.5,0.40, "matrix from Powheg")
+        tt.DrawLatex(0.55,0.45, "Closure test, response")
+        tt.DrawLatex(0.55,0.40, "matrix from Powheg")
     else : 
         leg2.AddEntry( hReco, 'Unfolded MC (Powheg)', 'p')
         leg2.AddEntry( hTrue, 'Generated (Powheg)', 'l')
         leg2.AddEntry( hMeas, 'Reco-level (Powheg)', 'p')
         if options.toUnfold == "pt":
-            tt.DrawLatex(0.5,0.45, "MC closure test")
+            tt.DrawLatex(0.55,0.45, "MC closure test")
         if options.toUnfold == "y":
-            tt.DrawLatex(0.2,0.65, "MC closure test")
+            tt.DrawLatex(0.22,0.62, "MC closure test")
     
     leg2.Draw()
 
@@ -1426,9 +1424,10 @@ if options.twoStep:
     hMeas.Write()
 
     if options.toUnfold == "pt":
-        text1.DrawLatex(0.5,0.8, "#scale[1.0]{L = 19.7 fb^{-1} at #sqrt{s} = 8 TeV}")
+        text1.DrawLatex(0.55,0.8, "#scale[1.0]{L = 19.7 fb^{-1}, #sqrt{s} = 8 TeV}")
     if options.toUnfold == "y":
-        text1.DrawLatex(0.55,0.85, "#scale[1.0]{L = 19.7 fb^{-1} at #sqrt{s} = 8 TeV}")
+        text1.DrawLatex(0.72,0.82, "#scale[1.0]{L = 19.7 fb^{-1}}")
+        text1.DrawLatex(0.72,0.75, "#scale[1.0]{#sqrt{s} = 8 TeV}")
 
     pad2.cd()
 
@@ -1471,10 +1470,7 @@ if options.twoStep:
             leg2A = TLegend(0.37, 0.25, 0.65, 0.45)
         leg2A.SetFillStyle(0)
         leg2A.SetTextFont(42)
-        if options.toUnfold == "pt":
-            leg2A.SetTextSize(0.045)
-        if options.toUnfold == "y":
-            leg2A.SetTextSize(0.04)
+        leg2A.SetTextSize(0.045)
         leg2A.SetBorderSize(0)
 
         tt = TLatex()
@@ -1517,6 +1513,8 @@ if options.twoStep:
         if max2 > max:
             max = max2
         hReco_rp_odd.SetAxisRange(0,max*1.15,"Y")
+        if options.toUnfold == "y":
+            hReco_rp_odd.SetAxisRange(0,max*1.5,"Y")
         hReco_rp_odd.Draw()
         hPart_odd.Draw('hist same')
         hMeas_odd.Draw('same')
@@ -1531,10 +1529,7 @@ if options.twoStep:
             leg2B = TLegend(0.37, 0.25, 0.65, 0.45)
         leg2B.SetFillStyle(0)
         leg2B.SetTextFont(42)
-        if options.toUnfold == "pt":
-            leg2B.SetTextSize(0.045)
-        if options.toUnfold == "y":
-            leg2B.SetTextSize(0.04)
+        leg2B.SetTextSize(0.045)
         leg2B.SetBorderSize(0)
 
         leg2B.AddEntry( hReco_odd, 'Unfolded MC (Powheg)', 'p')
@@ -1543,7 +1538,7 @@ if options.twoStep:
         if options.toUnfold == "pt":
             tt.DrawLatex(0.5,0.45, "MC closure test")
         if options.toUnfold == "y":
-            tt.DrawLatex(0.45,0.48, "MC closure test")
+            tt.DrawLatex(0.45,0.45, "MC closure test")
     
         leg2B.Draw()
 
