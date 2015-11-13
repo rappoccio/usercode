@@ -780,9 +780,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     }
     else if (toUnfold == "y"){
       h_dummy->GetYaxis()->SetTitle("1/#sigma d#sigma/dy");
-      h_dummy->SetAxisRange(0,0.6,"Y");
+      h_dummy->SetAxisRange(0,0.5,"Y");
       h_dummy_part->GetYaxis()->SetTitle("1/#sigma d#sigma/dy");
-      h_dummy_part->SetAxisRange(0,0.6,"Y");
+      h_dummy_part->SetAxisRange(0,0.5,"Y");
     }
   }
   else {
@@ -796,7 +796,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       h_dummy->GetYaxis()->SetTitle("d#sigma/dy (fb)");
       h_dummy->SetAxisRange(0.0,900,"Y");
       h_dummy_part->GetYaxis()->SetTitle("d#sigma/dy (fb)");
-      h_dummy_part->SetAxisRange(0.0,300,"Y");
+      h_dummy_part->SetAxisRange(0.0,320,"Y");
     }
   }
 
@@ -1428,10 +1428,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   h_ratio->GetXaxis()->SetTitleOffset(1.0);
 
   if (toUnfold == "y"){
-    h_ratio->SetAxisRange(0.5,1.5,"Y");
-    h_ratioGEN->SetAxisRange(0.5,1.5,"Y");
-    h_ratioMG->SetAxisRange(0.5,1.5,"Y");
-    h_ratioMCNLO->SetAxisRange(0.5,1.5,"Y");
+    h_ratio->SetAxisRange(0.4,1.6,"Y");
+    h_ratioGEN->SetAxisRange(0.4,1.6,"Y");
+    h_ratioMG->SetAxisRange(0.4,1.6,"Y");
+    h_ratioMCNLO->SetAxisRange(0.4,1.6,"Y");
   }  
   else if (doNormalized) {
     h_ratio->SetAxisRange(0.6,1.4,"Y");
@@ -2156,16 +2156,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_ratio_part->GetXaxis()->SetTitleOffset(1.0);
     
     if (toUnfold == "y") {
-      /*
-      h_ratio_part->SetAxisRange(0.5,1.5,"Y");
-      h_ratioGEN_part->SetAxisRange(0.5,1.5,"Y");
-      h_ratioMG_part->SetAxisRange(0.5,1.5,"Y");
-      h_ratioMCNLO_part->SetAxisRange(0.5,1.5,"Y");
-      */
-      h_ratio_part->SetAxisRange(0.5,2.2,"Y");
-      h_ratioGEN_part->SetAxisRange(0.5,2.2,"Y");
-      h_ratioMG_part->SetAxisRange(0.5,2.2,"Y");
-      h_ratioMCNLO_part->SetAxisRange(0.5,2.2,"Y");
+      h_ratio_part->SetAxisRange(0.4,1.6,"Y");
+      h_ratioGEN_part->SetAxisRange(0.4,1.6,"Y");
+      h_ratioMG_part->SetAxisRange(0.4,1.6,"Y");
+      h_ratioMCNLO_part->SetAxisRange(0.4,1.6,"Y");
     }
     else if (doNormalized) {
       h_ratio_part->SetAxisRange(0.6,1.4,"Y");
