@@ -68,6 +68,7 @@ void calcFinal() {
 
   for (int i=0; i<3; i++) {
 
+    cout << endl;
     if (i==0) cout << "muon, particle level" << endl;
     if (i==1) cout << "electron, particle level" << endl;
     if (i==2) cout << "combined, particle level" << endl;
@@ -87,6 +88,8 @@ void calcFinal() {
 	 << "+/- " << theory << " (total theory) "
 	 << " TOTAL uncertainty = " << sqrt(stat*stat + pdf*pdf + q2*q2 + ps*ps + lum*lum) 
 	 << endl;
+    cout << "relative uncertainties: " << stat/(particle_nom[i]*data[i]) << " (stat) " << pdf/(particle_nom[i]*data[i]) << " (pdf) " 
+	 << q2/(particle_nom[i]*data[i]) << " (Q2) " << ps/(particle_nom[i]*data[i]) << " (PS) " << lum/(particle_nom[i]*data[i]) << " (lumi) " << endl;
 
     if (i==0) cout << "muon, parton level" << endl;
     if (i==1) cout << "electron, parton level" << endl;
@@ -107,6 +110,8 @@ void calcFinal() {
 	 << "+/- " << theory << " (total theory) "
 	 << " TOTAL uncertainty = " << sqrt(stat*stat + pdf*pdf + q2*q2 + ps*ps + lum*lum) 
 	 << endl;
+    cout << "relative uncertainties: " << stat/(parton_nom[i]*data[i]) << " (stat) " << pdf/(parton_nom[i]*data[i]) << " (pdf) " 
+	 << q2/(parton_nom[i]*data[i]) << " (Q2) " << ps/(parton_nom[i]*data[i]) << " (PS) " << lum/(parton_nom[i]*data[i]) << " (lumi) " << endl;
   }
 
   cout << endl << "*** MADGRAPH ***" << endl<< endl;

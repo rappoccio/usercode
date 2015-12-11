@@ -12,8 +12,8 @@ gStyle.SetPadBottomMargin(0.15);
 
 
 pdfnames = ["CT10_nom"]
-channels = ["mu", "el", "comb"]
-#channels = ["comb"]
+#channels = ["mu", "el", "comb"]
+channels = ["comb"]
 
 ### THESE BELOW ARE FOR EXTERNALIZE LUMINOSITY & B-TAGGING !!! ###
 
@@ -142,8 +142,8 @@ for pdfname in pdfnames :
         t2.SetTextFont(52)
         t2.SetTextColor(1)
         t2.SetTextSize(extraTextSize)
-        if (ich=="comb"): 
-            t2.DrawLatex(0.28,0.93, "Preliminary")
+        #if (ich=="comb"): 
+        #    t2.DrawLatex(0.28,0.93, "Preliminary")
 
         t3 = TLatex()
         t3.SetNDC()

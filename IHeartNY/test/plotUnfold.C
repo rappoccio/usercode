@@ -67,6 +67,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
   bool forpub = false; // plot for public?
   if (wobtag && do2step && channel == "comb") forpub=true; 
+  bool preliminary = false; // "CMS Preliminary" 
+
 
   // ---------------------------------------------------------------------------------------------------------------
   // cross-section values for scaling to theta integrated result
@@ -1376,9 +1378,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
   // ----------------------------------------------------------------------------------------------------------------
   double legxlow = 0.52;
-  double legylow = 0.4;
   double legxhigh = 0.85;
-  double legyhigh = 0.75;
+  //double legylow = 0.4;
+  //double legyhigh = 0.75;
+  double legylow = 0.5;
+  double legyhigh = 0.85;
   if (toUnfold == "y"){
     legxlow = 0.37;
     legylow = 0.04;
@@ -1404,8 +1408,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   leg->SetTextFont(42);
   leg->Draw();
 
-  if (toUnfold=="y") drawCMS(0.21,0.79,0.21,0.72,true,true,forpub);
-  else drawCMS(0.53,0.8,0.64,0.8,true,true,forpub);
+  if (toUnfold=="y") drawCMS(0.21,0.79,0.21,0.72,true,preliminary,forpub);
+  //else drawCMS(0.53,0.8,0.64,0.8,true,preliminary,forpub);
+  else drawCMS(0.40,0.79,0.51,0.79,true,preliminary,forpub);
 
 
   // ----------------------------------------------------------------------------------------------------------------
@@ -1585,7 +1590,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   h_dummy_r->Draw("hist,axis,same");
   leg2->Draw(); 
 
-  drawCMS(0.2,0.84,0.3,0.84,false,true,forpub);
+  drawCMS(0.22,0.82,0.32,0.82,false,preliminary,forpub);
 
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
@@ -2135,9 +2140,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     leg->SetTextFont(42);
     leg->Draw();
 
-    if (toUnfold=="y") drawCMS(0.21,0.79,0.21,0.72,true,true,forpub);
-    else drawCMS(0.53,0.8,0.64,0.8,true,true,forpub);
-    
+    if (toUnfold=="y") drawCMS(0.21,0.79,0.21,0.72,true,preliminary,forpub);
+    //else drawCMS(0.53,0.8,0.64,0.8,true,preliminary,forpub);
+    else drawCMS(0.40,0.79,0.51,0.79,true,preliminary,forpub);
+
+
     // ----------------------------------------------------------------------------------------------------------------
         
     p4->cd();
@@ -2306,7 +2313,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_dummy_r_part->Draw("hist,axis,same");
     leg4->Draw(); 
     
-    drawCMS(0.2,0.84,0.3,0.84,false,true,forpub);
+    drawCMS(0.22,0.82,0.32,0.82,false,preliminary,forpub);
     
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");

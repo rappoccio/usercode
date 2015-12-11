@@ -85,6 +85,7 @@ if options.addNoBtag == True:
 
     
 from ROOT import gRandom, TH1, TH1D, cout, TFile, gSystem, TCanvas, TPad, gPad, gROOT, gStyle, THStack, TLegend, TLatex, TColor
+from array import array
 
 gROOT.Macro("rootlogon.C")
 
@@ -1569,6 +1570,29 @@ if options.twoStep:
 # (do this in the end as the normalization otherwise will mess up the unfolding result!)
 # -------------------------------------------------------------------------------------
 
+#gStyle.SetPalette(1)
+
+ncontours = 256
+stops = [0.00, 1.00]
+#red   = [0.99, 0.32]
+#green = [0.99, 0.3]
+#blue  = [0.99, 0.9]
+red   = [0.99, 0.32]
+green = [0.99, 0.42]
+blue  = [0.99, 0.9]
+s = array('d', stops)
+r = array('d', red)
+g = array('d', green)
+b = array('d', blue)
+npoints = len(s)
+TColor.CreateGradientColorTable(npoints, s, r, g, b, ncontours)
+gStyle.SetNumberContours(ncontours)
+
+#GREEN:  new TColor(8, 0.35,0.83,0.33);
+#BLUE:  new TColor(9, 0.35,0.33,0.85);
+#GREY-BLUE:  new TColor(38,0.49,0.6,0.82);
+# red - green - blue
+
 # -------------------------------------------------------------------------------------
 # one-step unfolding
 # -------------------------------------------------------------------------------------
@@ -1582,10 +1606,10 @@ if options.twoStep == False:
     hEmpty2D.SetName("empty2D")
     hEmpty2D.Reset()
     if options.toUnfold == "pt":
-        hEmpty2D.GetXaxis().SetTitle("Reconstructed top-jet p_{T} (GeV)")
+        hEmpty2D.GetXaxis().SetTitle("Reconstructed top jet p_{T} (GeV)")
         hEmpty2D.GetYaxis().SetTitle("Top quark p_{T} (GeV)")
     elif options.toUnfold == "y":
-        hEmpty2D.GetXaxis().SetTitle("Reconstructed top-jet rapidity")
+        hEmpty2D.GetXaxis().SetTitle("Reconstructed top jet rapidity")
         hEmpty2D.GetYaxis().SetTitle("Top quark rapidity")        
     hEmpty2D.GetXaxis().SetLabelSize(0.045)
     hEmpty2D.GetYaxis().SetLabelSize(0.045)
@@ -1682,10 +1706,10 @@ if options.twoStep:
     hEmpty2D_rp.SetName("empty2D_rp")
     hEmpty2D_rp.Reset()
     if options.toUnfold == "pt":
-        hEmpty2D_rp.GetXaxis().SetTitle("Reconstructed top-jet p_{T} (GeV)")
+        hEmpty2D_rp.GetXaxis().SetTitle("Reconstructed top jet p_{T} (GeV)")
         hEmpty2D_rp.GetYaxis().SetTitle("Particle-level top p_{T} (GeV)")
     elif options.toUnfold == "y":
-        hEmpty2D_rp.GetXaxis().SetTitle("Reconstructed top-jet rapidity")
+        hEmpty2D_rp.GetXaxis().SetTitle("Reconstructed top jet rapidity")
         hEmpty2D_rp.GetYaxis().SetTitle("Particle-level top rapidity")
     hEmpty2D_rp.GetXaxis().SetLabelSize(0.05)
     hEmpty2D_rp.GetYaxis().SetLabelSize(0.05)
@@ -1773,12 +1797,12 @@ if options.twoStep:
         t1.SetTextSize(cmsTextSize)
         t1.DrawLatex(0.19,0.94, "CMS")
         
-        t2 = TLatex()
-        t2.SetNDC()
-        t2.SetTextFont(52)
-        t2.SetTextColor(1)
-        t2.SetTextSize(extraTextSize)
-        t2.DrawLatex(0.29,0.94, "Preliminary")
+        #t2 = TLatex()
+        #t2.SetNDC()
+        #t2.SetTextFont(52)
+        #t2.SetTextColor(1)
+        #t2.SetTextSize(extraTextSize)
+        #t2.DrawLatex(0.29,0.94, "Preliminary")
         
         t3 = TLatex()
         t3.SetNDC()
@@ -1896,12 +1920,12 @@ if options.twoStep:
         t1.SetTextSize(cmsTextSize)
         t1.DrawLatex(0.19,0.94, "CMS")
         
-        t2 = TLatex()
-        t2.SetNDC()
-        t2.SetTextFont(52)
-        t2.SetTextColor(1)
-        t2.SetTextSize(extraTextSize)
-        t2.DrawLatex(0.29,0.94, "Preliminary")
+        #t2 = TLatex()
+        #t2.SetNDC()
+        #t2.SetTextFont(52)
+        #t2.SetTextColor(1)
+        #t2.SetTextSize(extraTextSize)
+        #t2.DrawLatex(0.29,0.94, "Preliminary")
         
         t3 = TLatex()
         t3.SetNDC()

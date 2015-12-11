@@ -378,7 +378,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 
   // legend
   TLegend* leg;
-  if (postfit && combined && hist == "hadtop_y4") leg = new TLegend(0.62,0.5,0.87,0.88);
+  if (postfit && combined && hist.Contains("hadtop_y")) leg = new TLegend(0.62,0.5,0.87,0.88);
   else if (postfit && combined) leg = new TLegend(0.62,0.4,0.87,0.78);
   else if (var.Contains("csv")) leg = new TLegend(0.59,0.56,0.84,0.9);
   else leg = new TLegend(0.65,0.5,0.87,0.88);
@@ -535,7 +535,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   h_data->GetXaxis()->SetLabelSize(26);
   h_data->GetYaxis()->SetLabelSize(26);
   h_data->GetYaxis()->SetTitleSize(36);
-  if (hist == "hadtop_pt4" || hist == "hadtop_y4") h_data->GetYaxis()->SetTitleOffset(1.2);
+  if (hist == "hadtop_pt4") h_data->GetYaxis()->SetTitleOffset(1.2);
   else h_data->GetYaxis()->SetTitleOffset(1.0);
   h_data->Draw("lep");
   h_stack->Draw("hist,same");
@@ -548,10 +548,10 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 
   if (postfit && combined) {
 
-    if (hist == "hadtop_y4")
-      drawCMS(0.18,0.68,true);
+    if (hist.Contains("hadtop_y"))
+      drawCMS(0.18,0.68,false);
     else
-      drawCMS(0.62,0.83,true);      
+      drawCMS(0.62,0.83,false);      
     
     if (hist.Contains("vtxMass") || hist.Contains("hadtop_pt")) {
       if (hist.Contains("7")) myText(0.62,0.32,1,"1 t-tag + 1 b-tag");
@@ -913,7 +913,8 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   leg->AddEntry(h_ttbar_semiLep, "t#bar{t} Signal", "f");
   leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} Other", "f");
   leg->AddEntry(h_singletop, "Single Top", "f");
-  leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
+  if (doElectron) leg->AddEntry(h_wjets, "W #rightarrow e#nu", "f");
+  else leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
   leg->AddEntry(h_qcd, "QCD" , "f");
   leg->AddEntry(h_totalbkg, "Uncertainty", "f");
 
@@ -1048,7 +1049,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 
   leg->Draw();
 
-  drawCMS(0.62,0.83,true);
+  drawCMS(0.62,0.83,false);
 
   if (what.Contains("vtxMass")) {
     if (what.Contains("7")) myText(0.62,0.32,1,"1 t-tag + 1 b-tag");
