@@ -729,9 +729,26 @@ start_time = time.time()
 # input and output files
 # -------------------------------------------------------------------------------------
 
-print 'Getting these files : ' + options.files
+# Option to run on a single (eos) file
+files = []
+if '.root' in options.files :
+    files = options.files
 
-files = glob.glob( options.files )
+# Option to run on an eos directory
+else :
+    import subprocess
+    filelist = subprocess.Popen(["xrdfs root://cmseos.fnal.gov ls " + options.files], stdout=subprocess.PIPE, shell=True, executable="/bin/tcsh").communicate()[0]
+    
+    filesraw = filelist.split()
+
+    for ifile in filesraw :
+        s = 'root://cmseos.fnal.gov/' + ifile.rstrip()
+        if '.root' not in s:
+            continue
+        else :
+            files.append( s )
+
+print 'Running on files: '
 print files
 
 ptwstring=''

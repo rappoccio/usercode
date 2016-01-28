@@ -17,59 +17,59 @@ argv = []
 samples = [
     
     #------------------------------    
-    # Nominal samples, CT10
+    # Nominal samples, NNPDF
     #------------------------------
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_inclusive_mu',
-           title='TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom',
-           flags='--mttGenMax=700. --makeResponse --semilep=1.0 --pdfSys=0.0 --pdfSet=0.0',
+           title='TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_NNPDF_nom',
+           flags='--mttGenMax=700. --semilep=-1.0 --pdfSys=0.0 --pdfSet=2.0',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
-           ),
+    ),
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_700to1000_mu',
-           title='TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom',
-           flags='--makeResponse  --semilep=1.0 --pdfSys=0.0 --pdfSet=0.0',
+           title='TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_NNPDF_nom',
+           flags='--semilep=-1.0 --pdfSys=0.0 --pdfSet=2.0',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_1000toInf_mu',
-           title='TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom',
-           flags='--makeResponse  --semilep=1.0 --pdfSys=0.0 --pdfSet=0.0',
+           title='TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_NNPDF_nom',
+           flags='--semilep=-1.0 --pdfSys=0.0 --pdfSet=2.0',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
     
     #------------------------------    
-    # PDF Up samples, CT10
+    # PDF Up samples, NNPDF
     #------------------------------
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_inclusive_mu',
-           title='TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_pdfup',
-           flags='--mttGenMax=700. --makeResponse --semilep=1.0 --pdfSys=1.0 --pdfSet=0.0',
+           title='TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_NNPDF_pdfup',
+           flags='--mttGenMax=700. --semilep=-1.0 --pdfSys=1.0 --pdfSet=2.0',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
-           ),
+    ),
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_700to1000_mu',
-           title='TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_pdfup',
-           flags='--makeResponse  --semilep=1.0 --pdfSys=1.0 --pdfSet=0.0',
+           title='TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_NNPDF_pdfup',
+           flags='--semilep=-1.0 --pdfSys=1.0 --pdfSet=2.0',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_1000toInf_mu',
-           title='TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_pdfup',
-           flags='--makeResponse  --semilep=1.0 --pdfSys=1.0 --pdfSet=0.0',
+           title='TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_NNPDF_pdfup',
+           flags='--semilep=-1.0 --pdfSys=1.0 --pdfSet=2.0',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
-    
+
     #------------------------------    
-    # PDF Down samples, CT10
+    # PDF Down samples, NNPDF
     #------------------------------
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_inclusive_mu',
-           title='TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_pdfdown',
-           flags='--mttGenMax=700. --makeResponse --semilep=1.0 --pdfSys=-1.0 --pdfSet=0.0',
+           title='TT_nonSemiLep_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_NNPDF_pdfdown',
+           flags='--mttGenMax=700. --semilep=-1.0 --pdfSys=-1.0 --pdfSet=2.0',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
-           ),
+    ),
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_700to1000_mu',
-           title='TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_pdfdown',
-           flags='--makeResponse  --semilep=1.0 --pdfSys=-1.0 --pdfSet=0.0',
+           title='TT_nonSemiLep_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_NNPDF_pdfdown',
+           flags='--semilep=-1.0 --pdfSys=-1.0 --pdfSet=2.0',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_1000toInf_mu',
-           title='TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_pdfdown',
-           flags='--makeResponse  --semilep=1.0 --pdfSys=-1.0 --pdfSet=0.0',
+           title='TT_nonSemiLep_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_NNPDF_pdfdown',
+           flags='--semilep=-1.0 --pdfSys=-1.0 --pdfSet=2.0',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
 
