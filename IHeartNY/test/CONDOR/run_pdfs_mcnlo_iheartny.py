@@ -16,22 +16,22 @@ argv = []
 
 samples = [
     
-    Sample(directory='/eos/uscms/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_mu',
+    Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_mu',
            title='TT_mcatnlo_iheartNY_V1_mu',
            flags='--makeResponse --semilep=1.0',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
-    Sample(directory='/eos/uscms/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_el',
+    Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_el',
            title='TT_mcatnlo_iheartNY_V1_el',
            flags='--makeResponse --semilep=1.0 --lepType=ele',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
-    Sample(directory='/eos/uscms/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_mu',
+    Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_mu',
            title='TT_nonSemiLep_mcatnlo_iheartNY_V1_mu',
            flags='--semilep=-1.0',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
-    Sample(directory='/eos/uscms/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_el',
+    Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_el',
            title='TT_nonSemiLep_mcatnlo_iheartNY_V1_el',
            flags='--semilep=-1.0 --lepType=ele',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
@@ -41,12 +41,12 @@ samples = [
 
 samplesMini = [
     
-    Sample(directory='/eos/uscms/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_mu',
+    Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_mu',
            title='TT_mcatnlo_iheartNY_V1_mu',
            flags='--makeResponse --semilep=1.0',
            pdfsys=False, noms=True, jersys=False, jecsys=False, btagsys=False, toptagsys=False, qcd=False, postfit=options.postfit
     ),
-    Sample(directory='/eos/uscms/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_el',
+    Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_el',
            title='TT_mcatnlo_iheartNY_V1_el',
            flags='--makeResponse --semilep=1.0 --lepType=ele',
            pdfsys=False, noms=True, jersys=False, jecsys=False, btagsys=False, toptagsys=False, qcd=False, postfit=options.postfit

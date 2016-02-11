@@ -132,7 +132,7 @@ def run_threads ( samples ) :
     for sample in samples : 
         for isyst in sample.systs :
             flags = isyst.flags
-            s = ['python', './tardir/iheartny_topxs_fwlite.py','--files=' + sample.directory + '/*.root', '--outname=' + sample.title + isyst.name, '--condor']            
+            s = ['python', './tardir/iheartny_topxs_fwlite.py','--files=' + sample.directory, '--outname=' + sample.title + isyst.name, '--condor']            
             for flag in flags :
                 s.append(flag)
             #print 'adding to queue : '

@@ -1,3 +1,7 @@
+
+
+
+
 rm listofjobs_data_mu
 python run_data_iheartny.py > listofjobs_data_mu
 rm listofjobs_data_el
@@ -16,6 +20,24 @@ rm listofjobs_CT10_el
 python run_pdfs_CT10_el_iheartny.py > listofjobs_CT10_el
 rm listofjobs_CT10_NS_el
 python run_pdfs_NS_CT10_el_iheartny.py > listofjobs_CT10_NS_el
+
+rm listofjobs_MSTW_mu
+python run_pdfs_MSTW_iheartny.py > listofjobs_MSTW_mu
+rm listofjobs_MSTW_NS_mu
+python run_pdfs_NS_MSTW_iheartny.py > listofjobs_MSTW_NS_mu
+rm listofjobs_MSTW_el
+python run_pdfs_MSTW_el_iheartny.py > listofjobs_MSTW_el
+rm listofjobs_MSTW_NS_el
+python run_pdfs_NS_MSTW_el_iheartny.py > listofjobs_MSTW_NS_el
+
+rm listofjobs_NNPDF_mu
+python run_pdfs_NNPDF_iheartny.py > listofjobs_NNPDF_mu
+rm listofjobs_NNPDF_NS_mu
+python run_pdfs_NS_NNPDF_iheartny.py > listofjobs_NNPDF_NS_mu
+rm listofjobs_NNPDF_el
+python run_pdfs_NNPDF_el_iheartny.py > listofjobs_NNPDF_el
+rm listofjobs_NNPDF_NS_el
+python run_pdfs_NS_NNPDF_el_iheartny.py > listofjobs_NNPDF_NS_el
 
 rm listofjobs_q2_mu
 python run_q2_iheartny.py > listofjobs_q2_mu
@@ -47,6 +69,24 @@ rm commands_CT10_NS_mu
 ./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_CT10_NS_mu commands_CT10_NS_mu
 rm commands_CT10_NS_el
 ./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_CT10_NS_el commands_CT10_NS_el
+
+rm commands_MSTW_mu
+./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_MSTW_mu commands_MSTW_mu
+rm commands_MSTW_NS_mu
+./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_MSTW_NS_mu commands_MSTW_NS_mu
+rm commands_MSTW_el
+./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_MSTW_el commands_MSTW_el
+rm commands_MSTW_NS_el
+./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_MSTW_NS_el commands_MSTW_NS_el
+
+rm commands_NNPDF_mu
+./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_NNPDF_mu commands_NNPDF_mu
+rm commands_NNPDF_NS_mu
+./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_NNPDF_NS_mu commands_NNPDF_NS_mu
+rm commands_NNPDF_el
+./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_NNPDF_el commands_NNPDF_el
+rm commands_NNPDF_NS_el
+./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_NNPDF_NS_el commands_NNPDF_NS_el
 
 rm commands_q2_mu
 ./runManySections.py --createCommandFile --cmssw --addLog --setTarball=tarball.tgz  listofjobs_q2_mu commands_q2_mu

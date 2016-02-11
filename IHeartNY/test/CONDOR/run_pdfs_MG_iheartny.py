@@ -16,47 +16,47 @@ argv = []
 
 samples = [
     
-    Sample(directory='/eos/uscms/store/user/skinnari/Unfold_24feb2015/TT_MG_mu',
+    Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_MG_mu',
            title='TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_mu',
            flags='--makeResponse --semilep=1.0',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
-    Sample(directory='/eos/uscms/store/user/skinnari/Unfold_24feb2015/TT_MG_el',
+    Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_MG_el',
            title='TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_el',
            flags='--makeResponse --semilep=1.0 --lepType=ele',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
-    Sample(directory='/uscms_data/d3/skinnari/TopXS_Feb15/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/TTJets_HadronicMGDecays_8TeV-madgraph_iheartNY_mu/res',
-           title='TTJets_HadronicMGDecays_8TeV-madgraph_iheartNY_V1_mu',
-           flags='--semilep=-1.0',
-           pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
-           ),
-    Sample(directory='/uscms_data/d3/skinnari/TopXS_Feb15/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/TTJets_HadronicMGDecays_8TeV-madgraph_iheartNY_el/res',
-           title='TTJets_HadronicMGDecays_8TeV-madgraph_iheartNY_V1_el',
-           flags='--semilep=-1.0 --lepType=ele',
-           pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
-           ),
-    Sample(directory='/uscms_data/d3/skinnari/TopXS_Feb15/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/TTJets_FullLeptMGDecays_8TeV-madgraph_iheartNY_mu/res',
-           title='TTJets_FullLeptMGDecays_8TeV-madgraph_iheartNY_V1_mu',
-           flags='--semilep=-1.0',
-           pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
-           ),
-    Sample(directory='/uscms_data/d3/skinnari/TopXS_Feb15/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/TTJets_FullLeptMGDecays_8TeV-madgraph_iheartNY_el/res',
-           title='TTJets_FullLeptMGDecays_8TeV-madgraph_iheartNY_V1_el',
-           flags='--semilep=-1.0 --lepType=ele',
-           pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
-           ),
+    #Sample(directory='/uscms_data/d3/skinnari/TopXS_Feb15/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/TTJets_HadronicMGDecays_8TeV-madgraph_iheartNY_mu/res',
+    #       title='TTJets_HadronicMGDecays_8TeV-madgraph_iheartNY_V1_mu',
+    #       flags='--semilep=-1.0',
+    #       pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
+    #       ),
+    #Sample(directory='/uscms_data/d3/skinnari/TopXS_Feb15/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/TTJets_HadronicMGDecays_8TeV-madgraph_iheartNY_el/res',
+    #       title='TTJets_HadronicMGDecays_8TeV-madgraph_iheartNY_V1_el',
+    #       flags='--semilep=-1.0 --lepType=ele',
+    #       pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
+    #       ),
+    #Sample(directory='/uscms_data/d3/skinnari/TopXS_Feb15/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/TTJets_FullLeptMGDecays_8TeV-madgraph_iheartNY_mu/res',
+    #       title='TTJets_FullLeptMGDecays_8TeV-madgraph_iheartNY_V1_mu',
+    #       flags='--semilep=-1.0',
+    #       pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
+    #       ),
+    #Sample(directory='/uscms_data/d3/skinnari/TopXS_Feb15/CMSSW_5_3_22_patch1/src/Analysis/IHeartNY/test/TTJets_FullLeptMGDecays_8TeV-madgraph_iheartNY_el/res',
+    #       title='TTJets_FullLeptMGDecays_8TeV-madgraph_iheartNY_V1_el',
+    #       flags='--semilep=-1.0 --lepType=ele',
+    #       pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
+    #       ),
     
 ]
 
 samplesMini = [
     
-    Sample(directory='/eos/uscms/store/user/skinnari/Unfold_24feb2015/TT_MG_mu',
+    Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_MG_mu',
            title='TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_mu',
            flags='--makeResponse --semilep=1.0',
            pdfsys=False, noms=True, jersys=False, jecsys=False, btagsys=False, toptagsys=False, qcd=False, postfit=options.postfit
     ),
-    Sample(directory='/eos/uscms/store/user/skinnari/Unfold_24feb2015/TT_MG_el',
+    Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_MG_el',
            title='TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_el',
            flags='--makeResponse --semilep=1.0 --lepType=ele',
            pdfsys=False, noms=True, jersys=False, jecsys=False, btagsys=False, toptagsys=False, qcd=False, postfit=options.postfit
