@@ -343,6 +343,10 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     h_wjets->Rebin(rebin);
   }
   if (var.Contains("vtxMass")) h_data->GetXaxis()->SetTitle("Leptonic-side secondary vertex mass (GeV)");
+  if (var.Contains("hadtop_pt")) h_data->GetXaxis()->SetTitle("p_{T}^{t} (GeV)");
+  if (var.Contains("hadtop_y")) h_data->GetXaxis()->SetTitle("y^{t}");
+  if (var.Contains("ptLep") && doElectron) h_data->GetXaxis()->SetTitle("Electron p_{T} (GeV)");
+  if (var.Contains("ptLep") && !doElectron) h_data->GetXaxis()->SetTitle("Muon p_{T} (GeV)");
   
   h_data->SetLineWidth(1);
   h_data->SetMarkerStyle(20);
@@ -387,9 +391,9 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   leg->SetTextFont(42);
   leg->SetTextSize(0.055);
   leg->AddEntry(h_data, "Data", "pel");
-  leg->AddEntry(h_ttbar, "t#bar{t} Signal", "f");
-  leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} Other", "f");
-  leg->AddEntry(h_singletop, "Single Top", "f");
+  leg->AddEntry(h_ttbar, "t#bar{t} signal", "f");
+  leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} other", "f");
+  leg->AddEntry(h_singletop, "Single t", "f");
   if (doElectron) leg->AddEntry(h_wjets, "W #rightarrow e#nu", "f");
   else leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
   leg->AddEntry(h_qcd, "QCD" , "f");
@@ -557,21 +561,21 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
       if (hist.Contains("7")) myText(0.62,0.32,1,"1 t-tag + 1 b-tag");
       else if (hist.Contains("6")) myText(0.62,0.32,1,"1 t-tag + 0 b-tag");
       else if (hist.Contains("4")) myText(0.62,0.32,1,"0 t-tag + #geq 0 b-tag");
-      if (doElectron) myText(0.62,0.26,1,"e+Jets");
-      else myText(0.62,0.26,1,"#mu+Jets");
+      if (doElectron) myText(0.62,0.26,1,"e+jets");
+      else myText(0.62,0.26,1,"#mu+jets");
       myItalicText(0.62,0.20,1,"Post-fit yields");
     }
     
     else {
       if (doElectron) {
-	if (hist.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  e+Jets");
-	else if (hist.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  e+Jets");
-	else if (hist.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  e+Jets");
+	if (hist.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  e+jets");
+	else if (hist.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  e+jets");
+	else if (hist.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  e+jets");
       }
       else {
-	if (hist.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  #mu+Jets");
-	else if (hist.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  #mu+Jets");
-	else if (hist.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  #mu+Jets");
+	if (hist.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  #mu+jets");
+	else if (hist.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  #mu+jets");
+	else if (hist.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  #mu+jets");
       }
       myItalicText(0.18,0.77,1,"Post-fit yields");
     }
@@ -852,6 +856,10 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   else if (what.Contains("htLep")) rebin = getRebin("htLep");
 
   if (what.Contains("vtxMass")) h_data->GetXaxis()->SetTitle("Leptonic-side secondary vertex mass (GeV)");
+  if (what.Contains("hadtop_pt")) h_data->GetXaxis()->SetTitle("p_{T}^{t} (GeV)");
+  if (what.Contains("hadtop_y")) h_data->GetXaxis()->SetTitle("y^{t}");
+  if (what.Contains("ptLep") && doElectron) h_data->GetXaxis()->SetTitle("Electron p_{T} (GeV)");
+  if (what.Contains("ptLep") && !doElectron) h_data->GetXaxis()->SetTitle("Muon p_{T} (GeV)");
 
   h_data->Rebin(rebin);
   float binwidth = h_data->GetBinWidth(2);
@@ -910,9 +918,9 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   leg->SetTextFont(42);
   leg->SetTextSize(0.055);
   leg->AddEntry(h_data, "Data", "pel");
-  leg->AddEntry(h_ttbar_semiLep, "t#bar{t} Signal", "f");
-  leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} Other", "f");
-  leg->AddEntry(h_singletop, "Single Top", "f");
+  leg->AddEntry(h_ttbar_semiLep, "t#bar{t} signal", "f");
+  leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} other", "f");
+  leg->AddEntry(h_singletop, "Single t", "f");
   if (doElectron) leg->AddEntry(h_wjets, "W #rightarrow e#nu", "f");
   else leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
   leg->AddEntry(h_qcd, "QCD" , "f");
@@ -1055,20 +1063,20 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
     if (what.Contains("7")) myText(0.62,0.32,1,"1 t-tag + 1 b-tag");
     else if (what.Contains("6")) myText(0.62,0.32,1,"1 t-tag + 0 b-tag");
     else if (what.Contains("4")) myText(0.62,0.32,1,"0 t-tag + #geq 0 b-tag");
-    if (doElectron) myText(0.62,0.26,1,"e+Jets");
-    else myText(0.62,0.26,1,"#mu+Jets");
+    if (doElectron) myText(0.62,0.26,1,"e+jets");
+    else myText(0.62,0.26,1,"#mu+jets");
     myItalicText(0.62,0.20,1,"Post-fit yields");
   }
   else {
     if (doElectron) {
-      if (what.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  e+Jets");
-      else if (what.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  e+Jets");
-      else if (what.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  e+Jets");
+      if (what.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  e+jets");
+      else if (what.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  e+jets");
+      else if (what.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  e+jets");
     }
     else {
-      if (what.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  #mu+Jets");
-      else if (what.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  #mu+Jets");
-      else if (what.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  #mu+Jets");
+      if (what.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  #mu+jets");
+      else if (what.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  #mu+jets");
+      else if (what.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  #mu+jets");
     }
     myItalicText(0.18,0.77,1,"Post-fit yields");
   }

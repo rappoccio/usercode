@@ -39,9 +39,9 @@ void plotUnfold(TString channel, TString toUnfold="pt") {
   bool doScale      = true;   // scale central value to match integrated result from theta?
 
   plot(channel,toUnfold,true,true, doNormalized,doLogscale,doAverageErr,doScale);
-  plot(channel,toUnfold,true,false, doNormalized,doLogscale,doAverageErr,doScale);
-  plot(channel,toUnfold,false,true, doNormalized,doLogscale,doAverageErr,doScale);
-  plot(channel,toUnfold,false,false, doNormalized,doLogscale,doAverageErr,doScale);
+  //plot(channel,toUnfold,true,false, doNormalized,doLogscale,doAverageErr,doScale);
+  //plot(channel,toUnfold,false,true, doNormalized,doLogscale,doAverageErr,doScale);
+  //plot(channel,toUnfold,false,false, doNormalized,doLogscale,doAverageErr,doScale);
 
 }
 
@@ -808,12 +808,12 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   // ----------------------------------------------------------------------------------------------------------------
   
   h_true->SetLineColor(2);
-  h_true->SetLineWidth(2);
+  h_true->SetLineWidth(3);
   h_trueMG->SetLineColor(4);
-  h_trueMG->SetLineWidth(2);
+  h_trueMG->SetLineWidth(3);
   h_trueMG->SetLineStyle(7);
   h_trueMCNLO->SetLineColor(kOrange+1);
-  h_trueMCNLO->SetLineWidth(2);
+  h_trueMCNLO->SetLineWidth(3);
   h_trueMCNLO->SetLineStyle(9);
 
   h_unfolded[0]->SetLineColor(1);
@@ -824,12 +824,12 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
   if (twoStep == "_2step") {
     h_part->SetLineColor(2);
-    h_part->SetLineWidth(2);
+    h_part->SetLineWidth(3);
     h_partMG->SetLineColor(4);
-    h_partMG->SetLineWidth(2);
+    h_partMG->SetLineWidth(3);
     h_partMG->SetLineStyle(7);
     h_partMCNLO->SetLineColor(kOrange+1);
-    h_partMCNLO->SetLineWidth(2);
+    h_partMCNLO->SetLineWidth(3);
     h_partMCNLO->SetLineStyle(9);
     
     h_unfolded_part[0]->SetLineColor(1);
@@ -1124,9 +1124,18 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       if (lowedge > 300 && highedge < 1300) {
 	cout << (float)lowedge << "--" << (float)highedge << " & " << count[0] << " & " << syst_stat << " & " 
 	     << max_syst_totalEXP << " & " << max_syst_totalTH << " & " << max_syst_totaltotal << " & " 
-	     << h_true->GetBinContent(i+1) << " & " 
-	     << h_trueMG->GetBinContent(i+1) << " & " 
-	     << h_trueMCNLO->GetBinContent(i+1) << endl;
+	     << h_true->GetBinContent(i+1) 
+	  //<< " +/- " << h_true->GetBinError(i+1) 
+	  //<< " frac error (%): " << h_true->GetBinError(i+1)/h_true->GetBinContent(i+1)*100.0 
+	     <<  " & " 
+	     << h_trueMG->GetBinContent(i+1) 
+	  //<< " +/- " << h_trueMG->GetBinError(i+1) 
+	  //<< " frac error (%): " << h_trueMG->GetBinError(i+1)/h_trueMG->GetBinContent(i+1)*100.0 
+	     << " & " 
+	     << h_trueMCNLO->GetBinContent(i+1) 
+	  //<< " +/- " << h_trueMCNLO->GetBinError(i+1) 
+	  //<< " frac error (%): " << h_trueMCNLO->GetBinError(i+1)/h_trueMCNLO->GetBinContent(i+1)*100.0 
+	     << endl;
       }
       
       if (lowedge > 300.) {
@@ -1141,9 +1150,18 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     else if (toUnfold == "y"){
       cout << (float)lowedge << "--" << (float)highedge << " & " << count[0] << " & " << syst_stat << " & " 
 	   << max_syst_totalEXP << " & " << max_syst_totalTH << " & " << max_syst_totaltotal << " & " 
-	   << h_true->GetBinContent(i+1) << " & " 
-	   << h_trueMG->GetBinContent(i+1) << " & " 
-	   << h_trueMCNLO->GetBinContent(i+1) << endl;
+	   << h_true->GetBinContent(i+1) 
+	//<< " +/- " << h_true->GetBinError(i+1)
+	//<< " frac error (%): " << h_true->GetBinError(i+1)/h_true->GetBinContent(i+1)*100.0 
+	   <<  " & " 
+	   << h_trueMG->GetBinContent(i+1) 
+	//<< " +/- " << h_trueMG->GetBinError(i+1) 
+	//<< " frac error (%): " << h_trueMG->GetBinError(i+1)/h_trueMG->GetBinContent(i+1)*100.0 
+	   << " & " 
+	   << h_trueMCNLO->GetBinContent(i+1) 
+	//<< " +/- " << h_trueMCNLO->GetBinError(i+1) 
+	//<< " frac error (%): " << h_trueMCNLO->GetBinError(i+1)/h_trueMCNLO->GetBinContent(i+1)*100.0 
+	   << endl;
       
       
       xsec_meas += count[0]*h_true->GetBinWidth(i+1);
@@ -1409,7 +1427,6 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   leg->Draw();
 
   if (toUnfold=="y") drawCMS(0.21,0.79,0.21,0.72,true,preliminary,forpub);
-  //else drawCMS(0.53,0.8,0.64,0.8,true,preliminary,forpub);
   else drawCMS(0.40,0.79,0.51,0.79,true,preliminary,forpub);
 
 
@@ -1425,7 +1442,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
   h_ratio->GetYaxis()->SetTitle("Theory/Data");
   if (toUnfold == "pt") h_ratio->GetXaxis()->SetTitle("Top quark p_{T} (GeV)");
-  else if (toUnfold == "y") h_ratio->GetXaxis()->SetTitle("Top quark rapidity");
+  else if (toUnfold == "y") h_ratio->GetXaxis()->SetTitle("Top quark y");
   h_ratio->GetYaxis()->SetTitleOffset(0.8);
   h_ratio->GetYaxis()->SetNdivisions(505);
   //h_ratio->GetYaxis()->SetNdivisions(510);
@@ -1478,7 +1495,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   
 
   if (toUnfold == "pt") h_dummy_r->GetXaxis()->SetTitle("Top quark p_{T} (GeV)");
-  else if (toUnfold == "y") h_dummy_r->GetXaxis()->SetTitle("Top quark rapidity");
+  else if (toUnfold == "y") h_dummy_r->GetXaxis()->SetTitle("Top quark y");
   h_dummy_r->GetYaxis()->SetTitle("Uncertainty [%]");
   if (toUnfold == "pt") h_dummy_r->SetAxisRange(400,1150,"X");
   if (toUnfold == "y") h_dummy_r->SetAxisRange(0,50,"Y");
@@ -1557,21 +1574,21 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   
   TLegend* leg2;
   if (toUnfold == "pt" && doNormalized) leg2 = new TLegend(0.2,0.46,0.45,0.8);
-  else leg2 = new TLegend(0.6,0.54,0.85,0.88);
+  else leg2 = new TLegend(0.2,0.46,0.45,0.88);
   leg2->AddEntry(h_syst_tot,"Total syst. uncertainty","f");
   leg2->AddEntry(h_syst_stat,"Statistical uncertainty","lp");
-  if (doNormalized == false) leg2->AddEntry(h_lumi,"Luminosity","lp");
+  if (doNormalized == false) leg2->AddEntry(h_lumi,"Int. luminosity","lp");
   leg2->AddEntry(h_syst_jec,"Jet energy scale","lp");
   leg2->AddEntry(h_syst_jer,"Jet energy resolution","lp");
   leg2->AddEntry(h_syst_toptag,"Top-tagging efficiency","lp");
   if (nobtag == "") leg2->AddEntry(h_syst_btag,"b-tagging efficiency","lp");
   leg2->AddEntry(h_syst_bkg,"Background normalization","lp");
   leg2->AddEntry(h_syst_pdf,"PDF uncertainty","lp");
-  if (doQ2) leg2->AddEntry(h_syst_Q2,"Q^{2} scale","lp");
+  if (doQ2) leg2->AddEntry(h_syst_Q2,"#mu_{R}, #mu_{F} scales","lp");
   leg2->AddEntry(h_syst_PS,"Generator+PS","lp");
   leg2->SetFillStyle(0);
   leg2->SetBorderSize(0);
-  leg2->SetTextSize(0.032);
+  leg2->SetTextSize(0.04);
   leg2->SetTextFont(42);
 
   
@@ -1590,7 +1607,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   h_dummy_r->Draw("hist,axis,same");
   leg2->Draw(); 
 
-  drawCMS(0.22,0.82,0.32,0.82,false,preliminary,forpub);
+  drawCMS(0.75,0.82,0.85,0.82,false,preliminary,forpub);
 
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
@@ -1872,9 +1889,18 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	if (lowedge > 300 && highedge < 1300) {
 	  cout << (float)lowedge << "--" << (float)highedge << " & " << count_part[0] << " & " << syst_stat_part << " & " 
 	       << max_syst_totalEXP_part << " & " << max_syst_totalTH_part << " & " << max_syst_totaltotal_part << " & " 
-	       << h_part->GetBinContent(i+1) << " & " 
-	       << h_partMG->GetBinContent(i+1) << " & " 
-	       << h_partMCNLO->GetBinContent(i+1) << endl;
+	       << h_part->GetBinContent(i+1) 
+	    //<< " +/- " << h_part->GetBinError(i+1) 
+	    //<< " frac error (%): " << h_part->GetBinError(i+1)/h_part->GetBinContent(i+1)*100.0
+	       << " & "
+	       << h_partMG->GetBinContent(i+1) 
+	    //<< " +/- " << h_partMG->GetBinError(i+1) 
+	    //<< " frac error (%): " << h_partMG->GetBinError(i+1)/h_partMG->GetBinContent(i+1)*100.0 
+	       << " & "
+	       << h_partMCNLO->GetBinContent(i+1) 
+	    //<< " +/- " << h_partMCNLO->GetBinError(i+1) 
+	    //<< " frac error (%): " << h_partMCNLO->GetBinError(i+1)/h_partMCNLO->GetBinContent(i+1)*100.0 
+	       << endl;
 	}
 	
 	if (lowedge > 300.) {
@@ -1889,9 +1915,18 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       else if (toUnfold == "y"){
 	cout << (float)lowedge << "--" << (float)highedge << " & " << count_part[0] << " & " << syst_stat_part << " & " 
 	     << max_syst_totalEXP_part << " & " << max_syst_totalTH_part << " & " << max_syst_totaltotal_part << " & " 
-	     << h_part->GetBinContent(i+1) << " & " 
-	     << h_partMG->GetBinContent(i+1) << " & " 
-	     << h_partMCNLO->GetBinContent(i+1) << endl;
+	     << h_part->GetBinContent(i+1) 
+	  //<< " +/- " << h_part->GetBinError(i+1) 
+	  //<< " frac error (%): " << h_part->GetBinError(i+1)/h_part->GetBinContent(i+1)*100.0 
+	     << " & "
+	     << h_partMG->GetBinContent(i+1) 
+	  //<< " +/- " << h_partMG->GetBinError(i+1) 
+	  //<< " frac error (%): " << h_partMG->GetBinError(i+1)/h_partMG->GetBinContent(i+1)*100.0 
+	     << " & "
+	     << h_partMCNLO->GetBinContent(i+1) 
+	  //<< " +/- " << h_partMCNLO->GetBinError(i+1) 
+	  //<< " frac error (%): " << h_partMCNLO->GetBinError(i+1)/h_partMCNLO->GetBinContent(i+1)*100.0 
+	     << endl;
 	
 	xsec_meas += count_part[0]*h_part->GetBinWidth(i+1);
 	xsec_true += h_part->GetBinContent(i+1)*h_part->GetBinWidth(i+1);
@@ -2141,7 +2176,6 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     leg->Draw();
 
     if (toUnfold=="y") drawCMS(0.21,0.79,0.21,0.72,true,preliminary,forpub);
-    //else drawCMS(0.53,0.8,0.64,0.8,true,preliminary,forpub);
     else drawCMS(0.40,0.79,0.51,0.79,true,preliminary,forpub);
 
 
@@ -2155,8 +2189,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_ratio_part->GetXaxis()->SetLabelSize(0.12);
     h_ratio_part->GetYaxis()->SetLabelSize(0.1);
     h_ratio_part->GetYaxis()->SetTitle("Theory/Data");
-    if (toUnfold == "pt") h_ratio_part->GetXaxis()->SetTitle("Particle-level top p_{T} (GeV)");
-    else if (toUnfold == "y") h_ratio_part->GetXaxis()->SetTitle("Particle-level top rapidity");
+    if (toUnfold == "pt") h_ratio_part->GetXaxis()->SetTitle("Particle-level t jet p_{T} (GeV)");
+    else if (toUnfold == "y") h_ratio_part->GetXaxis()->SetTitle("Particle-level t jet y");
     h_ratio_part->GetYaxis()->SetTitleOffset(0.8);
     h_ratio_part->GetYaxis()->SetNdivisions(505);
     h_ratio_part->GetYaxis()->SetTitleOffset(0.38);
@@ -2207,8 +2241,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     c3->SetLeftMargin(0.16);
     
     
-    if (toUnfold == "pt") h_dummy_r_part->GetXaxis()->SetTitle("Particle-level top p_{T} (GeV)");
-    else if (toUnfold == "y") h_dummy_r_part->GetXaxis()->SetTitle("Particle-level top rapidity");
+    if (toUnfold == "pt") h_dummy_r_part->GetXaxis()->SetTitle("Particle-level t jet p_{T} (GeV)");
+    else if (toUnfold == "y") h_dummy_r_part->GetXaxis()->SetTitle("Particle-level t jet y");
     h_dummy_r_part->GetYaxis()->SetTitle("Uncertainty [%]");
     if (toUnfold == "pt") h_dummy_r_part->SetAxisRange(400,1150,"X");
     if (toUnfold == "y") h_dummy_r_part->SetAxisRange(0,50,"Y");
@@ -2281,21 +2315,21 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     
     TLegend* leg4;
     if (toUnfold == "pt" && doNormalized) leg4 = new TLegend(0.2,0.46,0.45,0.8);
-    else leg4 = new TLegend(0.6,0.54,0.85,0.88);
+    else leg4 = new TLegend(0.2,0.46,0.45,0.88);
     leg4->AddEntry(h_syst_tot_part,"Total syst. uncertainty","f");
     leg4->AddEntry(h_syst_stat_part,"Statistical uncertainty","lp");
-    if (doNormalized == false) leg4->AddEntry(h_lumi,"Luminosity","lp");
+    if (doNormalized == false) leg4->AddEntry(h_lumi,"Int. luminosity","lp");
     leg4->AddEntry(h_syst_jec_part,"Jet energy scale","lp");
     leg4->AddEntry(h_syst_jer_part,"Jet energy resolution","lp");
     leg4->AddEntry(h_syst_toptag_part,"Top-tagging efficiency","lp");
     if (nobtag == "") leg4->AddEntry(h_syst_btag_part,"b-tagging efficiency","lp");
     leg4->AddEntry(h_syst_bkg_part,"Background normalization","lp");
     leg4->AddEntry(h_syst_pdf_part,"PDF uncertainty","lp");
-    if (doQ2) leg4->AddEntry(h_syst_Q2_part,"Q^{2} scale","lp");
+    if (doQ2) leg4->AddEntry(h_syst_Q2_part,"#mu_{R}, #mu_{F} scales","lp");
     leg4->AddEntry(h_syst_PS_part,"Generator+PS","lp");
     leg4->SetFillStyle(0);
     leg4->SetBorderSize(0);
-    leg4->SetTextSize(0.032);
+    leg4->SetTextSize(0.04);
     leg4->SetTextFont(42);
     
     h_dummy_r_part->Draw("hist");
@@ -2313,7 +2347,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_dummy_r_part->Draw("hist,axis,same");
     leg4->Draw(); 
     
-    drawCMS(0.22,0.82,0.32,0.82,false,preliminary,forpub);
+    drawCMS(0.75,0.82,0.85,0.82,false,preliminary,forpub);
     
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
