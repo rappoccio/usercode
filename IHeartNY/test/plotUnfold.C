@@ -320,6 +320,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	h_true_tmp[ic]->GetBinContent(7)*400.0;
       h_true_tmp[ic]->Scale(xs_parton[whichXS]/sum);
       
+      cout << "SCALING CROSS-SECTION:  sum = " << sum << " xs_parton[whichXS] = " << xs_parton[whichXS] << endl;
+
       //PS uncertainty needs to be scaled to truth (since that's what it's compared to)
       for (int is=0; is<nSYST; is++) {
 	if (name_syst[is]=="_PS") h_unfolded_tmp[ic][is]->Scale(xs_parton[whichXS]/sum);
@@ -1045,6 +1047,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
     max_syst_toptag = sqrt(max_syst_toptagNOM*max_syst_toptagNOM + max_syst_toptagHIGHPT*max_syst_toptagHIGHPT);
 
+    cout << "max_syst_toptagNOM = " << max_syst_toptagNOM << endl;
+    cout << "max_syst_toptagHIGHPT = " << max_syst_toptagHIGHPT << endl;
+    cout << "max_syst_toptag = " << max_syst_toptag << endl;
+
     if (!doQ2) {
       syst_scaleup = 0;
       syst_scaledn = 0;
@@ -1416,9 +1422,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   //leg->AddEntry(blaEXP,"Experimental uncertainty","f");
   //leg->AddEntry(blaTH,"Theory uncertainty","f");
   //leg->AddEntry(blaTOT,"Stat. #oplus exp. #oplus theory","f");
-  leg->AddEntry(blaSTAT,"Stat. Uncertainty","f");
-  if (doNormalized) leg->AddEntry(blaTOT,"Stat. #oplus Syst.","f");
-  else leg->AddEntry(blaTOT,"Stat. #oplus Syst.","f");
+  leg->AddEntry(blaSTAT,"Stat. uncertainty","f");
+  if (doNormalized) leg->AddEntry(blaTOT,"Stat. #oplus syst.","f");
+  else leg->AddEntry(blaTOT,"Stat. #oplus syst.","f");
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);
   if (toUnfold == "pt") leg->SetTextSize(0.055);
@@ -1583,14 +1589,25 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   leg2->AddEntry(h_syst_toptag,"Top-tagging efficiency","lp");
   if (nobtag == "") leg2->AddEntry(h_syst_btag,"b-tagging efficiency","lp");
   leg2->AddEntry(h_syst_bkg,"Background normalization","lp");
+  leg2->AddEntry(h_syst_PS,"Generator+parton shower","lp");
   leg2->AddEntry(h_syst_pdf,"PDF uncertainty","lp");
   if (doQ2) leg2->AddEntry(h_syst_Q2,"#mu_{R}, #mu_{F} scales","lp");
-  leg2->AddEntry(h_syst_PS,"Generator+PS","lp");
   leg2->SetFillStyle(0);
   leg2->SetBorderSize(0);
   leg2->SetTextSize(0.04);
   leg2->SetTextFont(42);
 
+  cout << endl << "Generator+PS (parton level)" << endl;
+  int ilow=0;
+  int ihigh=0;
+  if (toUnfold=="pt") {
+    ilow=2;
+    ihigh=-1;
+  }  
+  for (int iib=ilow; iib<(int)h_syst_PS->GetNbinsX()+ihigh; iib++) {
+    cout << h_syst_PS->GetBinContent(iib+1) << endl;
+  }
+  cout << endl;
   
   h_dummy_r->Draw("hist");
   h_syst_tot->Draw("hist,same");
@@ -2165,9 +2182,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     leg->AddEntry(h_partMCNLO,"MC@NLO+Herwig6 t#bar{t}","l");
     //leg->AddEntry(blaEXP_part,"Experimental uncertainty","f");
     //leg->AddEntry(blaTH_part,"Theory uncertainty","f");
-    leg->AddEntry(blaSTAT_part,"Stat. Uncertainty","f");
-    if (doNormalized) leg->AddEntry(blaTOT_part,"Stat. #oplus Syst.","f");
-    else leg->AddEntry(blaTOT_part,"Stat. #oplus Syst.","f");
+    leg->AddEntry(blaSTAT_part,"Stat. uncertainty","f");
+    if (doNormalized) leg->AddEntry(blaTOT_part,"Stat. #oplus syst.","f");
+    else leg->AddEntry(blaTOT_part,"Stat. #oplus syst.","f");
     leg->SetFillStyle(0);
     leg->SetBorderSize(0);
     if (toUnfold == "pt") leg->SetTextSize(0.055);
@@ -2324,14 +2341,26 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     leg4->AddEntry(h_syst_toptag_part,"Top-tagging efficiency","lp");
     if (nobtag == "") leg4->AddEntry(h_syst_btag_part,"b-tagging efficiency","lp");
     leg4->AddEntry(h_syst_bkg_part,"Background normalization","lp");
+    leg4->AddEntry(h_syst_PS_part,"Generator+parton shower","lp");
     leg4->AddEntry(h_syst_pdf_part,"PDF uncertainty","lp");
     if (doQ2) leg4->AddEntry(h_syst_Q2_part,"#mu_{R}, #mu_{F} scales","lp");
-    leg4->AddEntry(h_syst_PS_part,"Generator+PS","lp");
     leg4->SetFillStyle(0);
     leg4->SetBorderSize(0);
     leg4->SetTextSize(0.04);
     leg4->SetTextFont(42);
-    
+
+    cout << endl << "Generator+PS (particle level)" << endl;
+    int ilow=0;
+    int ihigh=0;
+    if (toUnfold=="pt") {
+      ilow=2;
+      ihigh=-1;
+    }  
+    for (int iib=ilow; iib<(int)h_syst_PS_part->GetNbinsX()+ihigh; iib++) {
+      cout << h_syst_PS_part->GetBinContent(iib+1) << endl;
+    }
+    cout << endl;
+
     h_dummy_r_part->Draw("hist");
     h_syst_tot_part->Draw("hist,same");
     h_syst_stat_part->Draw("ep,same");

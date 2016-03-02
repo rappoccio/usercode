@@ -58,7 +58,8 @@ void myText(Double_t x,Double_t y,Color_t color,char const *text) {
 }
 void myItalicText(Double_t x,Double_t y,Color_t color,char const *text) {
   TLatex l;
-  l.SetTextSize(0.04); 
+  //l.SetTextSize(0.04); 
+  l.SetTextSize(0.05); 
   l.SetTextFont(52); 
   l.SetNDC();
   l.SetTextColor(color);
@@ -342,7 +343,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     h_singletop->Rebin(rebin);
     h_wjets->Rebin(rebin);
   }
-  if (var.Contains("vtxMass")) h_data->GetXaxis()->SetTitle("Leptonic-side secondary vertex mass (GeV)");
+  if (var.Contains("vtxMass")) h_data->GetXaxis()->SetTitle("m_{vtx} (GeV)");
   if (var.Contains("hadtop_pt")) h_data->GetXaxis()->SetTitle("p_{T}^{t} (GeV)");
   if (var.Contains("hadtop_y")) h_data->GetXaxis()->SetTitle("y^{t}");
   if (var.Contains("ptLep") && doElectron) h_data->GetXaxis()->SetTitle("Electron p_{T} (GeV)");
@@ -396,7 +397,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   leg->AddEntry(h_singletop, "Single t", "f");
   if (doElectron) leg->AddEntry(h_wjets, "W #rightarrow e#nu", "f");
   else leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
-  leg->AddEntry(h_qcd, "QCD" , "f");
+  leg->AddEntry(h_qcd, "Multijet" , "f");
   if (postfit && combined) leg->AddEntry(h_totalbkg, "Uncertainty", "f");
 
   // uncertainty bands
@@ -553,29 +554,46 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (postfit && combined) {
 
     if (hist.Contains("hadtop_y"))
-      drawCMS(0.18,0.68,false);
+      drawCMS(0.18,0.82,false);
     else
-      drawCMS(0.62,0.83,false);      
+      drawCMS(0.62,0.82,false);
     
     if (hist.Contains("vtxMass") || hist.Contains("hadtop_pt")) {
-      if (hist.Contains("7")) myText(0.62,0.32,1,"1 t-tag + 1 b-tag");
-      else if (hist.Contains("6")) myText(0.62,0.32,1,"1 t-tag + 0 b-tag");
-      else if (hist.Contains("4")) myText(0.62,0.32,1,"0 t-tag + #geq 0 b-tag");
-      if (doElectron) myText(0.62,0.26,1,"e+jets");
-      else myText(0.62,0.26,1,"#mu+jets");
-      myItalicText(0.62,0.20,1,"Post-fit yields");
-    }
-    
-    else {
       if (doElectron) {
-	if (hist.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  e+jets");
-	else if (hist.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  e+jets");
-	else if (hist.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  e+jets");
+	if (hist.Contains("7")) myText(0.62,0.32,1,"1t+1b, e+jets");
+	else if (hist.Contains("6")) myText(0.62,0.32,1,"1t+0b, e+jets");
+	else if (hist.Contains("4")) myText(0.62,0.32,1,"0t, e+jets");
       }
       else {
-	if (hist.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  #mu+jets");
-	else if (hist.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  #mu+jets");
-	else if (hist.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  #mu+jets");
+	if (hist.Contains("7")) myText(0.62,0.32,1,"1t+1b, #mu+jets");
+	else if (hist.Contains("6")) myText(0.62,0.32,1,"1t+0b, #mu+jets");
+	else if (hist.Contains("4")) myText(0.62,0.32,1,"0t, #mu+jets");
+      }
+      myItalicText(0.62,0.25,1,"Post-fit yields");
+    }
+    else if (hist.Contains("hadtop_y")) {
+      if (doElectron) {
+	if (hist.Contains("7")) myText(0.18,0.73,1,"1t+1b,  e+jets");
+	else if (hist.Contains("6")) myText(0.18,0.73,1,"1t+0b,  e+jets");
+	else if (hist.Contains("4")) myText(0.18,0.73,1,"0t,  e+jets");
+      }
+      else {
+	if (hist.Contains("7")) myText(0.18,0.73,1,"1t+1b,  #mu+jets");
+	else if (hist.Contains("6")) myText(0.18,0.73,1,"1t+0b,  #mu+jets");
+	else if (hist.Contains("4")) myText(0.18,0.73,1,"0t,  #mu+jets");
+      }
+      myItalicText(0.18,0.66,1,"Post-fit yields");
+    }
+    else {
+      if (doElectron) {
+	if (hist.Contains("7")) myText(0.18,0.84,1,"1t+1b,  e+jets");
+	else if (hist.Contains("6")) myText(0.18,0.84,1,"1t+0b,  e+jets");
+	else if (hist.Contains("4")) myText(0.18,0.84,1,"0t,  e+jets");
+      }
+      else {
+	if (hist.Contains("7")) myText(0.18,0.84,1,"1t+1b,  #mu+jets");
+	else if (hist.Contains("6")) myText(0.18,0.84,1,"1t+0b,  #mu+jets");
+	else if (hist.Contains("4")) myText(0.18,0.84,1,"0t,  #mu+jets");
       }
       myItalicText(0.18,0.77,1,"Post-fit yields");
     }
@@ -599,7 +617,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   h_ratio->SetMaximum(2.0);
   h_ratio->SetMinimum(0.0);
   h_ratio->GetYaxis()->SetNdivisions(2,4,0,false);
-  h_ratio->GetYaxis()->SetTitle("Data/MC");
+  h_ratio->GetYaxis()->SetTitle("Data / Sim.");
   h_ratio->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
   h_ratio->GetXaxis()->SetTitleOffset( 4.0 );
   h_ratio->GetXaxis()->SetLabelSize(26);
@@ -855,7 +873,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   else if (what.Contains("vtxMass")) rebin = getRebin("vtxMass");
   else if (what.Contains("htLep")) rebin = getRebin("htLep");
 
-  if (what.Contains("vtxMass")) h_data->GetXaxis()->SetTitle("Leptonic-side secondary vertex mass (GeV)");
+  if (what.Contains("vtxMass")) h_data->GetXaxis()->SetTitle("m_{vtx} (GeV)");
   if (what.Contains("hadtop_pt")) h_data->GetXaxis()->SetTitle("p_{T}^{t} (GeV)");
   if (what.Contains("hadtop_y")) h_data->GetXaxis()->SetTitle("y^{t}");
   if (what.Contains("ptLep") && doElectron) h_data->GetXaxis()->SetTitle("Electron p_{T} (GeV)");
@@ -923,7 +941,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   leg->AddEntry(h_singletop, "Single t", "f");
   if (doElectron) leg->AddEntry(h_wjets, "W #rightarrow e#nu", "f");
   else leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
-  leg->AddEntry(h_qcd, "QCD" , "f");
+  leg->AddEntry(h_qcd, "Multijet" , "f");
   leg->AddEntry(h_totalbkg, "Uncertainty", "f");
 
 
@@ -1057,26 +1075,31 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 
   leg->Draw();
 
-  drawCMS(0.62,0.83,false);
+  drawCMS(0.62,0.82,false);
 
   if (what.Contains("vtxMass")) {
-    if (what.Contains("7")) myText(0.62,0.32,1,"1 t-tag + 1 b-tag");
-    else if (what.Contains("6")) myText(0.62,0.32,1,"1 t-tag + 0 b-tag");
-    else if (what.Contains("4")) myText(0.62,0.32,1,"0 t-tag + #geq 0 b-tag");
-    if (doElectron) myText(0.62,0.26,1,"e+jets");
-    else myText(0.62,0.26,1,"#mu+jets");
-    myItalicText(0.62,0.20,1,"Post-fit yields");
+    if (doElectron) {
+      if (what.Contains("7")) myText(0.62,0.32,1,"1t+1b, e+jets");
+      else if (what.Contains("6")) myText(0.62,0.32,1,"1t+0b, e+jets");
+      else if (what.Contains("4")) myText(0.62,0.32,1,"0t, e+jets");
+    }
+    else {
+      if (what.Contains("7")) myText(0.62,0.32,1,"1t+1b, #mu+jets");
+      else if (what.Contains("6")) myText(0.62,0.32,1,"1t+0b, #mu+jets");
+      else if (what.Contains("4")) myText(0.62,0.32,1,"0t, #mu+jets");
+    }
+    myItalicText(0.62,0.25,1,"Post-fit yields");
   }
   else {
     if (doElectron) {
-      if (what.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  e+jets");
-      else if (what.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  e+jets");
-      else if (what.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  e+jets");
+      if (what.Contains("7")) myText(0.18,0.84,1,"1t+1b,  e+jets");
+      else if (what.Contains("6")) myText(0.18,0.84,1,"1t+0b,  e+jets");
+      else if (what.Contains("4")) myText(0.18,0.84,1,"0t,  e+jets");
     }
     else {
-      if (what.Contains("7")) myText(0.18,0.83,1,"1 t-tag + 1 b-tag,  #mu+jets");
-      else if (what.Contains("6")) myText(0.18,0.83,1,"1 t-tag + 0 b-tag,  #mu+jets");
-      else if (what.Contains("4")) myText(0.18,0.83,1,"0 t-tag + #geq 0 b-tag,  #mu+jets");
+      if (what.Contains("7")) myText(0.18,0.84,1,"1t+1b,  #mu+jets");
+      else if (what.Contains("6")) myText(0.18,0.84,1,"1t+0b,  #mu+jets");
+      else if (what.Contains("4")) myText(0.18,0.84,1,"0t,  #mu+jets");
     }
     myItalicText(0.18,0.77,1,"Post-fit yields");
   }
@@ -1091,7 +1114,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   h_ratio->SetMaximum(2.0);
   h_ratio->SetMinimum(0.0);
   h_ratio->GetYaxis()->SetNdivisions(2,4,0,false);
-  h_ratio->GetYaxis()->SetTitle("Data/MC");
+  h_ratio->GetYaxis()->SetTitle("Data / Sim.");
   h_ratio->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
   h_ratio->GetXaxis()->SetTitleOffset( 4.0 );
   h_ratio->GetXaxis()->SetLabelSize(26);
@@ -1725,9 +1748,52 @@ void makeTable(bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_n
 	    << " & " << h_qcd[1]->Integral() << " $\\pm$ " << h_qcd[1]->Integral()*fiterr_qcd
 	    << " & " << h_qcd[2]->Integral() << " $\\pm$ " << h_qcd[2]->Integral()*fiterr_qcd << " \\\\ " << std::endl;
   std::cout << "\\hline" << std::endl;
+  std::cout << "Sum of backgrounds & " << h_total[0]->Integral()-h_ttbar_semiLep[0]->Integral() << " & "  << h_total[1]->Integral()-h_ttbar_semiLep[1]->Integral() << " & "  << h_total[2]->Integral()-h_ttbar_semiLep[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "Total                & " << h_total[0]->Integral() << " & "  << h_total[1]->Integral() << " & "  << h_total[2]->Integral() << " \\\\ " << std::endl;
   std::cout << "\\hline \\hline" << std::endl;
   std::cout << "Data                 & " << h_data[0]->Integral() << " & " << h_data[1]->Integral() << " & " << h_data[2]->Integral() << " \\\\ " << std::endl;
+
+  float tmp_err_tt = h_ttbar_semiLep[0]->Integral()*fiterr_tt;
+  float tmp_err_ttnon = h_ttbar_nonSemiLep[0]->Integral()*fiterr_tt;
+  float tmp_err_t = h_singletop[0]->Integral()*fiterr_singletop;
+  float tmp_err_w = h_wjets[0]->Integral()*fiterr_wjets;
+  float tmp_err_qcd = h_qcd[0]->Integral()*fiterr_qcd;
+  std::cout << std::endl 
+	    << "Total uncertainty (neglecting correlations!):   0t = " << sqrt(tmp_err_tt*tmp_err_tt + tmp_err_ttnon*tmp_err_ttnon + tmp_err_t*tmp_err_t + tmp_err_w*tmp_err_w + tmp_err_qcd*tmp_err_qcd);
+
+  tmp_err_tt = h_ttbar_semiLep[1]->Integral()*fiterr_tt;
+  tmp_err_ttnon = h_ttbar_nonSemiLep[1]->Integral()*fiterr_tt;
+  tmp_err_t = h_singletop[1]->Integral()*fiterr_singletop;
+  tmp_err_w = h_wjets[1]->Integral()*fiterr_wjets;
+  tmp_err_qcd = h_qcd[1]->Integral()*fiterr_qcd;
+  std::cout << "   1t+0b = " << sqrt(tmp_err_tt*tmp_err_tt + tmp_err_ttnon*tmp_err_ttnon + tmp_err_t*tmp_err_t + tmp_err_w*tmp_err_w + tmp_err_qcd*tmp_err_qcd);
+
+  tmp_err_tt = h_ttbar_semiLep[2]->Integral()*fiterr_tt;
+  tmp_err_ttnon = h_ttbar_nonSemiLep[2]->Integral()*fiterr_tt;
+  tmp_err_t = h_singletop[2]->Integral()*fiterr_singletop;
+  tmp_err_w = h_wjets[2]->Integral()*fiterr_wjets;
+  tmp_err_qcd = h_qcd[2]->Integral()*fiterr_qcd;
+  std::cout << "   1t+1b = " << sqrt(tmp_err_tt*tmp_err_tt + tmp_err_ttnon*tmp_err_ttnon + tmp_err_t*tmp_err_t + tmp_err_w*tmp_err_w + tmp_err_qcd*tmp_err_qcd) << std::endl;
+
+
+  tmp_err_ttnon = h_ttbar_nonSemiLep[0]->Integral()*fiterr_tt;
+  tmp_err_t = h_singletop[0]->Integral()*fiterr_singletop;
+  tmp_err_w = h_wjets[0]->Integral()*fiterr_wjets;
+  tmp_err_qcd = h_qcd[0]->Integral()*fiterr_qcd;
+  std::cout << std::endl 
+	    << "Uncertainty on sum of bkg:   0t = " << sqrt(tmp_err_ttnon*tmp_err_ttnon + tmp_err_t*tmp_err_t + tmp_err_w*tmp_err_w + tmp_err_qcd*tmp_err_qcd);
+
+  tmp_err_ttnon = h_ttbar_nonSemiLep[1]->Integral()*fiterr_tt;
+  tmp_err_t = h_singletop[1]->Integral()*fiterr_singletop;
+  tmp_err_w = h_wjets[1]->Integral()*fiterr_wjets;
+  tmp_err_qcd = h_qcd[1]->Integral()*fiterr_qcd;
+  std::cout << "   1t+0b = " << sqrt(tmp_err_ttnon*tmp_err_ttnon + tmp_err_t*tmp_err_t + tmp_err_w*tmp_err_w + tmp_err_qcd*tmp_err_qcd);
+
+  tmp_err_ttnon = h_ttbar_nonSemiLep[2]->Integral()*fiterr_tt;
+  tmp_err_t = h_singletop[2]->Integral()*fiterr_singletop;
+  tmp_err_w = h_wjets[2]->Integral()*fiterr_wjets;
+  tmp_err_qcd = h_qcd[2]->Integral()*fiterr_qcd;
+  std::cout << "   1t+1b = " << sqrt(tmp_err_ttnon*tmp_err_ttnon + tmp_err_t*tmp_err_t + tmp_err_w*tmp_err_w + tmp_err_qcd*tmp_err_qcd) << std::endl;
 
 
   TString outblaj = "";
