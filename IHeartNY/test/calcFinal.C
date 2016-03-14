@@ -2,7 +2,7 @@
 void calcFinal() {
 
   //float particle_nom[3] = {1.50269, 1.48366, 0.}; //this is w/o particle-level jet mass cut
-  float particle_nom[3] = {0.583181, 0.576421, 0.};
+  float particle_nom[3] = {0.583181, 0.576421, 0.}; //muon, electron, combined
   float parton_nom[3]   = {1.6743, 1.66291, 0.};
   particle_nom[2] = (particle_nom[0]+particle_nom[1])/2.;
   parton_nom[2] = (parton_nom[0]+parton_nom[1])/2.;
@@ -17,6 +17,35 @@ void calcFinal() {
   float parton_pdfdown[3]   = {1.54695, 1.53923, 0.};
   particle_pdfdown[2] = (particle_pdfdown[0]+particle_pdfdown[1])/2.;
   parton_pdfdown[2] = (parton_pdfdown[0]+parton_pdfdown[1])/2.;
+
+  // MSTW
+  float particle_mstw_nom[3] = {0.577921, 0.571326, 0.};
+  float parton_mstw_nom[3]   = {1.6581, 1.64622, 0.};
+  particle_mstw_nom[2] = (particle_mstw_nom[0]+particle_mstw_nom[1])/2.;
+  parton_mstw_nom[2] = (parton_mstw_nom[0]+parton_mstw_nom[1])/2.;
+  float particle_mstw_pdfup[3] = {0.597294, 0.591382, 0.};
+  float parton_mstw_pdfup[3]   = {1.71095, 1.69555, 0.};
+  particle_mstw_pdfup[2] = (particle_mstw_pdfup[0]+particle_mstw_pdfup[1])/2.;
+  parton_mstw_pdfup[2] = (parton_mstw_pdfup[0]+parton_mstw_pdfup[1])/2.;
+  float particle_mstw_pdfdown[3] = {0.540877, 0.5337, 0.};
+  float parton_mstw_pdfdown[3]   = {1.55217, 1.54231, 0.};
+  particle_mstw_pdfdown[2] = (particle_mstw_pdfdown[0]+particle_mstw_pdfdown[1])/2.;
+  parton_mstw_pdfdown[2] = (parton_mstw_pdfdown[0]+parton_mstw_pdfdown[1])/2.;
+
+  // NNPDF
+  float particle_nnpdf_nom[3] = {0.542714, 0.535482, 0.};
+  float parton_nnpdf_nom[3]   = {1.55884, 1.55028, 0.};
+  particle_nnpdf_nom[2] = (particle_nnpdf_nom[0]+particle_nnpdf_nom[1])/2.;
+  parton_nnpdf_nom[2] = (parton_nnpdf_nom[0]+parton_nnpdf_nom[1])/2.;
+  float particle_nnpdf_pdfup[3] = {0.610029, 0.605052, 0.};
+  float parton_nnpdf_pdfup[3]   = {1.75021, 1.73307, 0.};
+  particle_nnpdf_pdfup[2] = (particle_nnpdf_pdfup[0]+particle_nnpdf_pdfup[1])/2.;
+  parton_nnpdf_pdfup[2] = (parton_nnpdf_pdfup[0]+parton_nnpdf_pdfup[1])/2.;
+  float particle_nnpdf_pdfdown[3] = {0.546872, 0.538056, 0.};
+  float parton_nnpdf_pdfdown[3]   = {1.57099, 1.56756, 0.};
+  particle_nnpdf_pdfdown[2] = (particle_nnpdf_pdfdown[0]+particle_nnpdf_pdfdown[1])/2.;
+  parton_nnpdf_pdfdown[2] = (parton_nnpdf_pdfdown[0]+parton_nnpdf_pdfdown[1])/2.;
+
   //float particle_scaleup[3] = {1.60251, 1.5769, 0.};
   float particle_scaleup[3] = {0.620764, 0.610568, 0.};
   float parton_scaleup[3]   = {1.81578, 1.78817, 0.};
@@ -56,6 +85,15 @@ void calcFinal() {
   cout << "CT10 nominal & " << parton_nom[2] << " & " << particle_nom[0] << " & " << particle_nom[1] << " & " << particle_nom[2] << " \\\\" << endl;
   cout << "PDF up & " << parton_pdfup[2] << " & " << particle_pdfup[0] << " & " << particle_pdfup[1] << " & " << particle_pdfup[2] << " \\\\" << endl;
   cout << "PDF down & " << parton_pdfdown[2] << " & " << particle_pdfdown[0] << " & " << particle_pdfdown[1] << " & " << particle_pdfdown[2] << " \\\\" << endl;
+
+  cout << "MSTW nominal & " << parton_mstw_nom[2] << " & " << particle_mstw_nom[0] << " & " << particle_mstw_nom[1] << " & " << particle_mstw_nom[2] << " \\\\" << endl;
+  cout << "PDF up & " << parton_mstw_pdfup[2] << " & " << particle_mstw_pdfup[0] << " & " << particle_mstw_pdfup[1] << " & " << particle_mstw_pdfup[2] << " \\\\" << endl;
+  cout << "PDF down & " << parton_mstw_pdfdown[2] << " & " << particle_mstw_pdfdown[0] << " & " << particle_mstw_pdfdown[1] << " & " << particle_mstw_pdfdown[2] << " \\\\" << endl;
+
+  cout << "NNPDF nominal & " << parton_nnpdf_nom[2] << " & " << particle_nnpdf_nom[0] << " & " << particle_nnpdf_nom[1] << " & " << particle_nnpdf_nom[2] << " \\\\" << endl;
+  cout << "PDF up & " << parton_nnpdf_pdfup[2] << " & " << particle_nnpdf_pdfup[0] << " & " << particle_nnpdf_pdfup[1] << " & " << particle_nnpdf_pdfup[2] << " \\\\" << endl;
+  cout << "PDF down & " << parton_nnpdf_pdfdown[2] << " & " << particle_nnpdf_pdfdown[0] << " & " << particle_nnpdf_pdfdown[1] << " & " << particle_nnpdf_pdfdown[2] << " \\\\" << endl;
+
   cout << "$Q^2$ up & " << parton_scaleup[2] << " & " << particle_scaleup[0] << " & " << particle_scaleup[1] << " & " << particle_scaleup[2] << " \\\\" << endl;
   cout << "$Q^2$ down & " << parton_scaledown[2] << " & " << particle_scaledown[0] << " & " << particle_scaledown[1] << " & " << particle_scaledown[2] << " \\\\" << endl;
   cout << "MadGraph & " << parton_MG[2] << " & " << particle_MG[0] << " & " << particle_MG[1] << " & " << particle_MG[2] << " \\\\" << endl;
@@ -64,7 +102,7 @@ void calcFinal() {
 
   std::cout.precision(3);
 
-  cout << endl << "*** POWHEG ***" << endl<< endl;
+  cout << endl << "*** POWHEG ***" << endl;
 
   for (int i=0; i<3; i++) {
 
@@ -74,7 +112,15 @@ void calcFinal() {
     if (i==2) cout << "combined, particle level" << endl;
 
     float stat = err_data[i]*particle_nom[i];
-    float pdf = ((particle_pdfup[i]-particle_nom[i])*data[i] + (particle_nom[i]-particle_pdfdown[i])*data[i])/2;
+    
+    float pdf_maxup = particle_pdfup[i];
+    if (particle_mstw_pdfup[i] > pdf_maxup) pdf_maxup = particle_mstw_pdfup[i];
+    if (particle_nnpdf_pdfup[i] > pdf_maxup) pdf_maxup = particle_nnpdf_pdfup[i];
+    float pdf_mindn = particle_pdfdown[i]; 
+    if (particle_mstw_pdfdown[i] < pdf_mindn) pdf_mindn = particle_mstw_pdfdown[i];
+    if (particle_nnpdf_pdfdown[i] < pdf_mindn) pdf_mindn = particle_nnpdf_pdfdown[i];
+
+    float pdf = ((pdf_maxup-particle_nom[i])*data[i] + (particle_nom[i]-pdf_mindn)*data[i])/2;
     float q2 = ((particle_scaleup[i]-particle_nom[i])*data[i] + (particle_nom[i]-particle_scaledown[i])*data[i])/2;
     float ps = fabs(particle_mcnlo[i]-particle_nom[i])*data[i];
     float theory = sqrt(pdf*pdf+q2*q2+ps*ps);
@@ -96,7 +142,15 @@ void calcFinal() {
     if (i==2) cout << "combined, parton level" << endl;
 
     stat = err_data[i]*parton_nom[i];
-    pdf = ((parton_pdfup[i]-parton_nom[i])*data[i] + (parton_nom[i]-parton_pdfdown[i])*data[i])/2;
+
+    pdf_maxup = parton_pdfup[i];
+    if (parton_mstw_pdfup[i] > pdf_maxup) pdf_maxup = parton_mstw_pdfup[i];
+    if (parton_nnpdf_pdfup[i] > pdf_maxup) pdf_maxup = parton_nnpdf_pdfup[i];
+    pdf_mindn = parton_pdfdown[i]; 
+    if (parton_mstw_pdfdown[i] < pdf_mindn) pdf_mindn = parton_mstw_pdfdown[i];
+    if (parton_nnpdf_pdfdown[i] < pdf_mindn) pdf_mindn = parton_nnpdf_pdfdown[i];
+
+    pdf = ((pdf_maxup-parton_nom[i])*data[i] + (parton_nom[i]-pdf_mindn)*data[i])/2;
     q2 = ((parton_scaleup[i]-parton_nom[i])*data[i] + (parton_nom[i]-parton_scaledown[i])*data[i])/2;
     ps = fabs(parton_mcnlo[i]-parton_nom[i])*data[i];
     theory = sqrt(pdf*pdf+q2*q2+ps*ps);

@@ -55,7 +55,7 @@ void plotUnfold(TString channel, TString toUnfold="pt") {
   if (toUnfold == "y") doLogscale = false;
   bool doAverageErr = true;   // average up/down systematic uncertainties? 
   bool doScale      = true;   // scale central value to match integrated result from theta?
-  bool do3PDF       = false;
+  bool do3PDF       = true;
 
   plot(channel,toUnfold,true,true, doNormalized,doLogscale,doAverageErr,doScale,do3PDF);
   //plot(channel,toUnfold,true,false, doNormalized,doLogscale,doAverageErr,doScale,do3PDF);
@@ -1082,9 +1082,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
     max_syst_toptag = sqrt(max_syst_toptagNOM*max_syst_toptagNOM + max_syst_toptagHIGHPT*max_syst_toptagHIGHPT);
 
-    cout << "max_syst_toptagNOM = " << max_syst_toptagNOM << endl;
-    cout << "max_syst_toptagHIGHPT = " << max_syst_toptagHIGHPT << endl;
-    cout << "max_syst_toptag = " << max_syst_toptag << endl;
+    //cout << "max_syst_toptagNOM = " << max_syst_toptagNOM << endl;
+    //cout << "max_syst_toptagHIGHPT = " << max_syst_toptagHIGHPT << endl;
+    //cout << "max_syst_toptag = " << max_syst_toptag << endl;
 
     if (!doQ2) {
       syst_scaleup = 0;
@@ -1182,8 +1182,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	  //<< " +/- " << h_trueMCNLO->GetBinError(i+1) 
 	  //<< " frac error (%): " << h_trueMCNLO->GetBinError(i+1)/h_trueMCNLO->GetBinContent(i+1)*100.0 
 	     << endl;
-	cout << "PDF uncertainty using 1 PDF is " << ((fabs(count[11]-count[0]) + fabs(count[12]-count[0])) / 2.)*100./count[0] << notation1 << endl;
-	cout << "PDF uncertainty using 3 PDFs is " << this_syst_pdf * 100. / count[0] << notation3 << endl;
+	//cout << "PDF uncertainty using 1 PDF is " << ((fabs(count[11]-count[0]) + fabs(count[12]-count[0])) / 2.)*100./count[0] << notation1 << endl;
+	//cout << "PDF uncertainty using 3 PDFs is " << this_syst_pdf * 100. / count[0] << notation3 << endl;
 
       }
       
@@ -1211,8 +1211,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	//<< " +/- " << h_trueMCNLO->GetBinError(i+1) 
 	//<< " frac error (%): " << h_trueMCNLO->GetBinError(i+1)/h_trueMCNLO->GetBinContent(i+1)*100.0 
 	   << endl;
-      cout << "PDF uncertainty using 1 PDF is " << ((fabs(count[11]-count[0]) + fabs(count[12]-count[0])) / 2.)*100./count[0] << notation1 << endl;
-      cout << "PDF uncertainty using 3 PDFs is " << this_syst_pdf * 100. / count[0] << notation3 << endl;
+      //cout << "PDF uncertainty using 1 PDF is " << ((fabs(count[11]-count[0]) + fabs(count[12]-count[0])) / 2.)*100./count[0] << notation1 << endl;
+      //cout << "PDF uncertainty using 3 PDFs is " << this_syst_pdf * 100. / count[0] << notation3 << endl;
       
       xsec_meas += count[0]*h_true->GetBinWidth(i+1);
       xsec_true += h_true->GetBinContent(i+1)*h_true->GetBinWidth(i+1);
@@ -1969,8 +1969,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	    //<< " +/- " << h_partMCNLO->GetBinError(i+1) 
 	    //<< " frac error (%): " << h_partMCNLO->GetBinError(i+1)/h_partMCNLO->GetBinContent(i+1)*100.0 
 	       << endl;
-	  cout << "PDF uncertainty using 1 PDF is " << ((fabs(count_part[11]-count_part[0]) + fabs(count_part[12]-count_part[0])) / 2.) * 100. / count_part[0] << notation1 << endl;
-	  cout << "PDF uncertainty using 3 PDFs is " << this_syst_pdf_part * 100. / count_part[0] << notation3 << endl;
+	  //cout << "PDF uncertainty using 1 PDF is " << ((fabs(count_part[11]-count_part[0]) + fabs(count_part[12]-count_part[0])) / 2.) * 100. / count_part[0] << notation1 << endl;
+	  //cout << "PDF uncertainty using 3 PDFs is " << this_syst_pdf_part * 100. / count_part[0] << notation3 << endl;
 
 	}
 	
@@ -1999,8 +1999,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	  //<< " frac error (%): " << h_partMCNLO->GetBinError(i+1)/h_partMCNLO->GetBinContent(i+1)*100.0 
 	     << endl;
 
-	cout << "PDF uncertainty using 1 PDF is " << ((fabs(count_part[11]-count_part[0]) + fabs(count_part[12]-count_part[0])) / 2.) * 100. / count_part[0] << notation1 << endl;
-	cout << "PDF uncertainty using 3 PDFs is " << this_syst_pdf_part * 100. / count_part[0] << notation3 << endl;
+	//cout << "PDF uncertainty using 1 PDF is " << ((fabs(count_part[11]-count_part[0]) + fabs(count_part[12]-count_part[0])) / 2.) * 100. / count_part[0] << notation1 << endl;
+	//cout << "PDF uncertainty using 3 PDFs is " << this_syst_pdf_part * 100. / count_part[0] << notation3 << endl;
 	
 	xsec_meas += count_part[0]*h_part->GetBinWidth(i+1);
 	xsec_true += h_part->GetBinContent(i+1)*h_part->GetBinWidth(i+1);

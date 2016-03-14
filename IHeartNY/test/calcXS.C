@@ -3,6 +3,7 @@ void calcOne(TString which, bool parton, bool doel);
 
 void calcXS() {
   
+  // CT10
   cout << endl;
   calcOne("CT10_nom",false,false);
   calcOne("CT10_nom",false,true);
@@ -21,6 +22,45 @@ void calcXS() {
   calcOne("CT10_pdfdown",true,false);
   calcOne("CT10_pdfdown",true,true);
 
+  // MSTW
+  cout << endl;
+  calcOne("MSTW_nom",false,false);
+  calcOne("MSTW_nom",false,true);
+  calcOne("MSTW_nom",true,false);
+  calcOne("MSTW_nom",true,true);
+
+  cout << endl;
+  calcOne("MSTW_pdfup",false,false);
+  calcOne("MSTW_pdfup",false,true);
+  calcOne("MSTW_pdfup",true,false);
+  calcOne("MSTW_pdfup",true,true);
+
+  cout << endl;
+  calcOne("MSTW_pdfdown",false,false);
+  calcOne("MSTW_pdfdown",false,true);
+  calcOne("MSTW_pdfdown",true,false);
+  calcOne("MSTW_pdfdown",true,true);
+
+  // NNPDF
+  cout << endl;
+  calcOne("NNPDF_nom",false,false);
+  calcOne("NNPDF_nom",false,true);
+  calcOne("NNPDF_nom",true,false);
+  calcOne("NNPDF_nom",true,true);
+
+  cout << endl;
+  calcOne("NNPDF_pdfup",false,false);
+  calcOne("NNPDF_pdfup",false,true);
+  calcOne("NNPDF_pdfup",true,false);
+  calcOne("NNPDF_pdfup",true,true);
+
+  cout << endl;
+  calcOne("NNPDF_pdfdown",false,false);
+  calcOne("NNPDF_pdfdown",false,true);
+  calcOne("NNPDF_pdfdown",true,false);
+  calcOne("NNPDF_pdfdown",true,true);
+
+  // Q2
   cout << endl;
   calcOne("scaleup",false,false);
   calcOne("scaleup",false,true);
@@ -59,22 +99,28 @@ void calcOne(TString which, bool parton, bool doel) {
     else TFile* f1 = new TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_mu_2Dcut_nom.root");
   }
   else if (doel) {
-    TFile* f1 = new TFile("histfiles_"+which+"/qcd_el/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_el_"+which+"_2Dcut_nom.root");
-    TFile* f2 = new TFile("histfiles_"+which+"/qcd_el/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_el_"+which+"_2Dcut_nom.root");
-    TFile* f3 = new TFile("histfiles_"+which+"/qcd_el/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_el_"+which+"_2Dcut_nom.root");
+    TFile* f1 = new TFile("histfiles_"+which+"/postfit_combfit/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_el_"+which+"_2Dcut_postfit_nom.root");
+    TFile* f2 = new TFile("histfiles_"+which+"/postfit_combfit/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_el_"+which+"_2Dcut_postfit_nom.root");
+    TFile* f3 = new TFile("histfiles_"+which+"/postfit_combfit/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_el_"+which+"_2Dcut_postfit_nom.root");
+
+    /*
     // additional normalization
     TFile* fn1 = new TFile("histfiles_CT10_nom/qcd_el/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_el_CT10_nom_2Dcut_nom.root");
     TFile* fn2 = new TFile("histfiles_CT10_nom/qcd_el/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_el_CT10_nom_2Dcut_nom.root");
     TFile* fn3 = new TFile("histfiles_CT10_nom/qcd_el/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_el_CT10_nom_2Dcut_nom.root");
+    */
   }
   else {
-    TFile* f1 = new TFile("histfiles_"+which+"/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+which+"_2Dcut_nom.root");
-    TFile* f2 = new TFile("histfiles_"+which+"/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+which+"_2Dcut_nom.root");
-    TFile* f3 = new TFile("histfiles_"+which+"/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+which+"_2Dcut_nom.root");
+    TFile* f1 = new TFile("histfiles_"+which+"/postfit_combfit/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+which+"_2Dcut_postfit_nom.root");
+    TFile* f2 = new TFile("histfiles_"+which+"/postfit_combfit/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+which+"_2Dcut_postfit_nom.root");
+    TFile* f3 = new TFile("histfiles_"+which+"/postfit_combfit/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_"+which+"_2Dcut_postfit_nom.root");
+
+    /*
     // additional normalization
     TFile* fn1 = new TFile("histfiles_CT10_nom/2Dhists/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
     TFile* fn2 = new TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
     TFile* fn3 = new TFile("histfiles_CT10_nom/2Dhists/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_mu_CT10_nom_2Dcut_nom.root");
+    */
   }
 
   TString whatDEN = "ptGenTop";
@@ -97,8 +143,8 @@ void calcOne(TString which, bool parton, bool doel) {
   float normPDF = 1.0;
   
   int iwhich = 0;
-  if (which=="CT10_pdfup") iwhich = 1;
-  else if (which=="CT10_pdfdown") iwhich = 2;
+  if (which.Contains("_pdfup")) iwhich = 1;
+  else if (which.Contains("_pdfdown")) iwhich = 2;
   else if (which=="scaleup") iwhich = 3;
   else if (which=="scaledown") iwhich = 4;
   
@@ -136,7 +182,8 @@ void calcOne(TString which, bool parton, bool doel) {
     h11->Scale(ttbar_norm);
   }
   else {
-    
+
+    /*
     // correcting the inclusive cross section for PDF up/down is not really needed when taking the ratio in (pass pt>400)/(all)
     if (which=="CT10_pdfup" || which=="CT10_pdfdown") {
 
@@ -167,6 +214,7 @@ void calcOne(TString which, bool parton, bool doel) {
       normPDF = h1_num->GetSum()/h1_den->GetSum();
       //cout << "additional sample normalization for " << which << " = " << normPDF << endl;
     }
+    */
 
     h1->Sumw2();
     h2->Sumw2();
