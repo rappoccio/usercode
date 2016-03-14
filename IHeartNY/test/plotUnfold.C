@@ -798,9 +798,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     }
     else if (toUnfold == "y"){
       h_dummy->GetYaxis()->SetTitle("d#sigma/dy (fb)");
-      h_dummy->SetAxisRange(0.0,900,"Y");
+      h_dummy->SetAxisRange(0,900,"Y");
       h_dummy_part->GetYaxis()->SetTitle("d#sigma/dy (fb)");
-      h_dummy_part->SetAxisRange(0.0,320,"Y");
+      h_dummy_part->SetAxisRange(0,320,"Y");
     }
   }
 
@@ -1224,17 +1224,17 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
   TCanvas *c = new TCanvas("c", "", 700, 625);
   
-  float ratio_size = 0.35;
+  float ratio_size = 0.33;
   
-  TPad* p1 = new TPad("p1","p1",0,ratio_size+0.0,1,1);
-  p1->SetBottomMargin(0.01);
+  TPad* p1 = new TPad("p1","p1",0,ratio_size,1,1);
+  p1->SetBottomMargin(0.03);
   p1->SetTopMargin(0.10);
   p1->SetLeftMargin(0.16);
   p1->SetRightMargin(0.075);
   
-  TPad* p2 = new TPad("p2","p2",0,0,1,ratio_size-0.0);
-  p2->SetTopMargin(0.06);
-  p2->SetBottomMargin(0.34);
+  TPad* p2 = new TPad("p2","p2",0,0,1,ratio_size);
+  p2->SetTopMargin(0.01);
+  p2->SetBottomMargin(0.36);
   p2->SetLeftMargin(0.16);
   p2->SetRightMargin(0.075);
   
@@ -1372,8 +1372,6 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     blaTOT->SetBinError(i+1,(up-dn)/2);
   }
   
-  //blaSTAT->SetLineColor(1);
-  //blaSTAT->SetLineWidth(1);
   blaSTAT->SetMarkerSize(0);
   blaSTAT->SetLineColor(0);
   blaSTAT->SetLineWidth(0);
@@ -1403,15 +1401,13 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   // ----------------------------------------------------------------------------------------------------------------
   double legxlow = 0.52;
   double legxhigh = 0.85;
-  //double legylow = 0.4;
-  //double legyhigh = 0.75;
   double legylow = 0.5;
   double legyhigh = 0.85;
   if (toUnfold == "y"){
     legxlow = 0.37;
-    legylow = 0.04;
+    legylow = 0.05;
     legxhigh = 0.70;
-    legyhigh = 0.37;
+    legyhigh = 0.38;
   }
   
   TLegend* leg = new TLegend(legxlow,legylow,legxhigh,legyhigh);  
@@ -1419,9 +1415,6 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   leg->AddEntry(h_true,"Powheg+Pythia6 t#bar{t}","l");
   leg->AddEntry(h_trueMG,"MadGraph+Pythia6 t#bar{t}","l");
   leg->AddEntry(h_trueMCNLO,"MC@NLO+Herwig6 t#bar{t}","l");
-  //leg->AddEntry(blaEXP,"Experimental uncertainty","f");
-  //leg->AddEntry(blaTH,"Theory uncertainty","f");
-  //leg->AddEntry(blaTOT,"Stat. #oplus exp. #oplus theory","f");
   leg->AddEntry(blaSTAT,"Stat. uncertainty","f");
   if (doNormalized) leg->AddEntry(blaTOT,"Stat. #oplus syst.","f");
   else leg->AddEntry(blaTOT,"Stat. #oplus syst.","f");
@@ -1441,10 +1434,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   p2->cd();
   p2->SetGridy();
 
-  h_ratio->GetXaxis()->SetTitleSize(0.14);
-  h_ratio->GetYaxis()->SetTitleSize(0.14);
+  h_ratio->GetXaxis()->SetTitleSize(0.15);
+  h_ratio->GetYaxis()->SetTitleSize(0.13);
   h_ratio->GetXaxis()->SetLabelSize(0.12);
-  h_ratio->GetYaxis()->SetLabelSize(0.1);
+  h_ratio->GetYaxis()->SetLabelSize(0.11);
 
   h_ratio->GetYaxis()->SetTitle("Theory/Data");
   if (toUnfold == "pt") h_ratio->GetXaxis()->SetTitle("Top quark p_{T} (GeV)");
@@ -1468,10 +1461,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_ratioMCNLO->SetAxisRange(0.6,1.4,"Y");
   }
   else {
-    h_ratio->SetAxisRange(0.3,1.7,"Y");
-    h_ratioGEN->SetAxisRange(0.3,1.7,"Y");
-    h_ratioMG->SetAxisRange(0.3,1.7,"Y");
-    h_ratioMCNLO->SetAxisRange(0.3,1.7,"Y");
+    h_ratio->SetAxisRange(0.4,1.6,"Y");
+    h_ratioGEN->SetAxisRange(0.4,1.6,"Y");
+    h_ratioMG->SetAxisRange(0.4,1.6,"Y");
+    h_ratioMCNLO->SetAxisRange(0.4,1.6,"Y");
   }
   h_ratio->Draw("hist");
   blaTOT->Draw("same,e2");
@@ -1483,7 +1476,6 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   h_ratioGEN->Draw("same,hist");
   h_ratioMG->Draw("same,hist");
   h_ratioMCNLO->Draw("same,hist");
-  //blaSTAT->Draw("same,ep");
   h_ratio->Draw("same,hist");
   h_ratio->Draw("same,axis");
   
@@ -1999,18 +1991,18 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
     TCanvas *c2 = new TCanvas("c2", "", 700, 625);
     
-    TPad* p3 = new TPad("p3","p3",0,ratio_size+0.0,1,1);
-    p3->SetBottomMargin(0.01);
+    TPad* p3 = new TPad("p3","p3",0,ratio_size,1,1);
+    p3->SetBottomMargin(0.03);
     p3->SetTopMargin(0.10);
     p3->SetLeftMargin(0.16);
     p3->SetRightMargin(0.075);
     
-    TPad* p4 = new TPad("p4","p4",0,0,1,ratio_size-0.0);
-    p4->SetTopMargin(0.06);
-    p4->SetBottomMargin(0.34);
+    TPad* p4 = new TPad("p4","p4",0,0,1,ratio_size);
+    p4->SetTopMargin(0.01);
+    p4->SetBottomMargin(0.36);
     p4->SetLeftMargin(0.16);
     p4->SetRightMargin(0.075);
-
+  
     p4->Draw();
     p3->Draw();
     
@@ -2180,8 +2172,6 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     leg->AddEntry(h_part,"Powheg+Pythia6 t#bar{t}","l");
     leg->AddEntry(h_partMG,"MadGraph+Pythia6 t#bar{t}","l");
     leg->AddEntry(h_partMCNLO,"MC@NLO+Herwig6 t#bar{t}","l");
-    //leg->AddEntry(blaEXP_part,"Experimental uncertainty","f");
-    //leg->AddEntry(blaTH_part,"Theory uncertainty","f");
     leg->AddEntry(blaSTAT_part,"Stat. uncertainty","f");
     if (doNormalized) leg->AddEntry(blaTOT_part,"Stat. #oplus syst.","f");
     else leg->AddEntry(blaTOT_part,"Stat. #oplus syst.","f");
@@ -2201,10 +2191,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     p4->cd();
     p4->SetGridy();
     
-    h_ratio_part->GetXaxis()->SetTitleSize(0.14);
-    h_ratio_part->GetYaxis()->SetTitleSize(0.14);
+    h_ratio_part->GetXaxis()->SetTitleSize(0.15);
+    h_ratio_part->GetYaxis()->SetTitleSize(0.13);
     h_ratio_part->GetXaxis()->SetLabelSize(0.12);
-    h_ratio_part->GetYaxis()->SetLabelSize(0.1);
+    h_ratio_part->GetYaxis()->SetLabelSize(0.11);
     h_ratio_part->GetYaxis()->SetTitle("Theory/Data");
     if (toUnfold == "pt") h_ratio_part->GetXaxis()->SetTitle("Particle-level t jet p_{T} (GeV)");
     else if (toUnfold == "y") h_ratio_part->GetXaxis()->SetTitle("Particle-level t jet y");
@@ -2226,10 +2216,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       h_ratioMCNLO_part->SetAxisRange(0.6,1.4,"Y");
     }
     else {
-      h_ratio_part->SetAxisRange(0.3,1.7,"Y");
-      h_ratioGEN_part->SetAxisRange(0.3,1.7,"Y");
-      h_ratioMG_part->SetAxisRange(0.3,1.7,"Y");
-      h_ratioMCNLO_part->SetAxisRange(0.3,1.7,"Y");
+      h_ratio_part->SetAxisRange(0.4,1.6,"Y");
+      h_ratioGEN_part->SetAxisRange(0.4,1.6,"Y");
+      h_ratioMG_part->SetAxisRange(0.4,1.6,"Y");
+      h_ratioMCNLO_part->SetAxisRange(0.4,1.6,"Y");
     }
     h_ratio_part->Draw("hist");
     blaTOT_part->Draw("same,e2");
@@ -2240,7 +2230,6 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_ratioGEN_part->Draw("same,hist");
     h_ratioMG_part->Draw("same,hist");
     h_ratioMCNLO_part->Draw("same,hist");
-    //blaSTAT_part->Draw("same,ep");
     h_ratio_part->Draw("same,hist");
     h_ratio_part->Draw("same,axis");
     
@@ -2429,12 +2418,6 @@ void SetPlotStyle() {
   
   // set the paper & margin sizes
   gStyle->SetPaperSize(20,26);
-  /*
-    gStyle->SetPadTopMargin(0.05);
-    gStyle->SetPadRightMargin(0.05);
-    gStyle->SetPadBottomMargin(0.16);
-    gStyle->SetPadLeftMargin(0.16);
-  */
   gStyle->SetPadTopMargin(0.07);
   gStyle->SetPadRightMargin(0.05);
   gStyle->SetPadBottomMargin(0.16);
