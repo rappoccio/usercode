@@ -26,9 +26,27 @@ void SetPlotStyle();
 void mySmallText(Double_t x,Double_t y,Color_t color,Double_t tsize,char *text); 
 void drawCMS(Double_t x1,Double_t y1, Double_t x2,Double_t y2, bool pad, bool prel, bool forPublic);
 
+double max6(double a, double b, double c, double d, double e, double f){
+  if      (a > b && a > c && a > d && a > e && a > f) return a;
+  else if (b > c && b > d && b > e && b > f) return b;
+  else if (c > d && c > e && c > f) return c;
+  else if (d > e && d > f) return d;
+  else if (e > f) return e;
+  else return f;
+}
+
+double min6(double a, double b, double c, double d, double e, double f){
+  if      (a < b && a < c && a < d && a < e && a < f) return a;
+  else if (b < c && b < d && b < e && b < f) return b;
+  else if (c < d && c < e && c < f) return c;
+  else if (d < e && d < f) return d;
+  else if (e < f) return e;
+  else return f;
+}
+
 void symmetrize(TH1F* h_input);
 
-void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doNormalized, bool doLogscale, bool doAverageErr);
+void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doNormalized, bool doLogscale, bool doAverageErr, bool do3PDF);
 
 void plotUnfold(TString channel, TString toUnfold="pt") {
 
@@ -37,15 +55,16 @@ void plotUnfold(TString channel, TString toUnfold="pt") {
   if (toUnfold == "y") doLogscale = false;
   bool doAverageErr = true;   // average up/down systematic uncertainties? 
   bool doScale      = true;   // scale central value to match integrated result from theta?
+  bool do3PDF       = false;
 
-  plot(channel,toUnfold,true,true, doNormalized,doLogscale,doAverageErr,doScale);
-  //plot(channel,toUnfold,true,false, doNormalized,doLogscale,doAverageErr,doScale);
-  //plot(channel,toUnfold,false,true, doNormalized,doLogscale,doAverageErr,doScale);
-  //plot(channel,toUnfold,false,false, doNormalized,doLogscale,doAverageErr,doScale);
+  plot(channel,toUnfold,true,true, doNormalized,doLogscale,doAverageErr,doScale,do3PDF);
+  //plot(channel,toUnfold,true,false, doNormalized,doLogscale,doAverageErr,doScale,do3PDF);
+  //plot(channel,toUnfold,false,true, doNormalized,doLogscale,doAverageErr,doScale,do3PDF);
+  //plot(channel,toUnfold,false,false, doNormalized,doLogscale,doAverageErr,doScale,do3PDF);
 
 }
 
-void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doNormalized, bool doLogscale, bool doAverageErr, bool doScale) {
+void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doNormalized, bool doLogscale, bool doAverageErr, bool doScale, bool do3PDF) {
   
   SetPlotStyle();
     
@@ -95,7 +114,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   
   cout << endl << "Getting files and hists..." << endl;
 
-  const int nSYST = 1+10+4+2+1; //nominal+expSyst+thSyst
+  const int nSYST = 1+10+4+2+1+6; //nominal+expSyst+thSyst
   TString name_syst[nSYST] = {"_CT10_nom_nom",
 			      "_CT10_nom_jecup",
 			      "_CT10_nom_jecdn",
@@ -113,7 +132,13 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 			      "_scaledown_nom",
 			      "_CT10_nom_toptagHIGHPTup",
 			      "_CT10_nom_toptagHIGHPTdn",
-			      "_PS"
+			      "_PS",
+			      "_MSTW_nom_nom",
+			      "_MSTW_pdfup_nom",
+			      "_MSTW_pdfdown_nom",
+			      "_NNPDF_nom_nom",
+			      "_NNPDF_pdfup_nom",
+			      "_NNPDF_pdfdown_nom"
   };
   
   if (channel == "comb") const int nCHANNEL = 2;
@@ -943,16 +968,22 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     this_systEXP_dn += (count[10]-count[0])*(count[10]-count[0]);
     this_systEXP_dn += (count[16]-count[0])*(count[16]-count[0]);
     this_systEXP_dn = sqrt(this_systEXP_dn);
+
+    // construct PDF envelope
+    double this_syst_pdf = 0.5*(max6(count[11],count[12],count[19],count[20],count[22],count[23])
+				-min6(count[11],count[12],count[19],count[20],count[22],count[23]));
     
     // theory
     float this_systTH_up = 0;
-    this_systTH_up += (count[11]-count[0])*(count[11]-count[0]); //pdf
+    if (do3PDF) this_systTH_up += this_syst_pdf * this_syst_pdf; //pdf 
+    else this_systTH_up += (count[11]-count[0])*(count[11]-count[0]);
     if (doQ2) this_systTH_up += (count[13]-count[0])*(count[13]-count[0]); //q2
     this_systTH_up += this_syst_PS*this_syst_PS; //PS
     this_systTH_up = sqrt(this_systTH_up);
     
     float this_systTH_dn = 0;
-    this_systTH_dn += (count[12]-count[0])*(count[12]-count[0]);
+    if (do3PDF) this_systTH_dn += this_syst_pdf * this_syst_pdf; //pdf 
+    else this_systTH_dn += (count[12]-count[0])*(count[12]-count[0]);
     if (doQ2) this_systTH_dn += (count[14]-count[0])*(count[14]-count[0]);
     this_systTH_dn += this_syst_PS*this_syst_PS; //PS
     this_systTH_dn = sqrt(this_systTH_dn);
@@ -1009,6 +1040,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     // theoretical
     double syst_pdfup   = fabs((count[11]-count[0])/count[0])*100;
     double syst_pdfdn   = fabs((count[12]-count[0])/count[0])*100;
+    if (do3PDF) {
+      syst_pdfup = this_syst_pdf/count[0]*100;
+      syst_pdfdn = this_syst_pdf/count[0]*100;
+    }
     double syst_scaleup = fabs((count[13]-count[0])/count[0])*100;
     double syst_scaledn = fabs((count[14]-count[0])/count[0])*100;
     // parton shower
@@ -1125,6 +1160,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     float lowedge = h_systEXP_up->GetBinLowEdge(ibin1);
     float highedge = h_systEXP_up->GetBinLowEdge(ibin2);
 
+    TString notation1 = "";
+    TString notation3 = "";
+    if (do3PDF) notation3 = " <-- We are using this";
+    else notation1 = " <-- We are using this";
+
     if (toUnfold == "pt"){
 
       if (lowedge > 300 && highedge < 1300) {
@@ -1142,6 +1182,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	  //<< " +/- " << h_trueMCNLO->GetBinError(i+1) 
 	  //<< " frac error (%): " << h_trueMCNLO->GetBinError(i+1)/h_trueMCNLO->GetBinContent(i+1)*100.0 
 	     << endl;
+	cout << "PDF uncertainty using 1 PDF is " << ((fabs(count[11]-count[0]) + fabs(count[12]-count[0])) / 2.)*100./count[0] << notation1 << endl;
+	cout << "PDF uncertainty using 3 PDFs is " << this_syst_pdf * 100. / count[0] << notation3 << endl;
+
       }
       
       if (lowedge > 300.) {
@@ -1168,7 +1211,8 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	//<< " +/- " << h_trueMCNLO->GetBinError(i+1) 
 	//<< " frac error (%): " << h_trueMCNLO->GetBinError(i+1)/h_trueMCNLO->GetBinContent(i+1)*100.0 
 	   << endl;
-      
+      cout << "PDF uncertainty using 1 PDF is " << ((fabs(count[11]-count[0]) + fabs(count[12]-count[0])) / 2.)*100./count[0] << notation1 << endl;
+      cout << "PDF uncertainty using 3 PDFs is " << this_syst_pdf * 100. / count[0] << notation3 << endl;
       
       xsec_meas += count[0]*h_true->GetBinWidth(i+1);
       xsec_true += h_true->GetBinContent(i+1)*h_true->GetBinWidth(i+1);
@@ -1719,16 +1763,22 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       this_systEXP_dn_part += (count_part[10]-count_part[0])*(count_part[10]-count_part[0]);
       this_systEXP_dn_part += (count_part[16]-count_part[0])*(count_part[16]-count_part[0]);
       this_systEXP_dn_part = sqrt(this_systEXP_dn_part);
-      
+
+      // construct PDF envelope
+      double this_syst_pdf_part = 0.5*(max6(count_part[11],count_part[12],count_part[19],count_part[20],count_part[22],count_part[23])
+				       -min6(count_part[11],count_part[12],count_part[19],count_part[20],count_part[22],count_part[23]));
+
       // theory
       float this_systTH_up_part = 0;
-      this_systTH_up_part += (count_part[11]-count_part[0])*(count_part[11]-count_part[0]);
+      if (do3PDF) this_systTH_up_part += this_syst_pdf_part * this_syst_pdf_part; //pdf
+      else this_systTH_up_part += (count_part[11]-count_part[0])*(count_part[11]-count_part[0]);
       if (doQ2) this_systTH_up_part += (count_part[13]-count_part[0])*(count_part[13]-count_part[0]);
       this_systTH_up_part += this_syst_PS*this_syst_PS;
       this_systTH_up_part = sqrt(this_systTH_up_part);
       
       float this_systTH_dn_part = 0;
-      this_systTH_dn_part += (count_part[12]-count_part[0])*(count_part[12]-count_part[0]);
+      if (do3PDF) this_systTH_dn_part += this_syst_pdf_part * this_syst_pdf_part; //pdf
+      else this_systTH_dn_part += (count_part[12]-count_part[0])*(count_part[12]-count_part[0]);
       if (doQ2) this_systTH_dn_part += (count_part[14]-count_part[0])*(count_part[14]-count_part[0]);
       this_systTH_dn_part += this_syst_PS*this_syst_PS;
       this_systTH_dn_part = sqrt(this_systTH_dn_part);
@@ -1781,6 +1831,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       // theoretical
       double syst_pdfup_part   = fabs((count_part[11]-count_part[0])/count_part[0])*100;
       double syst_pdfdn_part   = fabs((count_part[12]-count_part[0])/count_part[0])*100;
+      if (do3PDF) {
+	syst_pdfup_part = this_syst_pdf_part/count_part[0]*100;
+	syst_pdfdn_part = this_syst_pdf_part/count_part[0]*100;	  
+      }
       double syst_scaleup_part = fabs((count_part[13]-count_part[0])/count_part[0])*100;
       double syst_scaledn_part = fabs((count_part[14]-count_part[0])/count_part[0])*100;
       // parton shower
@@ -1893,6 +1947,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       float lowedge = h_systEXP_up_part->GetBinLowEdge(ibin1);
       float highedge = h_systEXP_up_part->GetBinLowEdge(ibin2);
 
+      TString notation1 = "";
+      TString notation3 = "";
+      if (do3PDF) notation3 = " <-- We are using this";
+      else notation1 = " <-- We are using this";
+
       if (toUnfold == "pt"){
       
 	if (lowedge > 300 && highedge < 1300) {
@@ -1910,6 +1969,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	    //<< " +/- " << h_partMCNLO->GetBinError(i+1) 
 	    //<< " frac error (%): " << h_partMCNLO->GetBinError(i+1)/h_partMCNLO->GetBinContent(i+1)*100.0 
 	       << endl;
+	  cout << "PDF uncertainty using 1 PDF is " << ((fabs(count_part[11]-count_part[0]) + fabs(count_part[12]-count_part[0])) / 2.) * 100. / count_part[0] << notation1 << endl;
+	  cout << "PDF uncertainty using 3 PDFs is " << this_syst_pdf_part * 100. / count_part[0] << notation3 << endl;
+
 	}
 	
 	if (lowedge > 300.) {
@@ -1936,6 +1998,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	  //<< " +/- " << h_partMCNLO->GetBinError(i+1) 
 	  //<< " frac error (%): " << h_partMCNLO->GetBinError(i+1)/h_partMCNLO->GetBinContent(i+1)*100.0 
 	     << endl;
+
+	cout << "PDF uncertainty using 1 PDF is " << ((fabs(count_part[11]-count_part[0]) + fabs(count_part[12]-count_part[0])) / 2.) * 100. / count_part[0] << notation1 << endl;
+	cout << "PDF uncertainty using 3 PDFs is " << this_syst_pdf_part * 100. / count_part[0] << notation3 << endl;
 	
 	xsec_meas += count_part[0]*h_part->GetBinWidth(i+1);
 	xsec_true += h_part->GetBinContent(i+1)*h_part->GetBinWidth(i+1);
