@@ -5,6 +5,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "THStack.h"
+#include "TExec.h"
 
 #include <iostream>
 
@@ -24,6 +25,8 @@ void setStyle() {
   gStyle->SetLabelFont(43, "XYZ");
   gStyle->SetLabelSize(20, "XYZ");
 
+  gStyle->SetErrorX(0);
+  
   // use plain black on white colors
   gStyle->SetFrameBorderMode(0);
   gStyle->SetFrameFillColor(0);
@@ -42,7 +45,7 @@ void setStyle() {
 
 void myLargeText(Double_t x,Double_t y,Color_t color,char const *text) {
   TLatex l;
-  l.SetTextSize(0.054); 
+  l.SetTextSize(0.06); 
   l.SetTextFont(42); 
   l.SetNDC();
   l.SetTextColor(color);
@@ -391,7 +394,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   leg->SetFillStyle(0);
   leg->SetTextFont(42);
   leg->SetTextSize(0.055);
-  leg->AddEntry(h_data, "Data", "pel");
+  leg->AddEntry(h_data, "Data", "pe");
   leg->AddEntry(h_ttbar, "t#bar{t} signal", "f");
   leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} other", "f");
   leg->AddEntry(h_singletop, "Single t", "f");
@@ -542,12 +545,17 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   h_data->GetYaxis()->SetTitleSize(36);
   if (hist == "hadtop_pt4") h_data->GetYaxis()->SetTitleOffset(1.2);
   else h_data->GetYaxis()->SetTitleOffset(1.0);
-  h_data->Draw("lep");
+
+  h_data->Draw("ep");
   h_stack->Draw("hist,same");
-  h_data->Draw("lep,same");
+  h_data->Draw("ep,same");
+  TExec *setex2 = new TExec("setex2","gStyle->SetErrorX(0.5)");
+  setex2->Draw();
   if (postfit && combined) h_totalbkg->SetMinimum(0);
   if (postfit && combined) h_totalbkg->Draw("e2,same");
-  h_data->Draw("lep,same,axis");
+  TExec *setex1 = new TExec("setex1","gStyle->SetErrorX(0)");
+  setex1->Draw();
+  h_data->Draw("ep,same,axis");
 
   leg->Draw();
 
@@ -560,42 +568,42 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     
     if (hist.Contains("vtxMass") || hist.Contains("hadtop_pt")) {
       if (doElectron) {
-	if (hist.Contains("7")) myText(0.62,0.32,1,"1t+1b, e+jets");
-	else if (hist.Contains("6")) myText(0.62,0.32,1,"1t+0b, e+jets");
-	else if (hist.Contains("4")) myText(0.62,0.32,1,"0t, e+jets");
+	if (hist.Contains("7")) myLargeText(0.62,0.3,1,"1t+1b, e+jets");
+	else if (hist.Contains("6")) myLargeText(0.62,0.3,1,"1t+0b, e+jets");
+	else if (hist.Contains("4")) myLargeText(0.62,0.3,1,"0t, e+jets");
       }
       else {
-	if (hist.Contains("7")) myText(0.62,0.32,1,"1t+1b, #mu+jets");
-	else if (hist.Contains("6")) myText(0.62,0.32,1,"1t+0b, #mu+jets");
-	else if (hist.Contains("4")) myText(0.62,0.32,1,"0t, #mu+jets");
+	if (hist.Contains("7")) myLargeText(0.62,0.3,1,"1t+1b, #mu+jets");
+	else if (hist.Contains("6")) myLargeText(0.62,0.3,1,"1t+0b, #mu+jets");
+	else if (hist.Contains("4")) myLargeText(0.62,0.3,1,"0t, #mu+jets");
       }
-      myItalicText(0.62,0.25,1,"Post-fit yields");
+      //myItalicText(0.62,0.25,1,"Post-fit yields");
     }
     else if (hist.Contains("hadtop_y")) {
       if (doElectron) {
-	if (hist.Contains("7")) myText(0.18,0.73,1,"1t+1b,  e+jets");
-	else if (hist.Contains("6")) myText(0.18,0.73,1,"1t+0b,  e+jets");
-	else if (hist.Contains("4")) myText(0.18,0.73,1,"0t,  e+jets");
+	if (hist.Contains("7")) myLargeText(0.18,0.73,1,"1t+1b,  e+jets");
+	else if (hist.Contains("6")) myLargeText(0.18,0.73,1,"1t+0b,  e+jets");
+	else if (hist.Contains("4")) myLargeText(0.18,0.73,1,"0t,  e+jets");
       }
       else {
-	if (hist.Contains("7")) myText(0.18,0.73,1,"1t+1b,  #mu+jets");
-	else if (hist.Contains("6")) myText(0.18,0.73,1,"1t+0b,  #mu+jets");
-	else if (hist.Contains("4")) myText(0.18,0.73,1,"0t,  #mu+jets");
+	if (hist.Contains("7")) myLargeText(0.18,0.73,1,"1t+1b,  #mu+jets");
+	else if (hist.Contains("6")) myLargeText(0.18,0.73,1,"1t+0b,  #mu+jets");
+	else if (hist.Contains("4")) myLargeText(0.18,0.73,1,"0t,  #mu+jets");
       }
-      myItalicText(0.18,0.66,1,"Post-fit yields");
+      //myItalicText(0.18,0.66,1,"Post-fit yields");
     }
     else {
       if (doElectron) {
-	if (hist.Contains("7")) myText(0.18,0.84,1,"1t+1b,  e+jets");
-	else if (hist.Contains("6")) myText(0.18,0.84,1,"1t+0b,  e+jets");
-	else if (hist.Contains("4")) myText(0.18,0.84,1,"0t,  e+jets");
+	if (hist.Contains("7")) myLargeText(0.18,0.82,1,"1t+1b,  e+jets");
+	else if (hist.Contains("6")) myLargeText(0.18,0.82,1,"1t+0b,  e+jets");
+	else if (hist.Contains("4")) myLargeText(0.18,0.82,1,"0t,  e+jets");
       }
       else {
-	if (hist.Contains("7")) myText(0.18,0.84,1,"1t+1b,  #mu+jets");
-	else if (hist.Contains("6")) myText(0.18,0.84,1,"1t+0b,  #mu+jets");
-	else if (hist.Contains("4")) myText(0.18,0.84,1,"0t,  #mu+jets");
+	if (hist.Contains("7")) myLargeText(0.18,0.82,1,"1t+1b,  #mu+jets");
+	else if (hist.Contains("6")) myLargeText(0.18,0.82,1,"1t+0b,  #mu+jets");
+	else if (hist.Contains("4")) myLargeText(0.18,0.82,1,"0t,  #mu+jets");
       }
-      myItalicText(0.18,0.77,1,"Post-fit yields");
+      //myItalicText(0.18,0.77,1,"Post-fit yields");
     }
   }
   else if (var.Contains("csv")) {
@@ -612,12 +620,16 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   p2->SetGridy();
   h_ratio->UseCurrentStyle();
   h_ratio->Draw("lep");
+  TExec *setex4 = new TExec("setex4","gStyle->SetErrorX(0.5)");
+  setex4->Draw();
   if (postfit && combined) h_ratio2->Draw("e2,same");
-  if (postfit && combined) h_ratio->Draw("lep,same");
+  TExec *setex3 = new TExec("setex3","gStyle->SetErrorX(0)");
+  setex3->Draw();
+  if (postfit && combined) h_ratio->Draw("ep,same");
   h_ratio->SetMaximum(2.0);
   h_ratio->SetMinimum(0.0);
   h_ratio->GetYaxis()->SetNdivisions(2,4,0,false);
-  h_ratio->GetYaxis()->SetTitle("Data / Sim.");
+  h_ratio->GetYaxis()->SetTitle("Data / Fit");
   h_ratio->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
   h_ratio->GetXaxis()->SetTitleOffset( 4.0 );
   h_ratio->GetXaxis()->SetLabelSize(26);
@@ -935,7 +947,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   leg->SetFillStyle(0);
   leg->SetTextFont(42);
   leg->SetTextSize(0.055);
-  leg->AddEntry(h_data, "Data", "pel");
+  leg->AddEntry(h_data, "Data", "pe");
   leg->AddEntry(h_ttbar_semiLep, "t#bar{t} signal", "f");
   leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} other", "f");
   leg->AddEntry(h_singletop, "Single t", "f");
@@ -1066,12 +1078,16 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   h_data->GetYaxis()->SetLabelSize(26);
   h_data->GetYaxis()->SetTitleSize(36);
   h_data->GetYaxis()->SetTitleOffset(1.0);
-  h_data->Draw("lep");
+  h_data->Draw("ep");
   h_stack->Draw("hist,same");
-  h_data->Draw("lep,same");
+  h_data->Draw("ep,same");
   h_totalbkg->SetMinimum(0);
+  TExec *setex6 = new TExec("setex6","gStyle->SetErrorX(0.5)");
+  setex6->Draw();
   h_totalbkg->Draw("e2,same");
-  h_data->Draw("lep,same,axis");
+  TExec *setex5 = new TExec("setex5","gStyle->SetErrorX(0)");
+  setex5->Draw();
+  h_data->Draw("ep,same,axis");
 
   leg->Draw();
 
@@ -1079,42 +1095,46 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 
   if (what.Contains("vtxMass")) {
     if (doElectron) {
-      if (what.Contains("7")) myText(0.62,0.32,1,"1t+1b, e+jets");
-      else if (what.Contains("6")) myText(0.62,0.32,1,"1t+0b, e+jets");
-      else if (what.Contains("4")) myText(0.62,0.32,1,"0t, e+jets");
+      if (what.Contains("7")) myLargeText(0.62,0.3,1,"1t+1b, e+jets");
+      else if (what.Contains("6")) myLargeText(0.62,0.3,1,"1t+0b, e+jets");
+      else if (what.Contains("4")) myLargeText(0.62,0.3,1,"0t, e+jets");
     }
     else {
-      if (what.Contains("7")) myText(0.62,0.32,1,"1t+1b, #mu+jets");
-      else if (what.Contains("6")) myText(0.62,0.32,1,"1t+0b, #mu+jets");
-      else if (what.Contains("4")) myText(0.62,0.32,1,"0t, #mu+jets");
+      if (what.Contains("7")) myLargeText(0.62,0.3,1,"1t+1b, #mu+jets");
+      else if (what.Contains("6")) myLargeText(0.62,0.3,1,"1t+0b, #mu+jets");
+      else if (what.Contains("4")) myLargeText(0.62,0.3,1,"0t, #mu+jets");
     }
-    myItalicText(0.62,0.25,1,"Post-fit yields");
+    //myItalicText(0.62,0.25,1,"Post-fit yields");
   }
   else {
     if (doElectron) {
-      if (what.Contains("7")) myText(0.18,0.84,1,"1t+1b,  e+jets");
-      else if (what.Contains("6")) myText(0.18,0.84,1,"1t+0b,  e+jets");
-      else if (what.Contains("4")) myText(0.18,0.84,1,"0t,  e+jets");
+      if (what.Contains("7")) myLargeText(0.18,0.82,1,"1t+1b,  e+jets");
+      else if (what.Contains("6")) myLargeText(0.18,0.82,1,"1t+0b,  e+jets");
+      else if (what.Contains("4")) myLargeText(0.18,0.82,1,"0t,  e+jets");
     }
     else {
-      if (what.Contains("7")) myText(0.18,0.84,1,"1t+1b,  #mu+jets");
-      else if (what.Contains("6")) myText(0.18,0.84,1,"1t+0b,  #mu+jets");
-      else if (what.Contains("4")) myText(0.18,0.84,1,"0t,  #mu+jets");
+      if (what.Contains("7")) myLargeText(0.18,0.82,1,"1t+1b,  #mu+jets");
+      else if (what.Contains("6")) myLargeText(0.18,0.82,1,"1t+0b,  #mu+jets");
+      else if (what.Contains("4")) myLargeText(0.18,0.82,1,"0t,  #mu+jets");
     }
-    myItalicText(0.18,0.77,1,"Post-fit yields");
+    //myItalicText(0.18,0.77,1,"Post-fit yields");
   }
 
   // plot ratio part
   p2->cd();
   p2->SetGridy();
   h_ratio->UseCurrentStyle();
-  h_ratio->Draw("lep");
+  h_ratio->Draw("ep");
+  TExec *setex8 = new TExec("setex8","gStyle->SetErrorX(0.5)");
+  setex8->Draw();
   h_ratio2->Draw("e2,same");
-  h_ratio->Draw("lep,same");
+  TExec *setex7 = new TExec("setex7","gStyle->SetErrorX(0)");
+  setex7->Draw();
+  h_ratio->Draw("ep,same");
   h_ratio->SetMaximum(2.0);
   h_ratio->SetMinimum(0.0);
   h_ratio->GetYaxis()->SetNdivisions(2,4,0,false);
-  h_ratio->GetYaxis()->SetTitle("Data / Sim.");
+  h_ratio->GetYaxis()->SetTitle("Data / Fit");
   h_ratio->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
   h_ratio->GetXaxis()->SetTitleOffset( 4.0 );
   h_ratio->GetXaxis()->SetLabelSize(26);

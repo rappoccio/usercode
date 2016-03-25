@@ -1540,9 +1540,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   else if (toUnfold == "y") h_dummy_r->GetXaxis()->SetTitle("Top quark y");
   h_dummy_r->GetYaxis()->SetTitle("Uncertainty [%]");
   if (toUnfold == "pt") h_dummy_r->SetAxisRange(400,1150,"X");
-  if (toUnfold == "y") h_dummy_r->SetAxisRange(0,50,"Y");
+  if (toUnfold == "y") h_dummy_r->SetAxisRange(0,40,"Y");
   else if (doQ2 && channel == "comb" && doNormalized) h_dummy_r->SetAxisRange(0,40,"Y");
-  else if (doQ2) h_dummy_r->SetAxisRange(0,80,"Y");
+  else if (doQ2) h_dummy_r->SetAxisRange(0,60,"Y");
   else h_dummy_r->SetAxisRange(0,25,"Y");
   
   h_dummy_r->GetYaxis()->SetTitleSize(0.055);    
@@ -1615,23 +1615,32 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   }
   
   TLegend* leg2;
-  if (toUnfold == "pt" && doNormalized) leg2 = new TLegend(0.2,0.46,0.45,0.8);
-  else leg2 = new TLegend(0.2,0.46,0.45,0.88);
+  if (toUnfold == "pt" && doNormalized) leg2 = new TLegend(0.2,0.65,0.45,0.8);
+  else leg2 = new TLegend(0.2,0.65,0.45,0.88);
   leg2->AddEntry(h_syst_tot,"Total syst. uncertainty","f");
   leg2->AddEntry(h_syst_stat,"Statistical uncertainty","lp");
   if (doNormalized == false) leg2->AddEntry(h_lumi,"Int. luminosity","lp");
   leg2->AddEntry(h_syst_jec,"Jet energy scale","lp");
   leg2->AddEntry(h_syst_jer,"Jet energy resolution","lp");
-  leg2->AddEntry(h_syst_toptag,"Top-tagging efficiency","lp");
-  if (nobtag == "") leg2->AddEntry(h_syst_btag,"b-tagging efficiency","lp");
-  leg2->AddEntry(h_syst_bkg,"Background normalization","lp");
-  leg2->AddEntry(h_syst_PS,"Generator+parton shower","lp");
-  leg2->AddEntry(h_syst_pdf,"PDF uncertainty","lp");
-  if (doQ2) leg2->AddEntry(h_syst_Q2,"#mu_{R}, #mu_{F} scales","lp");
   leg2->SetFillStyle(0);
   leg2->SetBorderSize(0);
   leg2->SetTextSize(0.04);
   leg2->SetTextFont(42);
+
+  TLegend* leg22;
+  if (toUnfold == "pt" && doNormalized) leg22 = new TLegend(0.55,0.65,0.8,0.8);
+  else leg22 = new TLegend(0.55,0.65,0.8,0.88);
+  leg22->AddEntry(h_syst_toptag,"Top-tagging efficiency","lp");
+  if (nobtag == "") leg22->AddEntry(h_syst_btag,"b-tagging efficiency","lp");
+  leg22->AddEntry(h_syst_bkg,"Background normalization","lp");
+  leg22->AddEntry(h_syst_PS,"Generator+parton shower","lp");
+  leg22->AddEntry(h_syst_pdf,"PDF uncertainty","lp");
+  if (doQ2) leg22->AddEntry(h_syst_Q2,"#mu_{R}, #mu_{F} scales","lp");
+  leg22->SetFillStyle(0);
+  leg22->SetBorderSize(0);
+  leg22->SetTextSize(0.04);
+  leg22->SetTextFont(42);
+
 
   cout << endl << "Generator+PS (parton level)" << endl;
   int ilow=0;
@@ -1659,8 +1668,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   h_syst_PS->Draw("ep,same");
   h_dummy_r->Draw("hist,axis,same");
   leg2->Draw(); 
+  leg22->Draw(); 
 
-  drawCMS(0.75,0.82,0.85,0.82,false,preliminary,forpub);
+  drawCMS(0.18,0.94,0.28,0.94,false,preliminary,forpub);
 
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
@@ -2316,9 +2326,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     else if (toUnfold == "y") h_dummy_r_part->GetXaxis()->SetTitle("Particle-level t jet y");
     h_dummy_r_part->GetYaxis()->SetTitle("Uncertainty [%]");
     if (toUnfold == "pt") h_dummy_r_part->SetAxisRange(400,1150,"X");
-    if (toUnfold == "y") h_dummy_r_part->SetAxisRange(0,50,"Y");
+    if (toUnfold == "y") h_dummy_r_part->SetAxisRange(0,40,"Y");
     else if (doQ2 && channel == "comb" && doNormalized) h_dummy_r_part->SetAxisRange(0,40,"Y");
-    else if (doQ2) h_dummy_r_part->SetAxisRange(0,80,"Y");
+    else if (doQ2) h_dummy_r_part->SetAxisRange(0,60,"Y");
     else h_dummy_r_part->SetAxisRange(0,25,"Y");
     
     h_dummy_r_part->GetYaxis()->SetTitleSize(0.055);    
@@ -2385,23 +2395,31 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_syst_PS_part->SetMarkerStyle(32);
     
     TLegend* leg4;
-    if (toUnfold == "pt" && doNormalized) leg4 = new TLegend(0.2,0.46,0.45,0.8);
-    else leg4 = new TLegend(0.2,0.46,0.45,0.88);
+    if (toUnfold == "pt" && doNormalized) leg4 = new TLegend(0.2,0.65,0.45,0.8);
+    else leg4 = new TLegend(0.2,0.65,0.45,0.88);
     leg4->AddEntry(h_syst_tot_part,"Total syst. uncertainty","f");
     leg4->AddEntry(h_syst_stat_part,"Statistical uncertainty","lp");
     if (doNormalized == false) leg4->AddEntry(h_lumi,"Int. luminosity","lp");
     leg4->AddEntry(h_syst_jec_part,"Jet energy scale","lp");
     leg4->AddEntry(h_syst_jer_part,"Jet energy resolution","lp");
-    leg4->AddEntry(h_syst_toptag_part,"Top-tagging efficiency","lp");
-    if (nobtag == "") leg4->AddEntry(h_syst_btag_part,"b-tagging efficiency","lp");
-    leg4->AddEntry(h_syst_bkg_part,"Background normalization","lp");
-    leg4->AddEntry(h_syst_PS_part,"Generator+parton shower","lp");
-    leg4->AddEntry(h_syst_pdf_part,"PDF uncertainty","lp");
-    if (doQ2) leg4->AddEntry(h_syst_Q2_part,"#mu_{R}, #mu_{F} scales","lp");
     leg4->SetFillStyle(0);
     leg4->SetBorderSize(0);
     leg4->SetTextSize(0.04);
     leg4->SetTextFont(42);
+
+    TLegend* leg44;
+    if (toUnfold == "pt" && doNormalized) leg44 = new TLegend(0.55,0.65,0.8,0.8);
+    else leg44 = new TLegend(0.55,0.65,0.8,0.88);
+    leg44->AddEntry(h_syst_toptag_part,"Top-tagging efficiency","lp");
+    if (nobtag == "") leg44->AddEntry(h_syst_btag_part,"b-tagging efficiency","lp");
+    leg44->AddEntry(h_syst_bkg_part,"Background normalization","lp");
+    leg44->AddEntry(h_syst_PS_part,"Generator+parton shower","lp");
+    leg44->AddEntry(h_syst_pdf_part,"PDF uncertainty","lp");
+    if (doQ2) leg44->AddEntry(h_syst_Q2_part,"#mu_{R}, #mu_{F} scales","lp");
+    leg44->SetFillStyle(0);
+    leg44->SetBorderSize(0);
+    leg44->SetTextSize(0.04);
+    leg44->SetTextFont(42);
 
     cout << endl << "Generator+PS (particle level)" << endl;
     int ilow=0;
@@ -2429,9 +2447,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_syst_PS_part->Draw("ep,same");
     h_dummy_r_part->Draw("hist,axis,same");
     leg4->Draw(); 
+    leg44->Draw(); 
     
-    drawCMS(0.75,0.82,0.85,0.82,false,preliminary,forpub);
-    
+    drawCMS(0.18,0.94,0.28,0.94,false,preliminary,forpub);
+  
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".eps");
