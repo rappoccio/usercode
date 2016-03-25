@@ -361,7 +361,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (hist=="hadtop_pt3") h_data->SetAxisRange(150,700,"X");
   if (hist=="hadtop_pt4" || hist=="hadtop_pt5") h_data->SetAxisRange(370,900,"X");
   if (hist=="hadtop_pt6" || hist=="hadtop_pt7") h_data->SetAxisRange(350,1190,"X");
-  if (var=="hadtop_y" || var=="leptop_y") h_data->SetAxisRange(-3,3,"X");
+  if (var=="hadtop_y" || var=="leptop_y") h_data->SetAxisRange(-2.39,2.39,"X");
   if (hist=="ht3" || hist=="htLep3") h_data->SetAxisRange(0,1400,"X");
   if ( (var=="ht" || var=="htLep") && (cut==4||cut==6||cut==7) ) h_data->SetAxisRange(0,2500,"X");
   if (hist=="pt1LepJet2") h_data->SetAxisRange(0,250,"X");
@@ -386,10 +386,10 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 
   // legend
   TLegend* leg;
-  if (postfit && combined && hist.Contains("hadtop_y")) leg = new TLegend(0.62,0.5,0.87,0.88);
-  else if (postfit && combined) leg = new TLegend(0.62,0.4,0.87,0.78);
+  if (postfit && combined && hist.Contains("hadtop_y")) leg = new TLegend(0.64,0.5,0.89,0.88);
+  else if (postfit && combined) leg = new TLegend(0.64,0.4,0.89,0.78);
   else if (var.Contains("csv")) leg = new TLegend(0.59,0.56,0.84,0.9);
-  else leg = new TLegend(0.65,0.5,0.87,0.88);
+  else leg = new TLegend(0.64,0.5,0.89,0.88);
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
   leg->SetTextFont(42);
@@ -564,18 +564,18 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     if (hist.Contains("hadtop_y"))
       drawCMS(0.18,0.82,false);
     else
-      drawCMS(0.62,0.82,false);
+      drawCMS(0.64,0.82,false);
     
     if (hist.Contains("vtxMass") || hist.Contains("hadtop_pt")) {
       if (doElectron) {
-	if (hist.Contains("7")) myLargeText(0.62,0.3,1,"1t+1b, e+jets");
-	else if (hist.Contains("6")) myLargeText(0.62,0.3,1,"1t+0b, e+jets");
-	else if (hist.Contains("4")) myLargeText(0.62,0.3,1,"0t, e+jets");
+	if (hist.Contains("7")) myLargeText(0.64,0.3,1,"1t+1b, e+jets");
+	else if (hist.Contains("6")) myLargeText(0.64,0.3,1,"1t+0b, e+jets");
+	else if (hist.Contains("4")) myLargeText(0.64,0.3,1,"0t, e+jets");
       }
       else {
-	if (hist.Contains("7")) myLargeText(0.62,0.3,1,"1t+1b, #mu+jets");
-	else if (hist.Contains("6")) myLargeText(0.62,0.3,1,"1t+0b, #mu+jets");
-	else if (hist.Contains("4")) myLargeText(0.62,0.3,1,"0t, #mu+jets");
+	if (hist.Contains("7")) myLargeText(0.64,0.3,1,"1t+1b, #mu+jets");
+	else if (hist.Contains("6")) myLargeText(0.64,0.3,1,"1t+0b, #mu+jets");
+	else if (hist.Contains("4")) myLargeText(0.64,0.3,1,"0t, #mu+jets");
       }
       //myItalicText(0.62,0.25,1,"Post-fit yields");
     }
@@ -942,7 +942,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 
 
   // legend
-  TLegend* leg = new TLegend(0.62,0.4,0.87,0.78);
+  TLegend* leg = new TLegend(0.64,0.4,0.89,0.78);
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
   leg->SetTextFont(42);
@@ -1091,18 +1091,18 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 
   leg->Draw();
 
-  drawCMS(0.62,0.82,false);
+  drawCMS(0.64,0.82,false);
 
   if (what.Contains("vtxMass")) {
     if (doElectron) {
-      if (what.Contains("7")) myLargeText(0.62,0.3,1,"1t+1b, e+jets");
-      else if (what.Contains("6")) myLargeText(0.62,0.3,1,"1t+0b, e+jets");
-      else if (what.Contains("4")) myLargeText(0.62,0.3,1,"0t, e+jets");
+      if (what.Contains("7")) myLargeText(0.64,0.3,1,"1t+1b, e+jets");
+      else if (what.Contains("6")) myLargeText(0.64,0.3,1,"1t+0b, e+jets");
+      else if (what.Contains("4")) myLargeText(0.64,0.3,1,"0t, e+jets");
     }
     else {
-      if (what.Contains("7")) myLargeText(0.62,0.3,1,"1t+1b, #mu+jets");
-      else if (what.Contains("6")) myLargeText(0.62,0.3,1,"1t+0b, #mu+jets");
-      else if (what.Contains("4")) myLargeText(0.62,0.3,1,"0t, #mu+jets");
+      if (what.Contains("7")) myLargeText(0.64,0.3,1,"1t+1b, #mu+jets");
+      else if (what.Contains("6")) myLargeText(0.64,0.3,1,"1t+0b, #mu+jets");
+      else if (what.Contains("4")) myLargeText(0.64,0.3,1,"0t, #mu+jets");
     }
     //myItalicText(0.62,0.25,1,"Post-fit yields");
   }
