@@ -398,8 +398,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   leg->AddEntry(h_ttbar, "t#bar{t} signal", "f");
   leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} other", "f");
   leg->AddEntry(h_singletop, "Single t", "f");
-  if (doElectron) leg->AddEntry(h_wjets, "W #rightarrow e#nu", "f");
-  else leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
+  leg->AddEntry(h_wjets, "W+jets", "f");
   leg->AddEntry(h_qcd, "Multijet" , "f");
   if (postfit && combined) leg->AddEntry(h_totalbkg, "Uncertainty", "f");
 
@@ -485,9 +484,9 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   float max = h_totalbkg->GetMaximum();
   if ( (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin())) > max)
     max = (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin()));
-  if (var.Contains("etaAbs") && doElectron) 
+  if (var.Contains("etaAbs")) 
     max = max*1.2;
-  else if (var.Contains("etaAbs") || var=="lepMET" || var=="leptop_mass") 
+  else if (var=="lepMET" || var=="leptop_mass") 
     max = max*1.2;
   else if (var.Contains("eta") && doElectron)
     max = max*1.8;
@@ -566,45 +565,17 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     else
       drawCMS(0.64,0.82,false);
     
-    if (hist.Contains("vtxMass") || hist.Contains("hadtop_pt")) {
-      if (doElectron) {
-	if (hist.Contains("7")) myLargeText(0.64,0.3,1,"1t+1b, e+jets");
-	else if (hist.Contains("6")) myLargeText(0.64,0.3,1,"1t+0b, e+jets");
-	else if (hist.Contains("4")) myLargeText(0.64,0.3,1,"0t, e+jets");
-      }
-      else {
-	if (hist.Contains("7")) myLargeText(0.64,0.3,1,"1t+1b, #mu+jets");
-	else if (hist.Contains("6")) myLargeText(0.64,0.3,1,"1t+0b, #mu+jets");
-	else if (hist.Contains("4")) myLargeText(0.64,0.3,1,"0t, #mu+jets");
-      }
-      //myItalicText(0.62,0.25,1,"Post-fit yields");
-    }
-    else if (hist.Contains("hadtop_y")) {
-      if (doElectron) {
-	if (hist.Contains("7")) myLargeText(0.18,0.73,1,"1t+1b,  e+jets");
-	else if (hist.Contains("6")) myLargeText(0.18,0.73,1,"1t+0b,  e+jets");
-	else if (hist.Contains("4")) myLargeText(0.18,0.73,1,"0t,  e+jets");
-      }
-      else {
-	if (hist.Contains("7")) myLargeText(0.18,0.73,1,"1t+1b,  #mu+jets");
-	else if (hist.Contains("6")) myLargeText(0.18,0.73,1,"1t+0b,  #mu+jets");
-	else if (hist.Contains("4")) myLargeText(0.18,0.73,1,"0t,  #mu+jets");
-      }
-      //myItalicText(0.18,0.66,1,"Post-fit yields");
+    if (doElectron) {
+      if (hist.Contains("7")) myLargeText(0.38,0.82,1,"1t+1b, e+jets");
+      else if (hist.Contains("6")) myLargeText(0.38,0.82,1,"1t+0b, e+jets");
+      else if (hist.Contains("4")) myLargeText(0.38,0.82,1,"0t, e+jets");
     }
     else {
-      if (doElectron) {
-	if (hist.Contains("7")) myLargeText(0.18,0.82,1,"1t+1b,  e+jets");
-	else if (hist.Contains("6")) myLargeText(0.18,0.82,1,"1t+0b,  e+jets");
-	else if (hist.Contains("4")) myLargeText(0.18,0.82,1,"0t,  e+jets");
-      }
-      else {
-	if (hist.Contains("7")) myLargeText(0.18,0.82,1,"1t+1b,  #mu+jets");
-	else if (hist.Contains("6")) myLargeText(0.18,0.82,1,"1t+0b,  #mu+jets");
-	else if (hist.Contains("4")) myLargeText(0.18,0.82,1,"0t,  #mu+jets");
-      }
-      //myItalicText(0.18,0.77,1,"Post-fit yields");
+      if (hist.Contains("7")) myLargeText(0.38,0.82,1,"1t+1b, #mu+jets");
+      else if (hist.Contains("6")) myLargeText(0.38,0.82,1,"1t+0b, #mu+jets");
+      else if (hist.Contains("4")) myLargeText(0.38,0.82,1,"0t, #mu+jets");
     }
+
   }
   else if (var.Contains("csv")) {
     myText(0.40,0.81,1,"#intLdt = 19.7 fb^{-1}");
@@ -951,8 +922,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   leg->AddEntry(h_ttbar_semiLep, "t#bar{t} signal", "f");
   leg->AddEntry(h_ttbar_nonSemiLep, "t#bar{t} other", "f");
   leg->AddEntry(h_singletop, "Single t", "f");
-  if (doElectron) leg->AddEntry(h_wjets, "W #rightarrow e#nu", "f");
-  else leg->AddEntry(h_wjets, "W #rightarrow #mu#nu", "f");
+  leg->AddEntry(h_wjets, "W+jets", "f");
   leg->AddEntry(h_qcd, "Multijet" , "f");
   leg->AddEntry(h_totalbkg, "Uncertainty", "f");
 
@@ -1040,8 +1010,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   float max = h_totalbkg->GetMaximum();
   if ( (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin())) > max)
     max = (h_data->GetMaximum() + h_data->GetBinError(h_data->GetMaximumBin()));
-  if (what.Contains("etaAbs") && doElectron) max = max*1.3;
-  else if (what.Contains("etaAbs")) max = max*1.3;
+  if (what.Contains("etaAbs")) max = max*1.2;
   h_data->SetAxisRange(0,max*1.05,"Y");
 
 
@@ -1093,31 +1062,15 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 
   drawCMS(0.64,0.82,false);
 
-  if (what.Contains("vtxMass")) {
-    if (doElectron) {
-      if (what.Contains("7")) myLargeText(0.64,0.3,1,"1t+1b, e+jets");
-      else if (what.Contains("6")) myLargeText(0.64,0.3,1,"1t+0b, e+jets");
-      else if (what.Contains("4")) myLargeText(0.64,0.3,1,"0t, e+jets");
-    }
-    else {
-      if (what.Contains("7")) myLargeText(0.64,0.3,1,"1t+1b, #mu+jets");
-      else if (what.Contains("6")) myLargeText(0.64,0.3,1,"1t+0b, #mu+jets");
-      else if (what.Contains("4")) myLargeText(0.64,0.3,1,"0t, #mu+jets");
-    }
-    //myItalicText(0.62,0.25,1,"Post-fit yields");
+  if (doElectron) {
+    if (what.Contains("7")) myLargeText(0.38,0.82,1,"1t+1b, e+jets");
+    else if (what.Contains("6")) myLargeText(0.38,0.82,1,"1t+0b, e+jets");
+    else if (what.Contains("4")) myLargeText(0.38,0.82,1,"0t, e+jets");
   }
   else {
-    if (doElectron) {
-      if (what.Contains("7")) myLargeText(0.18,0.82,1,"1t+1b,  e+jets");
-      else if (what.Contains("6")) myLargeText(0.18,0.82,1,"1t+0b,  e+jets");
-      else if (what.Contains("4")) myLargeText(0.18,0.82,1,"0t,  e+jets");
-    }
-    else {
-      if (what.Contains("7")) myLargeText(0.18,0.82,1,"1t+1b,  #mu+jets");
-      else if (what.Contains("6")) myLargeText(0.18,0.82,1,"1t+0b,  #mu+jets");
-      else if (what.Contains("4")) myLargeText(0.18,0.82,1,"0t,  #mu+jets");
-    }
-    //myItalicText(0.18,0.77,1,"Post-fit yields");
+    if (what.Contains("7")) myLargeText(0.38,0.82,1,"1t+1b, #mu+jets");
+    else if (what.Contains("6")) myLargeText(0.38,0.82,1,"1t+0b, #mu+jets");
+    else if (what.Contains("4")) myLargeText(0.38,0.82,1,"0t, #mu+jets");
   }
 
   // plot ratio part
