@@ -18,22 +18,22 @@ samples = [
     
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_mu',
            title='TT_mcatnlo_iheartNY_V1_mu',
-           flags='--makeResponse --semilep=1.0',
+           flags='--makeResponse --semilep=1.0 --useGenWeight',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_el',
            title='TT_mcatnlo_iheartNY_V1_el',
-           flags='--makeResponse --semilep=1.0 --lepType=ele',
+           flags='--makeResponse --semilep=1.0 --lepType=ele --useGenWeight',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_mu',
            title='TT_nonSemiLep_mcatnlo_iheartNY_V1_mu',
-           flags='--semilep=-1.0',
+           flags='--semilep=-1.0 --useGenWeight',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_el',
            title='TT_nonSemiLep_mcatnlo_iheartNY_V1_el',
-           flags='--semilep=-1.0 --lepType=ele',
+           flags='--semilep=-1.0 --lepType=ele --useGenWeight',
            pdfsys=False, noms=True, jersys=True, jecsys=True, btagsys=True, toptagsys=True, qcd=True, postfit=options.postfit
     ),
     
@@ -43,12 +43,12 @@ samplesMini = [
     
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_mu',
            title='TT_mcatnlo_iheartNY_V1_mu',
-           flags='--makeResponse --semilep=1.0',
+           flags='--makeResponse --semilep=1.0 --useGenWeight',
            pdfsys=False, noms=True, jersys=False, jecsys=False, btagsys=False, toptagsys=False, qcd=False, postfit=options.postfit
     ),
     Sample(directory='/store/user/skinnari/Unfold_24feb2015/TT_mcatnlo_el',
            title='TT_mcatnlo_iheartNY_V1_el',
-           flags='--makeResponse --semilep=1.0 --lepType=ele',
+           flags='--makeResponse --semilep=1.0 --lepType=ele --useGenWeight',
            pdfsys=False, noms=True, jersys=False, jecsys=False, btagsys=False, toptagsys=False, qcd=False, postfit=options.postfit
     ),
     

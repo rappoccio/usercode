@@ -611,6 +611,11 @@ parser.add_option('--WjetsHF', metavar='F', type='string', action='store',
                   dest='WjetsHF',
                   help='Distinguish Wbb (WjetsHF=wbb) / Wcc (WjetsHF=wcc) / Wc (WjetsHF=wc) / W+light (WjetsHF=wl) jets final states')
 
+parser.add_option('--useGenWeight', metavar='F', action='store_true',
+                  default=False,
+                  dest='useGenWeight',
+                  help='Apply generator event weights? Use this for MC@NLO to account for the potential negative weights!!')
+
 
 (options, args) = parser.parse_args()
 argv = []
@@ -797,6 +802,9 @@ WeightPS_File = ROOT.TFile(DIR+"PS_weights.root")
 WeightPS_Plot = WeightPS_File.Get("weight_eta")
 
 f.cd()
+
+## histogram for the total number of events processed, and with MC generator weights (needed for normalization of MC@NLO samples to account for negative weights
+h_nevt = ROOT.TH1F("nevt",";;Number of events with gen weights", 1,0.5,1.5)
 
 h_true_dR_zoom = ROOT.TH1F("true_dR_zoom",";dR(lepton, closest AK5 gen jet);", 100, 0.0, 0.4)
 h_true_dR = ROOT.TH1F("true_dR",";dR(lepton, closest AK5 gen jet);", 100, 0.0, 5.0)
@@ -1382,6 +1390,9 @@ puLabel   = ("pileup", "npvRealTrue")
 npvHandle = Handle("unsigned int")
 npvLabel  = ("pileup", "npv")
 
+geninfoHandle  = Handle("GenEventInfoProduct")
+geninfoLabel = ("generator")
+
 rhoHandle = Handle("double")
 rhoLabel  = ("kt6PFJets", "rho")
 
@@ -1695,6 +1706,21 @@ for event in events :
     
     weight = 1.0 #event weight
 
+    ## MC event weight for MC@NLO
+    if options.useGenWeight :
+        event.getByLabel(geninfoLabel, geninfoHandle)
+        geninfo = geninfoHandle.product()
+        geninfo_weight = geninfo.weight()
+    
+        if options.debug :
+            print "geninfo weight = " + str(geninfo_weight)
+
+        ## the weights are to be 1 vs -1, i.e. only care about the sign
+        if geninfo_weight < 0:
+            weight = -1.0
+
+    h_nevt.Fill(1.0, weight) 
+                
     mttbarGen = -1.0
 
     ## various pass/fail for unfolding 
@@ -1836,7 +1862,7 @@ for event in events :
             continue
 
         if options.debug : 
-            print "PPDF weight is " + str(this_pdfweight)
+            print "PDF weight is " + str(this_pdfweight)
 
         
     

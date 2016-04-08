@@ -611,6 +611,11 @@ parser.add_option('--WjetsHF', metavar='F', type='string', action='store',
                   dest='WjetsHF',
                   help='Distinguish Wbb (WjetsHF=wbb) / Wcc (WjetsHF=wcc) / Wc (WjetsHF=wc) / W+light (WjetsHF=wl) jets final states')
 
+parser.add_option('--useGenWeight', metavar='F', action='store_true',
+                  default=False,
+                  dest='useGenWeight',
+                  help='Apply generator event weights? Use this for MC@NLO to account for the potential negative weights!!')
+
 
 (options, args) = parser.parse_args()
 argv = []
@@ -722,6 +727,27 @@ cutflow = {
     'Stage 7: ':0,
     }
 
+truthcutflow = {
+    'Is semilep: ':0,
+    'Is mu(el): ':0,
+    'Top quark pt>400: ':0,
+    'AK5 gen jets exist: ':0,
+    'CA8 gen jets exist: ':0,
+    '==1 particle-level mu(el): ':0,
+    '>=1 gen b jet: ':0,
+    '>=1 gen top jet: ':0,
+    'Pass particle loose: ':0,
+    'Pass particle: ':0,
+    }
+
+classifytruth = {
+    'Semileptonic, electron channel: ':0,
+    'Semileptonic, muon channel: ':0,
+    'Semileptonic, tau channel: ':0,
+    'Dileptonic: ':0,
+    'Hadronic: ':0,
+    }
+
 start_time = time.time()
 
 
@@ -773,9 +799,12 @@ else:
 PilePlot = PileFile.Get("pweight" + options.pileup)
 
 WeightPS_File = ROOT.TFile(DIR+"PS_weights.root")
-WeightPS_Plot = WeightPS_File.Get("weight")
+WeightPS_Plot = WeightPS_File.Get("weight_eta")
 
 f.cd()
+
+## histogram for the total number of events processed, and with MC generator weights (needed for normalization of MC@NLO samples to account for negative weights
+h_nevt = ROOT.TH1F("nevt",";;Number of events with gen weights", 1,0.5,1.5)
 
 h_true_dR_zoom = ROOT.TH1F("true_dR_zoom",";dR(lepton, closest AK5 gen jet);", 100, 0.0, 0.4)
 h_true_dR = ROOT.TH1F("true_dR",";dR(lepton, closest AK5 gen jet);", 100, 0.0, 5.0)
@@ -1361,6 +1390,9 @@ puLabel   = ("pileup", "npvRealTrue")
 npvHandle = Handle("unsigned int")
 npvLabel  = ("pileup", "npv")
 
+geninfoHandle  = Handle("GenEventInfoProduct")
+geninfoLabel = ("generator")
+
 rhoHandle = Handle("double")
 rhoLabel  = ("kt6PFJets", "rho")
 
@@ -1674,6 +1706,21 @@ for event in events :
     
     weight = 1.0 #event weight
 
+    ## MC event weight for MC@NLO
+    if options.useGenWeight :
+        event.getByLabel(geninfoLabel, geninfoHandle)
+        geninfo = geninfoHandle.product()
+        geninfo_weight = geninfo.weight()
+    
+        if options.debug :
+            print "geninfo weight = " + str(geninfo_weight)
+
+        ## the weights are to be 1 vs -1, i.e. only care about the sign
+        if geninfo_weight < 0:
+            weight = -1.0
+
+    h_nevt.Fill(1.0, weight) 
+                
     mttbarGen = -1.0
 
     ## various pass/fail for unfolding 
@@ -1686,6 +1733,10 @@ for event in events :
     if ntotal % 10000 == 0 or options.debug :
       print  '--------- Processing Event ' + str(ntotal)
     ntotal += 1
+
+    # TEMP hack to make small file
+    #if ntotal > 10000:
+    #    continue
 
     if options.oddeven != 'none':
         # odd only
@@ -1811,7 +1862,7 @@ for event in events :
             continue
 
         if options.debug : 
-            print "PPDF weight is " + str(this_pdfweight)
+            print "PDF weight is " + str(this_pdfweight)
 
         
     
@@ -1837,6 +1888,7 @@ for event in events :
     isSemiLeptonicGen = True
     isMuon = False
     isElectron = False
+    isTau = False
     
     if options.makeResponse == True or options.mttGenMax is not None or options.semilep is not None:
         event.getByLabel( genParticlesPtLabel, genParticlesPtHandle )
@@ -1898,16 +1950,35 @@ for event in events :
                 p4Electron = ROOT.TLorentzVector()
                 p4Electron.SetPtEtaPhiM( genParticlesPt[igen], genParticlesEta[igen], genParticlesPhi[igen], genParticlesMass[igen] )
                 genElectrons.append(p4Electron)
+                
+            if (abs(genParticlesPdgId[igen]) == 15):
+                isTau = True
 
         topQuarks.append( GenTopQuark( 6, p4Top, topDecay) )
         topQuarks.append( GenTopQuark( -6, p4Antitop, antitopDecay) )
+
+        if (topDecay + antitopDecay == 0):
+            classifytruth['Hadronic: '] += 1
+        if (topDecay + antitopDecay == 2):
+            classifytruth['Dileptonic: '] += 1
+        
+        if (topDecay + antitopDecay == 1):
+            truthcutflow['Is semilep: '] += 1
+            if (isMuon == True) :
+                classifytruth['Semileptonic, muon channel: '] += 1
+            if (isElectron == True) :
+                classifytruth['Semileptonic, electron channel: '] += 1
+            if (isTau == True) :
+                classifytruth['Semileptonic, tau channel: '] += 1
         
         if (topDecay + antitopDecay == 1) and (isMuon == True) and (isElectron == False) and (options.lepType == "muon"):
             isSemiLeptonicGen = True
+            truthcutflow['Is mu(el): '] += 1
             if options.debug:
                 print "semileptonic ttbar decay to muon channel!"
         elif (topDecay + antitopDecay == 1) and (isMuon == False) and (isElectron == True) and (options.lepType == "ele"):
             isSemiLeptonicGen = True
+            truthcutflow['Is mu(el): '] += 1
             if options.debug:
                 print "semileptonic ttbar decay to electron channel!"
         else :
@@ -1945,10 +2016,10 @@ for event in events :
 
         
         # -------------------------------------------------------------------------------------
-        # reweight MC@NLO parton-level shape to match Powheg
+        # reweight Powheg parton-level eta shape to match MC@NLO
         # -------------------------------------------------------------------------------------
         
-        #if "mcatnlo" in options.outname and "TT_" in options.outname:
+        #if "TT_" in options.outname and not "nonSemiLep" in options.outname:
         #    wbin = WeightPS_Plot.FindBin(hadTop.p4.Eta()) 
         #    weight *= WeightPS_Plot.GetBinContent(wbin)
 
@@ -1961,6 +2032,9 @@ for event in events :
             
             if hadTop.p4.Perp() > 400.0:
                 passParton = True
+
+                truthcutflow['Top quark pt>400: '] += 1
+
                 h_ptGenTop_passParton.Fill(hadTop.p4.Perp(), weight)
                 h_yGenTop.Fill( hadTop.p4.Rapidity(), weight )
                 h_etaGenTop.Fill( hadTop.p4.Eta(), weight )
@@ -2073,6 +2147,8 @@ for event in events :
                     response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
                     response_y_pp.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             continue
+        
+        truthcutflow['AK5 gen jets exist: '] += 1
 
         # loop over AK5 gen jets
         for iak5 in xrange( len(ak5GenJetPt) ) :
@@ -2114,6 +2190,8 @@ for event in events :
                     response_y_nobtag.Miss( hadTop.p4.Rapidity(), weight*weight_response )
                     response_y_pp.Miss( hadTop.p4.Rapidity(), weight*weight_response )
             continue
+
+        truthcutflow['CA8 gen jets exist: '] += 1
 
         # loop over CA8 gen jets
         for ica8 in xrange( len(ca8GenJetPt) ) :
@@ -2254,11 +2332,21 @@ for event in events :
                     for j in xrange(i+1,3):
                         massPairs.append( (subjets[i] + subjets[j]).M() )
                 minMass = min( massPairs )
-            
+
+        if nGenLeptons == 1:
+            truthcutflow['==1 particle-level mu(el): '] += 1
+
+        if nGenLeptons == 1 and nGenBJets > 0:
+            truthcutflow['>=1 gen b jet: '] += 1
+
+        if nGenLeptons == 1 and nGenBJets > 0 and nGenTops > 0:
+            truthcutflow['>=1 gen top jet: '] += 1
 
         if nGenLeptons == 1 and nGenBJets > 0 and nGenTops > 0 and ((minMass > 50. and nsubjets > 2) or options.useSubstructure==False):
+            truthcutflow['Pass particle loose: '] += 1
             passParticleLoose = True
         if passParticleLoose and genTops[0].Perp() > 400.0 :
+            truthcutflow['Pass particle: '] += 1
             passParticle = True
 
 
@@ -4065,6 +4153,14 @@ for event in events :
 # -------------------------------------------------------------------------------------
 
 for stage, count in sorted(cutflow.iteritems()) :
+    print '{0} {1:15.0f}'.format( stage, count )
+
+print ''
+for stage, count in truthcutflow.iteritems() :
+    print '{0} {1:15.0f}'.format( stage, count )
+print ''
+
+for stage, count in classifytruth.iteritems() :
     print '{0} {1:15.0f}'.format( stage, count )
 
 print  'Total Events: ' + str(ntotal)
