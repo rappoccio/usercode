@@ -280,16 +280,19 @@ elif options.pdf == "mcnlo" and options.closureTest == True and options.whatClos
     f_ttbar_max700    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+postname+options.syst+".root")
     f_ttbar_700to1000 = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+postname+options.syst+".root")
     f_ttbar_1000toInf = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+postname+options.syst+".root")
-    f_ttbar_max700_odd = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
+    #f_ttbar_max700_odd = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
+    f_ttbar_max700_odd = TFile("histfiles_mcnlo_weight/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
 ## unfold MC@NLO ttbar sample using Powheg response matrix
 elif options.pdf == "mcnlo" and options.closureTest == True :
-    f_ttbar_max700 = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
+    #f_ttbar_max700 = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
+    f_ttbar_max700 = TFile("histfiles_mcnlo_weight/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
     f_ttbar_max700_odd    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+postname+options.syst+".root")
     f_ttbar_700to1000_odd = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+postname+options.syst+".root")
     f_ttbar_1000toInf_odd = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+postname+options.syst+".root")
 ## MC@NLO
 elif options.pdf == "mcnlo":
-    f_ttbar_max700 = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
+    #f_ttbar_max700 = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
+    f_ttbar_max700 = TFile("histfiles_mcnlo_weight/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
 ## regular closure test, unfolding 1/2 sample (even) using other 1/2 (odd)
 elif options.closureTest == True and options.whatClosure == "nom" : 
     if options.lepType=="ele":
@@ -596,7 +599,8 @@ if options.pdf == "MG" and options.closureTest == True and options.whatClosure==
     hMeas = hMeas_max700.Clone()
     hMeas.SetName(options.toUnfold+"RecoTop_measured")
 elif options.pdf == "mcnlo" and options.closureTest == True and options.whatClosure=="nom":
-    hMeas_max700.Scale(252.89*1000.0*19.7/32852589)
+    #hMeas_max700.Scale(252.89*1000.0*19.7/32852589)
+    hMeas_max700.Scale(252.89*1000.0*19.7/(32852589.*16777215./32575024.))
     hMeas = hMeas_max700.Clone()
     hMeas.SetName(options.toUnfold+"RecoTop_measured")
 # ttbar nominal as "measured" distribution
@@ -634,7 +638,8 @@ if options.pdf == "MG" and ((options.closureTest == True and options.whatClosure
     hTrue = hTrue_max700.Clone()
     hTrue.SetName(options.toUnfold+"_genTop")
 elif options.pdf == "mcnlo" and ((options.closureTest == True and options.whatClosure=="nom") or options.closureTest == False): 
-    hTrue_max700.Scale(252.89*1000.0*19.7/32852589)
+    #hTrue_max700.Scale(252.89*1000.0*19.7/32852589)
+    hTrue_max700.Scale(252.89*1000.0*19.7/(32852589.*16777215./32575024.))
     hTrue = hTrue_max700.Clone()
     hTrue.SetName(options.toUnfold+"_genTop")
 else :
@@ -661,7 +666,8 @@ if options.twoStep :
         hPart = hPart_max700.Clone()
         hPart.SetName(options.toUnfold+"_partTop")
     elif options.pdf == "mcnlo" and ((options.closureTest == True and options.whatClosure=="nom") or options.closureTest == False): 
-        hPart_max700.Scale(252.89*1000.0*19.7/32852589)
+        #hPart_max700.Scale(252.89*1000.0*19.7/32852589)
+        hPart_max700.Scale(252.89*1000.0*19.7/(32852589.*16777215./32575024.))
         hPart = hPart_max700.Clone()
         hPart.SetName(options.toUnfold+"_partTop")
     else :

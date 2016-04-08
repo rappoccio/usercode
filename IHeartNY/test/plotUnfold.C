@@ -99,9 +99,18 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   float xs_parton_MG[2]   = {1846.56, 1844.47};
   //float xs_particle_MG[2] = {1513.0, 1491.67};
   float xs_particle_MG[2] = {679.058, 670.627};
+
+  /*
+  // these are without MC@NLO generator weights
   float xs_parton_mcnlo[2]   = {1395.71, 1402.3};
   //float xs_particle_mcnlo[2] = {1195.22, 1188.57};
   float xs_particle_mcnlo[2] = {516.523, 502.574};
+  */
+  
+  // with MC@NLO generator weights
+  float xs_parton_mcnlo[2]   = {1418.26, 1413.46};
+  float xs_particle_mcnlo[2] = {506.931, 490.746};
+  
   float data_xs_parton[2]   = {1674.3*0.86, 1662.91*0.86};
   //float data_xs_particle[2] = {1502.36*0.86, 1483.66*0.86};
   float data_xs_particle[2] = {583.181*0.86, 576.421*0.86};
@@ -655,7 +664,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       }
       h_true->SetBinContent(ib+1,ncomb);
       h_true->SetBinError(ib+1,sncomb);
-
+      
       // h_trueMG
       nmu = h_trueMG_tmp[0]->GetBinContent(ib+1);
       nel = h_trueMG_tmp[1]->GetBinContent(ib+1);

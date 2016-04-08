@@ -95,8 +95,10 @@ void calcOne(TString which, bool parton, bool doel) {
     else TFile* f1 = new TFile("histfiles_MG/TTJets_SemiLeptMGDecays_8TeV-madgraph_iheartNY_V1_mu_2Dcut_nom.root");
   }
   else if (which=="mcnlo") {  
-    if (doel) TFile* f1 = new TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_el_2Dcut_nom.root");
-    else TFile* f1 = new TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_mu_2Dcut_nom.root");
+    //if (doel) TFile* f1 = new TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_el_2Dcut_nom.root");
+    //else TFile* f1 = new TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_mu_2Dcut_nom.root");
+    if (doel) TFile* f1 = new TFile("histfiles_mcnlo_weight/TT_mcatnlo_iheartNY_V1_el_2Dcut_nom.root");
+    else TFile* f1 = new TFile("histfiles_mcnlo_weight/TT_mcatnlo_iheartNY_V1_mu_2Dcut_nom.root");
   }
   else if (doel) {
     TFile* f1 = new TFile("histfiles_"+which+"/postfit_combfit/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_el_"+which+"_2Dcut_postfit_nom.root");
@@ -177,7 +179,14 @@ void calcOne(TString which, bool parton, bool doel) {
     h11->Scale(ttbar_norm);
   }
   else if (which=="mcnlo") {
-    double ttbar_norm = 252.89/32852589;
+    // weights!
+    TH1F* hw = (TH1F*) f1->Get("nevt");
+    float ntot = (float) nevt->GetEntries();
+    float nw =  (float) nevt->GetSum();
+    float adjust = (float)nw/ntot;
+    cout << "adjust mc@nlo total by " << adjust << " (= " << (int)nw << " / " << (int)ntot << ")" << endl;
+    
+    double ttbar_norm = 252.89/(32852589*adjust);
     h1->Scale(ttbar_norm);
     h11->Scale(ttbar_norm);
   }

@@ -63,9 +63,16 @@ void calcFinal() {
   particle_MG[2] = (particle_MG[0]+particle_MG[1])/2.;
   parton_MG[2] = (parton_MG[0]+parton_MG[1])/2.;
 
+  /*
+  // these are without using MC@NLO weights!!
   //float particle_mcnlo[3] = {1.19522, 1.18857, 0.};
   float particle_mcnlo[3] = {0.516523, 0.502574, 0.};
   float parton_mcnlo[3]   = {1.39571, 1.4023, 0.};
+  */
+  // WITH MC@NLO weights!
+  float particle_mcnlo[3] = {0.506931, 0.490746, 0.};
+  float parton_mcnlo[3]   = {1.41826, 1.41346, 0.};
+  
   particle_mcnlo[2] = (particle_mcnlo[0]+particle_mcnlo[1])/2.;
   parton_mcnlo[2] = (parton_mcnlo[0]+parton_mcnlo[1])/2.;
 
@@ -168,8 +175,8 @@ void calcFinal() {
 	 << q2/(parton_nom[i]*data[i]) << " (Q2) " << ps/(parton_nom[i]*data[i]) << " (PS) " << lum/(parton_nom[i]*data[i]) << " (lumi) " << endl;
   }
 
+  /*
   cout << endl << "*** MADGRAPH ***" << endl<< endl;
-
   for (int i=0; i<3; i++) {
     if (i==0) cout << "muon, particle level" << endl;
     if (i==1) cout << "electron, particle level" << endl;
@@ -186,5 +193,6 @@ void calcFinal() {
 	 << endl;
   }
   cout << endl;
+  */
 
 }
