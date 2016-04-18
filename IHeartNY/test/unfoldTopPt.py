@@ -69,6 +69,12 @@ parser.add_option('--toUnfold', metavar='F', type='string', action='store',
                   dest='toUnfold',
                   help='Which distribution (pt or y) to unfold?')
 
+parser.add_option('--useGenWeights', metavar='F', action='store_true',
+                  default=True,
+                  dest='useGenWeights',
+                  help='Use generator weights for MC@NLO')
+
+
 
 # -------------------------------------------------------------------------------------
 # load options & set plot style
@@ -280,19 +286,25 @@ elif options.pdf == "mcnlo" and options.closureTest == True and options.whatClos
     f_ttbar_max700    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+postname+options.syst+".root")
     f_ttbar_700to1000 = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+postname+options.syst+".root")
     f_ttbar_1000toInf = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+postname+options.syst+".root")
-    #f_ttbar_max700_odd = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
-    f_ttbar_max700_odd = TFile("histfiles_mcnlo_weight/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
+    if options.useGenWeights:
+        f_ttbar_max700_odd = TFile("histfiles_mcnlo_weight/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
+    else:
+        f_ttbar_max700_odd = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
 ## unfold MC@NLO ttbar sample using Powheg response matrix
 elif options.pdf == "mcnlo" and options.closureTest == True :
-    #f_ttbar_max700 = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
-    f_ttbar_max700 = TFile("histfiles_mcnlo_weight/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
+    if options.useGenWeights:
+        f_ttbar_max700 = TFile("histfiles_mcnlo_weight/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
+    else:
+        f_ttbar_max700 = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
     f_ttbar_max700_odd    = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_max700_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+postname+options.syst+".root")
     f_ttbar_700to1000_odd = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-700to1000_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+postname+options.syst+".root")
     f_ttbar_1000toInf_odd = TFile("histfiles_CT10_nom/"+ttDIR+"/TT_Mtt-1000toInf_CT10_TuneZ2star_8TeV-powheg-tauola_iheartNY_V1_"+muOrEl+"_CT10_nom_2Dcut_"+postname+options.syst+".root")
 ## MC@NLO
 elif options.pdf == "mcnlo":
-    #f_ttbar_max700 = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
-    f_ttbar_max700 = TFile("histfiles_mcnlo_weight/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
+    if options.useGenWeights:
+        f_ttbar_max700 = TFile("histfiles_mcnlo_weight/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
+    else:
+        f_ttbar_max700 = TFile("histfiles_mcnlo/TT_mcatnlo_iheartNY_V1_"+muOrEl+"_2Dcut_"+postname+"nom.root")
 ## regular closure test, unfolding 1/2 sample (even) using other 1/2 (odd)
 elif options.closureTest == True and options.whatClosure == "nom" : 
     if options.lepType=="ele":
@@ -357,7 +369,7 @@ elif options.closureTest == True and options.whatClosure=="nom":
         response_even.Add(response_ttbar_700to1000_even)
         response_even.Add(response_ttbar_1000toInf_even)
 
-elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == False: 
+elif (options.pdf == "MG" or options.pdf == "mcnlo") and (options.closureTest == False or options.whatClosure == "full"): 
     response_ttbar_max700 = f_ttbar_max700.Get("response_"+options.toUnfold+nobtag)
     response = response_ttbar_max700.Clone()
     response.SetName("response_"+options.toUnfold+"_"+options.syst)
@@ -418,7 +430,7 @@ if options.twoStep == True :
             response_pp_even.Add(response_ttbar_1000toInf_pp_even)
 
     
-    elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == False:
+    elif (options.pdf == "MG" or options.pdf == "mcnlo") and (options.closureTest == False or options.whatClosure=="full"):
         response_ttbar_max700_rp = f_ttbar_max700.Get("response_"+options.toUnfold+nobtag+"_rp")
         response_ttbar_max700_pp = f_ttbar_max700.Get("response_"+options.toUnfold+"_pp")
         
@@ -474,7 +486,7 @@ else :
 # read actual histograms
 # -------------------------------------------------------------------------------------
 
-if (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == True and options.whatClosure=="nom":
+if (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == True and (options.whatClosure=="nom" or options.whatClosure=="full"):
     # use truth-level distributions (and reco-level) from MC@NLO/MadGraph
     hTrue_max700    = f_ttbar_max700.Get(options.toUnfold+"GenTop")  
     hTrue_max700.Sumw2()
@@ -540,7 +552,7 @@ elif options.closureTest == True and options.whatClosure == "data":
     hMeas_max700.Sumw2()
     hMeas_700to1000.Sumw2()
     hMeas_1000toInf.Sumw2()
-elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == True and options.whatClosure=="nom":
+elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == True and (options.whatClosure=="nom" or options.whatClosure=="full"):
     # use truth-level distributions (and reco-level) from MC@NLO/MadGraph
     hMeas_max700    = f_ttbar_max700.Get(options.toUnfold+"RecoTop"+isTwoStep+nobtag)
     hMeas_max700.Sumw2()
@@ -594,13 +606,15 @@ hMeas_tt1000_nonsemi.Sumw2()
 
 ### normalize measured "data" for closure tests
 # MC@NLO/MadGraph
-if options.pdf == "MG" and options.closureTest == True and options.whatClosure=="nom":
+if options.pdf == "MG" and options.closureTest == True and (options.whatClosure=="nom" or options.whatClosure=="full"):
     hMeas_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
     hMeas = hMeas_max700.Clone()
     hMeas.SetName(options.toUnfold+"RecoTop_measured")
-elif options.pdf == "mcnlo" and options.closureTest == True and options.whatClosure=="nom":
-    #hMeas_max700.Scale(252.89*1000.0*19.7/32852589)
-    hMeas_max700.Scale(252.89*1000.0*19.7/(32852589.*16777215./32575024.))
+elif options.pdf == "mcnlo" and options.closureTest == True and (options.whatClosure=="nom" or options.whatClosure=="full"):
+    if options.useGenWeights:
+        hMeas_max700.Scale(252.89*1000.0*19.7/(32852589.*16777215./32575024.))
+    else:
+        hMeas_max700.Scale(252.89*1000.0*19.7/32852589)
     hMeas = hMeas_max700.Clone()
     hMeas.SetName(options.toUnfold+"RecoTop_measured")
 # ttbar nominal as "measured" distribution
@@ -633,13 +647,15 @@ elif options.closureTest == True and options.whatClosure == "data":
     hMeasTT.Add(hMeas_1000toInf)
         
     
-if options.pdf == "MG" and ((options.closureTest == True and options.whatClosure=="nom") or options.closureTest == False): 
+if options.pdf == "MG" and ((options.closureTest == True and (options.whatClosure=="nom" or options.whatClosure=="full")) or options.closureTest == False): 
     hTrue_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
     hTrue = hTrue_max700.Clone()
     hTrue.SetName(options.toUnfold+"_genTop")
-elif options.pdf == "mcnlo" and ((options.closureTest == True and options.whatClosure=="nom") or options.closureTest == False): 
-    #hTrue_max700.Scale(252.89*1000.0*19.7/32852589)
-    hTrue_max700.Scale(252.89*1000.0*19.7/(32852589.*16777215./32575024.))
+elif options.pdf == "mcnlo" and ((options.closureTest == True and (options.whatClosure=="nom" or options.whatClosure=="full")) or options.closureTest == False): 
+    if options.useGenWeights:
+        hTrue_max700.Scale(252.89*1000.0*19.7/(32852589.*16777215./32575024.))
+    else:
+        hTrue_max700.Scale(252.89*1000.0*19.7/32852589)
     hTrue = hTrue_max700.Clone()
     hTrue.SetName(options.toUnfold+"_genTop")
 else :
@@ -661,13 +677,15 @@ if options.troubleshoot and options.closureTest and options.whatClosure == "nom"
     hTrue_odd.Add(hTrue_1000toInf_odd)
 
 if options.twoStep :
-    if options.pdf == "MG" and ((options.closureTest == True and options.whatClosure=="nom") or options.closureTest == False):
+    if options.pdf == "MG" and ((options.closureTest == True and (options.whatClosure=="nom" or options.whatClosure=="full")) or options.closureTest == False):
         hPart_max700.Scale(252.89*1000.0*19.7/25424818.*0.438)
         hPart = hPart_max700.Clone()
         hPart.SetName(options.toUnfold+"_partTop")
-    elif options.pdf == "mcnlo" and ((options.closureTest == True and options.whatClosure=="nom") or options.closureTest == False): 
-        #hPart_max700.Scale(252.89*1000.0*19.7/32852589)
-        hPart_max700.Scale(252.89*1000.0*19.7/(32852589.*16777215./32575024.))
+    elif options.pdf == "mcnlo" and ((options.closureTest == True and (options.whatClosure=="nom" or options.whatClosure=="full")) or options.closureTest == False): 
+        if options.useGenWeights:
+            hPart_max700.Scale(252.89*1000.0*19.7/(32852589.*16777215./32575024.))
+        else:
+            hPart_max700.Scale(252.89*1000.0*19.7/32852589)
         hPart = hPart_max700.Clone()
         hPart.SetName(options.toUnfold+"_partTop")
     else :
@@ -1079,16 +1097,16 @@ if options.twoStep:
             hFrac_rp_odd.SetTitle(";Particle-level top rapidity;Data/MC")
         hFrac_rp_odd.Divide(hPart_odd)
 
-if options.closureTest and options.whatClosure == "reverse":
+#if options.closureTest and options.whatClosure == "reverse":
+if options.closureTest:
     print ''
     print '-------------------------------------------------------------------------------------'
-    print 'uncertainty from closure test for ' + options.pdf + ' ' + options.whatClosure
+    print 'uncertainty from closure test for ' + options.pdf + ' ' + options.whatClosure + ' (' + options.lepType + ')'
     print '-------------------------------------------------------------------------------------'
     print 'parton-level'
     for ibin in range(1, hFrac.GetXaxis().GetNbins()+1 ) :
-        
         if hFrac.GetBinLowEdge(ibin) > lowedge and hFrac.GetBinLowEdge(ibin) < highedge:
-            print '[' + str(hFrac.GetBinLowEdge(ibin)) + ',' + str(hFrac.GetBinLowEdge(ibin+1)) + '] = ' + str((hFrac.GetBinContent(ibin)-1.0)*100.0) + ' %' 
+            print '[' + str(hFrac.GetBinLowEdge(ibin)) + ',' + str(hFrac.GetBinLowEdge(ibin+1)) + '] = ' + str((hFrac.GetBinContent(ibin)-1.0)*100.0) + ' %'            
     if options.twoStep:
         print ''
         print 'particle-level'
@@ -1097,6 +1115,26 @@ if options.closureTest and options.whatClosure == "reverse":
             if hFrac_rp.GetBinLowEdge(ibin) > lowedge and hFrac_rp.GetBinLowEdge(ibin) < highedge:
                 print '[' + str(hFrac_rp.GetBinLowEdge(ibin)) + ',' + str(hFrac_rp.GetBinLowEdge(ibin+1)) + '] = ' + str((hFrac_rp.GetBinContent(ibin)-1.0)*100.0) + ' %' 
     
+
+    if options.toUnfold == "y":
+        print ''
+        print 'averaged in rapidity bins PARTON'
+        print '[-2.4,-1.2] = ' + str( ( abs(hFrac.GetBinContent(1)-1.0)*100.0 + abs(hFrac.GetBinContent(6)-1.0)*100.0 )/2 ) + ' %'            
+        print '[-1.2,-0.6] = ' + str( ( abs(hFrac.GetBinContent(2)-1.0)*100.0 + abs(hFrac.GetBinContent(5)-1.0)*100.0 )/2 ) + ' %'            
+        print '[-0.6, 0.0] = ' + str( ( abs(hFrac.GetBinContent(3)-1.0)*100.0 + abs(hFrac.GetBinContent(4)-1.0)*100.0 )/2 ) + ' %'            
+        print '[ 0.0, 0.6] = ' + str( ( abs(hFrac.GetBinContent(3)-1.0)*100.0 + abs(hFrac.GetBinContent(4)-1.0)*100.0 )/2 ) + ' %'            
+        print '[ 0.6, 1.2] = ' + str( ( abs(hFrac.GetBinContent(2)-1.0)*100.0 + abs(hFrac.GetBinContent(5)-1.0)*100.0 )/2 ) + ' %'            
+        print '[ 1.2, 2.4] = ' + str( ( abs(hFrac.GetBinContent(1)-1.0)*100.0 + abs(hFrac.GetBinContent(6)-1.0)*100.0 )/2 ) + ' %'            
+        if options.twoStep:
+            print ''
+            print 'averaged in rapidity bins PARTICLE'
+            print '[-2.4,-1.2] = ' + str( ( abs(hFrac_rp.GetBinContent(1)-1.0)*100.0 + abs(hFrac_rp.GetBinContent(6)-1.0)*100.0 )/2 ) + ' %'            
+            print '[-1.2,-0.6] = ' + str( ( abs(hFrac_rp.GetBinContent(2)-1.0)*100.0 + abs(hFrac_rp.GetBinContent(5)-1.0)*100.0 )/2 ) + ' %'            
+            print '[-0.6, 0.0] = ' + str( ( abs(hFrac_rp.GetBinContent(3)-1.0)*100.0 + abs(hFrac_rp.GetBinContent(4)-1.0)*100.0 )/2 ) + ' %'            
+            print '[ 0.0, 0.6] = ' + str( ( abs(hFrac_rp.GetBinContent(3)-1.0)*100.0 + abs(hFrac_rp.GetBinContent(4)-1.0)*100.0 )/2 ) + ' %'            
+            print '[ 0.6, 1.2] = ' + str( ( abs(hFrac_rp.GetBinContent(2)-1.0)*100.0 + abs(hFrac_rp.GetBinContent(5)-1.0)*100.0 )/2 ) + ' %'            
+            print '[ 1.2, 2.4] = ' + str( ( abs(hFrac_rp.GetBinContent(1)-1.0)*100.0 + abs(hFrac_rp.GetBinContent(6)-1.0)*100.0 )/2 ) + ' %'            
+        
 
 print ''
 print '-------------------------------------------------------------------------------------'
@@ -1200,8 +1238,9 @@ elif (options.pdf == "MG" or options.pdf == "mcnlo") and options.closureTest == 
         leg.AddEntry( hReco, 'MC@NLO (unfolded)', 'p')
         leg.AddEntry( hTrue, 'MC@NLO (generated)', 'l')
         leg.AddEntry( hMeas, 'MC@NLO (reco-level)', 'p')
-    tt.DrawLatex(0.55,0.45, "Closure test, response")
-    tt.DrawLatex(0.55,0.40, "matrix from Powheg")
+    if (options.whatClosure == "full") == False:
+        tt.DrawLatex(0.55,0.45, "Closure test, response")
+        tt.DrawLatex(0.55,0.40, "matrix from Powheg")
 else : 
     leg.AddEntry( hReco, 'Unfolded MC (Powheg)', 'p')
     leg.AddEntry( hTrue, 'Generated (Powheg)', 'l')
@@ -1407,8 +1446,9 @@ if options.twoStep:
             leg2.AddEntry( hReco, 'MC@NLO (unfolded)', 'p')
             leg2.AddEntry( hTrue, 'MC@NLO (generated)', 'l')
             leg2.AddEntry( hMeas, 'MC@NLO (reco-level)', 'p')
-        tt.DrawLatex(0.55,0.45, "Closure test, response")
-        tt.DrawLatex(0.55,0.40, "matrix from Powheg")
+        if (options.whatClosure == "full") == False:
+            tt.DrawLatex(0.55,0.45, "Closure test, response")
+            tt.DrawLatex(0.55,0.40, "matrix from Powheg")
     else : 
         leg2.AddEntry( hReco, 'Unfolded MC (Powheg)', 'p')
         leg2.AddEntry( hTrue, 'Generated (Powheg)', 'l')

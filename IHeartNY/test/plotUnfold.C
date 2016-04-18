@@ -94,25 +94,21 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   // ---------------------------------------------------------------------------------------------------------------
 
   float xs_parton[2]   = {1674.3, 1662.91}; //mu,el
-  //float xs_particle[2] = {1502.36, 1483.66};
   float xs_particle[2] = {583.181, 576.421};
   float xs_parton_MG[2]   = {1846.56, 1844.47};
-  //float xs_particle_MG[2] = {1513.0, 1491.67};
   float xs_particle_MG[2] = {679.058, 670.627};
 
   /*
   // these are without MC@NLO generator weights
   float xs_parton_mcnlo[2]   = {1395.71, 1402.3};
-  //float xs_particle_mcnlo[2] = {1195.22, 1188.57};
   float xs_particle_mcnlo[2] = {516.523, 502.574};
   */
-  
+
   // with MC@NLO generator weights
   float xs_parton_mcnlo[2]   = {1418.26, 1413.46};
   float xs_particle_mcnlo[2] = {506.931, 490.746};
-  
+
   float data_xs_parton[2]   = {1674.3*0.86, 1662.91*0.86};
-  //float data_xs_particle[2] = {1502.36*0.86, 1483.66*0.86};
   float data_xs_particle[2] = {583.181*0.86, 576.421*0.86};
 
 
@@ -163,7 +159,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
 
   TFile* f_syst[nCHANNEL][nSYST];
-
+  
   TH1F* h_true_tmp[nCHANNEL];
   TH1F* h_unfolded_tmp[nCHANNEL][nSYST];
   TH1F* h_part_tmp[nCHANNEL];
@@ -186,7 +182,6 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_trueMG_tmp[0] = (TH1F*) fMG[0]->Get(toUnfold+"_genTop")->Clone();
     h_trueMG_tmp[0]->SetName(toUnfold+"_genTop_MG_mu");
     if (toUnfold == "pt") h_trueMG_tmp[0]->SetAxisRange(400,1150,"X");
-
     h_trueMG_tmp[1] = (TH1F*) fMG[1]->Get(toUnfold+"_genTop")->Clone();
     h_trueMG_tmp[1]->SetName(toUnfold+"_genTop_MG_el");
     if (toUnfold == "pt") h_trueMG_tmp[1]->SetAxisRange(400,1150,"X");    
@@ -198,11 +193,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_trueMCNLO_tmp[0] = (TH1F*) fMCNLO[0]->Get(toUnfold+"_genTop")->Clone();
     h_trueMCNLO_tmp[0]->SetName(toUnfold+"_genTop_MCNLO_mu");
     if (toUnfold == "pt") h_trueMCNLO_tmp[0]->SetAxisRange(400,1150,"X");
-
     h_trueMCNLO_tmp[1] = (TH1F*) fMCNLO[1]->Get(toUnfold+"_genTop")->Clone();
     h_trueMCNLO_tmp[1]->SetName(toUnfold+"_genTop_MCNLO_el");
     if (toUnfold == "pt") h_trueMCNLO_tmp[1]->SetAxisRange(400,1150,"X");    
-        
+
+    
     if (twoStep == "_2step") {
       h_partMG_tmp[0] = (TH1F*) fMG[0]->Get(toUnfold+"_partTop")->Clone();
       h_partMG_tmp[0]->SetName(toUnfold+"_partTop_MG_mu");
@@ -330,6 +325,108 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     }//end systematic loop
   }//end channel loop
 
+
+
+  // ---------------------------------------------------------------------------------------------
+  // parton shower + generator uncertainty
+  // TRY INSTEAD COMPARING POWHEG UNFOLDED USING MC@NLO AND UNFOLDED USING POWHEG (INSTEAD OF TRUTH POWHEG)
+  // ---------------------------------------------------------------------------------------------
+
+  TFile* f_unfoldedPowheg[nCHANNEL];
+  TH1F* h_unfoldedPowheg_particle[nCHANNEL];
+  TH1F* h_unfoldedPowheg_parton[nCHANNEL];
+
+  TH1F* h_psUnc_parton_tmp[nCHANNEL];
+  TH1F* h_psUnc_particle_tmp[nCHANNEL];
+
+  if (channel == "comb") {
+    f_unfoldedPowheg[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_CT10_nom_nom"+nobtag+"_closure_full"+normflag+".root");
+    f_unfoldedPowheg[1] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_CT10_nom_nom"+nobtag+"_closure_full"+normflag+".root");
+
+    //parton
+    h_unfoldedPowheg_parton[0] = (TH1F*) f_unfoldedPowheg[0]->Get("UnfoldedMC")->Clone();
+    h_unfoldedPowheg_parton[0]->SetName(toUnfold+"_unfoldedMC_particle_CT10_mu");
+    if (toUnfold == "pt") h_unfoldedPowheg_parton[0]->SetAxisRange(400,1150,"X");
+    h_unfoldedPowheg_parton[1] = (TH1F*) f_unfoldedPowheg[1]->Get("UnfoldedMC")->Clone();
+    h_unfoldedPowheg_parton[1]->SetName(toUnfold+"_unfoldedMC_particle_CT10_el");
+    if (toUnfold == "pt") h_unfoldedPowheg_parton[1]->SetAxisRange(400,1150,"X");
+
+    //particle
+    if (twoStep == "_2step") {
+      h_unfoldedPowheg_particle[0] = (TH1F*) f_unfoldedPowheg[0]->Get("UnfoldedMC_rp")->Clone();
+      h_unfoldedPowheg_particle[0]->SetName(toUnfold+"_unfoldedMC_particle_CT10_mu");
+      if (toUnfold == "pt") h_unfoldedPowheg_particle[0]->SetAxisRange(400,1150,"X");
+      h_unfoldedPowheg_particle[1] = (TH1F*) f_unfoldedPowheg[1]->Get("UnfoldedMC_rp")->Clone();
+      h_unfoldedPowheg_particle[1]->SetName(toUnfold+"_unfoldedMC_particle_CT10_el");
+      if (toUnfold == "pt") h_unfoldedPowheg_particle[1]->SetAxisRange(400,1150,"X");
+    }
+  }
+  else if (channel == "el") {
+    f_unfoldedPowheg[0] = new TFile("UnfoldingPlots/unfold_el"+twoStep+"_"+toUnfold+"_CT10_nom_nom"+nobtag+"_closure_full"+normflag+".root");
+
+    h_unfoldedPowheg_parton[0] = (TH1F*) f_unfoldedPowheg[0]->Get("UnfoldedMC")->Clone();
+    h_unfoldedPowheg_parton[0]->SetName(toUnfold+"_unfoldedMC_particle_CT10_el");
+    if (toUnfold == "pt") h_unfoldedPowheg_parton[0]->SetAxisRange(400,1150,"X");
+    if (twoStep == "_2step") {
+      h_unfoldedPowheg_particle[0] = (TH1F*) f_unfoldedPowheg[0]->Get("UnfoldedMC_rp")->Clone();
+      h_unfoldedPowheg_particle[0]->SetName(toUnfold+"_unfoldedMC_particle_CT10_el");
+      if (toUnfold == "pt") h_unfoldedPowheg_particle[0]->SetAxisRange(400,1150,"X");
+    }
+  }
+  else {
+    f_unfoldedPowheg[0] = new TFile("UnfoldingPlots/unfold"+twoStep+"_"+toUnfold+"_CT10_nom_nom"+nobtag+"_closure_full"+normflag+".root");
+
+    h_unfoldedPowheg_parton[0] = (TH1F*) f_unfoldedPowheg[0]->Get("UnfoldedMC")->Clone();
+    h_unfoldedPowheg_parton[0]->SetName(toUnfold+"_unfoldedMC_particle_CT10_mu");
+    if (toUnfold == "pt") h_unfoldedPowheg_parton[0]->SetAxisRange(400,1150,"X");
+    if (twoStep == "_2step") {
+      h_unfoldedPowheg_particle[0] = (TH1F*) f_unfoldedPowheg[0]->Get("UnfoldedMC_rp")->Clone();
+      h_unfoldedPowheg_particle[0]->SetName(toUnfold+"_unfoldedMC_particle_CT10_mu");
+      if (toUnfold == "pt") h_unfoldedPowheg_particle[0]->SetAxisRange(400,1150,"X");
+    }
+  }
+
+  for (int ic=0; ic<nCHANNEL; ic++) {
+    h_psUnc_parton_tmp[ic] = (TH1F*) h_unfoldedPowheg_parton[ic]->Clone();
+    h_psUnc_parton_tmp[ic]->SetName("psuncertainty_parton_"+channel_name[ic]);
+    h_psUnc_particle_tmp[ic] = (TH1F*) h_unfoldedPowheg_particle[ic]->Clone();
+    h_psUnc_particle_tmp[ic]->SetName("psuncertainty_particle_"+channel_name[ic]);
+    
+    for (int i=0; i<h_unfolded_tmp[ic][17]->GetNbinsX(); i++) {
+      float bin_mcnlo  = h_unfolded_tmp[ic][17]->GetBinContent(i+1);
+      float bin_powheg = h_unfoldedPowheg_parton[ic]->GetBinContent(i+1);
+      float bin_unc = 0;
+      if (fabs(bin_powheg) > 0) bin_unc = fabs(bin_mcnlo-bin_powheg)/bin_powheg;
+      h_psUnc_parton_tmp[ic]->SetBinContent(i+1,bin_unc);
+      h_psUnc_parton_tmp[ic]->SetBinError(i+1,0.001);
+      
+      if (twoStep == "_2step") {
+	bin_mcnlo  = h_unfolded_part_tmp[ic][17]->GetBinContent(i+1);
+	bin_powheg = h_unfoldedPowheg_particle[ic]->GetBinContent(i+1);
+	bin_unc = 0;
+	if (bin_powheg > 0) bin_unc = fabs(bin_mcnlo-bin_powheg)/bin_powheg;
+	h_psUnc_particle_tmp[ic]->SetBinContent(i+1,bin_unc);
+	h_psUnc_particle_tmp[ic]->SetBinError(i+1,0.001);
+      }
+    }
+  }
+
+  cout << endl;
+  cout << "new PS+gen uncertainty" << endl;
+  for (int ic=0; ic<nCHANNEL; ic++) {
+    cout << "channel = " << channel_name[ic] << endl;
+    cout << endl << "particle level" << endl;
+    for (int i=0; i<h_psUnc_particle_tmp[ic]->GetNbinsX(); i++) {
+      cout << h_psUnc_particle_tmp[ic]->GetBinContent(i+1) << endl;
+    }
+    cout << endl << "parton level" << endl;
+    for (int i=0; i<h_psUnc_parton_tmp[ic]->GetNbinsX(); i++) {
+      cout << h_psUnc_parton_tmp[ic]->GetBinContent(i+1) << endl;
+    }
+    cout << endl;
+  }
+
+  
 
   // ---------------------------------------------------------------------------------------------
   // do scaling to integrated values?? 
@@ -538,9 +635,36 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     }// end channel loop
   }// end doScale && toUnfold == "y"
 
+
+  
   // ---------------------------------------------------------------------------------------------
+  // for PS uncertainty, extract the actual uncertainty before combining!!
+  // ---------------------------------------------------------------------------------------------
+  
+  for (int ic=0;ic<nCHANNEL;ic++) {
+    for (int i=0; i<h_unfolded_tmp[ic][0]->GetNbinsX(); i++) {
+      float bin_data  = h_unfolded_tmp[ic][0]->GetBinContent(i+1);
+      float bin_syst  = h_unfolded_tmp[ic][17]->GetBinContent(i+1);
+      float bin_truth = h_true_tmp[ic]->GetBinContent(i+1);
 
+      float bin_syst_PS = 0;
+      if (bin_truth > 0) bin_syst_PS = (1.0 + fabs(bin_syst-bin_truth)/bin_truth)*bin_data;
+      h_unfolded_tmp[ic][17]->SetBinContent(i+1, bin_syst_PS);
 
+      if (twoStep == "_2step") {
+	float bin_part_data  = h_unfolded_part_tmp[ic][0]->GetBinContent(i+1);
+	float bin_part_syst  = h_unfolded_part_tmp[ic][17]->GetBinContent(i+1);
+	float bin_part_truth = h_part_tmp[ic]->GetBinContent(i+1);
+	
+	float bin_part_syst_PS = 0;
+	if (bin_part_truth > 0) bin_part_syst_PS = (1.0 + fabs(bin_part_syst-bin_part_truth)/bin_part_truth)*bin_part_data;
+	h_unfolded_part_tmp[ic][17]->SetBinContent(i+1, bin_part_syst_PS);
+      }
+    }
+  }
+
+  
+  
   // ----------------------------------------------------------------------------------------------------------------
   // possibly perform combination of electron+muon channels
   // ----------------------------------------------------------------------------------------------------------------
@@ -562,7 +686,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   TH1F* h_partMG;
   TH1F* h_partMCNLO;
 
+  TH1F* h_psUnc_parton;
+  TH1F* h_psUnc_particle;
 
+  
   // ----------------------------------------------------------------------------------------------------------------
   // no combination -- just copy the electron/muon histograms
   if (channel != "comb") {
@@ -592,6 +719,13 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	h_unfolded_part[is] = (TH1F*) h_unfolded_part_tmp[0][is]->Clone();
 	h_unfolded_part[is]->SetName("UnfoldedData_part"+name_syst[is]);
       }
+    }
+
+    h_psUnc_parton = (TH1F*) h_psUnc_parton_tmp[0]->Clone();
+    h_psUnc_parton->SetName("psUnc_parton");
+    if (twoStep == "_2step") {
+      h_psUnc_particle = (TH1F*) h_psUnc_particle_tmp[0]->Clone();
+      h_psUnc_particle->SetName("psUnc_particle");
     }
 
   }
@@ -636,7 +770,6 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	h_unfolded_part[is]->Reset();
       }
     }
-
     
     //then do the combination
     float nel = 0;
@@ -791,11 +924,52 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	}
 	
       }//end loop systematics
-
     }//end bin loop
+
+
+    h_psUnc_parton = (TH1F*) h_psUnc_parton_tmp[0]->Clone();
+    h_psUnc_parton->SetName("psUnc_parton");
+    if (twoStep == "_2step") {
+      h_psUnc_particle = (TH1F*) h_psUnc_particle_tmp[0]->Clone();
+      h_psUnc_particle->SetName("psUnc_particle");
+    }
+      
+    for (int ib=0; ib<nBIN; ib++) {
+      float tmp1 = h_psUnc_parton_tmp[0]->GetBinContent(ib+1);
+      float tmp2 = h_psUnc_parton_tmp[1]->GetBinContent(ib+1);
+      h_psUnc_parton->SetBinContent(ib+1,fabs(tmp1+tmp2)/2.0);
+      if (twoStep == "_2step") {
+	tmp1 = h_psUnc_particle_tmp[0]->GetBinContent(ib+1);
+	tmp2 = h_psUnc_particle_tmp[1]->GetBinContent(ib+1);
+	h_psUnc_particle->SetBinContent(ib+1,fabs(tmp1+tmp2)/2.0);
+      }
+    }
+
+    
   }//end do combination
 
 
+  
+  if (toUnfold == "y") {
+    symmetrize(h_psUnc_parton);
+    if (twoStep == "_2step") symmetrize(h_psUnc_particle);
+  }
+  
+  cout << endl;
+  cout << "new PS+gen uncertainty for " << channel << endl;
+  if (twoStep == "_2step") {
+    cout << endl << "particle level" << endl;
+    for (int i=0; i<h_psUnc_particle->GetNbinsX(); i++) {
+      cout << h_psUnc_particle->GetBinContent(i+1) << endl;
+    }
+  }
+  cout << endl << "parton level" << endl;
+  for (int i=0; i<h_psUnc_parton->GetNbinsX(); i++) {
+    cout << h_psUnc_parton->GetBinContent(i+1) << endl;
+  }
+  cout << endl;
+
+  
 
   TH1F* h_dummy = (TH1F*) h_unfolded[0]->Clone("dummy");
   h_dummy->Reset();
@@ -955,8 +1129,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
       sig[is]   = h_unfolded[is]->GetBinError(i+1);
     }
     float truth = h_true->GetBinContent(i+1);
-    float this_syst_PS = fabs(count[17]-truth)/truth*count[0];
-
+    //float this_syst_PS = fabs(count[17]-truth)/truth*count[0];
+    float this_syst_PS = h_psUnc_parton->GetBinContent(i+1)*count[0];
+    //float this_syst_PS = fabs(count[17]-count[0]);
+    
     float this_lumi = 0.026 * count[0];
     
     // experimental
@@ -1114,8 +1290,14 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     double syst_totaltotal_dn = sqrt(syst_total_dn*syst_total_dn + syst_stat*syst_stat);
 
     // Add lumi uncertainty
-    if (doNormalized == false) syst_totaltotal_up = sqrt(syst_totaltotal_up*syst_totaltotal_up+2.6*2.6);
-    if (doNormalized == false) syst_totaltotal_dn = sqrt(syst_totaltotal_dn*syst_totaltotal_dn+2.6*2.6);
+    if (doNormalized == false) {
+      syst_total_up = sqrt(syst_total_up*syst_total_up+2.6*2.6);
+      syst_totaltotal_up = sqrt(syst_totaltotal_up*syst_totaltotal_up+2.6*2.6);
+    }
+    if (doNormalized == false) {
+      syst_total_dn = sqrt(syst_total_dn*syst_total_dn+2.6*2.6);
+      syst_totaltotal_dn = sqrt(syst_totaltotal_dn*syst_totaltotal_dn+2.6*2.6);
+    }
     
     double max_syst_totalEXP = 0;
     double max_syst_totalTH = 0;
@@ -1246,8 +1428,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     symmetrize(h_syst_Q2);
     symmetrize(h_syst_PS);
     symmetrize(h_syst_tot);
-  }
+  }  
 
+  
   // ----------------------------------------------------------------------------------------------------------------
   // RATIO PLOTS !!!!!!!
   // ----------------------------------------------------------------------------------------------------------------
@@ -1550,7 +1733,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   if (toUnfold == "pt") h_dummy_r->SetAxisRange(400,1150,"X");
   if (toUnfold == "y") h_dummy_r->SetAxisRange(0,40,"Y");
   else if (doQ2 && channel == "comb" && doNormalized) h_dummy_r->SetAxisRange(0,40,"Y");
-  else if (doQ2) h_dummy_r->SetAxisRange(0,60,"Y");
+  else if (doQ2) h_dummy_r->SetAxisRange(0,70,"Y");
   else h_dummy_r->SetAxisRange(0,25,"Y");
   
   h_dummy_r->GetYaxis()->SetTitleSize(0.055);    
@@ -1759,8 +1942,10 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 	sig_part[is]   = h_unfolded_part[is]->GetBinError(i+1);
       }
       float truth = h_part->GetBinContent(i+1);
-      float this_syst_PS = fabs(count_part[17]-truth)/truth*count_part[0];
-
+      //float this_syst_PS = fabs(count_part[17]-truth)/truth*count_part[0];
+      float this_syst_PS = h_psUnc_particle->GetBinContent(i+1)*count_part[0];
+      //float this_syst_PS = fabs(count_part[17]-count_part[0]);
+      
       float this_lumi_part = count_part[0]*0.026;
       
       // experimental
@@ -2335,7 +2520,7 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     if (toUnfold == "pt") h_dummy_r_part->SetAxisRange(400,1150,"X");
     if (toUnfold == "y") h_dummy_r_part->SetAxisRange(0,40,"Y");
     else if (doQ2 && channel == "comb" && doNormalized) h_dummy_r_part->SetAxisRange(0,40,"Y");
-    else if (doQ2) h_dummy_r_part->SetAxisRange(0,60,"Y");
+    else if (doQ2) h_dummy_r_part->SetAxisRange(0,70,"Y");
     else h_dummy_r_part->SetAxisRange(0,25,"Y");
     
     h_dummy_r_part->GetYaxis()->SetTitleSize(0.055);    

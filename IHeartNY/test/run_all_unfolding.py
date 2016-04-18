@@ -14,6 +14,11 @@ parser.add_option('--genCheck', metavar='F', action='store_true',
                   dest='genCheck',
                   help='Run generator cross checks')
 
+parser.add_option('--genCheckDebug', metavar='F', action='store_true',
+                  default=False,
+                  dest='genCheckDebug',
+                  help='Run generator cross checks')
+
 parser.add_option('--ttbarPDF', metavar='F', type='string', action='store',
                   default='CT10_nom',
                   dest='pdf',
@@ -81,10 +86,23 @@ elif options.genCheck:
         "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --lepType=ele --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
         "python unfoldTopPt.py --closureTest --addNoBtag --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
         "python unfoldTopPt.py --closureTest --addNoBtag --lepType=ele --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --whatClosure=full --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --lepType=ele --whatClosure=full --toUnfold="+options.toUnfold,
         "python unfoldTopPt.py --closureTest --twoStep --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
         "python unfoldTopPt.py --closureTest --twoStep --lepType=ele --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
         "python unfoldTopPt.py --closureTest --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
         "python unfoldTopPt.py --closureTest --lepType=ele --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
+    ]
+elif options.genCheckDebug:
+    path = [
+        "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --ttbarPDF=mcnlo --whatClosure=nom --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --lepType=ele --ttbarPDF=mcnlo --whatClosure=reverse --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --lepType=ele --ttbarPDF=mcnlo --whatClosure=nom --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --whatClosure=full --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --lepType=ele --whatClosure=full --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --ttbarPDF=mcnlo --whatClosure=full --toUnfold="+options.toUnfold,
+        "python unfoldTopPt.py --closureTest --addNoBtag --twoStep --ttbarPDF=mcnlo --lepType=ele --whatClosure=full --toUnfold="+options.toUnfold,
     ]
 elif options.pdf == "CT10_nom" and not options.oneRegion: #run all alternatives for CT10 nominal
     path = [
