@@ -1867,6 +1867,9 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
   c1->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".eps");
 
+  TFile fout = TFile("dataForRivet_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".root","recreate");
+  if (toUnfold == "y") symmetrize_err(h_fullunc);
+  h_fullunc->Write();
 
   // -----------------------------------------------------------
   // Now do particle-level...
@@ -2646,7 +2649,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
     c3->SaveAs("UnfoldingPlots/unfold_relative_uncertainties_part_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".eps");
+
+    if (toUnfold == "y") symmetrize_err(h_fullunc_part);
+    h_fullunc_part->Write();
   }
+  fout.Close();
 
   return;
 
@@ -2673,6 +2680,21 @@ void symmetrize(TH1F* h_input){
     h_input->SetBinError(6-ii,average);
   }
   
+  return;
+}
+
+void symmetrize_err(TH1F* h_input){
+  if (h_input->GetNbinsX() != 6) {
+    cout << "Error! Wrong histogram being symmetrized" << endl;
+    continue;
+  }
+  for (int ii = 0; ii < 3; ii++){
+    double temp1 = h_input->GetBinError(ii+1);
+    double temp2 = h_input->GetBinError(6-ii);
+    double average = (temp1 + temp2) / 2;
+    h_input->SetBinError(ii+1,average);
+    h_input->SetBinError(6-ii,average);
+  }
   return;
 }
 

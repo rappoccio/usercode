@@ -94,6 +94,7 @@ from ROOT import gRandom, TH1, TH1D, cout, TFile, gSystem, TCanvas, TPad, gPad, 
 from array import array
 
 gROOT.Macro("rootlogon.C")
+gROOT.SetBatch(True)
 
 gStyle.SetOptStat(000000)
 gStyle.SetOptTitle(0);
