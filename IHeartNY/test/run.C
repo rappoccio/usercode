@@ -61,7 +61,7 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
 
     //makePlots("etaAbsLep", 4, 6, doElectron, "", "CT10_nom", true, combine);
     //makePlots("etaAbsLep", 6, 7, doElectron, "", "CT10_nom", true, combine);
-    //makePlots("etaAbsLep", 7, 0, doElectron, "", "CT10_nom", true, combine);
+    makePlots("etaAbsLep", 7, 0, doElectron, "", "CT10_nom", true, combine);
 
     //makePlots("vtxMass", 4, 6, doElectron, "", "CT10_nom", true, combine);
     //makePlots("vtxMass", 6, 7, doElectron, "", "CT10_nom", true, combine);
@@ -76,8 +76,8 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
     makePlots("hadtop_y", 7, 0, doElectron, "", "CT10_nom", true, combine);
 
     //makePlots("ptLep", 4, 6, doElectron, "", "CT10_nom", true, combine);
-    //makePlots("ptLep", 6, 7, doElectron, "", "CT10_nom", true, combine);
-    //makePlots("ptLep", 7, 0, doElectron, "", "CT10_nom", true, combine);
+    makePlots("ptLep", 6, 7, doElectron, "", "CT10_nom", true, combine);
+    makePlots("ptLep", 7, 0, doElectron, "", "CT10_nom", true, combine);
 
     //makePlots("ptMET", 4, 6, doElectron, "", "CT10_nom", true, combine);
     //makePlots("ptMET", 6, 7, doElectron, "", "CT10_nom", true, combine);

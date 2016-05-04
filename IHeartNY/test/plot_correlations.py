@@ -90,11 +90,14 @@ for pdfname in pdfnames :
             
 
         if ich=="comb":
-            labels = ['#beta_{signal}', 'JEC', 'JER', 'N(el QCD)', 'N(mu QCD)', 'N(single top)', 'N(W+jet)', 'Top-tagging']
+            #labels = ['#beta_{signal}', 'JEC', 'JER', 'N(el QCD)', 'N(mu QCD)', 'N(single top)', 'N(W+jet)', 'Top-tagging']
+            labels = ['#beta_{signal}', 'JEC', 'JER', 'N(e multijet)', 'N(#mu multijet)', 'N(single t)', 'N(W+jet)', 't tagging']
         elif ich=="mu" :
-            labels = ['#beta_{signal}', 'JEC', 'JER', 'N(mu QCD)', 'N(single top)', 'N(W+jet)', 'Top-tagging']
+            #labels = ['#beta_{signal}', 'JEC', 'JER', 'N(mu QCD)', 'N(single top)', 'N(W+jet)', 'Top-tagging']
+            labels = ['#beta_{signal}', 'JEC', 'JER', 'N(#mu multijet)', 'N(single t)', 'N(W+jet)', 't tagging']
         else:
-            labels = ['#beta_{signal}', 'JEC', 'JER', 'N(el QCD)', 'N(single top)', 'N(W+jet)', 'Top-tagging']
+            #labels = ['#beta_{signal}', 'JEC', 'JER', 'N(el QCD)', 'N(single top)', 'N(W+jet)', 'Top-tagging']
+            labels = ['#beta_{signal}', 'JEC', 'JER', 'N(e multijet)', 'N(single t)', 'N(W+jet)', 't tagging']
 
 
         nvars = len(cov[0])
@@ -142,8 +145,8 @@ for pdfname in pdfnames :
         t2.SetTextFont(52)
         t2.SetTextColor(1)
         t2.SetTextSize(extraTextSize)
-        #if (ich=="comb"): 
-        #    t2.DrawLatex(0.28,0.93, "Preliminary")
+        if (ich=="comb"): 
+            t2.DrawLatex(0.28,0.93, "Supplementary")
 
         t3 = TLatex()
         t3.SetNDC()

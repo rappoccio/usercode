@@ -1083,18 +1083,18 @@ if options.twoStep:
     hFrac_rp = hReco_rp.Clone()
     hFrac_rp.SetName("hFrac_rp")
     if options.toUnfold == "pt" :
-        hFrac_rp.SetTitle(";Particle-level top p_{T} (GeV);Data/MC")
+        hFrac_rp.SetTitle(";Particle-level t jet p_{T} (GeV);Data/MC")
     elif options.toUnfold == "y" :
-        hFrac_rp.SetTitle(";Particle-level top rapidity;Data/MC")
+        hFrac_rp.SetTitle(";Particle-level t jet y;Data/MC")
     hFrac_rp.Divide(hPart)
 
     if options.troubleshoot and options.closureTest and options.whatClosure == "nom":
         hFrac_rp_odd = hReco_rp_odd.Clone()
         hFrac_rp_odd.SetName("hFrac_rp_odd")
         if options.toUnfold == "pt" :
-            hFrac_rp_odd.SetTitle(";Particle-level top p_{T} (GeV);Data/MC")
+            hFrac_rp_odd.SetTitle(";Particle-level t jet p_{T} (GeV);Data/MC")
         elif options.toUnfold == "y" :
-            hFrac_rp_odd.SetTitle(";Particle-level top rapidity;Data/MC")
+            hFrac_rp_odd.SetTitle(";Particle-level t jet y;Data/MC")
         hFrac_rp_odd.Divide(hPart_odd)
 
 #if options.closureTest and options.whatClosure == "reverse":
@@ -1752,11 +1752,11 @@ if options.twoStep:
     hEmpty2D_rp.SetName("empty2D_rp")
     hEmpty2D_rp.Reset()
     if options.toUnfold == "pt":
-        hEmpty2D_rp.GetXaxis().SetTitle("Reconstructed top jet p_{T} (GeV)")
-        hEmpty2D_rp.GetYaxis().SetTitle("Particle-level top p_{T} (GeV)")
+        hEmpty2D_rp.GetXaxis().SetTitle("Reconstructed t jet p_{T} (GeV)")
+        hEmpty2D_rp.GetYaxis().SetTitle("Particle-level t jet p_{T} (GeV)")
     elif options.toUnfold == "y":
-        hEmpty2D_rp.GetXaxis().SetTitle("Reconstructed top jet rapidity")
-        hEmpty2D_rp.GetYaxis().SetTitle("Particle-level top rapidity")
+        hEmpty2D_rp.GetXaxis().SetTitle("Reconstructed t jet y")
+        hEmpty2D_rp.GetYaxis().SetTitle("Particle-level t jet y")
     hEmpty2D_rp.GetXaxis().SetLabelSize(0.05)
     hEmpty2D_rp.GetYaxis().SetLabelSize(0.05)
     hEmpty2D_rp.GetXaxis().SetTitleOffset(1.2)
@@ -1817,6 +1817,37 @@ if options.twoStep:
     hEmpty2D_rp.Draw()
     hResponse2D_rp.Draw("colz,same,text")
     hEmpty2D_rp.Draw("axis,same")
+
+    cmsTextSize = 0.06
+    extraOverCmsTextSize = 0.76
+    extraTextSize = extraOverCmsTextSize*cmsTextSize
+    
+    t1 = TLatex()
+    t1.SetNDC()
+    t1.SetTextFont(61)
+    t1.SetTextAngle(0)
+    t1.SetTextColor(1)
+    t1.SetTextSize(cmsTextSize)
+    t1.DrawLatex(0.18,0.94, "CMS")
+    
+    t2 = TLatex()
+    t2.SetNDC()
+    t2.SetTextFont(52)
+    t2.SetTextColor(1)
+    t2.SetTextSize(extraTextSize)
+    t2.DrawLatex(0.28,0.94, "Supplementary")
+    
+    t3 = TLatex()
+    t3.SetNDC()
+    t3.SetTextFont(42)
+    t3.SetTextColor(1)
+    t3.SetTextSize(extraTextSize)
+    if (options.lepType == "ele"):
+        t3.DrawLatex(0.52,0.94, "(e+jets)")
+    else:
+        t3.DrawLatex(0.52,0.94, "(#mu+jets)")
+    t3.DrawLatex(0.67,0.94, "19.7 fb^{-1} (8 TeV)")    
+    
     if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_"+options.pdf+"_"+options.syst+nobtag+".eps")
@@ -1830,36 +1861,14 @@ if options.twoStep:
         hEmpty2D_rp.Draw()
         hResponse2D_rp.Draw("colz,same,text")
         hEmpty2D_rp.Draw("axis,same")
-        
-        cmsTextSize = 0.06
-        extraOverCmsTextSize = 0.76
-        extraTextSize = extraOverCmsTextSize*cmsTextSize
-        
-        t1 = TLatex()
-        t1.SetNDC()
-        t1.SetTextFont(61)
-        t1.SetTextAngle(0)
-        t1.SetTextColor(1)
-        t1.SetTextSize(cmsTextSize)
-        t1.DrawLatex(0.19,0.94, "CMS")
-        
-        #t2 = TLatex()
-        #t2.SetNDC()
-        #t2.SetTextFont(52)
-        #t2.SetTextColor(1)
-        #t2.SetTextSize(extraTextSize)
-        #t2.DrawLatex(0.29,0.94, "Preliminary")
-        
-        t3 = TLatex()
-        t3.SetNDC()
-        t3.SetTextFont(42)
-        t3.SetTextColor(1)
-        t3.SetTextSize(extraTextSize)
+                
+        t1.DrawLatex(0.18,0.94, "CMS")
+        t2.DrawLatex(0.28,0.94, "Supplementary")
         if (options.lepType == "ele"):
-            t3.DrawLatex(0.49,0.94, "(e+Jets)")
+            t3.DrawLatex(0.52,0.94, "(e+jets)")
         else:
-            t3.DrawLatex(0.49,0.94, "(#mu+Jets)")
-        t3.DrawLatex(0.66,0.94, "19.7 fb^{-1} (8 TeV)")    
+            t3.DrawLatex(0.52,0.94, "(#mu+jets)")
+        t3.DrawLatex(0.67,0.94, "19.7 fb^{-1} (8 TeV)")    
 
         if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
             cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_rp_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")
@@ -1877,11 +1886,11 @@ if options.twoStep:
     hEmpty2D_pp.SetName("empty2D_pp")
     hEmpty2D_pp.Reset()
     if options.toUnfold == "pt":
-        hEmpty2D_pp.GetXaxis().SetTitle("Particle-level top p_{T} (GeV)")
+        hEmpty2D_pp.GetXaxis().SetTitle("Particle-level t jet p_{T} (GeV)")
         hEmpty2D_pp.GetYaxis().SetTitle("Top quark p_{T} (GeV)")
     if options.toUnfold == "y":
-        hEmpty2D_pp.GetXaxis().SetTitle("Particle-level top rapidity")
-        hEmpty2D_pp.GetYaxis().SetTitle("Top quark rapidity")
+        hEmpty2D_pp.GetXaxis().SetTitle("Particle-level t jet y")
+        hEmpty2D_pp.GetYaxis().SetTitle("Top quark y")
     hEmpty2D_pp.GetXaxis().SetLabelSize(0.05)
     hEmpty2D_pp.GetYaxis().SetLabelSize(0.05)
     hEmpty2D_pp.GetXaxis().SetTitleOffset(1.2)
@@ -1940,6 +1949,37 @@ if options.twoStep:
 
     hResponse2D_pp.Draw("colz,same,text")
     hEmpty2D_pp.Draw("axis,same")
+    
+    cmsTextSize = 0.06
+    extraOverCmsTextSize = 0.76
+    extraTextSize = extraOverCmsTextSize*cmsTextSize
+    
+    t1 = TLatex()
+    t1.SetNDC()
+    t1.SetTextFont(61)
+    t1.SetTextAngle(0)
+    t1.SetTextColor(1)
+    t1.SetTextSize(cmsTextSize)
+    t1.DrawLatex(0.18,0.94, "CMS")
+    
+    t2 = TLatex()
+    t2.SetNDC()
+    t2.SetTextFont(52)
+    t2.SetTextColor(1)
+    t2.SetTextSize(extraTextSize)
+    t2.DrawLatex(0.28,0.94, "Supplementary")
+    
+    t3 = TLatex()
+    t3.SetNDC()
+    t3.SetTextFont(42)
+    t3.SetTextColor(1)
+    t3.SetTextSize(extraTextSize)
+    if (options.lepType == "ele"):
+        t3.DrawLatex(0.52,0.94, "(e+jets)")
+    else:
+        t3.DrawLatex(0.52,0.94, "(#mu+jets)")
+    t3.DrawLatex(0.67,0.94, "19.7 fb^{-1} (8 TeV)")    
+
     if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".png")
         cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_"+options.pdf+"_"+options.syst+nobtag+".eps")
@@ -1954,35 +1994,13 @@ if options.twoStep:
         hResponse2D_pp.Draw("colz,same,text")
         hEmpty2D_pp.Draw("axis,same")
         
-        cmsTextSize = 0.06
-        extraOverCmsTextSize = 0.76
-        extraTextSize = extraOverCmsTextSize*cmsTextSize
-        
-        t1 = TLatex()
-        t1.SetNDC()
-        t1.SetTextFont(61)
-        t1.SetTextAngle(0)
-        t1.SetTextColor(1)
-        t1.SetTextSize(cmsTextSize)
-        t1.DrawLatex(0.19,0.94, "CMS")
-        
-        #t2 = TLatex()
-        #t2.SetNDC()
-        #t2.SetTextFont(52)
-        #t2.SetTextColor(1)
-        #t2.SetTextSize(extraTextSize)
-        #t2.DrawLatex(0.29,0.94, "Preliminary")
-        
-        t3 = TLatex()
-        t3.SetNDC()
-        t3.SetTextFont(42)
-        t3.SetTextColor(1)
-        t3.SetTextSize(extraTextSize)
+        t1.DrawLatex(0.18,0.94, "CMS")
+        t2.DrawLatex(0.28,0.94, "Supplementary")
         if (options.lepType == "ele"):
-            t3.DrawLatex(0.49,0.94, "(e+Jets)")
+            t3.DrawLatex(0.52,0.94, "(e+jets)")
         else:
-            t3.DrawLatex(0.49,0.94, "(#mu+Jets)")
-        t3.DrawLatex(0.66,0.94, "19.7 fb^{-1} (8 TeV)")    
+            t3.DrawLatex(0.52,0.94, "(#mu+jets)")
+        t3.DrawLatex(0.67,0.94, "19.7 fb^{-1} (8 TeV)")    
     
         if options.syst=="nom" and options.bkgSyst=="nom" and options.closureTest==False:
             cr.SaveAs("UnfoldingPlots/unfold"+DIR+"_"+options.toUnfold+"_2step"+closureout+"_responseMatrix_pp_zoom_"+options.pdf+"_"+options.syst+nobtag+".png")

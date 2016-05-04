@@ -96,8 +96,10 @@ void drawCMS(Double_t x,Double_t y, bool prel) {
     lp.SetTextFont(52); 
     lp.SetNDC();
     lp.SetTextColor(1);
-    float offset = 0.09;
-    lp.DrawLatex(x+offset,y,"Preliminary");
+    //float offset = 0.09;
+    //lp.DrawLatex(x+offset,y,"Preliminary");
+    float offset = 0.06;
+    lp.DrawLatex(x,y-offset,"Supplementary");
   }
 
   TLatex ll;
@@ -401,6 +403,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   // legend
   TLegend* leg;
   if (postfit && combined && hist.Contains("hadtop_y")) leg = new TLegend(0.64,0.5,0.89,0.88);
+  else if (postfit && combined && (hist.Contains("ptLep") || hist.Contains("etaAbsLep"))) leg = new TLegend(0.64,0.4-0.06,0.89,0.78-0.06);
   else if (postfit && combined) leg = new TLegend(0.64,0.4,0.89,0.78);
   else if (var.Contains("csv")) leg = new TLegend(0.59,0.56,0.84,0.9);
   else leg = new TLegend(0.64,0.5,0.89,0.88);
@@ -503,7 +506,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   else if (var.Contains("eta") || var.Contains("_y") || var.Contains("wboson_"))
     max = max*1.4;
   else if (var.Contains("ptLep"))
-    max = max*1.3;
+    max = max*1.05; //max*1.3;
   else if (hist=="hadtop_pt4")
     max = max*1.02;
   
@@ -575,6 +578,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 
     if (hist.Contains("hadtop_y"))
       drawCMS(0.18,0.82,false);
+    else if (hist.Contains("ptLep") || hist.Contains("etaAbsLep"))
+      drawCMS(0.64,0.82,true);
     else
       drawCMS(0.64,0.82,false);
     
@@ -936,7 +941,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 
   
   // legend
-  TLegend* leg = new TLegend(0.64,0.4,0.89,0.78);
+  TLegend* leg = new TLegend(0.64,0.4-0.06,0.89,0.78-0.06);
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
   leg->SetTextFont(42);
