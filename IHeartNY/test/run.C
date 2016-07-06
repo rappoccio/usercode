@@ -59,30 +59,18 @@ void run(TString option, bool doElectron, bool combine=true, TString pdfdir = "C
 
     setExtName();
 
-    //makePlots("etaAbsLep", 4, 6, doElectron, "", "CT10_nom", true, combine);
-    //makePlots("etaAbsLep", 6, 7, doElectron, "", "CT10_nom", true, combine);
-    makePlots("etaAbsLep", 7, 0, doElectron, "", "CT10_nom", true, combine);
+    makePlots("etaAbsLep", 7, 0, doElectron, "", "CT10_nom", true, combine, false);
 
-    //makePlots("vtxMass", 4, 6, doElectron, "", "CT10_nom", true, combine);
-    //makePlots("vtxMass", 6, 7, doElectron, "", "CT10_nom", true, combine);
-    //makePlots("vtxMass", 7, 0, doElectron, "", "CT10_nom", true, combine);
+    makePlots("hadtop_pt", 4, 6, doElectron, "", "CT10_nom", true, combine, true);
+    makePlots("hadtop_pt", 6, 7, doElectron, "", "CT10_nom", true, combine, true);
+    makePlots("hadtop_pt", 7, 0, doElectron, "", "CT10_nom", true, combine, true);
 
-    makePlots("hadtop_pt", 4, 6, doElectron, "", "CT10_nom", true, combine);
-    makePlots("hadtop_pt", 6, 7, doElectron, "", "CT10_nom", true, combine);
-    makePlots("hadtop_pt", 7, 0, doElectron, "", "CT10_nom", true, combine);
+    makePlots("hadtop_y", 4, 6, doElectron, "", "CT10_nom", true, combine, true);
+    makePlots("hadtop_y", 6, 7, doElectron, "", "CT10_nom", true, combine, true);
+    makePlots("hadtop_y", 7, 0, doElectron, "", "CT10_nom", true, combine, true);
 
-    makePlots("hadtop_y", 4, 6, doElectron, "", "CT10_nom", true, combine);
-    makePlots("hadtop_y", 6, 7, doElectron, "", "CT10_nom", true, combine);
-    makePlots("hadtop_y", 7, 0, doElectron, "", "CT10_nom", true, combine);
-
-    //makePlots("ptLep", 4, 6, doElectron, "", "CT10_nom", true, combine);
-    makePlots("ptLep", 6, 7, doElectron, "", "CT10_nom", true, combine);
-    makePlots("ptLep", 7, 0, doElectron, "", "CT10_nom", true, combine);
-
-    //makePlots("ptMET", 4, 6, doElectron, "", "CT10_nom", true, combine);
-    //makePlots("ptMET", 6, 7, doElectron, "", "CT10_nom", true, combine);
-    //makePlots("ptMET", 7, 0, doElectron, "", "CT10_nom", true, combine);
-
+    makePlots("ptLep", 6, 7, doElectron, "", "CT10_nom", true, combine, false);
+    makePlots("ptLep", 7, 0, doElectron, "", "CT10_nom", true, combine, false);
   }
   // various plots for kinematic checks
   else if (option=="plotex") {

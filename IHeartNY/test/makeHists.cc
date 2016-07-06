@@ -117,7 +117,7 @@ void drawCMS(Double_t x,Double_t y, bool prel) {
 // make pretty plots
 // -------------------------------------------------------------------------------------
 
-void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool postfit=false, bool combined=false) {
+void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString ptbin = "", TString pdfdir="CT10_nom", bool postfit=false, bool combined=false, bool addChannels=false) {
 
   TString mydir = pdfdir;
   if (do_htlep150qcd) mydir = "htlep150qcd";
@@ -144,41 +144,122 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   hist2 += ptbin;
 
   // read QCD normalization
-  std::pair<double, double> qcdnorm = getQCDnorm(cut, doElectron, ptbin);
-  double nqcd = qcdnorm.first;
-  double err_qcd = qcdnorm.second; 
+  double nqcd = 0;
+  double err_qcd = 0; 
+  double nqcd_mu = 0;
+  double err_qcd_mu = 0; 
 
-  if (cut==6 && cut2==0) {
-    std::pair<double, double> qcdnorm2 = getQCDnorm(7, doElectron, ptbin);
-    double nqcd2 = qcdnorm2.first;
-    //double err_qcd2 = qcdnorm2.second; 
-    nqcd += nqcd2;
+  if (addChannels) {
+    std::pair<double, double> qcdnorm_el = getQCDnorm(cut, true, ptbin);
+    nqcd = qcdnorm_el.first;
+    err_qcd = qcdnorm_el.second; 
+    std::pair<double, double> qcdnorm_mu = getQCDnorm(cut, false, ptbin);
+    nqcd_mu = qcdnorm_mu.first;
+    err_qcd_mu = qcdnorm_mu.second; 
+
+    if (cut==6 && cut2==0) {
+      std::pair<double, double> qcdnorm2_el = getQCDnorm(7, true, ptbin);
+      double nqcd2 = qcdnorm2_el.first;
+      nqcd += nqcd2;
+      std::pair<double, double> qcdnorm2_mu = getQCDnorm(7, false, ptbin);
+      double nqcd2_mu = qcdnorm2_mu.first;
+      nqcd_mu += nqcd2_mu;
+    }
+  }
+  else {
+    std::pair<double, double> qcdnorm = getQCDnorm(cut, doElectron, ptbin);
+    nqcd = qcdnorm.first;
+    err_qcd = qcdnorm.second; 
+    
+    if (cut==6 && cut2==0) {
+      std::pair<double, double> qcdnorm2 = getQCDnorm(7, doElectron, ptbin);
+      double nqcd2 = qcdnorm2.first;
+      //double err_qcd2 = qcdnorm2.second; 
+      nqcd += nqcd2;
+    }
   }
 
   // get histograms
-  SummedHist* wjets = getWJets( syst, hist, doElectron, ptbin );
-  SummedHist* singletop = getSingleTop( syst, hist, doElectron, ptbin );
-  SummedHist* ttbar = getTTbar( syst, hist, doElectron, ptbin, pdfdir );
-  SummedHist* ttbar_nonSemiLep = getTTbarNonSemiLep( syst, hist, doElectron, ptbin, pdfdir  );
-  SummedHist* qcd = getQCD( hist, doElectron, ptbin );
+  SummedHist* wjets;
+  SummedHist* singletop;
+  SummedHist* ttbar;
+  SummedHist* ttbar_nonSemiLep;
+  SummedHist* qcd;
+
+  SummedHist* wjets_mu;
+  SummedHist* singletop_mu;
+  SummedHist* ttbar_mu;
+  SummedHist* ttbar_nonSemiLep_mu;
+  SummedHist* qcd_mu;
+
+  if (addChannels) {
+    wjets = getWJets( syst, hist, true, ptbin );
+    singletop = getSingleTop( syst, hist, true, ptbin );
+    ttbar = getTTbar( syst, hist, true, ptbin, pdfdir );
+    ttbar_nonSemiLep = getTTbarNonSemiLep( syst, hist, true, ptbin, pdfdir  );
+    qcd = getQCD( hist, true, ptbin );
+
+    wjets_mu = getWJets( syst, hist, false, ptbin );
+    singletop_mu = getSingleTop( syst, hist, false, ptbin );
+    ttbar_mu = getTTbar( syst, hist, false, ptbin, pdfdir );
+    ttbar_nonSemiLep_mu = getTTbarNonSemiLep( syst, hist, false, ptbin, pdfdir  );
+    qcd_mu = getQCD( hist, false, ptbin );
+  }
+  else {
+    wjets = getWJets( syst, hist, doElectron, ptbin );
+    singletop = getSingleTop( syst, hist, doElectron, ptbin );
+    ttbar = getTTbar( syst, hist, doElectron, ptbin, pdfdir );
+    ttbar_nonSemiLep = getTTbarNonSemiLep( syst, hist, doElectron, ptbin, pdfdir  );
+    qcd = getQCD( hist, doElectron, ptbin );
+  }
   
   SummedHist* wjets2;
   SummedHist* singletop2;
   SummedHist* ttbar2;
   SummedHist* ttbar_nonSemiLep2;
   SummedHist* qcd2;
+  
+  SummedHist* wjets2_mu;
+  SummedHist* singletop2_mu;
+  SummedHist* ttbar2_mu;
+  SummedHist* ttbar_nonSemiLep2_mu;
+  SummedHist* qcd2_mu;
+
   if (cut2>0) {
-    wjets2 = getWJets( syst, hist2, doElectron, ptbin );
-    singletop2 = getSingleTop( syst, hist2, doElectron, ptbin );
-    ttbar2 = getTTbar( syst, hist2, doElectron, ptbin, pdfdir  );
-    ttbar_nonSemiLep2 = getTTbarNonSemiLep( syst, hist2, doElectron, ptbin, pdfdir  );
-    qcd2 = getQCD( hist2, doElectron, ptbin );
+    if (addChannels) {
+      wjets2 = getWJets( syst, hist2, true, ptbin );
+      singletop2 = getSingleTop( syst, hist2, true, ptbin );
+      ttbar2 = getTTbar( syst, hist2, true, ptbin, pdfdir  );
+      ttbar_nonSemiLep2 = getTTbarNonSemiLep( syst, hist2, true, ptbin, pdfdir  );
+      qcd2 = getQCD( hist2, true, ptbin );
+      
+      wjets2_mu = getWJets( syst, hist2, false, ptbin );
+      singletop2_mu = getSingleTop( syst, hist2, false, ptbin );
+      ttbar2_mu = getTTbar( syst, hist2, false, ptbin, pdfdir  );
+      ttbar_nonSemiLep2_mu = getTTbarNonSemiLep( syst, hist2, false, ptbin, pdfdir  );
+      qcd2_mu = getQCD( hist2, false, ptbin );
+    }
+    else {
+      wjets2 = getWJets( syst, hist2, doElectron, ptbin );
+      singletop2 = getSingleTop( syst, hist2, doElectron, ptbin );
+      ttbar2 = getTTbar( syst, hist2, doElectron, ptbin, pdfdir  );
+      ttbar_nonSemiLep2 = getTTbarNonSemiLep( syst, hist2, doElectron, ptbin, pdfdir  );
+      qcd2 = getQCD( hist2, doElectron, ptbin );
+    }
   }
 
   TString filepath;
-  if (use2D && doElectron) filepath = "histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
-  else if (use2D) filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
-  else filepath = "histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root";
+  TString filepath_mu;
+
+  if (addChannels) {
+    filepath = "histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    filepath_mu = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+  }
+  else {
+    if (use2D && doElectron) filepath = "histfiles/2Dhist_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+    else if (use2D) filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+    else filepath = "histfiles/SingleMu_iheartNY_V1_mu_Run2012_nom.root";
+  }
 
   if (do_htlep150qcd) {
     if (doElectron) filepath = "histfiles_htlep150qcd/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
@@ -189,33 +270,88 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     else filepath = "histfiles_met50qcd/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
   }
   else if (do_qcd) {
-    if (doElectron) filepath = "histfiles/qcd_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
-    else filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+
+    if (addChannels) {
+      filepath = "histfiles/qcd_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+      filepath_mu = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+    }
+    else {
+      if (doElectron) filepath = "histfiles/qcd_el/SingleEl_iheartNY_V1_el_Run2012_2Dcut_nom.root";
+      else filepath = "histfiles/2Dhist/SingleMu_iheartNY_V1_mu_Run2012_2Dcut_nom.root";
+    }
   }
 
-  TFile* dataFile = TFile::Open(filepath);
-  TH1F* h_data = (TH1F*) dataFile->Get( hist );
+
+  TFile* dataFile;
+  TH1F* h_data;
+
+  TFile* dataFile_mu;
+  TH1F* h_data_mu;
+
+  if (addChannels) {
+    dataFile = TFile::Open(filepath);
+    h_data = (TH1F*) dataFile->Get( hist );
+    dataFile_mu = TFile::Open(filepath_mu);
+    h_data_mu = (TH1F*) dataFile_mu->Get( hist );
+  }
+  else {
+    dataFile = TFile::Open(filepath);
+    h_data = (TH1F*) dataFile->Get( hist );
+  }
 
   TString channel = "mu_";
   if (doElectron) channel = "el_";
-  h_data->SetName(channel + hist + "__DATA");
+
+  if (addChannels) {
+    channel = "comb_";
+    h_data->SetName("el_" + hist + "__DATA");
+    h_data_mu->SetName("mu_" + hist + "__DATA");
+  }
+  else {
+    h_data->SetName(channel + hist + "__DATA");
+  }
 
   TH1F* h_data2;
+  TH1F* h_data2_mu;
+
   if (cut2>0) {
-    h_data2 = (TH1F*) dataFile->Get( hist2 );
-    h_data2->SetName(channel + hist + "__DATA_2");
-  } 
+    if (addChannels) {
+      h_data2 = (TH1F*) dataFile->Get( hist2 );
+      h_data2->SetName("el_" + hist + "__DATA_2");
+      h_data2_mu = (TH1F*) dataFile_mu->Get( hist2 );
+      h_data2_mu->SetName("mu_" + hist + "__DATA_2");
+    }
+    else {
+      h_data2 = (TH1F*) dataFile->Get( hist2 );
+      h_data2->SetName(channel + hist + "__DATA_2");
+    } 
+  }
 
   // -------------------------------------------------------------------------------------
   // do the subtraction ?
   if (cut2>0) {
-    wjets->hist() ->Add(wjets2->hist(), -1);
-    singletop->hist() ->Add(singletop2->hist(), -1);
-    ttbar->hist() ->Add(ttbar2->hist(), -1);
-    ttbar_nonSemiLep->hist() ->Add(ttbar_nonSemiLep2->hist(), -1);
-    qcd->hist() ->Add(qcd2->hist(), -1);
+    wjets->hist()->Add(wjets2->hist(), -1);
+    singletop->hist()->Add(singletop2->hist(), -1);
+    ttbar->hist()->Add(ttbar2->hist(), -1);
+    ttbar_nonSemiLep->hist()->Add(ttbar_nonSemiLep2->hist(), -1);
+    qcd->hist()->Add(qcd2->hist(), -1);
     h_data->Add(h_data2, -1);
+
+    if (addChannels) {
+      wjets_mu->hist()->Add(wjets2_mu->hist(), -1);
+      singletop_mu->hist()->Add(singletop2_mu->hist(), -1);
+      ttbar_mu->hist()->Add(ttbar2_mu->hist(), -1);
+      ttbar_nonSemiLep_mu->hist()->Add(ttbar_nonSemiLep2_mu->hist(), -1);
+      qcd_mu->hist()->Add(qcd2_mu->hist(), -1);
+      h_data_mu->Add(h_data2_mu, -1);
+    }
   }
+
+  if (addChannels) {
+    h_data->Add(h_data_mu);
+  }
+
+
 
   // -------------------------------------------------------------------------------------
   // get the TH1F versions
@@ -226,26 +362,90 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   TH1F* h_ttbar_nonSemiLep = (TH1F*) ttbar_nonSemiLep->hist();
   TH1F* h_singletop = (TH1F*) singletop->hist();
 
+  TH1F* h_qcd_mu;
+  TH1F* h_wjets_mu;
+  TH1F* h_ttbar_mu;
+  TH1F* h_ttbar_nonSemiLep_mu;
+  TH1F* h_singletop_mu;
+
+  if (addChannels) {
+    h_qcd_mu = (TH1F*) qcd_mu->hist();
+    h_wjets_mu = (TH1F*) wjets_mu->hist();
+    h_ttbar_mu = (TH1F*) ttbar_mu->hist();
+    h_ttbar_nonSemiLep_mu = (TH1F*) ttbar_nonSemiLep_mu->hist();
+    h_singletop_mu = (TH1F*) singletop_mu->hist();
+  }
+
+  
   // ------------------------------------------------------------------------------------
   // Normalize the QCD histogram
+  
   h_qcd->Scale(nqcd / h_qcd->GetSum());
+  if (addChannels) {
+    h_qcd_mu->Scale(nqcd_mu / h_qcd_mu->GetSum());
+  }
+
 
   // ------------------------------------------------------------------------------------
   // Rescale to post-fit normalizations if making post-fit plots
   if (postfit) {
+
     // get ratios
-    float ttbarRatio = getPostPreRatio(doElectron, ptbin, mydir, combined, "ttbar", cut, cut2);
-    float singletopRatio = getPostPreRatio(doElectron, ptbin, mydir, combined, "singletop", cut, cut2);
-    float wjetsRatio = getPostPreRatio(doElectron, ptbin, mydir, combined, "wjets", cut, cut2);
-    float qcdRatio = getPostPreRatio(doElectron, ptbin, mydir, combined, "qcd", cut, cut2);
-    
-    // And now use post/pre fit ratio to rescale
-    h_ttbar->Scale(ttbarRatio);
-    h_ttbar_nonSemiLep->Scale(ttbarRatio);
-    h_singletop->Scale(singletopRatio);
-    h_wjets->Scale(wjetsRatio);
-    h_qcd->Scale(qcdRatio);
+    float ttbarRatio = 1;
+    float singletopRatio = 1;
+    float wjetsRatio = 1;
+    float qcdRatio = 1;
+
+    float ttbarRatio_mu = 1;
+    float singletopRatio_mu = 1;
+    float wjetsRatio_mu = 1;
+    float qcdRatio_mu = 1;
+
+    if (addChannels) {
+      ttbarRatio = getPostPreRatio(true, ptbin, mydir, combined, "ttbar", cut, cut2);
+      singletopRatio = getPostPreRatio(true, ptbin, mydir, combined, "singletop", cut, cut2);
+      wjetsRatio = getPostPreRatio(true, ptbin, mydir, combined, "wjets", cut, cut2);
+      qcdRatio = getPostPreRatio(true, ptbin, mydir, combined, "qcd", cut, cut2);
+
+      ttbarRatio_mu = getPostPreRatio(false, ptbin, mydir, combined, "ttbar", cut, cut2);
+      singletopRatio_mu = getPostPreRatio(false, ptbin, mydir, combined, "singletop", cut, cut2);
+      wjetsRatio_mu = getPostPreRatio(false, ptbin, mydir, combined, "wjets", cut, cut2);
+      qcdRatio_mu = getPostPreRatio(false, ptbin, mydir, combined, "qcd", cut, cut2);
+
+      h_ttbar->Scale(ttbarRatio);
+      h_ttbar_nonSemiLep->Scale(ttbarRatio);
+      h_singletop->Scale(singletopRatio);
+      h_wjets->Scale(wjetsRatio);
+      h_qcd->Scale(qcdRatio);
+
+      h_ttbar_mu->Scale(ttbarRatio_mu);
+      h_ttbar_nonSemiLep_mu->Scale(ttbarRatio_mu);
+      h_singletop_mu->Scale(singletopRatio_mu);
+      h_wjets_mu->Scale(wjetsRatio_mu);
+      h_qcd_mu->Scale(qcdRatio_mu);
+
+      // finally now add the electron and muon channels together 
+      h_ttbar->Add(h_ttbar_mu);
+      h_ttbar_nonSemiLep->Add(h_ttbar_nonSemiLep_mu);
+      h_singletop->Add(h_singletop_mu);
+      h_wjets->Add(h_wjets_mu);
+      h_qcd->Add(h_qcd_mu);
+    }
+    else {
+      ttbarRatio = getPostPreRatio(doElectron, ptbin, mydir, combined, "ttbar", cut, cut2);
+      singletopRatio = getPostPreRatio(doElectron, ptbin, mydir, combined, "singletop", cut, cut2);
+      wjetsRatio = getPostPreRatio(doElectron, ptbin, mydir, combined, "wjets", cut, cut2);
+      qcdRatio = getPostPreRatio(doElectron, ptbin, mydir, combined, "qcd", cut, cut2);
+
+      // And now use post/pre fit ratio to rescale
+      h_ttbar->Scale(ttbarRatio);
+      h_ttbar_nonSemiLep->Scale(ttbarRatio);
+      h_singletop->Scale(singletopRatio);
+      h_wjets->Scale(wjetsRatio);
+      h_qcd->Scale(qcdRatio);
+    }
   }
+
 
   // -------------------------------------------------------------------------------------
   // various hist plotting edits
@@ -360,10 +560,6 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (var=="csv1LepJet" || var=="csv2LepJet") h_data->SetAxisRange(0,1.05,"X");
   if (hist=="hadtop_mass3" || hist=="hadtop_mass4") h_data->SetAxisRange(0,250,"X");
   if (hist=="hadtop_pt3") h_data->SetAxisRange(150,700,"X");
-  /*
-  if (hist=="hadtop_pt4" || hist=="hadtop_pt5") h_data->SetAxisRange(370,900,"X");
-  if (hist=="hadtop_pt6" || hist=="hadtop_pt7") h_data->SetAxisRange(350,1190,"X");
-  */
   if (hist=="hadtop_pt4" || hist=="hadtop_pt5") h_data->SetAxisRange(400,900,"X");
   if (hist=="hadtop_pt6" || hist=="hadtop_pt7") h_data->SetAxisRange(400,1190,"X");
   if (var=="hadtop_y" || var=="leptop_y") h_data->SetAxisRange(-2.39,2.39,"X");
@@ -424,7 +620,13 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   float myerr_st = 0.0;
   float myerr_wj = 0.0;
   float myerr_qcd = 0.0;
-  if (doElectron) {
+  if (addChannels) {
+    myerr_tt = (117.336 + 144.425) / (1561.97 + 1922.58);
+    myerr_st = (119.726 + 134.715) / (260.899 + 293.561);
+    myerr_wj = (250.45 + 326.887) / (3667 + 4786.17);
+    myerr_qcd = (128.224 + 168.613) / (756.974 + 358.282);
+  }
+  else if (doElectron) {
     myerr_tt = 117.336/1561.97;
     myerr_st = 119.726/260.899;
     myerr_wj = 250.45/3667;
@@ -506,7 +708,7 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   else if (var.Contains("eta") || var.Contains("_y") || var.Contains("wboson_"))
     max = max*1.4;
   else if (var.Contains("ptLep"))
-    max = max*1.05; //max*1.3;
+    max = max*1.05;
   else if (hist=="hadtop_pt4")
     max = max*1.02;
   
@@ -586,7 +788,12 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
     else
       drawCMS(0.64,0.82,false);
     
-    if (doElectron) {
+    if (addChannels) {
+      if (hist.Contains("7")) myLargeText(0.38,0.82,1,"1t+1b");
+      else if (hist.Contains("6")) myLargeText(0.38,0.82,1,"1t+0b");
+      else if (hist.Contains("4")) myLargeText(0.38,0.82,1,"0t");
+    }
+    else if (doElectron) {
       if (hist.Contains("7")) myLargeText(0.38,0.82,1,"1t+1b, e+jets");
       else if (hist.Contains("6")) myLargeText(0.38,0.82,1,"1t+0b, e+jets");
       else if (hist.Contains("4")) myLargeText(0.38,0.82,1,"0t, e+jets");
@@ -634,7 +841,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   // save output
   TString outname;
 
-  if (use2D && doElectron) outname = "Plots/el_"+mydir+extName+"_";
+  if (addChannels) outname = "Plots/comb_"+mydir+extName+"_";
+  else if (use2D && doElectron) outname = "Plots/el_"+mydir+extName+"_";
   else if (use2D) outname = "Plots/mu_"+mydir+extName+"_";
   else outname = "Plots/mu_relIso_"+mydir+extName+"_";
 
@@ -699,7 +907,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
 
 
   std::cout << std::endl << "-------------------------------------------------------------------------------------" << std::endl;
-  if (doElectron) std::cout << "*** electron+jets channel *** " << std::endl;
+  if (addChannels) std::cout << "*** COMBINED electron+muon channels *** " << std::endl;
+  else if (doElectron) std::cout << "*** electron+jets channel *** " << std::endl;
   else std::cout << "*** muon+jets channel *** " << std::endl;
   std::cout << "PDF: " << pdfdir << std::endl;
   if (cut2==0) std::cout << "hist: " << hist << std::endl;
