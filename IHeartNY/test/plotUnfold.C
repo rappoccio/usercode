@@ -1683,24 +1683,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   h_ratio->GetYaxis()->SetTitleOffset(0.38);
   h_ratio->GetXaxis()->SetTitleOffset(1.0);
 
-  if (toUnfold == "y"){
-    h_ratio->SetAxisRange(0.45,1.55,"Y");
-    h_ratioGEN->SetAxisRange(0.45,1.55,"Y");
-    h_ratioMG->SetAxisRange(0.45,1.55,"Y");
-    h_ratioMCNLO->SetAxisRange(0.45,1.55,"Y");
-  }  
-  else if (doNormalized) {
-    h_ratio->SetAxisRange(0.6,1.4,"Y");
-    h_ratioGEN->SetAxisRange(0.6,1.4,"Y");
-    h_ratioMG->SetAxisRange(0.6,1.4,"Y");
-    h_ratioMCNLO->SetAxisRange(0.6,1.4,"Y");
-  }
-  else {
-    h_ratio->SetAxisRange(0.45,1.55,"Y");
-    h_ratioGEN->SetAxisRange(0.45,1.55,"Y");
-    h_ratioMG->SetAxisRange(0.45,1.55,"Y");
-    h_ratioMCNLO->SetAxisRange(0.45,1.55,"Y");
-  }
+  h_ratio->SetAxisRange(0.4,1.6,"Y");
+  h_ratioGEN->SetAxisRange(0.4,1.6,"Y");
+  h_ratioMG->SetAxisRange(0.4,1.6,"Y");
+  h_ratioMCNLO->SetAxisRange(0.4,1.6,"Y");
+  
   h_ratio->Draw("hist");
   blaTOT->Draw("same,e2");
   //blaEXP->Draw("same,e2");
@@ -2473,24 +2460,11 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
     h_ratio_part->GetYaxis()->SetTitleOffset(0.38);
     h_ratio_part->GetXaxis()->SetTitleOffset(1.0);
     
-    if (toUnfold == "y") {
-      h_ratio_part->SetAxisRange(0.45,1.55,"Y");
-      h_ratioGEN_part->SetAxisRange(0.45,1.55,"Y");
-      h_ratioMG_part->SetAxisRange(0.45,1.55,"Y");
-      h_ratioMCNLO_part->SetAxisRange(0.45,1.55,"Y");
-    }
-    else if (doNormalized) {
-      h_ratio_part->SetAxisRange(0.6,1.4,"Y");
-      h_ratioGEN_part->SetAxisRange(0.6,1.4,"Y");
-      h_ratioMG_part->SetAxisRange(0.6,1.4,"Y");
-      h_ratioMCNLO_part->SetAxisRange(0.6,1.4,"Y");
-    }
-    else {
-      h_ratio_part->SetAxisRange(0.45,1.55,"Y");
-      h_ratioGEN_part->SetAxisRange(0.45,1.55,"Y");
-      h_ratioMG_part->SetAxisRange(0.45,1.55,"Y");
-      h_ratioMCNLO_part->SetAxisRange(0.45,1.55,"Y");
-    }
+    h_ratio_part->SetAxisRange(0.4,1.6,"Y");
+    h_ratioGEN_part->SetAxisRange(0.4,1.6,"Y");
+    h_ratioMG_part->SetAxisRange(0.4,1.6,"Y");
+    h_ratioMCNLO_part->SetAxisRange(0.4,1.6,"Y");
+    
     h_ratio_part->Draw("hist");
     blaTOT_part->Draw("same,e2");
     //blaEXP_part->Draw("same,e2");

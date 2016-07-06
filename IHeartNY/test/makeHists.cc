@@ -260,12 +260,12 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (var=="etaLep"){
     rebin = 2;
     binwidth = h_data->GetBinWidth(2) * rebin;
-    sprintf(tmptxt,elmu+" / %.1f",binwidth);
+    sprintf(tmptxt,"Events / %.1f",binwidth);
   }
   else if (var.Contains("etaAbsLep")){
     rebin = 2;
     binwidth = h_data->GetBinWidth(2) * rebin;
-    sprintf(tmptxt,elmu+" / %.1f",binwidth);
+    sprintf(tmptxt,"Events / %.1f",binwidth);
   }
   else if (var.Contains("hadtop_eta")){
     rebin = 2;
@@ -521,11 +521,11 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   TCanvas* c = new TCanvas("c_"+hist,"c_"+hist,900,800);
   TPad* p1 = new TPad("datamcp1_"+hist,"datamcp1_"+hist,0,0.3,1,1);
   p1->SetTopMargin(0.08);
-  p1->SetBottomMargin(0.05);
+  p1->SetBottomMargin(0.03);
   p1->SetNumber(1);
   TPad* p2 = new TPad("datamcp2_"+hist,"datamcp2_"+hist,0,0,1,0.3);
   p2->SetNumber(2);
-  p2->SetTopMargin(0.05);
+  p2->SetTopMargin(0.01);
   p2->SetBottomMargin(0.35);
 
   p1->Draw();
@@ -560,6 +560,9 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   h_data->GetYaxis()->SetTitleSize(36);
   if (hist == "hadtop_pt4") h_data->GetYaxis()->SetTitleOffset(1.2);
   else h_data->GetYaxis()->SetTitleOffset(1.0);
+
+  h_data->GetXaxis()->SetTitleSize(0);
+  h_data->GetXaxis()->SetLabelSize(0);
 
   h_data->Draw("e0p");
   h_stack->Draw("hist,same");
@@ -617,8 +620,8 @@ void makePlots(TString var, int cut, int cut2=0, bool doElectron=false, TString 
   if (postfit && combined) h_ratio->Draw("e0p,same");
   h_ratio->SetMaximum(1.8);
   h_ratio->SetMinimum(0.2);
-  h_ratio->GetYaxis()->SetNdivisions(2,4,0,false);
-  h_ratio->GetYaxis()->SetTitle("Data / Fit");
+  h_ratio->GetYaxis()->SetNdivisions(505);
+  h_ratio->GetYaxis()->SetTitle("N_{Data} / N_{Fit}");
   h_ratio->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
   h_ratio->GetXaxis()->SetTitleOffset( 4.0 );
   h_ratio->GetXaxis()->SetLabelSize(26);
@@ -884,8 +887,7 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   float binwidth = h_data->GetBinWidth(2);
   char tmptxt[500];
   
-  if (what.Contains("etaAbsLep") && doElectron) sprintf(tmptxt,"Electrons / %.1f",binwidth);
-  else if (what.Contains("etaAbsLep")) sprintf(tmptxt,"Muons / %.1f",binwidth);
+  if (what.Contains("etaAbsLep")) sprintf(tmptxt,"Events / %.1f",binwidth);
   else if (what.Contains("vtxMass")) sprintf(tmptxt,"Events / %.1f GeV",binwidth);
   else if (what.Contains("htLep")) sprintf(tmptxt,"Events / %.0f GeV",binwidth);
 
@@ -941,7 +943,9 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
 
   
   // legend
-  TLegend* leg = new TLegend(0.64,0.4-0.06,0.89,0.78-0.06);
+  TLegend* leg;
+  if (what=="vtxMass7" || what=="etaAbsLep6" || what=="etaAbsLep4") leg = new TLegend(0.64,0.4,0.89,0.78);
+  else leg = new TLegend(0.64,0.4-0.06,0.89,0.78-0.06);
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
   leg->SetTextFont(42);
@@ -1043,11 +1047,11 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   TCanvas* c = new TCanvas("c_"+what,"c_"+what,900,800);
   TPad* p1 = new TPad("datamcp1_"+what,"datamcp1_"+what,0,0.3,1,1);
   p1->SetTopMargin(0.08);
-  p1->SetBottomMargin(0.05);
+  p1->SetBottomMargin(0.03);
   p1->SetNumber(1);
   TPad* p2 = new TPad("datamcp2_"+what,"datamcp2_"+what,0,0,1,0.3);
   p2->SetNumber(2);
-  p2->SetTopMargin(0.05);
+  p2->SetTopMargin(0.01);
   p2->SetBottomMargin(0.35);
 
   p1->Draw();
@@ -1070,6 +1074,10 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   h_data->GetYaxis()->SetLabelSize(26);
   h_data->GetYaxis()->SetTitleSize(36);
   h_data->GetYaxis()->SetTitleOffset(1.0);
+
+  h_data->GetXaxis()->SetTitleSize(0);
+  h_data->GetXaxis()->SetLabelSize(0);
+
   h_data->Draw("e0p");
   h_stack->Draw("hist,same");
   h_data->Draw("e0p,same");
@@ -1109,8 +1117,8 @@ void makePosteriorPlots(TString what, bool doElectron=false, TString ptbin = "",
   h_ratio->Draw("e0p,same");
   h_ratio->SetMaximum(1.8);
   h_ratio->SetMinimum(0.2);
-  h_ratio->GetYaxis()->SetNdivisions(2,4,0,false);
-  h_ratio->GetYaxis()->SetTitle("Data / Fit");
+  h_ratio->GetYaxis()->SetNdivisions(505);
+  h_ratio->GetYaxis()->SetTitle("N_{Data} / N_{Fit}");
   h_ratio->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
   h_ratio->GetXaxis()->SetTitleOffset( 4.0 );
   h_ratio->GetXaxis()->SetLabelSize(26);
