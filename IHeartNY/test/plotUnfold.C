@@ -112,6 +112,42 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   float data_xs_particle[2] = {583.181*0.86, 576.421*0.86};
 
 
+  // ---------------------------------------------------------------------------------------------------------------
+  // additional theory comparisons 
+  
+  // pt measurement
+  // our bins: 0-200,200-400, 400-500, 500-600, 600-700, 700-800, 800-1200 
+  // the conversion numbers below are: (sum of cross sections for the bin range we use) / (bin width) * (pb-->fb)
+
+  // LHC8-PTavt-nnlo-MT2-NNPDF30.dat 
+  // NNPDF30:     "NNPDF30_(nn)lo_as_0118"
+  float nnlo_nnpdf30[7] = { 0.0, 0.0, 
+				 (0.6358696500000001+0.3146162000000000)/100.*1000., (0.1604826000000000+0.08462925000000002)/100.*1000., 
+				 (0.0458970350000000+0.0256531600000000)/100.*1000., (0.014473729999999999+0.0084397365000000)/100.*1000., 
+				 (0.0049946140000000+0.0029758358500000+0.0018095443850000+0.0011067699500000+
+				  0.0006797102000000+0.0004273242100000+0.00026842889000000005+0.00016960592500000002)/400.*1000.}; 
+  
+  // LHC8-PTavt-nnlo-MT2-CT14.dat 
+  // CT14:        "CT14(nn)lo"
+  float nnlo_ct14[7] = { 0.0, 0.0, 
+			 (0.6535005000000000+0.3234780000000000)/100.*1000., (0.1649332000000000+0.0869088500000000)/100.*1000., 
+			 (0.0470825250000000+0.0262368250000000)/100.*1000., (0.014760990000000002+0.0085699030000000)/100.*1000., 
+			 (0.005051291000000001+0.0029942235000000+0.0018123596500000002+0.0011011457850000+
+			  0.0006709686000000001+0.0004184653700000+0.0002605836800000+0.00016336405500000001)/400.*1000.}; 
+
+  // LHC8-PTavt-nnlo-MT2-MMHT2014.dat 
+  //MMHT2014:    "MMHT2014(nn)lo68cl"
+  float nnlo_mmht2014[7] = { 0.0, 0.0, 
+			     (0.6643410000000000+0.3311834000000000)/100.*1000., (0.17007014999999998+0.09032180000000001)/100.*1000., 
+			     (0.0493306600000000+0.027743894999999998)/100.*1000., (0.015743325000000002+0.0092261550000000)/100.*1000., 
+			     (0.005489487499999999+0.0032862194999999997+0.0020101444500000+0.0012314527600000003+
+			      0.0007593735000000+0.0004782915000000+0.00030061730999999994+0.0001909813150000)/400.*1000.}; 
+
+  float annnlo[7] = { 0.0, 0.0, 
+		      11.9236298085, 3.58917547755, 1.19792962383, 0.429050592794, 0.0648451839752}; 
+
+  // ---------------------------------------------------------------------------------------------------------------
+
 
   // ---------------------------------------------------------------------------------------------------------------
   // get files & histograms
@@ -1014,6 +1050,42 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
 
 
   // ----------------------------------------------------------------------------------------------------------------
+  // add theoretical cross section to plots? 
+  // ----------------------------------------------------------------------------------------------------------------
+
+  if (toUnfold == "pt") {
+
+    TH1F* h_nnlo_nnpdf30 = (TH1F*) h_unfolded[0]->Clone("nnlo_nnpdf30");
+    h_nnlo_nnpdf30->Reset(); 
+    TH1F* h_nnlo_ct14 = (TH1F*) h_unfolded[0]->Clone("nnlo_ct14");
+    h_nnlo_ct14->Reset(); 
+    TH1F* h_nnlo_mmht2014 = (TH1F*) h_unfolded[0]->Clone("nnlo_mmht2014");
+    h_nnlo_mmht2014->Reset(); 
+    TH1F* h_annnlo = (TH1F*) h_unfolded[0]->Clone("annnlo");
+    h_annnlo->Reset(); 
+    
+    for (int ibin=0; ibin<h_nnlo_nnpdf30->GetNbinsX(); ibin++) {
+      h_nnlo_nnpdf30->SetBinContent(ibin+1, nnlo_nnpdf30[ibin]);
+      h_nnlo_ct14->SetBinContent(ibin+1, nnlo_ct14[ibin]);
+      h_nnlo_mmht2014->SetBinContent(ibin+1, nnlo_mmht2014[ibin]);
+      h_annnlo->SetBinContent(ibin+1, annnlo[ibin]);
+    }
+    h_nnlo_ct14->SetLineWidth(3); 
+    h_nnlo_ct14->SetLineStyle(1); 
+    h_nnlo_ct14->SetLineColor(4); 
+    h_nnlo_nnpdf30->SetLineWidth(3); 
+    h_nnlo_nnpdf30->SetLineStyle(5); 
+    h_nnlo_nnpdf30->SetLineColor(kMagenta-4); 
+    h_nnlo_mmht2014->SetLineWidth(3); 
+    h_nnlo_mmht2014->SetLineStyle(9); 
+    h_nnlo_mmht2014->SetLineColor(8); 
+    h_annnlo->SetLineWidth(3); 
+    h_annnlo->SetLineStyle(7); 
+    h_annnlo->SetLineColor(14); 
+  }
+
+
+  // ----------------------------------------------------------------------------------------------------------------
   // colors and stuff
   // ----------------------------------------------------------------------------------------------------------------
   
@@ -1566,6 +1638,17 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   h_ratioMG->Divide(h_unfolded[0]);
   h_ratioMCNLO->Divide(h_unfolded[0]);
 
+  if (toUnfold == "pt") {
+    TH1F* h_ratio_nnlo_nnpdf30 = (TH1F*) h_nnlo_nnpdf30->Clone(baselab+"_ratio_nnlo_nnpdf30");
+    TH1F* h_ratio_nnlo_ct14 = (TH1F*) h_nnlo_ct14->Clone(baselab+"_ratio_nnlo_ct14");
+    TH1F* h_ratio_nnlo_mmht2014 = (TH1F*) h_nnlo_mmht2014->Clone(baselab+"_ratio_nnlo_mmht2014");
+    TH1F* h_ratio_annnlo = (TH1F*) h_annnlo->Clone(baselab+"_ratio_annnlo");
+
+    h_ratio_nnlo_nnpdf30->Divide(h_unfolded[0]);
+    h_ratio_nnlo_ct14->Divide(h_unfolded[0]);
+    h_ratio_nnlo_mmht2014->Divide(h_unfolded[0]);
+    h_ratio_annnlo->Divide(h_unfolded[0]);
+  }
   
   // ----------------------------------------------------------------------------------------------------------------
   TH1F* blaSTAT = (TH1F*) h_ratioSTAT_up->Clone("blaSTAT");
@@ -1700,11 +1783,66 @@ void plot(TString channel, TString toUnfold, bool wobtag, bool do2step, bool doN
   h_ratioMCNLO->Draw("same,hist");
   h_ratio->Draw("same,hist");
   h_ratio->Draw("same,axis");
-  
+
   c->SaveAs("UnfoldingPlots/unfoldWithError_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
   c->SaveAs("UnfoldingPlots/unfoldWithError_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".eps");
   c->SaveAs("UnfoldingPlots/unfoldWithError_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
 
+
+  //--------------------------------------------------------------------------------------------------------
+  // additional parton-level plot for pt measurement 
+  //--------------------------------------------------------------------------------------------------------
+
+  if (toUnfold=="pt") {
+
+    p1->cd();
+    
+    h_dummy->Draw("hist");
+    h_nnlo_ct14->Draw("hist,same"); 
+    h_nnlo_nnpdf30->Draw("hist,same"); 
+    h_nnlo_mmht2014->Draw("hist,same"); 
+    h_annnlo->Draw("hist,same"); 
+    TExec *setex1 = new TExec("setex1","gStyle->SetErrorX(0)");
+    setex1->Draw();
+    h_fullunc->Draw("hist,ep,same");
+    h_unfolded[0]->Draw("hist,E1p,same");
+    TExec *setex2 = new TExec("setex2","gStyle->SetErrorX(0.5)");
+    setex2->Draw();
+    h_dummy->Draw("hist,axis,same"); 
+    
+    TLegend* leg_nnlo = new TLegend(legxlow,legylow,legxhigh,legyhigh);  
+    leg_nnlo->AddEntry(h_unfolded[0],"Data","pe1");
+    leg_nnlo->AddEntry(h_nnlo_ct14,"NNLO, CT14","l");
+    leg_nnlo->AddEntry(h_nnlo_nnpdf30,"NNLO, NNPDF3.0","l");
+    leg_nnlo->AddEntry(h_nnlo_mmht2014,"NNLO, MMHT2014","l");
+    leg_nnlo->AddEntry(h_annnlo,"aNNNLO","l");
+    leg_nnlo->AddEntry(blaSTAT,"Stat. uncertainty","f");
+    leg_nnlo->AddEntry(blaTOT,"Stat. #oplus syst. uncertainties","f");
+    leg_nnlo->SetFillStyle(0);
+    leg_nnlo->SetBorderSize(0);
+    leg_nnlo->SetTextSize(0.055);
+    leg_nnlo->SetTextFont(42);
+    leg_nnlo->Draw();
+
+    drawCMS(0.36,0.79,0.47,0.79,true,preliminary,forpub);
+
+    p2->cd();
+    h_ratio->SetAxisRange(0.6,1.9,"Y");
+    h_ratio->Draw("hist");
+    blaTOT->Draw("same,e2");
+    blaSTAT->Draw("same,e2");
+    h_ratio_nnlo_ct14->Draw("same,hist");
+    h_ratio_nnlo_nnpdf30->Draw("same,hist");
+    h_ratio_nnlo_mmht2014->Draw("same,hist");
+    h_ratio_annnlo->Draw("same,hist");
+    h_ratio->Draw("same,hist");
+    h_ratio->Draw("same,axis");
+    
+    c->SaveAs("UnfoldingPlots/unfoldWithError_nnlo_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".png");
+    c->SaveAs("UnfoldingPlots/unfoldWithError_nnlo_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".eps");
+    c->SaveAs("UnfoldingPlots/unfoldWithError_nnlo_"+toUnfold+"_"+channel+twoStep+nobtag+normflag+".pdf");
+  }
+  //--------------------------------------------------------------------------------------------------------
 
   
   TCanvas *c1 = new TCanvas("c1", "", 800, 600);

@@ -896,6 +896,22 @@ if options.closureTest and options.troubleshoot and options.whatClosure == "nom"
 # do the actual unfolding
 # -------------------------------------------------------------------------------------
 
+## FOR CHECKING aNNNLO UNFOLDING CLOSURE TEST
+#
+#SF = [ 1.0, 1.0, 11.9236298085/11.8437366486, 3.58917547755/3.22087001801, 1.19792962383/0.97037011385, 0.429050592794/0.329721450806, 0.0648451839752/0.0464682132006, 1.0]
+#
+#for ibin in range(1, hTrue.GetXaxis().GetNbins()+1 ) :
+#    print "SF = " + str(SF[ibin-1])
+#    bc = hMeas.GetBinContent(ibin)
+#    be = hMeas.GetBinError(ibin)
+#    hMeas.SetBinContent(ibin, bc*SF[ibin-1])
+#    hMeas.SetBinError(ibin, be*SF[ibin-1])
+#    bc = hTrue.GetBinContent(ibin)
+#    be = hTrue.GetBinError(ibin)
+#    hTrue.SetBinContent(ibin, bc*SF[ibin-1])
+#    hTrue.SetBinError(ibin, be*SF[ibin-1])
+
+
 # -------------------------------------------------------------------------------------
 # one-step unfolding
 if options.twoStep == False:                
